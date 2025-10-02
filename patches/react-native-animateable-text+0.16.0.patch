@@ -1,0 +1,149 @@
+diff --git a/node_modules/react-native-animateable-text/android/src/main/java/com/reactnativereanimatedtext/JBTextViewManager.java b/node_modules/react-native-animateable-text/android/src/main/java/com/reactnativereanimatedtext/JBTextViewManager.java
+index 1234567..abcdefg 100644
+--- a/node_modules/react-native-animateable-text/android/src/main/java/com/reactnativereanimatedtext/JBTextViewManager.java
++++ b/node_modules/react-native-animateable-text/android/src/main/java/com/reactnativereanimatedtext/JBTextViewManager.java
+@@ -1,39 +1,45 @@
+ /*
+  * Custom
+  */
+ 
+ package com.reactnativereanimatedtext;
+ 
+ import androidx.annotation.Nullable;
+ import com.facebook.react.module.annotations.ReactModule;
+-import com.facebook.react.views.text.ReactTextShadowNode;
+-import com.facebook.react.views.text.ReactTextViewManager;
++import com.facebook.react.views.text.ReactTextShadowNode;
++import com.facebook.react.views.text.ReactTextViewManager;
+ import com.facebook.react.views.text.ReactTextViewManagerCallback;
+ import androidx.annotation.NonNull;
++import com.facebook.react.uimanager.ViewManager;
++import com.facebook.react.uimanager.ThemedReactContext;
++import com.facebook.react.uimanager.ViewManagerDelegate;
++import com.facebook.react.viewmanagers.ReactTextViewManagerDelegate;
++import com.facebook.react.views.text.ReactTextView;
+ 
+ @ReactModule(name = JBTextViewManager.REACT_CLASS)
+-public class JBTextViewManager
+-  extends ReactTextViewManager {
++public class JBTextViewManager extends ViewManager<ReactTextView, ReactTextShadowNode> {
+ 
+   public static final String REACT_CLASS = "JBAnimatedText";
++  private final ReactTextViewManager mReactTextViewManager = new ReactTextViewManager();
++  private final ReactTextViewManagerDelegate mDelegate = new ReactTextViewManagerDelegate(this);
+ 
+   @NonNull
+   @Override
+   public String getName() {
+     return REACT_CLASS;
+   }
+ 
+   @Override
+-  public ReactTextShadowNode createShadowNodeInstance() {
+-    return new JBTextShadowNode();
++  public ReactTextView createViewInstance(ThemedReactContext context) {
++    return mReactTextViewManager.createViewInstance(context);
+   }
+ 
+-  public JBTextShadowNode createShadowNodeInstance(
+-    @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
+-    return new JBTextShadowNode(reactTextViewManagerCallback);
++  @Override
++  public ReactTextShadowNode createShadowNodeInstance() {
++    return new JBTextShadowNode();
++  }
++
++  public JBTextShadowNode createShadowNodeInstance(
++    @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
++    return new JBTextShadowNode(reactTextViewManagerCallback);
+   }
++
++  @Override
++  public ViewManagerDelegate<ReactTextView> getDelegate() {
++    return mDelegate;
+   }
+ }
+diff --git a/node_modules/react-native-animateable-text/android/src/main/java/com/reactnativereanimatedtext/JBTextShadowNode.java b/node_modules/react-native-animateable-text/android/src/main/java/com/reactnativereanimatedtext/JBTextShadowNode.java
+index 1234567..abcdefg 100644
+--- a/node_modules/react-native-animateable-text/android/src/main/java/com/reactnativereanimatedtext/JBTextShadowNode.java
++++ b/node_modules/react-native-animateable-text/android/src/main/java/com/reactnativereanimatedtext/JBTextShadowNode.java
+@@ -1,61 +1,45 @@
+ /*
+- * Custom - onBeforeLayout (forked)
++ * Custom - Composition-based approach for RN 0.81 compatibility
+  */
+ 
+ package com.reactnativereanimatedtext;
+ 
+ import android.annotation.TargetApi;
+ import android.os.Build;
+ import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
+ import com.facebook.react.uimanager.annotations.ReactProp;
+-import com.facebook.react.views.text.ReactTextShadowNode;
++import com.facebook.react.views.text.ReactTextShadowNode;
+ import com.facebook.react.views.text.ReactTextViewManagerCallback;
++import com.facebook.react.uimanager.ReactShadowNode;
+ 
+ import java.lang.reflect.Field;
+ 
+ @TargetApi(Build.VERSION_CODES.M)
+-public class JBTextShadowNode extends ReactTextShadowNode {
++public class JBTextShadowNode extends ReactShadowNode {
+   protected String mText = "";
++  private final ReactTextShadowNode mReactTextShadowNode;
+ 
+-private static final Field mPreparedSpannableTextField;
++  private static final Field mPreparedSpannableTextField;
+   static {
+     try {
+       mPreparedSpannableTextField = ReactTextShadowNode.class.getDeclaredField("mPreparedSpannableText");
+       mPreparedSpannableTextField.setAccessible(true);
+     } catch (NoSuchFieldException e) {
+       throw new RuntimeException(e);
+     }
+   }
+ 
+   public JBTextShadowNode() {
+     this(null);
+   }
+ 
+   public JBTextShadowNode(ReactTextViewManagerCallback reactTextViewManagerCallback) {
+-    super(reactTextViewManagerCallback);
++    mReactTextShadowNode = new ReactTextShadowNode(reactTextViewManagerCallback);
+   }
+ 
+   @Override
+   public void onBeforeLayout(NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
+-    // ADDED
+     try {
+-    // END ADDED
+-      mPreparedSpannableTextField.set(this, spannedFromShadowNode(
+-        this,
+-        /* text (e.g. from `value` prop): */ mText, // EDITED
+-        /* supportsInlineViews: */ true,
+-        nativeViewHierarchyOptimizer));
++      mPreparedSpannableTextField.set(mReactTextShadowNode, spannedFromShadowNode(
++        mReactTextShadowNode,
++        /* text (e.g. from `value` prop): */ mText,
++        /* supportsInlineViews: */ true,
++        nativeViewHierarchyOptimizer));
+       markUpdated();
+-    // ADDED
+     } catch (IllegalAccessException e) {
+       throw new RuntimeException(e);
+     }
+-    // END ADDED
+   }
+ 
+   @ReactProp(name = "text")
+   public void setText(String newText) {
+     mText = newText;
+     markUpdated();
+   }
++
++  // Delegate methods to ReactTextShadowNode
++  @Override
++  public void onCollectExtraUpdates(com.facebook.react.uimanager.UIViewOperationQueue uiViewOperationQueue) {
++    mReactTextShadowNode.onCollectExtraUpdates(uiViewOperationQueue);
++  }
+ }

@@ -9448,7 +9448,7 @@ __metadata:
     react-native-action-sheet: "npm:2.2.0"
     react-native-actionsheet: "npm:2.4.2"
     react-native-aes-crypto: "rainbow-me/react-native-aes#65c49f7e70266615b2999eaa7db654d3fe4f2e3b"
-    react-native-animateable-text: "npm:0.16.0-beta.0"
+    react-native-animateable-text: "npm:0.16.0"
     react-native-ble-plx: "npm:3.2.1"
     react-native-blur-view: "christianbaroni/react-native-blur-view#2548117e37750f2c08ef0ec8c7e1c38e1294c9a8"
     react-native-bootsplash: "npm:6.3.7"
@@ -23419,9 +23419,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-animateable-text@npm:0.16.0-beta.0":
-  version: 0.16.0-beta.0
-  resolution: "react-native-animateable-text@npm:0.16.0-beta.0"
+"react-native-animateable-text@npm:0.16.0":
+  version: 0.16.0
+  resolution: "react-native-animateable-text@npm:0.16.0"
   dependencies:
     deprecated-react-native-prop-types: "npm:^2.3.0"
     nullthrows: "npm:^1.1.1"
@@ -23429,7 +23429,7 @@ __metadata:
     react: "*"
     react-native: ">=0.74.0"
     react-native-reanimated: ">=3"
-  checksum: 10c0/29399df6e3bd095358e0e57ae9a701274c9e6814ac9f2fa4999caa21b6933458b24c94cf4816bbbebacb25e0b150aadf75e85e90b4414f936f4fd631cb52c53d
+  checksum: 10c0/f57e90fd296f08cbad38bcd1c61dadcc4f1e75f757d045ef2f3aca47e67dd8e9e43534b05153e8e3bd6e95dc090d81f44f2ea496959c31a238c0f4ef65ac3418
   languageName: node
   linkType: hard
 
