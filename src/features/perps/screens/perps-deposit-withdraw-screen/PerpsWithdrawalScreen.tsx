@@ -49,8 +49,17 @@ const PerpsWithdrawalScreenContent = memo(function PerpsWithdrawalScreenContent(
   const isBalanceLoading = useHyperliquidAccountStore(state => state.getStatus('isInitialLoad'));
   const formattedBalance = `$${addCommasToNumber(toFixedWorklet(availableBalance, USD_DECIMALS), '0')}`;
 
-  const { displayedAmount, fields, inputMethod, handlePressMaxWorklet, handleSliderBeginWorklet, handleNumberPadChange, sliderProgress } =
-    usePerpsWithdrawalController();
+  const {
+    balance,
+    displayedAmount,
+    fields,
+    handlePressMaxWorklet,
+    handleSliderBeginWorklet,
+    handleNumberPadChange,
+    inputMethod,
+    isAtMax,
+    sliderProgress,
+  } = usePerpsWithdrawalController();
 
   const sliderColors = useMemo(
     () => ({
@@ -69,9 +78,14 @@ const PerpsWithdrawalScreenContent = memo(function PerpsWithdrawalScreenContent(
     return `$${formatted}`;
   });
 
+  useDerivedValue(() => {
+    console.log('isAtMax', isAtMax.value);
+  });
+
   const handleSwap = useCallback(async () => {
     withdrawalActions.setIsSubmitting(true);
-    const sanitizedAmount = sanitizeAmount(displayedAmount.value);
+    const amountToWithdraw = isAtMax.value ? balance.value : displayedAmount.value;
+    const sanitizedAmount = sanitizeAmount(amountToWithdraw);
     try {
       await hyperliquidAccountActions.withdraw(sanitizedAmount);
       analytics.track(analytics.event.perpsWithdrew, {
@@ -89,7 +103,7 @@ const PerpsWithdrawalScreenContent = memo(function PerpsWithdrawalScreenContent(
     } finally {
       withdrawalActions.setIsSubmitting(false);
     }
-  }, [displayedAmount, withdrawalActions]);
+  }, [balance, displayedAmount, isAtMax, withdrawalActions]);
 
   const formattedValues = useDerivedValue<Record<string, string>>(() => {
     return {
@@ -98,7 +112,8 @@ const PerpsWithdrawalScreenContent = memo(function PerpsWithdrawalScreenContent(
   });
 
   const inputAmountErrorShared = useDerivedValue(() => {
-    const amountNumber = Number(displayedAmount.value || '0');
+    const amountToCheck = isAtMax.value ? balance.value : displayedAmount.value;
+    const amountNumber = Number(amountToCheck || '0');
     if (amountNumber === 0) return 'zero';
     if (amountNumber > Number(availableBalance)) return 'overBalance';
     return null;

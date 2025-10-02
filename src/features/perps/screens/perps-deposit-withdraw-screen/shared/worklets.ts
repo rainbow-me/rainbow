@@ -72,21 +72,23 @@ export function amountFromSliderProgress(
   };
 }
 
-export function valueFromSliderProgress(progress: number, balance: string, decimals = 2): string {
+export function valueFromSliderProgress(progress: number, balance: string, decimals = 2): { amount: string; trueBalance?: string } {
   'worklet';
   const clampedProgress = clampSliderProgress(progress);
 
   if (progress === 0 || equalWorklet(balance, '0')) {
-    return '0';
+    return { amount: '0' };
   }
 
   if (clampedProgress >= SLIDER_MAX) {
-    return toFixedWorklet(balance, decimals);
+    const sanitizedBalance = sanitizeAmount(balance);
+    const displayAmount = toFixedWorklet(sanitizedBalance, decimals);
+    return { amount: displayAmount, trueBalance: sanitizedBalance };
   }
 
   const percentage = clampedProgress / SLIDER_MAX;
   const amount = mulWorklet(balance, percentage);
-  return toFixedWorklet(amount, decimals);
+  return { amount: toFixedWorklet(amount, decimals) };
 }
 
 export function sliderProgressFromAmount(amount: string, balance: string): number {

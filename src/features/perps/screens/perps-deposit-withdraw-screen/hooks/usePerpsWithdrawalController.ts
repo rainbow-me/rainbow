@@ -24,6 +24,7 @@ export function usePerpsWithdrawalController() {
   const inputMethod = useSharedValue('inputAmount');
   const displayedAmount = useSharedValue(initial.initialAmount);
   const fields = useSharedValue<Record<InputMethod, NumberPadField>>(initial.fields);
+  const isAtMax = useSharedValue(false);
 
   useAnimatedReaction(
     () => ({
@@ -41,11 +42,12 @@ export function usePerpsWithdrawalController() {
 
       if (!didSliderProgressChange && !didBalanceChange && !shouldVerifyMax) return;
 
-      const newAmount = valueFromSliderProgress(current.progress, current.balance, USD_DECIMALS);
-      displayedAmount.value = newAmount;
+      const result = valueFromSliderProgress(current.progress, current.balance, USD_DECIMALS);
+      displayedAmount.value = result.amount;
+      isAtMax.value = result.trueBalance !== undefined;
 
       fields.modify(prev => {
-        prev.inputAmount.value = newAmount;
+        prev.inputAmount.value = result.amount;
         return prev;
       });
     },
@@ -63,6 +65,7 @@ export function usePerpsWithdrawalController() {
       interactionSource.value = 'numberpad';
       const amount = String(newValue);
       displayedAmount.value = amount;
+      isAtMax.value = false;
 
       fields.modify(prev => {
         prev.inputAmount.value = amount;
@@ -73,7 +76,7 @@ export function usePerpsWithdrawalController() {
       const nextProgress = sliderProgressFromAmount(sanitizedAmount, balance.value);
       sliderProgress.value = withSpring(nextProgress, SPRING_CONFIGS.snappySpringConfig);
     },
-    [balance, displayedAmount, fields, interactionSource, sliderProgress]
+    [balance, displayedAmount, fields, interactionSource, isAtMax, sliderProgress]
   );
 
   const handlePressMaxWorklet = useCallback(() => {
@@ -97,10 +100,11 @@ export function usePerpsWithdrawalController() {
     state => state.getBalance(),
     newBalance => {
       runOnUI(() => {
-        const resetAmount = valueFromSliderProgress(sliderProgress.value, newBalance, USD_DECIMALS);
-        displayedAmount.value = resetAmount;
+        const result = valueFromSliderProgress(sliderProgress.value, newBalance, USD_DECIMALS);
+        displayedAmount.value = result.amount;
+        isAtMax.value = result.trueBalance !== undefined;
         fields.modify(prev => {
-          prev.inputAmount.value = resetAmount;
+          prev.inputAmount.value = result.amount;
           return prev;
         });
       })();
@@ -108,6 +112,7 @@ export function usePerpsWithdrawalController() {
   );
 
   return {
+    balance,
     displayedAmount,
     fields,
     handleNumberPadChange,
@@ -115,6 +120,7 @@ export function usePerpsWithdrawalController() {
     handleSliderBeginWorklet,
     inputMethod,
     interactionSource,
+    isAtMax,
     sliderProgress,
   };
 }
@@ -123,9 +129,8 @@ function getInitialValues(): {
   fields: Record<InputMethod, NumberPadField>;
   initialAmount: string;
 } {
-  const initialAmount = sanitizeAmount(
-    valueFromSliderProgress(INITIAL_SLIDER_PROGRESS, hyperliquidAccountActions.getBalance(), USD_DECIMALS)
-  );
+  const result = valueFromSliderProgress(INITIAL_SLIDER_PROGRESS, hyperliquidAccountActions.getBalance(), USD_DECIMALS);
+  const initialAmount = sanitizeAmount(result.amount);
   return {
     fields: {
       inputAmount: {
