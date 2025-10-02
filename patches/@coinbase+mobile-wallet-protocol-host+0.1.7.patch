@@ -1,5 +1,5 @@
 diff --git a/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/MobileWalletProtocolHostModule.kt b/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/MobileWalletProtocolHostModule.kt
-index 79505d4..f17558b 100644
+index 79505d4cb..f17558b6d 100644
 --- a/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/MobileWalletProtocolHostModule.kt
 +++ b/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/MobileWalletProtocolHostModule.kt
 @@ -114,7 +114,7 @@ class MobileWalletProtocolHostModule(reactContext: ReactApplicationContext) : Re
@@ -47,8 +47,12 @@ index 79505d4..f17558b 100644
              val data = activity.intent.data
              promise.resolve(data?.toString())
          } catch (e: Throwable) {
+             promise.reject(e)
+         }
+     }
+ }
 diff --git a/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/PackageManagerSignaturesExt.kt b/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/PackageManagerSignaturesExt.kt
-index 6b482fa..89ef7c3 100644
+index 6b482fa66..89ef7c3df 100644
 --- a/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/PackageManagerSignaturesExt.kt
 +++ b/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/PackageManagerSignaturesExt.kt
 @@ -7,7 +7,7 @@ import java.security.MessageDigest
@@ -69,3 +73,4 @@ index 6b482fa..89ef7c3 100644
              signatures.map { sha256(it.toByteArray()) }
          }
      } catch (e: Throwable) {
+
