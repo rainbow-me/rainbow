@@ -25,8 +25,8 @@ export const GasButtonWrapper = memo(function GasButtonWrapper() {
     useStableValue(() =>
       createDerivedStore(
         $ => {
-          const isQuoteLoading = $(useQuoteStore, state => state.getStatus('isLoading'));
-          const isGasLimitLoading = $(gasStores.useGasLimitStore, state => state.getStatus('isInitialLoad'));
+          const isQuoteLoading = $(useQuoteStore, state => state.status === 'loading');
+          const isGasLimitLoading = $(gasStores.useGasLimitStore, state => !state.getData() && state.status === 'loading');
           return isQuoteLoading || isGasLimitLoading;
         },
         { debounce: time.ms(100), fastMode: true }

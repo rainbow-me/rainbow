@@ -35,7 +35,7 @@ describe('createQueryStore', () => {
 
       const status = store.getState().getStatus();
       expect(status.isSuccess).toBe(true);
-      expect(status.isFetching).toBe(false);
+      expect(status.isLoading).toBe(false);
       expect(status.isError).toBe(false);
     });
   });

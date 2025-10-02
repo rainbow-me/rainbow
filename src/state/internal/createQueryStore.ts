@@ -13,6 +13,7 @@ import {
   FetchOptions,
   InternalStateKeys,
   ParamResolvable,
+  QueryStatusInfo,
   QueryStatuses,
   QueryStoreConfig,
   QueryStoreParams,
@@ -389,6 +390,48 @@ export function createQueryStore<
       }, timeUntilRefetch);
     };
 
+    function getStatus(statusKey: keyof QueryStatusInfo): QueryStatusInfo[keyof QueryStatusInfo];
+    function getStatus(): QueryStatusInfo;
+    function getStatus(statusKey?: keyof QueryStatusInfo): QueryStatusInfo[keyof QueryStatusInfo] | QueryStatusInfo {
+      switch (statusKey) {
+        case 'isIdle':
+          return get().status === QueryStatuses.Idle;
+        case 'isLoading':
+          return get().status === QueryStatuses.Loading;
+        case 'isSuccess': {
+          const { queryCache, queryKey, status } = get();
+          if (typeof queryCache[queryKey]?.lastFetchedAt === 'number') return true;
+          return status === QueryStatuses.Success;
+        }
+        case 'isError':
+        case 'isInitialLoad':
+        case undefined: {
+          const { lastFetchedAt: storeLastFetchedAt, queryCache, queryKey, status } = get();
+          const cacheEntry = queryCache[queryKey];
+          const lastFetchedAt = (disableCache ? lastFetchKey === queryKey && storeLastFetchedAt : cacheEntry?.lastFetchedAt) || null;
+
+          switch (statusKey) {
+            case 'isError': {
+              const isError = disableCache ? status !== 'error' : typeof cacheEntry?.errorInfo?.lastFailedAt === 'number';
+              return isError;
+            }
+            case 'isInitialLoad': {
+              const isInitialLoad = !lastFetchedAt && status === QueryStatuses.Loading;
+              return isInitialLoad;
+            }
+          }
+
+          return {
+            isError: status === QueryStatuses.Error,
+            isIdle: status === QueryStatuses.Idle,
+            isLoading: status === QueryStatuses.Loading,
+            isInitialLoad: !lastFetchedAt && status === QueryStatuses.Loading,
+            isSuccess: status === QueryStatuses.Success,
+          };
+        }
+      }
+    }
+
     const baseMethods = {
       ...customStateCreator(setWithEnabledHandling, get, api),
       ...initialData,
@@ -733,19 +776,7 @@ export function createQueryStore<
         return isExpired ? null : cacheEntry?.data ?? null;
       },
 
-      getStatus() {
-        const { queryKey, status } = get();
-        const lastFetchedAt =
-          (disableCache ? lastFetchKey === queryKey && get().lastFetchedAt : get().queryCache[queryKey]?.lastFetchedAt) || null;
-
-        return {
-          isError: status === QueryStatuses.Error,
-          isFetching: status === QueryStatuses.Loading,
-          isIdle: status === QueryStatuses.Idle,
-          isInitialLoading: !lastFetchedAt && status === QueryStatuses.Loading,
-          isSuccess: status === QueryStatuses.Success,
-        };
-      },
+      getStatus,
 
       isDataExpired(cacheTimeOverride?: number) {
         const currentQueryKey = get().queryKey;

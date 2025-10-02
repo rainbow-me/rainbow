@@ -39,9 +39,9 @@ export type QueryStatus = (typeof QueryStatuses)[keyof typeof QueryStatuses];
  */
 export type QueryStatusInfo = {
   isError: boolean;
-  isFetching: boolean;
+  isLoading: boolean;
   isIdle: boolean;
-  isInitialLoading: boolean;
+  isInitialLoad: boolean;
   isSuccess: boolean;
 };
 
@@ -129,7 +129,7 @@ export type CacheEntry<TData> = {
  * - **`queryKey`**: A string representation of the current query parameter values.
  * - **`fetch(params, options)`**: Initiates a data fetch operation.
  * - **`getData(params)`**: Returns the cached data, if available, for the current query parameters.
- * - **`getStatus()`**: Returns expanded status information for the current query parameters.
+ * - **`getStatus(statusKey?)`**: Returns expanded status information for the current query parameters.
  * - **`isDataExpired(override?)`**: Checks if the current data has expired based on `cacheTime`.
  * - **`isStale(override?)`**: Checks if the current data is stale based on `staleTime`.
  * - **`reset()`**: Resets the store to its initial state, clearing data and errors.
@@ -163,15 +163,17 @@ interface QueryCapableStore<
    */
   getData: (params?: TParams) => TData | null;
   /**
-   * Returns expanded status information for the currently specified query parameters. The raw
-   * status can be obtained by directly reading the `status` property.
+   * Returns expanded status information for the currently specified query parameters.
+   * Pass a status key to avoid building the full status object.
    * @example
    * ```ts
-   * const isInitialLoading = useMyQueryStore(state => state.getStatus().isInitialLoading);
+   * const isInitialLoad = useMyQueryStore(state => state.getStatus('isInitialLoad'));
    * ```
-   * @returns An object containing boolean flags for each status.
+   * @returns The requested status, or the full status object if no key is provided.
    */
-  getStatus: () => QueryStatusInfo;
+  getStatus(statusKey: keyof QueryStatusInfo): QueryStatusInfo[keyof QueryStatusInfo];
+  getStatus(): QueryStatusInfo;
+  getStatus(statusKey?: keyof QueryStatusInfo): QueryStatusInfo[keyof QueryStatusInfo] | QueryStatusInfo;
   /**
    * Determines if the current data is expired based on whether `cacheTime` has been exceeded.
    * @param override - An optional override for the default cache time, in milliseconds.

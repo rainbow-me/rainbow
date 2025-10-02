@@ -11,7 +11,7 @@ import { getBalance, TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useAccountSettings } from '@/hooks';
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { getSolidColorEquivalent } from '@/worklets/colors';
-import { useCandlestickStore } from '@/features/charts/stores/candlestickStore';
+import { useCandlestickPrice } from '@/features/charts/stores/derived/useCandlestickPrice';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { greaterThanWorklet, mulWorklet } from '@/safe-math/SafeMath';
 import { arePricesEqual } from '@/features/charts/candlestick/utils';
@@ -47,7 +47,7 @@ export function BalanceSection() {
     selector: token => token.reliability.metadata.liquidityCap,
   });
 
-  const [currentCandlestickPrice, candlestickPriceListener] = useStoreSharedValue(useCandlestickStore, state => state.getPrice(), {
+  const [currentCandlestickPrice, candlestickPriceListener] = useStoreSharedValue(useCandlestickPrice, state => state, {
     equalityFn: arePricesEqual,
     returnListenHandle: true,
   });

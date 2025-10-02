@@ -57,7 +57,7 @@ export default function useWalletSectionsData({
   const remoteCards = useMemo(() => (remoteCardsEnabled ? cardIds : []), [cardIds, remoteCardsEnabled]);
 
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
-  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus().isInitialLoading);
+  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const positionsData = usePositionsStore(state =>
     state.getData({
