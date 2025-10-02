@@ -58,7 +58,7 @@ export const useHlNewPositionStore = createRainbowStore<HlNewPositionStore>((set
 
   getLeverage: () => {
     const { leverage, market } = get();
-    if (!leverage || !market) return leverage;
+    if (!leverage || !market) return leverage ?? 1;
     return Math.min(leverage, market.maxLeverage);
   },
 
@@ -92,7 +92,9 @@ export const useHlNewPositionStore = createRainbowStore<HlNewPositionStore>((set
     const address = useWalletsStore.getState().accountAddress;
     const assetData = await infoClient.activeAssetData({ coin: market.symbol, user: address });
     const accountAssetLeverage = assetData?.leverage?.value || 1;
-    set(state => (state.leverage === accountAssetLeverage ? state : { leverage: accountAssetLeverage }));
+    set(state =>
+      state.leverage === accountAssetLeverage || market.symbol !== state.market?.symbol ? state : { leverage: accountAssetLeverage }
+    );
   },
 
   setPositionSide: positionSide => set(state => (state.positionSide === positionSide ? state : { positionSide })),
