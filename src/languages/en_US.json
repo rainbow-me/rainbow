@@ -1713,16 +1713,22 @@
         "title": "Perps",
         "steps": {
           "step_1": {
-            "title_parts": ["Perpetual Futures"],
-            "subtitle_parts": ["Predict a token’s price direction and earn if your call is right. Trade any time, no expiry."]
+            "title_parts": ["Introducing Perps"],
+            "subtitle_parts": [
+              "Trade on price movements. Open and close positions whenever you want—no expiration. Powered by Hyperliquid."
+            ]
           },
           "step_2": {
-            "title_parts": ["Go", "Long", "or go", "Short"],
-            "subtitle_parts": ["Go long when you expect the price to rise. Earn profits if the token goes up."]
+            "title_parts": ["Go", "Long", "or", "Short"],
+            "subtitle_parts": [
+              "Long when you think the price will rise. Short when you think it'll fall. Profit whether the market goes up or down."
+            ]
           },
           "step_3": {
-            "title_parts": ["Leverage and risk"],
-            "subtitle_parts": ["Leverage boosts profits but also risk. If the market moves against you, your position gets liquidated."]
+            "title_parts": ["Trade with Leverage"],
+            "subtitle_parts": [
+              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+            ]
           }
         }
       },

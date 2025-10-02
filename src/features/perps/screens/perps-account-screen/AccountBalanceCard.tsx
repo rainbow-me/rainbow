@@ -11,14 +11,16 @@ import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton
 import { ImgixImage } from '@/components/images';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { formatCurrency } from '@/helpers/strings';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import * as i18n from '@/languages';
+import { checkIfReadOnlyWallet, useWalletsStore } from '@/state/wallets/walletsStore';
 
 export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
   const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
   const isBalanceZero = useHyperliquidAccountStore(state => Number(state.getBalance()) === 0);
   const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
+  const accountAddress = useWalletsStore(state => state.accountAddress);
 
   return (
     <Box
@@ -45,6 +47,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
           <Box flexDirection="row" gap={10}>
             <ButtonPressAnimation
               onPress={() => {
+                if (checkIfReadOnlyWallet(accountAddress)) return;
                 Navigation.handleAction(Routes.PERPS_WITHDRAWAL_SCREEN);
               }}
             >
@@ -71,6 +74,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
             </ButtonPressAnimation>
             <HyperliquidButton
               onPress={() => {
+                if (checkIfReadOnlyWallet(accountAddress)) return;
                 Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
               }}
               height={40}
@@ -89,6 +93,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
         {isBalanceZero && (
           <HyperliquidButton
             onPress={() => {
+              if (checkIfReadOnlyWallet(accountAddress)) return;
               if (hasNoAssets) {
                 Navigation.handleAction(Routes.ADD_CASH_SHEET);
               } else {
