@@ -2,14 +2,15 @@ import React, { memo, RefObject, useCallback, useMemo, useRef } from 'react';
 import { ScrollView, ScrollViewProps, StyleSheet, View } from 'react-native';
 import Animated, {
   AnimatedStyle,
-  Easing,
+  DerivedValue,
   SharedValue,
   runOnJS,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { SPRING_CONFIGS, easing } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { AnimatedText, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
@@ -34,6 +35,7 @@ const RIGHT_INSET = BASE_HORIZONTAL_INSET + CHART_TOGGLE_SIZE + CHART_TOGGLE_LEF
 
 const CANDLE_RESOLUTION_COUNT = Object.keys(CANDLE_RESOLUTIONS).length;
 const CANDLESTICK_CONTENT_WIDTH = PILL.width * CANDLE_RESOLUTION_COUNT + PILL.gap * (CANDLE_RESOLUTION_COUNT - 1);
+const LINE_CHART_PERIOD_COUNT = Object.keys(LINE_CHART_TIME_PERIODS).length;
 
 // ============ Types ========================================================== //
 
@@ -84,7 +86,13 @@ export const TimeframeSelector = memo(function TimeframeSelector({
   const initialState = useStableValue(() => getInitialState(chartType));
   const scrollViewRef = useRef<ScrollView>(null);
   const selectedIndex = useSharedValue(initialState.initialIndex);
-  const scrollViewProps = useMemo(() => getScrollViewProps(chartType), [chartType]);
+  const scrollViewProps = useMemo(() => getScrollViewProps(chartType, hideChartTypeToggle), [chartType, hideChartTypeToggle]);
+
+  const buttonWidth = useDerivedValue(() => {
+    if (chartType === ChartType.Candlestick) return PILL.width;
+    const spaceForPills = DEVICE_WIDTH - BASE_HORIZONTAL_INSET - RIGHT_INSET - PILL.gap * (LINE_CHART_PERIOD_COUNT - 1);
+    return spaceForPills / LINE_CHART_PERIOD_COUNT;
+  });
 
   const onPress = useCallback(
     ({ candleResolution, lineChartTimePeriod }: SetTimeframeParams) => {
@@ -97,7 +105,7 @@ export const TimeframeSelector = memo(function TimeframeSelector({
   return (
     <View style={styles.container}>
       <ScrollView
-        centerContent={!IS_IOS}
+        centerContent={!IS_IOS || chartType === ChartType.Line || hideChartTypeToggle}
         contentContainerStyle={scrollViewProps.contentContainerStyle}
         contentOffset={initialState.contentOffset}
         horizontal
@@ -107,7 +115,7 @@ export const TimeframeSelector = memo(function TimeframeSelector({
         scrollEnabled={chartType === ChartType.Candlestick}
         style={scrollViewProps.style}
       >
-        <SelectedHighlight color={color} selectedIndex={selectedIndex} />
+        <SelectedHighlight buttonWidth={buttonWidth} color={color} selectedIndex={selectedIndex} />
 
         {chartType === ChartType.Candlestick ? (
           <CandlestickButtons color={color} onPress={onPress} selectedIndex={selectedIndex} />
@@ -117,7 +125,7 @@ export const TimeframeSelector = memo(function TimeframeSelector({
       </ScrollView>
 
       <EasingGradient
-        easing={Easing.in(Easing.sin)}
+        easing={easing.in.sin}
         endColor={backgroundColor}
         endPosition="left"
         startColor={backgroundColor}
@@ -127,17 +135,17 @@ export const TimeframeSelector = memo(function TimeframeSelector({
       />
 
       <EasingGradient
-        easing={Easing.in(Easing.sin)}
+        easing={easing.in.sin}
         endColor={backgroundColor}
         endPosition="right"
         pointerEvents="auto"
         startColor={backgroundColor}
         startPosition="left"
         steps={8}
-        style={styles.rightFade}
+        style={hideChartTypeToggle ? [styles.rightFade, styles.pointerEventsDisabled] : styles.rightFade}
       />
 
-      {!hideChartTypeToggle && (
+      {hideChartTypeToggle ? null : (
         <ChartTypeToggle
           backgroundColor={backgroundColor}
           color={color}
@@ -150,23 +158,33 @@ export const TimeframeSelector = memo(function TimeframeSelector({
   );
 });
 
-const SelectedHighlight = memo(function SelectedHighlight({ color, selectedIndex }: { color: string; selectedIndex: SharedValue<number> }) {
+const SelectedHighlight = memo(function SelectedHighlight({
+  buttonWidth,
+  color,
+  selectedIndex,
+}: {
+  buttonWidth: DerivedValue<number>;
+  color: string;
+  selectedIndex: SharedValue<number>;
+}) {
   const { isDarkMode } = useColorMode();
   const backgroundColor = opacity(color, 0.06);
   const borderColor = isDarkMode ? backgroundColor : opacity(color, 0.03);
 
-  const style = useAnimatedStyle(() => ({
+  const translateX = useAnimatedStyle(() => ({
     transform: [
       {
         translateX: withSpring(
-          selectedIndex.value * (PILL.width + PILL.gap) + BASE_HORIZONTAL_INSET,
+          selectedIndex.value * (buttonWidth.value + PILL.gap) + BASE_HORIZONTAL_INSET,
           SPRING_CONFIGS.snappyMediumSpringConfig
         ),
       },
     ],
   }));
 
-  return <Animated.View style={[styles.selectedHighlight, { backgroundColor, borderColor }, style]} />;
+  const width = useAnimatedStyle(() => ({ width: withSpring(buttonWidth.value, SPRING_CONFIGS.snappyMediumSpringConfig) }));
+
+  return <Animated.View style={[styles.selectedHighlight, { backgroundColor, borderColor }, translateX, width]} />;
 });
 
 const TimeframeButton = ({ candleResolution, color, index, label, lineChartTimePeriod, selectedIndex, onPress }: TimeframeButtonProps) => {
@@ -186,6 +204,7 @@ const TimeframeButton = ({ candleResolution, color, index, label, lineChartTimeP
     <GestureHandlerButton
       hapticTrigger="tap-end"
       hapticType="soft"
+      hitSlop={4}
       onPressWorklet={() => {
         'worklet';
         candleResolution ? onPress({ candleResolution }) : onPress({ lineChartTimePeriod });
@@ -381,13 +400,18 @@ function getInitialScrollPosition(buttonIndex: number): number {
 }
 
 function getScrollViewProps(
-  chartType: ChartType
+  chartType: ChartType,
+  hideChartTypeToggle: boolean | undefined
 ): Pick<ScrollViewProps, 'contentContainerStyle' | 'maintainVisibleContentPosition' | 'style'> {
   const isLineChart = chartType === ChartType.Line;
   return {
-    contentContainerStyle: IS_IOS || !isLineChart ? styles.contentContainer : [styles.contentContainer, { width: undefined }],
+    contentContainerStyle: isLineChart
+      ? [styles.contentContainer, { width: DEVICE_WIDTH }]
+      : hideChartTypeToggle
+        ? [styles.contentContainer, styles.hideChartToggleOverride]
+        : styles.contentContainer,
     maintainVisibleContentPosition: IS_IOS ? undefined : { minIndexForVisible: 0 },
-    style: IS_IOS ? [styles.scrollView, { paddingLeft: isLineChart ? 8 : 0 }] : styles.scrollView,
+    style: styles.scrollView,
   };
 }
 
@@ -416,6 +440,7 @@ function toggleChartTypeAndScroll(scrollViewRef: RefObject<ScrollView | null>, s
 const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
+    flex: 1,
     height: PILL.height,
     justifyContent: 'center',
     width: PILL.width,
@@ -479,6 +504,13 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     position: 'relative',
     width: IS_IOS ? undefined : CANDLESTICK_CONTENT_WIDTH + BASE_HORIZONTAL_INSET + RIGHT_INSET,
+  },
+  hideChartToggleOverride: {
+    paddingRight: BASE_HORIZONTAL_INSET,
+    width: IS_IOS ? undefined : CANDLESTICK_CONTENT_WIDTH + BASE_HORIZONTAL_INSET * 2,
+  },
+  pointerEventsDisabled: {
+    pointerEvents: 'none',
   },
   leftFade: {
     height: '100%',
