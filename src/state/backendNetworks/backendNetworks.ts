@@ -1,6 +1,6 @@
 import isEqual from 'react-fast-compare';
 import { Chain } from 'viem/chains';
-import { IS_TEST } from '@/env';
+import { IS_DEV, IS_TEST } from '@/env';
 import buildTimeNetworks from '@/references/networks.json';
 import { fetchBackendNetworks, BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
 import { filterSupportedNetworks, transformBackendNetworksToChains } from '@/state/backendNetworks/utils';
@@ -124,7 +124,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
         };
       });
     },
-    staleTime: time.minutes(10),
+    staleTime: IS_DEV ? 0 : time.minutes(10),
   },
 
   (_, get) => ({
