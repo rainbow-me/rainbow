@@ -707,11 +707,10 @@
           "website": "ウェブサイト",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter",
-          "warpcast": "Warpcast",
+          "twitter": "X (Twitter)",
           "farcaster": "Farcaster",
           "other": "その他",
-          "search_on_twitter": "Twitterで検索"
+          "search_on_twitter": "Search on X"
         },
         "uniswap_liquidity": "ユニスワップ流動性",
         "value": "価値",
@@ -923,7 +922,7 @@
         "toast_removed_from_showcase": "ショーケースから削除されました",
         "refreshing": "メタデータを更新中...",
         "reported": "スパムとして報告されました",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "view_all_with_property": "プロパティですべて表示",
         "view_collection": "コレクションを表示",
         "view_on_marketplace": "マーケットプレースで表示...",
@@ -958,7 +957,7 @@
       "poolboy_title": "アンロック\nRainbow Poolboy!",
       "adworld_description": "Rainbow World Citizenとして、特別版のAdWorld x Rainbowアプリアイコンをアンロックできます。",
       "adworld_title": "ウェルカムトゥレインボーワールド！",
-      "farcaster_description": "Warpcastのシンプルなミニマリズムに触発された、最も退屈なアプリアイコン。",
+      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
       "farcaster_title": "アンロック\nRainbowcast",
       "redacted_description": "真のGdupi愛好者のための独占的なRainbowアイコン。",
       "redacted_title": "ロック解除されました\nRedacted Rainbow",
@@ -1801,7 +1800,7 @@
         "skip": "スキップ",
         "snapchat": "スナップチャット",
         "telegram": "Telegram",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "upload_photo": "写真をアップロード",
         "uploading": "アップロード中",
         "username_placeholder": "ユーザー名",
@@ -2157,7 +2156,7 @@
       "done": "完了",
       "feedback_and_reports": "Feedback & Bug Reports",
       "feedback_and_support": "Feedback and Support",
-      "follow_us_on_twitter": "Follow us on Twitter",
+      "follow_us_on_twitter": "Follow us on X",
       "hey_friend_message": "👋️ Hey friend! Rainbowをダウンロードするべきです。これは私のお気に入りのイーサリアムウォレットです 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "設定",
       "language": "Language",
@@ -3330,7 +3329,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "利用可能残高: %{balance}",
-        "title": "Pre-buy tokens"
+        "title": "プリバイでトークンを購入"
       },
       "review": {
         "token_allocation": "トークン配分",
@@ -3395,7 +3394,7 @@
       },
       "links": {
         "x": {
-          "name": "X/Twitter",
+          "name": "X (Twitter)",
           "placeholder": "ユーザー名"
         },
         "telegram": {
@@ -3492,9 +3491,9 @@
           "step_1": {
             "title": "レースが開始",
             "subtitle_parts": [
-              "The current king is the token created in the last 30 days with the most",
+              "現在のキングは、過去30日間に作成されたトークンで、",
               " 購入ボリューム ",
-              "today."
+              "今日。"
             ]
           },
           "step_2": {
