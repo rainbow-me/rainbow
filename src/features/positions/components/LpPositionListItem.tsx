@@ -11,6 +11,7 @@ import * as i18n from '@/languages';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { ChainId } from '@/state/backendNetworks/types';
 
 function getRangeStatus(assets: RainbowUnderlyingAsset[], isConcentratedLiquidity: boolean) {
   if (!isConcentratedLiquidity) {
@@ -91,7 +92,7 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
       <Column width={'content'}>
         {displayAssets.length >= 2 && (
           <TwoCoinsIcon
-            badge
+            badge={displayAssets[0].asset.chain_id !== ChainId.mainnet}
             // @ts-expect-error component uses different Token entity type, but it is compatible
             over={{
               ...displayAssets[0].asset,
