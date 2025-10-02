@@ -1658,9 +1658,10 @@
         "amount": "Amount",
         "available": "Available",
         "max": "Max",
+        "maximum_amount_is": "Maximum amount is",
         "minimum": "Minimum",
         "minimum_amount_is": "Minimum amount is",
-        "maximum_amount_is": "Maximum amount is"
+        "no_balance": "No Balance"
       },
       "history": {
         "title": "History",

@@ -5,29 +5,33 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Inline, useForegroundColor } from '@/design-system';
 import { USD_DECIMALS } from '@/features/perps/constants';
 import { useOrderAmountValidation } from '@/features/perps/stores/derived/useOrderAmountValidation';
+import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import * as i18n from '@/languages';
-import { ReadOnlySharedValue, useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { truncateToDecimals } from '@/safe-math/SafeMath';
+import { ReadOnlySharedValue, useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
 const translations = {
   availableSuffix: i18n.t(i18n.l.perps.inputs.available),
   maxSuffix: i18n.t(i18n.l.perps.inputs.max),
   minimumSuffix: i18n.t(i18n.l.perps.inputs.minimum),
+  noBalance: i18n.t(i18n.l.perps.inputs.no_balance),
 };
 
 export const AmountInputCardSubtitle = ({ availableBalanceString }: { availableBalanceString: ReadOnlySharedValue<string> }) => {
+  const hasBalance = useStoreSharedValue(useHyperliquidAccountStore, state => state.hasBalance());
   const validation = useStoreSharedValue(useOrderAmountValidation, state => state);
   const labelSecondary = useForegroundColor('labelSecondary');
   const red = useForegroundColor('red');
 
-  const leftHandText = useDerivedValue(() =>
-    validation.value.isBelowMin
-      ? formatCurrency(truncateToDecimals(validation.value.minAmount, USD_DECIMALS))
-      : formatCurrency(truncateToDecimals(availableBalanceString.value, USD_DECIMALS))
-  );
+  const leftHandText = useDerivedValue(() => {
+    if (!hasBalance.value) return translations.noBalance;
+    if (validation.value.isBelowMin) return formatCurrency(truncateToDecimals(validation.value.minAmount, USD_DECIMALS));
+    return formatCurrency(truncateToDecimals(availableBalanceString.value, USD_DECIMALS));
+  });
 
   const rightHandText = useDerivedValue(() => {
+    if (!hasBalance.value) return '';
     if (validation.value.isAboveMax) return translations.maxSuffix;
     if (validation.value.isBelowMin) return translations.minimumSuffix;
     return translations.availableSuffix;

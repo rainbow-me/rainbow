@@ -17,6 +17,7 @@ type HyperliquidAccountActions = {
   getValue: () => string;
   getPositions: () => Record<string, PerpsPosition>;
   getPosition: (symbol: string) => PerpsPosition | undefined;
+  hasBalance: () => boolean;
 };
 
 type HyperliquidAccountParams = {
@@ -56,6 +57,7 @@ export const useHyperliquidAccountStore = createQueryStore<
     getPosition: symbol => get().getData()?.positions[symbol],
     getPositions: () => get().getData()?.positions ?? PERPS_EMPTY_ACCOUNT_DATA.positions,
     getValue: () => get().getData()?.value ?? PERPS_EMPTY_ACCOUNT_DATA.value,
+    hasBalance: () => Number(get().getBalance()) > 0,
   }),
 
   { storageKey: 'hyperliquidAccountStore' }
