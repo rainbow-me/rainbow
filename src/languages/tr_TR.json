@@ -707,11 +707,10 @@
           "website": "Web sitesi",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter",
-          "warpcast": "Warpcast",
+          "twitter": "X (Twitter)",
           "farcaster": "Farcaster",
           "other": "Diğer",
-          "search_on_twitter": "Twitter'da Ara"
+          "search_on_twitter": "Search on X"
         },
         "uniswap_liquidity": "Uniswap likiditesi",
         "value": "Değer",
@@ -923,7 +922,7 @@
         "toast_removed_from_showcase": "Vitrinden çıkarıldı",
         "refreshing": "Meta veriler yenileniyor...",
         "reported": "Spam olarak bildirildi",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "view_all_with_property": "Tümünü Özelliği ile Görüntüle",
         "view_collection": "Koleksiyonu Görüntüle",
         "view_on_marketplace": "Marketplace'de Görüntüle...",
@@ -958,7 +957,7 @@
       "poolboy_title": "Kazandınız\nRainbow Poolboy!",
       "adworld_description": "Bir Rainbow Dünya Vatandaşı olarak artık özel bir\nAdWorld x Rainbow Uygulama Simgesi kilidini açabilirsiniz.",
       "adworld_title": "Rainbow Dünyasına Hoş Geldiniz!",
-      "farcaster_description": "Farcaster'ın sade minimalizminden ilham alınarak hazırlanmış en sıkıcı uygulama simgemiz.",
+      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
       "farcaster_title": "Kazandınız\nRainbowcast",
       "redacted_description": "Gerçek Gdupi meraklıları için stupi'ye özel bir Rainbow simgesi.",
       "redacted_title": "Redacted Rainbow'un kilidini açtınız",
@@ -1801,7 +1800,7 @@
         "skip": "Atla",
         "snapchat": "Snapchat",
         "telegram": "Telegram",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "upload_photo": "Bir Fotoğraf Yükleyin",
         "uploading": "Yükleniyor",
         "username_placeholder": "kullanıcı adı",
@@ -2157,7 +2156,7 @@
       "done": "Tamamlandı",
       "feedback_and_reports": "Geri Bildirim & Hata Raporları",
       "feedback_and_support": "Geri Bildirim ve Destek",
-      "follow_us_on_twitter": "Twitter'da bizi takip edin",
+      "follow_us_on_twitter": "Follow us on X",
       "hey_friend_message": "👋️ Hey dostum! Rainbow'u indirmelisin, benim en sevdiğim Ethereum cüzdanı 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Ayarlar",
       "language": "Dil",
@@ -3330,7 +3329,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "Mevcut Bakiye: %{balance}",
-        "title": "Pre-buy tokens"
+        "title": "Daha fazla token ön satın al."
       },
       "review": {
         "token_allocation": "Token tahsisi",
@@ -3395,7 +3394,7 @@
       },
       "links": {
         "x": {
-          "name": "X/Twitter",
+          "name": "X (Twitter)",
           "placeholder": "Kullanıcı adı"
         },
         "telegram": {
@@ -3492,9 +3491,9 @@
           "step_1": {
             "title": "Yarış başladı",
             "subtitle_parts": [
-              "The current king is the token created in the last 30 days with the most",
+              "Mevcut kral, son 30 gün içinde en çok oluşturulan tokendir.",
               " alım hacmine ",
-              "today."
+              "bugün."
             ]
           },
           "step_2": {
