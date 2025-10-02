@@ -7,9 +7,8 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import infinityIcon from '@/assets/infinity.png';
 import LinearGradient from 'react-native-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Navigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
+import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import * as i18n from '@/languages';
 import ConditionalWrap from 'conditional-wrap';
@@ -133,10 +132,6 @@ export const PerpsFeatureCard = memo(function PerpsFeatureCard({ isDismissable =
     </AccentColorProvider>
   );
 });
-
-function navigateToPerps() {
-  Navigation.handleAction(Routes.PERPS_NAVIGATOR);
-}
 
 const styles = StyleSheet.create({
   container: {

@@ -5,9 +5,8 @@ import * as i18n from '@/languages';
 import { formatCurrency } from '@/helpers/strings';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import Routes from '@/navigation/routesNames';
-import { Navigation } from '@/navigation';
 import { useHyperliquidBalance } from '@/features/perps/stores/derived/useHyperliquidBalance';
+import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 
 const HEIGHT = 48;
 
@@ -24,13 +23,7 @@ export const PerpsHeader = React.memo(function PerpsHeader() {
   }, [accountColor]);
 
   return (
-    <ButtonPressAnimation
-      onPress={() => {
-        Navigation.handleAction(Routes.PERPS_NAVIGATOR);
-      }}
-      scaleTo={1.05}
-      testID={'perps-list-header'}
-    >
+    <ButtonPressAnimation onPress={navigateToPerps} scaleTo={1.05} testID={'perps-list-header'}>
       <Box height={{ custom: HEIGHT }} paddingHorizontal="20px" justifyContent="center">
         <Inline alignHorizontal="justify" alignVertical="center">
           <Inline horizontalSpace={'8px'} alignVertical="center">
