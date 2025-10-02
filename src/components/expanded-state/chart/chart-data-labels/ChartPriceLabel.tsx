@@ -1,12 +1,13 @@
 import React from 'react';
-import * as i18n from '@/languages';
 import { DerivedValue, SharedValue, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
-import { NativeCurrencyKeys } from '@/entities';
+import { formatCandlestickPrice } from '@/features/charts/candlestick/components/CandlestickChart';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
+import * as i18n from '@/languages';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
 const translations = {
   noPriceData: i18n.t(i18n.l.expanded_state.chart.no_price_data),
@@ -19,16 +20,17 @@ type ChartPriceLabelProps = {
 };
 
 export function ChartPriceLabel({ price, backgroundColor, isLineChartGestureActive }: ChartPriceLabelProps) {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const isHyperliquidChart = useChartsStore(state => isHyperliquidToken(state.token));
-  const currency = isHyperliquidChart ? NativeCurrencyKeys.USD : nativeCurrency;
+  const currency = useStoreSharedValue(userAssetsStoreManager, state => state.currency);
+  const isHyperliquidChart = useStoreSharedValue(useChartsStore, state => isHyperliquidToken(state.token));
 
   const formattedPrice = useDerivedValue(() => {
     if (!price.value) return translations.noPriceData;
-    return formatAssetPrice({
-      currency,
-      value: price.value,
-    });
+    switch (isHyperliquidChart.value) {
+      case true:
+        return formatCandlestickPrice(price.value, currency.value, isHyperliquidChart.value);
+      case false:
+        return formatAssetPrice({ currency: currency.value, value: price.value });
+    }
   });
 
   return (

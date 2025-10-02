@@ -12,6 +12,7 @@ import {
  * Determines if a {@link Token} is a {@link HyperliquidSymbol}.
  */
 export function isHyperliquidToken(token: Token | null): token is HyperliquidSymbol {
+  'worklet';
   return typeof token === 'string';
 }
 
