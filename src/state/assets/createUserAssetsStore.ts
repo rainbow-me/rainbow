@@ -229,7 +229,7 @@ export const createUserAssetsStore = (address: Address | string) =>
 
       reprocessAssetsData: positionTokenAddresses =>
         set(state => {
-          const lastData = get().getData();
+          const lastData = state.getData();
           if (!lastData?.userAssets) return state;
           return setUserAssets({ address, state, userAssets: lastData.userAssets, positionTokenAddresses });
         }),
