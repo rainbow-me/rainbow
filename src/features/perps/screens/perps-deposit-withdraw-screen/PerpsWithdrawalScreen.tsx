@@ -78,10 +78,6 @@ const PerpsWithdrawalScreenContent = memo(function PerpsWithdrawalScreenContent(
     return `$${formatted}`;
   });
 
-  useDerivedValue(() => {
-    console.log('isAtMax', isAtMax.value);
-  });
-
   const handleSwap = useCallback(async () => {
     withdrawalActions.setIsSubmitting(true);
     const amountToWithdraw = isAtMax.value ? balance.value : displayedAmount.value;

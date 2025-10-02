@@ -9,6 +9,8 @@ import { OrderResponse } from '@nktkas/hyperliquid';
 import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { hlOpenOrdersStoreActions } from '@/features/perps/stores/hlOpenOrdersStore';
 import { refetchHyperliquidStores } from '@/features/perps/utils';
+import { truncateToDecimals } from '@/safe-math/SafeMath';
+import { USD_DECIMALS } from '@/features/perps/constants';
 
 type HyperliquidAccountActions = {
   getBalance: () => string;
@@ -46,7 +48,11 @@ export const useHyperliquidAccountStore = createQueryStore<
   },
 
   (_, get) => ({
-    getBalance: () => get().getData()?.balance ?? PERPS_EMPTY_ACCOUNT_DATA.balance,
+    getBalance: () => {
+      const balance = get().getData()?.balance;
+      if (!balance) return PERPS_EMPTY_ACCOUNT_DATA.balance;
+      return truncateToDecimals(balance, USD_DECIMALS);
+    },
     getPosition: symbol => get().getData()?.positions[symbol],
     getPositions: () => get().getData()?.positions ?? PERPS_EMPTY_ACCOUNT_DATA.positions,
     getValue: () => get().getData()?.value ?? PERPS_EMPTY_ACCOUNT_DATA.value,

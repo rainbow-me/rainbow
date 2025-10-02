@@ -391,7 +391,7 @@ export const AmountInputCard = memo(function AmountInputCard() {
             {i18n.t(i18n.l.perps.inputs.amount)}
           </Text>
           <Text size="15pt" weight="heavy" color="labelSecondary">
-            {formatCurrency(truncateToDecimals(availableBalanceString, 2))}
+            {formatCurrency(truncateToDecimals(availableBalanceString, USD_DECIMALS))}
             <Text size="15pt" weight="bold" color="labelQuaternary">
               {` ${i18n.t(i18n.l.perps.inputs.available)}`}
             </Text>
