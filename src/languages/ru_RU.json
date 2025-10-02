@@ -707,11 +707,10 @@
           "website": "Веб-сайт",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter",
-          "warpcast": "Warpcast",
+          "twitter": "X (Twitter)",
           "farcaster": "Farcaster",
           "other": "Другие",
-          "search_on_twitter": "Поиск в Twitter"
+          "search_on_twitter": "Search on X"
         },
         "uniswap_liquidity": "Ликвидность Uniswap",
         "value": "Цена",
@@ -923,7 +922,7 @@
         "toast_removed_from_showcase": "Удалено из витрины",
         "refreshing": "Обновление метаданных...",
         "reported": "Пожаловано как спам",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "view_all_with_property": "Просмотреть все свойства",
         "view_collection": "Просмотреть коллекцию",
         "view_on_marketplace": "Просмотреть на Marketplace...",
@@ -958,7 +957,7 @@
       "poolboy_title": "Вы разблокировали\nRainbow Poolboy!",
       "adworld_description": "Как гражданин мира Rainbow, вы можете разблокировать специальную иконку\nAdWorld x Rainbow.",
       "adworld_title": "Добро пожаловать в мир Rainbow!",
-      "farcaster_description": "Наш самый скучный иконка приложения, вдохновленная минимализмом Warpcast.",
+      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
       "farcaster_title": "Вы разблокировали\nRainbowcast",
       "redacted_description": "Эксклюзивная иконка Rainbow для истинных ценителей Gdupi.",
       "redacted_title": "Вы разблокировали\nСкрытую Rainbow",
@@ -1801,7 +1800,7 @@
         "skip": "Пропустить",
         "snapchat": "Snapchat",
         "telegram": "Telegram",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "upload_photo": "Загрузить фотографию",
         "uploading": "Загружается",
         "username_placeholder": "имя пользователя",
@@ -2157,7 +2156,7 @@
       "done": "Готово",
       "feedback_and_reports": "Отзывы и сообщения об ошибках",
       "feedback_and_support": "Обратная связь и поддержка",
-      "follow_us_on_twitter": "Подпишитесь на нас в Twitter",
+      "follow_us_on_twitter": "Follow us on X",
       "hey_friend_message": "👋️ Привет, друг! Тебе следует скачать Rainbow, это мой любимый кошелек Ethereum 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Настройки",
       "language": "Язык",
@@ -3330,7 +3329,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "Доступный баланс: %{balance}",
-        "title": "Pre-buy tokens"
+        "title": "Предпокупка токенов"
       },
       "review": {
         "token_allocation": "Распределение токенов",
@@ -3395,7 +3394,7 @@
       },
       "links": {
         "x": {
-          "name": "X/Twitter",
+          "name": "X (Twitter)",
           "placeholder": "Имя пользователя"
         },
         "telegram": {
@@ -3492,9 +3491,9 @@
           "step_1": {
             "title": "Гонка в прямом эфире",
             "subtitle_parts": [
-              "The current king is the token created in the last 30 days with the most",
+              "Текущий король - это токен, созданный за последние 30 дней с наибольшим количеством",
               " объёмом покупок ",
-              "today."
+              "сегодня."
             ]
           },
           "step_2": {
