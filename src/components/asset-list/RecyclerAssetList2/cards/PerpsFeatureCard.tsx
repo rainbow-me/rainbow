@@ -12,6 +12,7 @@ import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import * as i18n from '@/languages';
 import ConditionalWrap from 'conditional-wrap';
+import { IS_ANDROID } from '@/env';
 
 export const PERPS_FEATURE_CARD_HEIGHT = 92;
 
@@ -147,6 +148,6 @@ const styles = StyleSheet.create({
   dismissButton: {
     position: 'absolute',
     top: 16,
-    right: 16,
+    right: (IS_ANDROID ? 12 : 0) + 16,
   },
 });
