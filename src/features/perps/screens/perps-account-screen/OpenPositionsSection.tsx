@@ -69,7 +69,7 @@ export const OpenPositionsSection = function OpenPositionsSection() {
                 }}
               >
                 <Box flexDirection="row" alignItems="center" gap={4}>
-                  <Text size="15pt" weight="bold" color={'labelTertiary'}>
+                  <Text align="center" size="15pt" weight="bold" color={'labelTertiary'}>
                     {i18n.t(i18n.l.perps.positions.learn_more_about_perps)}
                   </Text>
                   <Text align="center" size="icon 11px" weight="heavy" color={'labelQuaternary'} style={{ top: StyleSheet.hairlineWidth }}>
