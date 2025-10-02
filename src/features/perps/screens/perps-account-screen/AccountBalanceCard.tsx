@@ -17,9 +17,7 @@ import * as i18n from '@/languages';
 export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
   const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
-  const balance = useHyperliquidAccountStore(state => state.getBalance());
-  const formattedBalance = formatCurrency(balance);
-  const isBalanceZero = Number(balance) === 0;
+  const isBalanceZero = useHyperliquidAccountStore(state => Number(state.getBalance()) === 0);
   const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
 
   return (
@@ -39,11 +37,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
               {i18n.t(i18n.l.perps.account.available_balance).toUpperCase()}
             </Text>
             <View style={{ opacity: isBalanceZero ? 0.4 : 1 }}>
-              <TextShadow color={accentColors.opacity100} blur={16} shadowOpacity={0.24}>
-                <Text color={{ custom: accentColors.opacity100 }} size="17pt" weight="heavy">
-                  {formattedBalance}
-                </Text>
-              </TextShadow>
+              <AccountBalance accentColor={accentColors.opacity100} />
             </View>
           </Stack>
         </Box>
@@ -57,12 +51,12 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
               <Box
                 justifyContent="center"
                 alignItems="center"
-                backgroundColor={accentColors.opacity8}
+                backgroundColor={isDarkMode ? accentColors.opacity8 : accentColors.opacity10}
                 height={40}
                 width={52}
                 borderRadius={24}
                 borderWidth={THICKER_BORDER_WIDTH}
-                borderColor={{ custom: accentColors.opacity6 }}
+                borderColor={{ custom: isDarkMode ? accentColors.opacity6 : accentColors.opacity3 }}
               >
                 <TextIcon align="center" color={{ custom: accentColors.opacity100 }} size="icon 20px" weight="black">
                   {'􀅽'}
@@ -115,3 +109,14 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
     </Box>
   );
 });
+
+const AccountBalance = ({ accentColor }: { accentColor: string }) => {
+  const balance = useHyperliquidAccountStore(state => state.getBalance());
+  return (
+    <TextShadow blur={16} color={accentColor} shadowOpacity={0.24}>
+      <Text color={{ custom: accentColor }} size="17pt" weight="heavy">
+        {formatCurrency(balance)}
+      </Text>
+    </TextShadow>
+  );
+};

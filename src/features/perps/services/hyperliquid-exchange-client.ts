@@ -53,11 +53,9 @@ export class HyperliquidExchangeClient {
         });
 
         if (!wallet) throw new Error('[HyperliquidExchangeClient] Failed to load wallet for signing');
-        // const localWallet: Wallet | undefined = '_isSigner' in wallet ? undefined : wallet;
 
         return new hl.ExchangeClient({
           transport: new hl.HttpTransport(),
-          // wallet: localWallet ?? (wallet as Wallet),
           wallet: wallet as Wallet,
         });
       })();

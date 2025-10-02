@@ -20,6 +20,7 @@ import { IS_IOS } from '@/env';
 import { GestureHandlerButton, GestureHandlerButtonProps } from './GestureHandlerButton';
 import { useSwapContext } from '../providers/swap-provider';
 import { SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
+import { PerpsDepositContextType } from '@/features/perps/screens/perps-deposit-withdraw-screen/types';
 
 function SwapButton({
   asset,
@@ -36,7 +37,7 @@ function SwapButton({
   children,
   testID,
 }: {
-  asset: DerivedValue<ExtendedAnimatedAssetWithColors | null>;
+  asset: DerivedValue<ExtendedAnimatedAssetWithColors | null> | PerpsDepositContextType['minifiedAsset'];
   borderRadius?: number;
   disableShadow?: boolean;
   icon?: string | SharedOrDerivedValueText;
@@ -237,7 +238,7 @@ export const SwapActionButton = ({
   testID,
   ...props
 }: {
-  asset: DerivedValue<ExtendedAnimatedAssetWithColors | null>;
+  asset: DerivedValue<ExtendedAnimatedAssetWithColors | null> | PerpsDepositContextType['minifiedAsset'];
   borderRadius?: number;
   disableShadow?: boolean;
   holdProgress?: SharedValue<number>;
@@ -277,6 +278,7 @@ export const SwapActionButton = ({
         onPressWorklet={onPressWorklet}
         scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
         style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
+        testID={testID}
       >
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <SwapButton {...props} disabled={disabled}>

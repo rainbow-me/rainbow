@@ -2,7 +2,7 @@ import { Fragment, memo, useMemo, useState } from 'react';
 import { HlTrade, PerpMarket } from '@/features/perps/types';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { tradeExecutionDescriptions, useHlTradesStore } from '@/features/perps/stores/hlTradesStore';
-import { Box, Separator, Text, TextIcon, TextShadow } from '@/design-system';
+import { Box, BoxProps, Separator, Text, TextIcon, TextShadow } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { format } from 'date-fns';
@@ -25,7 +25,7 @@ const descriptionIcons = {
   [tradeExecutionDescriptions.stopLossExecuted]: '􁘳',
 };
 
-const TradeListItem = memo(function TradeListItem({ trade }: { trade: HlTrade }) {
+const TradeListItem = memo(function TradeListItem({ paddingTop = '16px', trade }: { paddingTop?: BoxProps['paddingTop']; trade: HlTrade }) {
   const pnlValue = Number(trade.pnl);
   const isPositivePnl = pnlValue >= 0;
   const pnlColor = isPositivePnl ? 'green' : 'red';
@@ -54,7 +54,7 @@ const TradeListItem = memo(function TradeListItem({ trade }: { trade: HlTrade })
   const descriptionIcon = descriptionIcons[trade.description as keyof typeof descriptionIcons];
 
   return (
-    <Box paddingVertical="16px" gap={12}>
+    <Box paddingBottom="16px" paddingTop={paddingTop} gap={12}>
       <Box flexDirection="row" justifyContent="space-between" alignItems="center">
         <Box flexDirection="row" alignItems="center" gap={2}>
           <TextIcon color={descriptionColor} height={8} size="icon 11px" weight="semibold" width={18}>
@@ -107,13 +107,13 @@ export const HistorySection = memo(function HistorySection({ market }: { market:
   const visibleTrades = isExpanded ? trades : trades.slice(0, DEFAULT_VISIBLE_TRADE_COUNT);
 
   return (
-    <Box gap={16} paddingTop="4px">
+    <Box gap={16}>
       {(isExpanded || trades.length > 0) && (
         <Box gap={12}>
           <Box>
             {visibleTrades.map((trade, index) => (
               <Fragment key={trade.id}>
-                <TradeListItem trade={trade} />
+                <TradeListItem paddingTop={index === 0 ? '10px' : '16px'} trade={trade} />
                 {index < visibleTrades.length - 1 && <Separator color={'separatorTertiary'} direction="horizontal" thickness={4 / 3} />}
               </Fragment>
             ))}
