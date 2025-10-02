@@ -36,6 +36,7 @@ export function createPerpsDepositQuoteStore(
       asset: $ => $(useDepositStore, selectDepositAsset, shallowEqual),
     },
     cacheTime: time.seconds(30),
+    paramChangeThrottle: 'microtask',
     staleTime: time.seconds(15),
   });
 }
