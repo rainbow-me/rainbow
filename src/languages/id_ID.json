@@ -707,11 +707,10 @@
           "website": "Situs Web",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter",
-          "warpcast": "Warpcast",
+          "twitter": "X (Twitter)",
           "farcaster": "Farcaster",
           "other": "Lainnya",
-          "search_on_twitter": "Cari di Twitter"
+          "search_on_twitter": "Search on X"
         },
         "uniswap_liquidity": "Likuiditas Uniswap",
         "value": "Nilai",
@@ -923,7 +922,7 @@
         "toast_removed_from_showcase": "Dihapus dari pameran",
         "refreshing": "Menyegarkan metadata...",
         "reported": "Dilaporkan sebagai spam",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "view_all_with_property": "Lihat Semua dengan Properti",
         "view_collection": "Lihat Koleksi",
         "view_on_marketplace": "Lihat di Marketplace...",
@@ -958,7 +957,7 @@
       "poolboy_title": "Anda telah membuka\nRainbow Poolboy!",
       "adworld_description": "Sebagai Warga Dunia Rainbow, kini Anda dapat membuka Ikon Aplikasi edisi khusus\nAdWorld x Rainbow.",
       "adworld_title": "Selamat datang di Dunia Rainbow!",
-      "farcaster_description": "Ikon aplikasi kami yang paling membosankan, terinspirasi oleh minimalisme Warpcast yang hambar.",
+      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
       "farcaster_title": "Anda telah membuka\nRainbowcast",
       "redacted_description": "Ikon Rainbow eksklusif untuk para penikmat sejati Gdupi.",
       "redacted_title": "Anda telah membuka\n Rainbow yang Dihilangkan",
@@ -1801,7 +1800,7 @@
         "skip": "Lewat",
         "snapchat": "Snapchat",
         "telegram": "Telegram",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "upload_photo": "Unggah Foto",
         "uploading": "Mengunggah",
         "username_placeholder": "nama pengguna",
@@ -2157,7 +2156,7 @@
       "done": "Selesai",
       "feedback_and_reports": "Umpan Balik & Laporan Bug",
       "feedback_and_support": "Masukan dan Dukungan",
-      "follow_us_on_twitter": "Ikuti kami di Twitter",
+      "follow_us_on_twitter": "Follow us on X",
       "hey_friend_message": "👋️ Hai teman! Anda harus mengunduh Rainbow, dompet Ethereum favorit saya 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Pengaturan",
       "language": "Bahasa",
@@ -3330,7 +3329,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "Saldo Tersedia: %{balance}",
-        "title": "Pre-buy tokens"
+        "title": "Pra-beli token"
       },
       "review": {
         "token_allocation": "Pembagian token",
@@ -3395,7 +3394,7 @@
       },
       "links": {
         "x": {
-          "name": "X/Twitter",
+          "name": "X (Twitter)",
           "placeholder": "Nama pengguna"
         },
         "telegram": {
@@ -3492,9 +3491,9 @@
           "step_1": {
             "title": "Perlombaan langsung",
             "subtitle_parts": [
-              "The current king is the token created in the last 30 days with the most",
+              "Raja saat ini adalah token yang dibuat dalam 30 hari terakhir dengan yang paling",
               " volume pembelian ",
-              "today."
+              "hari ini."
             ]
           },
           "step_2": {
