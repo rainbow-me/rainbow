@@ -7,13 +7,13 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import infinityIcon from '@/assets/infinity.png';
 import LinearGradient from 'react-native-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Navigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
+import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import * as i18n from '@/languages';
 import ConditionalWrap from 'conditional-wrap';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { IS_ANDROID } from '@/env';
 
 export const PERPS_FEATURE_CARD_HEIGHT = 92;
 
@@ -141,10 +141,6 @@ export const PerpsFeatureCard = memo(function PerpsFeatureCard({
   );
 });
 
-function navigateToPerps() {
-  Navigation.handleAction(Routes.PERPS_NAVIGATOR);
-}
-
 const styles = StyleSheet.create({
   container: {
     width: '100%',
@@ -159,6 +155,6 @@ const styles = StyleSheet.create({
   dismissButton: {
     position: 'absolute',
     top: 16,
-    right: 16,
+    right: (IS_ANDROID ? 12 : 0) + 16,
   },
 });

@@ -3,8 +3,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet } from 'react-native';
 import { Box, Text } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Navigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
+import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 import { ImgixImage } from '@/components/images';
 import { USDC_COLORS, USDC_ICON_URL } from '@/features/perps/constants';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
@@ -23,13 +22,7 @@ export const PerpsAvailableBalance = memo(function PerpsAvailableBalance({ balan
 
   return (
     <Box paddingHorizontal="20px">
-      <ButtonPressAnimation
-        onPress={() => {
-          Navigation.handleAction(Routes.PERPS_NAVIGATOR);
-        }}
-        scaleTo={0.96}
-        style={{ marginLeft: -4 }}
-      >
+      <ButtonPressAnimation onPress={navigateToPerps} scaleTo={0.96} style={{ marginLeft: -4 }}>
         <GradientBorderView
           borderGradientColors={[borderColor, 'transparent']}
           start={{ x: 0.2, y: 0 }}

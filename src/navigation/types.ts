@@ -655,6 +655,11 @@ type RouteParams = {
         type: 'newPosition' | 'search';
       }
     | undefined;
+  [Routes.PERPS_EXPLAIN_SHEET]:
+    | {
+        onDismiss?: () => void;
+      }
+    | undefined;
 };
 
 /**

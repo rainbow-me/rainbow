@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { AnimatedText, ColorModeProvider, Text } from '@/design-system';
 import { ExplainerSheet, ExplainerSheetStep, PANEL_INNER_WIDTH } from '@/components/explainer-sheet/ExplainerSheet';
@@ -9,7 +9,10 @@ import { HYPERLIQUID_COLORS } from '@/features/perps/constants';
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
+import { useNavigation } from '@/navigation';
+import { useFocusEffect } from '@react-navigation/native';
 import * as i18n from '@/languages';
+import { useRoute } from '@/navigation/Navigation';
 
 const translations = i18n.l.perps.explain_sheet;
 
@@ -72,6 +75,21 @@ const STEPS: ExplainerSheetStep[] = [
 ];
 
 export function PerpsExplainSheet() {
+  const route = useRoute();
+  const params = route.params as { onDismiss?: () => void } | undefined;
+  const onDismiss = params?.onDismiss;
+
+  useFocusEffect(
+    useCallback(() => {
+      // Return a cleanup function that runs when the screen loses focus
+      return () => {
+        if (onDismiss) {
+          onDismiss();
+        }
+      };
+    }, [onDismiss])
+  );
+
   return (
     <ColorModeProvider value={'dark'}>
       <PerpsAccentColorContextProvider>
