@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Keyboard, ScrollView } from 'react-native';
 import Animated, { useSharedValue } from 'react-native-reanimated';
-import { Bleed, Box, Separator, Stack, useColorMode } from '@/design-system';
+import { Box, Separator, Stack, useColorMode } from '@/design-system';
 import { AmountInputCard } from './AmountInputCard';
 import { LeverageInputCard } from './LeverageInputCard';
 import { POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING, PositionSideSelector } from './PositionSideSelector';
@@ -12,7 +12,6 @@ import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-scr
 import { TriggerOrdersSection } from '@/features/perps/screens/perps-new-position-screen/TriggerOrdersSection';
 import { FOOTER_HEIGHT_WITH_SAFE_AREA, LAYOUT_ANIMATION, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import { MarketInfoSection } from './MarketInfoSection';
-import { AmountInputError } from '@/features/perps/screens/perps-new-position-screen/AmountInputError';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { HeaderFade } from '@/features/perps/components/HeaderFade';
 import { IS_ANDROID } from '@/env';
@@ -52,12 +51,7 @@ export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
             >
               <MarketInfoSection market={market} />
               <Box gap={20}>
-                <Bleed horizontal={'20px'}>
-                  <Box paddingHorizontal="20px">
-                    <AmountInputCard />
-                    <AmountInputError />
-                  </Box>
-                </Bleed>
+                <AmountInputCard />
                 <LeverageSection market={market} />
               </Box>
               <Animated.View layout={LAYOUT_ANIMATION}>

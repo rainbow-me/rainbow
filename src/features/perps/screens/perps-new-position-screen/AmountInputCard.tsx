@@ -9,7 +9,7 @@ import {
   USD_CURRENCY,
   USD_DECIMALS,
 } from '@/features/perps/constants';
-import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { runOnJS, runOnUI, SharedValue, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Slider, SliderChangeSource, SliderGestureState } from '@/features/perps/components/Slider';
 import { addCommasToNumber, clamp, trimCurrencyZeros } from '@/__swaps__/utils/swaps';
@@ -23,9 +23,7 @@ import {
   greaterThanWorklet,
   mulWorklet,
   toFixedWorklet,
-  truncateToDecimals,
 } from '@/safe-math/SafeMath';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { useListen } from '@/state/internal/hooks/useListen';
 import * as i18n from '@/languages';
 import { useDebouncedCallback } from 'use-debounce';
@@ -36,6 +34,8 @@ import { useLazyRef } from '@/hooks/useLazyRef';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { sanitizeAmount } from '@/worklets/strings';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { AmountInputCardSubtitle } from '@/features/perps/screens/perps-new-position-screen/AmountInputCardSubtitle';
 
 type InteractionMode = 'slider' | 'keyboard';
 
@@ -187,8 +187,8 @@ export const AmountInputCard = memo(function AmountInputCard() {
   const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
 
-  const availableBalanceString = useHyperliquidAccountStore(state => state.getBalance());
-  const initialValues = useStableValue(() => buildInitialValues(availableBalanceString));
+  const availableBalanceString = useStoreSharedValue(useHyperliquidAccountStore, state => state.getBalance());
+  const initialValues = useStableValue(() => buildInitialValues());
   const inputRef = useRef<CurrencyInputRef>(null);
   const lastAccountAddress = useLazyRef(() => getAccountAddress());
 
@@ -312,7 +312,7 @@ export const AmountInputCard = memo(function AmountInputCard() {
     (newAvailableBalance?: string) => {
       'worklet';
       const resetFunction = () => {
-        const currentBalance = newAvailableBalance || availableBalanceString;
+        const currentBalance = newAvailableBalance || availableBalanceString.value;
         const balance = sanitizeAmount(currentBalance) || '0';
         const targetProgress = getInitialProgress(currentBalance);
         const resetAmount = toAdaptivePrecision(getAmountFromProgress(targetProgress, balance), balance);
@@ -390,12 +390,7 @@ export const AmountInputCard = memo(function AmountInputCard() {
           <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
             {i18n.t(i18n.l.perps.inputs.amount)}
           </Text>
-          <Text size="15pt" weight="heavy" color="labelSecondary">
-            {formatCurrency(truncateToDecimals(availableBalanceString, USD_DECIMALS))}
-            <Text size="15pt" weight="bold" color="labelQuaternary">
-              {` ${i18n.t(i18n.l.perps.inputs.available)}`}
-            </Text>
-          </Text>
+          <AmountInputCardSubtitle availableBalanceString={availableBalanceString} />
         </Box>
         <Box flexDirection="row" alignItems="center" justifyContent="flex-end" style={{ flex: 1 }}>
           <CurrencyInput
@@ -429,11 +424,12 @@ export const AmountInputCard = memo(function AmountInputCard() {
   );
 });
 
-function buildInitialValues(availableBalanceString: string): {
+function buildInitialValues(): {
   amount: string;
   availableBalance: string;
   sliderProgress: number;
 } {
+  const availableBalanceString = hyperliquidAccountActions.getBalance();
   const availableBalance = sanitizeAmount(availableBalanceString);
   const sliderProgress = getInitialProgress(availableBalanceString);
   const amount = toAdaptivePrecision(getAmountFromProgress(sliderProgress, availableBalance), availableBalance);

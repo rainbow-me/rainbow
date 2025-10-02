@@ -1657,6 +1657,8 @@
       "inputs": {
         "amount": "Amount",
         "available": "Available",
+        "max": "Max",
+        "minimum": "Minimum",
         "minimum_amount_is": "Minimum amount is",
         "maximum_amount_is": "Maximum amount is"
       },
