@@ -304,7 +304,6 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
             weight="black"
             progressColor={button.textColor}
           />
-          <Border borderColor={{ custom: button.borderColor }} borderWidth={2} borderRadius={24} enableInLightMode />
         </Box>
       </Box>
     </>
