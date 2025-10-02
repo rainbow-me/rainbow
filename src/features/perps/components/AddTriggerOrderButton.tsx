@@ -41,6 +41,7 @@ export const AddTriggerOrderButton = function AddTriggerOrderButton({
         navigateToTriggerOrderSheet(type);
       }}
       disabled={disabled}
+      scaleTo={0.95}
     >
       <Box
         borderWidth={isDarkMode ? 2 : THICK_BORDER_WIDTH}
@@ -60,7 +61,7 @@ export const AddTriggerOrderButton = function AddTriggerOrderButton({
               : i18n.t(i18n.l.perps.trigger_orders.add_take_profit)}
           </Text>
         </TextShadow>
-        <TextIcon color={{ custom: accentColors.opacity100 }} size="icon 20px" weight="heavy">
+        <TextIcon color={{ custom: accentColors.opacity100 }} size="icon 20px" weight="heavy" width={24}>
           {'􀅼'}
         </TextIcon>
       </Box>

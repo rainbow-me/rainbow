@@ -1645,7 +1645,9 @@
         "from_current_price": "from current price",
         "details": "Details",
         "funding_rate": "Funding Rate",
-        "max_slippage": "Max Slippage"
+        "max_slippage": "Max Slippage",
+        "no_liquidation_risk": "No Liquidation Risk",
+        "trading_without_leverage": "Trading without leverage"
       },
       "inputs": {
         "amount": "Amount",

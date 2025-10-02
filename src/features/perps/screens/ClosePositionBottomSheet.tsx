@@ -17,7 +17,7 @@ import { SheetHandleFixedToTop } from '@/components/sheet';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { HANDLE_COLOR, LIGHT_HANDLE_COLOR, MIN_ORDER_SIZE_USD, SLIDER_WIDTH } from '@/features/perps/constants';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { mulWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, mulWorklet } from '@/safe-math/SafeMath';
 import { logger, RainbowError } from '@/logger';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { colors } from '@/styles';
@@ -26,6 +26,7 @@ import { analytics } from '@/analytics';
 import { useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
 import { TriggerOrderType } from '@/features/perps/types';
 import { Alert } from 'react-native';
+import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
 
 function PanelSheet({ children }: { children: React.ReactNode }) {
   const { isDarkMode } = useColorMode();
@@ -50,7 +51,7 @@ function PanelContent({ symbol }: PanelContentProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCloseDisabled, setIsCloseDisabled] = useState(false);
   const [isBelowMinimum, setIsBelowMinimum] = useState(false);
-  const percentToClose = useSharedValue(1);
+  const closeProgress = useSharedValue(SLIDER_MAX);
   const position = useHyperliquidAccountStore(state => state.getPosition(symbol));
   const navigation = useNavigation();
   const isNegativePnl = position ? Number(position.unrealizedPnl) < 0 : false;
@@ -61,21 +62,21 @@ function PanelContent({ symbol }: PanelContentProps) {
 
   const minPercentage = useMemo(() => {
     if (!position || Number(position.value) === 0) return '0';
-    const percent = (MIN_ORDER_SIZE_USD / Number(position.value)) * 100;
+    const percent = (MIN_ORDER_SIZE_USD / Number(position.value)) * SLIDER_MAX;
     return Math.ceil(percent);
   }, [position]);
 
   useAnimatedReaction(
-    () => percentToClose.value,
+    () => closeProgress.value,
     (current, previous) => {
-      const closeValue = position ? Number(position.value) * current : 0;
+      const closeValue = position ? Number(position.value) * (current / SLIDER_MAX) : 0;
       const belowMin = closeValue < MIN_ORDER_SIZE_USD && closeValue > 0;
 
       if (current === 0 || belowMin) {
         runOnJS(setIsCloseDisabled)(true);
         runOnJS(setIsBelowMinimum)(belowMin);
       } else if (
-        (previous === null || previous === 0 || Number(position?.value ?? 0) * previous < MIN_ORDER_SIZE_USD) &&
+        (previous === null || previous === 0 || Number(position?.value ?? 0) * (previous / SLIDER_MAX) < MIN_ORDER_SIZE_USD) &&
         current !== 0 &&
         closeValue >= MIN_ORDER_SIZE_USD
       ) {
@@ -93,12 +94,16 @@ function PanelContent({ symbol }: PanelContentProps) {
   });
 
   const positionEquity = position ? position.equity : '0';
-  const receivedAmount = useDerivedValue(() => formatCurrency(mulWorklet(positionEquity, percentToClose.value)));
+  const receivedAmount = useDerivedValue(() => {
+    const ratio = closeProgress.value / SLIDER_MAX;
+    return formatCurrency(mulWorklet(positionEquity, ratio));
+  });
 
   const projectedPnl = useDerivedValue(() => {
     if (!position) return '-';
-    return `${isNegativePnl ? '' : '+'}${formatCurrency(mulWorklet(position.unrealizedPnl, percentToClose.value))}`;
-  }, [position, percentToClose, isNegativePnl]);
+    const ratio = closeProgress.value / SLIDER_MAX;
+    return `${isNegativePnl ? '' : '+'}${formatCurrency(mulWorklet(position.unrealizedPnl, ratio))}`;
+  }, [position, closeProgress, isNegativePnl]);
 
   const closePosition = useCallback(async () => {
     if (!position) return;
@@ -106,7 +111,7 @@ function PanelContent({ symbol }: PanelContentProps) {
     setIsSubmitting(true);
 
     const perpsBalance = Number(useHyperliquidAccountStore.getState().getValue());
-    const closePercentage = percentToClose.value;
+    const closePercentage = Number(divWorklet(closeProgress.value, SLIDER_MAX));
 
     try {
       await hyperliquidAccountActions.closePosition({
@@ -153,7 +158,7 @@ function PanelContent({ symbol }: PanelContentProps) {
       logger.error(new RainbowError('[ClosePositionBottomSheet] Failed to close position', e));
     }
     setIsSubmitting(false);
-  }, [position, symbol, liveTokenPrice, navigation, percentToClose]);
+  }, [position, symbol, liveTokenPrice, navigation, closeProgress]);
 
   if (!position) return null;
 
@@ -180,7 +185,7 @@ function PanelContent({ symbol }: PanelContentProps) {
           <PositionPercentageSlider
             totalValue={formatCurrency(positionEquity)}
             title={i18n.t(i18n.l.perps.inputs.amount)}
-            percentageValue={percentToClose}
+            progressValue={closeProgress}
             sliderWidth={SLIDER_WIDTH - 8 * 2}
           />
         </Box>
