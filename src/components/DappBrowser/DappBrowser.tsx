@@ -13,7 +13,6 @@ import { RootStackParamList } from '@/navigation/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserHistoryStore } from '@/state/browserHistory';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { time } from '@/utils';
 import { generateUniqueId } from '@/worklets/strings';
 import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
 import { BrowserTab } from './BrowserTab';
@@ -29,7 +28,7 @@ import {
 } from './constants';
 import { useBrowserScrollView } from './hooks/useBrowserScrollView';
 import { useScreenshotAndScrollTriggers } from './hooks/useScreenshotAndScrollTriggers';
-import { pruneScreenshots } from './screenshots';
+import { schedulePruneScreenshots } from './screenshots';
 import { Search } from './search/Search';
 import { SearchContextProvider } from './search/SearchContext';
 import { AnimatedTabUrls, TabViewGestureStates } from './types';
@@ -100,19 +99,9 @@ function setNewTabUrl(updatedTabUrls: AnimatedTabUrls, newActiveIndex: number | 
   setParams<typeof Routes.DAPP_BROWSER_SCREEN>({ url: undefined });
 }
 
-function useScreenshotPruner() {
+function useScreenshotPruner(): void {
   useEffect(() => {
-    let idleCallbackId: number;
-    const timeoutId = setTimeout(() => {
-      idleCallbackId = requestIdleCallback(() => {
-        pruneScreenshots(useBrowserStore.getState().tabsData);
-      });
-    }, time.seconds(10));
-
-    return () => {
-      clearTimeout(timeoutId);
-      if (typeof idleCallbackId === 'number') cancelIdleCallback(idleCallbackId);
-    };
+    return schedulePruneScreenshots(useBrowserStore.getState().tabsData);
   }, []);
 }
 
