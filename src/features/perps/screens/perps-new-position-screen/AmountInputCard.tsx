@@ -366,7 +366,7 @@ export const AmountInputCard = memo(function AmountInputCard() {
 
   useListen(
     useHlNewPositionStore,
-    state => state.amountResetSignal,
+    state => state.marketResetSignal,
     () => resetToInitial()
   );
 
