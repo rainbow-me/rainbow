@@ -422,7 +422,7 @@ export const Slider: React.FC<SliderProps> = ({
             style={[
               styles.sliderBox,
               rightBarContainerStyle,
-              { borderColor: isDarkMode ? 'rgba(245, 248, 255, 0.015)' : 'rgba(26, 28, 31, 0.005)' },
+              IS_IOS ? { borderColor: isDarkMode ? 'rgba(245, 248, 255, 0.015)' : 'rgba(26, 28, 31, 0.005)' } : undefined,
             ]}
           />
         </Animated.View>
@@ -439,6 +439,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   sliderScrubber: {
+    borderCurve: 'continuous',
     borderRadius: 4,
     height: `${250 / 3}%`,
     width: 4,
