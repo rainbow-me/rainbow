@@ -5,7 +5,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Inline, Text, useColorMode } from '@/design-system';
 import { Slider, SliderProps } from '@/features/perps/components/Slider';
-import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
+import { SLIDER_MAX, SliderGestureState } from '@/features/perps/components/Slider/Slider';
 import { INPUT_CARD_HEIGHT, SLIDER_WIDTH } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
@@ -17,6 +17,7 @@ import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue'
 import { time } from '@/utils/time';
 
 const LeverageSlider = ({
+  gestureState,
   nextTargetProgress,
   onProgressSettleWorklet,
   silenceEdgeHaptics,
@@ -24,6 +25,7 @@ const LeverageSlider = ({
   snapPoints,
   width = SLIDER_WIDTH,
 }: {
+  gestureState: SliderProps['gestureState'];
   nextTargetProgress: SliderProps['nextTargetProgress'];
   onProgressSettleWorklet: SliderProps['onProgressSettleWorklet'];
   silenceEdgeHaptics: SliderProps['silenceEdgeHaptics'];
@@ -41,6 +43,7 @@ const LeverageSlider = ({
       width={width}
       height={10}
       expandedHeight={14}
+      gestureState={gestureState}
       nextTargetProgress={nextTargetProgress}
       silenceEdgeHaptics={silenceEdgeHaptics}
       snapPoints={snapPoints}
@@ -118,6 +121,7 @@ export const LeverageInputCard = memo(function LeverageInputCard({
 
   const initialSliderProgress = useStableValue(() => getInitialSliderProgress(initialLeverage));
   const sliderProgress = useSharedValue(initialSliderProgress);
+  const gestureState = useSharedValue<SliderGestureState>('idle');
   const ignoreExternalUpdates = useSharedValue(false);
   const maxLeverage = useStoreSharedValue(useHlNewPositionStore, state => state.getMaxLeverage());
   const nextTargetProgress = useSharedValue<number | undefined>(initialSliderProgress);
@@ -142,12 +146,19 @@ export const LeverageInputCard = memo(function LeverageInputCard({
     },
   });
 
+  const computeLeverage = useCallback(
+    (progress: number, nextTarget: number | undefined) => {
+      'worklet';
+      return progressToLeverage(progress, maxLeverage.value, nextTarget);
+    },
+    [maxLeverage]
+  );
+
   useAnimatedReaction(
-    () => progressToLeverage(sliderProgress.value, maxLeverage.value, nextTargetProgress.value),
+    () => computeLeverage(sliderProgress.value, nextTargetProgress.value),
     (newLeverage, previous) => {
       'worklet';
       if (previous === null || newLeverage === previous) return;
-
       leverage.value = newLeverage;
 
       const wasSetFromStore = ignoreExternalUpdates.value;
@@ -157,37 +168,10 @@ export const LeverageInputCard = memo(function LeverageInputCard({
 
       const currentProgress = sliderProgress.value;
       if (currentProgress < 0.5 || currentProgress >= SLIDER_MAX - 0.5) return;
+
       triggerHaptics('selection');
     },
     []
-  );
-
-  useListen(
-    useHlNewPositionStore,
-    state => state.leverage,
-    newLeverage => {
-      // Handle external leverage updates from the store
-      if (newLeverage === null) return;
-      runOnUI(() => {
-        if (newLeverage === leverage.value) return;
-
-        resumeSliderUpdatesTimeout.clearTimeout();
-        ignoreExternalUpdates.value = true;
-        leverage.value = newLeverage;
-
-        const newProgress = leverageToProgress(newLeverage, maxLeverage.value);
-        const shouldAnimate = newLeverage !== maxLeverage.value;
-
-        if (!shouldAnimate) {
-          sliderProgress.value = newProgress;
-          resumeSliderUpdatesTimeout.start();
-        } else {
-          sliderProgress.value = withSpring(newProgress, SPRING_CONFIGS.snappyMediumSpringConfig, () => {
-            ignoreExternalUpdates.value = false;
-          });
-        }
-      })();
-    }
   );
 
   const handleProgressSettle = useCallback<NonNullable<SliderProps['onProgressSettleWorklet']>>(
@@ -197,6 +181,46 @@ export const LeverageInputCard = memo(function LeverageInputCard({
       runOnJS(debouncedSetLeverage)(newLeverage);
     },
     [debouncedSetLeverage, maxLeverage]
+  );
+
+  const resetSlider = useCallback(
+    (resetReason: 'accountLeverageLoaded' | 'newMarket') => {
+      const newLeverage = getCurrentLeverage(resetReason);
+      if (!newLeverage) return;
+
+      debouncedSetLeverage.cancel();
+      const newSliderProgress = getInitialSliderProgress(newLeverage);
+      const shouldAnimate = resetReason === 'accountLeverageLoaded';
+
+      runOnUI(() => {
+        resumeSliderUpdatesTimeout.clearTimeout();
+        ignoreExternalUpdates.value = true;
+        leverage.value = newLeverage;
+
+        if (!shouldAnimate) {
+          sliderProgress.value = newSliderProgress;
+          resumeSliderUpdatesTimeout.start();
+        } else {
+          sliderProgress.value = withSpring(newSliderProgress, SPRING_CONFIGS.snappyMediumSpringConfig, isFinished => {
+            if (!isFinished) ignoreExternalUpdates.value = false;
+            else resumeSliderUpdatesTimeout.start();
+          });
+        }
+      })();
+    },
+    [debouncedSetLeverage, ignoreExternalUpdates, leverage, resumeSliderUpdatesTimeout, sliderProgress]
+  );
+
+  useListen(
+    useHlNewPositionStore,
+    state => state.marketResetSignal,
+    () => resetSlider('newMarket')
+  );
+
+  useListen(
+    useHlNewPositionStore,
+    state => state.leverageResetSignal,
+    () => resetSlider('accountLeverageLoaded')
   );
 
   return (
@@ -231,6 +255,7 @@ export const LeverageInputCard = memo(function LeverageInputCard({
         </AnimatedText>
       </Box>
       <LeverageSlider
+        gestureState={gestureState}
         nextTargetProgress={nextTargetProgress}
         onProgressSettleWorklet={handleProgressSettle}
         silenceEdgeHaptics={ignoreExternalUpdates}
@@ -240,6 +265,15 @@ export const LeverageInputCard = memo(function LeverageInputCard({
     </Box>
   );
 });
+
+function getCurrentLeverage(reason: 'accountLeverageLoaded' | 'newMarket'): number | null {
+  switch (reason) {
+    case 'accountLeverageLoaded':
+      return hlNewPositionStoreActions.getLeverage();
+    case 'newMarket':
+      return hlNewPositionStoreActions.getMaxLeverage();
+  }
+}
 
 function getInitialSliderProgress(initialLeverage: number): number {
   const initialMaxLeverage = useHlNewPositionStore.getState().market?.maxLeverage ?? initialLeverage;
