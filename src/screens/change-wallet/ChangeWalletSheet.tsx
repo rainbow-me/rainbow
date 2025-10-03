@@ -545,7 +545,7 @@ export default function ChangeWalletSheet() {
       if (!IS_ANDROID) return;
       const { height } = event.nativeEvent.layout;
 
-      // @ts-ignore
+      // @ts-expect-error Bottom sheet options is not typed
       navigation.setOptions({ snapPoints: [height + PANEL_BOTTOM_OFFSET] });
 
       // Wait for snap point to be committed before showing
