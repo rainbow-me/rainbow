@@ -12,6 +12,7 @@ export type RainbowImageProps = {
   onError?: FasterImageProps['onError'];
   onSuccess?: FasterImageProps['onSuccess'];
   style?: FasterImageProps['style'];
+  tintColor?: string;
 };
 
 /**
@@ -29,6 +30,7 @@ const RainbowImageInternal = ({
   resizeMode = 'cover',
   onError,
   onSuccess,
+  tintColor,
 }: RainbowImageProps) => {
   const handler = typeof source === 'number' ? 'fast-image' : getHandlerFromType(getImageType(source.url));
 
@@ -63,6 +65,7 @@ const RainbowImageInternal = ({
         // @ts-expect-error so fast-image defines their own weird ImageStyle, it's mostly a subset and should be fine
         // we should replace fast-image with something like expo-image as it's no longer maintained and that will fix this
         style={style}
+        tintColor={tintColor}
         onError={() => {
           onError?.({ nativeEvent: { error: 'Error loading image' } });
         }}
@@ -86,6 +89,7 @@ const RainbowImageInternal = ({
       style={style}
       source={typeof source === 'number' ? source : { uri: source.url }}
       resizeMode={resizeMode}
+      tintColor={tintColor}
       onError={onError}
       onLoad={e => {
         if (typeof source === 'number') return; // its imported local bundle no need to onLoad

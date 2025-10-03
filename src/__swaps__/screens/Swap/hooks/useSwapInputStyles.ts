@@ -87,13 +87,6 @@ export const useSwapInputStyles = ({
     };
   });
 
-  const inputHeight = useDerivedValue(() =>
-    withSpring(
-      interpolate(progress.value, [0, 1, 2], [BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT], 'clamp'),
-      SPRING_CONFIGS.springConfig
-    )
-  );
-
   const inputStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: withTiming(
@@ -114,8 +107,12 @@ export const useSwapInputStyles = ({
             : 0,
         },
       ],
+      height: withSpring(
+        interpolate(progress.value, [0, 1, 2], [BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT], 'clamp'),
+        SPRING_CONFIGS.springConfig
+      ),
     };
   });
 
-  return { containerStyle, inputHeight, inputStyle };
+  return { containerStyle, inputStyle };
 };

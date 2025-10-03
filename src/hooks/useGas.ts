@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/store';
 import usePrevious from './usePrevious';
@@ -34,7 +34,7 @@ import { useQueries } from '@tanstack/react-query';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ETH_ADDRESS } from '@/references';
 import { analytics } from '@/analytics';
-import { useRoute } from '@react-navigation/native';
+import { useRoute } from '@/navigation/Navigation';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nativeAsset?: ParsedAddressAsset) => {

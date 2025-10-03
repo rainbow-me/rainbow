@@ -71,7 +71,15 @@ function setTimeframe(selectedIndex: SharedValue<number>, { candleResolution, li
   }
 }
 
-export const TimeframeSelector = memo(function TimeframeSelector({ backgroundColor, color }: { backgroundColor: string; color: string }) {
+export const TimeframeSelector = memo(function TimeframeSelector({
+  backgroundColor,
+  color,
+  hideChartTypeToggle,
+}: {
+  backgroundColor: string;
+  color: string;
+  hideChartTypeToggle?: boolean;
+}) {
   const chartType = useChartType();
   const initialState = useStableValue(() => getInitialState(chartType));
   const scrollViewRef = useRef<ScrollView>(null);
@@ -129,13 +137,15 @@ export const TimeframeSelector = memo(function TimeframeSelector({ backgroundCol
         style={styles.rightFade}
       />
 
-      <ChartTypeToggle
-        backgroundColor={backgroundColor}
-        color={color}
-        initialChartType={initialState.initialChartType}
-        scrollViewRef={scrollViewRef}
-        selectedIndex={selectedIndex}
-      />
+      {!hideChartTypeToggle && (
+        <ChartTypeToggle
+          backgroundColor={backgroundColor}
+          color={color}
+          initialChartType={initialState.initialChartType}
+          scrollViewRef={scrollViewRef}
+          selectedIndex={selectedIndex}
+        />
+      )}
     </View>
   );
 });

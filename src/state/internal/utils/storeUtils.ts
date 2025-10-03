@@ -1,3 +1,4 @@
+import { StoreApi } from 'zustand';
 import { BaseRainbowStore, DerivedStore, PersistedRainbowStore } from '../types';
 
 export function getStoreName(store: BaseRainbowStore<unknown>): string {
@@ -5,7 +6,7 @@ export function getStoreName(store: BaseRainbowStore<unknown>): string {
   return name ?? store.name;
 }
 
-export function isDerivedStore(store: BaseRainbowStore<unknown>): store is DerivedStore<unknown> {
+export function isDerivedStore(store: BaseRainbowStore<unknown> | StoreApi<unknown>): store is DerivedStore<unknown> {
   return 'flushUpdates' in store;
 }
 

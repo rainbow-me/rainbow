@@ -10,13 +10,14 @@ import {
   useRoute as useReactNavigationRoute,
 } from '@react-navigation/native';
 import { StackNavigationOptions, StackNavigationProp } from '@react-navigation/stack';
-import { useMemo } from 'react';
+import { createContext, useContext, useMemo } from 'react';
 import { useCallbackOne } from 'use-memo-one';
 import { IS_DEV } from '@/env';
 import { setActiveRoute } from '@/state/navigation/navigationStore';
 import { prefetchRegistry } from './prefetchRegistry';
 import Routes, { NATIVE_ROUTES, Route } from './routesNames';
 import { RootStackParamList, RoutesWithOptionalParams } from './types';
+import { VIRTUAL_NAVIGATORS } from './virtualNavigators';
 
 // ============ Navigation Ref ================================================= //
 
@@ -27,6 +28,7 @@ let navigationRef: NavigationContainerRef<RootStackParamList> | null = null;
 export type { Route };
 
 export type RouteParams<RouteName extends Route> = RootStackParamList[RouteName];
+export type UseRouteHook<RouteName extends Route = Route> = () => RouteProp<RootStackParamList, RouteName>;
 
 export type NavigateArgs<RouteName extends Route> = RouteName extends RoutesWithOptionalParams
   ? [screen: RouteName, params?: RootStackParamList[RouteName]]
@@ -75,8 +77,18 @@ export function useNavigation<RouteName extends Route>() {
   );
 }
 
-export function useRoute<RouteName extends Route = Route>() {
-  return useReactNavigationRoute<RouteProp<RootStackParamList, RouteName>>();
+// ============ useRoute Context =============================================== //
+
+const UseRouteContext = createContext<UseRouteHook>(useDefaultUseRoute);
+export const UseRouteProvider = UseRouteContext.Provider;
+
+export function useRoute(): RouteProp<RootStackParamList, Route> {
+  const useRouteHook = useContext(UseRouteContext);
+  return useRouteHook();
+}
+
+function useDefaultUseRoute(): RouteProp<RootStackParamList, Route> {
+  return useReactNavigationRoute<RouteProp<RootStackParamList, Route>>();
 }
 
 // ============ Core Navigation Functions ====================================== //
@@ -117,7 +129,10 @@ export function getActiveRoute<RouteName extends Route>(): ReactNavigationRoute<
   RouteName | string,
   RootStackParamList[RouteName] | object | undefined
 > | null {
-  return navigationRef?.getCurrentRoute() ?? null;
+  const route = navigationRef?.getCurrentRoute() ?? null;
+  if (!route) return null;
+  assertRoute(route.name);
+  return VIRTUAL_NAVIGATORS[route.name]?.getActiveRouteState() ?? route;
 }
 
 /**

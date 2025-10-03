@@ -1,5 +1,5 @@
 import { IS_TEST } from '@/env';
-import { Easing, WithSpringConfig, WithTimingConfig } from 'react-native-reanimated';
+import { Easing, EasingFunction, EasingFunctionFactory, WithSpringConfig, WithTimingConfig } from 'react-native-reanimated';
 
 function createSpringConfigs<T extends Record<string, WithSpringConfig>>(configs: T): T {
   return configs;
@@ -49,5 +49,6 @@ const timingAnimations = createTimingConfigs({
   tabPressConfig: disableForTestingEnvironment({ duration: 800, easing: Easing.bezier(0.22, 1, 0.36, 1) }),
 });
 
-export const TIMING_CONFIGS: Record<keyof typeof timingAnimations, WithTimingConfig> = timingAnimations;
+export const TIMING_CONFIGS: Record<keyof typeof timingAnimations, { duration: number; easing: EasingFunction | EasingFunctionFactory }> =
+  timingAnimations;
 // /---- END ----/ //

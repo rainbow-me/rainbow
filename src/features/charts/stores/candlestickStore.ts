@@ -148,11 +148,18 @@ async function fetchCandlestickData(params: CandlestickParams, abortController: 
  * @param token - The token to prefetch candlestick data for.
  */
 export function prefetchCandlestickData(asset: Token | ExpandedSheetParamAsset): void {
-  const { candleResolution, chartType } = useChartsStore.getState();
   const token = typeof asset === 'string' ? asset : { address: asset.address, chainId: asset.chainId };
   chartsActions.setToken(token);
+
+  const chartType = chartsActions.getChartType();
   if (chartType === ChartType.Line) return;
-  candlestickActions.fetch(buildBaseParams({ candleResolution, token }));
+
+  candlestickActions.fetch(
+    buildBaseParams({
+      candleResolution: useChartsStore.getState().candleResolution,
+      token,
+    })
+  );
 }
 
 /**
@@ -567,5 +574,5 @@ function prunePrices(originalPrices: Partial<Record<TokenId, Price>>, tokenIdToP
  * @returns `true` if the current chart type is `Candlestick`, `false` otherwise.
  */
 function shouldEnable(state: ChartsState): boolean {
-  return state.chartType === ChartType.Candlestick;
+  return state.getChartType() === ChartType.Candlestick;
 }

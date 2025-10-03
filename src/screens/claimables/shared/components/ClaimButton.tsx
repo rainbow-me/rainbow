@@ -1,7 +1,7 @@
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { AccentColorProvider, Box, Inline, Text, TextShadow } from '@/design-system';
-import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
+import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { deviceUtils, watchingAlert } from '@/utils';
 import { debounce } from 'lodash';

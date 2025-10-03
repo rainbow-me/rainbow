@@ -15,6 +15,7 @@ type EstimateSwapGasLimitArgs = {
   chainId?: ChainId;
   quote?: Quote | CrosschainQuote | QuoteError | null;
   assetToSell?: ParsedSearchAsset | null;
+  usePlaceholderData?: boolean;
 };
 
 // ///////////////////////////////////////////////
@@ -68,10 +69,10 @@ type EstimateSwapGasLimitResult = QueryFunctionResult<typeof estimateSwapGasLimi
 // Query Hook
 
 export function useSwapEstimatedGasLimit(
-  { chainId, quote, assetToSell }: EstimateSwapGasLimitArgs,
+  { chainId, quote, assetToSell, usePlaceholderData = true }: EstimateSwapGasLimitArgs,
   config: QueryConfigWithSelect<EstimateSwapGasLimitResult, Error, EstimateSwapGasLimitResult, EstimateSwapGasLimitQueryKey> = {}
 ) {
-  const placeholderData = chainId && { chainId, gasLimit: gasUnits.basic_swap[chainId] };
+  const placeholderData = chainId && usePlaceholderData ? { chainId, gasLimit: gasUnits.basic_swap[chainId] } : undefined;
   const { data } = useQuery(
     estimateSwapGasLimitQueryKey({
       chainId,

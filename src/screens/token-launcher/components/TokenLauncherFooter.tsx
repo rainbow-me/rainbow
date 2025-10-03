@@ -39,7 +39,7 @@ import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { useTokenLaunchGasOptions } from '../hooks/useTokenLaunchGasOptions';
 import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { GasButton } from './gas/GasButton';
-import { HoldToActivateButton } from './HoldToActivateButton';
+import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 
 // height + top padding + bottom padding
 export const FOOTER_HEIGHT = 48 + 16 + 16;

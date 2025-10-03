@@ -6,8 +6,12 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ETH_ADDRESS, SupportedCurrencyKey, WETH_ADDRESS } from '@/references';
 import { getPlatformClient } from '@/resources/platform/client';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, greaterThan, multiply } from '@/helpers/utilities';
+import { fetchHyperliquidPrices } from './hyperliquidPriceService';
+import Routes from '@/navigation/routesNames';
+import { HYPERLIQUID_TOKEN_ID_SUFFIX } from '@/features/perps/constants';
 
 const ETH_MAINNET_TOKEN_ID = `${ETH_ADDRESS}:1`;
+const HYPERLIQUID_TOKEN_SUFFIX = `:${HYPERLIQUID_TOKEN_ID_SUFFIX}`;
 
 function convertLegacyTokenIdToTokenId(tokenId: string): string {
   const [tokenAddress, chainId] = tokenId.split('_');
@@ -17,6 +21,23 @@ function convertLegacyTokenIdToTokenId(tokenId: string): string {
 function convertTokenIdToLegacyTokenId(tokenId: string): string {
   const [tokenAddress, chainId] = tokenId.split(':');
   return `${tokenAddress}_${chainId}`;
+}
+
+export function isHyperliquidToken(tokenId: string): boolean {
+  return tokenId.endsWith(HYPERLIQUID_TOKEN_SUFFIX);
+}
+
+/**
+ * Parses a Hyperliquid token ID to extract the symbol
+ * @param tokenId Hyperliquid token ID (e.g., "ETH:hl")
+ * @returns The symbol or null if not a valid Hyperliquid token ID
+ */
+export function parseHyperliquidTokenId(tokenId: string): { symbol: string } | null {
+  if (!isHyperliquidToken(tokenId)) {
+    return null;
+  }
+  const symbol = tokenId.slice(0, -HYPERLIQUID_TOKEN_SUFFIX.length);
+  return { symbol };
 }
 
 // Only works for tokens the user owns
@@ -35,6 +56,8 @@ export type PriceReliabilityStatus =
 
 export interface TokenData {
   price: string;
+  // This is exclusively for Hyperliquid markets
+  midPrice?: string | null;
   change: {
     change5mPct: string;
     change1hPct: string;
@@ -109,55 +132,80 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute, currency 
     return null;
   }
 
-  // Separate ETH variants from other tokens
+  // Separate tokens by type
   const ethVariants: string[] = [];
-  const otherTokens: string[] = [];
+  const hyperliquidTokens: string[] = [];
+  const regularTokens: string[] = [];
 
   tokenIds.forEach(tokenId => {
-    if (isEthVariant(tokenId)) {
+    if (isHyperliquidToken(tokenId)) {
+      hyperliquidTokens.push(tokenId);
+    } else if (isEthVariant(tokenId)) {
       ethVariants.push(tokenId);
     } else {
-      otherTokens.push(tokenId);
+      regularTokens.push(tokenId);
     }
   });
 
+  // Prepare regular tokens for fetching
   const tokensToFetch = [
-    ...otherTokens,
+    ...regularTokens,
     // Only subscribe to mainnet ETH if we have any ETH variants
     ...(ethVariants.length > 0 ? [ETH_MAINNET_TOKEN_ID] : []),
   ];
 
-  const response = await getPlatformClient().get<LiveTokensResponse>('/prices/GetCurrentPrices', {
-    params: {
-      tokenIds: tokensToFetch.join(','),
-      currency,
-    },
-  });
-
-  if (!response.data.result) return null;
+  const [regularTokensResponse, hyperliquidPrices] = await Promise.all([
+    tokensToFetch.length > 0
+      ? getPlatformClient().get<LiveTokensResponse>('/prices/GetCurrentPrices', {
+          params: {
+            tokenIds: tokensToFetch.join(','),
+            currency,
+          },
+        })
+      : Promise.resolve({ data: { result: {} } }),
+    hyperliquidTokens.length > 0
+      ? fetchHyperliquidPrices(
+          hyperliquidTokens
+            .map(tokenId => {
+              const parsed = parseHyperliquidTokenId(tokenId);
+              return parsed?.symbol || '';
+            })
+            .filter(Boolean)
+        )
+      : Promise.resolve({}),
+  ]);
 
   const result: LiveTokensData = {};
 
-  Object.entries(response.data.result).forEach(([tokenId, tokenData]) => {
-    if (tokenId !== ETH_MAINNET_TOKEN_ID) {
-      result[convertTokenIdToLegacyTokenId(tokenId)] = tokenData;
-    }
-  });
-
-  // Map ETH data to all ETH variants
-  if (response.data.result[ETH_MAINNET_TOKEN_ID]) {
-    const ethData = response.data.result[ETH_MAINNET_TOKEN_ID];
-    ethVariants.forEach(ethVariant => {
-      result[convertTokenIdToLegacyTokenId(ethVariant)] = ethData;
+  // Process regular tokens
+  if (regularTokensResponse.data.result) {
+    Object.entries(regularTokensResponse.data.result).forEach(([tokenId, tokenData]) => {
+      if (tokenId !== ETH_MAINNET_TOKEN_ID) {
+        result[convertTokenIdToLegacyTokenId(tokenId)] = tokenData;
+      }
     });
+
+    // Map ETH data to all ETH variants
+    const ethMainnetData = (regularTokensResponse.data.result as LiveTokensData)[ETH_MAINNET_TOKEN_ID];
+    if (ethMainnetData) {
+      ethVariants.forEach(ethVariant => {
+        result[convertTokenIdToLegacyTokenId(ethVariant)] = ethMainnetData;
+      });
+    }
   }
 
-  return result;
+  // Add Hyperliquid prices to result
+  Object.assign(result, hyperliquidPrices);
+
+  return Object.keys(result).length > 0 ? result : null;
 };
 
 function updateUserAssetsStore(tokens: LiveTokensData) {
   useUserAssetsStore.getState().updateTokens(tokens);
 }
+
+const FAST_REFRESH_ROUTES = [Routes.PERPS_NEW_POSITION_SCREEN, Routes.CLOSE_POSITION_BOTTOM_SHEET];
+const FAST_REFRESH_INTERVAL = time.seconds(1);
 
 export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTokensParams, LiveTokensStore>(
   {
@@ -174,9 +222,15 @@ export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTo
         });
       }
     },
-    onFetched: ({ data }) => {
+    onFetched: ({ data, fetch }) => {
       if (data) {
         updateUserAssetsStore(data);
+      }
+      const activeRoute = useNavigationStore.getState().activeRoute as (typeof FAST_REFRESH_ROUTES)[number];
+      if (FAST_REFRESH_ROUTES.includes(activeRoute)) {
+        setTimeout(() => {
+          fetch(undefined, { staleTime: FAST_REFRESH_INTERVAL });
+        }, FAST_REFRESH_INTERVAL);
       }
     },
     paramChangeThrottle: 250,

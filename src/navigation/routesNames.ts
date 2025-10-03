@@ -120,6 +120,17 @@ const Routes = {
   CLAIM_REWARDS_PANEL: 'ClaimRewardsPanel',
   TOKEN_LAUNCHER_SCREEN: 'TokenLauncherScreen',
   KING_OF_THE_HILL_EXPLAIN_SHEET: 'KingOfTheHillExplainSheet',
+  PERPS_NAVIGATOR: 'PerpsNavigator',
+  PERPS_ACCOUNT_SCREEN: 'PerpsAccountScreen',
+  PERPS_SEARCH_SCREEN: 'PerpsSearchScreen',
+  PERPS_NEW_POSITION_SEARCH_SCREEN: 'PerpsNewPositionSearchScreen',
+  PERPS_NEW_POSITION_SCREEN: 'PerpsNewPositionScreen',
+  PERPS_DEPOSIT_SCREEN: 'PerpsDepositScreen',
+  PERPS_WITHDRAWAL_SCREEN: 'PerpsWithdrawalScreen',
+  PERPS_DETAIL_SCREEN: 'PerpsDetailScreen',
+  CREATE_TRIGGER_ORDER_BOTTOM_SHEET: 'CreateTriggerOrderBottomSheet',
+  CLOSE_POSITION_BOTTOM_SHEET: 'ClosePositionBottomSheet',
+  PERPS_EXPLAIN_SHEET: 'PerpsExplainSheet',
 } as const;
 
 export const NATIVE_ROUTES = new Set<Route>([
@@ -130,6 +141,8 @@ export const NATIVE_ROUTES = new Set<Route>([
   Routes.EXPANDED_ASSET_SHEET_V2,
   Routes.TOKEN_LAUNCHER_SCREEN,
   Routes.MODAL_SCREEN,
+  Routes.PERPS_DETAIL_SCREEN,
+  Routes.PERPS_NAVIGATOR,
   Routes.POSITION_SHEET,
   Routes.RECEIVE_MODAL,
   Routes.SETTINGS_SHEET,

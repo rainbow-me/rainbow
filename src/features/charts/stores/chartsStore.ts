@@ -17,6 +17,7 @@ export type ChartsState = {
    */
   snapSignal: number;
   token: Token | null;
+  getChartType: () => ChartType;
   resetChartsState: () => void;
   setCandleResolution: (candleResolution: CandleResolution) => void;
   setChartType: (chartType: ChartType) => void;
@@ -32,6 +33,12 @@ export const useChartsStore = createRainbowStore<ChartsState>(
     lineChartTimePeriod: LineChartTimePeriod.D1,
     snapSignal: 0,
     token: null,
+
+    getChartType: () => {
+      const { chartType, token } = get();
+      const shouldForceCandlestick = isHyperliquidToken(token);
+      return shouldForceCandlestick ? ChartType.Candlestick : chartType;
+    },
 
     resetChartsState: () =>
       set(state => {
@@ -89,7 +96,7 @@ export const chartsActions = createStoreActions(useChartsStore);
 export function useChartType(): ChartType {
   const { candlestick_charts_enabled } = useRemoteConfig('candlestick_charts_enabled');
   const enableCandlestickCharts = useExperimentalFlag(CANDLESTICK_CHARTS) || candlestick_charts_enabled;
-  const chartType = useChartsStore(state => state.chartType);
+  const chartType = useChartsStore(state => state.getChartType());
   return enableCandlestickCharts ? chartType : ChartType.Line;
 }
 
@@ -103,4 +110,8 @@ function areTokensEqual(previousToken: Token | null, newToken: Token | null): bo
   if (!previousToken || !newToken) return false;
   if (typeof previousToken === 'string' || typeof newToken === 'string') return previousToken === newToken;
   return previousToken.address === newToken.address && previousToken.chainId === newToken.chainId;
+}
+
+function isHyperliquidToken(token: Token | null): boolean {
+  return typeof token === 'string';
 }

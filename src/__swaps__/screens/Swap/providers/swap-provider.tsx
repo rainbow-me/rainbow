@@ -224,6 +224,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     lastTypedInput,
     outputProgress,
     quote,
+    sliderPressProgress,
     sliderXPosition,
   });
 

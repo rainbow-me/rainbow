@@ -116,7 +116,11 @@ export default function useMemoBriefSectionData({
         index++;
         return true;
       })
-      .map(({ uid, type: cellType }) => {
+      .map(data => {
+        const { uid, type: cellType } = data;
+        if (cellType === CellType.SPACER && 'height' in data) {
+          return { type: cellType, uid, height: data.height };
+        }
         return { type: cellType, uid };
       });
     return briefSectionsDataFiltered;
