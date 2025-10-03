@@ -550,13 +550,11 @@ export default function ChangeWalletSheet() {
 
       // Wait for snap point to be committed before showing
       if (!isLayoutMeasured) {
-        // Using double requestAnimationFrame to give Reanimated 2 frames to commit the snapPoint change before
+        // Using 32 ms to give Reanimated 2 frames to commit the snapPoint change before
         // making the sheet visible. This should ensure it's already settled at the correct height when it appears.
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            setIsLayoutMeasured(true);
-          });
-        });
+        setTimeout(() => {
+          setIsLayoutMeasured(true);
+        }, 32);
       }
     },
     [navigation, isLayoutMeasured]
