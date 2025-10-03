@@ -97,14 +97,14 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
             over={{
               ...displayAssets[0].asset,
               chainId: displayAssets[0].asset.chain_id,
-              icon_url: externalAssets[0]?.icon_url,
+              icon_url: externalAssets[0]?.icon_url || displayAssets[0].asset.icon_url,
               colors: externalAssets[0]?.colors,
             }}
             // @ts-expect-error component uses different Token entity type, but it is compatible
             under={{
               ...displayAssets[1].asset,
               chainId: displayAssets[1].asset.chain_id,
-              icon_url: externalAssets[1]?.icon_url,
+              icon_url: externalAssets[1]?.icon_url || displayAssets[1].asset.icon_url,
               colors: externalAssets[1]?.colors,
             }}
           />
@@ -113,7 +113,7 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
           <RainbowCoinIcon
             chainId={displayAssets[0].asset.chain_id}
             color={externalAssets[0]?.colors?.primary || externalAssets[0]?.colors?.fallback || undefined}
-            icon={externalAssets[0]?.icon_url}
+            icon={externalAssets[0]?.icon_url || displayAssets[0].asset.icon_url}
             symbol={displayAssets[0].asset.symbol}
           />
         )}

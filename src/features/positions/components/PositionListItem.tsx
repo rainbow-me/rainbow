@@ -37,7 +37,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
         <RainbowCoinIcon
           chainId={asset.chain_id}
           color={externalAsset?.colors?.primary || externalAsset?.colors?.fallback || undefined}
-          icon={externalAsset?.icon_url}
+          icon={externalAsset?.icon_url || asset.icon_url}
           symbol={asset.symbol}
         />
       </Column>
