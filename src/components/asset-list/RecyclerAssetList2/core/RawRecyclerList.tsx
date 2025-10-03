@@ -22,7 +22,8 @@ import rowRenderer from './RowRenderer';
 import { BaseCellType, CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
-import { useAccountAddress } from '../../../../state/wallets/walletsStore';
+import { useWalletsStore } from '../../../../state/wallets/walletsStore';
+import { useListen } from '@/state/internal/hooks/useListen';
 
 const dimensions = {
   height: deviceUtils.dimensions.height,
@@ -95,32 +96,20 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     [briefSectionsData, isCoinListEdited, remoteConfig, experimentalConfig]
   );
 
-  const accountAddress = useAccountAddress();
   const { setScrollToTopRef } = useRecyclerListViewScrollToTopContext();
 
   const topMarginRef = useRef<number>(0);
   const ref = useRef<RecyclerListViewRef>(undefined);
 
-  useEffect(() => {
-    // this is hacky, but let me explain what's happening here:
-    // RecyclerListView is trying to persist the position while updating the component.
-    // Therefore, internally the library wants to scroll to old position.
-    // However, Android is setting the position to 0, because there's no content so
-    // the event has no effect on content position and this is set to 0 as expected.
-    // To avoid generating this nonsense event, I firstly set internally the position to 0.
-    // Then the update might happen, but this is OK, because I overrode the position
-    // with `updateOffset` method. However, this is happening inside `setTimeout`
-    // so the callback might be already scheduled (this is a race condition, happens randomly).
-    // We need to clear this scheduled event with `clearTimeout` method.
-    // Then, in case the event was not emitted, we want to emit this anyway (`scrollToOffset`)
-    // to make headers located in `0` position.
-    // @ts-expect-error - accessing private property
-    ref.current?._virtualRenderer?.getViewabilityTracker?.()?.updateOffset?.(0, true, 0);
-    // @ts-expect-error - accessing private property
-    clearTimeout(ref.current?._processInitialOffsetTimeout);
-    ref.current?.scrollToOffset(0, 0);
-    y?.setValue(0);
-  }, [y, accountAddress]);
+  useListen(
+    useWalletsStore,
+    state => state.accountAddress,
+    () => {
+      ref.current?.scrollToTop();
+      topMarginRef.current = 0;
+      y?.setValue(0);
+    }
+  );
 
   useEffect(() => {
     if (!ref.current) return;

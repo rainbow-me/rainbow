@@ -14,7 +14,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { Navigation } from '@/navigation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { toSignificantDigits } from '@/helpers/utilities';
-import { getBalance, TokenData } from '@/state/liveTokens/liveTokensStore';
+import { getLiquidityCappedBalance, TokenData } from '@/state/liveTokens/liveTokensStore';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -98,9 +98,10 @@ const MemoizedBalanceCoinRow = React.memo(
 
     const tokenBalanceSelector = useCallback(
       (token: TokenData) => {
-        return getBalance({ token, balanceAmount: tokenBalanceAmount, nativeCurrency });
+        const { balance, isCapped } = getLiquidityCappedBalance({ token, balanceAmount: tokenBalanceAmount, nativeCurrency });
+        return `${isCapped ? '~' : ''}${balance}`;
       },
-      [tokenBalanceAmount, nativeCurrency]
+      [nativeCurrency, tokenBalanceAmount]
     );
 
     return (

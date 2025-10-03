@@ -16,7 +16,7 @@ import Routes from '@/navigation/Routes';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import { addSubscribedTokens, removeSubscribedTokens } from '@/state/liveTokens/liveTokensStore';
+import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { debounce } from 'lodash';
 import { useRoute } from '@react-navigation/native';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
@@ -100,6 +100,10 @@ function WalletScreen() {
       const viewableTokenUniqueIds = extractTokenRowIds(viewableItems);
       if (viewableTokenUniqueIds.length > 0) {
         addSubscribedTokens({ route: routeName, tokenIds: viewableTokenUniqueIds });
+        // Immediately force a fetch of the newly added tokens
+        useLiveTokensStore.getState().fetch(undefined, {
+          force: true,
+        });
       }
     }, 250)
   );
