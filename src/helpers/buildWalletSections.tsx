@@ -175,12 +175,12 @@ const withPerpsFeatureCardSection = (isDismissedPerpsFeatureCard?: boolean): Cel
     {
       type: CellType.PERPS_FEATURE_CARD,
       uid: 'perps-feature-card',
-    } as CellTypes,
+    },
     {
       type: CellType.SPACER,
       uid: 'perps-feature-card-after-spacer',
       height: 24,
-    } as CellTypes,
+    },
   ];
 };
 
@@ -241,9 +241,10 @@ const withClaimablesSection = (claimables: ClaimablesStore | null, isLoadingUser
 
 const withPerpsSection = (perpsData: PerpsWalletListData | null): CellTypes[] => {
   const perpsSectionItems: CellTypes[] = [];
+  const hasPerpsContent = perpsData?.hasBalance || perpsData?.hasPositions;
 
   // Always show the balance if there are positions even if balance is zero
-  if (perpsData?.hasPositions || perpsData?.hasBalance) {
+  if (hasPerpsContent) {
     perpsSectionItems.push({
       type: CellType.PERPS_BALANCE,
       balance: perpsData?.balance,
@@ -262,13 +263,25 @@ const withPerpsSection = (perpsData: PerpsWalletListData | null): CellTypes[] =>
     });
   }
 
-  return [
-    {
-      type: CellType.PERPS_HEADER,
-      uid: 'perps-header',
-    },
-    ...perpsSectionItems,
-  ];
+  return hasPerpsContent
+    ? [
+        {
+          type: CellType.PERPS_HEADER,
+          uid: 'perps-header',
+        },
+        ...perpsSectionItems,
+      ]
+    : [
+        {
+          type: CellType.SPACER,
+          uid: 'perps-header-spacer',
+          height: 10,
+        },
+        {
+          type: CellType.PERPS_HEADER,
+          uid: 'perps-header',
+        },
+      ];
 };
 
 const withTokensHeaderSection = ({
