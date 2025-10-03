@@ -8,7 +8,7 @@ import { FeatureHintTooltip, TooltipRef } from '@/components/tooltips/FeatureHin
 import { NOTIFICATIONS, useExperimentalFlag } from '@/config';
 import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
 import { EthereumAddress } from '@/entities';
-import { IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import { isValidHex } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
@@ -43,7 +43,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import ConditionalWrap from 'conditional-wrap';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, InteractionManager } from 'react-native';
+import { Alert, InteractionManager, LayoutChangeEvent } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { Address } from 'viem';
 import { updateWebProfile } from '@/helpers/webData';
@@ -108,6 +108,7 @@ export default function ChangeWalletSheet() {
   const featureHintTooltipRef = useRef<TooltipRef>(null);
 
   const [editMode, setEditMode] = useState(false);
+  const [isLayoutMeasured, setIsLayoutMeasured] = useState(IS_IOS);
 
   const setPinnedAddresses = usePinnedWalletsStore(state => state.setPinnedAddresses);
 
@@ -537,6 +538,28 @@ export default function ChangeWalletSheet() {
     [walletsByAddress, onPressEdit, onPressNotifications, onPressRemove, onPressCopyAddress, onPressWalletSettings]
   );
 
+  const navigation = useNavigation();
+
+  const handleLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      if (!IS_ANDROID) return;
+      const { height } = event.nativeEvent.layout;
+
+      // @ts-expect-error Bottom sheet options is not typed
+      navigation.setOptions({ snapPoints: [height + PANEL_BOTTOM_OFFSET] });
+
+      // Wait for snap point to be committed before showing
+      if (!isLayoutMeasured) {
+        // Using 32 ms to give Reanimated 2 frames to commit the snapPoint change before
+        // making the sheet visible. This should ensure it's already settled at the correct height when it appears.
+        setTimeout(() => {
+          setIsLayoutMeasured(true);
+        }, 32);
+      }
+    },
+    [navigation, isLayoutMeasured]
+  );
+
   return (
     <>
       <Box
@@ -548,11 +571,12 @@ export default function ChangeWalletSheet() {
             pointerEvents: 'box-none',
             position: 'absolute',
             zIndex: 30000,
+            opacity: isLayoutMeasured ? 1 : 0,
           },
         ]}
       >
         <Panel>
-          <Box style={{ maxHeight: MAX_PANEL_HEIGHT, paddingHorizontal: PANEL_INSET_HORIZONTAL }}>
+          <Box onLayout={handleLayout} style={{ maxHeight: MAX_PANEL_HEIGHT, paddingHorizontal: PANEL_INSET_HORIZONTAL }}>
             <SheetHandleFixedToTop />
             <Box
               style={{ position: 'relative' }}
