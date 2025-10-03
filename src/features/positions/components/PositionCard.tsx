@@ -110,6 +110,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
           <Box>
             <Columns space="20px" alignHorizontal="justify">
               <Column width="content">
+                {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
                 {/* @ts-ignore js component*/}
                 <RequestVendorLogoIcon
                   backgroundColor={positionColor}
@@ -151,7 +152,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
               </Inline>
             </Box>
             <Text color={{ custom: colors.black }} size="17pt" weight="semibold" numberOfLines={1}>
-              {position.totals.totals.display}
+              {position.totals.total.display}
             </Text>
           </Stack>
         </Stack>
