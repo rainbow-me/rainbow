@@ -275,7 +275,7 @@ const withPerpsSection = (perpsData: PerpsWalletListData | null): CellTypes[] =>
         {
           type: CellType.SPACER,
           uid: 'perps-header-spacer',
-          height: 10,
+          height: 8,
         },
         {
           type: CellType.PERPS_HEADER,
