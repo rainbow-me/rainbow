@@ -142,7 +142,7 @@ export const TimeframeSelector = memo(function TimeframeSelector({
         startColor={backgroundColor}
         startPosition="left"
         steps={8}
-        style={hideChartTypeToggle ? [styles.rightFade, styles.pointerEventsDisabled] : styles.rightFade}
+        style={hideChartTypeToggle ? [styles.rightFade, styles.symmetricalRightFade] : styles.rightFade}
       />
 
       {hideChartTypeToggle ? null : (
@@ -509,9 +509,6 @@ const styles = StyleSheet.create({
     paddingRight: BASE_HORIZONTAL_INSET,
     width: IS_IOS ? undefined : CANDLESTICK_CONTENT_WIDTH + BASE_HORIZONTAL_INSET * 2,
   },
-  pointerEventsDisabled: {
-    pointerEvents: 'none',
-  },
   leftFade: {
     height: '100%',
     left: 0,
@@ -542,5 +539,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'absolute',
     width: PILL.width,
+  },
+  symmetricalRightFade: {
+    pointerEvents: 'none',
+    width: BASE_HORIZONTAL_INSET,
   },
 });
