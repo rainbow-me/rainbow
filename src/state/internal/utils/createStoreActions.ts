@@ -1,4 +1,5 @@
-import { BaseRainbowStore } from '../types';
+import { StoreApi } from 'zustand';
+import { InferStoreState } from '../types';
 
 type UnknownFunction = (...args: never[]) => unknown;
 
@@ -11,7 +12,7 @@ type Methods = Record<string, UnknownFunction>;
 
 type NoOverlap<State, Bundled extends Methods> = Extract<keyof Bundled, FunctionKeys<State>> extends never ? Bundled : never;
 
-type StoreActions<State> = Pick<State, FunctionKeys<State>>;
+export type StoreActions<Store extends StoreApi<unknown>> = Pick<InferStoreState<Store>, FunctionKeys<InferStoreState<Store>>>;
 
 /**
  * Given a Zustand store, produce a new object containing only its actions.
@@ -30,17 +31,17 @@ type StoreActions<State> = Pick<State, FunctionKeys<State>>;
  * export const exampleActions = createStoreActions(useExampleStore);
  * exampleActions.increment();
  */
-export function createStoreActions<State>(store: BaseRainbowStore<State>): StoreActions<State>;
+export function createStoreActions<Store extends StoreApi<unknown>>(store: Store): StoreActions<Store>;
 
-export function createStoreActions<State, Bundled extends Methods>(
-  store: BaseRainbowStore<State>,
-  bundledMethods: NoOverlap<State, Bundled>
-): StoreActions<State> & Bundled;
+export function createStoreActions<Store extends StoreApi<unknown>, Bundled extends Methods>(
+  store: Store,
+  bundledMethods: NoOverlap<InferStoreState<Store>, Bundled>
+): StoreActions<Store> & Bundled;
 
-export function createStoreActions<State, Bundled extends Methods>(
-  store: BaseRainbowStore<State>,
-  bundledMethods?: NoOverlap<State, Bundled>
-): StoreActions<State> | (StoreActions<State> & Bundled) {
+export function createStoreActions<Store extends StoreApi<unknown>, Bundled extends Methods>(
+  store: Store,
+  bundledMethods?: NoOverlap<InferStoreState<Store>, Bundled>
+): StoreActions<Store> | (StoreActions<Store> & Bundled) {
   const state = store.getState();
   const isObject = typeof state === 'object' && state !== null;
   if (!isObject) throw new Error('[createStoreActions]: State is not an object');
@@ -51,8 +52,8 @@ export function createStoreActions<State, Bundled extends Methods>(
   return Object.assign(storeActions, bundledMethods);
 }
 
-function extractFunctionProperties<State>(state: State): StoreActions<State> {
-  const result: StoreActions<State> = Object.create(null);
+function extractFunctionProperties<Store extends StoreApi<unknown>>(state: InferStoreState<Store>): StoreActions<Store> {
+  const result: StoreActions<Store> = Object.create(null);
   for (const key in state) {
     if (isFunctionKey(state, key)) result[key] = state[key];
   }

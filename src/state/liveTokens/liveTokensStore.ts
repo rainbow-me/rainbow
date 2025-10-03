@@ -1,14 +1,14 @@
 import { time } from '@/utils';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { NavigationState, useNavigationStore } from '@/state/navigation/navigationStore';
 import { useUserAssetsStore } from '../assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ETH_ADDRESS, SupportedCurrencyKey, WETH_ADDRESS } from '@/references';
 import { getPlatformClient } from '@/resources/platform/client';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, greaterThan, multiply } from '@/helpers/utilities';
 import { fetchHyperliquidPrices } from './hyperliquidPriceService';
-import Routes from '@/navigation/routesNames';
 import { HYPERLIQUID_TOKEN_ID_SUFFIX } from '@/features/perps/constants';
+import Routes, { Route } from '@/navigation/routesNames';
 
 const ETH_MAINNET_TOKEN_ID = `${ETH_ADDRESS}:1`;
 const HYPERLIQUID_TOKEN_SUFFIX = `:${HYPERLIQUID_TOKEN_ID_SUFFIX}`;
@@ -47,7 +47,11 @@ function isEthVariant(tokenId: string) {
 }
 
 // route -> token id -> subscription count
-type TokenSubscriptionCountByRoute = Record<string, Record<string, number>>;
+type TokenSubscriptionCountByRoute = {
+  [route in Route]?: {
+    [tokenId: string]: number | undefined;
+  };
+};
 
 export type PriceReliabilityStatus =
   | 'PRICE_RELIABILITY_STATUS_TRUSTED'
@@ -93,12 +97,12 @@ type LiveTokensResponse = {
 
 type LiveTokensParams = {
   subscribedTokensByRoute: TokenSubscriptionCountByRoute;
-  activeRoute: string;
+  activeRoute: Route;
   currency: SupportedCurrencyKey;
 };
 
 type UpdateSubscribedTokensParams = {
-  route: string;
+  route: Route;
   tokenIds: string[];
 };
 
@@ -147,22 +151,18 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute, currency 
     }
   });
 
-  // Prepare regular tokens for fetching
-  const tokensToFetch = [
-    ...regularTokens,
-    // Only subscribe to mainnet ETH if we have any ETH variants
-    ...(ethVariants.length > 0 ? [ETH_MAINNET_TOKEN_ID] : []),
-  ];
+  // Only subscribe to mainnet ETH if we have any ETH variants
+  if (ethVariants.length > 0) regularTokens.push(ETH_MAINNET_TOKEN_ID);
 
   const [regularTokensResponse, hyperliquidPrices] = await Promise.all([
-    tokensToFetch.length > 0
+    regularTokens.length > 0
       ? getPlatformClient().get<LiveTokensResponse>('/prices/GetCurrentPrices', {
           params: {
-            tokenIds: tokensToFetch.join(','),
+            tokenIds: regularTokens.join(','),
             currency,
           },
         })
-      : Promise.resolve({ data: { result: {} } }),
+      : null,
     hyperliquidTokens.length > 0
       ? fetchHyperliquidPrices(
           hyperliquidTokens
@@ -172,68 +172,63 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute, currency 
             })
             .filter(Boolean)
         )
-      : Promise.resolve({}),
+      : null,
   ]);
 
   const result: LiveTokensData = {};
+  let hasResult = false;
 
   // Process regular tokens
-  if (regularTokensResponse.data.result) {
+  if (regularTokensResponse?.data.result) {
     Object.entries(regularTokensResponse.data.result).forEach(([tokenId, tokenData]) => {
       if (tokenId !== ETH_MAINNET_TOKEN_ID) {
         result[convertTokenIdToLegacyTokenId(tokenId)] = tokenData;
+        hasResult = true;
       }
     });
 
     // Map ETH data to all ETH variants
-    const ethMainnetData = (regularTokensResponse.data.result as LiveTokensData)[ETH_MAINNET_TOKEN_ID];
+    const ethMainnetData = regularTokensResponse.data.result[ETH_MAINNET_TOKEN_ID];
     if (ethMainnetData) {
       ethVariants.forEach(ethVariant => {
         result[convertTokenIdToLegacyTokenId(ethVariant)] = ethMainnetData;
+        hasResult = true;
       });
     }
   }
 
   // Add Hyperliquid prices to result
-  Object.assign(result, hyperliquidPrices);
+  if (hyperliquidPrices) {
+    Object.assign(result, hyperliquidPrices);
+    hasResult = true;
+  }
 
-  return Object.keys(result).length > 0 ? result : null;
+  return hasResult ? result : null;
 };
 
 function updateUserAssetsStore(tokens: LiveTokensData) {
   useUserAssetsStore.getState().updateTokens(tokens);
 }
 
-const FAST_REFRESH_ROUTES = [Routes.PERPS_NEW_POSITION_SCREEN, Routes.CLOSE_POSITION_BOTTOM_SHEET];
-const FAST_REFRESH_INTERVAL = time.seconds(1);
+const DEFAULT_STALE_TIME = time.seconds(5);
+const FAST_REFRESH_STALE_TIME = time.seconds(2);
 
 export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTokensParams, LiveTokensStore>(
   {
     fetcher: fetchTokensData,
     disableCache: true,
-    staleTime: time.seconds(5),
+    staleTime: $ => $(useNavigationStore, determineStaleTime),
     setData: ({ data, set }) => {
-      if (data) {
-        set(state => {
-          return {
-            ...state,
-            tokens: { ...state.tokens, ...data },
-          };
-        });
-      }
+      if (!data) return;
+      set(state => ({
+        ...state,
+        tokens: { ...state.tokens, ...data },
+      }));
     },
-    onFetched: ({ data, fetch }) => {
-      if (data) {
-        updateUserAssetsStore(data);
-      }
-      const activeRoute = useNavigationStore.getState().activeRoute as (typeof FAST_REFRESH_ROUTES)[number];
-      if (FAST_REFRESH_ROUTES.includes(activeRoute)) {
-        setTimeout(() => {
-          fetch(undefined, { staleTime: FAST_REFRESH_INTERVAL });
-        }, FAST_REFRESH_INTERVAL);
-      }
+    onFetched: ({ data }) => {
+      if (data) updateUserAssetsStore(data);
     },
-    paramChangeThrottle: 250,
+    paramChangeThrottle: time.ms(250),
     params: {
       subscribedTokensByRoute: ($, store) => $(store).subscribedTokensByRoute,
       activeRoute: $ => $(useNavigationStore).activeRoute,
@@ -287,7 +282,8 @@ export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTo
         if (!hasChanges) return state;
 
         // remove routes with no subscriptions
-        if (Object.keys(subscribedTokensByRoute[route]).length === 0) {
+        const routeSubscriptions = subscribedTokensByRoute[route];
+        if (!routeSubscriptions || Object.keys(routeSubscriptions).length === 0) {
           delete subscribedTokensByRoute[route];
         }
 
@@ -305,10 +301,10 @@ export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTo
 
 export const { addSubscribedTokens, removeSubscribedTokens } = useLiveTokensStore.getState();
 
-export function addSubscribedToken({ route, tokenId }: { route: string; tokenId: string }) {
+export function addSubscribedToken({ route, tokenId }: { route: Route; tokenId: string }) {
   addSubscribedTokens({ route, tokenIds: [tokenId] });
 }
-export function removeSubscribedToken({ route, tokenId }: { route: string; tokenId: string }) {
+export function removeSubscribedToken({ route, tokenId }: { route: Route; tokenId: string }) {
   removeSubscribedTokens({ route, tokenIds: [tokenId] });
 }
 
@@ -328,4 +324,17 @@ export function getBalance({
 
   const { display } = convertAmountAndPriceToNativeDisplay(balanceAmount, token.price, nativeCurrency);
   return display;
+}
+
+/**
+ * Determines the stale time to use depending on the active route.
+ */
+function determineStaleTime(state: NavigationState): number {
+  switch (state.activeRoute) {
+    case Routes.PERPS_NEW_POSITION_SCREEN:
+    case Routes.CLOSE_POSITION_BOTTOM_SHEET:
+      return FAST_REFRESH_STALE_TIME;
+    default:
+      return DEFAULT_STALE_TIME;
+  }
 }

@@ -221,11 +221,11 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       return <Claimable claimable={claimable} />;
     }
     case CellType.PERPS_HEADER: {
-      return <PerpsHeader />;
+      return <PerpsHeader isDarkMode={extendedState.theme.isDarkMode} />;
     }
     case CellType.PERPS_BALANCE: {
       const { balance } = data as PerpsBalanceExtraData;
-      return <PerpsAvailableBalance balance={balance} />;
+      return <PerpsAvailableBalance balance={balance} isDarkMode={extendedState.theme.isDarkMode} />;
     }
     case CellType.PERPS_POSITION: {
       const { position } = data as PerpsPositionExtraData;

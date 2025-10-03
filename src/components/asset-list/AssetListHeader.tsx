@@ -121,7 +121,7 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
   const { width: deviceWidth } = useDimensions();
   const { accountName } = useAccountProfileInfo();
   const { navigate } = useNavigation();
-  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus().isInitialLoading);
+  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
 
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);

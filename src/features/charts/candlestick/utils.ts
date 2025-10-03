@@ -14,7 +14,9 @@ export function areCandlesEqual(a: Bar | undefined, b: Bar | undefined): boolean
  * Compares two candlestick `Price` objects for equality.
  */
 export function arePricesEqual(previousPrice: Price | undefined, price: Price | undefined): boolean {
-  return price?.price === previousPrice?.price && price?.percentChange === previousPrice?.percentChange;
+  if (!price && !previousPrice) return true;
+  if (!price || !previousPrice) return false;
+  return price.price === previousPrice.price && price.percentChange === previousPrice.percentChange;
 }
 
 export function transformApiResponseToBars(response: CandlestickEndpointResponse, filterEmptyVolumes = false): Bar[] {

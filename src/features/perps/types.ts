@@ -115,6 +115,7 @@ export type PerpsWalletListData = {
   hasPositions: boolean;
   positions: PerpsPosition[];
   value: string;
+  enabled: boolean;
 };
 
 export type HlBuilderSettings = {

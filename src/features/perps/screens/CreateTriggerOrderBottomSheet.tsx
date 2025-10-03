@@ -3,7 +3,7 @@ import { Alert, StyleSheet, View } from 'react-native';
 import { AnimatedText, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { addCommasToNumber, opacityWorklet, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
+import { addCommasToNumber, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { Panel } from '@/components/SmoothPager/ListPanel';
@@ -43,6 +43,8 @@ import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPri
 import { logger, RainbowError } from '@/logger';
 import * as i18n from '@/languages';
 import { analytics } from '@/analytics';
+import { sanitizeAmount } from '@/worklets/strings';
+import { useStableValue } from '@/hooks/useStableValue';
 
 // Translations for worklets
 const translations = {
@@ -55,10 +57,12 @@ const translations = {
 
 const PANEL_HEIGHT = 360;
 const PRICE_SHIFT_FACTOR = 0.05;
+const STOP_LOSS_DEFAULT_PERCENTAGE = 0.05; // 5% loss from current price
+const STOP_LOSS_LIQ_BUFFER = 0.1; // 10% buffer from liquidation
 
 function formatInputForDisplay(value: string) {
   'worklet';
-  const numericValue = stripNonDecimalNumbers(value);
+  const numericValue = sanitizeAmount(value);
   if (!numericValue || numericValue === '0') {
     return '$0';
   }
@@ -105,8 +109,24 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
   const isLong = positionSide === PerpPositionSide.LONG;
   const shouldBeAbove = isLong ? isTakeProfit : !isTakeProfit;
   const formatInput = useCallback((text: string) => formatTriggerOrderInput(text, market.decimals), [market.decimals]);
-  const initialPrice = mulWorklet(market.price, shouldBeAbove ? 1 + PRICE_SHIFT_FACTOR : 1 - PRICE_SHIFT_FACTOR);
-  const inputValue = useSharedValue(formatInput(initialPrice));
+
+  const initialPrice = useStableValue(() =>
+    formatInput(
+      calculateDefaultOrderPrice({
+        amount,
+        existingLiquidationPrice,
+        isExistingPosition,
+        isLong,
+        isStopLoss,
+        leverage,
+        market,
+        positionSide,
+        shouldBeAbove,
+      })
+    )
+  );
+
+  const inputValue = useSharedValue(initialPrice);
 
   const liveTokenPrice = useLiveTokenSharedValue({
     tokenId: getHyperliquidTokenId(market.symbol),
@@ -307,6 +327,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
               </Text>
               <CurrencyInput
                 autoFocus={true}
+                initialValue={initialPrice}
                 ref={inputRef}
                 value={inputValue}
                 textColor={accentColors.opacity100}
@@ -413,6 +434,62 @@ export const CreateTriggerOrderBottomSheet = memo(function CreateTriggerOrderBot
     </KeyboardProvider>
   );
 });
+
+function calculateDefaultOrderPrice({
+  amount,
+  existingLiquidationPrice,
+  isExistingPosition,
+  isLong,
+  isStopLoss,
+  leverage,
+  market,
+  positionSide,
+  shouldBeAbove,
+}: {
+  amount: string;
+  existingLiquidationPrice: string;
+  isExistingPosition: boolean;
+  isLong: boolean;
+  isStopLoss: boolean;
+  leverage: number | null;
+  market: PerpMarket;
+  positionSide: PerpPositionSide;
+  shouldBeAbove: boolean;
+}): string {
+  let defaultPrice: string;
+  if (isStopLoss) {
+    let liqPrice = 0;
+    if (isExistingPosition) {
+      liqPrice = Number(existingLiquidationPrice);
+    } else if (leverage && amount) {
+      liqPrice = Number(
+        calculateIsolatedLiquidationPriceFromMargin({
+          entryPrice: market.price,
+          marginAmount: amount,
+          positionSide: positionSide,
+          leverage: leverage,
+          market,
+        })
+      );
+    }
+
+    const currentPrice = Number(market.price);
+    const idealStopLoss = isLong ? currentPrice * (1 - STOP_LOSS_DEFAULT_PERCENTAGE) : currentPrice * (1 + STOP_LOSS_DEFAULT_PERCENTAGE);
+
+    if (liqPrice > 0) {
+      const liqPriceWithBuffer = isLong ? liqPrice * (1 + STOP_LOSS_LIQ_BUFFER) : liqPrice * (1 - STOP_LOSS_LIQ_BUFFER);
+      const wouldViolateBuffer = isLong ? idealStopLoss < liqPriceWithBuffer : idealStopLoss > liqPriceWithBuffer;
+
+      if (wouldViolateBuffer) defaultPrice = String((currentPrice + liqPrice) / 2);
+      else defaultPrice = String(idealStopLoss);
+    } else {
+      defaultPrice = String(idealStopLoss);
+    }
+  } else {
+    defaultPrice = mulWorklet(market.price, shouldBeAbove ? 1 + PRICE_SHIFT_FACTOR : 1 - PRICE_SHIFT_FACTOR);
+  }
+  return defaultPrice;
+}
 
 const styles = StyleSheet.create({
   panelContainer: {

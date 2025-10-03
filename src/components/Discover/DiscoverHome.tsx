@@ -68,7 +68,7 @@ export default function DiscoverHome() {
     <Inset top="12px" bottom={{ custom: 200 }} horizontal={{ custom: HORIZONTAL_PADDING }}>
       {!testNetwork ? (
         <Box gap={20}>
-          {perpsEnabled && <PerpsFeatureCard isDismissable={false} />}
+          {perpsEnabled && <PerpsFeatureCard brightenDarkModeBackground isDismissable={false} />}
           <DiscoverSeparator />
           {trendingTokensEnabled && <TrendingTokens />}
           <RemoteCardCarousel />

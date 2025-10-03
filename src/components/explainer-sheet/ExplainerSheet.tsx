@@ -177,7 +177,7 @@ const Step = memo(function Step({
         <Box justifyContent={'center'} alignItems={'center'} width={PANEL_INNER_WIDTH} height={280}>
           {step.graphicComponent()}
         </Box>
-        <Box gap={18} paddingHorizontal={{ custom: PANEL_PADDING_HORIZONTAL }} width={PANEL_WIDTH}>
+        <Box gap={24} paddingHorizontal={{ custom: PANEL_PADDING_HORIZONTAL }} width={PANEL_WIDTH}>
           {step.titleComponent()}
           {step.subtitleComponent()}
         </Box>

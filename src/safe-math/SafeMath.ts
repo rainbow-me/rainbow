@@ -168,7 +168,7 @@ export function mulWorklet(num1: string | number, num2: string | number): string
 }
 
 // Divide function
-export function divWorklet(num1: string | number, num2: string | number): string {
+export function divWorklet(num1: string | number, num2: string | number, divideByZeroFallback?: string): string {
   'worklet';
   const num1Str = toStringWorklet(num1);
   const num2Str = toStringWorklet(num2);
@@ -177,7 +177,8 @@ export function divWorklet(num1: string | number, num2: string | number): string
     throw new Error('Arguments must be a numeric string or number');
   }
   if (isZeroWorklet(num2Str)) {
-    throw new Error('Division by zero');
+    if (divideByZeroFallback === undefined) throw new Error('Division by zero');
+    return divideByZeroFallback;
   }
   if (isZeroWorklet(num1Str)) {
     return '0';

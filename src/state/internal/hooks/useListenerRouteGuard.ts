@@ -14,6 +14,11 @@ import { ListenHandle, useListen } from './useListen';
  */
 export type UseListenerRouteGuardOptions = {
   /**
+   * Optional additional routes to allow the listener to remain active on.
+   * @default undefined
+   */
+  additionalRoutes?: Route | Route[];
+  /**
    * Whether to log debug messages to the console.
    * @default false
    */
@@ -37,7 +42,7 @@ export type UseListenerRouteGuardOptions = {
   route?: Route;
 };
 
-type RequiredInternalOptions = Required<Omit<UseListenerRouteGuardOptions, 'route'>>;
+type RequiredInternalOptions = Required<Omit<UseListenerRouteGuardOptions, 'additionalRoutes' | 'route'>>;
 
 // ============ useListenerRouteGuard ========================================== //
 
@@ -57,6 +62,8 @@ const DEFAULT_OPTIONS = Object.freeze({
  *
  * ---
  * 💡 **Note:** The provided `route` is frozen to its initial value. Subsequent changes have no effect.
+ *
+ * The same applies to `additionalRoutes`.
  *
  * ---
  * @param listenHandleOrTuple - The `ListenHandle` to suspend/resume, or a tuple of `[SharedValue, ListenHandle]`.
@@ -104,10 +111,10 @@ export function useListenerRouteGuard<T>(
 
 export function useListenerRouteGuard<T>(
   listenHandleOrTuple: RefObject<Readonly<ListenHandle>> | ListenHandleTuple<T>,
-  { debugMode, enabled, fireImmediately, route }: UseListenerRouteGuardOptions = DEFAULT_OPTIONS
+  { additionalRoutes, debugMode, enabled, fireImmediately, route }: UseListenerRouteGuardOptions = DEFAULT_OPTIONS
 ): void | ReadOnlySharedValue<T> {
   const currentRoute = useRoute().name;
-  const config = useStableValue(() => createRouteGuardConfig(listenHandleOrTuple, route ?? currentRoute, debugMode));
+  const config = useStableValue(() => createRouteGuardConfig(listenHandleOrTuple, route ?? currentRoute, additionalRoutes, debugMode));
   const adjustedOptions = useMemo(() => stripDebugMode({ enabled, fireImmediately }), [enabled, fireImmediately]);
 
   useListen(useNavigationStore, config.selector, config.suspensionHandler, adjustedOptions);
@@ -126,6 +133,7 @@ type RouteGuardConfig<T = unknown> = {
 function createRouteGuardConfig<T>(
   listenHandleOrTuple: RefObject<Readonly<ListenHandle>> | ListenHandleTuple<T>,
   route: Route,
+  additionalRoutes?: Route | Route[],
   debugMode?: boolean
 ): RouteGuardConfig<T> {
   const isTuple = Array.isArray(listenHandleOrTuple);
@@ -133,10 +141,26 @@ function createRouteGuardConfig<T>(
   const sharedValue = isTuple ? listenHandleOrTuple[0] : undefined;
 
   return {
-    selector: state => state.isRouteActive(route),
+    selector: createSelector(route, additionalRoutes),
     sharedValue,
     suspensionHandler: createSuspensionHandler(listenHandle, route, debugMode),
   };
+}
+
+function createSelector(route: Route, additionalRoutes?: Route | Route[]): Selector<NavigationState, boolean> {
+  const hasAdditionalRoutes = additionalRoutes !== undefined;
+  if (!hasAdditionalRoutes) return state => state.isRouteActive(route);
+
+  const booleanMap: Partial<Record<Route, boolean>> = { [route]: true };
+  if (typeof additionalRoutes === 'string') {
+    booleanMap[additionalRoutes] = true;
+  } else if (additionalRoutes.length) {
+    for (const additionalRoute of additionalRoutes) {
+      booleanMap[additionalRoute] = true;
+    }
+  }
+
+  return state => booleanMap[state.activeRoute] ?? false;
 }
 
 function createSuspensionHandler(listenHandle: RefObject<Readonly<ListenHandle>>, route: Route, debugMode?: boolean): Listener<boolean> {

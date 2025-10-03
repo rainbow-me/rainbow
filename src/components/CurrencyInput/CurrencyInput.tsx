@@ -7,6 +7,7 @@ import { CurrencyDisplay } from './CurrencyDisplay';
 import { TextProps, useTextStyle } from '@/design-system';
 
 export type CurrencyInputProps = Omit<TextProps, 'color' | 'children'> & {
+  initialValue: string;
   value: SharedValue<string>;
   onChangeValue?: (value: string) => void;
   onFocus?: () => void;
@@ -31,6 +32,7 @@ export interface CurrencyInputRef {
 export const CurrencyInput = forwardRef<CurrencyInputRef, CurrencyInputProps>(
   (
     {
+      initialValue,
       value,
       onChangeValue,
       onFocus,
@@ -105,10 +107,7 @@ export const CurrencyInput = forwardRef<CurrencyInputRef, CurrencyInputProps>(
       ref,
       () => ({
         setValue: (newValue: string) => {
-          runOnUI(() => {
-            'worklet';
-            handleValueChange(newValue);
-          })();
+          runOnUI(handleValueChange)(newValue);
           nativeInputRef.current?.setNativeProps({ text: newValue });
         },
         getValue: () => value.value,
@@ -128,7 +127,6 @@ export const CurrencyInput = forwardRef<CurrencyInputRef, CurrencyInputProps>(
           formattedValue={formattedValue}
           textColorStyle={textColorStyle}
           isFocused={isFocused}
-          value={value}
           caretColor={textColor}
           disabled={disabled}
           onPress={handleFocus}
@@ -137,7 +135,7 @@ export const CurrencyInput = forwardRef<CurrencyInputRef, CurrencyInputProps>(
 
         <HiddenNativeInput
           ref={nativeInputRef}
-          value={value.value}
+          value={initialValue}
           onChangeText={handleNativeChangeText}
           onFocus={handleFocus}
           onBlur={handleBlur}

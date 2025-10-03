@@ -19,7 +19,7 @@ export const PerpMarketDisabledRow = function PerpMarketDisabledRow({ market, pa
       gap={12}
       paddingVertical={paddingVertical ? { custom: paddingVertical } : '10px'}
     >
-      <View style={{ opacity: 0.2 }}>
+      <View style={{ opacity: 0.4 }}>
         <HyperliquidTokenIcon symbol={market.symbol} size={40} />
       </View>
       <Box style={{ flex: 1 }} gap={12}>

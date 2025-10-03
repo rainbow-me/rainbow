@@ -18,7 +18,6 @@ import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { addSubscribedTokens, removeSubscribedTokens } from '@/state/liveTokens/liveTokensStore';
 import { debounce } from 'lodash';
-import { useRoute } from '@react-navigation/native';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
@@ -28,6 +27,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRecoilValue } from 'recoil';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useStableValue } from '@/hooks/useStableValue';
+import { useRoute } from '@/navigation/Navigation';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (

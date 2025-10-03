@@ -118,7 +118,7 @@ const DiscoverSearchInput = ({
   const { colors } = useTheme();
   const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
   const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery);
-  const isLoading = useDiscoverSearchStore(state => state.getStatus().isFetching);
+  const isLoading = useDiscoverSearchStore(state => state.getStatus('isLoading'));
   const onChangeText = useCallback((updatedQuery: string) => {
     useDiscoverSearchQueryStore.setState({ searchQuery: updatedQuery });
   }, []);

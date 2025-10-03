@@ -289,7 +289,7 @@ export const useRemoteConfigStore = createQueryStore<RainbowConfig, never, Remot
   (_, get) => ({
     config: DEFAULT_CONFIG,
     lastFetchedVersion: 0,
-    getRemoteConfigKey: key => get().config[key],
+    getRemoteConfigKey: key => get().config[key] ?? DEFAULT_CONFIG[key],
   }),
 
   { storageKey: 'remoteConfig' }
@@ -409,6 +409,6 @@ function selectRemoteConfigKeys<const K extends RemoteConfigKey>(
 ): RainbowConfig | Pick<RainbowConfig, K> {
   if (!keys) return state.config;
   const result: Partial<RainbowConfig> = {};
-  for (const key of keys) result[key] = state.config[key];
+  for (const key of keys) result[key] = state.config[key] ?? DEFAULT_CONFIG[key];
   return result as Pick<RainbowConfig, K>;
 }

@@ -1584,7 +1584,7 @@
       },
       "feature_card": {
         "title": "Perps",
-        "subtitle": "High risk, high reward trading"
+        "subtitle": "High-risk, high-reward trading"
       },
       "actions": {
         "fund_wallet": "Fund Wallet",
@@ -1605,21 +1605,26 @@
         "no_balance": "No Balance",
         "receive": "Receive",
         "slider_label": "Depositing",
+        "zero_amount_error": "Enter an amount to deposit",
         "confirm_button_text": "Hold to Deposit",
         "confirm_button_loading_text": "Depositing...",
         "confirm_button_zero_text": "Enter Amount",
         "confirm_button_over_balance_text": "Insufficient Funds",
         "confirm_button_error_text": "Quote Error",
-        "quote_error": "􀇿 No quote available"
+        "quote_error": "􀇿 No quote available",
+        "insufficient_balance": "􀫲 Insufficient Funds"
       },
       "withdraw": {
         "title": "Withdraw",
         "slider_label": "Withdrawing",
         "confirm_button_text": "Hold to Withdraw",
         "confirm_button_loading_text": "Withdrawing...",
-        "available_balance": "%{balance} available",
+        "available_balance_suffix": " Available",
         "confirm_button_zero_text": "Enter Amount",
-        "confirm_button_over_balance_text": "Insufficient Funds"
+        "confirm_button_over_balance_text": "Insufficient Funds",
+        "info_card_title_prefix": "Withdrawing to ",
+        "info_card_title_suffix": "Arbitrum",
+        "info_card_subtitle": "Additional networks coming soon. Withdrawals currently include a $1.00 Hyperliquid fee."
       },
       "position_side": {
         "long": "Long",
@@ -1645,13 +1650,18 @@
         "from_current_price": "from current price",
         "details": "Details",
         "funding_rate": "Funding Rate",
-        "max_slippage": "Max Slippage"
+        "max_slippage": "Max Slippage",
+        "no_liquidation_risk": "No Liquidation Risk",
+        "trading_without_leverage": "Trading without leverage"
       },
       "inputs": {
         "amount": "Amount",
         "available": "Available",
+        "max": "Max",
+        "maximum_amount_is": "Maximum amount is",
+        "minimum": "Minimum",
         "minimum_amount_is": "Minimum amount is",
-        "maximum_amount_is": "Maximum amount is"
+        "no_balance": "No Balance"
       },
       "history": {
         "title": "History",
@@ -1704,15 +1714,21 @@
         "steps": {
           "step_1": {
             "title_parts": ["Perpetual Futures"],
-            "subtitle_parts": ["Predict a token’s price direction and earn if your call is right. Trade any time, no expiry."]
+            "subtitle_parts": [
+              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
+            ]
           },
           "step_2": {
-            "title_parts": ["Go", "Long", "or go", "Short"],
-            "subtitle_parts": ["Go long when you expect the price to rise. Earn profits if the token goes up."]
+            "title_parts": ["Go", "Long", "or", "Short"],
+            "subtitle_parts": [
+              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
+            ]
           },
           "step_3": {
-            "title_parts": ["Leverage and risk"],
-            "subtitle_parts": ["Leverage boosts profits but also risk. If the market moves against you, your position gets liquidated."]
+            "title_parts": ["Trade with Leverage"],
+            "subtitle_parts": [
+              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+            ]
           }
         }
       },

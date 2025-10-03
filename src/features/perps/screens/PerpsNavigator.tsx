@@ -1,10 +1,8 @@
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { memo } from 'react';
 import { StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { SheetHandle } from '@/components/sheet';
 import { Box, useColorMode } from '@/design-system';
 import { PerpsNavbar } from '@/features/perps/components/PerpsNavbar';
 import { PerpsNavigatorFooter } from '@/features/perps/components/PerpsNavigatorFooter';
@@ -19,6 +17,7 @@ import { createVirtualNavigator } from '@/navigation/createVirtualNavigator';
 import Routes from '@/navigation/routesNames';
 import { PerpsRoute } from '@/navigation/types';
 import { useListen } from '@/state/internal/hooks/useListen';
+import { SheetHandle } from '@/features/perps/components/SheetHandle';
 
 const Navigator = createVirtualNavigator<PerpsRoute>({
   initialRoute: Routes.PERPS_ACCOUNT_SCREEN,
@@ -31,7 +30,6 @@ export const usePerpsNavigationStore = Navigator.useNavigationStore;
 export const PerpsNavigator = memo(function PerpsNavigator() {
   const { isDarkMode } = useColorMode();
   const { ref, goToPage } = usePagerNavigation();
-  const insets = useSafeAreaInsets();
 
   const screenBackgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
 
@@ -47,11 +45,10 @@ export const PerpsNavigator = memo(function PerpsNavigator() {
     <KeyboardProvider>
       <PerpsAccentColorContextProvider>
         <Box backgroundColor={screenBackgroundColor} style={styles.container}>
-          <Box backgroundColor={screenBackgroundColor} style={styles.sheetHandle} top={{ custom: insets.top }}>
+          <Box alignItems="center" backgroundColor={screenBackgroundColor} width="full">
             <SheetHandle />
+            <PerpsNavbar />
           </Box>
-
-          <PerpsNavbar />
 
           {useStableValue(() => (
             <SmoothPager
@@ -103,10 +100,5 @@ export const PerpsNavigator = memo(function PerpsNavigator() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  sheetHandle: {
-    alignSelf: 'center',
-    position: 'absolute',
-    zIndex: 10,
   },
 });

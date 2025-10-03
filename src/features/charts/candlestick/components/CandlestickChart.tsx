@@ -20,7 +20,6 @@ import { Gesture, GestureDetector, State as GestureState } from 'react-native-ge
 import Animated, {
   Easing,
   SharedValue,
-  executeOnUIRuntimeSync,
   runOnJS,
   runOnUI,
   useAnimatedReaction,
@@ -41,22 +40,25 @@ import { CANDLESTICK_DATA_MONITOR, useExperimentalFlag } from '@/config';
 import { Text, TextIcon, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { TextSegment, useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
-import { NativeCurrencyKey } from '@/entities';
+import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities';
 import { IS_DEV, IS_IOS } from '@/env';
 import { areCandlesEqual } from '@/features/charts/candlestick/utils';
 import { candlestickActions, fetchHistoricalCandles, useCandlestickStore } from '@/features/charts/stores/candlestickStore';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
+import { isHyperliquidToken } from '@/features/charts/utils';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';
+import Routes from '@/navigation/routesNames';
 import { supportedNativeCurrencies } from '@/references';
+import { greaterThanOrEqualToWorklet } from '@/safe-math/SafeMath';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
-import { clamp, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { addCommasToNumber, clamp, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { DeepPartial } from '@/types/objects';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -295,14 +297,24 @@ function findPercentile(array: number[], percentile: number): number {
   return a[Math.min(percentile, a.length - 1)];
 }
 
-function formatPrice(price: number, currency: NativeCurrencyKey): string {
+export function formatCandlestickPrice(price: number | string, currency: NativeCurrencyKey, isHyperliquidPrice: boolean): string {
   'worklet';
-  return formatAssetPrice({
+  if (!price) return '$0.00';
+  const isNumber = typeof price === 'number';
+
+  const priceString = formatAssetPrice({
     currency,
     decimalPlaces: supportedNativeCurrencies[currency].decimals,
     prefix: supportedNativeCurrencies[currency].symbol,
     value: price,
   });
+
+  if (isHyperliquidPrice && isNumber ? price >= 100_000 : greaterThanOrEqualToWorklet(price, '100000')) {
+    const toFixedPrice = isNumber ? price.toFixed(0) : price;
+    return `$${addCommasToNumber(toFixedPrice, '0')}`;
+  }
+
+  return priceString;
 }
 
 function getEmaPeriod(type: IndicatorKey): number {
@@ -324,6 +336,7 @@ function getYOffsetForPriceLabel(index: number, textHeight: number): number {
 }
 
 const AVERAGE_CHARACTER_WIDTH = 52 / 6;
+const DECIMAL_WIDTH = AVERAGE_CHARACTER_WIDTH / 3;
 
 function getYAxisLabelWidth(maxCharacters: number): number {
   'worklet';
@@ -350,6 +363,7 @@ class CandlestickChartManager {
   private fetchAdditionalCandles: () => void;
   private hasPreviousCandles: boolean;
   private isDarkMode: boolean;
+  private isHyperliquidToken: boolean;
   private nativeCurrency: { currency: NativeCurrencyKey; decimals: number };
   private volumeBarColor: SkColor;
   private yAxisWidth: number;
@@ -445,6 +459,7 @@ class CandlestickChartManager {
     isLoadingHistoricalCandles,
     maxDisplayedVolume,
     nativeCurrency,
+    token,
   }: {
     activeCandle: SharedValue<Bar | undefined>;
     buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
@@ -467,6 +482,7 @@ class CandlestickChartManager {
     isLoadingHistoricalCandles: SharedValue<boolean>;
     maxDisplayedVolume: SharedValue<number>;
     nativeCurrency: { currency: NativeCurrencyKey; decimals: number };
+    token: Token;
   }) {
     // ========== Core State ==========
     this.backgroundColor = Skia.Color(config.chart.backgroundColor);
@@ -481,6 +497,7 @@ class CandlestickChartManager {
     this.fetchAdditionalCandles = fetchAdditionalCandles;
     this.hasPreviousCandles = hasPreviousCandles;
     this.isDarkMode = isDarkMode;
+    this.isHyperliquidToken = isHyperliquidToken(token);
     this.nativeCurrency = nativeCurrency;
     this.volumeBarColor = Skia.Color(config.volume.color);
 
@@ -737,11 +754,14 @@ class CandlestickChartManager {
       }
     }
 
+    const nativeCurrency = this.nativeCurrency.currency;
+    const isHyperliquidToken = this.isHyperliquidToken;
+
     let maxAfterDecimal = 0;
     let maxCharacters = 0;
 
     for (const price of newPrices) {
-      const formatted = formatPrice(price, this.nativeCurrency.currency);
+      const formatted = formatCandlestickPrice(price, nativeCurrency, isHyperliquidToken);
       const numeric = formatted.replace(/[^\d.]/g, '');
       const afterDecimal = numeric.split('.')[1]?.length ?? 0;
       maxAfterDecimal = Math.max(maxAfterDecimal, afterDecimal);
@@ -755,7 +775,10 @@ class CandlestickChartManager {
 
     this.maxYAxisLabelDecimals = maxAfterDecimal;
 
-    return this.config.chart.yAxisPaddingLeft + getYAxisLabelWidth(maxCharacters) + this.config.chart.yAxisPaddingRight;
+    const yAxisWidth = this.config.chart.yAxisPaddingLeft + getYAxisLabelWidth(maxCharacters) + this.config.chart.yAxisPaddingRight;
+    if (maxAfterDecimal === 0) return yAxisWidth + DECIMAL_WIDTH;
+
+    return yAxisWidth;
   }
 
   // ============ Chart Drawing Methods ======================================== //
@@ -839,17 +862,21 @@ class CandlestickChartManager {
     }
 
     const labelX = chartWidth - this.yAxisWidth + this.config.chart.yAxisPaddingLeft;
+    const nativeCurrency = this.nativeCurrency.currency;
+    const isHyperliquidToken = this.isHyperliquidToken;
+
     let labelHeight: number | undefined = undefined;
 
     for (let i = 0; i <= 3; i++) {
       const y = chartHeight * (i / 4) + 0.5;
       canvas.drawLine(0, y, chartWidth, y, this.paints.grid);
       if (!hasCandles) continue;
+
       // -- TODO: Simplify this
-      const formattedPrice = formatPrice(this.getPriceAtYPosition(y), this.nativeCurrency.currency);
-      const [integerPart, decimalPart = ''] = formattedPrice.split('.');
+      let newPrice = formatCandlestickPrice(this.getPriceAtYPosition(y), nativeCurrency, isHyperliquidToken);
+      const [integerPart, decimalPart = ''] = newPrice.split('.');
       const paddedDecimal = decimalPart.padEnd(this.maxYAxisLabelDecimals, '0').slice(0, this.maxYAxisLabelDecimals);
-      const newPrice = `${integerPart}.${paddedDecimal}`;
+      newPrice = paddedDecimal ? `${integerPart}.${paddedDecimal}` : integerPart;
 
       const paragraph = buildParagraph({
         color: this.colors.labelQuinary,
@@ -1152,8 +1179,9 @@ class CandlestickChartManager {
 
     if (didProvideRawPrice) {
       const maxDecimals = this.maxYAxisLabelDecimals;
-      const rawFormatted = formatPrice(priceOrLabel, this.nativeCurrency.currency);
-      const [integerPart, decimalPart = ''] = rawFormatted.split('.');
+      formattedPrice = formatCandlestickPrice(priceOrLabel, this.nativeCurrency.currency, this.isHyperliquidToken);
+
+      const [integerPart, decimalPart = ''] = formattedPrice.split('.');
       const paddedDecimal = decimalPart.padEnd(maxDecimals, '0').slice(0, maxDecimals);
       formattedPrice = maxDecimals > 0 ? `${integerPart}.${paddedDecimal}` : integerPart;
     } else {
@@ -1705,8 +1733,9 @@ function useCandlestickChart({
       isLoadingHistoricalCandles,
       maxDisplayedVolume,
       nativeCurrency,
+      token,
     });
-  });
+  }, true);
 
   const resetHistoricalFetchState = useCallback(
     (data: CandlestickResponse, previousData: CandlestickResponse) => {
@@ -1754,7 +1783,10 @@ function useCandlestickChart({
     useListen(useCandlestickStore, state => state.getData(), updateCandles, {
       equalityFn: isCandlestickDataEqual,
       fireImmediately: true,
-    })
+    }),
+    {
+      additionalRoutes: Routes.CLOSE_POSITION_BOTTOM_SHEET,
+    }
   );
 
   useListen(
@@ -1800,7 +1832,7 @@ function useCandlestickChart({
   useCleanup(() => {
     chartStatus.value = ChartStatus.Loaded;
     initialPicture.dispose();
-    executeOnUIRuntimeSync(() => {
+    runOnUI(() => {
       chartManager.value?.dispose?.();
       chartManager.value = undefined;
     })();
@@ -2243,8 +2275,12 @@ function prepareCandlestickData(): {
 }
 
 function getNativeCurrency(): { currency: NativeCurrencyKey; decimals: number } {
-  const currency = userAssetsStoreManager.getState().currency;
-  return { currency, decimals: supportedNativeCurrencies[currency].decimals };
+  const isHyperliquidChart = isHyperliquidToken(useChartsStore.getState().token);
+  const currency = isHyperliquidChart ? NativeCurrencyKeys.USD : userAssetsStoreManager.getState().currency;
+  return {
+    currency,
+    decimals: supportedNativeCurrencies[currency].decimals,
+  };
 }
 
 function getOpacityForStatus(status: ChartStatus): number {

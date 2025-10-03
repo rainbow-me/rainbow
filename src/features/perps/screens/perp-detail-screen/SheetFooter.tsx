@@ -27,7 +27,7 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
   const safeAreaInsets = useSafeAreaInsets();
 
   const hasPosition = useHyperliquidAccountStore(state => state.getPosition(market.symbol) !== undefined);
-  const hasPerpsBalance = useHyperliquidAccountStore(state => state.getBalance() !== '0');
+  const hasPerpsBalance = useHyperliquidAccountStore(state => Number(state.getBalance()) !== 0);
   const hasUserAssets = useUserAssetsStore(state => state.getFilteredUserAssetIds().length > 0);
 
   const { onPress, buttonText } = useMemo(() => {

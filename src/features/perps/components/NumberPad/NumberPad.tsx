@@ -4,31 +4,31 @@ import React from 'react';
 import Animated, { SharedValue, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { NumberPadField, NumberPadKey } from './NumberPadKey';
 
-export const CUSTOM_KEYBOARD_HEIGHT = 202;
+const BOTTOM_PADDING = 16;
+export const CUSTOM_KEYBOARD_HEIGHT = 202 + BOTTOM_PADDING;
 
 export type ValidationResult = {
   isValid: boolean;
   reason?: string;
 };
 
-export type NumberPadProps = {
-  activeFieldId: SharedValue<string>;
-  fields: SharedValue<Record<string, NumberPadField>>;
-  formattedValues?: SharedValue<Record<string, string>>;
-  onBeforeChange?: (fieldId: string, currentValue: string, newValue: string) => ValidationResult;
-  onValueChange?: (fieldId: string, newValue: string | number) => void;
+export type NumberPadProps<K extends string> = {
+  activeFieldId: SharedValue<K>;
+  fields: SharedValue<Record<K, NumberPadField>>;
+  formattedValues?: SharedValue<Record<K, string>>;
+  onBeforeChange?: (fieldId: K, currentValue: string, newValue: string) => ValidationResult;
+  onValueChange?: (fieldId: K, newValue: string | number) => void;
   onStaleStateChange?: (isStale: boolean) => void;
-  shouldMarkStale?: (fieldId: string, oldValue: string, newValue: string) => boolean;
+  shouldMarkStale?: (fieldId: K, oldValue: string, newValue: string) => boolean;
   onIntervalStop?: () => void;
   isVisible?: SharedValue<boolean>;
   height?: number;
   stripFormatting?: (value: string) => string;
 };
 
-export const NumberPad = ({
+export const NumberPad = <K extends string>({
   activeFieldId,
   fields,
-  formattedValues,
   onBeforeChange,
   onValueChange,
   onStaleStateChange,
@@ -37,7 +37,7 @@ export const NumberPad = ({
   isVisible,
   height = CUSTOM_KEYBOARD_HEIGHT,
   stripFormatting = (value: string) => value.replace(/[^0-9.-]/g, ''),
-}: NumberPadProps) => {
+}: NumberPadProps<K>) => {
   const longPressTimer = useSharedValue(0);
   const isStale = useSharedValue(false);
 
@@ -48,9 +48,6 @@ export const NumberPad = ({
     if (!field) return '0';
 
     const rawValue = String(field.value);
-    if (formattedValues?.value[fieldId]) {
-      return stripFormatting(formattedValues.value[fieldId]);
-    }
     return stripFormatting(rawValue);
   };
 
@@ -95,13 +92,10 @@ export const NumberPad = ({
       }
     }
 
-    fields.modify(currentFields => ({
-      ...currentFields,
-      [fieldId]: {
-        ...currentFields[fieldId],
-        value: newValue,
-      },
-    }));
+    fields.modify(currentFields => {
+      currentFields[fieldId].value = newValue;
+      return currentFields;
+    });
 
     if (onValueChange) {
       onValueChange(fieldId, newValue);

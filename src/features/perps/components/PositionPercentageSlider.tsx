@@ -2,29 +2,26 @@ import React, { memo, useCallback } from 'react';
 import { AnimatedText, Box, Text, useColorMode } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { INPUT_CARD_HEIGHT, SLIDER_WIDTH } from '@/features/perps/constants';
-import { SharedValue, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { Slider } from '@/features/perps/components/Slider';
 import * as i18n from '@/languages';
+import { SharedValue, useDerivedValue } from 'react-native-reanimated';
+import { Slider, SliderChangeSource } from '@/features/perps/components/Slider';
 
-const PercentageSlider = ({
-  sliderXPosition,
-  onPercentageChange,
-  onPercentageUpdate,
+const ProgressSlider = ({
+  progressValue,
+  onProgressSettleWorklet,
   width,
 }: {
-  sliderXPosition: SharedValue<number>;
-  onPercentageChange?: (percentage: number) => void;
-  onPercentageUpdate?: (percentage: number) => void;
+  progressValue: SharedValue<number>;
+  onProgressSettleWorklet?: (progress: number, source: SliderChangeSource) => void;
   width: number;
 }) => {
   const { accentColors } = usePerpsAccentColorContext();
 
   return (
     <Slider
-      sliderXPosition={sliderXPosition}
+      progressValue={progressValue}
       colors={accentColors.slider}
-      onPercentageChange={onPercentageChange}
-      onPercentageUpdate={onPercentageUpdate}
+      onProgressSettleWorklet={onProgressSettleWorklet}
       width={width}
       height={10}
       expandedHeight={14}
@@ -35,33 +32,32 @@ const PercentageSlider = ({
 type PositionPercentageSliderProps = {
   title: string;
   totalValue: string;
-  percentageValue: SharedValue<number>;
+  progressValue: SharedValue<number>;
   sliderWidth?: number;
 };
 
 export const PositionPercentageSlider = memo(function PositionPercentageSlider({
   title,
   totalValue,
-  percentageValue,
+  progressValue,
   sliderWidth = SLIDER_WIDTH,
 }: PositionPercentageSliderProps) {
   const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
-  const sliderXPosition = useSharedValue(percentageValue.value * sliderWidth);
 
   const displayValue = useDerivedValue(() => {
-    return `${Math.round((sliderXPosition.value / sliderWidth) * 100)}%`;
+    return `${Math.round(progressValue.value)}%`;
   });
 
-  const onPercentageChange = useCallback(
-    (percentage: number) => {
+  const handleProgressSettle = useCallback(
+    (progress: number) => {
       'worklet';
-      const roundedPercentage = Math.round(percentage * 100);
-      if (roundedPercentage !== Math.round(percentageValue.value * 100)) {
-        percentageValue.value = percentage;
+      const rounded = Math.round(progress);
+      if (rounded !== Math.round(progressValue.value)) {
+        progressValue.value = rounded;
       }
     },
-    [percentageValue]
+    [progressValue]
   );
 
   return (
@@ -93,12 +89,7 @@ export const PositionPercentageSlider = memo(function PositionPercentageSlider({
           {displayValue}
         </AnimatedText>
       </Box>
-      <PercentageSlider
-        onPercentageChange={onPercentageChange}
-        onPercentageUpdate={onPercentageChange}
-        sliderXPosition={sliderXPosition}
-        width={sliderWidth}
-      />
+      <ProgressSlider progressValue={progressValue} onProgressSettleWorklet={handleProgressSettle} width={sliderWidth} />
     </Box>
   );
 });

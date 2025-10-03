@@ -1,7 +1,8 @@
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, Cover, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Box, Cover, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText, SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
 import { IS_IOS } from '@/env';
 import { HYPERLIQUID_COLORS } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -70,75 +71,86 @@ export const PerpsSwapButton = ({
   disabled,
   disabledOpacity = 0.4,
 }: {
-  label: string;
+  label: SharedOrDerivedValueText | string;
   style?: ViewStyle;
   testID?: string;
   onLongPress: () => void;
-  disabled?: boolean;
+  disabled?: boolean | SharedValue<boolean>;
   disabledOpacity?: number;
 }) => {
   const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
   const labelColor = useForegroundColor('label');
   const holdProgress = useSharedValue(0);
-  const containerStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(disabled ? disabledOpacity : 1, TIMING_CONFIGS.slowerFadeConfig),
-  }));
+
+  const containerStyle = useAnimatedStyle(() => {
+    if (typeof disabled === 'object') {
+      return {
+        opacity: withTiming(disabled.value ? disabledOpacity : 1, TIMING_CONFIGS.slowerFadeConfig),
+        pointerEvents: disabled.value ? 'none' : 'auto',
+      };
+    }
+    return {
+      opacity: withTiming(disabled ? disabledOpacity : 1, TIMING_CONFIGS.slowerFadeConfig),
+    };
+  });
+
   return (
-    <GestureHandlerButton
-      testID={testID}
-      longPressDuration={HOLD_TO_SWAP_DURATION_MS}
-      onLongPressJS={onLongPress}
-      style={style}
-      scaleTo={0.9}
-      disabled={disabled}
-      onLongPressEndWorklet={success => {
-        'worklet';
-        if (!success) {
-          holdProgress.value = withSpring(0, SPRING_CONFIGS.slowSpring);
-        }
-      }}
-      onLongPressWorklet={() => {
-        'worklet';
-        triggerHaptics('notificationSuccess');
-      }}
-      onPressStartWorklet={() => {
-        'worklet';
-        holdProgress.value = 0;
-        holdProgress.value = withTiming(100, { duration: HOLD_TO_SWAP_DURATION_MS, easing: Easing.inOut(Easing.sin) }, isFinished => {
-          if (isFinished) {
-            holdProgress.value = 0;
+    <Animated.View style={containerStyle}>
+      <GestureHandlerButton
+        testID={testID}
+        longPressDuration={HOLD_TO_SWAP_DURATION_MS}
+        onLongPressJS={onLongPress}
+        style={style}
+        scaleTo={0.9}
+        disabled={typeof disabled === 'boolean' ? disabled : undefined}
+        onLongPressEndWorklet={success => {
+          'worklet';
+          if (!success) {
+            holdProgress.value = withSpring(0, SPRING_CONFIGS.slowSpring);
           }
-        });
-      }}
-    >
-      <Box
-        as={Animated.View}
-        style={containerStyle}
-        borderRadius={24}
-        height={48}
-        justifyContent={'center'}
-        alignItems={'center'}
-        borderWidth={isDarkMode ? 2 : 0}
-        borderColor={{ custom: opacityWorklet(labelColor, 0.16) }}
+        }}
+        onLongPressWorklet={() => {
+          'worklet';
+          triggerHaptics('notificationSuccess');
+        }}
+        onPressStartWorklet={() => {
+          'worklet';
+          holdProgress.value = 0;
+          holdProgress.value = withTiming(100, { duration: HOLD_TO_SWAP_DURATION_MS, easing: Easing.inOut(Easing.sin) }, isFinished => {
+            if (isFinished) {
+              holdProgress.value = 0;
+            }
+          });
+        }}
       >
-        {isDarkMode && (
-          <>
-            <LinearGradient
-              colors={accentColors.gradient}
-              style={StyleSheet.absoluteFillObject}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            />
-            <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000', opacity: 0.12 }]} />
-          </>
-        )}
-        {!isDarkMode && <View style={[StyleSheet.absoluteFillObject, { backgroundColor: accentColors.opacity100 }]} />}
-        <HoldProgress holdProgress={holdProgress} color={HYPERLIQUID_COLORS.green} />
-        <Text size="20pt" weight={'black'} color={isDarkMode ? 'black' : 'white'}>
-          {label}
-        </Text>
-      </Box>
-    </GestureHandlerButton>
+        <Box
+          as={Animated.View}
+          borderRadius={24}
+          height={48}
+          justifyContent={'center'}
+          alignItems={'center'}
+          borderWidth={isDarkMode ? 2 : 0}
+          borderColor={{ custom: opacityWorklet(labelColor, 0.16) }}
+        >
+          {isDarkMode && (
+            <>
+              <LinearGradient
+                colors={accentColors.gradient}
+                style={StyleSheet.absoluteFillObject}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              />
+              <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000', opacity: 0.12 }]} />
+            </>
+          )}
+          {!isDarkMode && <View style={[StyleSheet.absoluteFillObject, { backgroundColor: accentColors.opacity100 }]} />}
+          <HoldProgress holdProgress={holdProgress} color={HYPERLIQUID_COLORS.green} />
+          <AnimatedText size="20pt" weight={'black'} color={isDarkMode ? 'black' : 'white'}>
+            {label}
+          </AnimatedText>
+        </Box>
+      </GestureHandlerButton>
+    </Animated.View>
   );
 };

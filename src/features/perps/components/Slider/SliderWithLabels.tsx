@@ -2,9 +2,9 @@ import React, { useCallback, useRef } from 'react';
 import { View } from 'react-native';
 import Animated, {
   SharedValue,
-  runOnJS,
   useAnimatedStyle,
   useDerivedValue,
+  useSharedValue,
   withRepeat,
   withSequence,
   withSpring,
@@ -15,46 +15,55 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { opacity } from '@/__swaps__/utils/swaps';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { pulsingConfig } from '@/__swaps__/screens/Swap/constants';
-import { Slider, SliderProps, SliderChangeSource, SliderVisualState, SLIDER_DEFAULT_WIDTH } from './Slider';
+import { Slider, SliderProps, SliderVisualState, SLIDER_DEFAULT_WIDTH } from './Slider';
 
-export interface SliderLabels {
+export type SliderLabels = {
   title?: string | SharedValue<string>;
   disabledText?: string;
   maxButtonText?: string;
-}
+};
 
-export interface SliderWithLabelsProps extends SliderProps {
+export type SliderWithLabelsProps = SliderProps & {
   labels?: SliderLabels | SharedValue<SliderLabels>;
-  showPercentage?: boolean;
-  percentageFormatter?: (percentage: number, isEnabled: boolean) => string;
-  onMaxPress?: () => void;
+  formatPercentageWorklet?: (percentage: number, isEnabled: boolean) => string;
+  onPressMaxWorklet?: () => void;
   showMaxButton?: boolean;
+  showPercentage?: boolean;
   maxButtonColor?: string | SharedValue<string>;
   icon?: React.ReactNode;
   visualState?: SliderVisualState | SharedValue<SliderVisualState>;
-}
+  /**
+   * Initial progress used when a shared value is not provided.
+   */
+};
 
 export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
-  sliderXPosition,
+  progressValue: externalProgressValue,
+  initialProgress = 0,
   isEnabled: isEnabledProp = true,
   visualState: visualStateProp = 'idle',
   colors,
   height,
   width = SLIDER_DEFAULT_WIDTH,
   snapPoints,
-  onPercentageChange: onPercentageChangeProp,
-  onPercentageUpdate,
+  onGestureUpdateWorklet,
+  onProgressSettleWorklet,
+  gestureState,
+  onGestureBeginWorklet,
   containerStyle,
   labels = {},
   showPercentage = true,
-  percentageFormatter,
-  onMaxPress,
+  formatPercentageWorklet,
+  onPressMaxWorklet,
   showMaxButton = true,
   maxButtonColor,
   icon,
 }) => {
   const { isDarkMode } = useColorMode();
   const maxButtonRef = useRef(undefined);
+
+  const internalProgressValue = useSharedValue(initialProgress);
+  const progressValue = externalProgressValue || internalProgressValue;
 
   const labelSecondary = useForegroundColor('labelSecondary');
   const zeroAmountColor = opacity(labelSecondary, 0.2);
@@ -77,13 +86,6 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
     return labels;
   });
 
-  // Calculate percentage from slider position
-  const xPercentage = useDerivedValue(() => {
-    const sliderWidth = width || 287; // Default SLIDER_WIDTH
-    const scrubberWidth = 12; // SCRUBBER_WIDTH
-    return Math.max(0, Math.min(1, (sliderXPosition.value - scrubberWidth / sliderWidth) / sliderWidth));
-  });
-
   // Format percentage text
   const percentageText = useDerivedValue(() => {
     if (!showPercentage) return '';
@@ -92,11 +94,11 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
       return labelsValue.value.disabledText || 'Disabled';
     }
 
-    if (percentageFormatter) {
-      return percentageFormatter(xPercentage.value, isEnabled.value);
+    if (formatPercentageWorklet) {
+      return formatPercentageWorklet(progressValue.value, isEnabled.value);
     }
 
-    return `${Math.round(xPercentage.value * 100)}%`;
+    return `${Math.round(progressValue.value)}%`;
   });
 
   const pulsingOpacity = useDerivedValue(() => {
@@ -107,7 +109,7 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
 
   const percentageTextStyle = useAnimatedStyle(() => {
     const isProcessing = visualState.value === 'processing';
-    const useDimColor = !isEnabled.value || isProcessing || sliderXPosition.value === 0;
+    const useDimColor = !isEnabled.value || isProcessing || Math.round(progressValue.value) === 0;
 
     return {
       color: withTiming(useDimColor ? zeroAmountColor : labelSecondary, TIMING_CONFIGS.slowFadeConfig),
@@ -125,25 +127,16 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
 
   const titleLabelStyle = useAnimatedStyle(() => ({ marginRight: isEnabled.value ? 3 : 0 }));
 
-  // Wrap onPercentageChange to handle max button press
-  const onPercentageChange = useCallback(
-    (percentage: number, source: SliderChangeSource) => {
-      'worklet';
-      onPercentageChangeProp?.(percentage, source);
-    },
-    [onPercentageChangeProp]
-  );
-
-  const handleMaxPress = () => {
+  const handleMaxPress = useCallback(() => {
     'worklet';
     if (!isEnabled.value) return;
 
-    if (onMaxPress) {
-      runOnJS(onMaxPress)();
-    }
-    runOnJS(onPercentageChange)(1, 'max-button');
-    sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig);
-  };
+    if (onPressMaxWorklet) onPressMaxWorklet();
+    progressValue.value = withSpring(100, SPRING_CONFIGS.snappySpringConfig, () => {
+      'worklet';
+      onProgressSettleWorklet?.(100, 'max-button');
+    });
+  }, [isEnabled, onPressMaxWorklet, onProgressSettleWorklet, progressValue]);
 
   return (
     <Animated.View style={containerStyle}>
@@ -177,15 +170,18 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
           </Columns>
         </View>
         <Slider
-          sliderXPosition={sliderXPosition}
+          progressValue={progressValue}
+          initialProgress={initialProgress}
           isEnabled={isEnabledProp}
           colors={colors}
           height={height}
           expandedHeight={height}
           width={width}
           snapPoints={snapPoints}
-          onPercentageChange={onPercentageChange}
-          onPercentageUpdate={onPercentageUpdate}
+          onGestureUpdateWorklet={onGestureUpdateWorklet}
+          onProgressSettleWorklet={onProgressSettleWorklet}
+          gestureState={gestureState}
+          onGestureBeginWorklet={onGestureBeginWorklet}
         />
       </Animated.View>
     </Animated.View>

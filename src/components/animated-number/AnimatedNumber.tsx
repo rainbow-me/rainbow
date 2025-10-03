@@ -23,7 +23,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { EasingGradient } from '../easing-gradient/EasingGradient';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { disableForTestingEnvironment } from '../animations/animationConfigs';
+import { buildTestSafeConfig } from '@/components/animations/animationConfigs';
 import { measureTextSync } from '@/utils/measureText';
 import { useIsFirstRender } from '@/hooks/useIsFirstRender';
 import { usePrevious } from '@/hooks';
@@ -53,7 +53,10 @@ function customEasing(t: number) {
   return EASING_KEYFRAMES[i] + (EASING_KEYFRAMES[j] - EASING_KEYFRAMES[i]) * localT;
 }
 
-const DEFAULT_TIMING_CONFIG = disableForTestingEnvironment({ duration: DEFAULT_ANIMATION_DURATION, easing: customEasing });
+export const DEFAULT_TIMING_CONFIG = buildTestSafeConfig({
+  duration: DEFAULT_ANIMATION_DURATION,
+  easing: customEasing,
+});
 
 type NumberPartType = 'integer' | 'separator' | 'prefix' | 'suffix';
 

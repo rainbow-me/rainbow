@@ -1,8 +1,9 @@
 import { TextColor } from '@/design-system/color/palettes';
-import { abs, add, divide, greaterThan, isEqual, isZero, multiply, subtract } from '@/helpers/utilities';
+import { USD_DECIMALS } from '@/features/perps/constants';
 import { PerpsPosition } from '@/features/perps/types';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { toFixedWorklet } from '@/safe-math/SafeMath';
+import { abs, add, divide, greaterThan, isEqual, isZero, multiply, subtract } from '@/helpers/utilities';
+import { toFixedWorklet, truncateToDecimals } from '@/safe-math/SafeMath';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { PERPS_EMPTY_ACCOUNT_DATA, useHyperliquidAccountStore } from '../hyperliquidAccountStore';
 
@@ -57,7 +58,7 @@ export const usePerpsPositionsInfo = createDerivedStore<PerpsPositionsInfo>(
     const unrealizedPnlPercent = toFixedWorklet(initialMargin === '0' ? '0' : multiply(divide(totalPositionsPnl, initialMargin), 100), 2);
 
     return {
-      balance: accountData.balance,
+      balance: truncateToDecimals(accountData.balance, USD_DECIMALS),
       equity: formatCurrency(totalPositionsEquity),
       hasBalance: !isZero(accountData.balance),
       hasPositions: positions.length > 0,

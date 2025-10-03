@@ -19,7 +19,7 @@ export function InputValueCaret({
 }: {
   disabled?: SharedValue<boolean>;
   value: SharedValue<string>;
-  color: string;
+  color: string | SharedValue<string>;
 }) {
   const shouldShow = useDerivedValue(() => {
     return !disabled?.value;
@@ -55,7 +55,7 @@ export function InputValueCaret({
 
   const assetCaretStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: color,
+      backgroundColor: typeof color === 'string' ? color : color.value,
     };
   });
 

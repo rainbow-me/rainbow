@@ -8,7 +8,7 @@ import { createDerivedStore } from '@/state/internal/createDerivedStore';
 
 export const useHasPositionCheck = createDerivedStore(
   $ => {
-    const positions = $(useHyperliquidAccountStore, state => state.getPositions(), didActivePositionsChange);
+    const positions = $(useHyperliquidAccountStore, s => s.getPositions(), areActivePositionsEqual);
     const isNewPositionSearchActive = $(usePerpsNavigationStore, checkSearchScreenParams);
 
     const hasPositions = Object.keys(positions).length > 0;
@@ -27,10 +27,10 @@ function checkSearchScreenParams(state: VirtualNavigationStore<PerpsRoute>): boo
   return !params || params.type === 'newPosition';
 }
 
-function didActivePositionsChange(currentPositions: Record<string, PerpsPosition>, prevPositions: Record<string, PerpsPosition>): boolean {
+function areActivePositionsEqual(currentPositions: Record<string, PerpsPosition>, prevPositions: Record<string, PerpsPosition>): boolean {
   return (
-    Object.keys(currentPositions).length !== Object.keys(prevPositions).length ||
-    Object.keys(currentPositions).some(symbol => currentPositions[symbol] !== prevPositions[symbol])
+    Object.keys(currentPositions).length === Object.keys(prevPositions).length &&
+    Object.keys(currentPositions).every(symbol => currentPositions[symbol] === prevPositions[symbol])
   );
 }
 

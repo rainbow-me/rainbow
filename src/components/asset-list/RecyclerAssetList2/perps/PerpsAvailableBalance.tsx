@@ -13,23 +13,25 @@ import * as i18n from '@/languages';
 
 type PerpsAvailableBalanceProps = {
   balance: string;
+  isDarkMode: boolean;
 };
 
-export const PerpsAvailableBalance = memo(function PerpsAvailableBalance({ balance }: PerpsAvailableBalanceProps) {
-  const color = opacityWorklet(USDC_COLORS.primary, 0.06);
+export const PerpsAvailableBalance = memo(function PerpsAvailableBalance({ balance, isDarkMode }: PerpsAvailableBalanceProps) {
+  const backgroundColor = opacityWorklet(USDC_COLORS.primary, isDarkMode ? 0.06 : 0.03);
+  const borderColor = opacityWorklet(USDC_COLORS.primary, isDarkMode ? 0.06 : 0.02);
 
   return (
     <Box paddingHorizontal="20px">
       <ButtonPressAnimation onPress={navigateToPerps} scaleTo={0.96} style={{ marginLeft: -4 }}>
         <GradientBorderView
-          borderGradientColors={[color, 'transparent']}
+          borderGradientColors={[borderColor, 'transparent']}
           start={{ x: 0.2, y: 0 }}
           end={{ x: 1, y: 0 }}
           borderRadius={14}
           style={{ height: 36, overflow: 'hidden' }}
         >
           <LinearGradient
-            colors={[color, 'transparent']}
+            colors={[backgroundColor, 'transparent']}
             style={StyleSheet.absoluteFillObject}
             start={{ x: 0.2, y: 0 }}
             end={{ x: 1, y: 0 }}
