@@ -38,6 +38,7 @@ import { INITIAL_SLIDER_PROGRESS } from '@/features/perps/screens/perps-deposit-
 import { computeMaxSwappableAmount } from '@/features/perps/screens/perps-deposit-withdraw-screen/stores/createPerpsDepositStore';
 import { sanitizeAmount } from '@/worklets/strings';
 import { amountFromSliderProgress } from '@/features/perps/screens/perps-deposit-withdraw-screen/shared/worklets';
+import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 
 const enum NavigationSteps {
   INPUT_ELEMENT_FOCUSED = 0,
@@ -252,6 +253,7 @@ const DepositInput = ({ inputProgress }: { inputProgress: SharedValue<number> })
                 handleSelectAsset(token);
               }}
             />
+            <DecoyScrollView />
           </TokenListOverlay>
         ),
         [handleSelectAsset, inputProgress]
