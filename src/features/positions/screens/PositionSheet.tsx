@@ -97,7 +97,7 @@ export const PositionSheet: React.FC = () => {
                         {capitalize(position.dapp.name.replaceAll('-', ' '))}
                       </Text>
                       <Text size="26pt" weight="heavy" color="label" numberOfLines={1}>
-                        {position.totals.totals.display}
+                        {position.totals.total.display}
                       </Text>
                     </Stack>
                   </Inline>

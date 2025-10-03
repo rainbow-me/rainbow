@@ -202,7 +202,7 @@ const withPositionsSection = (positions: RainbowPositions | null, isLoadingUserA
     {
       type: CellType.POSITIONS_HEADER,
       uid: 'positions-header',
-      total: positions.totals?.totals?.display,
+      total: positions.totals?.total?.display,
     },
     ...positionSectionItems,
   ];
