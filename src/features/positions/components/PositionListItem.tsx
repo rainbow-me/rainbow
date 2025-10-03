@@ -9,7 +9,6 @@ import {
 import { NativeDisplay, PositionAsset } from '@/features/positions/types';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ButtonPressAnimation } from '@/components/animations';
 
@@ -26,8 +25,7 @@ type Props = {
 export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, native, positionColor, dappVersion, onPress }) => {
   const theme = useTheme();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const chainId = useBackendNetworksStore.getState().getChainsIdByName()[asset.network];
-  const { data: externalAsset } = useExternalToken({ address: asset.address, chainId, currency: nativeCurrency });
+  const { data: externalAsset } = useExternalToken({ address: asset.address, chainId: asset.chain_id, currency: nativeCurrency });
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
@@ -37,7 +35,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
     <Columns space={'10px'}>
       <Column width={'content'}>
         <RainbowCoinIcon
-          chainId={chainId}
+          chainId={asset.chain_id}
           color={externalAsset?.colors?.primary || externalAsset?.colors?.fallback || undefined}
           icon={externalAsset?.icon_url}
           symbol={asset.symbol}
