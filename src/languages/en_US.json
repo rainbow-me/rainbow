@@ -1713,15 +1713,15 @@
         "title": "Perps",
         "steps": {
           "step_1": {
-            "title_parts": ["Introducing Perps"],
+            "title_parts": ["Perpetual Futures"],
             "subtitle_parts": [
-              "Trade on price movements. Open and close positions whenever you want—no expiration. Powered by Hyperliquid."
+              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
             ]
           },
           "step_2": {
             "title_parts": ["Go", "Long", "or", "Short"],
             "subtitle_parts": [
-              "Long when you think the price will rise. Short when you think it'll fall. Profit whether the market goes up or down."
+              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
             ]
           },
           "step_3": {
