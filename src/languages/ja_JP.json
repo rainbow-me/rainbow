@@ -707,14 +707,18 @@
           "website": "ウェブサイト",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "X (Twitter)",
+          "twitter": "Ｘ（ツイッター）",
           "farcaster": "Farcaster",
           "other": "その他",
-          "search_on_twitter": "Search on X"
+          "search_on_twitter": "Xで検索"
         },
         "uniswap_liquidity": "ユニスワップ流動性",
         "value": "価値",
         "volume_24_hours": "24時間のボリューム",
+        "liquidity_cap_disclaimer": {
+          "value_lower_than": "次の値よりも低い",
+          "due_to_low_liquidity": "流動性の低下により"
+        },
         "menu": {
           "view_on": "%{blockExplorerName}で表示する",
           "share": "共有する",
@@ -922,7 +926,7 @@
         "toast_removed_from_showcase": "ショーケースから削除されました",
         "refreshing": "メタデータを更新中...",
         "reported": "スパムとして報告されました",
-        "twitter": "X (Twitter)",
+        "twitter": "Ｘ（ツイッター）",
         "view_all_with_property": "プロパティですべて表示",
         "view_collection": "コレクションを表示",
         "view_on_marketplace": "マーケットプレースで表示...",
@@ -957,7 +961,7 @@
       "poolboy_title": "アンロック\nRainbow Poolboy!",
       "adworld_description": "Rainbow World Citizenとして、特別版のAdWorld x Rainbowアプリアイコンをアンロックできます。",
       "adworld_title": "ウェルカムトゥレインボーワールド！",
-      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
+      "farcaster_description": "Farcasterのシンプルなミニマリズムに触発された、最も退屈なアプリアイコン。",
       "farcaster_title": "アンロック\nRainbowcast",
       "redacted_description": "真のGdupi愛好者のための独占的なRainbowアイコン。",
       "redacted_title": "ロック解除されました\nRedacted Rainbow",
@@ -1800,7 +1804,7 @@
         "skip": "スキップ",
         "snapchat": "スナップチャット",
         "telegram": "Telegram",
-        "twitter": "X (Twitter)",
+        "twitter": "Ｘ（ツイッター）",
         "upload_photo": "写真をアップロード",
         "uploading": "アップロード中",
         "username_placeholder": "ユーザー名",
@@ -2156,7 +2160,7 @@
       "done": "完了",
       "feedback_and_reports": "Feedback & Bug Reports",
       "feedback_and_support": "Feedback and Support",
-      "follow_us_on_twitter": "Follow us on X",
+      "follow_us_on_twitter": "Xでフォローする",
       "hey_friend_message": "👋️ Hey friend! Rainbowをダウンロードするべきです。これは私のお気に入りのイーサリアムウォレットです 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "設定",
       "language": "Language",
@@ -3394,7 +3398,7 @@
       },
       "links": {
         "x": {
-          "name": "X (Twitter)",
+          "name": "Ｘ（ツイッター）",
           "placeholder": "ユーザー名"
         },
         "telegram": {
