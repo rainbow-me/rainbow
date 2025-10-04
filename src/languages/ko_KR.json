@@ -707,14 +707,18 @@
           "website": "웹사이트",
           "reddit": "레딧",
           "telegram": "텔레그램",
-          "twitter": "X (Twitter)",
+          "twitter": "X/트위터)",
           "farcaster": "Farcaster",
           "other": "기타",
-          "search_on_twitter": "Search on X"
+          "search_on_twitter": "X에서 검색"
         },
         "uniswap_liquidity": "유니스wap 유동성",
         "value": "가치",
         "volume_24_hours": "24시간 거래량",
+        "liquidity_cap_disclaimer": {
+          "value_lower_than": "가치가 다음보다 낮습니다.",
+          "due_to_low_liquidity": "􀇿 유동성이 낮아서"
+        },
         "menu": {
           "view_on": "%{blockExplorerName}에서 보기",
           "share": "공유",
@@ -922,7 +926,7 @@
         "toast_removed_from_showcase": "쇼케이스에서 제거됨",
         "refreshing": "메타데이터 새로 고침 중...",
         "reported": "스팸으로 신고됨",
-        "twitter": "X (Twitter)",
+        "twitter": "X/트위터)",
         "view_all_with_property": "속성을 가진 모든 것 보기",
         "view_collection": "컬렉션 보기",
         "view_on_marketplace": "마켓플레이스에서 보기...",
@@ -957,7 +961,7 @@
       "poolboy_title": "잠금 해제\nRainbow Poolboy!",
       "adworld_description": "Rainbow World Citizen으로서 이제 특별판 AdWorld x Rainbow 앱 아이콘을 잠금 해제할 수 있습니다.",
       "adworld_title": "Rainbow World에 오신 것을 환영합니다!",
-      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
+      "farcaster_description": "Warpcast의 밋밋한 미니멀리즘에서 영감을 받은 가장 지루한 앱 아이콘입니다.",
       "farcaster_title": "잠금 해제\nRainbowcast",
       "redacted_description": "진정한 Gdupi 애호가를 위한 stupi 전용 Rainbow 아이콘입니다.",
       "redacted_title": "잠금 해제 완료\nRedacted Rainbow",
@@ -1800,7 +1804,7 @@
         "skip": "건너뛰기",
         "snapchat": "스냅챗",
         "telegram": "텔레그램",
-        "twitter": "X (Twitter)",
+        "twitter": "X/트위터)",
         "upload_photo": "사진 업로드",
         "uploading": "업로드 중",
         "username_placeholder": "사용자 이름",
@@ -2156,7 +2160,7 @@
       "done": "완료",
       "feedback_and_reports": "피드백 및 버그 보고",
       "feedback_and_support": "피드백 및 지원",
-      "follow_us_on_twitter": "Follow us on X",
+      "follow_us_on_twitter": "X에서 팔로우하기",
       "hey_friend_message": "👋️ 안녕 친구! 이더리움 지갑인 레인보우를 다운로드 받아야 해, 내가 가장 좋아하는 거야 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "설정",
       "language": "언어",
@@ -3394,7 +3398,7 @@
       },
       "links": {
         "x": {
-          "name": "X (Twitter)",
+          "name": "X/트위터)",
           "placeholder": "사용자 이름"
         },
         "telegram": {
