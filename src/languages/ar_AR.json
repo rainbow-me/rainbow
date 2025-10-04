@@ -707,14 +707,18 @@
           "website": "الموقع الإلكتروني",
           "reddit": "رديت",
           "telegram": "تيليجرام",
-          "twitter": "X (Twitter)",
+          "twitter": "X/تويتر)",
           "farcaster": "فاركاستر",
           "other": "آخر",
-          "search_on_twitter": "Search on X"
+          "search_on_twitter": "بحث على X"
         },
         "uniswap_liquidity": "سيولة يونيسواب",
         "value": "القيمة",
         "volume_24_hours": "الحجم في 24 ساعة",
+        "liquidity_cap_disclaimer": {
+          "value_lower_than": "القيمة أقل من",
+          "due_to_low_liquidity": "بسبب السيولة المنخفضة"
+        },
         "menu": {
           "view_on": "اعرض على %{blockExplorerName}",
           "share": "شارك",
@@ -922,7 +926,7 @@
         "toast_removed_from_showcase": "تم الإزالة من العرض",
         "refreshing": "تحديث البيانات الوصفية...",
         "reported": "تم الإبلاغ عنه كرسالة غير مرغوب فيها",
-        "twitter": "X (Twitter)",
+        "twitter": "X/تويتر)",
         "view_all_with_property": "عرض الكل بالخاصية",
         "view_collection": "عرض المجموعة",
         "view_on_marketplace": "عرض على السوق...",
@@ -957,7 +961,7 @@
       "poolboy_title": "لقد قمت بفتح\nRainbow Poolboy!",
       "adworld_description": "باعتبارك أحد مواطني Rainbow World، يمكنك الآن فتح أيقونة تطبيق AdWorld x Rainbow إصدار خاص.",
       "adworld_title": "مرحبًا بك في Rainbow World!",
-      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
+      "farcaster_description": "أيقونة تطبيقنا الأكثر مللاً على الإطلاق، مستوحاة من البساطة الباهتة لـ Farcaster.",
       "farcaster_title": "لقد قمت بفتح\nRainbowcast",
       "redacted_description": "أيقونة قوس قزح حصرية لـ stupi لمحبي Gdupi الحقيقيين.",
       "redacted_title": "لقد فتحت\nقوس قزح المكمم",
@@ -1800,7 +1804,7 @@
         "skip": "تخطي",
         "snapchat": "سناب شات",
         "telegram": "تيليجرام",
-        "twitter": "X (Twitter)",
+        "twitter": "X/تويتر)",
         "upload_photo": "تحميل صورة",
         "uploading": "جارٍ الرفع",
         "username_placeholder": "اسم المستخدم",
@@ -2156,7 +2160,7 @@
       "done": "تم",
       "feedback_and_reports": "الملاحظات وتقارير الأخطاء",
       "feedback_and_support": "التعليقات والدعم",
-      "follow_us_on_twitter": "Follow us on X",
+      "follow_us_on_twitter": "تابعنا على X",
       "hey_friend_message": "👋️ مرحبا صديقي! يجب أن تقوم بتنزيل Rainbow، فهو المحفظة المفضلة لدي في Ethereum 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "الإعدادات",
       "language": "اللغة",
@@ -3394,7 +3398,7 @@
       },
       "links": {
         "x": {
-          "name": "X (Twitter)",
+          "name": "X/تويتر)",
           "placeholder": "اسم المستخدم"
         },
         "telegram": {
