@@ -715,6 +715,10 @@
         "uniswap_liquidity": "Uniswap liquidity",
         "value": "Value",
         "volume_24_hours": "24h volume",
+        "liquidity_cap_disclaimer": {
+          "value_lower_than": "Value is lower than",
+          "due_to_low_liquidity": "due to low liquidity"
+        },
         "menu": {
           "view_on": "View on %{blockExplorerName}",
           "share": "Share",

@@ -258,7 +258,7 @@ export function removeSubscribedToken({ route, tokenId }: { route: string; token
   removeSubscribedTokens({ route, tokenIds: [tokenId] });
 }
 
-export function getBalance({
+export function getLiquidityCappedBalance({
   token,
   balanceAmount,
   nativeCurrency,
@@ -266,12 +266,25 @@ export function getBalance({
   token: TokenData;
   balanceAmount: string;
   nativeCurrency: SupportedCurrencyKey;
-}): string {
+}): {
+  balance: string;
+  isCapped: boolean;
+} {
+  const liquidityCap = token.reliability?.metadata?.liquidityCap ?? '';
   const balance = multiply(token.price, balanceAmount);
-  if (greaterThan(balance, token.reliability.metadata.liquidityCap)) {
-    return convertAmountToNativeDisplayWorklet(token.reliability.metadata.liquidityCap, nativeCurrency);
+
+  if (liquidityCap !== '' && greaterThan(balance, liquidityCap)) {
+    const cappedDisplay = convertAmountToNativeDisplayWorklet(liquidityCap, nativeCurrency);
+    return {
+      balance: cappedDisplay,
+      isCapped: true,
+    };
   }
 
   const { display } = convertAmountAndPriceToNativeDisplay(balanceAmount, token.price, nativeCurrency);
-  return display;
+
+  return {
+    balance: display,
+    isCapped: false,
+  };
 }
