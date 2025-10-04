@@ -707,14 +707,18 @@
           "website": "网站",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "X (Twitter)",
+          "twitter": "X（推特）",
           "farcaster": "Farcaster",
           "other": "其他",
-          "search_on_twitter": "Search on X"
+          "search_on_twitter": "在X上搜索"
         },
         "uniswap_liquidity": "Uniswap 流动性",
         "value": "价值",
         "volume_24_hours": "24小时交易量",
+        "liquidity_cap_disclaimer": {
+          "value_lower_than": "数值低于",
+          "due_to_low_liquidity": "由于流动性低"
+        },
         "menu": {
           "view_on": "在 %{blockExplorerName}查看",
           "share": "分享",
@@ -922,7 +926,7 @@
         "toast_removed_from_showcase": "从展示架中移除",
         "refreshing": "正在刷新元数据...",
         "reported": "报告为垃圾邮件",
-        "twitter": "X (Twitter)",
+        "twitter": "X（推特）",
         "view_all_with_property": "查看所有带有属性的",
         "view_collection": "查看集合",
         "view_on_marketplace": "在市场上查看...",
@@ -957,7 +961,7 @@
       "poolboy_title": "你已解锁\nRainbow Poolboy!",
       "adworld_description": "作为Rainbow世界公民，您现在可以解锁特别版\nAdWorld x Rainbow应用图标。",
       "adworld_title": "欢迎来到Rainbow世界！",
-      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
+      "farcaster_description": "我们最无聊的应用图标，灵感来自Farcaster的极简风。",
       "farcaster_title": "你已解锁\nRainbowcast",
       "redacted_description": "一个专属的 Rainbow 图标，供真正的 Gdupi 爱好者使用。",
       "redacted_title": "您已解锁\n Redacted Rainbow",
@@ -1800,7 +1804,7 @@
         "skip": "跳过",
         "snapchat": "Snapchat",
         "telegram": "Telegram",
-        "twitter": "X (Twitter)",
+        "twitter": "X（推特）",
         "upload_photo": "上传照片",
         "uploading": "上传中",
         "username_placeholder": "用户名",
@@ -2156,7 +2160,7 @@
       "done": "完成",
       "feedback_and_reports": "反馈和错误报告",
       "feedback_and_support": "反馈与支持",
-      "follow_us_on_twitter": "Follow us on X",
+      "follow_us_on_twitter": "在X上关注我们",
       "hey_friend_message": "👋️ 嘿，朋友！你应该下载Rainbow，这是我最喜欢的以太坊钱包 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "设置",
       "language": "语言",
@@ -3394,7 +3398,7 @@
       },
       "links": {
         "x": {
-          "name": "X (Twitter)",
+          "name": "X（推特）",
           "placeholder": "用户名"
         },
         "telegram": {
