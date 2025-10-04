@@ -710,11 +710,15 @@
           "twitter": "X (Twitter)",
           "farcaster": "Farcaster",
           "other": "Lainnya",
-          "search_on_twitter": "Search on X"
+          "search_on_twitter": "Cari di X"
         },
         "uniswap_liquidity": "Likuiditas Uniswap",
         "value": "Nilai",
         "volume_24_hours": "Volume 24h",
+        "liquidity_cap_disclaimer": {
+          "value_lower_than": "Nilai lebih rendah dari",
+          "due_to_low_liquidity": "karena likuiditas rendah"
+        },
         "menu": {
           "view_on": "Tampilkan di %{blockExplorerName}",
           "share": "Bagikan",
@@ -957,7 +961,7 @@
       "poolboy_title": "Anda telah membuka\nRainbow Poolboy!",
       "adworld_description": "Sebagai Warga Dunia Rainbow, kini Anda dapat membuka Ikon Aplikasi edisi khusus\nAdWorld x Rainbow.",
       "adworld_title": "Selamat datang di Dunia Rainbow!",
-      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
+      "farcaster_description": "Ikon aplikasi kami yang paling membosankan, terinspirasi oleh minimalisme Farcaster yang hambar.",
       "farcaster_title": "Anda telah membuka\nRainbowcast",
       "redacted_description": "Ikon Rainbow eksklusif untuk para penikmat sejati Gdupi.",
       "redacted_title": "Anda telah membuka\n Rainbow yang Dihilangkan",
@@ -2156,7 +2160,7 @@
       "done": "Selesai",
       "feedback_and_reports": "Umpan Balik & Laporan Bug",
       "feedback_and_support": "Masukan dan Dukungan",
-      "follow_us_on_twitter": "Follow us on X",
+      "follow_us_on_twitter": "Ikuti kami di X",
       "hey_friend_message": "👋️ Hai teman! Anda harus mengunduh Rainbow, dompet Ethereum favorit saya 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Pengaturan",
       "language": "Bahasa",
