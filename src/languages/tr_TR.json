@@ -710,11 +710,15 @@
           "twitter": "X (Twitter)",
           "farcaster": "Farcaster",
           "other": "Diğer",
-          "search_on_twitter": "Search on X"
+          "search_on_twitter": "X'te Ara"
         },
         "uniswap_liquidity": "Uniswap likiditesi",
         "value": "Değer",
         "volume_24_hours": "24s hacim",
+        "liquidity_cap_disclaimer": {
+          "value_lower_than": "Değer aşağıda",
+          "due_to_low_liquidity": "düşük likidite nedeniyle"
+        },
         "menu": {
           "view_on": "%{blockExplorerName}'da Görüntüle",
           "share": "Paylaş",
@@ -957,7 +961,7 @@
       "poolboy_title": "Kazandınız\nRainbow Poolboy!",
       "adworld_description": "Bir Rainbow Dünya Vatandaşı olarak artık özel bir\nAdWorld x Rainbow Uygulama Simgesi kilidini açabilirsiniz.",
       "adworld_title": "Rainbow Dünyasına Hoş Geldiniz!",
-      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
+      "farcaster_description": "Farcaster'ın sade minimalizminden esinlenerek yapılmış en sıkıcı uygulama simgemiz.",
       "farcaster_title": "Kazandınız\nRainbowcast",
       "redacted_description": "Gerçek Gdupi meraklıları için stupi'ye özel bir Rainbow simgesi.",
       "redacted_title": "Redacted Rainbow'un kilidini açtınız",
@@ -2156,7 +2160,7 @@
       "done": "Tamamlandı",
       "feedback_and_reports": "Geri Bildirim & Hata Raporları",
       "feedback_and_support": "Geri Bildirim ve Destek",
-      "follow_us_on_twitter": "Follow us on X",
+      "follow_us_on_twitter": "Bizi X'te takip edin",
       "hey_friend_message": "👋️ Hey dostum! Rainbow'u indirmelisin, benim en sevdiğim Ethereum cüzdanı 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Ayarlar",
       "language": "Dil",
