@@ -707,11 +707,10 @@
           "website": "เว็บไซต์",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter",
-          "warpcast": "Warpcast",
+          "twitter": "X (Twitter)",
           "farcaster": "ฟาร์คาสเตอร์",
           "other": "อื่น ๆ",
-          "search_on_twitter": "ค้นหาบนทวิตเตอร์"
+          "search_on_twitter": "Search on X"
         },
         "uniswap_liquidity": "ความสภาพ Uniswap",
         "value": "ค่า",
@@ -923,7 +922,7 @@
         "toast_removed_from_showcase": "ลบออกจากโชว์เคส",
         "refreshing": "กำลังรีเฟรชข้อมูลเมทาดาทา...",
         "reported": "รายงานเป็นสแปม",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "view_all_with_property": "ดูทั้งหมดด้วยคุณสมบัติ",
         "view_collection": "ดูคอลเลกชัน",
         "view_on_marketplace": "ดูบน Marketplace...",
@@ -958,7 +957,7 @@
       "poolboy_title": "คุณได้ปลดล็อก\nRainbow Poolboy!",
       "adworld_description": "ในฐานะพลเมือง Rainbow World คุณสามารถปลดล็อกไอคอนแอป AdWorld x Rainbow ฉบับพิเศษได้แล้ว",
       "adworld_title": "ยินดีต้อนรับสู่ Rainbow World!",
-      "farcaster_description": "ไอคอนแอปที่น่าเบื่อที่สุดของเรา แรงบันดาลใจจากความเรียบง่ายที่ไร้บทบาทของ Warpcast",
+      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
       "farcaster_title": "คุณได้ปลดล็อก\nRainbowcast",
       "redacted_description": "ไอคอน Rainbow พิเศษสำหรับผู้ที่ชื่นชอบ Gdupi แท้ๆ",
       "redacted_title": "คุณได้ปลดล็อก\nRedacted Rainbow",
@@ -1801,7 +1800,7 @@
         "skip": "ข้าม",
         "snapchat": "Snapchat",
         "telegram": "Telegram",
-        "twitter": "ทวิตเตอร์",
+        "twitter": "X (Twitter)",
         "upload_photo": "อัปโหลดรูปภาพ",
         "uploading": "กำลังอัปโหลด",
         "username_placeholder": "ชื่อผู้ใช้",
@@ -2157,7 +2156,7 @@
       "done": "เสร็จสิ้น",
       "feedback_and_reports": "ข้อเสนอแนะและรายงานข้อผิดพลาด",
       "feedback_and_support": "คำติชมและการสนับสนุน",
-      "follow_us_on_twitter": "ติดตามเราบน Twitter",
+      "follow_us_on_twitter": "Follow us on X",
       "hey_friend_message": "👋️ สวัสดีเพื่อน! คุณควรดาวน์โหลด Rainbow, มันเป็นกระเป๋า Ethereum ที่ชื่นชอบ 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "การตั้งค่า",
       "language": "ภาษา",
@@ -3330,7 +3329,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "ยอดคงเหลือที่มีอยู่: %{balance}",
-        "title": "ซื้อโทเค็นเพิ่มล่วงหน้า"
+        "title": "ซื้อโทเค็นล่วงหน้า"
       },
       "review": {
         "token_allocation": "การจัดสรรโทเค็น",
@@ -3395,7 +3394,7 @@
       },
       "links": {
         "x": {
-          "name": "X/Twitter",
+          "name": "X (Twitter)",
           "placeholder": "ชื่อผู้ใช้"
         },
         "telegram": {
@@ -3492,9 +3491,9 @@
           "step_1": {
             "title": "การแข่งขันกำลังดำเนินอยู่",
             "subtitle_parts": [
-              "โทเค็นที่มี",
+              "ราชาปัจจุบันคือโทเค็นที่ถูกสร้างขึ้นในช่วง 30 วันที่ผ่านมาและมีจำนวน",
               "ปริมาณการซื้อ",
-              "ขณะนี้เป็นราชาปัจจุบัน"
+              "วันนี้"
             ]
           },
           "step_2": {

@@ -707,11 +707,10 @@
           "website": "الموقع الإلكتروني",
           "reddit": "رديت",
           "telegram": "تيليجرام",
-          "twitter": "تويتر",
-          "warpcast": "ووربكاست",
+          "twitter": "X (Twitter)",
           "farcaster": "فاركاستر",
           "other": "آخر",
-          "search_on_twitter": "بحث على تويتر"
+          "search_on_twitter": "Search on X"
         },
         "uniswap_liquidity": "سيولة يونيسواب",
         "value": "القيمة",
@@ -774,10 +773,10 @@
       "chart": {
         "candlestick": {
           "candle_field_labels": {
-            "c": "إغلاق",
+            "c": "أغلق",
             "h": "مرتفع",
             "l": "منخفض",
-            "o": "الافتتاح",
+            "o": "افتح",
             "t": "",
             "v": "حجم"
           },
@@ -923,7 +922,7 @@
         "toast_removed_from_showcase": "تم الإزالة من العرض",
         "refreshing": "تحديث البيانات الوصفية...",
         "reported": "تم الإبلاغ عنه كرسالة غير مرغوب فيها",
-        "twitter": "تويتر",
+        "twitter": "X (Twitter)",
         "view_all_with_property": "عرض الكل بالخاصية",
         "view_collection": "عرض المجموعة",
         "view_on_marketplace": "عرض على السوق...",
@@ -958,7 +957,7 @@
       "poolboy_title": "لقد قمت بفتح\nRainbow Poolboy!",
       "adworld_description": "باعتبارك أحد مواطني Rainbow World، يمكنك الآن فتح أيقونة تطبيق AdWorld x Rainbow إصدار خاص.",
       "adworld_title": "مرحبًا بك في Rainbow World!",
-      "farcaster_description": "أيقونة تطبيقنا الأكثر مللاً على الإطلاق، مستوحاة من البساطة الباهتة لـ Warpcast.",
+      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
       "farcaster_title": "لقد قمت بفتح\nRainbowcast",
       "redacted_description": "أيقونة قوس قزح حصرية لـ stupi لمحبي Gdupi الحقيقيين.",
       "redacted_title": "لقد فتحت\nقوس قزح المكمم",
@@ -1801,7 +1800,7 @@
         "skip": "تخطي",
         "snapchat": "سناب شات",
         "telegram": "تيليجرام",
-        "twitter": "تويتر",
+        "twitter": "X (Twitter)",
         "upload_photo": "تحميل صورة",
         "uploading": "جارٍ الرفع",
         "username_placeholder": "اسم المستخدم",
@@ -2157,7 +2156,7 @@
       "done": "تم",
       "feedback_and_reports": "الملاحظات وتقارير الأخطاء",
       "feedback_and_support": "التعليقات والدعم",
-      "follow_us_on_twitter": "تابعنا على تويتر",
+      "follow_us_on_twitter": "Follow us on X",
       "hey_friend_message": "👋️ مرحبا صديقي! يجب أن تقوم بتنزيل Rainbow، فهو المحفظة المفضلة لدي في Ethereum 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "الإعدادات",
       "language": "اللغة",
@@ -3330,7 +3329,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "رصيد متاح: %{balance}",
-        "title": "شراء المزيد من الرموز مسبقًا"
+        "title": "شراء الرموز مسبقاً"
       },
       "review": {
         "token_allocation": "تخصيص الرمز",
@@ -3395,7 +3394,7 @@
       },
       "links": {
         "x": {
-          "name": "X/تويتر",
+          "name": "X (Twitter)",
           "placeholder": "اسم المستخدم"
         },
         "telegram": {
@@ -3492,9 +3491,9 @@
           "step_1": {
             "title": "السباق مباشر",
             "subtitle_parts": [
-              "الرمز صاحب أعلى",
+              "الملك الحالي هو الرمز الذي تم إنشاؤه في آخر 30 يوماً والذي حقق أكثر شهرة",
               " حجم الشراء ",
-              "الآن هو الملك الحالي."
+              "اليوم."
             ]
           },
           "step_2": {

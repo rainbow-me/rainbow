@@ -707,11 +707,10 @@
           "website": "Sitio web",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter",
-          "warpcast": "Warpcast",
+          "twitter": "X (Twitter)",
           "farcaster": "Farcaster",
           "other": "Otro",
-          "search_on_twitter": "Buscar en Twitter"
+          "search_on_twitter": "Search on X"
         },
         "uniswap_liquidity": "Liquidez de Uniswap",
         "value": "Valor",
@@ -774,10 +773,10 @@
       "chart": {
         "candlestick": {
           "candle_field_labels": {
-            "c": "Cerrar",
+            "c": "CERRAR",
             "h": "A",
             "l": "B",
-            "o": "Abrir",
+            "o": "ABRIR",
             "t": "",
             "v": "V"
           },
@@ -923,7 +922,7 @@
         "toast_removed_from_showcase": "Eliminado del escaparate",
         "refreshing": "Actualizando metadatos...",
         "reported": "Reportado como spam",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "view_all_with_property": "Ver todo con propiedad",
         "view_collection": "Ver colección",
         "view_on_marketplace": "Ver en el Marketplace...",
@@ -958,7 +957,7 @@
       "poolboy_title": "¡Has desbloqueado el\nRainbow Poolboy!",
       "adworld_description": "Como Ciudadano del Mundo Rainbow, ahora puedes desbloquear un ícono especial de la aplicación AdWorld x Rainbow.",
       "adworld_title": "¡Bienvenido al Mundo Rainbow!",
-      "farcaster_description": "Nuestro ícono de aplicación más aburrido de todos los tiempos, inspirado en el minimalismo insípido de Warpcast.",
+      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
       "farcaster_title": "Has desbloqueado\nRainbowcast",
       "redacted_description": "Un ícono exclusivo de Rainbow para los verdaderos fanáticos de Gdupi.",
       "redacted_title": "Has desbloqueado\n Redacted Rainbow",
@@ -1801,7 +1800,7 @@
         "skip": "Omitir",
         "snapchat": "Snapchat",
         "telegram": "Telegram",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "upload_photo": "Subir una foto",
         "uploading": "Cargando",
         "username_placeholder": "nombre de usuario",
@@ -2157,7 +2156,7 @@
       "done": "Listo",
       "feedback_and_reports": "Comentarios y reportes de errores",
       "feedback_and_support": "Comentarios y soporte",
-      "follow_us_on_twitter": "Síguenos en Twitter",
+      "follow_us_on_twitter": "Follow us on X",
       "hey_friend_message": "👋️ ¡Hola amigo! Deberías descargar Rainbow, es mi billetera de Ethereum favorita 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Configuraciones",
       "language": "Idioma",
@@ -3395,7 +3394,7 @@
       },
       "links": {
         "x": {
-          "name": "X/Twitter",
+          "name": "X (Twitter)",
           "placeholder": "Nombre de Usuario"
         },
         "telegram": {
@@ -3492,9 +3491,9 @@
           "step_1": {
             "title": "La carrera está en vivo",
             "subtitle_parts": [
-              "El token con más",
+              "El rey actual es el token creado en los últimos 30 días con el mayor",
               " volumen de compra",
-              "ahora mismo es el rey actual."
+              "hoy."
             ]
           },
           "step_2": {

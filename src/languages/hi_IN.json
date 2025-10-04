@@ -707,11 +707,10 @@
           "website": "वेबसाइट",
           "reddit": "रेडिट",
           "telegram": "टेलीग्राम",
-          "twitter": "ट्विटर",
-          "warpcast": "वार्पकास्ट",
+          "twitter": "X (Twitter)",
           "farcaster": "फ़ारकास्टर",
           "other": "अन्य",
-          "search_on_twitter": "ट्विटर पर खोजें"
+          "search_on_twitter": "Search on X"
         },
         "uniswap_liquidity": "यूनिस्वैप लिक्विडिटी",
         "value": "मूल्य",
@@ -923,7 +922,7 @@
         "toast_removed_from_showcase": "शोकेस से निकाला गया",
         "refreshing": "मेटाडाटा ताज़ा किया जा रहा है...",
         "reported": "स्पैम के रूप में रिपोर्ट किया गया",
-        "twitter": "ट्विटर",
+        "twitter": "X (Twitter)",
         "view_all_with_property": "संपत्ति के साथ सभी देखें",
         "view_collection": "संग्रह देखें",
         "view_on_marketplace": "मार्केटप्लेस पर देखें...",
@@ -958,7 +957,7 @@
       "poolboy_title": "आपने अनलॉक कर लिया है\nरेनबो पूलबॉय!",
       "adworld_description": "रेनबो वर्ल्ड नागरिक के रूप में, आप अब एक विशेष संस्करण अनलॉक कर सकते हैं\nएडवर्ल्ड एक्स रेनबो ऐप आइकन।",
       "adworld_title": "रेनबो वर्ल्ड में आपका स्वागत है!",
-      "farcaster_description": "हमारा सबसे बोरिंग ऐप आइकन, वार्पकास्ट के सुस्त न्यूनतमवाद से प्रेरित।",
+      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
       "farcaster_title": "आपने अनलॉक कर लिया है\nरेनबो कास्ट",
       "redacted_description": "सच्चे Gdupi एनजॉयर्स के लिए एक अनन्य Rainbow आइकन।",
       "redacted_title": "आपने\nरेडैक्टेड रेनबो को अनलॉक कर दिया",
@@ -1801,7 +1800,7 @@
         "skip": "छोड़ें",
         "snapchat": "स्नैपचैट",
         "telegram": "टेलीग्राम",
-        "twitter": "ट्विटर",
+        "twitter": "X (Twitter)",
         "upload_photo": "एक फ़ोटो अपलोड करें",
         "uploading": "अपलोड हो रहा है",
         "username_placeholder": "उपयोगकर्ता नाम",
@@ -2157,7 +2156,7 @@
       "done": "हो गया",
       "feedback_and_reports": "प्रतिक्रिया और बग रिपोर्ट्स",
       "feedback_and_support": "प्रतिक्रिया और समर्थन",
-      "follow_us_on_twitter": "हमें Twitter पर फॉलो करें",
+      "follow_us_on_twitter": "Follow us on X",
       "hey_friend_message": "👋️ हे मित्र! आपको रेनबो डाउनलोड करना चाहिए, यह मेरा पसंदीदा Ethereum वॉलेट है 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "सेटिंग्स",
       "language": "भाषा",
@@ -3330,7 +3329,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "उपलब्ध शेष राशि: %{balance}",
-        "title": "अग्रिम हेतु अधिक टोकन खरीदें"
+        "title": "अग्रिम हेतु टोकन खरीदें"
       },
       "review": {
         "token_allocation": "टोकन आवंटन",
@@ -3395,7 +3394,7 @@
       },
       "links": {
         "x": {
-          "name": "एक्स/ट्विटर",
+          "name": "X (Twitter)",
           "placeholder": "उपयोगकर्ता नाम"
         },
         "telegram": {
@@ -3492,9 +3491,9 @@
           "step_1": {
             "title": "रेस लाइव है",
             "subtitle_parts": [
-              "सबसे अधिक वाला टोकन",
+              "वर्तमान राजा वह टोकन है जो पिछले 30 दिनों में सबसे अधिक बनाया गया था",
               " खरीद वॉल्यूम ",
-              "अभी वर्तमान किंग है।"
+              "आज।"
             ]
           },
           "step_2": {
