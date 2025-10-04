@@ -710,11 +710,15 @@
           "twitter": "X (Twitter)",
           "farcaster": "Farcaster",
           "other": "Другие",
-          "search_on_twitter": "Search on X"
+          "search_on_twitter": "Искать на X"
         },
         "uniswap_liquidity": "Ликвидность Uniswap",
         "value": "Цена",
         "volume_24_hours": "Торговый объем за 24 часа",
+        "liquidity_cap_disclaimer": {
+          "value_lower_than": "Значение ниже чем",
+          "due_to_low_liquidity": "из-за низкой ликвидности"
+        },
         "menu": {
           "view_on": "Посмотреть на %{blockExplorerName}",
           "share": "Поделиться",
@@ -957,7 +961,7 @@
       "poolboy_title": "Вы разблокировали\nRainbow Poolboy!",
       "adworld_description": "Как гражданин мира Rainbow, вы можете разблокировать специальную иконку\nAdWorld x Rainbow.",
       "adworld_title": "Добро пожаловать в мир Rainbow!",
-      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
+      "farcaster_description": "Наш самый скучный иконка приложения, вдохновленная минимализмом Warpcast.",
       "farcaster_title": "Вы разблокировали\nRainbowcast",
       "redacted_description": "Эксклюзивная иконка Rainbow для истинных ценителей Gdupi.",
       "redacted_title": "Вы разблокировали\nСкрытую Rainbow",
@@ -2156,7 +2160,7 @@
       "done": "Готово",
       "feedback_and_reports": "Отзывы и сообщения об ошибках",
       "feedback_and_support": "Обратная связь и поддержка",
-      "follow_us_on_twitter": "Follow us on X",
+      "follow_us_on_twitter": "Подпишитесь на нас в X",
       "hey_friend_message": "👋️ Привет, друг! Тебе следует скачать Rainbow, это мой любимый кошелек Ethereum 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Настройки",
       "language": "Язык",
