@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Install secret tools
         run: sudo apt install libsecret-tools
@@ -35,25 +35,25 @@ jobs:
 
       - name: Setup env
         env:
-            SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+          SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
         run: |
-            git clone git@github.com:rainbow-me/rainbow-env.git
-            mv rainbow-env/dotenv .env
-            mv rainbow-env/android/app/google-services.json android/app/google-services.json
-            rm -rf rainbow-env
-            sed -i "s/IS_TESTING=false/IS_TESTING=true/" .env
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env
+          mv rainbow-env/android/app/google-services.json android/app/google-services.json
+          rm -rf rainbow-env
+          sed -i "s/IS_TESTING=false/IS_TESTING=true/" .env
       - name: Setup scripts
         env:
-            CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
-            SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
         run: |
-            eval $CI_SCRIPTS
+          eval $CI_SCRIPTS
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
       - name: Cache Yarn dependencies
-        uses: useblacksmith/cache@v5
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: |
             ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -83,4 +83,3 @@ jobs:
 
       - name: Unit tests
         run: yarn test
-
