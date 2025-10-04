@@ -707,14 +707,18 @@
           "website": "Site Internet",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "X (Twitter)",
+          "twitter": "X (Twitter :)",
           "farcaster": "Farcaster",
           "other": "Autre",
-          "search_on_twitter": "Search on X"
+          "search_on_twitter": "Rechercher sur X"
         },
         "uniswap_liquidity": "Liquidité Uniswap",
         "value": "Valeur",
         "volume_24_hours": "Volume sur 24 heures",
+        "liquidity_cap_disclaimer": {
+          "value_lower_than": "La valeur est inférieure à",
+          "due_to_low_liquidity": "en raison de la faible liquidité"
+        },
         "menu": {
           "view_on": "Voir sur %{blockExplorerName}",
           "share": "Partager",
@@ -922,7 +926,7 @@
         "toast_removed_from_showcase": "Retiré de la vitrine",
         "refreshing": "Actualisation des métadonnées...",
         "reported": "Signalé comme spam",
-        "twitter": "X (Twitter)",
+        "twitter": "X (Twitter :)",
         "view_all_with_property": "Voir tout avec propriété",
         "view_collection": "Voir la Collection",
         "view_on_marketplace": "Voir sur le Marketplace...",
@@ -957,7 +961,7 @@
       "poolboy_title": "Vous avez débloqué le\nRainbow Poolboy!",
       "adworld_description": "En tant que citoyen du monde Rainbow, vous pouvez maintenant débloquer une icône d'application AdWorld x Rainbow en édition spéciale.",
       "adworld_title": "Bienvenue dans le monde Rainbow!",
-      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
+      "farcaster_description": "Notre icône d'application la plus ennuyeuse jamais créée, inspirée par le minimalisme fade de Warpcast.",
       "farcaster_title": "Vous avez débloqué\nRainbowcast",
       "redacted_description": "Une icône Rainbow exclusive pour les véritables amateurs de Gdupi.",
       "redacted_title": "Vous avez débloqué\nRedacted Rainbow",
@@ -1800,7 +1804,7 @@
         "skip": "Passer",
         "snapchat": "Snapchat",
         "telegram": "Telegram",
-        "twitter": "X (Twitter)",
+        "twitter": "X (Twitter :)",
         "upload_photo": "Télécharger une photo",
         "uploading": "Téléchargement",
         "username_placeholder": "username :)",
@@ -2156,7 +2160,7 @@
       "done": "Terminé",
       "feedback_and_reports": "Retour & Rapports de bugs :)",
       "feedback_and_support": "Retour d'information et soutien",
-      "follow_us_on_twitter": "Follow us on X",
+      "follow_us_on_twitter": "Suivez-nous sur X (Twitter :)",
       "hey_friend_message": "👋️ Salut ami! Tu devrais télécharger Rainbow, c'est mon portefeuille Ethereum préféré 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Paramètres",
       "language": "Langue",
@@ -3394,7 +3398,7 @@
       },
       "links": {
         "x": {
-          "name": "X (Twitter)",
+          "name": "X (Twitter :)",
           "placeholder": "Nom d'utilisateur"
         },
         "telegram": {
