@@ -2,7 +2,7 @@ import { createSelector } from 'reselect';
 import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
 import { NativeCurrencyKey, ParsedAddressAsset, UniqueAsset } from '@/entities';
 import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import { RainbowPositions } from '@/resources/defi/types';
+import { RainbowPositions } from '@/features/positions/types';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { Language } from '@/languages';
 import { Network } from '@/state/backendNetworks/types';
@@ -202,7 +202,7 @@ const withPositionsSection = (positions: RainbowPositions | null, isLoadingUserA
     {
       type: CellType.POSITIONS_HEADER,
       uid: 'positions-header',
-      total: positions.totals?.total?.display,
+      total: positions.totals?.totals?.display,
     },
     ...positionSectionItems,
   ];

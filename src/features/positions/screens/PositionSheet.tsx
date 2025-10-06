@@ -11,7 +11,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { SubPositionListItem } from '../components/PositionListItem';
 import * as i18n from '@/languages';
 import { capitalize } from 'lodash';
-import { RainbowPosition } from '@/resources/defi/types';
+import { RainbowPosition } from '@/features/positions/types';
 import { LpPositionListItem } from '../components/LpPositionListItem';
 import { RootStackParamList } from '@/navigation/types';
 import { openInBrowser } from '@/utils/openInBrowser';

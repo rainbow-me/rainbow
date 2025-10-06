@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
 import { useTheme } from '@/theme';
 import { convertAmountToPercentageDisplay, convertRawAmountToNativeDisplay, divide } from '@/helpers/utilities';
-import { RainbowUnderlyingAsset } from '@/resources/defi/types';
+import { RainbowUnderlyingAsset } from '@/features/positions/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { LpPositionRangeBadge } from './LpPositionRangeBadge';
 import { TwoCoinsIcon } from '@/components/coin-icon/TwoCoinsIcon';

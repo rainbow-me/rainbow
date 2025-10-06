@@ -4,7 +4,7 @@ import { createQueryKey, queryClient } from '@/react-query';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useClaimablesStore } from '@/state/claimables/claimables';
-import { usePositionsStore } from '@/state/positions/positions';
+import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { refetchWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { getAccountAddress, refreshWalletInfo } from '@/state/wallets/walletsStore';
 import { time } from '@/utils';
