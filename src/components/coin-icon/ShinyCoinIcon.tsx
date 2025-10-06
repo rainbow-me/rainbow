@@ -19,7 +19,7 @@ import { opacity } from '@/__swaps__/utils/swaps';
 type ShinyCoinIconProps = {
   chainId: ChainId;
   color: string | undefined;
-  imageUrl: string;
+  imageUrl: string | undefined;
   symbol: string;
   size?: number;
   disableShadow?: boolean;
