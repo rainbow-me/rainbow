@@ -1,6 +1,12 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { InfiniteQueryConfig, QueryConfig, QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
-import { ListTransactionsResponse, NativeCurrencyKey, RainbowTransaction, TransactionApiResponse } from '@/entities';
+import {
+  ListTransactionsResponse,
+  NativeCurrencyKey,
+  NormalizedTransactionApiResponse,
+  RainbowTransaction,
+  TransactionApiResponse,
+} from '@/entities';
 import { RainbowError, logger } from '@/logger';
 import { parseTransaction } from '@/parsers/transactions';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -65,19 +71,18 @@ export async function consolidatedTransactionsQueryFunction({
   try {
     const cursor = typeof pageParam === 'string' ? pageParam : undefined;
 
-    console.log({ chainIds: chainIds.join(',') });
-
     const { data } = await getPlatformClient().get<ListTransactionsResponse>('/transactions/ListTransactions', {
       method: 'get',
       params: {
         address,
-        // chainIds: chainIds.join(','),
-        chainIds: '1',
+        chainIds: chainIds.join(','),
         currency: currency.toLowerCase(),
         limit: String(30),
         ...(cursor ? { cursor } : {}),
       },
     });
+    // __AUTO_GENERATED_PRINT_VAR_START__
+    console.log('consolidatedTransactionsQueryFunction data:', JSON.stringify(data, null, 2)); // __AUTO_GENERATED_PRINT_VAR_END__
 
     const payload = extractTransactionsPayload(data);
 
@@ -180,16 +185,9 @@ function resolveChainId(tx: TransactionApiResponse, chainsIdByName: TransactionC
   return undefined;
 }
 
-type PlatformTransactionPayload = Omit<TransactionApiResponse, 'blockNumber' | 'blockConfirmations' | 'minedAt' | 'nonce'> & {
-  blockNumber: number | string;
-  blockConfirmations?: number | string | null;
-  minedAt?: number | string | null;
-  nonce: number | string | null;
-};
-
-function normalizeTransactionPayload(tx: PlatformTransactionPayload): TransactionApiResponse {
+function normalizeTransactionPayload(tx: TransactionApiResponse): NormalizedTransactionApiResponse {
   const blockNumber = toNumber(tx.blockNumber);
-  const blockConfirmations = toNumber(tx.blockConfirmations, 0);
+  const blockConfirmations = 0; // Not provided in API response
   const nonce = toNumber(tx.nonce, 0);
   const minedAtSeconds = normalizeMinedAt(tx.minedAt);
 
@@ -199,7 +197,7 @@ function normalizeTransactionPayload(tx: PlatformTransactionPayload): Transactio
     blockConfirmations,
     nonce,
     minedAt: minedAtSeconds,
-  } as TransactionApiResponse;
+  };
 }
 
 function toNumber(value: number | string | null | undefined, fallback?: number): number {

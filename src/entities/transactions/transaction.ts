@@ -379,21 +379,15 @@ export interface TransactionApiResponse {
   /**
    * Block number where transaction was mined
    *
-   * examples: 18500000, 45000000, 32000000
+   * examples: "18500000", "45000000", "32000000"
    */
-  blockNumber: number;
+  blockNumber: string;
   /**
-   * Number of block confirmations
+   * ISO 8601 timestamp when transaction was mined
    *
-   * examples: 0, 12, 50, 100
+   * examples: "2025-10-04T03:24:23Z", "2025-10-04T01:54:59Z"
    */
-  blockConfirmations: number;
-  /**
-   * Unix timestamp when transaction was mined
-   *
-   * examples: 1724463859, 1650000000
-   */
-  minedAt: number | undefined;
+  minedAt: string | undefined;
   /**
    * Transaction status
    *
@@ -427,21 +421,46 @@ export interface TransactionApiResponse {
   /**
    * Transaction nonce
    *
-   * examples: 0, 42, 1337, 999999
+   * examples: "0", "42", "1337", "999999"
    */
-  nonce: number;
+  nonce: string;
   /** List of balance changes caused by this transaction */
   changes: Change[];
   /** Transaction fee information */
   fee: Fee | undefined;
   /** Additional transaction metadata */
   meta: Meta | undefined;
+}
+
+/**
+ * Normalized transaction response with parsed numeric values
+ * This is the format used internally after normalizing the raw API response
+ */
+export interface NormalizedTransactionApiResponse extends Omit<TransactionApiResponse, 'blockNumber' | 'minedAt' | 'nonce'> {
   /**
-   * Raw transaction calldata
+   * Block number where transaction was mined (parsed as number)
    *
-   * examples: "0x", "0xa9059cbb000000000000000000000000..."
+   * examples: 18500000, 45000000, 32000000
    */
-  callData: Uint8Array;
+  blockNumber: number;
+  /**
+   * Number of block confirmations
+   *
+   * examples: 0, 12, 50, 100
+   */
+  blockConfirmations: number;
+  /**
+   * Unix timestamp in seconds when transaction was mined
+   *
+   * examples: 1724463859, 1650000000
+   */
+  minedAt: number | undefined;
+  /**
+   * Transaction nonce (parsed as number)
+   *
+   * examples: 0, 42, 1337, 999999
+   */
+  nonce: number;
 }
 
 export interface Change {
@@ -523,7 +542,7 @@ export interface Asset {
    */
   chainId: string;
   /** Current price information for the asset */
-  price: Price | undefined;
+  price?: Price | undefined;
   /**
    * Asset symbol/ticker
    *
@@ -541,57 +560,57 @@ export interface Asset {
    *
    * examples: "ERC20", "ERC721", "ERC1155", "BEP20"
    */
-  interface: string;
+  interface?: string;
   /** Color scheme for UI display */
-  colors: Colors | undefined;
+  colors?: Colors | undefined;
   /** Asset information across different networks */
-  networks: NetworkMapping[];
+  networks?: NetworkMapping[];
   /** Bridging information for cross-chain transfers */
-  bridging: TokenBridging | undefined;
+  bridging?: TokenBridging | undefined;
   /**
    * Whether this asset should be hidden from UI (internal use)
    *
    * examples: true, false
    */
-  trash: boolean;
+  trash?: boolean;
   /**
    * Whether this asset is likely spam or fraudulent
    *
    * examples: true, false
    */
-  probableSpam: boolean;
+  probableSpam?: boolean;
   /**
    * Unique token identifier for NFTs
    *
    * examples: "1", "42", "9999", "0x123abc"
    */
-  tokenId: string;
+  tokenId?: string;
   /**
    * Whether this asset has been verified by the platform
    *
    * examples: true, false
    */
-  verified: boolean;
+  verified?: boolean;
   /**
    * Whether this represents a DeFi position rather than a transferable asset
    *
    * examples: true, false
    */
-  defiPosition: boolean;
+  defiPosition?: boolean;
   /**
    * Whether this asset can be transferred (null means unknown)
    *
    * examples: true, false
    * Note: Use has_transferable to check if value is set
    */
-  transferable: boolean;
-  hasTransferable: boolean;
+  transferable?: boolean;
+  hasTransferable?: boolean;
   /**
    * ISO 8601 timestamp when the asset was created
    *
    * examples: "2023-12-25T10:30:00Z", "2021-01-01T00:00:00Z"
    */
-  creationDate: Date | undefined;
+  creationDate?: Date | undefined;
 }
 
 export interface NetworkMapping {
@@ -613,11 +632,11 @@ export interface Price {
    */
   value: string;
   /**
-   * Unix timestamp when the price was last updated
+   * ISO 8601 timestamp when the price was last updated
    *
    * examples: "2025-05-21T00:00:00Z", "2025-12-31T23:59:59Z"
    */
-  changedAt: Date | undefined;
+  changedAt: string | undefined;
   /**
    * 24-hour percentage change in price
    *
@@ -644,7 +663,7 @@ export interface Colors {
    *
    * examples: "#000000", "#424242", "#9E9E9E"
    */
-  shadow: string;
+  shadow?: string;
 }
 
 export interface TokenMapping {
@@ -826,7 +845,7 @@ export interface Meta {
    *
    * examples: "https://example.com/icons/contract.png", "https://assets.example.com/uniswap.svg"
    */
-  contractIconUrl: string;
+  contractIconUrl?: string;
   /**
    * Human-readable label for block explorer display
    *
@@ -840,19 +859,19 @@ export interface Meta {
    */
   explorerUrl: string;
   /** Asset information related to the transaction */
-  asset: Asset | undefined;
+  asset?: Asset | undefined;
   /**
    * Quantity of assets involved in the transaction
    *
-   * examples: "1.5", "1000.0", "0.001", "999999.999999"
+   * examples: "1.5", "1000.0", "0.001", "999999.999999", "UNLIMITED"
    */
-  quantity: string;
+  quantity?: string;
   /**
    * Address that was approved to spend tokens
    *
    * examples: "0x742D35Cc6634C0532925a3b8D404020ae0e4f5f3", "0x0000000000000000000000000000000000000000"
    */
-  approvalTo: string;
+  approvalTo?: string;
   /**
    * Transaction type classification
    *
@@ -864,13 +883,13 @@ export interface Meta {
    *
    * examples: "erc20_transfer", "eth_transfer", "nft_sale", "liquidity_add"
    */
-  subType: string;
+  subType?: string;
   /**
    * Public-facing subtype for external display
    *
    * examples: "Token Swap", "NFT Purchase", "Liquidity Provision", "Yield Farming"
    */
-  publicSubType: string;
+  publicSubType?: string;
 }
 
 /** ResponseMetadata contains metadata about the response processing */

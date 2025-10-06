@@ -1,5 +1,6 @@
 import {
   NativeCurrencyKey,
+  NormalizedTransactionApiResponse,
   RainbowTransaction,
   TransactionDirection,
   TransactionChanges,
@@ -52,7 +53,7 @@ export const getAssetFromChanges = (changes: TransactionChanges, type: Transacti
 };
 
 export const parseTransaction = (
-  transaction: TransactionApiResponse,
+  transaction: NormalizedTransactionApiResponse,
   nativeCurrency: NativeCurrencyKey,
   chainId: ChainId
 ): Promise<RainbowTransaction> => {
