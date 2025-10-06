@@ -7,6 +7,7 @@ import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual, deepEqual } from '@/worklets/comparisons';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const useLiveWalletBalance = createDerivedStore(
   $ => {
@@ -15,11 +16,12 @@ export const useLiveWalletBalance = createDerivedStore(
     const userAssets = $(useUserAssetsStore, state => state.userAssets);
     const isFetching = $(useUserAssetsStore, state => state.status === 'loading');
     const params = $(userAssetsStoreManager, state => ({ address: state.address, currency: state.currency }), shallowEqual);
-    const perpsBalanceNative = $(useHyperliquidBalance);
+    const positionChainIds = $(useBackendNetworksStore, state => state.getSupportedPositionsChainIds());
 
+    const perpsBalanceNative = $(useHyperliquidBalance);
     const claimablesBalance = $(useClaimablesStore, state => state.getData(params)?.totalValueAmount || '0');
     const positionsBalance = $(usePositionsStore, state => {
-      const data = state.getData(params);
+      const data = state.getData({ ...params, chainIds: positionChainIds });
       if (!data) return '0';
       return subtract(data.totals.total.amount, data.totals.totalLocked.amount);
     });
