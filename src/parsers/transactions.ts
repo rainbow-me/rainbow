@@ -1,4 +1,5 @@
 import {
+  EthereumAddress,
   NativeCurrencyKey,
   NormalizedTransactionApiResponse,
   RainbowTransaction,
@@ -25,6 +26,8 @@ import { ParsedAsset } from '@/resources/assets/types';
 
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 const TransactionOutTypes = [
   'burn',
@@ -84,9 +87,19 @@ export const parseTransaction = (
 
   const type = isValidTransactionType(meta?.type) ? meta.type : 'contract_interaction';
 
-  const asset: ParsedAsset | undefined = meta?.asset?.assetCode
+  let asset: ParsedAsset | undefined = meta?.asset?.assetCode
     ? parseAsset({ asset: meta.asset, address: meta?.asset.assetCode })
     : getAssetFromChanges(changes, type);
+
+  if (!asset && txn.addressTo) {
+    const uniqueId = getUniqueId(txn.addressTo as EthereumAddress, chainId);
+    const cachedAsset = userAssetsStore.getState().getLegacyUserAsset(uniqueId);
+
+    if (cachedAsset) {
+      const { balance: _balance, ...cachedAssetWithoutBalance } = cachedAsset;
+      asset = cachedAssetWithoutBalance;
+    }
+  }
 
   const direction = txn.direction || getDirection(type);
 

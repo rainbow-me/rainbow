@@ -157,7 +157,7 @@ async function parseConsolidatedTransactions(
       return [];
     }
 
-    const normalizedTransaction = normalizeTransactionPayload(tx as PlatformTransactionPayload);
+    const normalizedTransaction = normalizeTransactionPayload(tx as NormalizedTransactionApiResponse);
 
     return [parseTransaction(normalizedTransaction, currency, chainId)];
   });
