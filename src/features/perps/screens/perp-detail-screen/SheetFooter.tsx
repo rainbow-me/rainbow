@@ -39,14 +39,6 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
         buttonText: i18n.t(i18n.l.perps.actions.fund_wallet),
       };
     }
-    if (!hasPerpsBalance) {
-      return {
-        onPress: () => {
-          Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
-        },
-        buttonText: i18n.t(i18n.l.perps.deposit.title),
-      };
-    }
     if (hasPosition) {
       return {
         onPress: () => {
@@ -55,6 +47,14 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
           });
         },
         buttonText: i18n.t(i18n.l.perps.actions.close_position),
+      };
+    }
+    if (!hasPerpsBalance) {
+      return {
+        onPress: () => {
+          Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
+        },
+        buttonText: i18n.t(i18n.l.perps.deposit.title),
       };
     }
     return {
