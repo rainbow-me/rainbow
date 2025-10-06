@@ -1,4 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { isValid, parseISO } from 'date-fns';
 import { InfiniteQueryConfig, QueryConfig, QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
 import {
   ListTransactionsResponse,
@@ -206,21 +207,13 @@ function toNumber(value: number | string | null | undefined, fallback?: number):
   return typeof value === 'string' ? Number(value) : value;
 }
 
-function normalizeMinedAt(value: number | string | null | undefined): number | undefined {
-  if (value === null || value === undefined || value === '') {
+function normalizeMinedAt(value: string | undefined): number | undefined {
+  if (!value) {
     return undefined;
   }
 
-  if (typeof value === 'number') {
-    return Math.floor(value < 10_000_000_000 ? value : value / 1000);
-  }
-
-  const timestampMs = new Date(value).getTime();
-  if (Number.isNaN(timestampMs) || timestampMs === 0) {
-    return undefined;
-  }
-
-  return Math.floor(timestampMs / 1000);
+  const parsedDate = parseISO(value);
+  return isValid(parsedDate) ? Math.floor(parsedDate.getTime() / 1000) : undefined;
 }
 
 function extractTransactionsPayload(

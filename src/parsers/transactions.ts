@@ -66,22 +66,24 @@ export const parseTransaction = (
     ...transaction,
     changes: Array.isArray(transaction.changes) ? transaction.changes : [],
   };
-  const changes: TransactionChanges = txn.changes.map(change => {
-    if (!change) return undefined;
-    return {
-      asset: parseAddressAsset({
-        assetData: {
-          asset: change.asset,
-          quantity: change.quantity || '0',
-        },
-      }),
-      value: change.quantity ? parseFloat(change.quantity) : undefined,
-      direction: change.direction as TransactionDirection,
-      address_from: change.addressFrom,
-      address_to: change.addressTo,
-      price: parseFloat(change.price || '0'),
-    };
-  });
+  const changes: TransactionChanges = txn.changes
+    .map(change => {
+      if (!change) return undefined;
+      return {
+        asset: parseAddressAsset({
+          assetData: {
+            asset: change.asset,
+            quantity: change.quantity || '0',
+          },
+        }),
+        value: change.quantity ? parseFloat(change.quantity) : undefined,
+        direction: change.direction as TransactionDirection,
+        address_from: change.addressFrom,
+        address_to: change.addressTo,
+        price: parseFloat(change.price || '0'),
+      };
+    })
+    .filter((change): change is Exclude<TransactionChanges[number], undefined> => change !== undefined);
 
   const type = isValidTransactionType(meta?.type) ? meta.type : 'contract_interaction';
 

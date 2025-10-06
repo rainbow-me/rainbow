@@ -933,11 +933,11 @@ export interface ResponseMetadata {
    * Example: "v1.2.3"
    */
   version?: string | undefined;
-  /** Pagination infromation */
+  /** Pagination information */
   pagination?: PaginationResponse | undefined;
 }
 
-/** Pagination Response Infromation */
+/** Pagination Response Information */
 export interface PaginationResponse {
   next?: string | undefined;
 }
