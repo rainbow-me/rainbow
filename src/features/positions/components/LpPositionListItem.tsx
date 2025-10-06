@@ -12,6 +12,7 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 function getRangeStatus(assets: RainbowUnderlyingAsset[], isConcentratedLiquidity: boolean) {
   if (!isConcentratedLiquidity) {
@@ -38,6 +39,7 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
   const { colors } = useTheme();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const separatorSecondary = useForegroundColor('separatorSecondary');
+  const chainsNativeAsset = useBackendNetworksStore(state => state.getChainsNativeAsset());
 
   const totalAssetsValueNative = convertRawAmountToNativeDisplay(totalAssetsValue, 0, 1, nativeCurrency);
 
@@ -56,10 +58,13 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
     return Math.round(parseFloat(divide(asset.native.amount, totalAssetsValue)) * 100);
   });
 
-  // If ETH/WETH comes first and split is 50/50, flip the order so non-ETH token is displayed first
+  // If native/wrapped asset comes first and split is 50/50, flip the order so non-native token is displayed first
   if (displayAssets.length === 2 && allocationPercentages[0] === 50 && allocationPercentages[1] === 50) {
     const firstSymbol = displayAssets[0].asset.symbol.toLowerCase();
-    if (firstSymbol === 'eth' || firstSymbol === 'weth') {
+    const nativeAsset = chainsNativeAsset[displayAssets[0].asset.chain_id as ChainId];
+    const nativeSymbol = nativeAsset?.symbol.toLowerCase();
+
+    if (nativeSymbol && (firstSymbol === nativeSymbol || firstSymbol === `w${nativeSymbol}`)) {
       displayAssets = [displayAssets[1], displayAssets[0]];
       allocationPercentages = [allocationPercentages[1], allocationPercentages[0]];
     }
