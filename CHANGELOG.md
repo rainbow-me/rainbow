@@ -15,6 +15,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [2.0.7] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.7)
+
+### Added
+
+- Visual indicators for token balance liquidity capping (#6874)
+
+### Changed
+
+- Make browser tab preview cleanup more robust (#6878)
+- Bump iOS and Android to v2.0.7 (#6881)
+
+### Fixed
+
+- Fixed social link browser redirects, x/farcaster branding (#6865)
+- Fixed bottom sheet issue for change wallet for Android (#6875)
+- Fixed the close position button not showing when balance is 0 (#6882)
+
 ## [2.0.6] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.6)
 
 ### Added
