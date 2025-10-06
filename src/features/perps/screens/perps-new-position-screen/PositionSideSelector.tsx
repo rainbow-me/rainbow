@@ -18,6 +18,7 @@ import { fonts } from '@/design-system/typography/typography';
 export const POSITION_SIDE_SELECTOR_HEIGHT = 36;
 export const POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING = POSITION_SIDE_SELECTOR_HEIGHT + 8;
 
+const BUTTON_HIT_SLOP = Object.freeze({ bottom: 20, top: 10 });
 const HORIZONTAL_PADDING = 20;
 const PROGRESS_RANGE = Object.freeze([0, 100]);
 const COLOR_RANGE = Object.freeze([PERPS_COLORS.longGreen, PERPS_COLORS.shortRed]);
@@ -104,11 +105,12 @@ export const PositionSideSelector = memo(function PositionSideSelector() {
             borderColor={{ custom: opacityWorklet(isDarkMode ? '#ffffff' : '#000000', isDarkMode ? 0.16 : 0.02) }}
           />
         </Animated.View>
-        <Box style={StyleSheet.absoluteFill}>
+        <Box style={StyleSheet.absoluteFill} zIndex={2000}>
           <Box flexDirection="row">
             <GestureHandlerButton
               hapticTrigger="tap-end"
               hapticType="soft"
+              hitSlop={BUTTON_HIT_SLOP}
               onPressJS={() => hlNewPositionStoreActions.setPositionSide(PerpPositionSide.LONG)}
               style={styles.optionContainer}
             >
@@ -120,6 +122,7 @@ export const PositionSideSelector = memo(function PositionSideSelector() {
             <GestureHandlerButton
               hapticTrigger="tap-end"
               hapticType="soft"
+              hitSlop={BUTTON_HIT_SLOP}
               onPressJS={() => hlNewPositionStoreActions.setPositionSide(PerpPositionSide.SHORT)}
               style={styles.optionContainer}
             >

@@ -1,21 +1,22 @@
 import React, { memo } from 'react';
 import { Keyboard, ScrollView } from 'react-native';
-import Animated from 'react-native-reanimated';
-import { Bleed, Box, Separator, Stack, useColorMode } from '@/design-system';
+import Animated, { useSharedValue } from 'react-native-reanimated';
+import { Box, Separator, Stack, useColorMode } from '@/design-system';
 import { AmountInputCard } from './AmountInputCard';
 import { LeverageInputCard } from './LeverageInputCard';
 import { POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING, PositionSideSelector } from './PositionSideSelector';
 import { DetailsSection } from './DetailsSection';
 import { useOnLeaveRoute } from '@/hooks/useOnLeaveRoute';
-import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-screen/LiquidationInfo';
 import { TriggerOrdersSection } from '@/features/perps/screens/perps-new-position-screen/TriggerOrdersSection';
 import { FOOTER_HEIGHT_WITH_SAFE_AREA, LAYOUT_ANIMATION, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import { MarketInfoSection } from './MarketInfoSection';
-import { AmountInputError } from '@/features/perps/screens/perps-new-position-screen/AmountInputError';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { HeaderFade } from '@/features/perps/components/HeaderFade';
 import { IS_ANDROID } from '@/env';
+import { PerpMarket } from '@/features/perps/types';
+import { useStableValue } from '@/hooks/useStableValue';
 
 export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
   const { isDarkMode } = useColorMode();
@@ -50,18 +51,9 @@ export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
             >
               <MarketInfoSection market={market} />
               <Box gap={20}>
-                <Bleed horizontal={'20px'}>
-                  <Box paddingHorizontal="20px">
-                    <AmountInputCard />
-                    <AmountInputError />
-                  </Box>
-                </Bleed>
-                <LeverageInputCard />
-                <Box paddingHorizontal={'8px'}>
-                  <LiquidationInfo market={market} />
-                </Box>
+                <AmountInputCard />
+                <LeverageSection market={market} />
               </Box>
-              <TriggerOrdersSection />
               <Animated.View layout={LAYOUT_ANIMATION}>
                 <DetailsSection market={market} />
               </Animated.View>
@@ -85,3 +77,19 @@ export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
     </Box>
   );
 });
+
+const LeverageSection = ({ market }: { market: PerpMarket }) => {
+  const initialLeverage = useStableValue(() => hlNewPositionStoreActions.getLeverage() ?? 1);
+  const leverage = useSharedValue(initialLeverage);
+  return (
+    <>
+      <LeverageInputCard initialLeverage={initialLeverage} leverage={leverage} />
+      <Box gap={32}>
+        <Box paddingHorizontal="8px">
+          <LiquidationInfo market={market} leverage={leverage} />
+        </Box>
+        <TriggerOrdersSection />
+      </Box>
+    </>
+  );
+};

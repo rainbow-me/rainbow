@@ -1,4 +1,5 @@
 import { CANDLESTICK_CHARTS, useExperimentalFlag } from '@/config';
+import { isHyperliquidToken } from '@/features/charts/utils';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
@@ -110,8 +111,4 @@ function areTokensEqual(previousToken: Token | null, newToken: Token | null): bo
   if (!previousToken || !newToken) return false;
   if (typeof previousToken === 'string' || typeof newToken === 'string') return previousToken === newToken;
   return previousToken.address === newToken.address && previousToken.chainId === newToken.chainId;
-}
-
-function isHyperliquidToken(token: Token | null): boolean {
-  return typeof token === 'string';
 }

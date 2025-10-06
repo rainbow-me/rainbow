@@ -10,17 +10,17 @@ import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 
 const HEIGHT = 48;
 
-export const PerpsHeader = React.memo(function PerpsHeader() {
+export const PerpsHeader = React.memo(function PerpsHeader({ isDarkMode }: { isDarkMode: boolean }) {
   const { accentColor: accountColor } = useAccountAccentColor();
   const accountValueNative = useHyperliquidBalance();
 
   const navigationButtonColors = useMemo(() => {
     return {
       icon: accountColor,
-      border: opacityWorklet(accountColor, 0.08),
-      background: opacityWorklet(accountColor, 0.16),
+      border: opacityWorklet(accountColor, isDarkMode ? 0.08 : 0.015),
+      background: opacityWorklet(accountColor, isDarkMode ? 0.16 : 0.1),
     };
-  }, [accountColor]);
+  }, [accountColor, isDarkMode]);
 
   return (
     <ButtonPressAnimation onPress={navigateToPerps} scaleTo={1.05} testID={'perps-list-header'}>

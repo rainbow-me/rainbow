@@ -14,13 +14,12 @@ import { caretConfig } from '@/__swaps__/screens/Swap/constants';
 
 interface CurrencyInputCaretProps {
   isFocused: SharedValue<boolean>;
-  hasValue: SharedValue<boolean>;
   color?: string;
   disabled?: boolean;
   size?: 'small' | 'large';
 }
 
-export function CurrencyInputCaret({ isFocused, hasValue, color, disabled = false, size = 'large' }: CurrencyInputCaretProps) {
+export function CurrencyInputCaret({ isFocused, color, disabled = false, size = 'large' }: CurrencyInputCaretProps) {
   const { isDarkMode } = useColorMode();
 
   const shouldShow = useDerivedValue(() => {
@@ -42,12 +41,7 @@ export function CurrencyInputCaret({ isFocused, hasValue, color, disabled = fals
       : withTiming(0, caretConfig);
   });
 
-  const caretStyle = useAnimatedStyle(() => {
-    return {
-      opacity: blinkAnimation.value,
-      position: hasValue.value ? 'relative' : 'absolute',
-    };
-  });
+  const caretStyle = useAnimatedStyle(() => ({ opacity: blinkAnimation.value }));
 
   const caretColorStyle = useAnimatedStyle(() => {
     const defaultColor = isDarkMode ? '#FFFFFF' : '#000000';
@@ -77,5 +71,6 @@ const styles = StyleSheet.create({
   caretContainer: {
     flexGrow: 100,
     flexShrink: 0,
+    position: 'relative',
   },
 });

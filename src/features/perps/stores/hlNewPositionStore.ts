@@ -19,9 +19,10 @@ type TriggerOrder = {
 
 type HlNewPositionState = {
   amount: string;
-  amountResetSignal: number;
   leverage: number | null;
+  leverageResetSignal: number;
   market: PerpMarket | null;
+  marketResetSignal: number;
   positionSide: PerpPositionSide;
   triggerOrders: TriggerOrder[];
 };
@@ -41,9 +42,10 @@ type HlNewPositionStore = HlNewPositionState & HlNewPositionActions;
 
 const initialState: HlNewPositionState = {
   amount: '0',
-  amountResetSignal: 0,
   leverage: null,
+  leverageResetSignal: 0,
   market: null,
+  marketResetSignal: 0,
   positionSide: PerpPositionSide.LONG,
   triggerOrders: [],
 };
@@ -58,7 +60,7 @@ export const useHlNewPositionStore = createRainbowStore<HlNewPositionStore>((set
 
   getLeverage: () => {
     const { leverage, market } = get();
-    if (!leverage || !market) return leverage;
+    if (!leverage || !market) return leverage ?? 1;
     return Math.min(leverage, market.maxLeverage);
   },
 
@@ -85,14 +87,23 @@ export const useHlNewPositionStore = createRainbowStore<HlNewPositionStore>((set
     const amount = toFixedWorklet(greaterThanWorklet(availableBalance, 5) ? divide(availableBalance, 2) : availableBalance, 2);
 
     // Ensure old state is reset before the new position screen is shown
-    set(state => ({ ...initialState, amount, amountResetSignal: state.amountResetSignal + 1, leverage: market.maxLeverage, market }));
+    set(state => ({ ...initialState, amount, leverage: market.maxLeverage, market, marketResetSignal: state.marketResetSignal + 1 }));
     PerpsNavigation.setParams(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' });
 
     // Whenever the market changes, we need to fetch the user's account leverage for this asset
+    const requestId = get().marketResetSignal;
     const address = useWalletsStore.getState().accountAddress;
     const assetData = await infoClient.activeAssetData({ coin: market.symbol, user: address });
     const accountAssetLeverage = assetData?.leverage?.value || 1;
-    set(state => (state.leverage === accountAssetLeverage ? state : { leverage: accountAssetLeverage }));
+
+    set(state =>
+      state.leverage === accountAssetLeverage || requestId !== state.marketResetSignal
+        ? state
+        : {
+            leverage: accountAssetLeverage,
+            leverageResetSignal: state.leverageResetSignal + 1,
+          }
+    );
   },
 
   setPositionSide: positionSide => set(state => (state.positionSide === positionSide ? state : { positionSide })),

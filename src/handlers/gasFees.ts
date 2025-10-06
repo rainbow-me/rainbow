@@ -20,5 +20,7 @@ export const getRainbowMeteorologyApi = () => {
   return rainbowMeteorologyApi;
 };
 
-export const rainbowMeteorologyGetData = (chainId: ChainId) =>
-  getRainbowMeteorologyApi().get(`/meteorology/v1/gas/${useBackendNetworksStore.getState().getChainsName()[chainId]}`, {});
+export const rainbowMeteorologyGetData = <T>(chainId: ChainId, abortController?: AbortController | null) =>
+  getRainbowMeteorologyApi().get<T>(`/meteorology/v1/gas/${useBackendNetworksStore.getState().getChainsName()[chainId]}`, {
+    abortController,
+  });

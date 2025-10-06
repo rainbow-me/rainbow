@@ -1,10 +1,9 @@
-import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
+import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { AnimatedText, Bleed, Box, globalColors, Inline, Stack, Text, useColorMode } from '@/design-system';
+import { AnimatedText, Bleed, Box, globalColors, Inline, Text, useColorMode } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks';
-import { useDelayedMount } from '@/hooks/useDelayedMount';
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -14,10 +13,14 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import c from 'chroma-js';
 import React, { memo, useCallback, useMemo } from 'react';
-import { Text as RNText, StyleSheet } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { Text as RNText, StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { DelayedMount } from '@/components/utilities/DelayedMount';
+import { usePerpsDepositContext } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsDepositContext';
+import { LegendList } from '@legendapp/list';
 import { EXPANDED_INPUT_HEIGHT } from './constants';
+import { safeAreaInsetValues } from '@/utils';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 type ChainSelectionProps = {
   onChainSelected: (chainId: ChainId | undefined) => void;
@@ -101,23 +104,27 @@ const PerpsChainSelection = memo(function ChainSelection({ onChainSelected, sele
   );
 });
 
-const getItemLayout = (_: unknown, index: number) => ({
-  length: COIN_ROW_WITH_PADDING_HEIGHT,
-  offset: COIN_ROW_WITH_PADDING_HEIGHT * index,
-  index,
-});
-
-interface PerpsTokenListProps {
+type PerpsTokenListProps = {
   onSelectToken?: (token: ParsedSearchAsset | null) => void;
-  onSelectChain: (chainId: ChainId | undefined) => void;
-  selectedChainId: ChainId | undefined;
-}
+};
 
+export const PerpsTokenList = ({ onSelectToken }: PerpsTokenListProps) => {
+  return (
+    <DelayedMount delay="idle">
+      <PerpsTokenListCore onSelectToken={onSelectToken} />
+    </DelayedMount>
+  );
+};
+
+const COIN_ROW_HEIGHT = 60;
 const MemoizedCoinRow = memo(CoinRow);
 
-const PerpsTokenListCore = ({ onSelectToken, onSelectChain, selectedChainId }: PerpsTokenListProps) => {
-  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
+const PerpsTokenListCore = ({ onSelectToken }: PerpsTokenListProps) => {
+  const accountAddress = useAccountAddress();
+  const { depositActions, useDepositStore } = usePerpsDepositContext();
+  const selectedChainId = useDepositStore(state => state.listChainId);
   const userAssets = useUserAssetsStore(state => state.userAssets);
+  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
 
   const searchResults = useMemo(() => {
     return userAssetIds
@@ -135,46 +142,54 @@ const PerpsTokenListCore = ({ onSelectToken, onSelectChain, selectedChainId }: P
 
   const renderItem = useCallback(
     ({ item }: { item: ParsedSearchAsset }) => {
-      return <MemoizedCoinRow onPress={handleSelectToken} output={false} uniqueIdOrAsset={item} />;
+      return <MemoizedCoinRow height={COIN_ROW_HEIGHT} onPress={handleSelectToken} output={false} uniqueIdOrAsset={item} />;
     },
     [handleSelectToken]
   );
 
   return (
-    <Box style={{ height: EXPANDED_INPUT_HEIGHT, width: DEVICE_WIDTH - 24 }}>
-      <PerpsChainSelection selectedChainId={selectedChainId} onChainSelected={onSelectChain} />
-      <FlatList
-        key={selectedChainId ?? 'all'}
-        contentContainerStyle={styles.contentContainer}
+    <Box style={styles.listContainer}>
+      <Box paddingHorizontal="4px">
+        <PerpsChainSelection selectedChainId={selectedChainId} onChainSelected={depositActions.setListChainId} />
+      </Box>
+
+      <LegendList
+        ListFooterComponent={<View style={styles.listFooter} />}
         data={searchResults}
-        getItemLayout={getItemLayout}
-        initialNumToRender={15}
-        keyExtractor={item => item.uniqueId}
+        estimatedItemSize={COIN_ROW_HEIGHT}
+        key={accountAddress}
+        keyExtractor={keyExtractor}
         keyboardShouldPersistTaps="always"
-        maxToRenderPerBatch={8}
+        maintainVisibleContentPosition={false}
+        overScrollMode="always"
+        recycleItems
         renderItem={renderItem}
-        windowSize={3}
+        scrollIndicatorInsets={styles.scrollIndicatorInsets}
       />
     </Box>
   );
 };
 
-export const PerpsTokenList = (props: PerpsTokenListProps) => {
-  const shouldMount = useDelayedMount();
-
-  if (!shouldMount) return null;
-
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  return <PerpsTokenListCore {...props} />;
-};
+function keyExtractor(item: ParsedSearchAsset): string {
+  return item.uniqueId;
+}
 
 const styles = StyleSheet.create({
+  listContainer: {
+    height: EXPANDED_INPUT_HEIGHT,
+    width: DEVICE_WIDTH - 24,
+  },
+  listFooter: {
+    height: 48,
+    width: '100%',
+  },
+  scrollIndicatorInsets: {
+    bottom: safeAreaInsetValues.bottom + 48,
+    top: 0,
+  },
   textIconGlow: {
     padding: 16,
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
-  },
-  contentContainer: {
-    paddingBottom: 16,
   },
 });

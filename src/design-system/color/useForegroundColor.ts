@@ -1,4 +1,5 @@
 import { useContext } from 'react';
+import { SharedValue } from 'react-native-reanimated';
 import { AccentColorContext } from './AccentColorContext';
 import { ColorModeContext } from './ColorMode';
 import {
@@ -55,20 +56,28 @@ export function useForegroundColor(color: ForegroundColor | 'accent' | CustomCol
   return useForegroundColors([color])[0];
 }
 
+function isForegroundColor(color: string | ForegroundColor): color is ForegroundColor {
+  'worklet';
+  return color in foregroundColors;
+}
+
 export function getColorForTheme(
-  color: ForegroundColor | TextColor | CustomColor | 'accent',
+  color: ForegroundColor | TextColor | CustomColor | string | 'accent' | SharedValue<TextColor> | SharedValue<string>,
   colorMode: ColorMode,
   accentColor?: BackgroundColorValue | null
 ): string {
   'worklet';
   const binaryColorMode = colorMode === 'dark' || colorMode === 'darkTinted' ? 'dark' : 'light';
-  switch (color) {
+  const colorValue = typeof color === 'object' && 'value' in color ? color.value : color;
+
+  switch (colorValue) {
     case 'accent':
       return accentColor?.color ?? getDefaultAccentColorForColorMode(binaryColorMode).color;
     default:
-      if (typeof color === 'object' && 'custom' in color) {
-        return typeof color.custom === 'string' ? color.custom : color.custom[binaryColorMode];
+      if (typeof colorValue === 'object' && 'custom' in colorValue) {
+        return typeof colorValue.custom === 'string' ? colorValue.custom : colorValue.custom[binaryColorMode];
       }
-      return foregroundColors[color][binaryColorMode];
+      if (isForegroundColor(colorValue)) return foregroundColors[colorValue][binaryColorMode];
+      return colorValue;
   }
 }

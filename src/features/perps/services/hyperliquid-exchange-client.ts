@@ -18,18 +18,7 @@ import { getOppositePositionSide } from '@/features/perps/utils';
 import { getProvider } from '@/handlers/web3';
 import { ChainId } from '@/state/backendNetworks/types';
 import { loadWallet } from '@/model/wallet';
-import { getWalletWithAccount } from '@/state/wallets/walletsStore';
-import { watchingAlert } from '@/utils';
-import WalletTypes from '@/helpers/walletTypes';
-
-function checkIfReadOnlyWallet(address: string): boolean {
-  const wallet = getWalletWithAccount(address);
-  if (wallet?.type === WalletTypes.readOnly) {
-    watchingAlert();
-    return true;
-  }
-  return false;
-}
+import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
 
 type OrderStatusResponse = hl.OrderSuccessResponse['response']['data']['statuses'][number];
 
@@ -53,11 +42,9 @@ export class HyperliquidExchangeClient {
         });
 
         if (!wallet) throw new Error('[HyperliquidExchangeClient] Failed to load wallet for signing');
-        // const localWallet: Wallet | undefined = '_isSigner' in wallet ? undefined : wallet;
 
         return new hl.ExchangeClient({
           transport: new hl.HttpTransport(),
-          // wallet: localWallet ?? (wallet as Wallet),
           wallet: wallet as Wallet,
         });
       })();

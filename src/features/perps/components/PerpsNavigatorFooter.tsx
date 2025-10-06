@@ -31,7 +31,6 @@ import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/scree
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import * as i18n from '@/languages';
 import LinearGradient from 'react-native-linear-gradient';
-import { fonts } from '@/design-system/typography/typography';
 import { IS_ANDROID } from '@/env';
 import { analytics } from '@/analytics';
 
@@ -300,14 +299,11 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
             label={button.text}
             onLongPress={submitNewPosition}
             height={BUTTON_HEIGHT}
-            textStyle={{
-              color: button.textColor,
-              fontSize: 20,
-              fontFamily: fonts.SFProRounded.heavy.fontFamily,
-            }}
+            color={{ custom: button.textColor }}
+            size="20pt"
+            weight="black"
             progressColor={button.textColor}
           />
-          <Border borderColor={{ custom: button.borderColor }} borderWidth={2} borderRadius={24} enableInLightMode />
         </Box>
       </Box>
     </>
@@ -344,10 +340,10 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
               width: 0,
               height: -8,
             },
-            borderTopWidth: TOP_BORDER_WIDTH,
+            borderTopWidth: isDarkMode ? TOP_BORDER_WIDTH : 0,
             borderTopColor: accentColors.opacity10,
             paddingBottom: Math.max(safeAreaInsets.bottom, PADDING) + 4,
-            paddingTop: PADDING - TOP_BORDER_WIDTH,
+            paddingTop: isDarkMode ? PADDING - TOP_BORDER_WIDTH : PADDING,
             backgroundColor: isDarkMode ? accentColors.surfacePrimary : 'white',
           }}
         >

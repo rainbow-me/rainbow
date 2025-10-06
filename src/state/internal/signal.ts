@@ -1,7 +1,7 @@
 import { dequal } from 'dequal';
 import { StoreApi } from 'zustand';
 import { BaseRainbowStore } from '@/state/internal/types';
-import { isDerivedStore } from '@/state/internal/utils/storeUtils';
+import { hasGetSnapshot } from '@/state/internal/utils/storeUtils';
 
 const ENABLE_LOGS = false;
 
@@ -62,10 +62,7 @@ export const createSignal = <T, S>(
   selector: (state: T) => S,
   equalityFn: (a: S, b: S) => boolean
 ): [Subscribe, GetValue, SetValue] => {
-  const isDerived = isDerivedStore(store);
-  const unsubscribeDummyWatcher = isDerived ? store.subscribe(dummyWatcher) : undefined;
-
-  let selected = selector(store.getState());
+  let selected = selector(hasGetSnapshot(store) ? store.getSnapshot() : store.getState());
   const listeners = new Set<() => void>();
   let unsubscribe: Unsubscribe | undefined;
 
@@ -81,7 +78,6 @@ export const createSignal = <T, S>(
     }
 
     listeners.add(callback);
-    unsubscribeDummyWatcher?.();
 
     return () => {
       listeners.delete(callback);
@@ -174,8 +170,4 @@ function getOrCreateAttachValue<T, S>(store: StoreApi<T>, selector: (state: T) =
   attachValueSubscriptionMap.set(rootVal, subscribe);
   byEqFn.set(equalityFn as (a: unknown, b: unknown) => boolean, rootVal);
   return rootVal as AttachValue<S>;
-}
-
-function dummyWatcher(): void {
-  return;
 }

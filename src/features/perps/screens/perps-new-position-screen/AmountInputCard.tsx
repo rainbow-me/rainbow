@@ -1,164 +1,376 @@
 import React, { memo, useCallback, useRef } from 'react';
 import { Box, Text, useColorMode } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { SLIDER_WIDTH, SLIDER_HEIGHT, SLIDER_EXPANDED_HEIGHT, INPUT_CARD_HEIGHT } from '@/features/perps/constants';
-import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { runOnJS, runOnUI, SharedValue, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
-import { Slider } from '@/features/perps/components/Slider';
-import { addCommasToNumber, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
+import {
+  SLIDER_WIDTH,
+  SLIDER_HEIGHT,
+  SLIDER_EXPANDED_HEIGHT,
+  INPUT_CARD_HEIGHT,
+  USD_CURRENCY,
+  USD_DECIMALS,
+} from '@/features/perps/constants';
+import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { runOnJS, runOnUI, SharedValue, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import { Slider, SliderChangeSource, SliderGestureState } from '@/features/perps/components/Slider';
+import { addCommasToNumber, clamp, trimCurrencyZeros } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
-import { truncateToDecimals } from '@/safe-math/SafeMath';
-import { divide } from '@/helpers/utilities';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { useStableValue } from '@/hooks/useStableValue';
+import {
+  divWorklet,
+  equalWorklet,
+  greaterThanOrEqualToWorklet,
+  greaterThanWorklet,
+  mulWorklet,
+  toFixedWorklet,
+} from '@/safe-math/SafeMath';
 import { useListen } from '@/state/internal/hooks/useListen';
 import * as i18n from '@/languages';
+import { useDebouncedCallback } from 'use-debounce';
+import { time } from '@/utils/time';
+import { useStableValue } from '@/hooks/useStableValue';
+import { SLIDER_DEFAULT_SNAP_POINTS, SLIDER_MAX, SLIDER_MIN } from '@/features/perps/components/Slider/Slider';
+import { useLazyRef } from '@/hooks/useLazyRef';
+import { getAccountAddress } from '@/state/wallets/walletsStore';
+import { triggerHaptics } from 'react-native-turbo-haptics';
+import { sanitizeAmount } from '@/worklets/strings';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { AmountInputCardSubtitle } from '@/features/perps/screens/perps-new-position-screen/AmountInputCardSubtitle';
+
+type InteractionMode = 'slider' | 'keyboard';
 
 const AmountSlider = ({
-  sliderXPosition,
-  onPercentageUpdate,
-  onPercentageChange,
+  progressValue,
+  gestureState,
+  isEnabled,
+  onGestureBeginWorklet,
+  onProgressSettleWorklet,
+  onTouchesUpWorklet,
+  silenceEdgeHaptics,
+  snapPoints,
 }: {
-  sliderXPosition: SharedValue<number>;
-  onPercentageUpdate?: (percentage: number) => void;
-  onPercentageChange: (percentage: number) => void;
+  progressValue: SharedValue<number>;
+  gestureState: SharedValue<SliderGestureState>;
+  isEnabled?: SharedValue<boolean>;
+  onGestureBeginWorklet?: () => void;
+  onProgressSettleWorklet?: (progress: number, source: SliderChangeSource) => void;
+  onTouchesUpWorklet?: () => void;
+  silenceEdgeHaptics?: SharedValue<boolean>;
+  snapPoints?: SharedValue<readonly number[]>;
 }) => {
   const { accentColors } = usePerpsAccentColorContext();
 
   return (
     <Slider
-      sliderXPosition={sliderXPosition}
       colors={accentColors.slider}
-      onPercentageUpdate={onPercentageUpdate}
-      onPercentageChange={onPercentageChange}
-      width={SLIDER_WIDTH}
-      height={SLIDER_HEIGHT}
       expandedHeight={SLIDER_EXPANDED_HEIGHT}
+      height={SLIDER_HEIGHT}
+      isEnabled={isEnabled}
+      gestureState={gestureState}
+      onGestureBeginWorklet={onGestureBeginWorklet}
+      onProgressSettleWorklet={onProgressSettleWorklet}
+      onTouchesUpWorklet={onTouchesUpWorklet}
+      progressValue={progressValue}
+      silenceEdgeHaptics={silenceEdgeHaptics}
+      snapPoints={snapPoints}
+      width={SLIDER_WIDTH}
     />
   );
 };
 
-function formatInput(text: string) {
+function clampSliderProgress(progress: number): number {
+  'worklet';
+  return clamp(progress, SLIDER_MIN, SLIDER_MAX);
+}
+
+function formatInputForEditing(text: string): string {
   'worklet';
   const cleanedText = text.replace(/[^0-9.]/g, '');
-
   if (!cleanedText) return '';
 
-  // Handle multiple decimals - keep only the first one
   const parts = cleanedText.split('.');
   let formattedText = parts.length > 2 ? `${parts[0]}.${parts.slice(1).join('')}` : cleanedText;
 
-  // Handle decimal point
   if (formattedText.includes('.')) {
     const [intPart, decPart] = formattedText.split('.');
-    // Allow empty integer part (will be displayed as "0.")
     const cleanedInt = intPart === '' ? '0' : intPart.replace(/^0+/, '') || '0';
-    // Limit decimal places to 2
     const truncatedDecPart = decPart.slice(0, 2);
     formattedText = `${cleanedInt}.${truncatedDecPart}`;
-  } else {
-    // No decimal point - only strip leading zeros if there's more than one character
-    // This allows "0" to remain but "00" becomes "0", "05" becomes "5"
-    if (formattedText.length > 1) {
-      formattedText = formattedText.replace(/^0+/, '') || '0';
-    }
+  } else if (formattedText.length > 1) {
+    formattedText = formattedText.replace(/^0+/, '') || '0';
   }
 
   return formattedText;
 }
 
-function formatDisplay(value: string) {
+function formatAmountForDisplay(value: string): string {
   'worklet';
-  const numericValue = stripNonDecimalNumbers(value);
-  if (!numericValue || numericValue === '0') {
-    return '$0';
+  const numeric = sanitizeAmount(value);
+  if (!numeric || equalWorklet(numeric, '0')) return '$0';
+
+  if (numeric.includes('.')) {
+    const [intPart, decPart] = numeric.split('.');
+    if (decPart === '') {
+      return `$${addCommasToNumber(intPart, '0')}.`;
+    } else if (decPart.length === 1) {
+      return `$${addCommasToNumber(intPart, '0')}.${decPart}`;
+    } else {
+      return `$${addCommasToNumber(intPart, '0')}.${decPart.slice(0, 2)}`;
+    }
   }
-  return `$${addCommasToNumber(numericValue, '0')}`;
+  return `$${addCommasToNumber(numeric, '0')}`;
+}
+
+function getAmountFromProgress(progress: number, balance: string): string {
+  'worklet';
+  if (progress >= SLIDER_MAX) return balance;
+  if (equalWorklet(balance, '0')) return '0';
+
+  const percentage = clampSliderProgress(progress) / SLIDER_MAX;
+  const product = mulWorklet(balance, percentage);
+
+  return toFixedWorklet(product, USD_DECIMALS);
+}
+
+function getProgressFromAmount(amount: string, balance: string): number {
+  'worklet';
+  if (!greaterThanWorklet(balance, '0')) return 0;
+  const sanitizedAmount = sanitizeAmount(amount);
+  const ratio = balance === '0' ? 0 : divWorklet(sanitizedAmount, balance);
+  return clampSliderProgress(Number(ratio) * SLIDER_MAX);
+}
+
+function getInitialProgress(availableBalanceString: string): number {
+  'worklet';
+  const availableBalance = Number(availableBalanceString);
+  if (!availableBalance) return 0;
+  return availableBalance <= 5 ? SLIDER_MAX : SLIDER_MAX / 2;
+}
+
+function normalizeAmountForStore(value: string): string {
+  'worklet';
+  const numeric = sanitizeAmount(value);
+  if (numeric.endsWith('.')) {
+    const trimmed = numeric.slice(0, -1);
+    return trimmed === '' ? '0' : trimmed;
+  }
+  return trimCurrencyZeros(numeric, USD_CURRENCY);
+}
+
+function toNiceIncrement(sanitizedAmount: string): string {
+  'worklet';
+  const amountAsNumber = Number(sanitizedAmount);
+  if (amountAsNumber < 100) return toFixedWorklet(sanitizedAmount, USD_DECIMALS);
+  if (amountAsNumber < 1000) trimCurrencyZeros(toFixedWorklet(sanitizedAmount, 0), USD_CURRENCY);
+  return trimCurrencyZeros(toFixedWorklet(Math.round(amountAsNumber / 10) * 10, 0), USD_CURRENCY);
+}
+
+function toAdaptivePrecision(amount: string, availableBalance: string): string {
+  'worklet';
+  if (equalWorklet(amount, '0')) return '';
+
+  const balance = sanitizeAmount(availableBalance);
+  const isMax = greaterThanOrEqualToWorklet(amount, balance);
+  if (isMax) return toFixedWorklet(balance, USD_DECIMALS);
+
+  if (amount === balance) return amount;
+
+  return toNiceIncrement(amount);
+}
+
+function roundToNearestTenth(value: number): number {
+  'worklet';
+  return Math.round(value * 10) / 10;
 }
 
 export const AmountInputCard = memo(function AmountInputCard() {
   const { isDarkMode } = useColorMode();
-  const inputRef = useRef<CurrencyInputRef>(null);
   const { accentColors } = usePerpsAccentColorContext();
 
-  const availableBalanceString = useHyperliquidAccountStore(state => state.getBalance());
-  const initialValues = useStableValue(() => getInitialValues(availableBalanceString));
+  const availableBalanceString = useStoreSharedValue(useHyperliquidAccountStore, state => state.getBalance());
+  const initialValues = useStableValue(() => buildInitialValues());
+  const inputRef = useRef<CurrencyInputRef>(null);
+  const lastAccountAddress = useLazyRef(() => getAccountAddress());
 
-  const availableBalance = Number(availableBalanceString);
-  const sliderXPosition = useSharedValue(initialValues.sliderXPosition);
-  const ignoreSliderUpdates = useSharedValue(false);
-  const inputValue = useSharedValue(initialValues.initialAmount);
+  const balanceValue = useSharedValue(initialValues.availableBalance);
+  const displayedAmount = useSharedValue(initialValues.amount);
+  const sliderProgress = useSharedValue(initialValues.sliderProgress);
+  const inputSource = useSharedValue<InteractionMode>('slider');
   const isInputFocused = useSharedValue(false);
+  const sliderGestureState = useSharedValue<SliderGestureState>('idle');
 
-  const amountText = useDerivedValue(() => {
-    const currentInputValue = inputValue.value;
-    if (isInputFocused.value || Number(currentInputValue) > availableBalance) return currentInputValue;
-    const amount = availableBalance * (sliderXPosition.value / SLIDER_WIDTH);
-    const formattedAmount = formatInput(amount.toString());
-    return formattedAmount;
-  });
+  const isBalanceZero = useDerivedValue(() => equalWorklet(balanceValue.value, '0'));
+  const snapPoints = useDerivedValue(() => (isBalanceZero.value ? [0] : SLIDER_DEFAULT_SNAP_POINTS)); // ? [0] : undefined);
 
-  const onBlur = useCallback(() => (isInputFocused.value = false), [isInputFocused]);
-  const onFocus = useCallback(() => (isInputFocused.value = true), [isInputFocused]);
-  const setInputValue = useCallback((value: string) => inputRef.current?.setValue(value), [inputRef]);
   const setAmount = hlNewPositionStoreActions.setAmount;
 
-  const onNewInputValue = useCallback(
+  const debouncedSetAmount = useDebouncedCallback(
+    (amount: string) => {
+      setAmount(amount);
+    },
+    time.ms(200),
+    { leading: false, trailing: true }
+  );
+
+  const setTextInput = useCallback(
+    (value: string) => {
+      inputRef.current?.setValue(value);
+    },
+    [inputRef]
+  );
+
+  const handleSliderBeginWorklet = useCallback(() => {
+    'worklet';
+    inputSource.value = 'slider';
+  }, [inputSource]);
+
+  useAnimatedReaction(
+    () => ({
+      progress: clampSliderProgress(roundToNearestTenth(sliderProgress.value)),
+      source: inputSource.value,
+    }),
+    (current, previous) => {
+      if (previous === null || (current.progress === previous.progress && current.source === previous.source)) return;
+
+      const currentGestureState = sliderGestureState.value;
+      const isCurrentSourceSlider = current.source === 'slider';
+      const isSliderGestureActive = currentGestureState === 'active';
+
+      if (isSliderGestureActive && !isCurrentSourceSlider) inputSource.value = 'slider';
+
+      const isSliderControlled = isSliderGestureActive || isCurrentSourceSlider;
+      if (!isSliderControlled) return;
+
+      const balance = balanceValue.value;
+      const amount = toAdaptivePrecision(getAmountFromProgress(current.progress, balance), balance);
+
+      if (displayedAmount.value === amount) return;
+
+      displayedAmount.value = amount;
+      const normalized = normalizeAmountForStore(amount);
+      runOnJS(debouncedSetAmount)(normalized);
+    },
+    []
+  );
+
+  const handleKeyboardValueChange = useCallback(
     (value: string) => {
       'worklet';
-      if (!isInputFocused.value) return;
-      const amount = Number(value) || 0;
-      const percentage = availableBalance > 0 ? Math.min(amount / availableBalance, 1) : 0;
-      const newSliderX = percentage * SLIDER_WIDTH;
-      inputValue.value = value;
-      sliderXPosition.value = withSpring(newSliderX, SPRING_CONFIGS.snappySpringConfig);
-      runOnJS(setAmount)(value);
+      inputSource.value = 'keyboard';
+      displayedAmount.value = value;
+
+      const normalized = normalizeAmountForStore(value);
+      runOnJS(debouncedSetAmount)(normalized);
+
+      const nextProgress = getProgressFromAmount(value, balanceValue.value);
+      sliderProgress.value = withSpring(nextProgress, SPRING_CONFIGS.snappySpringConfig);
     },
-    [availableBalance, isInputFocused, inputValue, sliderXPosition, setAmount]
+    [balanceValue, debouncedSetAmount, displayedAmount, inputSource, sliderProgress]
   );
 
-  // Called when gesture ends
-  const onPercentageChange = useCallback(
-    (percentage: number) => {
+  const handleInputFocus = useCallback(() => {
+    'worklet';
+    isInputFocused.value = true;
+    inputSource.value = 'keyboard';
+    runOnJS(setTextInput)(displayedAmount.value);
+  }, [displayedAmount, inputSource, isInputFocused, setTextInput]);
+
+  const handleInputBlur = useCallback(() => {
+    'worklet';
+    isInputFocused.value = false;
+    const normalized = normalizeAmountForStore(displayedAmount.value);
+    displayedAmount.value = equalWorklet(normalized, '0') ? '' : normalized;
+    runOnJS(setAmount)(normalized);
+  }, [displayedAmount, isInputFocused, setAmount]);
+
+  const handleSliderTouchesUp = useCallback(() => {
+    'worklet';
+    if (!equalWorklet(balanceValue.value, '0') || sliderProgress.value <= 0) return;
+    inputSource.value = 'slider';
+    sliderProgress.value = withSpring(0, SPRING_CONFIGS.snappySpringConfig);
+  }, [balanceValue, inputSource, sliderProgress]);
+
+  const handleSliderProgressSettle = useCallback(
+    (_: number, source: SliderChangeSource) => {
       'worklet';
-      if (ignoreSliderUpdates.value) return;
-      const amount = availableBalance * percentage;
-      const formattedAmount = formatInput(amount.toString());
-      inputValue.value = formattedAmount;
-      runOnJS(setInputValue)(formattedAmount);
-      runOnJS(setAmount)(formattedAmount);
+      if (equalWorklet(balanceValue.value, '0')) {
+        triggerHaptics('notificationError');
+        sliderProgress.value = withSpring(0, SPRING_CONFIGS.snappySpringConfig);
+        return;
+      }
+
+      if (source === 'gesture' || source === 'tap' || source === 'max-button') {
+        inputSource.value = 'slider';
+        const normalized = normalizeAmountForStore(displayedAmount.value);
+        runOnJS(setAmount)(normalized);
+      }
     },
-    [availableBalance, ignoreSliderUpdates, inputValue, setAmount, setInputValue]
+    [balanceValue, displayedAmount, inputSource, setAmount, sliderProgress]
   );
 
-  const revalidateInputAmount = useCallback(
-    (balanceString: string) => {
-      runOnUI(() => {
-        const balance = Number(stripNonDecimalNumbers(balanceString));
-        const inputValueExceedsBalance = Number(stripNonDecimalNumbers(inputValue.value)) > balance;
-        if (!inputValueExceedsBalance) return;
+  const resetToInitial = useCallback(
+    (newAvailableBalance?: string) => {
+      'worklet';
+      const resetFunction = () => {
+        const currentBalance = newAvailableBalance || availableBalanceString.value;
+        const balance = sanitizeAmount(currentBalance) || '0';
+        const targetProgress = getInitialProgress(currentBalance);
+        const resetAmount = toAdaptivePrecision(getAmountFromProgress(targetProgress, balance), balance);
+        const normalized = normalizeAmountForStore(resetAmount);
 
-        const formattedBalanceString = formatInput(balanceString);
-        ignoreSliderUpdates.value = true;
-        runOnJS(setInputValue)(formattedBalanceString);
-        inputValue.value = formattedBalanceString;
-        sliderXPosition.value = withSpring(SLIDER_WIDTH, SPRING_CONFIGS.snappySpringConfig, () => {
-          ignoreSliderUpdates.value = false;
-        });
+        balanceValue.value = balance;
+        displayedAmount.value = equalWorklet(normalized, '0') ? '' : normalized;
+        inputSource.value = 'slider';
+        sliderProgress.value = targetProgress;
+        runOnJS(setAmount)(normalized);
+      };
+      if (_WORKLET) resetFunction();
+      else runOnUI(resetFunction)();
+    },
+    [availableBalanceString, balanceValue, displayedAmount, inputSource, setAmount, sliderProgress]
+  );
+
+  const revalidateAmount = useCallback(
+    (balanceString: string) => {
+      const accountAddress = getAccountAddress();
+      const didAddressChange = lastAccountAddress.current !== accountAddress;
+      if (didAddressChange) lastAccountAddress.current = accountAddress;
+
+      runOnUI(() => {
+        const nextBalance = sanitizeAmount(balanceString);
+        balanceValue.value = nextBalance;
+
+        if (didAddressChange) {
+          resetToInitial(nextBalance);
+          return;
+        }
+
+        const normalizedCurrent = normalizeAmountForStore(displayedAmount.value);
+        const exceedsBalance = greaterThanWorklet(normalizedCurrent, nextBalance);
+
+        if (exceedsBalance) {
+          inputSource.value = 'slider';
+          const hasBalance = !equalWorklet(nextBalance, '0');
+          sliderProgress.value = withSpring(hasBalance ? SLIDER_MAX : 0, SPRING_CONFIGS.snappySpringConfig);
+          return;
+        }
+
+        const nextProgress = clampSliderProgress(getProgressFromAmount(normalizedCurrent, nextBalance));
+        if (Math.abs(sliderProgress.value - nextProgress) > 0.1) {
+          sliderProgress.value = withSpring(nextProgress, SPRING_CONFIGS.snappySpringConfig);
+        }
       })();
     },
-    [ignoreSliderUpdates, inputValue, setInputValue, sliderXPosition]
+    [balanceValue, displayedAmount, inputSource, lastAccountAddress, resetToInitial, sliderProgress]
   );
-
-  useListen(useHyperliquidAccountStore, state => state.getBalance(), revalidateInputAmount);
 
   useListen(
     useHlNewPositionStore,
-    state => state.amountResetSignal,
-    () => revalidateInputAmount(availableBalanceString)
+    state => state.marketResetSignal,
+    () => resetToInitial()
   );
+
+  useListen(useHyperliquidAccountStore, state => state.getBalance(), revalidateAmount);
 
   return (
     <Box
@@ -178,24 +390,20 @@ export const AmountInputCard = memo(function AmountInputCard() {
           <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
             {i18n.t(i18n.l.perps.inputs.amount)}
           </Text>
-          <Text size="15pt" weight="heavy" color="labelSecondary">
-            {formatCurrency(truncateToDecimals(availableBalanceString, 2))}
-            <Text size="15pt" weight="bold" color="labelQuaternary">
-              {` ${i18n.t(i18n.l.perps.inputs.available)}`}
-            </Text>
-          </Text>
+          <AmountInputCardSubtitle availableBalanceString={availableBalanceString} />
         </Box>
         <Box flexDirection="row" alignItems="center" justifyContent="flex-end" style={{ flex: 1 }}>
           <CurrencyInput
             ref={inputRef}
-            value={amountText}
+            value={displayedAmount}
             textColor={accentColors.opacity100}
             placeholderTextColor={accentColors.opacity24}
-            formatInput={formatInput}
-            formatDisplay={formatDisplay}
-            onBlur={onBlur}
-            onChangeValue={onNewInputValue}
-            onFocus={onFocus}
+            formatInput={formatInputForEditing}
+            formatDisplay={formatAmountForDisplay}
+            initialValue={initialValues.amount}
+            onBlur={handleInputBlur}
+            onChangeValue={handleKeyboardValueChange}
+            onFocus={handleInputFocus}
             size="30pt"
             weight="heavy"
             align="right"
@@ -203,15 +411,31 @@ export const AmountInputCard = memo(function AmountInputCard() {
           />
         </Box>
       </Box>
-      <AmountSlider sliderXPosition={sliderXPosition} onPercentageChange={onPercentageChange} />
+      <AmountSlider
+        gestureState={sliderGestureState}
+        onGestureBeginWorklet={handleSliderBeginWorklet}
+        onProgressSettleWorklet={handleSliderProgressSettle}
+        onTouchesUpWorklet={handleSliderTouchesUp}
+        progressValue={sliderProgress}
+        silenceEdgeHaptics={isBalanceZero}
+        snapPoints={snapPoints}
+      />
     </Box>
   );
 });
 
-function getInitialValues(availableBalanceString: string): { initialAmount: string; sliderXPosition: number } {
-  const availableBalance = Number(availableBalanceString);
-  const shouldUseMax = availableBalance <= 5;
-  const sliderXPosition = shouldUseMax ? SLIDER_WIDTH : 0.5 * SLIDER_WIDTH;
-  const initialAmount = formatInput(formatDisplay(shouldUseMax ? availableBalanceString : divide(availableBalanceString, 2)));
-  return { initialAmount, sliderXPosition };
+function buildInitialValues(): {
+  amount: string;
+  availableBalance: string;
+  sliderProgress: number;
+} {
+  const availableBalanceString = hyperliquidAccountActions.getBalance();
+  const availableBalance = sanitizeAmount(availableBalanceString);
+  const sliderProgress = getInitialProgress(availableBalanceString);
+  const amount = toAdaptivePrecision(getAmountFromProgress(sliderProgress, availableBalance), availableBalance);
+  return {
+    amount,
+    availableBalance,
+    sliderProgress,
+  };
 }

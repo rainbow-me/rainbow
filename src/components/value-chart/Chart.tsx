@@ -17,10 +17,11 @@ import { IS_DEV } from '@/env';
 import { CandlestickChart, PartialCandlestickConfig } from '@/features/charts/candlestick/components/CandlestickChart';
 import { arePricesEqual } from '@/features/charts/candlestick/utils';
 import { TimeframeSelector } from '@/features/charts/components/TimeframeSelector';
-import { useCandlestickStore } from '@/features/charts/stores/candlestickStore';
 import { chartsActions, useChartsStore, useChartType } from '@/features/charts/stores/chartsStore';
 import { ChartType, LineChartTimePeriod } from '@/features/charts/types';
+import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { useCleanup } from '@/hooks/useCleanup';
+import Routes from '@/navigation/routesNames';
 import { AssetAccentColors, ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
@@ -28,7 +29,7 @@ import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue'
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { LineChart } from './LineChart';
-import { getHyperliquidTokenId } from '@/features/perps/utils';
+import { useCandlestickPrice } from '@/features/charts/stores/derived/useCandlestickPrice';
 
 const BASE_CHART_HEIGHT = 292;
 const LINE_CHART_HEIGHT = BASE_CHART_HEIGHT - 6;
@@ -46,7 +47,6 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors,
   const { width: screenWidth } = useWindowDimensions();
   const candlestickConfig = useCandlestickConfig(accentColors);
   const chartType = useChartType();
-  const enableCandlestickListeners = chartType === ChartType.Candlestick;
 
   const chartGestureUnixTimestamp = useSharedValue<number>(0);
   const chartGesturePrice = useSharedValue<number | undefined>(asset?.price.value ?? undefined);
@@ -55,14 +55,13 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors,
   const lineChartTimePeriod = useStoreSharedValue(useChartsStore, state => state.lineChartTimePeriod);
   const selectedTimespan = useChartsStore(state => state.lineChartTimePeriod);
 
-  const [currentCandlestickPrice, priceListener] = useStoreSharedValue(useCandlestickStore, state => state.getPrice(), {
-    equalityFn: arePricesEqual,
-    enabled: enableCandlestickListeners,
-    fireImmediately: true,
-    returnListenHandle: true,
-  });
-
-  useListenerRouteGuard(priceListener, { enabled: enableCandlestickListeners });
+  const currentCandlestickPrice = useListenerRouteGuard(
+    useStoreSharedValue(useCandlestickPrice, state => state, {
+      equalityFn: arePricesEqual,
+      returnListenHandle: true,
+    }),
+    { additionalRoutes: Routes.CLOSE_POSITION_BOTTOM_SHEET }
+  );
 
   const liveTokenPercentageChangeSelector = useCallback(
     ({ change }: TokenData): string => {
@@ -76,16 +75,16 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors,
     [selectedTimespan]
   );
 
-  const hyperliquidTokenId = getHyperliquidTokenId(hyperliquidSymbol);
+  const tokenId = hyperliquidSymbol === undefined ? asset.uniqueId : getHyperliquidTokenId(hyperliquidSymbol);
 
   const liveTokenPercentageChange = useLiveTokenSharedValue({
-    tokenId: hyperliquidTokenId ?? asset?.uniqueId,
+    tokenId,
     initialValue: asset?.price.relativeChange24h?.toString() ?? '0',
     selector: liveTokenPercentageChangeSelector,
   });
 
   const liveTokenPrice = useLiveTokenSharedValue({
-    tokenId: hyperliquidTokenId ?? asset?.uniqueId,
+    tokenId,
     initialValue: asset?.price.value?.toString() ?? '0',
     selector: state => state.price,
   });
@@ -118,25 +117,20 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors,
   });
 
   const ChartComponent = useMemo(() => {
-    const commonProps = {
-      accentColor: accentColors.color,
-      backgroundColor,
-      chartHeight: BASE_CHART_HEIGHT,
-      chartWidth: screenWidth,
-      config: candlestickConfig,
-      isChartGestureActive,
-    };
-
-    if (hyperliquidSymbol) {
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      return <CandlestickChart {...commonProps} symbol={hyperliquidSymbol} />;
-    }
-    if (asset) {
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      return <CandlestickChart {...commonProps} address={asset.address} chainId={asset.chainId} />;
-    }
-    return null;
-  }, [hyperliquidSymbol, asset, accentColors.color, backgroundColor, screenWidth, candlestickConfig, isChartGestureActive]);
+    const tokenProps = hyperliquidSymbol === undefined ? { address: asset.address, chainId: asset.chainId } : { symbol: hyperliquidSymbol };
+    return (
+      <CandlestickChart
+        accentColor={accentColors.color}
+        backgroundColor={backgroundColor}
+        chartHeight={BASE_CHART_HEIGHT}
+        chartWidth={screenWidth}
+        config={candlestickConfig}
+        isChartGestureActive={isChartGestureActive}
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...tokenProps}
+      />
+    );
+  }, [accentColors.color, asset, backgroundColor, candlestickConfig, hyperliquidSymbol, isChartGestureActive, screenWidth]);
 
   useCleanup(() => {
     chartsActions.resetChartsState();
@@ -155,7 +149,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors,
       />
 
       <Box gap={20}>
-        {chartType === ChartType.Line && !hyperliquidSymbol ? (
+        {chartType === ChartType.Line ? (
           <Box
             alignItems="center"
             height={LINE_CHART_HEIGHT}

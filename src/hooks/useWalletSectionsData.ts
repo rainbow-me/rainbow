@@ -44,20 +44,20 @@ export default function useWalletSectionsData({
   const selectedWallet = useSelectedWallet();
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
-  const remoteConfig = useRemoteConfig('claimables', 'remote_cards_enabled');
+  const remoteConfig = useRemoteConfig('claimables', 'remote_cards_enabled', 'perps_enabled');
   const experimentalConfig = useExperimentalConfig();
   const isWalletEthZero = useIsWalletEthZero();
 
   const remoteCardsEnabled = (remoteConfig.remote_cards_enabled || experimentalConfig[REMOTE_CARDS]) && !isReadOnlyWallet;
   const positionsEnabled = experimentalConfig[DEFI_POSITIONS] && !IS_TEST;
   const claimablesEnabled = (remoteConfig.claimables || experimentalConfig[CLAIMABLES]) && !IS_TEST;
-  const perpsEnabled = experimentalConfig[PERPS] && !IS_TEST;
+  const perpsEnabled = (experimentalConfig[PERPS] || remoteConfig.perps_enabled) && !IS_TEST;
 
   const cardIds = remoteCardsStore(state => state.getCardIdsForScreen('WALLET_SCREEN'));
   const remoteCards = useMemo(() => (remoteCardsEnabled ? cardIds : []), [cardIds, remoteCardsEnabled]);
 
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
-  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus().isInitialLoading);
+  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const positionsData = usePositionsStore(state =>
     state.getData({
@@ -187,13 +187,13 @@ export default function useWalletSectionsData({
   ]);
 }
 
-function selectPerpsData(state: PerpsPositionsInfo, perpsEnabled: boolean): PerpsWalletListData | null {
-  if (!perpsEnabled || (!state.hasPositions && !state.hasBalance)) return null;
+function selectPerpsData(state: PerpsPositionsInfo, perpsEnabled: boolean): PerpsWalletListData {
   return {
     balance: state.balance,
     hasBalance: state.hasBalance,
     hasPositions: state.hasPositions,
     positions: state.positions,
     value: state.value,
+    enabled: perpsEnabled,
   };
 }
