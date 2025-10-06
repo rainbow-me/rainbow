@@ -15,6 +15,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [2.0.6] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.6)
+
+### Added
+
+- Implement Perps Feature (#6815)
+- Updates to Perps Release #6876
+
+### Changed
+
+- Remove env log (#6870)
+- Bump iOS and Android to v2.0.6 (#6871)
+
+### Fixed
+
+- Fixed sheet and text layout on Android (#6855)
+- Fixed modal flick for contact (#6850)
+
 ## [2.0.5] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.5)
 
 ### Changed
