@@ -37,6 +37,7 @@ import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { ChartTime } from '@/hooks/charts/useChartInfo';
 import { AreAllKeysOptional, ExtractOptionalKeys } from '@/types/objects';
 import { ScrollView } from 'react-native';
+import { PerpMarket, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
 
 export type PortalSheetProps = {
   children: React.FC;
@@ -136,6 +137,8 @@ export const gasTrendToTrendType: Record<GasTrend, keyof CurrentBaseFeeTypes> = 
 } as const;
 
 export type CurrentBaseFeeTypeKey = keyof CurrentBaseFeeTypes;
+
+export type PerpsRoute = typeof Routes.PERPS_ACCOUNT_SCREEN | typeof Routes.PERPS_SEARCH_SCREEN | typeof Routes.PERPS_NEW_POSITION_SCREEN;
 
 export interface ExplainSheetParameterMap extends CurrentBaseFeeTypes {
   network: { chainId: ChainId };
@@ -626,6 +629,37 @@ type RouteParams = {
     event: PoapEvent;
   };
   [Routes.MODAL_SCREEN]: ModalParams;
+  [Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET]: {
+    triggerOrderType: TriggerOrderType;
+    symbol: string;
+    source?: TriggerOrderSource;
+  };
+  [Routes.CLOSE_POSITION_BOTTOM_SHEET]: {
+    symbol: string;
+  };
+  [Routes.PERPS_NAVIGATOR]:
+    | {
+        initialPerpsPage?: PerpsRoute;
+      }
+    | undefined;
+  [Routes.PERPS_ACCOUNT_SCREEN]:
+    | {
+        scrollToTop?: boolean;
+      }
+    | undefined;
+  [Routes.PERPS_DETAIL_SCREEN]: {
+    market: PerpMarket;
+  };
+  [Routes.PERPS_SEARCH_SCREEN]:
+    | {
+        type: 'newPosition' | 'search';
+      }
+    | undefined;
+  [Routes.PERPS_EXPLAIN_SHEET]:
+    | {
+        onDismiss?: () => void;
+      }
+    | undefined;
 };
 
 /**

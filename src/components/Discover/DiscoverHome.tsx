@@ -7,6 +7,7 @@ import useExperimentalFlag, {
   NFT_OFFERS,
   FEATURED_RESULTS,
   TRENDING_TOKENS,
+  PERPS,
 } from '@rainbow-me/config/experimentalHooks';
 import { Inline, Inset, Stack, Box } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
@@ -31,6 +32,7 @@ import Routes from '@/navigation/routesNames';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
 import { DiscoverSeparator } from './DiscoverSeparator';
 import { useWallets } from '@/state/wallets/walletsStore';
+import { PerpsFeatureCard } from '@/components/asset-list/RecyclerAssetList2/cards/PerpsFeatureCard';
 
 export const HORIZONTAL_PADDING = 20;
 
@@ -41,7 +43,8 @@ function onNavigate(url: string): void {
 }
 
 export default function DiscoverHome() {
-  const { profiles_enabled, mints_enabled, op_rewards_enabled, featured_results, trending_tokens_enabled } = useRemoteConfig();
+  const { profiles_enabled, mints_enabled, op_rewards_enabled, featured_results, trending_tokens_enabled, perps_enabled } =
+    useRemoteConfig();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
@@ -51,6 +54,7 @@ export default function DiscoverHome() {
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
   const trendingTokensEnabled = (useExperimentalFlag(TRENDING_TOKENS) || trending_tokens_enabled) && !IS_TEST;
+  const perpsEnabled = useExperimentalFlag(PERPS) || perps_enabled;
 
   const { chainId } = useAccountSettings();
   const testNetwork = isTestnetChain({ chainId });
@@ -64,6 +68,7 @@ export default function DiscoverHome() {
     <Inset top="12px" bottom={{ custom: 200 }} horizontal={{ custom: HORIZONTAL_PADDING }}>
       {!testNetwork ? (
         <Box gap={20}>
+          {perpsEnabled && <PerpsFeatureCard brightenDarkModeBackground isDismissable={false} />}
           <DiscoverSeparator />
           {trendingTokensEnabled && <TrendingTokens />}
           <RemoteCardCarousel />

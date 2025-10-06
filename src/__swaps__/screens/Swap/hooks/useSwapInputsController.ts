@@ -1,5 +1,7 @@
 import {
   SCRUBBER_WIDTH,
+  SLIDER_COLLAPSED_HEIGHT,
+  SLIDER_HEIGHT,
   SLIDER_ROUND_THRESHOLD_END,
   SLIDER_ROUND_THRESHOLD_START,
   SLIDER_WIDTH,
@@ -81,6 +83,7 @@ export function useSwapInputsController({
   lastTypedInput,
   outputProgress,
   quote,
+  sliderPressProgress,
   sliderXPosition,
 }: {
   currentCurrency: NativeCurrencyKey;
@@ -94,6 +97,7 @@ export function useSwapInputsController({
   lastTypedInput: SharedValue<InputKeys>;
   outputProgress: SharedValue<number>;
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
+  sliderPressProgress: SharedValue<number>;
   sliderXPosition: SharedValue<number>;
 }) {
   const inputValues = useSharedValue<InputValues>(applyInitialInputValues(initialValues));
@@ -545,6 +549,9 @@ export function useSwapInputsController({
       } else {
         isQuoteStale.value = 1;
       }
+
+      // Reset slider press progress to normal state when max button is pressed
+      sliderPressProgress.value = withSpring(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT, SPRING_CONFIGS.sliderConfig);
 
       sliderXPosition.value = withSpring(SLIDER_WIDTH, SPRING_CONFIGS.snappySpringConfig, isFinished => {
         if (isFinished) {

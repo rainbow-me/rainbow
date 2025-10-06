@@ -72,7 +72,7 @@ const AssetList = (props: AssetListProps) => {
         hideHeader={props.hideHeader}
         isLoading={true}
         isWalletEthZero={props.isWalletEthZero || false}
-        title={i18n.t(i18n.l.account.tab_balances)}
+        title={i18n.t(i18n.l.account.tokens)}
         {...restProps}
       />
     );

@@ -9,7 +9,7 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { usePositionsStore } from '@/state/positions/positions';
 import { useClaimablesStore } from '@/state/claimables/claimables';
-import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
+import { CLAIMABLES, DEFI_POSITIONS, PERPS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
 import { analytics } from '@/analytics';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
@@ -19,6 +19,10 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useShowcaseTokens, useHiddenTokens } from '@/hooks';
 import { isDataComplete } from '@/state/nfts/utils';
+import { PerpsPositionsInfo, usePerpsPositionsInfo } from '@/features/perps/stores/derived/usePerpsPositionsInfo';
+import { PerpsWalletListData } from '@/features/perps/types';
+import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
+import { shallowEqual } from '@/worklets/comparisons';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -40,19 +44,20 @@ export default function useWalletSectionsData({
   const selectedWallet = useSelectedWallet();
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
-  const remoteConfig = useRemoteConfig('claimables', 'remote_cards_enabled');
+  const remoteConfig = useRemoteConfig('claimables', 'remote_cards_enabled', 'perps_enabled');
   const experimentalConfig = useExperimentalConfig();
   const isWalletEthZero = useIsWalletEthZero();
 
   const remoteCardsEnabled = (remoteConfig.remote_cards_enabled || experimentalConfig[REMOTE_CARDS]) && !isReadOnlyWallet;
   const positionsEnabled = experimentalConfig[DEFI_POSITIONS] && !IS_TEST;
   const claimablesEnabled = (remoteConfig.claimables || experimentalConfig[CLAIMABLES]) && !IS_TEST;
+  const perpsEnabled = (experimentalConfig[PERPS] || remoteConfig.perps_enabled) && !IS_TEST;
 
   const cardIds = remoteCardsStore(state => state.getCardIdsForScreen('WALLET_SCREEN'));
   const remoteCards = useMemo(() => (remoteCardsEnabled ? cardIds : []), [cardIds, remoteCardsEnabled]);
 
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
-  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus().isInitialLoading);
+  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const positionsData = usePositionsStore(state =>
     state.getData({
@@ -78,6 +83,8 @@ export default function useWalletSectionsData({
     return claimablesData;
   }, [claimablesData, claimablesEnabled]);
 
+  const perpsData = usePerpsPositionsInfo(state => selectPerpsData(state, perpsEnabled), shallowEqual);
+
   const isShowcaseDataMigrated = useMemo(() => isDataComplete(showcaseTokens), [showcaseTokens]);
   const isHiddenDataMigrated = useMemo(() => isDataComplete(hiddenTokens), [hiddenTokens]);
 
@@ -97,6 +104,7 @@ export default function useWalletSectionsData({
 
   const { pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
   const { isCoinListEdited } = useCoinListEdited();
+  const { isDismissed: isDismissedPerpsFeatureCard } = usePerpsFeatureCard();
 
   useEffect(() => {
     if (isLoadingUserAssets || type !== 'wallet') return;
@@ -131,10 +139,12 @@ export default function useWalletSectionsData({
       experimentalConfig,
       positions,
       claimables,
+      perpsData,
       remoteCards,
       hasMoreCollections,
       isShowcaseDataMigrated,
       isHiddenDataMigrated,
+      isDismissedPerpsFeatureCard,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(sections);
@@ -168,9 +178,22 @@ export default function useWalletSectionsData({
     experimentalConfig,
     positions,
     claimables,
+    perpsData,
     remoteCards,
     hasMoreCollections,
     isShowcaseDataMigrated,
     isHiddenDataMigrated,
+    isDismissedPerpsFeatureCard,
   ]);
+}
+
+function selectPerpsData(state: PerpsPositionsInfo, perpsEnabled: boolean): PerpsWalletListData {
+  return {
+    balance: state.balance,
+    hasBalance: state.hasBalance,
+    hasPositions: state.hasPositions,
+    positions: state.positions,
+    value: state.value,
+    enabled: perpsEnabled,
+  };
 }

@@ -6,7 +6,6 @@ import WrappedNFT from '../WrappedNFT';
 import WrappedTokenFamilyHeader from '../WrappedTokenFamilyHeader';
 import { ExtendedState } from './RawRecyclerList';
 import {
-  AssetsHeaderExtraData,
   CellType,
   ClaimableExtraData,
   ClaimablesHeaderExtraData,
@@ -18,6 +17,8 @@ import {
   NFTFamilyExtraData,
   PositionExtraData,
   PositionHeaderExtraData,
+  PerpsBalanceExtraData,
+  PerpsPositionExtraData,
 } from './ViewTypes';
 import assertNever from '@/helpers/assertNever';
 import { ProfileRowWrapper } from '../profile-header/ProfileRowWrapper';
@@ -31,6 +32,7 @@ import { ReceiveAssetsCard } from '@/components/cards/ReceiveAssetsCard';
 import { CardRowWrapper } from '../cards/CardRowWrapper';
 import { DiscoverMoreButton } from './DiscoverMoreButton';
 import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
+import { PerpsFeatureCard } from '../cards/PerpsFeatureCard';
 import WrappedPosition from '../WrappedPosition';
 import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
@@ -41,6 +43,10 @@ import { ClaimablesListHeader } from '../ClaimablesListHeader';
 import { Claimable } from '../Claimable';
 import LegacyWrappedNFT from '../LegacyWrappedNFT';
 import LegacyWrappedTokenFamilyHeader from '../LegacyWrappedTokenFamilyHeader';
+import { PerpsHeader } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsHeader';
+import { PerpsPositionRow } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsPositionRow';
+import { PerpsAvailableBalance } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsAvailableBalance';
+import { TokensHeader } from '@/components/asset-list/RecyclerAssetList2/tokens/TokensHeader';
 
 function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
   const data = extendedState.additionalData[uid];
@@ -62,6 +68,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.CLAIMABLES_SPACE_AFTER:
     case CellType.CLAIMABLES_SPACE_BEFORE:
     case CellType.EMPTY_REMOTE_CARD_CAROUSEL:
+    case CellType.SPACER:
       return null;
     case CellType.COIN_DIVIDER:
       return (
@@ -97,6 +104,13 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
           <RotatingLearnCard />
         </CardRowWrapper>
       );
+    case CellType.PERPS_FEATURE_CARD: {
+      return (
+        <CardRowWrapper>
+          <PerpsFeatureCard />
+        </CardRowWrapper>
+      );
+    }
     case CellType.PROFILE_STICKY_HEADER:
       return <ProfileStickyHeader />;
     case CellType.REMOTE_CARD_CAROUSEL:
@@ -206,7 +220,20 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
 
       return <Claimable claimable={claimable} />;
     }
-
+    case CellType.PERPS_HEADER: {
+      return <PerpsHeader isDarkMode={extendedState.theme.isDarkMode} />;
+    }
+    case CellType.PERPS_BALANCE: {
+      const { balance } = data as PerpsBalanceExtraData;
+      return <PerpsAvailableBalance balance={balance} isDarkMode={extendedState.theme.isDarkMode} />;
+    }
+    case CellType.PERPS_POSITION: {
+      const { position } = data as PerpsPositionExtraData;
+      return <PerpsPositionRow position={position} />;
+    }
+    case CellType.TOKENS_HEADER: {
+      return <TokensHeader />;
+    }
     case CellType.LOADING_ASSETS:
       return <AssetListItemSkeleton />;
     default:
@@ -214,4 +241,4 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
   }
 }
 
-export default rowRenderer as (type: string | number, data: any) => React.ReactElement;
+export default rowRenderer as (type: string | number, data: any) => React.ReactElement; // eslint-disable-line @typescript-eslint/no-explicit-any
