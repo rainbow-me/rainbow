@@ -27,14 +27,14 @@ const SECTION_TITLE_HEIGHT = 20 + ITEM_PADDING;
 
 export function getPositionSheetHeight({ position }: { position: RainbowPosition }) {
   let height = 120 + safeAreaInsetValues.bottom;
-  const numberOfDeposits = position.deposits.filter(deposit => !deposit.isLp).length || 0;
-  const numberOfLpDeposits = position.deposits.filter(deposit => deposit.isLp).length || 0;
+  const numberOfDeposits = position.deposits.length || 0;
+  const numberOfPools = position.pools.length || 0;
   const numberOfBorrows = position.borrows.length || 0;
   const numberOfClaimables = position.rewards.length || 0;
   const numberOfStakes = position.stakes.length || 0;
 
   height += numberOfDeposits > 0 ? SECTION_TITLE_HEIGHT + numberOfDeposits * (DEPOSIT_ITEM_HEIGHT + ITEM_PADDING) : 0;
-  height += numberOfLpDeposits > 0 ? SECTION_TITLE_HEIGHT + numberOfLpDeposits * (DEPOSIT_ITEM_HEIGHT + ITEM_PADDING) : 0;
+  height += numberOfPools > 0 ? SECTION_TITLE_HEIGHT + numberOfPools * (DEPOSIT_ITEM_HEIGHT + ITEM_PADDING) : 0;
   height += numberOfBorrows > 0 ? SECTION_TITLE_HEIGHT + numberOfBorrows * (BORROW_ITEM_HEIGHT + ITEM_PADDING) : 0;
   height += numberOfClaimables > 0 ? SECTION_TITLE_HEIGHT + numberOfClaimables * (CLAIMABLE_ITEM_HEIGHT + ITEM_PADDING) : 0;
   height += numberOfStakes > 0 ? SECTION_TITLE_HEIGHT + numberOfStakes * (STAKE_ITEM_HEIGHT + ITEM_PADDING) : 0;
@@ -51,9 +51,6 @@ export const PositionSheet: React.FC = () => {
 
   const positionColor =
     position.dapp.colors.primary || position.dapp.colors.fallback || (isDarkMode ? globalColors.white100 : globalColors.white10);
-
-  const deposits = position.deposits.filter(deposit => !deposit.isLp);
-  const lpDeposits = position.deposits.filter(deposit => deposit.isLp);
 
   const openDapp = useCallback(() => {
     analytics.track(analytics.event.positionsOpenedExternalDapp, {
@@ -115,12 +112,12 @@ export const PositionSheet: React.FC = () => {
               </Inline>
 
               <Stack space={'20px'}>
-                {(deposits.length || false) && (
+                {(position.deposits.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
                     {i18n.t(i18n.l.positions.deposits)}
                   </Text>
                 )}
-                {deposits.map(deposit => (
+                {position.deposits.map(deposit => (
                   <SubPositionListItem
                     key={`deposit-${deposit.asset.asset_code}-${deposit.quantity}-${deposit.apy}`}
                     asset={deposit.underlying[0].asset}
@@ -132,18 +129,18 @@ export const PositionSheet: React.FC = () => {
                   />
                 ))}
 
-                {(lpDeposits.length || false) && (
+                {(position.pools.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
                     {i18n.t(i18n.l.positions.pools)}
                   </Text>
                 )}
-                {lpDeposits.map(deposit => (
+                {position.pools.map(pool => (
                   <LpPositionListItem
-                    key={`deposit-${deposit.asset.asset_code}-${deposit.quantity}`}
-                    assets={deposit.underlying}
-                    totalAssetsValue={deposit.totalValue}
-                    isConcentratedLiquidity={deposit.isConcentratedLiquidity}
-                    dappVersion={deposit.dappVersion}
+                    key={`pool-${pool.asset.asset_code}-${pool.quantity}`}
+                    assets={pool.underlying}
+                    totalAssetsValue={pool.totalValue}
+                    isConcentratedLiquidity={pool.isConcentratedLiquidity}
+                    dappVersion={pool.dappVersion}
                   />
                 ))}
 
