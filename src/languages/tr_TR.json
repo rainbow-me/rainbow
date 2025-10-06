@@ -13,7 +13,7 @@
       "show": "Göster",
       "show_all": "Hepsini göster",
       "show_less": "Daha az göster",
-      "tab_balances": "Bakiyeler",
+      "tab_tokens": "Tokenler",
       "tab_balances_empty_state": "Bakiye",
       "tab_balances_tooltip": "Ethereum ve Token Bakiyeleri",
       "tab_claimables": "Talep Edilebilirler",
@@ -23,6 +23,7 @@
       "tab_investments": "Havuzlar",
       "tab_savings": "Tasarruflar",
       "tab_showcase": "Vitrin",
+      "tab_perps": "Perps",
       "tab_points": "Noktalar",
       "tab_positions": "Pozisyonlar",
       "tab_rewards": "Ödüller",
@@ -1579,6 +1580,181 @@
       "info": {
         "address_copied_to_clipboard": "Adres panoya kopyalandı"
       }
+    },
+    "perps": {
+      "common": {
+        "not_available": "N/A",
+        "current_price": "Current Price",
+        "title": "Perps",
+        "error_submitting_order": "Error submitting order",
+        "submitting": "Submitting...",
+        "more": "Daha fazla",
+        "error": "Hata",
+        "cancel": "İptal",
+        "liq_price": "liq. price",
+        "liq": "liq"
+      },
+      "feature_card": {
+        "title": "Perps",
+        "subtitle": "High-risk, high-reward trading"
+      },
+      "actions": {
+        "fund_wallet": "Fund Wallet",
+        "new_position": "New Position",
+        "close_position": "Close Position",
+        "open_position": "Open Position"
+      },
+      "account": {
+        "available_balance": "Mevcut Bakiye"
+      },
+      "markets": {
+        "title": "Markets",
+        "up_to": "UP TO",
+        "already_open": "Already Open"
+      },
+      "deposit": {
+        "title": "Depozit",
+        "no_balance": "Bakiye Yok",
+        "receive": "Al",
+        "slider_label": "Yatırılıyor",
+        "zero_amount_error": "Enter an amount to deposit",
+        "confirm_button_text": "Yatırmak için Basılı Tutun",
+        "confirm_button_loading_text": "Depositing...",
+        "confirm_button_zero_text": "Miktar Girin",
+        "confirm_button_over_balance_text": "Yetersiz Bakiye",
+        "confirm_button_error_text": "Teklif Hatası",
+        "quote_error": "􀇿 No quote available",
+        "insufficient_balance": "􀫲 Insufficient Funds"
+      },
+      "withdraw": {
+        "title": "Çekme",
+        "slider_label": "Çekiliyor",
+        "confirm_button_text": "Çekmek için Tut",
+        "confirm_button_loading_text": "Withdrawing...",
+        "available_balance_suffix": " Available",
+        "confirm_button_zero_text": "Miktar Girin",
+        "confirm_button_over_balance_text": "Yetersiz Bakiye",
+        "info_card_title_prefix": "Withdrawing to ",
+        "info_card_title_suffix": "Arbitrum",
+        "info_card_subtitle": "Additional networks coming soon. Withdrawals currently include a $1.00 Hyperliquid fee."
+      },
+      "position_side": {
+        "long": "Long",
+        "short": "Short"
+      },
+      "positions": {
+        "entry": "ENTRY",
+        "mark_price": "MARK PRICE",
+        "open_positions": "Open Positions",
+        "no_open_positions": "No Open Positions",
+        "position_value": "Position Value",
+        "mark_price_full": "Mark Price",
+        "entry_price": "Entry Price",
+        "funding": "Funding",
+        "liquidation_price": "Liquidation Price",
+        "total": "Toplam",
+        "learn_more_about_perps": "Learn more about Perps"
+      },
+      "new_position": {
+        "hold_to_long": "Hold to Long",
+        "hold_to_short": "Hold to Short",
+        "liquidated_at": "Liquidated at",
+        "from_current_price": "from current price",
+        "details": "Detaylar",
+        "funding_rate": "Funding Rate",
+        "max_slippage": "Maks Kayma",
+        "no_liquidation_risk": "No Liquidation Risk",
+        "trading_without_leverage": "Trading without leverage"
+      },
+      "inputs": {
+        "amount": "Miktar",
+        "available": "Available",
+        "max": "Maks",
+        "maximum_amount_is": "Maximum amount is",
+        "minimum": "Minimum",
+        "minimum_amount_is": "Minimum amount is",
+        "no_balance": "Bakiye Yok"
+      },
+      "history": {
+        "title": "Geçmiş",
+        "no_trades": "No trades",
+        "trade_execution": {
+          "take_profit_executed": "Take Profit Executed",
+          "stop_loss_executed": "Stop Loss Executed",
+          "long_opened": "Long Opened",
+          "short_opened": "Short Opened",
+          "long_closed": "Long Closed",
+          "short_closed": "Short Closed",
+          "long_liquidated": "Long Liquidated",
+          "short_liquidated": "Short Liquidated"
+        }
+      },
+      "trigger_orders": {
+        "title": "Trigger Orders",
+        "take_profit": "Take Profit",
+        "stop_loss": "Stop Loss",
+        "sell": "Sell",
+        "cancel_failed": "Failed to cancel order",
+        "add_stop_loss": "Add Stop Loss",
+        "add_take_profit": "Add Take Profit",
+        "price": "Fiyat",
+        "projected_profit": "Projected Profit",
+        "projected_loss": "Projected Loss",
+        "add": "Ekle",
+        "adding": "Adding...",
+        "above": "above",
+        "below": "below",
+        "must_be": "Must be",
+        "failed_to_create": "Failed to create trigger order"
+      },
+      "search": {
+        "search_markets": "Search markets",
+        "markets_count": "%{count} MARKETS",
+        "choose_a_market": "CHOOSE A MARKET"
+      },
+      "close_position": {
+        "estimated_loss": "Estimated Loss",
+        "estimated_profit": "Estimated Profit",
+        "minimum_amount_is": "Minimum amount is",
+        "closing": "Closing...",
+        "hold_to_close": "Hold to Close"
+      },
+      "explain_sheet": {
+        "next": "Sonraki",
+        "got_it": "Anladım",
+        "title": "Perps",
+        "steps": {
+          "step_1": {
+            "title_parts": [
+              "Perpetual Futures"
+            ],
+            "subtitle_parts": [
+              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
+            ]
+          },
+          "step_2": {
+            "title_parts": [
+              "Go",
+              "Long",
+              "or",
+              "Short"
+            ],
+            "subtitle_parts": [
+              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
+            ]
+          },
+          "step_3": {
+            "title_parts": [
+              "Trade with Leverage"
+            ],
+            "subtitle_parts": [
+              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+            ]
+          }
+        }
+      },
+      "leverage": "Leverage",
+      "up_to": "Up to"
     },
     "points": {
       "placeholder": {
@@ -3471,6 +3647,7 @@
     "done": "Tamamlandı",
     "copy": "Kopyala",
     "paste": "Yapıştır",
+    "new": "Yeni",
     "market_data": {
       "vol": "HACİM",
       "price": "FİYAT",
