@@ -81,8 +81,6 @@ export async function consolidatedTransactionsQueryFunction({
         ...(cursor ? { cursor } : {}),
       },
     });
-    // __AUTO_GENERATED_PRINT_VAR_START__
-    console.log('consolidatedTransactionsQueryFunction data:', JSON.stringify(data, null, 2)); // __AUTO_GENERATED_PRINT_VAR_END__
 
     const payload = extractTransactionsPayload(data);
 
