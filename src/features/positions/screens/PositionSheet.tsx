@@ -30,7 +30,7 @@ export function getPositionSheetHeight({ position }: { position: RainbowPosition
   const numberOfDeposits = position.deposits.filter(deposit => !deposit.isLp).length || 0;
   const numberOfLpDeposits = position.deposits.filter(deposit => deposit.isLp).length || 0;
   const numberOfBorrows = position.borrows.length || 0;
-  const numberOfClaimables = position.claimables.length || 0;
+  const numberOfClaimables = position.rewards.length || 0;
   const numberOfStakes = position.stakes.length || 0;
 
   height += numberOfDeposits > 0 ? SECTION_TITLE_HEIGHT + numberOfDeposits * (DEPOSIT_ITEM_HEIGHT + ITEM_PADDING) : 0;
@@ -68,12 +68,9 @@ export const PositionSheet: React.FC = () => {
       {({ backgroundColor }) => (
         <SlackSheet
           backgroundColor={backgroundColor}
-          {...(IS_IOS
-            ? { height: '100%' }
-            : {
-                additionalTopPadding: true,
-                contentHeight: getPositionSheetHeight({ position }),
-              })}
+          height={IS_IOS ? '100%' : undefined}
+          additionalTopPadding={IS_IOS ? undefined : true}
+          contentHeight={IS_IOS ? undefined : getPositionSheetHeight({ position })}
           scrollEnabled
         >
           <Box padding="20px" width="full" paddingBottom={{ custom: 50 }}>
@@ -81,7 +78,7 @@ export const PositionSheet: React.FC = () => {
               <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
                 <Box style={{ maxWidth: '58%' }}>
                   <Inline horizontalSpace={'10px'} alignVertical="center" wrap={false}>
-                    {/* @ts-ignore js component*/}
+                    {/* @ts-expect-error - RequestVendorLogoIcon is a JS component without TypeScript definitions */}
                     <RequestVendorLogoIcon
                       backgroundColor={positionColor}
                       dappName={startCase(position.type.split('-')[0])}
@@ -192,17 +189,17 @@ export const PositionSheet: React.FC = () => {
                   />
                 ))}
 
-                {(position.claimables.length || false) && (
+                {(position.rewards.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
                     {i18n.t(i18n.l.positions.rewards)}
                   </Text>
                 )}
-                {position.claimables.map(claim => (
+                {position.rewards.map(reward => (
                   <SubPositionListItem
-                    key={`claimable-${claim.asset.asset_code}-${claim.quantity}`}
-                    asset={claim.asset}
-                    quantity={claim.quantity}
-                    native={claim.native}
+                    key={`claimable-${reward.asset.asset_code}-${reward.quantity}`}
+                    asset={reward.asset}
+                    quantity={reward.quantity}
+                    native={reward.native}
                     positionColor={positionColor}
                     apy={undefined}
                   />
