@@ -21,7 +21,7 @@ export const useLiveWalletBalance = createDerivedStore(
     const positionsBalance = $(usePositionsStore, state => {
       const data = state.getData(params);
       if (!data) return '0';
-      return subtract(data.totals.total.amount, data.totals.totalLocked);
+      return subtract(data.totals.total.amount, data.totals.totalLocked.amount);
     });
 
     let valueDifference = '0';
