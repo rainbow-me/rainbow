@@ -13,7 +13,7 @@
       "show": "보이기",
       "show_all": "모두 보기",
       "show_less": "덜 보기",
-      "tab_balances": "잔고",
+      "tab_tokens": "토큰",
       "tab_balances_empty_state": "균형",
       "tab_balances_tooltip": "이더리움 및 토큰 잔고",
       "tab_claimables": "청구 가능",
@@ -23,6 +23,7 @@
       "tab_investments": "풀",
       "tab_savings": "저축",
       "tab_showcase": "쇼케이스",
+      "tab_perps": "Perps",
       "tab_points": "포인트",
       "tab_positions": "포지션",
       "tab_rewards": "보상",
@@ -1579,6 +1580,181 @@
       "info": {
         "address_copied_to_clipboard": "주소가 클립보드에 복사되었습니다"
       }
+    },
+    "perps": {
+      "common": {
+        "not_available": "N/A",
+        "current_price": "Current Price",
+        "title": "Perps",
+        "error_submitting_order": "Error submitting order",
+        "submitting": "Submitting...",
+        "more": "더 보기",
+        "error": "오류",
+        "cancel": "취소",
+        "liq_price": "liq. price",
+        "liq": "liq"
+      },
+      "feature_card": {
+        "title": "Perps",
+        "subtitle": "High-risk, high-reward trading"
+      },
+      "actions": {
+        "fund_wallet": "Fund Wallet",
+        "new_position": "New Position",
+        "close_position": "Close Position",
+        "open_position": "Open Position"
+      },
+      "account": {
+        "available_balance": "사용 가능한 잔액"
+      },
+      "markets": {
+        "title": "Markets",
+        "up_to": "UP TO",
+        "already_open": "Already Open"
+      },
+      "deposit": {
+        "title": "예금",
+        "no_balance": "잔액 없음",
+        "receive": "받기",
+        "slider_label": "입금 중",
+        "zero_amount_error": "Enter an amount to deposit",
+        "confirm_button_text": "입금을 위해 누르세요",
+        "confirm_button_loading_text": "Depositing...",
+        "confirm_button_zero_text": "금액 입력",
+        "confirm_button_over_balance_text": "자금이 부족합니다",
+        "confirm_button_error_text": "견적 오류",
+        "quote_error": "􀇿 No quote available",
+        "insufficient_balance": "􀫲 Insufficient Funds"
+      },
+      "withdraw": {
+        "title": "철수",
+        "slider_label": "인출 중",
+        "confirm_button_text": "출금 유지",
+        "confirm_button_loading_text": "Withdrawing...",
+        "available_balance_suffix": " Available",
+        "confirm_button_zero_text": "금액 입력",
+        "confirm_button_over_balance_text": "자금이 부족합니다",
+        "info_card_title_prefix": "Withdrawing to ",
+        "info_card_title_suffix": "Arbitrum",
+        "info_card_subtitle": "Additional networks coming soon. Withdrawals currently include a $1.00 Hyperliquid fee."
+      },
+      "position_side": {
+        "long": "Long",
+        "short": "Short"
+      },
+      "positions": {
+        "entry": "ENTRY",
+        "mark_price": "MARK PRICE",
+        "open_positions": "Open Positions",
+        "no_open_positions": "No Open Positions",
+        "position_value": "Position Value",
+        "mark_price_full": "Mark Price",
+        "entry_price": "Entry Price",
+        "funding": "Funding",
+        "liquidation_price": "Liquidation Price",
+        "total": "총액",
+        "learn_more_about_perps": "Learn more about Perps"
+      },
+      "new_position": {
+        "hold_to_long": "Hold to Long",
+        "hold_to_short": "Hold to Short",
+        "liquidated_at": "Liquidated at",
+        "from_current_price": "from current price",
+        "details": "세부정보",
+        "funding_rate": "Funding Rate",
+        "max_slippage": "최대 슬리피지",
+        "no_liquidation_risk": "No Liquidation Risk",
+        "trading_without_leverage": "Trading without leverage"
+      },
+      "inputs": {
+        "amount": "금액",
+        "available": "Available",
+        "max": "최대",
+        "maximum_amount_is": "Maximum amount is",
+        "minimum": "Minimum",
+        "minimum_amount_is": "Minimum amount is",
+        "no_balance": "잔액 없음"
+      },
+      "history": {
+        "title": "기록",
+        "no_trades": "No trades",
+        "trade_execution": {
+          "take_profit_executed": "Take Profit Executed",
+          "stop_loss_executed": "Stop Loss Executed",
+          "long_opened": "Long Opened",
+          "short_opened": "Short Opened",
+          "long_closed": "Long Closed",
+          "short_closed": "Short Closed",
+          "long_liquidated": "Long Liquidated",
+          "short_liquidated": "Short Liquidated"
+        }
+      },
+      "trigger_orders": {
+        "title": "Trigger Orders",
+        "take_profit": "Take Profit",
+        "stop_loss": "Stop Loss",
+        "sell": "Sell",
+        "cancel_failed": "Failed to cancel order",
+        "add_stop_loss": "Add Stop Loss",
+        "add_take_profit": "Add Take Profit",
+        "price": "가격",
+        "projected_profit": "Projected Profit",
+        "projected_loss": "Projected Loss",
+        "add": "추가",
+        "adding": "Adding...",
+        "above": "above",
+        "below": "below",
+        "must_be": "Must be",
+        "failed_to_create": "Failed to create trigger order"
+      },
+      "search": {
+        "search_markets": "Search markets",
+        "markets_count": "%{count} MARKETS",
+        "choose_a_market": "CHOOSE A MARKET"
+      },
+      "close_position": {
+        "estimated_loss": "Estimated Loss",
+        "estimated_profit": "Estimated Profit",
+        "minimum_amount_is": "Minimum amount is",
+        "closing": "Closing...",
+        "hold_to_close": "Hold to Close"
+      },
+      "explain_sheet": {
+        "next": "다음",
+        "got_it": "알겠습니다",
+        "title": "Perps",
+        "steps": {
+          "step_1": {
+            "title_parts": [
+              "Perpetual Futures"
+            ],
+            "subtitle_parts": [
+              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
+            ]
+          },
+          "step_2": {
+            "title_parts": [
+              "Go",
+              "Long",
+              "or",
+              "Short"
+            ],
+            "subtitle_parts": [
+              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
+            ]
+          },
+          "step_3": {
+            "title_parts": [
+              "Trade with Leverage"
+            ],
+            "subtitle_parts": [
+              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+            ]
+          }
+        }
+      },
+      "leverage": "Leverage",
+      "up_to": "Up to"
     },
     "points": {
       "placeholder": {
@@ -3471,6 +3647,7 @@
     "done": "완료",
     "copy": "복사",
     "paste": "붙여넣기",
+    "new": "새로운",
     "market_data": {
       "vol": "VOL",
       "price": "PRICE",
