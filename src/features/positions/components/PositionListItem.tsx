@@ -29,7 +29,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  const priceChangeColor = (asset.price?.relative_change_24h || 0) < 0 ? theme.colors.blueGreyDark60 : theme.colors.green;
+  const priceChangeColor = (externalAsset?.price?.relativeChange24h || 0) < 0 ? theme.colors.blueGreyDark60 : theme.colors.green;
 
   const renderContent = () => (
     <Columns space={'10px'}>
@@ -105,7 +105,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
               </Column>
               <Column width="content">
                 <Text size="13pt" weight="medium" color={{ custom: priceChangeColor }} align="right">
-                  {convertAmountToPercentageDisplay(`${asset.price?.relative_change_24h}`)}
+                  {convertAmountToPercentageDisplay(`${externalAsset?.price?.relativeChange24h}`)}
                 </Text>
               </Column>
             </Columns>
