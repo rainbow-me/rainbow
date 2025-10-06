@@ -2,9 +2,9 @@ import React from 'react';
 import { Bleed, Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
 import { useTheme } from '@/theme';
 import {
+  convertAmountToBalanceDisplay,
   convertAmountToPercentageDisplay,
   convertAmountToPercentageDisplayWithThreshold,
-  convertRawAmountToRoundedDecimal,
 } from '@/helpers/utilities';
 import { NativeDisplay, PositionAsset } from '@/features/positions/types';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
@@ -81,7 +81,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
                 <Inline alignVertical="center" space={'6px'}>
                   <Box style={{ maxWidth: 150 }}>
                     <Text size="13pt" weight="semibold" color="labelTertiary" numberOfLines={1}>
-                      {`${convertRawAmountToRoundedDecimal(quantity, asset.decimals, 3)} ${asset.symbol}`}
+                      {convertAmountToBalanceDisplay(quantity, asset)}
                     </Text>
                   </Box>
                   {apy && (
