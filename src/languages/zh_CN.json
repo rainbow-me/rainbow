@@ -13,7 +13,7 @@
       "show": "显示",
       "show_all": "全部显示",
       "show_less": "显示更少",
-      "tab_balances": "余额",
+      "tab_tokens": "代币",
       "tab_balances_empty_state": "余额",
       "tab_balances_tooltip": "以太坊和代币余额",
       "tab_claimables": "可领取",
@@ -23,6 +23,7 @@
       "tab_investments": "池",
       "tab_savings": "储蓄",
       "tab_showcase": "展示",
+      "tab_perps": "Perps",
       "tab_points": "积分",
       "tab_positions": "持仓",
       "tab_rewards": "奖励",
@@ -1579,6 +1580,181 @@
       "info": {
         "address_copied_to_clipboard": "地址已复制到剪贴板"
       }
+    },
+    "perps": {
+      "common": {
+        "not_available": "N/A",
+        "current_price": "Current Price",
+        "title": "Perps",
+        "error_submitting_order": "Error submitting order",
+        "submitting": "Submitting...",
+        "more": "更多",
+        "error": "错误",
+        "cancel": "取消",
+        "liq_price": "liq. price",
+        "liq": "liq"
+      },
+      "feature_card": {
+        "title": "Perps",
+        "subtitle": "High-risk, high-reward trading"
+      },
+      "actions": {
+        "fund_wallet": "Fund Wallet",
+        "new_position": "New Position",
+        "close_position": "Close Position",
+        "open_position": "Open Position"
+      },
+      "account": {
+        "available_balance": "可用余额"
+      },
+      "markets": {
+        "title": "Markets",
+        "up_to": "UP TO",
+        "already_open": "Already Open"
+      },
+      "deposit": {
+        "title": "存款",
+        "no_balance": "无余额",
+        "receive": "接收",
+        "slider_label": "正在存款",
+        "zero_amount_error": "Enter an amount to deposit",
+        "confirm_button_text": "按住进行存款",
+        "confirm_button_loading_text": "Depositing...",
+        "confirm_button_zero_text": "输入金额",
+        "confirm_button_over_balance_text": "资金不足",
+        "confirm_button_error_text": "报价错误",
+        "quote_error": "􀇿 No quote available",
+        "insufficient_balance": "􀫲 Insufficient Funds"
+      },
+      "withdraw": {
+        "title": "提款",
+        "slider_label": "正在提现",
+        "confirm_button_text": "按住以取款",
+        "confirm_button_loading_text": "Withdrawing...",
+        "available_balance_suffix": " Available",
+        "confirm_button_zero_text": "输入金额",
+        "confirm_button_over_balance_text": "资金不足",
+        "info_card_title_prefix": "Withdrawing to ",
+        "info_card_title_suffix": "Arbitrum",
+        "info_card_subtitle": "Additional networks coming soon. Withdrawals currently include a $1.00 Hyperliquid fee."
+      },
+      "position_side": {
+        "long": "Long",
+        "short": "Short"
+      },
+      "positions": {
+        "entry": "ENTRY",
+        "mark_price": "MARK PRICE",
+        "open_positions": "Open Positions",
+        "no_open_positions": "No Open Positions",
+        "position_value": "Position Value",
+        "mark_price_full": "Mark Price",
+        "entry_price": "Entry Price",
+        "funding": "Funding",
+        "liquidation_price": "Liquidation Price",
+        "total": "总计",
+        "learn_more_about_perps": "Learn more about Perps"
+      },
+      "new_position": {
+        "hold_to_long": "Hold to Long",
+        "hold_to_short": "Hold to Short",
+        "liquidated_at": "Liquidated at",
+        "from_current_price": "from current price",
+        "details": "详细信息",
+        "funding_rate": "Funding Rate",
+        "max_slippage": "最大滑点",
+        "no_liquidation_risk": "No Liquidation Risk",
+        "trading_without_leverage": "Trading without leverage"
+      },
+      "inputs": {
+        "amount": "金额",
+        "available": "Available",
+        "max": "最大",
+        "maximum_amount_is": "Maximum amount is",
+        "minimum": "Minimum",
+        "minimum_amount_is": "Minimum amount is",
+        "no_balance": "无余额"
+      },
+      "history": {
+        "title": "历史记录",
+        "no_trades": "No trades",
+        "trade_execution": {
+          "take_profit_executed": "Take Profit Executed",
+          "stop_loss_executed": "Stop Loss Executed",
+          "long_opened": "Long Opened",
+          "short_opened": "Short Opened",
+          "long_closed": "Long Closed",
+          "short_closed": "Short Closed",
+          "long_liquidated": "Long Liquidated",
+          "short_liquidated": "Short Liquidated"
+        }
+      },
+      "trigger_orders": {
+        "title": "Trigger Orders",
+        "take_profit": "Take Profit",
+        "stop_loss": "Stop Loss",
+        "sell": "Sell",
+        "cancel_failed": "Failed to cancel order",
+        "add_stop_loss": "Add Stop Loss",
+        "add_take_profit": "Add Take Profit",
+        "price": "价格",
+        "projected_profit": "Projected Profit",
+        "projected_loss": "Projected Loss",
+        "add": "添加",
+        "adding": "Adding...",
+        "above": "above",
+        "below": "below",
+        "must_be": "Must be",
+        "failed_to_create": "Failed to create trigger order"
+      },
+      "search": {
+        "search_markets": "Search markets",
+        "markets_count": "%{count} MARKETS",
+        "choose_a_market": "CHOOSE A MARKET"
+      },
+      "close_position": {
+        "estimated_loss": "Estimated Loss",
+        "estimated_profit": "Estimated Profit",
+        "minimum_amount_is": "Minimum amount is",
+        "closing": "Closing...",
+        "hold_to_close": "Hold to Close"
+      },
+      "explain_sheet": {
+        "next": "下一步",
+        "got_it": "我知道了",
+        "title": "Perps",
+        "steps": {
+          "step_1": {
+            "title_parts": [
+              "Perpetual Futures"
+            ],
+            "subtitle_parts": [
+              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
+            ]
+          },
+          "step_2": {
+            "title_parts": [
+              "Go",
+              "Long",
+              "or",
+              "Short"
+            ],
+            "subtitle_parts": [
+              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
+            ]
+          },
+          "step_3": {
+            "title_parts": [
+              "Trade with Leverage"
+            ],
+            "subtitle_parts": [
+              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+            ]
+          }
+        }
+      },
+      "leverage": "Leverage",
+      "up_to": "Up to"
     },
     "points": {
       "placeholder": {
@@ -3471,6 +3647,7 @@
     "done": "完成",
     "copy": "复制",
     "paste": "粘贴",
+    "new": "新的",
     "market_data": {
       "vol": "交易量",
       "price": "价格",
