@@ -281,34 +281,6 @@ const ClaimCard = memo(function ClaimCard({ claim, value }: { claim?: string; va
   );
 });
 
-const EarnRewardsCard = memo(function EarnRewardsCard() {
-  return (
-    <Card padding="20px">
-      <Box paddingVertical="8px">
-        <Stack space="20px">
-          <Inline alignHorizontal="center" alignVertical="center" space="10px">
-            <IconContainer height={12} width={24}>
-              <TextShadow>
-                <Text align="center" color="accent" size="icon 17px" weight="heavy">
-                  􀐾
-                </Text>
-              </TextShadow>
-            </IconContainer>
-            <TextShadow shadowOpacity={0.2}>
-              <Text align="center" color="label" size="20pt" weight="heavy">
-                {i18n.t(i18n.l.points.points.earn_eth_rewards)}
-              </Text>
-            </TextShadow>
-          </Inline>
-          <Text align="center" color="labelQuaternary" size="13pt / 135%" weight="semibold">
-            {i18n.t(i18n.l.points.points.rewards_explainer)}
-          </Text>
-        </Stack>
-      </Box>
-    </Card>
-  );
-});
-
 const EarningsCard = memo(function EarningsCard({ claimed, value }: { claimed?: string; value?: string }) {
   return (
     <Card padding="20px">
@@ -602,7 +574,6 @@ export function PointsContent() {
   const { claimed, claimable } = rewards || {};
   const showClaimYourPoints = claimable && claimable !== '0';
   const showMyEarnings = claimed && claimed !== '0';
-  const showNoHistoricalRewards = !showMyEarnings;
 
   const claimedBalance = convertRawAmountToBalance(claimed || '0', {
     decimals: 18,
@@ -664,7 +635,6 @@ export function PointsContent() {
                   {showMyEarnings && <EarningsCard claimed={claimedBalance.display} value={claimedPrice} />}
                 </Box>
               )}
-              {rewardsEnabled && showNoHistoricalRewards && <EarnRewardsCard />}
               {rewardsEnabled && <TotalEarnedByRainbowUsers earned={totalRewardsDisplay} />}
               {/* {nextDistributionDate && <NextDropCard nextDistribution={nextDistributionDate} />} */}
               <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
