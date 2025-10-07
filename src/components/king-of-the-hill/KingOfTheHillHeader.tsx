@@ -89,9 +89,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
     return () => clearInterval(interval);
   }, []);
 
-  if (!current || !sizedIconUrl || !currentWinningToken) {
-    return null;
-  }
+  if (!current || !currentWinningToken) return null;
 
   const hours = Math.floor(secondsRemaining / SECONDS_PER_HOUR);
   const minutes = Math.floor((secondsRemaining % SECONDS_PER_HOUR) / 60);
