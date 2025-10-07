@@ -1,0 +1,4 @@
+{
+  "code": 400,
+  "message": "input payload validation failed: user address when sending a str, it must be a hex string. got: 'invalid-address': "
+}
