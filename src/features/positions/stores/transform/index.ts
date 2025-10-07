@@ -22,7 +22,7 @@ import { sortPositions } from './sort';
 import { normalizeDappName } from './utils/dapp';
 import { calculatePositionTotals, calculateGrandTotals, calculateTotalValue, calculateTokenNativeDisplay } from './utils/totals';
 import { isConcentratedLiquidityProtocol, calculateLiquidityRangeStatus, calculateLiquidityAllocation } from './utils/lp';
-import { normalizeDate } from './utils/date';
+import { normalizeDate, normalizeDateTime } from './utils/date';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { NativeCurrencyKey } from '@/entities';
 
@@ -85,7 +85,7 @@ function buildUnderlyingAssets(tokens: PositionToken[] | undefined, currency: st
             ? {
                 ...token.asset.price,
                 // Filter out Go zero time Date objects and convert to timestamp
-                changed_at: normalizeDate(token.asset.price.changedAt) ? token.asset.price.changedAt?.getTime() : undefined,
+                changed_at: normalizeDateTime(token.asset.price.changedAt),
                 relative_change_24h: token.asset.price.relativeChange24h || 0,
               }
             : undefined,

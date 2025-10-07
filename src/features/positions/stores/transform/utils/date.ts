@@ -29,3 +29,22 @@ export function normalizeDate(value: string | Date | undefined): string | undefi
       .replace(/([+-]\d{2})(\d{2})$/, '$1:$2')
   );
 }
+
+/**
+ * Normalizes a date value and returns its timestamp.
+ * Handles both Date objects and Go timestamp strings.
+ * Returns undefined for invalid dates or Go's zero time.
+ */
+export function normalizeDateTime(value: string | Date | undefined): number | undefined {
+  if (!value) return undefined;
+
+  if (value instanceof Date) {
+    return value.getTime();
+  }
+
+  const normalized = normalizeDate(value);
+  if (!normalized) return undefined;
+
+  const date = new Date(normalized);
+  return isNaN(date.getTime()) ? undefined : date.getTime();
+}
