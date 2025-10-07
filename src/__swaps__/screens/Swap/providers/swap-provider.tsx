@@ -54,7 +54,7 @@ import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
-import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { executeFn, Screens, TimeToSignOperation, startTimeToSignTracking } from '@/state/performance/performance';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -387,7 +387,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     } catch (error) {
       isSwapping.value = false;
       const message = error instanceof Error ? error.message : 'Generic error while trying to swap';
-      logger.error(new RainbowError(`[getNonceAndPerformSwap]: ${message}`), {
+      logger.error(new RainbowError(`[getNonceAndPerformSwap]: ${message}`, error), {
         data: { error, parameters, type },
       });
     }
@@ -396,50 +396,43 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     swapsStore.setState({ lastNavigatedTrendingToken: undefined });
   };
 
-  const executeSwap = executeFn(
-    () => {
-      'worklet';
+  const executeSwap = () => {
+    'worklet';
 
-      if (configProgress.value !== NavigationSteps.SHOW_REVIEW && !degenMode.value) return;
+    if (configProgress.value !== NavigationSteps.SHOW_REVIEW && !degenMode.value) return;
 
-      const inputAsset = internalSelectedInputAsset.value;
-      const outputAsset = internalSelectedOutputAsset.value;
-      const quoteData = quote.value;
+    const inputAsset = internalSelectedInputAsset.value;
+    const outputAsset = internalSelectedOutputAsset.value;
+    const quoteData = quote.value;
 
-      if (isSwapping.value || !inputAsset || !outputAsset || !quoteData || 'error' in quoteData) {
-        return;
-      }
-
-      isSwapping.value = true;
-      quoteFetchingInterval.stop();
-
-      const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
-      const isNativeWrapOrUnwrap = quoteData.swapType === SwapType.wrap || quoteData.swapType === SwapType.unwrap;
-
-      const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
-        sellAmount: quoteData.sellAmount?.toString(),
-        buyAmount: quoteData.buyAmount?.toString(),
-        chainId: inputAsset.chainId,
-        assetToSell: inputAsset,
-        assetToBuy: outputAsset,
-        quote: {
-          ...quoteData,
-          buyAmountDisplay: isNativeWrapOrUnwrap ? quoteData.buyAmount : quoteData.buyAmountDisplay,
-          sellAmountDisplay: isNativeWrapOrUnwrap ? quoteData.sellAmount : quoteData.sellAmountDisplay,
-          feeInEth: isNativeWrapOrUnwrap ? '0' : quoteData.feeInEth,
-        },
-      };
-
-      runOnJS(getNonceAndPerformSwap)({ type, parameters });
-    },
-    {
-      screen: Screens.SWAPS,
-      operation: TimeToSignOperation.CallToAction,
-      isStartOfFlow: true,
-      metadata: { degenMode: swapsStore.getState().degenMode },
+    if (isSwapping.value || !inputAsset || !outputAsset || !quoteData || 'error' in quoteData) {
+      return;
     }
-  );
 
+    isSwapping.value = true;
+    quoteFetchingInterval.stop();
+
+    startTimeToSignTracking();
+
+    const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
+    const isNativeWrapOrUnwrap = quoteData.swapType === SwapType.wrap || quoteData.swapType === SwapType.unwrap;
+
+    const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
+      sellAmount: quoteData.sellAmount?.toString(),
+      buyAmount: quoteData.buyAmount?.toString(),
+      chainId: inputAsset.chainId,
+      assetToSell: inputAsset,
+      assetToBuy: outputAsset,
+      quote: {
+        ...quoteData,
+        buyAmountDisplay: isNativeWrapOrUnwrap ? quoteData.buyAmount : quoteData.buyAmountDisplay,
+        sellAmountDisplay: isNativeWrapOrUnwrap ? quoteData.sellAmount : quoteData.sellAmountDisplay,
+        feeInEth: isNativeWrapOrUnwrap ? '0' : quoteData.feeInEth,
+      },
+    };
+
+    runOnJS(getNonceAndPerformSwap)({ type, parameters });
+  };
   const swapInfo = useDerivedValue(() => {
     const areAllInputsZero =
       equalWorklet(inputValues.value.inputAmount, '0') &&

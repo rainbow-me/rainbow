@@ -475,7 +475,7 @@ export const SignTransactionSheet = () => {
       screen: SCREEN_FOR_REQUEST_SOURCE[source],
       operation: TimeToSignOperation.KeychainRead,
     })({
-      address: accountInfo.address,
+      address: toChecksumAddress(accountInfo.address),
       provider,
       timeTracking: {
         screen: SCREEN_FOR_REQUEST_SOURCE[source],

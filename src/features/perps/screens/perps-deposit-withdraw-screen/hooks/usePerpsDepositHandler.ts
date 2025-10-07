@@ -16,7 +16,7 @@ import { walletExecuteRap } from '@/raps/execute';
 import { RapSwapActionParameters, rapTypes } from '@/raps/references';
 import { sumWorklet } from '@/safe-math/SafeMath';
 import { getNextNonce } from '@/state/nonces';
-import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { executeFn, Screens, TimeToSignOperation, startTimeToSignTracking } from '@/state/performance/performance';
 import { isValidQuote } from '@/features/perps/screens/perps-deposit-withdraw-screen/utils';
 
 export function usePerpsDepositHandler({
@@ -35,6 +35,8 @@ export function usePerpsDepositHandler({
 
     const isSubmittingSharedValue = isSubmitting;
     isSubmittingSharedValue.value = true;
+
+    startTimeToSignTracking();
 
     const parameters: Omit<RapSwapActionParameters<rapTypes.crosschainSwap>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
       assetToBuy: USDC_ASSET,
@@ -110,7 +112,7 @@ export function usePerpsDepositHandler({
       }
 
       executeFn(Navigation.goBack, {
-        endOfOperation: true,
+        isEndOfFlow: true,
         operation: TimeToSignOperation.SheetDismissal,
         screen: Screens.PERPS_DEPOSIT,
       })();
