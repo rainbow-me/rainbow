@@ -1,3 +1,4 @@
+// TODO: should be named "TimeToSignScreens"
 export enum Screens {
   DAPP_BROWSER = 'DappBrowser',
   SWAPS = 'Swaps',
@@ -19,6 +20,7 @@ export enum TimeToSignOperation {
   KeychainRead = 'KeychainRead',
   Authentication = 'Authentication',
   CreateRap = 'CreateRap',
+  GetNonce = 'GetNonce',
   SignTransaction = 'SignTransaction',
   CreateSignableTransaction = 'CreateSignableTransaction',
   BroadcastTransaction = 'BroadcastTransaction',
@@ -47,6 +49,7 @@ export interface PerformanceLog<S extends Screen> {
   timeToCompletion: number;
   completedAt: number;
   metadata?: Record<string, string | number | boolean>;
+  resultWasNullish?: boolean;
 }
 
 export type AnyPerformanceLog = PerformanceLog<Screen>;

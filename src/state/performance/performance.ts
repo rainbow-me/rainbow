@@ -1,5 +1,5 @@
 import { analytics } from '@/analytics';
-import { logger } from '@/logger';
+import { ensureError, logger } from '@/logger';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { OperationForScreen, PerformanceLog, Screen } from '@/state/performance/operations';
 import { getSelectedWallet } from '@/state/wallets/walletsStore';
@@ -7,135 +7,200 @@ import { runOnJS } from 'react-native-reanimated';
 
 type AnyFunction = (...args: any[]) => any;
 
-export interface ExecuteFnParams<S extends Screen, T extends AnyFunction> {
+export interface ExecuteFnParams<S extends Screen> {
   screen: S;
   operation: OperationForScreen<S>;
-  fn: T;
   metadata?: Record<string, string | number | boolean>;
-  endOfOperation?: boolean;
+  isStartOfFlow?: boolean;
+  isEndOfFlow?: boolean;
+  endOfOperation?: boolean; // Deprecated, use isEndOfFlow
+  error?: Error;
+  resultWasNullish?: boolean;
 }
-
-export type ExecuteFnParamsWithoutFn<S extends Screen> = Omit<ExecuteFnParams<S, AnyFunction>, 'fn'>;
 
 interface PerformanceTrackingState {
-  elapsedTime: number;
-  executeFn: {
-    <S extends Screen, T extends AnyFunction>(params: ExecuteFnParams<S, T>): (...args: Parameters<T>) => ReturnType<T>;
-  };
+  operationsElapsedTime: number;
+  startTime: number;
 }
+
+export const performanceTracking = createRainbowStore<PerformanceTrackingState>(() => ({
+  operationsElapsedTime: 0,
+  startTime: 0,
+}));
 
 export function isEnabled() {
   const isHardwareWallet = getSelectedWallet()?.deviceId;
   return !isHardwareWallet;
 }
 
-// Helper function to log performance to Rudderstack
+// Helper function to log performance and update store state
 function logPerformance<S extends Screen>({
   screen,
   operation,
   startTime,
-  endTime,
   metadata,
-  endOfOperation,
-}: ExecuteFnParamsWithoutFn<S> & { startTime: number; endTime: number }) {
+  isStartOfFlow,
+  isEndOfFlow,
+  endOfOperation, // Deprecated, use isEndOfFlow
+  error,
+  resultWasNullish,
+}: ExecuteFnParams<S> & { startTime: number }) {
+  if (!isEnabled()) {
+    logger.debug('[performance]: Performance tracking is disabled');
+    return;
+  }
+  const endTime = performance.now();
+
+  const timeToCompletion = endTime - startTime;
+  const log: PerformanceLog<S> = {
+    completedAt: Date.now(),
+    screen,
+    operation,
+    startTime,
+    endTime,
+    metadata,
+    timeToCompletion,
+    resultWasNullish,
+  };
+
+  logger.debug('[performance]: Time to complete operation', { log });
+  analytics.track(analytics.event.performanceTimeToSignOperation, log);
+
   performanceTracking.setState(state => {
-    if (!isEnabled()) {
-      logger.debug('[performance]: Performance tracking is disabled');
-      return state;
+    // Reset state if this is the start of a new flow
+    if (isStartOfFlow) {
+      state = { operationsElapsedTime: 0, startTime: 0 };
     }
 
-    const timeToCompletion = endTime - startTime;
-    const log: PerformanceLog<S> = {
-      completedAt: Date.now(),
-      screen,
-      operation,
-      startTime,
-      endTime,
-      metadata,
-      timeToCompletion,
-    };
+    const newElapsedTime = state.operationsElapsedTime + timeToCompletion;
+    const flowStartTime = state.startTime === 0 ? startTime : state.startTime;
 
-    logger.debug('[performance]: Time to complete operation', { log });
+    // Support both isEndOfFlow (new) and endOfOperation (deprecated)
+    const flowEnded = isEndOfFlow || endOfOperation;
 
-    analytics.track(analytics.event.performanceTimeToSignOperation, log);
-
-    if (endOfOperation) {
+    if (flowEnded) {
       analytics.track(analytics.event.performanceTimeToSign, {
         screen,
         completedAt: Date.now(),
-        elapsedTime: state.elapsedTime + timeToCompletion,
+        elapsedTime: newElapsedTime,
+        totalElapsedTime: performance.now() - flowStartTime,
+        error: error?.message,
       });
 
-      logger.debug('[performance]: Time to sign', { screen, elapsedTime: state.elapsedTime + timeToCompletion, completedAt: Date.now() });
+      logger.debug('[performance]: Time to sign', {
+        screen,
+        elapsedTime: newElapsedTime,
+        completedAt: Date.now(),
+      });
 
-      return {
-        ...state,
-        elapsedTime: 0,
-      };
+      return { operationsElapsedTime: 0, startTime: 0 };
     }
 
-    return {
-      ...state,
-      elapsedTime: state.elapsedTime + timeToCompletion,
-    };
+    return { operationsElapsedTime: newElapsedTime, startTime: flowStartTime };
   });
 }
 
-// See https://docs.swmansion.com/react-native-reanimated/docs/threading/createWorkletRuntime/#remarks
-// TLDR; performance is an installed API in worklet context
-const getCurrentTime = (): number => {
+export function executeFn<S extends Screen, T extends AnyFunction>(
+  fn: T,
+  { screen, operation, metadata, isStartOfFlow = false, isEndOfFlow = false, endOfOperation = false }: ExecuteFnParams<S>
+): (...args: Parameters<T>) => ReturnType<T> {
   'worklet';
-  return performance.now();
-};
 
-export const performanceTracking = createRainbowStore<PerformanceTrackingState>(() => ({
-  elapsedTime: 0,
-
-  executeFn: (<S extends Screen, T extends AnyFunction>({
-    fn,
-    screen,
-    operation,
-    metadata,
-    endOfOperation = false,
-  }: ExecuteFnParams<S, T>) => {
+  return (...args: Parameters<T>) => {
     'worklet';
-    const logPerformanceAndReturn = <R>(startTime: number, endTime: number, result: R): R => {
+
+    const startTime = performance.now();
+
+    const recordPerformance = ({ result, error }: { result?: unknown; error?: Error } = {}) => {
       'worklet';
+      const resultWasNullish = result === null || result === undefined;
       runOnJS(logPerformance)({
         screen,
         operation,
         startTime,
-        endTime,
         metadata,
+        isStartOfFlow,
+        isEndOfFlow,
         endOfOperation,
+        error,
+        resultWasNullish,
       });
-      return result;
     };
 
-    return (...args: Parameters<T>) => {
-      'worklet';
+    try {
+      const result = fn(...args);
 
-      const startTime = getCurrentTime();
-
-      try {
-        const fnResult = fn(...args);
-        if (fnResult instanceof Promise) {
-          return fnResult
-            .then(result => {
-              return logPerformanceAndReturn(startTime, performance.now(), result);
-            })
-            .catch(error => {
-              throw error;
-            });
-        } else {
-          return logPerformanceAndReturn(startTime, performance.now(), fnResult);
-        }
-      } catch (error) {
-        logPerformanceAndReturn(startTime, performance.now(), undefined);
-        throw error;
+      if (result instanceof Promise) {
+        return result
+          .then(value => {
+            recordPerformance({ result: value });
+            return value;
+          })
+          .catch(e => {
+            throw e;
+          });
       }
-    };
-  }) as PerformanceTrackingState['executeFn'],
-}));
+
+      recordPerformance({ result });
+      return result;
+    } catch (e) {
+      const error = ensureError(e);
+      recordPerformance({ error });
+      throw e;
+    }
+  };
+}
 
 export * from './operations';
+
+// export type ExecuteFnParamsWithoutFn<S extends Screen> = Omit<ExecuteFnParams<S>, 'fn'>;
+
+// export function executeFn<S extends Screen, T extends AnyFunction>({
+//   fn,
+//   screen,
+//   operation,
+//   metadata,
+//   endOfOperation = false,
+// }: ExecuteFnParams<S, T>): (...args: Parameters<T>) => ReturnType<T> {
+//   'worklet';
+
+//   return (...args: Parameters<T>) => {
+//     'worklet';
+
+//     const startTime = performance.now();
+
+//     const recordPerformance = (error?: Error) => {
+//       'worklet';
+//       runOnJS(logPerformance)({
+//         screen,
+//         operation,
+//         startTime,
+//         metadata,
+//         endOfOperation,
+//         error,
+//       });
+//     };
+
+//     try {
+//       const result = fn(...args);
+
+//       if (result instanceof Promise) {
+//         return result
+//           .then(value => {
+//             recordPerformance();
+//             return value;
+//           })
+//           .catch(e => {
+//             throw e;
+//           });
+//       }
+
+//       recordPerformance();
+//       return result;
+//     } catch (e) {
+//       const error = ensureError(e);
+//       recordPerformance(error);
+//       throw e;
+//     }
+//   };
+// }

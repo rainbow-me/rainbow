@@ -19,14 +19,14 @@ import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import { useColorForAsset, useContacts, useDimensions, useENSAvatar, useGas, useUserAccounts } from '@/hooks';
 import * as i18n from '@/languages';
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { useInteractionsCount } from '@/resources/addys/interactions';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
@@ -355,8 +355,8 @@ export const SendConfirmationSheet = () => {
 
   const handleSubmit = useCallback(
     () =>
-      performanceTracking.getState().executeFn({
-        fn: async () => {
+      executeFn(
+        async () => {
           if (!canSubmit) return;
           try {
             setIsAuthorizing(true);
@@ -371,13 +371,17 @@ export const SendConfirmationSheet = () => {
               await callback();
             }
           } catch (e) {
-            logger.error(new RainbowError(`[SendConfirmationSheet]: error submitting transaction: ${e}`));
+            const error = ensureError(e);
+            logger.error(new RainbowError(`[SendConfirmationSheet]: error submitting transaction: ${error.message}`, error));
             setIsAuthorizing(false);
           }
         },
-        operation: TimeToSignOperation.CallToAction,
-        screen: isENS ? Screens.SEND_ENS : Screens.SEND,
-      })(),
+        {
+          operation: TimeToSignOperation.CallToAction,
+          isStartOfFlow: true,
+          screen: isENS ? Screens.SEND_ENS : Screens.SEND,
+        }
+      )(),
     [callback, canSubmit, checkboxes, isENS]
   );
 

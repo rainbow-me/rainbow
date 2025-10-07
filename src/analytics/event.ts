@@ -781,6 +781,8 @@ export type EventProperties = {
     screen: Screen;
     completedAt: number;
     elapsedTime: number;
+    totalElapsedTime: number;
+    error?: string;
   };
 
   [event.performanceTimeToSignOperation]: AnyPerformanceLog;

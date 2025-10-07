@@ -54,7 +54,7 @@ import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
-import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -269,8 +269,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const degenMode = swapsStore.getState().degenMode;
 
-      const wallet = await performanceTracking.getState().executeFn({
-        fn: loadWallet,
+      const wallet = await executeFn(loadWallet, {
         screen: Screens.SWAPS,
         operation: TimeToSignOperation.KeychainRead,
         metadata: { degenMode },
@@ -306,10 +305,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       const chainId = connectedToAnvil ? ChainId.anvil : parameters.chainId;
-      const nonce = await getNextNonce({ address: parameters.quote.from, chainId });
+      const nonce = await executeFn(getNextNonce, {
+        screen: Screens.SWAPS,
+        operation: TimeToSignOperation.GetNonce,
+        metadata: { degenMode, chainId },
+      })({ address: parameters.quote.from, chainId });
 
-      const { errorMessage } = await performanceTracking.getState().executeFn({
-        fn: walletExecuteRap,
+      const { errorMessage } = await executeFn(walletExecuteRap, {
         screen: Screens.SWAPS,
         operation: TimeToSignOperation.SignTransaction,
         metadata: { degenMode },
@@ -349,28 +351,30 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       clearCustomGasSettings(chainId);
       NotificationManager?.postNotification('rapCompleted');
-      performanceTracking.getState().executeFn({
-        fn: () => {
-          if (initialValues.goBackOnSwapSubmit) {
-            Navigation.goBack();
-            return;
-          }
 
-          const navState = Navigation.getState();
-          const activeRoute = Navigation.getActiveRoute();
-          if (
-            navState?.index === 0 ||
-            navState?.routes[navState.index - 1].name === Routes.EXPANDED_ASSET_SHEET_V2 ||
-            activeRoute?.name === Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET
-          ) {
-            Navigation.handleAction(Routes.WALLET_SCREEN);
-          } else {
-            Navigation.goBack();
-          }
-        },
+      const dismissSheet = () => {
+        if (initialValues.goBackOnSwapSubmit) {
+          Navigation.goBack();
+          return;
+        }
+
+        const navState = Navigation.getState();
+        const activeRoute = Navigation.getActiveRoute();
+        if (
+          navState?.index === 0 ||
+          navState?.routes[navState.index - 1].name === Routes.EXPANDED_ASSET_SHEET_V2 ||
+          activeRoute?.name === Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET
+        ) {
+          Navigation.handleAction(Routes.WALLET_SCREEN);
+        } else {
+          Navigation.goBack();
+        }
+      };
+
+      executeFn(dismissSheet, {
         screen: Screens.SWAPS,
         operation: TimeToSignOperation.SheetDismissal,
-        endOfOperation: true,
+        isEndOfFlow: true,
         metadata: { degenMode },
       })();
 
@@ -382,7 +386,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       });
     } catch (error) {
       isSwapping.value = false;
-
       const message = error instanceof Error ? error.message : 'Generic error while trying to swap';
       logger.error(new RainbowError(`[getNonceAndPerformSwap]: ${message}`), {
         data: { error, parameters, type },
@@ -393,10 +396,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     swapsStore.setState({ lastNavigatedTrendingToken: undefined });
   };
 
-  const executeSwap = performanceTracking.getState().executeFn({
-    screen: Screens.SWAPS,
-    operation: TimeToSignOperation.CallToAction,
-    fn: () => {
+  const executeSwap = executeFn(
+    () => {
       'worklet';
 
       if (configProgress.value !== NavigationSteps.SHOW_REVIEW && !degenMode.value) return;
@@ -431,8 +432,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       runOnJS(getNonceAndPerformSwap)({ type, parameters });
     },
-    metadata: { degenMode: swapsStore.getState().degenMode },
-  });
+    {
+      screen: Screens.SWAPS,
+      operation: TimeToSignOperation.CallToAction,
+      isStartOfFlow: true,
+      metadata: { degenMode: swapsStore.getState().degenMode },
+    }
+  );
 
   const swapInfo = useDerivedValue(() => {
     const areAllInputsZero =

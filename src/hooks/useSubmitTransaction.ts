@@ -1,5 +1,5 @@
-import { Dispatch, SetStateAction, useCallback, useState } from 'react';
-import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
+import { useCallback, useState } from 'react';
+import { executeFn, TimeToSignOperation } from '@/state/performance/performance';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
@@ -36,8 +36,8 @@ export const useTransactionSubmission = ({
 
   const submitFn = useCallback(
     () =>
-      performanceTracking.getState().executeFn({
-        fn: async () => {
+      executeFn(
+        () => {
           if (!isBalanceEnough && !isMessageRequest) {
             return navigate(Routes.ADD_CASH_SHEET);
           }
@@ -48,9 +48,12 @@ export const useTransactionSubmission = ({
 
           return onPressSend();
         },
-        operation: TimeToSignOperation.CallToAction,
-        screen: SCREEN_FOR_REQUEST_SOURCE[source],
-      })(),
+        {
+          operation: TimeToSignOperation.CallToAction,
+          isStartOfFlow: true,
+          screen: SCREEN_FOR_REQUEST_SOURCE[source],
+        }
+      )(),
     [accountInfo.isHardwareWallet, isBalanceEnough, isMessageRequest, navigate, onPressSend, source]
   );
 

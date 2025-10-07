@@ -3,7 +3,7 @@ import * as DeviceInfo from 'react-native-device-info';
 import { REACT_NATIVE_RUDDERSTACK_WRITE_KEY, RUDDERSTACK_DATA_PLANE_URL } from 'react-native-dotenv';
 import { EventProperties, event } from '@/analytics/event';
 import { UserProperties } from '@/analytics/userProperties';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_ANDROID, IS_DEV, IS_TEST } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { device } from '@/storage';
@@ -84,6 +84,9 @@ export class Analytics {
   track<T extends keyof EventProperties>(event: T, params?: EventProperties[T], walletContext?: WalletContext): void {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
+    if (IS_DEV) {
+      console.log('track', event, JSON.stringify({ ...params }, null, 2));
+    }
     this.enqueue(() => this.client.track(event, { ...metadata, ...walletContext, ...params }));
   }
 
