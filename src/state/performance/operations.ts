@@ -1,4 +1,3 @@
-// TODO: should be named "TimeToSignScreens"
 export enum Screens {
   DAPP_BROWSER = 'DappBrowser',
   SWAPS = 'Swaps',
@@ -11,11 +10,9 @@ export enum Screens {
 
 type RouteValues = (typeof Screens)[keyof typeof Screens];
 
-// Now, define Screen as the type of these values
 export type Screen = RouteValues;
 
 export enum TimeToSignOperation {
-  CallToAction = 'CallToAction',
   KeychainRead = 'KeychainRead',
   Authentication = 'Authentication',
   CreateRap = 'CreateRap',
