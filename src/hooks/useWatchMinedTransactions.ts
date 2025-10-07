@@ -64,6 +64,7 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
 
   const watchMinedTransactions = useCallback(
     async (minedTransactionsWithPolling: MinedTransactionWithPolling[]) => {
+      if (!address) return;
       try {
         if (!minedTransactionsWithPolling.length) return;
 
