@@ -7,7 +7,6 @@ export enum Screens {
   WALLETCONNECT = 'WalletConnect',
   MOBILE_WALLET_PROTOCOL = 'MobileWalletProtocol',
   PERPS_DEPOSIT = 'PerpsDeposit',
-  PERPS_WITHDRAW = 'PerpsWithdraw',
 }
 
 type RouteValues = (typeof Screens)[keyof typeof Screens];

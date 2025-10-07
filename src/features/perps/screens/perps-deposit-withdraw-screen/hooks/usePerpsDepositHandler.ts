@@ -16,7 +16,7 @@ import { walletExecuteRap } from '@/raps/execute';
 import { RapSwapActionParameters, rapTypes } from '@/raps/references';
 import { sumWorklet } from '@/safe-math/SafeMath';
 import { getNextNonce } from '@/state/nonces';
-import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { isValidQuote } from '@/features/perps/screens/perps-deposit-withdraw-screen/utils';
 
 export function usePerpsDepositHandler({
@@ -48,8 +48,7 @@ export function usePerpsDepositHandler({
     try {
       const provider = getProvider({ chainId: asset.chainId });
 
-      const wallet = await performanceTracking.getState().executeFn({
-        fn: loadWallet,
+      const wallet = await executeFn(loadWallet, {
         operation: TimeToSignOperation.KeychainRead,
         screen: Screens.PERPS_DEPOSIT,
       })({
@@ -83,8 +82,7 @@ export function usePerpsDepositHandler({
 
       const nonce = await getNextNonce({ address: quote.from, chainId: asset.chainId });
 
-      const { errorMessage } = await performanceTracking.getState().executeFn({
-        fn: walletExecuteRap,
+      const { errorMessage } = await executeFn(walletExecuteRap, {
         operation: TimeToSignOperation.SignTransaction,
         screen: Screens.PERPS_DEPOSIT,
       })(wallet, rapTypes.crosschainSwap, {
@@ -111,10 +109,7 @@ export function usePerpsDepositHandler({
         }
       }
 
-      performanceTracking.getState().executeFn({
-        fn: () => {
-          Navigation.goBack();
-        },
+      executeFn(Navigation.goBack, {
         endOfOperation: true,
         operation: TimeToSignOperation.SheetDismissal,
         screen: Screens.PERPS_DEPOSIT,
