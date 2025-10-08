@@ -23,7 +23,7 @@
       "tab_investments": "पूल्स",
       "tab_savings": "बचत",
       "tab_showcase": "शोकेस",
-      "tab_perps": "Perps",
+      "tab_perps": "परप्स",
       "tab_points": "अंक",
       "tab_positions": "पोजीशन्स",
       "tab_rewards": "इनाम",
@@ -1583,178 +1583,178 @@
     },
     "perps": {
       "common": {
-        "not_available": "N/A",
-        "current_price": "Current Price",
-        "title": "Perps",
-        "error_submitting_order": "Error submitting order",
-        "submitting": "Submitting...",
+        "not_available": "उपलब्ध नहीं",
+        "current_price": "वर्तमान मूल्य",
+        "title": "परप्स",
+        "error_submitting_order": "ऑर्डर सबमिट करने में त्रुटि",
+        "submitting": "संदेश भेजा जा रहा है...",
         "more": "अधिक",
         "error": "त्रुटि",
         "cancel": "रद्द करें",
-        "liq_price": "liq. price",
-        "liq": "liq"
+        "liq_price": "लिक्विडेशन मूल्य",
+        "liq": "लिक्विड"
       },
       "feature_card": {
-        "title": "Perps",
-        "subtitle": "High-risk, high-reward trading"
+        "title": "परप्स",
+        "subtitle": "उच्च जोखिम, उच्च इनाम ट्रेडिंग"
       },
       "actions": {
-        "fund_wallet": "Fund Wallet",
-        "new_position": "New Position",
-        "close_position": "Close Position",
-        "open_position": "Open Position"
+        "fund_wallet": "वॉलेट फंड करें",
+        "new_position": "नया स्थान",
+        "close_position": "स्थान बंद करें",
+        "open_position": "स्थान खोलें"
       },
       "account": {
         "available_balance": "उपलब्ध शेष राशि"
       },
       "markets": {
-        "title": "Markets",
-        "up_to": "UP TO",
-        "already_open": "Already Open"
+        "title": "बाज़ार",
+        "up_to": "तक",
+        "already_open": "पहले से खुला"
       },
       "deposit": {
         "title": "जमा",
         "no_balance": "कोई बैलेंस नहीं",
         "receive": "प्राप्त करें",
         "slider_label": "जमा कर रहे हैं",
-        "zero_amount_error": "Enter an amount to deposit",
+        "zero_amount_error": "जमा करने के लिए राशि दर्ज करें",
         "confirm_button_text": "जमा करने के लिए दबाएं रखें",
-        "confirm_button_loading_text": "Depositing...",
+        "confirm_button_loading_text": "जमा कर रहे हैं...",
         "confirm_button_zero_text": "राशि दर्ज करें",
         "confirm_button_over_balance_text": "अपर्याप्त धन",
         "confirm_button_error_text": "कोट त्रुटि",
-        "quote_error": "􀇿 No quote available",
-        "insufficient_balance": "􀫲 Insufficient Funds"
+        "quote_error": "􀇿 कोई भाव उपलब्ध नहीं है",
+        "insufficient_balance": "􀫲 अपर्याप्त धन"
       },
       "withdraw": {
         "title": "निकासी",
         "slider_label": "निकासी कर रहे हैं",
         "confirm_button_text": "निकासी के लिए होल्ड करें",
-        "confirm_button_loading_text": "Withdrawing...",
-        "available_balance_suffix": " Available",
+        "confirm_button_loading_text": "निकासी कर रहे हैं...",
+        "available_balance_suffix": " उपलब्ध",
         "confirm_button_zero_text": "राशि दर्ज करें",
         "confirm_button_over_balance_text": "अपर्याप्त धन",
-        "info_card_title_prefix": "Withdrawing to ",
+        "info_card_title_prefix": "की ओर निकाल रहे हैं ",
         "info_card_title_suffix": "Arbitrum",
-        "info_card_subtitle": "Additional networks coming soon. Withdrawals currently include a $1.00 Hyperliquid fee."
+        "info_card_subtitle": "अतिरिक्त नेटवर्क्स जल्द आ रहे हैं। वर्तमान में निकासी में $1.00 हायपरलिक्विड शुल्क शामिल है।"
       },
       "position_side": {
-        "long": "Long",
-        "short": "Short"
+        "long": "लंबा",
+        "short": "छोटा"
       },
       "positions": {
-        "entry": "ENTRY",
-        "mark_price": "MARK PRICE",
-        "open_positions": "Open Positions",
-        "no_open_positions": "No Open Positions",
-        "position_value": "Position Value",
-        "mark_price_full": "Mark Price",
-        "entry_price": "Entry Price",
-        "funding": "Funding",
-        "liquidation_price": "Liquidation Price",
+        "entry": "प्रवेश",
+        "mark_price": "मार्क मूल्य",
+        "open_positions": "खुली स्थितियां",
+        "no_open_positions": "कोई खुली स्थिति नहीं",
+        "position_value": "स्थिति का मूल्य",
+        "mark_price_full": "मार्क मूल्य",
+        "entry_price": "प्रवेश मूल्य",
+        "funding": "फंडिंग",
+        "liquidation_price": "लिक्विडेशन मूल्य",
         "total": "कुल",
-        "learn_more_about_perps": "Learn more about Perps"
+        "learn_more_about_perps": "Perps के बारे में अधिक जानें"
       },
       "new_position": {
-        "hold_to_long": "Hold to Long",
-        "hold_to_short": "Hold to Short",
-        "liquidated_at": "Liquidated at",
-        "from_current_price": "from current price",
+        "hold_to_long": "लंबा करने के लिए पकड़ें",
+        "hold_to_short": "छोटा करने के लिए पकड़ें",
+        "liquidated_at": "पर लिक्विडेट किया",
+        "from_current_price": "वर्तमान मूल्य से",
         "details": "विवरण",
-        "funding_rate": "Funding Rate",
+        "funding_rate": "फंडिंग दर",
         "max_slippage": "अधिकतम स्लिपेज",
-        "no_liquidation_risk": "No Liquidation Risk",
-        "trading_without_leverage": "Trading without leverage"
+        "no_liquidation_risk": "कोई लिक्विडेशन जोखिम नहीं",
+        "trading_without_leverage": "बिना लीवरेज के ट्रेडिंग"
       },
       "inputs": {
         "amount": "राशि",
-        "available": "Available",
+        "available": "उपलब्ध",
         "max": "अधिकतम",
-        "maximum_amount_is": "Maximum amount is",
-        "minimum": "Minimum",
-        "minimum_amount_is": "Minimum amount is",
+        "maximum_amount_is": "अधिकतम राशि है",
+        "minimum": "न्यूनतम",
+        "minimum_amount_is": "न्यूनतम राशि है",
         "no_balance": "कोई बैलेंस नहीं"
       },
       "history": {
         "title": "इतिहास",
-        "no_trades": "No trades",
+        "no_trades": "कोई ट्रेड नहीं",
         "trade_execution": {
-          "take_profit_executed": "Take Profit Executed",
-          "stop_loss_executed": "Stop Loss Executed",
-          "long_opened": "Long Opened",
-          "short_opened": "Short Opened",
-          "long_closed": "Long Closed",
-          "short_closed": "Short Closed",
-          "long_liquidated": "Long Liquidated",
-          "short_liquidated": "Short Liquidated"
+          "take_profit_executed": "लाभ प्राप्त किया",
+          "stop_loss_executed": "स्टॉप हानि निष्पादित",
+          "long_opened": "लंबा खोला गया",
+          "short_opened": "छोटा खोला गया",
+          "long_closed": "लंबा बंद किया गया",
+          "short_closed": "छोटा बंद किया गया",
+          "long_liquidated": "लंबा लिक्विडेट किया गया",
+          "short_liquidated": "छोटा लिक्विडेट किया गया"
         }
       },
       "trigger_orders": {
-        "title": "Trigger Orders",
-        "take_profit": "Take Profit",
-        "stop_loss": "Stop Loss",
-        "sell": "Sell",
-        "cancel_failed": "Failed to cancel order",
-        "add_stop_loss": "Add Stop Loss",
-        "add_take_profit": "Add Take Profit",
+        "title": "ट्रिगर ऑर्डर्स",
+        "take_profit": "लाभ प्राप्त करें",
+        "stop_loss": "स्टॉप हानि",
+        "sell": "बेचें",
+        "cancel_failed": "ऑर्डर रद्द करने में विफल",
+        "add_stop_loss": "स्टॉप हानि जोड़ें",
+        "add_take_profit": "लाभ जोड़ें",
         "price": "मूल्य",
-        "projected_profit": "Projected Profit",
-        "projected_loss": "Projected Loss",
+        "projected_profit": "अनुमानित लाभ",
+        "projected_loss": "अनुमानित हानि",
         "add": "जोड़ें",
-        "adding": "Adding...",
-        "above": "above",
-        "below": "below",
-        "must_be": "Must be",
-        "failed_to_create": "Failed to create trigger order"
+        "adding": "जोड़ रहे हैं...",
+        "above": "से ऊपर",
+        "below": "से नीचे",
+        "must_be": "होना चाहिए",
+        "failed_to_create": "ट्रिगर ऑर्डर बनाना विफल"
       },
       "search": {
-        "search_markets": "Search markets",
-        "markets_count": "%{count} MARKETS",
-        "choose_a_market": "CHOOSE A MARKET"
+        "search_markets": "बाज़ार खोजें",
+        "markets_count": "%{count} बाज़ार",
+        "choose_a_market": "एक बाज़ार चुनें"
       },
       "close_position": {
-        "estimated_loss": "Estimated Loss",
-        "estimated_profit": "Estimated Profit",
-        "minimum_amount_is": "Minimum amount is",
-        "closing": "Closing...",
-        "hold_to_close": "Hold to Close"
+        "estimated_loss": "अनुमानित हानि",
+        "estimated_profit": "अनुमानित लाभ",
+        "minimum_amount_is": "न्यूनतम राशि है",
+        "closing": "बंद कर रहे हैं...",
+        "hold_to_close": "बंद करने के लिए पकड़ें"
       },
       "explain_sheet": {
         "next": "अगला",
         "got_it": "समझ गया",
-        "title": "Perps",
+        "title": "परप्स",
         "steps": {
           "step_1": {
             "title_parts": [
-              "Perpetual Futures"
+              "पारंपरिक वायदा"
             ],
             "subtitle_parts": [
-              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
+              "मूल्य परिवर्तनों पर सट्टा लगाएं। अपनी इच्छानुसार स्थिति खोलें और बंद करें, कोई समाप्ति नहीं।\nHyperliquid द्वारा संचालित।"
             ]
           },
           "step_2": {
             "title_parts": [
-              "Go",
-              "Long",
-              "or",
-              "Short"
+              "जाओ",
+              "लंबा",
+              "या",
+              "छोटा"
             ],
             "subtitle_parts": [
-              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
+              "जब आपको लगता है कि मूल्य बढ़ेगा तो लंबा करें। जब आपको लगता है कि यह गिरेगा तब छोटा करें। जब आप सही दिशा में रहें तो लाभ कमाएं।"
             ]
           },
           "step_3": {
             "title_parts": [
-              "Trade with Leverage"
+              "लीवरेज के साथ व्यापार करें"
             ],
             "subtitle_parts": [
-              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+              "लीवरेज आपके जोखिम को बढ़ाता है। जब आप सही हों तो बड़े लाभ। जब आप गलत हों तो तेजी से हानि और लिक्विडेशन।"
             ]
           }
         }
       },
-      "leverage": "Leverage",
-      "up_to": "Up to"
+      "leverage": "लीवरेज",
+      "up_to": "ऊपर तक"
     },
     "points": {
       "placeholder": {
@@ -1832,8 +1832,6 @@
         "claimed_earnings": "दावा की गई कमाई",
         "current_value": "वर्तमान मूल्य",
         "rainbow_users_have_earned": "रेनबो उपयोगकर्ताओं ने कमाए हैं",
-        "earn_eth_rewards": "ETH पुरस्कार अर्जित करें",
-        "rewards_explainer": "हर सप्ताह, शीर्ष साप्ताहिक अंक अर्जित करने वालों को रेनबो की ऑनचेन राजस्व का एक हिस्सा प्राप्त होगा। रेनबो में स्वैप या लेनदेन करके, dapps का उपयोग करके, या दोस्तों को रेफर करके अंक अर्जित करें।",
         "my_points": "मेरे अंक",
         "refer_friends": "दोस्तों को रेफर करें",
         "try_again": "फिर से प्रयास करें",
