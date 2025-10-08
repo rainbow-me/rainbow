@@ -15,6 +15,7 @@ import { IS_TEST } from '@/env';
 import { anvilChain, e2eAnvilConfirmedTransactions } from './transaction';
 import { getPlatformClient } from '@/resources/platform/client';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useAirdropsStore } from '@/state/claimables/airdropsStore';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
 
@@ -76,7 +77,9 @@ export async function consolidatedTransactionsQueryFunction({
       method: 'get',
       params: {
         address,
-        chainIds: chainIds.join(','),
+        // TODO: re-enable multi-chain support when backend supports it
+        // chainIds: chainIds.join(','),
+        chainIds: '1',
         currency: currency.toLowerCase(),
         limit: String(30),
         ...(cursor ? { cursor } : {}),
