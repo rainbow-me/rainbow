@@ -1584,140 +1584,140 @@
     "perps": {
       "common": {
         "not_available": "N/A",
-        "current_price": "Current Price",
+        "current_price": "Harga Saat Ini",
         "title": "Perps",
-        "error_submitting_order": "Error submitting order",
-        "submitting": "Submitting...",
+        "error_submitting_order": "Kesalahan mengirimkan pesanan",
+        "submitting": "Mengajukan...",
         "more": "Lebih",
         "error": "Kesalahan",
         "cancel": "Batal",
-        "liq_price": "liq. price",
+        "liq_price": "harga liq.",
         "liq": "liq"
       },
       "feature_card": {
         "title": "Perps",
-        "subtitle": "High-risk, high-reward trading"
+        "subtitle": "Perdagangan berisiko tinggi, imbalan tinggi"
       },
       "actions": {
-        "fund_wallet": "Fund Wallet",
-        "new_position": "New Position",
-        "close_position": "Close Position",
-        "open_position": "Open Position"
+        "fund_wallet": "Isi Saldo Dompet Saya",
+        "new_position": "Posisi Baru",
+        "close_position": "Tutup Posisi",
+        "open_position": "Buka Posisi"
       },
       "account": {
         "available_balance": "Saldo Tersedia"
       },
       "markets": {
-        "title": "Markets",
-        "up_to": "UP TO",
-        "already_open": "Already Open"
+        "title": "Pasar",
+        "up_to": "HINGGA",
+        "already_open": "Sudah Terbuka"
       },
       "deposit": {
         "title": "Deposit",
         "no_balance": "Tidak Ada Saldo",
         "receive": "Terima",
         "slider_label": "Menyetor",
-        "zero_amount_error": "Enter an amount to deposit",
+        "zero_amount_error": "Masukkan jumlah untuk deposit",
         "confirm_button_text": "Tahan untuk Deposit",
-        "confirm_button_loading_text": "Depositing...",
+        "confirm_button_loading_text": "Menyetor...",
         "confirm_button_zero_text": "Masukkan Jumlah",
         "confirm_button_over_balance_text": "Dana Tidak Cukup",
         "confirm_button_error_text": "Kesalahan Kutipan",
-        "quote_error": "􀇿 No quote available",
-        "insufficient_balance": "􀫲 Insufficient Funds"
+        "quote_error": "􀇿 Tidak ada penawaran yang tersedia",
+        "insufficient_balance": "􀫲 Dana Tidak Cukup"
       },
       "withdraw": {
         "title": "Tarik",
         "slider_label": "Menarik",
         "confirm_button_text": "Tahan untuk Tarik",
-        "confirm_button_loading_text": "Withdrawing...",
-        "available_balance_suffix": " Available",
+        "confirm_button_loading_text": "Menarik...",
+        "available_balance_suffix": " Tersedia",
         "confirm_button_zero_text": "Masukkan Jumlah",
         "confirm_button_over_balance_text": "Dana Tidak Cukup",
-        "info_card_title_prefix": "Withdrawing to ",
+        "info_card_title_prefix": "Menarik ke ",
         "info_card_title_suffix": "Arbitrum",
-        "info_card_subtitle": "Additional networks coming soon. Withdrawals currently include a $1.00 Hyperliquid fee."
+        "info_card_subtitle": "Jaringan tambahan segera hadir. Penarikan saat ini termasuk biaya Hyperliquid sebesar $1.00."
       },
       "position_side": {
-        "long": "Long",
-        "short": "Short"
+        "long": "Panjang",
+        "short": "Pendek"
       },
       "positions": {
-        "entry": "ENTRY",
-        "mark_price": "MARK PRICE",
-        "open_positions": "Open Positions",
-        "no_open_positions": "No Open Positions",
-        "position_value": "Position Value",
-        "mark_price_full": "Mark Price",
-        "entry_price": "Entry Price",
-        "funding": "Funding",
-        "liquidation_price": "Liquidation Price",
+        "entry": "ENTRI",
+        "mark_price": "HARGA PASAR",
+        "open_positions": "Posisi Terbuka",
+        "no_open_positions": "Tidak Ada Posisi Terbuka",
+        "position_value": "Nilai Posisi",
+        "mark_price_full": "Harga Pasar",
+        "entry_price": "Harga Entri",
+        "funding": "Pendanaan",
+        "liquidation_price": "Harga Likuidasi",
         "total": "Total",
-        "learn_more_about_perps": "Learn more about Perps"
+        "learn_more_about_perps": "Pelajari lebih lanjut tentang Perps"
       },
       "new_position": {
-        "hold_to_long": "Hold to Long",
-        "hold_to_short": "Hold to Short",
-        "liquidated_at": "Liquidated at",
-        "from_current_price": "from current price",
+        "hold_to_long": "Tahan untuk Panjang",
+        "hold_to_short": "Tahan untuk Pendek",
+        "liquidated_at": "Dilikuidasi pada",
+        "from_current_price": "dari harga saat ini",
         "details": "Rincian",
-        "funding_rate": "Funding Rate",
+        "funding_rate": "Tingkat Pendanaan",
         "max_slippage": "Slippage Maksimum",
-        "no_liquidation_risk": "No Liquidation Risk",
-        "trading_without_leverage": "Trading without leverage"
+        "no_liquidation_risk": "Tidak Ada Risiko Likuidasi",
+        "trading_without_leverage": "Perdagangan tanpa leverage"
       },
       "inputs": {
         "amount": "Jumlah",
-        "available": "Available",
+        "available": "Tersedia",
         "max": "Maks",
-        "maximum_amount_is": "Maximum amount is",
-        "minimum": "Minimum",
-        "minimum_amount_is": "Minimum amount is",
+        "maximum_amount_is": "Jumlah maksimum adalah",
+        "minimum": "Minimal",
+        "minimum_amount_is": "Jumlah minimum adalah",
         "no_balance": "Tidak Ada Saldo"
       },
       "history": {
         "title": "Riwayat",
-        "no_trades": "No trades",
+        "no_trades": "Tidak ada perdagangan",
         "trade_execution": {
-          "take_profit_executed": "Take Profit Executed",
-          "stop_loss_executed": "Stop Loss Executed",
-          "long_opened": "Long Opened",
-          "short_opened": "Short Opened",
-          "long_closed": "Long Closed",
-          "short_closed": "Short Closed",
-          "long_liquidated": "Long Liquidated",
-          "short_liquidated": "Short Liquidated"
+          "take_profit_executed": "Ambil Untung Dieksekusi",
+          "stop_loss_executed": "Stop Loss Dieksekusi",
+          "long_opened": "Panjang Dibuka",
+          "short_opened": "Pendek Dibuka",
+          "long_closed": "Panjang Ditutup",
+          "short_closed": "Pendek Ditutup",
+          "long_liquidated": "Panjang Dilikuasikan",
+          "short_liquidated": "Pendek Dilikuasikan"
         }
       },
       "trigger_orders": {
-        "title": "Trigger Orders",
-        "take_profit": "Take Profit",
+        "title": "Pesanan Trigger",
+        "take_profit": "Ambil Untung",
         "stop_loss": "Stop Loss",
-        "sell": "Sell",
-        "cancel_failed": "Failed to cancel order",
-        "add_stop_loss": "Add Stop Loss",
-        "add_take_profit": "Add Take Profit",
+        "sell": "Jual",
+        "cancel_failed": "Gagal membatalkan pesanan",
+        "add_stop_loss": "Tambah Stop Loss",
+        "add_take_profit": "Tambah Ambil Untung",
         "price": "Harga",
-        "projected_profit": "Projected Profit",
-        "projected_loss": "Projected Loss",
+        "projected_profit": "Keuntungan Proyeksi",
+        "projected_loss": "Kerugian Proyeksi",
         "add": "Tambah",
-        "adding": "Adding...",
-        "above": "above",
-        "below": "below",
-        "must_be": "Must be",
-        "failed_to_create": "Failed to create trigger order"
+        "adding": "Menambahkan...",
+        "above": "atas",
+        "below": "di bawah",
+        "must_be": "Harus",
+        "failed_to_create": "Gagal membuat pesanan trigger"
       },
       "search": {
-        "search_markets": "Search markets",
-        "markets_count": "%{count} MARKETS",
-        "choose_a_market": "CHOOSE A MARKET"
+        "search_markets": "Cari pasar",
+        "markets_count": "%{count} PASAR",
+        "choose_a_market": "PILIH MARKAS"
       },
       "close_position": {
-        "estimated_loss": "Estimated Loss",
-        "estimated_profit": "Estimated Profit",
-        "minimum_amount_is": "Minimum amount is",
-        "closing": "Closing...",
-        "hold_to_close": "Hold to Close"
+        "estimated_loss": "Kerugian Estimasi",
+        "estimated_profit": "Keuntungan Estimasi",
+        "minimum_amount_is": "Jumlah minimum adalah",
+        "closing": "Menutup...",
+        "hold_to_close": "Tahan untuk Menutup"
       },
       "explain_sheet": {
         "next": "Selanjutnya",
@@ -1726,35 +1726,35 @@
         "steps": {
           "step_1": {
             "title_parts": [
-              "Perpetual Futures"
+              "Futures Perpetual"
             ],
             "subtitle_parts": [
-              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
+              "Bertaruh pada pergerakan harga. Buka dan tutup posisi kapan saja, tanpa kadaluarsa.\nDidukung oleh Hyperliquid."
             ]
           },
           "step_2": {
             "title_parts": [
-              "Go",
-              "Long",
-              "or",
-              "Short"
+              "Mulai",
+              "Panjang",
+              "atau",
+              "Pendek"
             ],
             "subtitle_parts": [
-              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
+              "Panjang saat Anda berpikir harga akan naik. Pendek saat Anda berpikir akan turun. Untung jika Anda memanggil arah yang benar."
             ]
           },
           "step_3": {
             "title_parts": [
-              "Trade with Leverage"
+              "Berdagang dengan Leverage"
             ],
             "subtitle_parts": [
-              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+              "Leverage memperbesar risiko Anda. Keuntungan lebih besar saat Anda benar. Kerugian lebih cepat, dan likuidasi, saat Anda salah."
             ]
           }
         }
       },
       "leverage": "Leverage",
-      "up_to": "Up to"
+      "up_to": "Hingga"
     },
     "points": {
       "placeholder": {
@@ -1832,8 +1832,6 @@
         "claimed_earnings": "Pendapatan yang Diklaim",
         "current_value": "Nilai Saat Ini",
         "rainbow_users_have_earned": "Pengguna Rainbow telah mendapatkan",
-        "earn_eth_rewards": "Dapatkan Hadiah ETH",
-        "rewards_explainer": "Setiap minggu, penghasil poin mingguan tertinggi akan menerima sebagian dari pendapatan onchain Rainbow. Kumpulkan poin dengan menukar atau bertransaksi di Rainbow, menggunakan dapps, atau merujuk teman.",
         "my_points": "Poin Saya",
         "refer_friends": "Rujukkan Teman",
         "try_again": "Coba Lagi",
