@@ -1584,140 +1584,140 @@
     "perps": {
       "common": {
         "not_available": "N/A",
-        "current_price": "Current Price",
+        "current_price": "当前价格",
         "title": "Perps",
-        "error_submitting_order": "Error submitting order",
-        "submitting": "Submitting...",
+        "error_submitting_order": "提交订单出错",
+        "submitting": "提交中...",
         "more": "更多",
         "error": "错误",
         "cancel": "取消",
-        "liq_price": "liq. price",
-        "liq": "liq"
+        "liq_price": "清算价",
+        "liq": "清算"
       },
       "feature_card": {
         "title": "Perps",
-        "subtitle": "High-risk, high-reward trading"
+        "subtitle": "高风险，高回报交易"
       },
       "actions": {
-        "fund_wallet": "Fund Wallet",
-        "new_position": "New Position",
-        "close_position": "Close Position",
-        "open_position": "Open Position"
+        "fund_wallet": "为我的钱包充值",
+        "new_position": "新建位置",
+        "close_position": "关闭位置",
+        "open_position": "打开位置"
       },
       "account": {
         "available_balance": "可用余额"
       },
       "markets": {
-        "title": "Markets",
-        "up_to": "UP TO",
-        "already_open": "Already Open"
+        "title": "市场",
+        "up_to": "最多",
+        "already_open": "已打开"
       },
       "deposit": {
         "title": "存款",
         "no_balance": "无余额",
         "receive": "接收",
         "slider_label": "正在存款",
-        "zero_amount_error": "Enter an amount to deposit",
+        "zero_amount_error": "输入存款金额",
         "confirm_button_text": "按住进行存款",
-        "confirm_button_loading_text": "Depositing...",
+        "confirm_button_loading_text": "正在存款...",
         "confirm_button_zero_text": "输入金额",
         "confirm_button_over_balance_text": "资金不足",
         "confirm_button_error_text": "报价错误",
-        "quote_error": "􀇿 No quote available",
-        "insufficient_balance": "􀫲 Insufficient Funds"
+        "quote_error": "􀇿 没有报价可用",
+        "insufficient_balance": "􀫲 资金不足"
       },
       "withdraw": {
         "title": "提款",
         "slider_label": "正在提现",
         "confirm_button_text": "按住以取款",
-        "confirm_button_loading_text": "Withdrawing...",
-        "available_balance_suffix": " Available",
+        "confirm_button_loading_text": "正在提现...",
+        "available_balance_suffix": " 可用",
         "confirm_button_zero_text": "输入金额",
         "confirm_button_over_balance_text": "资金不足",
-        "info_card_title_prefix": "Withdrawing to ",
+        "info_card_title_prefix": "正在提现至 ",
         "info_card_title_suffix": "Arbitrum",
-        "info_card_subtitle": "Additional networks coming soon. Withdrawals currently include a $1.00 Hyperliquid fee."
+        "info_card_subtitle": "更多网络即将支持。目前提现包含1.00美元Hyperliquid费用。"
       },
       "position_side": {
-        "long": "Long",
-        "short": "Short"
+        "long": "做多",
+        "short": "做空"
       },
       "positions": {
-        "entry": "ENTRY",
-        "mark_price": "MARK PRICE",
-        "open_positions": "Open Positions",
-        "no_open_positions": "No Open Positions",
-        "position_value": "Position Value",
-        "mark_price_full": "Mark Price",
-        "entry_price": "Entry Price",
-        "funding": "Funding",
-        "liquidation_price": "Liquidation Price",
+        "entry": "入口",
+        "mark_price": "标价",
+        "open_positions": "持仓",
+        "no_open_positions": "没有未平仓位",
+        "position_value": "仓位价值",
+        "mark_price_full": "标记价格",
+        "entry_price": "入场价",
+        "funding": "资金",
+        "liquidation_price": "清算价格",
         "total": "总计",
-        "learn_more_about_perps": "Learn more about Perps"
+        "learn_more_about_perps": "了解更多关于Perps的信息"
       },
       "new_position": {
-        "hold_to_long": "Hold to Long",
-        "hold_to_short": "Hold to Short",
-        "liquidated_at": "Liquidated at",
-        "from_current_price": "from current price",
+        "hold_to_long": "长按以做多",
+        "hold_to_short": "长按以做空",
+        "liquidated_at": "在以下位置清算",
+        "from_current_price": "从当前价格",
         "details": "详细信息",
-        "funding_rate": "Funding Rate",
+        "funding_rate": "资金费率",
         "max_slippage": "最大滑点",
-        "no_liquidation_risk": "No Liquidation Risk",
-        "trading_without_leverage": "Trading without leverage"
+        "no_liquidation_risk": "无清算风险",
+        "trading_without_leverage": "无杠杆交易"
       },
       "inputs": {
         "amount": "金额",
-        "available": "Available",
+        "available": "可用",
         "max": "最大",
-        "maximum_amount_is": "Maximum amount is",
-        "minimum": "Minimum",
-        "minimum_amount_is": "Minimum amount is",
+        "maximum_amount_is": "最大额度是",
+        "minimum": "最低",
+        "minimum_amount_is": "最低金额是",
         "no_balance": "无余额"
       },
       "history": {
         "title": "历史记录",
-        "no_trades": "No trades",
+        "no_trades": "没有交易",
         "trade_execution": {
-          "take_profit_executed": "Take Profit Executed",
-          "stop_loss_executed": "Stop Loss Executed",
-          "long_opened": "Long Opened",
-          "short_opened": "Short Opened",
-          "long_closed": "Long Closed",
-          "short_closed": "Short Closed",
-          "long_liquidated": "Long Liquidated",
-          "short_liquidated": "Short Liquidated"
+          "take_profit_executed": "止盈已执行",
+          "stop_loss_executed": "止损已执行",
+          "long_opened": "做多已开仓",
+          "short_opened": "做空已开仓",
+          "long_closed": "做多已平仓",
+          "short_closed": "做空已平仓",
+          "long_liquidated": "做多已清算",
+          "short_liquidated": "做空已清算"
         }
       },
       "trigger_orders": {
-        "title": "Trigger Orders",
-        "take_profit": "Take Profit",
-        "stop_loss": "Stop Loss",
-        "sell": "Sell",
-        "cancel_failed": "Failed to cancel order",
-        "add_stop_loss": "Add Stop Loss",
-        "add_take_profit": "Add Take Profit",
+        "title": "触发订单",
+        "take_profit": "止盈",
+        "stop_loss": "止损",
+        "sell": "卖出",
+        "cancel_failed": "无法取消订单",
+        "add_stop_loss": "添加止损",
+        "add_take_profit": "添加止盈",
         "price": "价格",
-        "projected_profit": "Projected Profit",
-        "projected_loss": "Projected Loss",
+        "projected_profit": "预计收益",
+        "projected_loss": "预计损失",
         "add": "添加",
-        "adding": "Adding...",
-        "above": "above",
-        "below": "below",
-        "must_be": "Must be",
-        "failed_to_create": "Failed to create trigger order"
+        "adding": "正在添加...",
+        "above": "以上",
+        "below": "以下",
+        "must_be": "必须是",
+        "failed_to_create": "创建触发订单失败"
       },
       "search": {
-        "search_markets": "Search markets",
-        "markets_count": "%{count} MARKETS",
-        "choose_a_market": "CHOOSE A MARKET"
+        "search_markets": "搜索市场",
+        "markets_count": "%{count}个市场",
+        "choose_a_market": "选择一个市场"
       },
       "close_position": {
-        "estimated_loss": "Estimated Loss",
-        "estimated_profit": "Estimated Profit",
-        "minimum_amount_is": "Minimum amount is",
-        "closing": "Closing...",
-        "hold_to_close": "Hold to Close"
+        "estimated_loss": "预估损失",
+        "estimated_profit": "预估收益",
+        "minimum_amount_is": "最低金额是",
+        "closing": "正在关闭...",
+        "hold_to_close": "长按以关闭"
       },
       "explain_sheet": {
         "next": "下一步",
@@ -1726,35 +1726,35 @@
         "steps": {
           "step_1": {
             "title_parts": [
-              "Perpetual Futures"
+              "永久期货"
             ],
             "subtitle_parts": [
-              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
+              "押注价格变动。随时打开和关闭仓位，无过期日。\n由Hyperliquid提供支持。"
             ]
           },
           "step_2": {
             "title_parts": [
-              "Go",
-              "Long",
-              "or",
-              "Short"
+              "走",
+              "做多",
+              "或",
+              "做空"
             ],
             "subtitle_parts": [
-              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
+              "当您认为价格会上涨时做多。当价格会下跌时做空。当您方向正确时获得收益。"
             ]
           },
           "step_3": {
             "title_parts": [
-              "Trade with Leverage"
+              "杠杆交易"
             ],
             "subtitle_parts": [
-              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+              "杠杆会放大您的风险。当您正确时，收益更大。当您错误时，损失和清算更快。"
             ]
           }
         }
       },
-      "leverage": "Leverage",
-      "up_to": "Up to"
+      "leverage": "杠杆",
+      "up_to": "最多"
     },
     "points": {
       "placeholder": {
@@ -1832,8 +1832,6 @@
         "claimed_earnings": "已领取收入",
         "current_value": "当前价值",
         "rainbow_users_have_earned": "彩虹钱包用户已经赚取",
-        "earn_eth_rewards": "赚取ETH奖励",
-        "rewards_explainer": "每周，排名前列的积分赚取者将获得彩虹钱包链上收入的一部分。通过在彩虹钱包中换币或交易、使用dapp或推荐朋友来收集积分。",
         "my_points": "我的积分",
         "refer_friends": "推荐朋友",
         "try_again": "再试一次",
