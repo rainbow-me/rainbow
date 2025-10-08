@@ -23,7 +23,7 @@
       "tab_investments": "المجمعات",
       "tab_savings": "التوفير",
       "tab_showcase": "عرض",
-      "tab_perps": "Perps",
+      "tab_perps": "الرافعات المالية",
       "tab_points": "النقاط",
       "tab_positions": "المواقف",
       "tab_rewards": "المكافآت",
@@ -1583,178 +1583,178 @@
     },
     "perps": {
       "common": {
-        "not_available": "N/A",
-        "current_price": "Current Price",
-        "title": "Perps",
-        "error_submitting_order": "Error submitting order",
-        "submitting": "Submitting...",
+        "not_available": "غير متاح",
+        "current_price": "السعر الحالي",
+        "title": "الرافعات المالية",
+        "error_submitting_order": "خطأ في إرسال الطلب",
+        "submitting": "جار الإرسال...",
         "more": "أكثر",
         "error": "خطأ",
         "cancel": "إلغاء",
-        "liq_price": "liq. price",
-        "liq": "liq"
+        "liq_price": "سعر التصفية",
+        "liq": "تصفية"
       },
       "feature_card": {
-        "title": "Perps",
-        "subtitle": "High-risk, high-reward trading"
+        "title": "الرافعات المالية",
+        "subtitle": "التداول عالي المخاطر، عالي المكافأة"
       },
       "actions": {
-        "fund_wallet": "Fund Wallet",
-        "new_position": "New Position",
-        "close_position": "Close Position",
-        "open_position": "Open Position"
+        "fund_wallet": "تمويل المحفظة",
+        "new_position": "موقع جديد",
+        "close_position": "إغلاق الموقع",
+        "open_position": "فتح موقع"
       },
       "account": {
         "available_balance": "الرصيد المتاح"
       },
       "markets": {
-        "title": "Markets",
-        "up_to": "UP TO",
-        "already_open": "Already Open"
+        "title": "الأسواق",
+        "up_to": "حتى",
+        "already_open": "مفتوح مسبقًا"
       },
       "deposit": {
         "title": "إيداع",
         "no_balance": "لا يوجد رصيد",
         "receive": "استلم",
         "slider_label": "إيداع",
-        "zero_amount_error": "Enter an amount to deposit",
+        "zero_amount_error": "أدخل كمية للإيداع",
         "confirm_button_text": "اضغط للإيداع",
-        "confirm_button_loading_text": "Depositing...",
+        "confirm_button_loading_text": "إيداع...",
         "confirm_button_zero_text": "أدخل كمية",
         "confirm_button_over_balance_text": "أموال غير كافية",
         "confirm_button_error_text": "خطأ في عرض السعر",
-        "quote_error": "􀇿 No quote available",
-        "insufficient_balance": "􀫲 Insufficient Funds"
+        "quote_error": "􀇿 لا يوجد اقتباس متاح",
+        "insufficient_balance": "􀫲 أموال غير كافية"
       },
       "withdraw": {
         "title": "سحب",
         "slider_label": "سحب",
         "confirm_button_text": "اضغط مع الاستمرار للسحب",
-        "confirm_button_loading_text": "Withdrawing...",
-        "available_balance_suffix": " Available",
+        "confirm_button_loading_text": "سحب...",
+        "available_balance_suffix": " متاح",
         "confirm_button_zero_text": "أدخل كمية",
         "confirm_button_over_balance_text": "أموال غير كافية",
-        "info_card_title_prefix": "Withdrawing to ",
+        "info_card_title_prefix": "سحب إلى ",
         "info_card_title_suffix": "Arbitrum",
-        "info_card_subtitle": "Additional networks coming soon. Withdrawals currently include a $1.00 Hyperliquid fee."
+        "info_card_subtitle": "شبكات إضافية ستتوفر قريبًا. حاليًا تشمل السحوبات رسوم Hyperliquid بقيمة 1.00 دولار."
       },
       "position_side": {
-        "long": "Long",
-        "short": "Short"
+        "long": "طويلة",
+        "short": "قصيرة"
       },
       "positions": {
-        "entry": "ENTRY",
-        "mark_price": "MARK PRICE",
-        "open_positions": "Open Positions",
-        "no_open_positions": "No Open Positions",
-        "position_value": "Position Value",
-        "mark_price_full": "Mark Price",
-        "entry_price": "Entry Price",
-        "funding": "Funding",
-        "liquidation_price": "Liquidation Price",
+        "entry": "دخول",
+        "mark_price": "سعر العلامة",
+        "open_positions": "المواقع المفتوحة",
+        "no_open_positions": "لا توجد مواقع مفتوحة",
+        "position_value": "قيمة الموقع",
+        "mark_price_full": "سعر العلامة",
+        "entry_price": "سعر الدخول",
+        "funding": "التمويل",
+        "liquidation_price": "سعر التصفية",
         "total": "المجموع",
-        "learn_more_about_perps": "Learn more about Perps"
+        "learn_more_about_perps": "تعرف أكثر على بيربز"
       },
       "new_position": {
-        "hold_to_long": "Hold to Long",
-        "hold_to_short": "Hold to Short",
-        "liquidated_at": "Liquidated at",
-        "from_current_price": "from current price",
+        "hold_to_long": "استمر للطول",
+        "hold_to_short": "استمر للقصر",
+        "liquidated_at": "تم التصفية عند",
+        "from_current_price": "من السعر الحالي",
         "details": "تفاصيل",
-        "funding_rate": "Funding Rate",
+        "funding_rate": "معدل التمويل",
         "max_slippage": "الانزلاق الأقصى",
-        "no_liquidation_risk": "No Liquidation Risk",
-        "trading_without_leverage": "Trading without leverage"
+        "no_liquidation_risk": "لا يوجد خطر تصفية",
+        "trading_without_leverage": "التداول بدون رافعة مالية"
       },
       "inputs": {
         "amount": "الكمية",
-        "available": "Available",
+        "available": "متاح",
         "max": "الحد الأقصى",
-        "maximum_amount_is": "Maximum amount is",
-        "minimum": "Minimum",
-        "minimum_amount_is": "Minimum amount is",
+        "maximum_amount_is": "الحد الأقصى هو",
+        "minimum": "الأقل",
+        "minimum_amount_is": "الحد الأدنى هو",
         "no_balance": "لا يوجد رصيد"
       },
       "history": {
         "title": "التاريخ",
-        "no_trades": "No trades",
+        "no_trades": "لا توجد تداولات",
         "trade_execution": {
-          "take_profit_executed": "Take Profit Executed",
-          "stop_loss_executed": "Stop Loss Executed",
-          "long_opened": "Long Opened",
-          "short_opened": "Short Opened",
-          "long_closed": "Long Closed",
-          "short_closed": "Short Closed",
-          "long_liquidated": "Long Liquidated",
-          "short_liquidated": "Short Liquidated"
+          "take_profit_executed": "تنفيذ جني الأرباح",
+          "stop_loss_executed": "تنفيذ وقف الخسارة",
+          "long_opened": "فتح طويل",
+          "short_opened": "فتح قصير",
+          "long_closed": "إغلاق طويل",
+          "short_closed": "إغلاق قصير",
+          "long_liquidated": "تصفية طويلة",
+          "short_liquidated": "تصفية قصيرة"
         }
       },
       "trigger_orders": {
-        "title": "Trigger Orders",
-        "take_profit": "Take Profit",
-        "stop_loss": "Stop Loss",
-        "sell": "Sell",
-        "cancel_failed": "Failed to cancel order",
-        "add_stop_loss": "Add Stop Loss",
-        "add_take_profit": "Add Take Profit",
+        "title": "أوامر الزناد",
+        "take_profit": "جني الأرباح",
+        "stop_loss": "وقف الخسارة",
+        "sell": "بيع",
+        "cancel_failed": "فشل في إلغاء الطلب",
+        "add_stop_loss": "إضافة وقف الخسارة",
+        "add_take_profit": "إضافة جني الأرباح",
         "price": "السعر",
-        "projected_profit": "Projected Profit",
-        "projected_loss": "Projected Loss",
+        "projected_profit": "الربح المتوقع",
+        "projected_loss": "الخسارة المتوقعة",
         "add": "أضف",
-        "adding": "Adding...",
-        "above": "above",
-        "below": "below",
-        "must_be": "Must be",
-        "failed_to_create": "Failed to create trigger order"
+        "adding": "جاري الإضافة...",
+        "above": "أعلى",
+        "below": "أدناه",
+        "must_be": "يجب أن تكون",
+        "failed_to_create": "فشل في إنشاء أمر الزناد"
       },
       "search": {
-        "search_markets": "Search markets",
-        "markets_count": "%{count} MARKETS",
-        "choose_a_market": "CHOOSE A MARKET"
+        "search_markets": "البحث في الأسواق",
+        "markets_count": "٪{count} أسواق ",
+        "choose_a_market": "اختيار سوق"
       },
       "close_position": {
-        "estimated_loss": "Estimated Loss",
-        "estimated_profit": "Estimated Profit",
-        "minimum_amount_is": "Minimum amount is",
-        "closing": "Closing...",
-        "hold_to_close": "Hold to Close"
+        "estimated_loss": "الخسارة المقدرة",
+        "estimated_profit": "الربح المقدر",
+        "minimum_amount_is": "الحد الأدنى هو",
+        "closing": "جاري الإغلاق...",
+        "hold_to_close": "استمر للإغلاق"
       },
       "explain_sheet": {
         "next": "التالي",
         "got_it": "فهمت",
-        "title": "Perps",
+        "title": "الرافعات المالية",
         "steps": {
           "step_1": {
             "title_parts": [
-              "Perpetual Futures"
+              "العقود الآجلة الدائمة"
             ],
             "subtitle_parts": [
-              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
+              "راهن على تحركات الأسعار. افتح وأغلق المواقع حينما تشاء، دون انتهاء صلاحيتها. مدعوم من Hyperliquid."
             ]
           },
           "step_2": {
             "title_parts": [
-              "Go",
-              "Long",
-              "or",
-              "Short"
+              "اذهب",
+              "طويلة",
+              "أو",
+              "قصيرة"
             ],
             "subtitle_parts": [
-              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
+              "طويلًا عندما تعتقد أن السعر سيرتفع. قصيرًا عندما تعتقد أنه سينخفض. اربح عندما تتوقع الاتجاه بشكل صحيح."
             ]
           },
           "step_3": {
             "title_parts": [
-              "Trade with Leverage"
+              "التداول بالرافعة المالية"
             ],
             "subtitle_parts": [
-              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+              "تضخم الرافعة المالية من مخاطرك. مكاسب أكبر عندما تكون على حق. خسائر أسرع، وتصفية، عندما تكون مخطئًا."
             ]
           }
         }
       },
-      "leverage": "Leverage",
-      "up_to": "Up to"
+      "leverage": "الرافعة المالية",
+      "up_to": "حتى"
     },
     "points": {
       "placeholder": {
@@ -1832,8 +1832,6 @@
         "claimed_earnings": "الأرباح المكتسبة",
         "current_value": "القيمة الحالية",
         "rainbow_users_have_earned": "لقد حصل مستخدمو Rainbow على",
-        "earn_eth_rewards": "اكسب مكافآت ETH",
-        "rewards_explainer": "كل أسبوع، سيحصل الكاسبين في أعلى النقاط الأسبوعية على جزء من عائدات Rainbow's على السلسلة. اجمع النقاط عن طريق التبديل أو التعامل على Rainbow، أو استخدام dapps، أو إحالة الأصدقاء.",
         "my_points": "نقاطي",
         "refer_friends": "إحالة الأصدقاء",
         "try_again": "حاول مرة أخرى",
