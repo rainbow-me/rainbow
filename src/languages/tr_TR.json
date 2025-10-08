@@ -23,7 +23,7 @@
       "tab_investments": "Havuzlar",
       "tab_savings": "Tasarruflar",
       "tab_showcase": "Vitrin",
-      "tab_perps": "Perps",
+      "tab_perps": "Vadeli İşlemler",
       "tab_points": "Noktalar",
       "tab_positions": "Pozisyonlar",
       "tab_rewards": "Ödüller",
@@ -1584,177 +1584,177 @@
     "perps": {
       "common": {
         "not_available": "N/A",
-        "current_price": "Current Price",
-        "title": "Perps",
-        "error_submitting_order": "Error submitting order",
-        "submitting": "Submitting...",
+        "current_price": "Mevcut Fiyat",
+        "title": "Vadeli İşlemler",
+        "error_submitting_order": "Sipariş gönderilirken hata oluştu",
+        "submitting": "Gönderiliyor...",
         "more": "Daha fazla",
         "error": "Hata",
         "cancel": "İptal",
-        "liq_price": "liq. price",
-        "liq": "liq"
+        "liq_price": "likit. fiyatı",
+        "liq": "likit"
       },
       "feature_card": {
-        "title": "Perps",
-        "subtitle": "High-risk, high-reward trading"
+        "title": "Vadeli İşlemler",
+        "subtitle": "Yüksek risk, yüksek getiri ticareti"
       },
       "actions": {
-        "fund_wallet": "Fund Wallet",
-        "new_position": "New Position",
-        "close_position": "Close Position",
-        "open_position": "Open Position"
+        "fund_wallet": "Cüzdanı Fonla",
+        "new_position": "Yeni Pozisyon",
+        "close_position": "Pozisyonu Kapat",
+        "open_position": "Pozisyonu Aç"
       },
       "account": {
         "available_balance": "Mevcut Bakiye"
       },
       "markets": {
-        "title": "Markets",
+        "title": "Piyasalar",
         "up_to": "UP TO",
-        "already_open": "Already Open"
+        "already_open": "Zaten Açık"
       },
       "deposit": {
         "title": "Depozit",
         "no_balance": "Bakiye Yok",
         "receive": "Al",
         "slider_label": "Yatırılıyor",
-        "zero_amount_error": "Enter an amount to deposit",
+        "zero_amount_error": "Yatırılacak tutarı girin",
         "confirm_button_text": "Yatırmak için Basılı Tutun",
-        "confirm_button_loading_text": "Depositing...",
+        "confirm_button_loading_text": "Yatırılıyor...",
         "confirm_button_zero_text": "Miktar Girin",
         "confirm_button_over_balance_text": "Yetersiz Bakiye",
         "confirm_button_error_text": "Teklif Hatası",
-        "quote_error": "􀇿 No quote available",
-        "insufficient_balance": "􀫲 Insufficient Funds"
+        "quote_error": "􀇿 Alıntı bulunamadı",
+        "insufficient_balance": "􀫲 Yetersiz Bakiye"
       },
       "withdraw": {
         "title": "Çekme",
         "slider_label": "Çekiliyor",
         "confirm_button_text": "Çekmek için Tut",
-        "confirm_button_loading_text": "Withdrawing...",
-        "available_balance_suffix": " Available",
+        "confirm_button_loading_text": "Çekiliyor...",
+        "available_balance_suffix": " Mevcut",
         "confirm_button_zero_text": "Miktar Girin",
         "confirm_button_over_balance_text": "Yetersiz Bakiye",
-        "info_card_title_prefix": "Withdrawing to ",
+        "info_card_title_prefix": "Çekiliyor ",
         "info_card_title_suffix": "Arbitrum",
-        "info_card_subtitle": "Additional networks coming soon. Withdrawals currently include a $1.00 Hyperliquid fee."
+        "info_card_subtitle": "Ek ağlar yakında geliyor. Çekimler şu anda $1.00 Hyperliquid ücreti içermektedir."
       },
       "position_side": {
-        "long": "Long",
-        "short": "Short"
+        "long": "Uzun",
+        "short": "Kısa"
       },
       "positions": {
-        "entry": "ENTRY",
-        "mark_price": "MARK PRICE",
-        "open_positions": "Open Positions",
-        "no_open_positions": "No Open Positions",
-        "position_value": "Position Value",
-        "mark_price_full": "Mark Price",
-        "entry_price": "Entry Price",
-        "funding": "Funding",
-        "liquidation_price": "Liquidation Price",
+        "entry": "GİRİŞ",
+        "mark_price": "FİYAT İŞARETİ",
+        "open_positions": "Açık Pozisyonlar",
+        "no_open_positions": "Açık Pozisyon Yok",
+        "position_value": "Pozisyon Değeri",
+        "mark_price_full": "Fiyat İşareti",
+        "entry_price": "Giriş Fiyatı",
+        "funding": "Fonlama",
+        "liquidation_price": "Tasfiye Fiyatı",
         "total": "Toplam",
-        "learn_more_about_perps": "Learn more about Perps"
+        "learn_more_about_perps": "Perps hakkında daha fazla bilgi edinin"
       },
       "new_position": {
-        "hold_to_long": "Hold to Long",
-        "hold_to_short": "Hold to Short",
-        "liquidated_at": "Liquidated at",
-        "from_current_price": "from current price",
+        "hold_to_long": "Uzun Tut",
+        "hold_to_short": "Kısa Tut",
+        "liquidated_at": "Tasfiye edildiği fiyat",
+        "from_current_price": "mevcut fiyattan",
         "details": "Detaylar",
-        "funding_rate": "Funding Rate",
+        "funding_rate": "Fonlama Oranı",
         "max_slippage": "Maks Kayma",
-        "no_liquidation_risk": "No Liquidation Risk",
-        "trading_without_leverage": "Trading without leverage"
+        "no_liquidation_risk": "Tasfiye Riski Yok",
+        "trading_without_leverage": "Kaldıraçsız ticaret"
       },
       "inputs": {
         "amount": "Miktar",
-        "available": "Available",
+        "available": "Mevcut",
         "max": "Maks",
-        "maximum_amount_is": "Maximum amount is",
-        "minimum": "Minimum",
-        "minimum_amount_is": "Minimum amount is",
+        "maximum_amount_is": "Maksimum miktar",
+        "minimum": "Asgari",
+        "minimum_amount_is": "Asgari miktar",
         "no_balance": "Bakiye Yok"
       },
       "history": {
         "title": "Geçmiş",
-        "no_trades": "No trades",
+        "no_trades": "İşlem Yok",
         "trade_execution": {
-          "take_profit_executed": "Take Profit Executed",
-          "stop_loss_executed": "Stop Loss Executed",
-          "long_opened": "Long Opened",
-          "short_opened": "Short Opened",
-          "long_closed": "Long Closed",
-          "short_closed": "Short Closed",
-          "long_liquidated": "Long Liquidated",
-          "short_liquidated": "Short Liquidated"
+          "take_profit_executed": "Kar Al Gerçekleştirildi",
+          "stop_loss_executed": "Zararı Durdur Gerçekleştirildi",
+          "long_opened": "Uzun Açıldı",
+          "short_opened": "Kısa Açıldı",
+          "long_closed": "Uzun Kapandı",
+          "short_closed": "Kısa Kapandı",
+          "long_liquidated": "Uzun Tasfiye Edildi",
+          "short_liquidated": "Kısa Tasfiye Edildi"
         }
       },
       "trigger_orders": {
-        "title": "Trigger Orders",
-        "take_profit": "Take Profit",
-        "stop_loss": "Stop Loss",
-        "sell": "Sell",
-        "cancel_failed": "Failed to cancel order",
-        "add_stop_loss": "Add Stop Loss",
-        "add_take_profit": "Add Take Profit",
+        "title": "Tetik Emirleri",
+        "take_profit": "Kar Al",
+        "stop_loss": "Zararı Durdur",
+        "sell": "Sat",
+        "cancel_failed": "Emir iptal edilemedi",
+        "add_stop_loss": "Zararı Durdur Ekle",
+        "add_take_profit": "Kar Al Ekle",
         "price": "Fiyat",
-        "projected_profit": "Projected Profit",
-        "projected_loss": "Projected Loss",
+        "projected_profit": "Tahmini Kar",
+        "projected_loss": "Tahmini Zarar",
         "add": "Ekle",
-        "adding": "Adding...",
-        "above": "above",
-        "below": "below",
-        "must_be": "Must be",
-        "failed_to_create": "Failed to create trigger order"
+        "adding": "Ekleniyor...",
+        "above": "üzerinde",
+        "below": "altında",
+        "must_be": "Olmalı",
+        "failed_to_create": "Tetik emri oluşturulamadı"
       },
       "search": {
-        "search_markets": "Search markets",
-        "markets_count": "%{count} MARKETS",
-        "choose_a_market": "CHOOSE A MARKET"
+        "search_markets": "Piyasaları ara",
+        "markets_count": "%{count} PİYASA",
+        "choose_a_market": "PİYASA SEÇİN"
       },
       "close_position": {
-        "estimated_loss": "Estimated Loss",
-        "estimated_profit": "Estimated Profit",
-        "minimum_amount_is": "Minimum amount is",
-        "closing": "Closing...",
-        "hold_to_close": "Hold to Close"
+        "estimated_loss": "Tahmini Zarar",
+        "estimated_profit": "Tahmini Kar",
+        "minimum_amount_is": "Asgari miktar",
+        "closing": "Kapanıyor...",
+        "hold_to_close": "Kapatmak için Basılı Tut"
       },
       "explain_sheet": {
         "next": "Sonraki",
         "got_it": "Anladım",
-        "title": "Perps",
+        "title": "Vadeli İşlemler",
         "steps": {
           "step_1": {
             "title_parts": [
-              "Perpetual Futures"
+              "Sürekli Vadeli İşlemler"
             ],
             "subtitle_parts": [
-              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
+              "Fiyat hareketleri üzerine bahis yapın. Pozisyonları istediğiniz zaman açın ve kapatın, son kullanma tarihi olmadan.\nHyperliquid tarafından desteklenmektedir."
             ]
           },
           "step_2": {
             "title_parts": [
-              "Go",
-              "Long",
-              "or",
-              "Short"
+              "Git",
+              "Uzun",
+              "veya",
+              "Kısa"
             ],
             "subtitle_parts": [
-              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
+              "Fiyatın yükseleceğini düşündüğünüzde uzun gidin. Düşeceğini düşündüğünüzde kısa gidin. Yönü doğru tahmin ettiğinizde kar edin."
             ]
           },
           "step_3": {
             "title_parts": [
-              "Trade with Leverage"
+              "Kaldıraçlı İşlem"
             ],
             "subtitle_parts": [
-              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+              "Kaldıraç riski artırır. Doğru olduğunuzda büyük kazançlar. Yanıldığınızda daha hızlı kayıplar ve tasfiye olur."
             ]
           }
         }
       },
-      "leverage": "Leverage",
-      "up_to": "Up to"
+      "leverage": "Kaldıraç",
+      "up_to": "Kadarcık"
     },
     "points": {
       "placeholder": {
@@ -1832,8 +1832,6 @@
         "claimed_earnings": "Talep Edilen Kazançlar",
         "current_value": "Güncel Değer",
         "rainbow_users_have_earned": "Rainbow kullanıcıları kazandı",
-        "earn_eth_rewards": "ETH Ödülleri Kazanın",
-        "rewards_explainer": "Her hafta, en çok puan kazanan haftalık kazananlar Rainbow’un zincir üstü gelirinin bir kısmını alacaklar. Puan toplamak için Rainbow'da takas yapın veya işlem yapın, dapp'leri kullanın veya arkadaşlarınızı davet edin.",
         "my_points": "Puanlarım",
         "refer_friends": "Arkadaşları Davet Et",
         "try_again": "Tekrar Deneyin",
