@@ -1583,141 +1583,141 @@
     },
     "perps": {
       "common": {
-        "not_available": "N/A",
-        "current_price": "Current Price",
+        "not_available": "ไม่พร้อมใช้งาน",
+        "current_price": "ราคาปัจจุบัน",
         "title": "Perps",
-        "error_submitting_order": "Error submitting order",
-        "submitting": "Submitting...",
+        "error_submitting_order": "เกิดข้อผิดพลาดในการส่งคำสั่ง",
+        "submitting": "ส่ง...",
         "more": "เพิ่มเติม",
         "error": "ข้อผิดพลาด",
         "cancel": "ยกเลิก",
-        "liq_price": "liq. price",
-        "liq": "liq"
+        "liq_price": "ราคา liq.",
+        "liq": "liquid."
       },
       "feature_card": {
         "title": "Perps",
-        "subtitle": "High-risk, high-reward trading"
+        "subtitle": "การซื้อขายที่มีความเสี่ยงสูงและผลตอบแทนสูง"
       },
       "actions": {
-        "fund_wallet": "Fund Wallet",
-        "new_position": "New Position",
-        "close_position": "Close Position",
-        "open_position": "Open Position"
+        "fund_wallet": "เติมเงินในกระเป๋าของฉัน",
+        "new_position": "ตำแหน่งใหม่",
+        "close_position": "ปิดตำแหน่ง",
+        "open_position": "เปิดตำแหน่ง"
       },
       "account": {
         "available_balance": "ยอดคงเหลือที่มี"
       },
       "markets": {
-        "title": "Markets",
-        "up_to": "UP TO",
-        "already_open": "Already Open"
+        "title": "ตลาด",
+        "up_to": "สูงสุดถึง",
+        "already_open": "เปิดแล้ว"
       },
       "deposit": {
         "title": "ฝาก",
         "no_balance": "ไม่มีคงเหลือ",
         "receive": "รับ",
         "slider_label": "กำลังฝาก",
-        "zero_amount_error": "Enter an amount to deposit",
+        "zero_amount_error": "กรอกจำนวนเงินที่จะฝาก",
         "confirm_button_text": "กดและยังฝาก",
-        "confirm_button_loading_text": "Depositing...",
+        "confirm_button_loading_text": "กำลังฝาก...",
         "confirm_button_zero_text": "ป้อนจำนวน",
         "confirm_button_over_balance_text": "เงินทุนไม่เพียงพอ",
         "confirm_button_error_text": "ข้อผิดพลาดของราคาที่เสนอ",
-        "quote_error": "􀇿 No quote available",
-        "insufficient_balance": "􀫲 Insufficient Funds"
+        "quote_error": "􀇿 ไม่มีใบเสนอราคา",
+        "insufficient_balance": "􀫲 เงินทุนไม่เพียงพอ"
       },
       "withdraw": {
         "title": "ถอน",
         "slider_label": "กำลังถอน",
         "confirm_button_text": "กดเพื่อถอน",
-        "confirm_button_loading_text": "Withdrawing...",
-        "available_balance_suffix": " Available",
+        "confirm_button_loading_text": "กำลังถอน...",
+        "available_balance_suffix": " ว่าง",
         "confirm_button_zero_text": "ป้อนจำนวน",
         "confirm_button_over_balance_text": "เงินทุนไม่เพียงพอ",
-        "info_card_title_prefix": "Withdrawing to ",
+        "info_card_title_prefix": "กำลังถอนไปที่ ",
         "info_card_title_suffix": "Arbitrum",
-        "info_card_subtitle": "Additional networks coming soon. Withdrawals currently include a $1.00 Hyperliquid fee."
+        "info_card_subtitle": "เครือข่ายเพิ่มเติมจะมาเร็วๆ นี้ ขณะนี้มีค่าธรรมเนียม Hyperliquid $1.00 สำหรับการถอน"
       },
       "position_side": {
-        "long": "Long",
-        "short": "Short"
+        "long": "ยาว",
+        "short": "สั้น"
       },
       "positions": {
-        "entry": "ENTRY",
-        "mark_price": "MARK PRICE",
-        "open_positions": "Open Positions",
-        "no_open_positions": "No Open Positions",
-        "position_value": "Position Value",
-        "mark_price_full": "Mark Price",
-        "entry_price": "Entry Price",
-        "funding": "Funding",
-        "liquidation_price": "Liquidation Price",
+        "entry": "เข้า",
+        "mark_price": "ราคามาร์ก",
+        "open_positions": "ตำแหน่งที่เปิดอยู่",
+        "no_open_positions": "ไม่มีตำแหน่งที่เปิดอยู่",
+        "position_value": "ค่าตำแหน่ง",
+        "mark_price_full": "ราคามาร์ก",
+        "entry_price": "ราคาเข้า",
+        "funding": "การจัดหาเงิน",
+        "liquidation_price": "ราคาการชำระหนี้",
         "total": "ทั้งหมด",
-        "learn_more_about_perps": "Learn more about Perps"
+        "learn_more_about_perps": "เรียนรู้เกี่ยวกับ Perps เพิ่มเติม"
       },
       "new_position": {
-        "hold_to_long": "Hold to Long",
-        "hold_to_short": "Hold to Short",
-        "liquidated_at": "Liquidated at",
-        "from_current_price": "from current price",
+        "hold_to_long": "กดค้างเพื่อยาว",
+        "hold_to_short": "กดค้างเพื่อสั้น",
+        "liquidated_at": "การขายหมดที่",
+        "from_current_price": "จากราคาปัจจุบัน",
         "details": "รายละเอียด",
-        "funding_rate": "Funding Rate",
+        "funding_rate": "อัตราการจัดหาเงิน",
         "max_slippage": "สลิปเปจสูงสุด",
-        "no_liquidation_risk": "No Liquidation Risk",
-        "trading_without_leverage": "Trading without leverage"
+        "no_liquidation_risk": "ไม่มีความเสี่ยงในการชำระหนี้",
+        "trading_without_leverage": "ซื้อขายโดยไม่มีการยืม"
       },
       "inputs": {
         "amount": "จำนวน",
-        "available": "Available",
+        "available": "ที่มีอยู่",
         "max": "สูงสุด",
-        "maximum_amount_is": "Maximum amount is",
-        "minimum": "Minimum",
-        "minimum_amount_is": "Minimum amount is",
+        "maximum_amount_is": "จำนวนสูงสุดคือ",
+        "minimum": "ขั้นต่ำ",
+        "minimum_amount_is": "จำนวนขั้นต่ำคือ",
         "no_balance": "ไม่มีคงเหลือ"
       },
       "history": {
         "title": "ประวัติ",
-        "no_trades": "No trades",
+        "no_trades": "ไม่มีการซื้อขาย",
         "trade_execution": {
-          "take_profit_executed": "Take Profit Executed",
-          "stop_loss_executed": "Stop Loss Executed",
-          "long_opened": "Long Opened",
-          "short_opened": "Short Opened",
-          "long_closed": "Long Closed",
-          "short_closed": "Short Closed",
-          "long_liquidated": "Long Liquidated",
-          "short_liquidated": "Short Liquidated"
+          "take_profit_executed": "เรียกผลกำไร",
+          "stop_loss_executed": "เรียกขาดทุน",
+          "long_opened": "เปิดยาว",
+          "short_opened": "เปิดสั้น",
+          "long_closed": "ปิดยาว",
+          "short_closed": "ปิดสั้น",
+          "long_liquidated": "ยาวถูกชำระ",
+          "short_liquidated": "สั้นถูกชำระ"
         }
       },
       "trigger_orders": {
-        "title": "Trigger Orders",
-        "take_profit": "Take Profit",
-        "stop_loss": "Stop Loss",
-        "sell": "Sell",
-        "cancel_failed": "Failed to cancel order",
-        "add_stop_loss": "Add Stop Loss",
-        "add_take_profit": "Add Take Profit",
+        "title": "คำสั่งกระตุ้น",
+        "take_profit": "เรียกผลกำไร",
+        "stop_loss": "เรียกขาดทุน",
+        "sell": "ขาย",
+        "cancel_failed": "ยกเลิกคำสั่งไม่สำเร็จ",
+        "add_stop_loss": "เพิ่มเรียกขาดทุน",
+        "add_take_profit": "เพิ่มเรียกผลกำไร",
         "price": "ราคา",
-        "projected_profit": "Projected Profit",
-        "projected_loss": "Projected Loss",
+        "projected_profit": "ผลกำไรที่คาดการณ์",
+        "projected_loss": "ขาดทุนที่คาดการณ์",
         "add": "เพิ่ม",
-        "adding": "Adding...",
-        "above": "above",
-        "below": "below",
-        "must_be": "Must be",
-        "failed_to_create": "Failed to create trigger order"
+        "adding": "กำลังเพิ่ม...",
+        "above": "เหนือ",
+        "below": "ต่ำกว่า",
+        "must_be": "ต้องเป็น",
+        "failed_to_create": "สร้างคำสั่งกระตุ้นไม่สำเร็จ"
       },
       "search": {
-        "search_markets": "Search markets",
-        "markets_count": "%{count} MARKETS",
-        "choose_a_market": "CHOOSE A MARKET"
+        "search_markets": "ค้นหาตลาด",
+        "markets_count": "%{count} ตลาด",
+        "choose_a_market": "เลือกตลาด"
       },
       "close_position": {
-        "estimated_loss": "Estimated Loss",
-        "estimated_profit": "Estimated Profit",
-        "minimum_amount_is": "Minimum amount is",
-        "closing": "Closing...",
-        "hold_to_close": "Hold to Close"
+        "estimated_loss": "ขาดทุนที่คาดการณ์",
+        "estimated_profit": "ผลกำไรที่คาดการณ์",
+        "minimum_amount_is": "จำนวนขั้นต่ำคือ",
+        "closing": "กำลังปิด...",
+        "hold_to_close": "กดค้างเพื่อปิด"
       },
       "explain_sheet": {
         "next": "ถัดไป",
@@ -1726,35 +1726,35 @@
         "steps": {
           "step_1": {
             "title_parts": [
-              "Perpetual Futures"
+              "ฟิวเจอร์สถาวร"
             ],
             "subtitle_parts": [
-              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
+              "เดิมพันกับการเปลี่ยนแปลงราคา เปิดและปิดตำแหน่งเมื่อคุณต้องการ ไม่มีการหมดอายุ\nขับเคลื่อนโดย Hyperliquid."
             ]
           },
           "step_2": {
             "title_parts": [
-              "Go",
-              "Long",
-              "or",
-              "Short"
+              "ไป",
+              "ยาว",
+              "หรือ",
+              "สั้น"
             ],
             "subtitle_parts": [
-              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
+              "ยาวเมื่อคุณคิดว่าราคาจะขึ้น สั้นเมื่อคุณคิดว่าจะตก ทำกำไรเมื่อคุณทำทิศทางได้ถูกต้อง"
             ]
           },
           "step_3": {
             "title_parts": [
-              "Trade with Leverage"
+              "ซื้อขายด้วยการยืม"
             ],
             "subtitle_parts": [
-              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+              "การยืมขยายความเสี่ยงของคุณ กำไรมากขึ้นเมื่อคุณถูก ขาดทุนเร็วขึ้น และชำระหนี้เมื่อคุณผิด"
             ]
           }
         }
       },
-      "leverage": "Leverage",
-      "up_to": "Up to"
+      "leverage": "เลเวอเรจ",
+      "up_to": "สูงสุดถึง"
     },
     "points": {
       "placeholder": {
@@ -1832,8 +1832,6 @@
         "claimed_earnings": "รายได้ที่รับแล้ว",
         "current_value": "มูลค่าปัจจุบัน",
         "rainbow_users_have_earned": "ผู้ใช้ Rainbow ได้รับ",
-        "earn_eth_rewards": "รับรางวัล ETH",
-        "rewards_explainer": "ทุกสัปดาห์ ผู้ที่ได้รับคะแนนประจำสัปดาห์สูงสุดจะได้รับส่วนแบ่งจากรายได้ของ Rainbow บนเชน สะสมคะแนนโดยการแลกเปลี่ยนหรือทำธุรกรรมใน Rainbow ใช้ dapps หรือแนะนำเพื่อน",
         "my_points": "คะแนนของฉัน",
         "refer_friends": "แนะนำเพื่อน",
         "try_again": "ลองใหม่",
