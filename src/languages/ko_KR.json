@@ -1584,140 +1584,140 @@
     "perps": {
       "common": {
         "not_available": "N/A",
-        "current_price": "Current Price",
+        "current_price": "현재 가격",
         "title": "Perps",
-        "error_submitting_order": "Error submitting order",
-        "submitting": "Submitting...",
+        "error_submitting_order": "주문 제출 오류",
+        "submitting": "제출 중...",
         "more": "더 보기",
         "error": "오류",
         "cancel": "취소",
-        "liq_price": "liq. price",
-        "liq": "liq"
+        "liq_price": "청산 가격",
+        "liq": "청산"
       },
       "feature_card": {
         "title": "Perps",
-        "subtitle": "High-risk, high-reward trading"
+        "subtitle": "고위험, 고수익 거래"
       },
       "actions": {
-        "fund_wallet": "Fund Wallet",
-        "new_position": "New Position",
-        "close_position": "Close Position",
-        "open_position": "Open Position"
+        "fund_wallet": "내 지갑 충전하기",
+        "new_position": "새 포지션",
+        "close_position": "포지션 닫기",
+        "open_position": "포지션 열기"
       },
       "account": {
         "available_balance": "사용 가능한 잔액"
       },
       "markets": {
-        "title": "Markets",
-        "up_to": "UP TO",
-        "already_open": "Already Open"
+        "title": "시장",
+        "up_to": "최대",
+        "already_open": "이미 열림"
       },
       "deposit": {
         "title": "예금",
         "no_balance": "잔액 없음",
         "receive": "받기",
         "slider_label": "입금 중",
-        "zero_amount_error": "Enter an amount to deposit",
+        "zero_amount_error": "입금할 금액 입력",
         "confirm_button_text": "입금을 위해 누르세요",
-        "confirm_button_loading_text": "Depositing...",
+        "confirm_button_loading_text": "입금 중...",
         "confirm_button_zero_text": "금액 입력",
         "confirm_button_over_balance_text": "자금이 부족합니다",
         "confirm_button_error_text": "견적 오류",
-        "quote_error": "􀇿 No quote available",
-        "insufficient_balance": "􀫲 Insufficient Funds"
+        "quote_error": "􀇿 견적이 없음",
+        "insufficient_balance": "􀫲 자금이 부족합니다"
       },
       "withdraw": {
         "title": "철수",
         "slider_label": "인출 중",
         "confirm_button_text": "출금 유지",
-        "confirm_button_loading_text": "Withdrawing...",
-        "available_balance_suffix": " Available",
+        "confirm_button_loading_text": "인출 중...",
+        "available_balance_suffix": " 사용 가능",
         "confirm_button_zero_text": "금액 입력",
         "confirm_button_over_balance_text": "자금이 부족합니다",
-        "info_card_title_prefix": "Withdrawing to ",
+        "info_card_title_prefix": "인출 중 ",
         "info_card_title_suffix": "Arbitrum",
-        "info_card_subtitle": "Additional networks coming soon. Withdrawals currently include a $1.00 Hyperliquid fee."
+        "info_card_subtitle": "추가 네트워크가 곧 제공될 예정입니다. 인출 시 $1.00 Hyperliquid 수수료가 부과됩니다."
       },
       "position_side": {
-        "long": "Long",
-        "short": "Short"
+        "long": "롱",
+        "short": "숏"
       },
       "positions": {
-        "entry": "ENTRY",
-        "mark_price": "MARK PRICE",
-        "open_positions": "Open Positions",
-        "no_open_positions": "No Open Positions",
-        "position_value": "Position Value",
-        "mark_price_full": "Mark Price",
-        "entry_price": "Entry Price",
-        "funding": "Funding",
-        "liquidation_price": "Liquidation Price",
+        "entry": "진입",
+        "mark_price": "마크 가격",
+        "open_positions": "열린 포지션",
+        "no_open_positions": "열린 포지션 없음",
+        "position_value": "포지션 가치",
+        "mark_price_full": "마크 가격",
+        "entry_price": "진입 가격",
+        "funding": "자금 조달",
+        "liquidation_price": "청산 가격",
         "total": "총액",
-        "learn_more_about_perps": "Learn more about Perps"
+        "learn_more_about_perps": "영구에 대해 더 알아보기"
       },
       "new_position": {
-        "hold_to_long": "Hold to Long",
-        "hold_to_short": "Hold to Short",
-        "liquidated_at": "Liquidated at",
-        "from_current_price": "from current price",
+        "hold_to_long": "롱 보유",
+        "hold_to_short": "숏 보유",
+        "liquidated_at": "다음에서 청산됨",
+        "from_current_price": "현재 가격에서",
         "details": "세부정보",
-        "funding_rate": "Funding Rate",
+        "funding_rate": "자금 조달율",
         "max_slippage": "최대 슬리피지",
-        "no_liquidation_risk": "No Liquidation Risk",
-        "trading_without_leverage": "Trading without leverage"
+        "no_liquidation_risk": "청산 위험 없음",
+        "trading_without_leverage": "레버리지 없이 거래"
       },
       "inputs": {
         "amount": "금액",
-        "available": "Available",
+        "available": "사용 가능",
         "max": "최대",
-        "maximum_amount_is": "Maximum amount is",
-        "minimum": "Minimum",
-        "minimum_amount_is": "Minimum amount is",
+        "maximum_amount_is": "최대 금액은",
+        "minimum": "최소",
+        "minimum_amount_is": "최소 금액은",
         "no_balance": "잔액 없음"
       },
       "history": {
         "title": "기록",
-        "no_trades": "No trades",
+        "no_trades": "거래 없음",
         "trade_execution": {
-          "take_profit_executed": "Take Profit Executed",
-          "stop_loss_executed": "Stop Loss Executed",
-          "long_opened": "Long Opened",
-          "short_opened": "Short Opened",
-          "long_closed": "Long Closed",
-          "short_closed": "Short Closed",
-          "long_liquidated": "Long Liquidated",
-          "short_liquidated": "Short Liquidated"
+          "take_profit_executed": "이익 실현 실행",
+          "stop_loss_executed": "손절매 실행",
+          "long_opened": "롱 개시",
+          "short_opened": "숏 개시",
+          "long_closed": "롱 마감",
+          "short_closed": "숏 마감",
+          "long_liquidated": "롱 청산",
+          "short_liquidated": "숏 청산"
         }
       },
       "trigger_orders": {
-        "title": "Trigger Orders",
-        "take_profit": "Take Profit",
-        "stop_loss": "Stop Loss",
-        "sell": "Sell",
-        "cancel_failed": "Failed to cancel order",
-        "add_stop_loss": "Add Stop Loss",
-        "add_take_profit": "Add Take Profit",
+        "title": "트리거 주문",
+        "take_profit": "이익 실현",
+        "stop_loss": "손절매",
+        "sell": "판매",
+        "cancel_failed": "주문 취소 실패",
+        "add_stop_loss": "손절매 추가",
+        "add_take_profit": "이익 실현 추가",
         "price": "가격",
-        "projected_profit": "Projected Profit",
-        "projected_loss": "Projected Loss",
+        "projected_profit": "예상 이익",
+        "projected_loss": "예상 손실",
         "add": "추가",
-        "adding": "Adding...",
-        "above": "above",
-        "below": "below",
-        "must_be": "Must be",
-        "failed_to_create": "Failed to create trigger order"
+        "adding": "추가 중...",
+        "above": "위의",
+        "below": "아래의",
+        "must_be": "다음이어야 함",
+        "failed_to_create": "트리거 주문 생성 실패"
       },
       "search": {
-        "search_markets": "Search markets",
-        "markets_count": "%{count} MARKETS",
-        "choose_a_market": "CHOOSE A MARKET"
+        "search_markets": "시장 검색",
+        "markets_count": "%{count} 시장",
+        "choose_a_market": "시장 선택"
       },
       "close_position": {
-        "estimated_loss": "Estimated Loss",
-        "estimated_profit": "Estimated Profit",
-        "minimum_amount_is": "Minimum amount is",
-        "closing": "Closing...",
-        "hold_to_close": "Hold to Close"
+        "estimated_loss": "예상 손실",
+        "estimated_profit": "예상 이익",
+        "minimum_amount_is": "최소 금액은",
+        "closing": "종료 중...",
+        "hold_to_close": "닫기 보유"
       },
       "explain_sheet": {
         "next": "다음",
@@ -1726,35 +1726,35 @@
         "steps": {
           "step_1": {
             "title_parts": [
-              "Perpetual Futures"
+              "영구 선물"
             ],
             "subtitle_parts": [
-              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
+              "가격 변동에 베팅하세요. 만료 기한 없이 원할 때 포지션 개시 및 마감.\nHyperliquid 제공."
             ]
           },
           "step_2": {
             "title_parts": [
-              "Go",
-              "Long",
-              "or",
-              "Short"
+              "이동",
+              "롱",
+              "또는",
+              "숏"
             ],
             "subtitle_parts": [
-              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
+              "가격 상승이 예상되면 롱, 하락이 예상되면 숏. 정확한 방향을 잡으면 수익."
             ]
           },
           "step_3": {
             "title_parts": [
-              "Trade with Leverage"
+              "레버리지와 거래"
             ],
             "subtitle_parts": [
-              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+              "레버리지는 위험을 증폭시킵니다. 맞다면 큰 수익, 틀리면 빠른 손실 및 청산."
             ]
           }
         }
       },
-      "leverage": "Leverage",
-      "up_to": "Up to"
+      "leverage": "레버리지",
+      "up_to": "최대"
     },
     "points": {
       "placeholder": {
@@ -1832,8 +1832,6 @@
         "claimed_earnings": "클레임된 수익",
         "current_value": "현재 값",
         "rainbow_users_have_earned": "레인보우 사용자가 벌어들인 수익",
-        "earn_eth_rewards": "ETH 리워드 적립",
-        "rewards_explainer": "매주 상위 주간 포인트 적립자는 레인보우의 온체인 수익의 일부를 받습니다. 레인보우에서 스왑하거나 거래를 하고, Dapp을 사용하거나 친구를 추천하여 포인트를 모으세요.",
         "my_points": "나의 포인트",
         "refer_friends": "친구 추천",
         "try_again": "다시 시도하기",
