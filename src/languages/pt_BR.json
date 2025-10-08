@@ -1584,140 +1584,140 @@
     "perps": {
       "common": {
         "not_available": "N/A",
-        "current_price": "Current Price",
+        "current_price": "Preço Atual",
         "title": "Perps",
-        "error_submitting_order": "Error submitting order",
-        "submitting": "Submitting...",
+        "error_submitting_order": "Erro ao enviar ordem",
+        "submitting": "Enviando...",
         "more": "Mais",
         "error": "Erro",
         "cancel": "Cancelar",
-        "liq_price": "liq. price",
-        "liq": "liq"
+        "liq_price": "Preço de liquidação",
+        "liq": "liq."
       },
       "feature_card": {
         "title": "Perps",
-        "subtitle": "High-risk, high-reward trading"
+        "subtitle": "Negociação de alto risco, alta recompensa"
       },
       "actions": {
-        "fund_wallet": "Fund Wallet",
-        "new_position": "New Position",
-        "close_position": "Close Position",
-        "open_position": "Open Position"
+        "fund_wallet": "Financiar Minha Carteira",
+        "new_position": "Nova Posição",
+        "close_position": "Fechar Posição",
+        "open_position": "Abrir Posição"
       },
       "account": {
         "available_balance": "Saldo Disponível"
       },
       "markets": {
-        "title": "Markets",
-        "up_to": "UP TO",
-        "already_open": "Already Open"
+        "title": "Mercados",
+        "up_to": "ATÉ",
+        "already_open": "Já Aberto"
       },
       "deposit": {
         "title": "Depósito",
         "no_balance": "Sem Saldo",
         "receive": "Receber",
         "slider_label": "Depositando",
-        "zero_amount_error": "Enter an amount to deposit",
+        "zero_amount_error": "Digite um valor para depositar",
         "confirm_button_text": "Segurar para Depositar",
-        "confirm_button_loading_text": "Depositing...",
+        "confirm_button_loading_text": "Depositando...",
         "confirm_button_zero_text": "Insira um valor",
         "confirm_button_over_balance_text": "Fundos insuficientes",
         "confirm_button_error_text": "Erro na Cotação",
-        "quote_error": "􀇿 No quote available",
-        "insufficient_balance": "􀫲 Insufficient Funds"
+        "quote_error": "􀇿 Nenhuma cotação disponível",
+        "insufficient_balance": "􀫲 Fundos insuficientes"
       },
       "withdraw": {
         "title": "Retirar",
         "slider_label": "Sacando",
         "confirm_button_text": "Segure para Sacar",
-        "confirm_button_loading_text": "Withdrawing...",
-        "available_balance_suffix": " Available",
+        "confirm_button_loading_text": "Sacando...",
+        "available_balance_suffix": " Disponível",
         "confirm_button_zero_text": "Insira um valor",
         "confirm_button_over_balance_text": "Fundos insuficientes",
-        "info_card_title_prefix": "Withdrawing to ",
+        "info_card_title_prefix": "Sacando para ",
         "info_card_title_suffix": "Arbitrum",
-        "info_card_subtitle": "Additional networks coming soon. Withdrawals currently include a $1.00 Hyperliquid fee."
+        "info_card_subtitle": "Novas redes em breve. Saques atualmente incluem uma taxa de $1,00 do Hyperliquid."
       },
       "position_side": {
-        "long": "Long",
-        "short": "Short"
+        "long": "Longo",
+        "short": "Curto"
       },
       "positions": {
-        "entry": "ENTRY",
-        "mark_price": "MARK PRICE",
-        "open_positions": "Open Positions",
-        "no_open_positions": "No Open Positions",
-        "position_value": "Position Value",
-        "mark_price_full": "Mark Price",
-        "entry_price": "Entry Price",
-        "funding": "Funding",
-        "liquidation_price": "Liquidation Price",
+        "entry": "ENTRADA",
+        "mark_price": "PREÇO DE MARCAÇÃO",
+        "open_positions": "Posições Abertas",
+        "no_open_positions": "Nenhuma Posição Aberta",
+        "position_value": "Valor da Posição",
+        "mark_price_full": "Preço de Marcação",
+        "entry_price": "Preço de Entrada",
+        "funding": "Financiamento",
+        "liquidation_price": "Preço de Liquidação",
         "total": "Total",
-        "learn_more_about_perps": "Learn more about Perps"
+        "learn_more_about_perps": "Saiba mais sobre Perps"
       },
       "new_position": {
-        "hold_to_long": "Hold to Long",
-        "hold_to_short": "Hold to Short",
-        "liquidated_at": "Liquidated at",
-        "from_current_price": "from current price",
+        "hold_to_long": "Segurar para Longo",
+        "hold_to_short": "Segurar para Curto",
+        "liquidated_at": "Liquidado em",
+        "from_current_price": "do preço atual",
         "details": "Detalhes",
-        "funding_rate": "Funding Rate",
+        "funding_rate": "Taxa de Financiamento",
         "max_slippage": "Derrapagem Máxima",
-        "no_liquidation_risk": "No Liquidation Risk",
-        "trading_without_leverage": "Trading without leverage"
+        "no_liquidation_risk": "Sem Risco de Liquidação",
+        "trading_without_leverage": "Negociando sem alavancagem"
       },
       "inputs": {
         "amount": "Quantidade",
-        "available": "Available",
+        "available": "Disponível",
         "max": "Máx",
-        "maximum_amount_is": "Maximum amount is",
-        "minimum": "Minimum",
-        "minimum_amount_is": "Minimum amount is",
+        "maximum_amount_is": "A quantidade máxima é",
+        "minimum": "Mínimo",
+        "minimum_amount_is": "A quantidade mínima é",
         "no_balance": "Sem Saldo"
       },
       "history": {
         "title": "Histórico",
-        "no_trades": "No trades",
+        "no_trades": "Sem negociações",
         "trade_execution": {
-          "take_profit_executed": "Take Profit Executed",
-          "stop_loss_executed": "Stop Loss Executed",
-          "long_opened": "Long Opened",
-          "short_opened": "Short Opened",
-          "long_closed": "Long Closed",
-          "short_closed": "Short Closed",
-          "long_liquidated": "Long Liquidated",
-          "short_liquidated": "Short Liquidated"
+          "take_profit_executed": "Lucro Realizado",
+          "stop_loss_executed": "Perda Realizada",
+          "long_opened": "Longo Aberto",
+          "short_opened": "Curto Aberto",
+          "long_closed": "Longo Fechado",
+          "short_closed": "Curto Fechado",
+          "long_liquidated": "Longo Liquidado",
+          "short_liquidated": "Curto Liquidado"
         }
       },
       "trigger_orders": {
-        "title": "Trigger Orders",
-        "take_profit": "Take Profit",
+        "title": "Ordens de Gatilho",
+        "take_profit": "Obter Lucro",
         "stop_loss": "Stop Loss",
-        "sell": "Sell",
-        "cancel_failed": "Failed to cancel order",
-        "add_stop_loss": "Add Stop Loss",
-        "add_take_profit": "Add Take Profit",
+        "sell": "Vender",
+        "cancel_failed": "Falha ao cancelar ordem",
+        "add_stop_loss": "Adicionar Stop Loss",
+        "add_take_profit": "Adicionar Obter Lucro",
         "price": "Preço",
-        "projected_profit": "Projected Profit",
-        "projected_loss": "Projected Loss",
+        "projected_profit": "Lucro Projetado",
+        "projected_loss": "Perda Projetada",
         "add": "Adicionar",
-        "adding": "Adding...",
-        "above": "above",
-        "below": "below",
-        "must_be": "Must be",
-        "failed_to_create": "Failed to create trigger order"
+        "adding": "Adicionando...",
+        "above": "acima",
+        "below": "abaixo",
+        "must_be": "Deve ser",
+        "failed_to_create": "Falha ao criar ordem de gatilho"
       },
       "search": {
-        "search_markets": "Search markets",
-        "markets_count": "%{count} MARKETS",
-        "choose_a_market": "CHOOSE A MARKET"
+        "search_markets": "Buscar mercados",
+        "markets_count": "%{count} MERCADOS",
+        "choose_a_market": "ESCOLHER UM MERCADO"
       },
       "close_position": {
-        "estimated_loss": "Estimated Loss",
-        "estimated_profit": "Estimated Profit",
-        "minimum_amount_is": "Minimum amount is",
-        "closing": "Closing...",
-        "hold_to_close": "Hold to Close"
+        "estimated_loss": "Perda Estimada",
+        "estimated_profit": "Lucro Estimado",
+        "minimum_amount_is": "A quantidade mínima é",
+        "closing": "Fechando...",
+        "hold_to_close": "Segurar para Fechar"
       },
       "explain_sheet": {
         "next": "Avançar",
@@ -1726,35 +1726,35 @@
         "steps": {
           "step_1": {
             "title_parts": [
-              "Perpetual Futures"
+              "Futuros Perpétuos"
             ],
             "subtitle_parts": [
-              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
+              "Aposte nos movimentos de preços. Abra e feche posições quando quiser, sem vencimento.\nPowered by Hyperliquid."
             ]
           },
           "step_2": {
             "title_parts": [
-              "Go",
-              "Long",
-              "or",
-              "Short"
+              "Ir",
+              "Longo",
+              "ou",
+              "Curto"
             ],
             "subtitle_parts": [
-              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
+              "Longo quando você acha que o preço vai subir. Curto quando acha que vai cair. Lucro quando acerta a direção."
             ]
           },
           "step_3": {
             "title_parts": [
-              "Trade with Leverage"
+              "Negociar com Alavancagem"
             ],
             "subtitle_parts": [
-              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+              "A alavancagem amplifica seu risco. Ganhos maiores quando você acerta. Perdas mais rápidas, e liquidação, quando você erra."
             ]
           }
         }
       },
-      "leverage": "Leverage",
-      "up_to": "Up to"
+      "leverage": "Alavancagem",
+      "up_to": "Até"
     },
     "points": {
       "placeholder": {
@@ -1832,8 +1832,6 @@
         "claimed_earnings": "Ganhos Reivindicados",
         "current_value": "Valor atual",
         "rainbow_users_have_earned": "Os usuários do Rainbow ganharam",
-        "earn_eth_rewards": "Ganhar Recompensas em ETH",
-        "rewards_explainer": "Toda semana, os maiores ganhadores de pontos semanais receberão uma parte da receita onchain do Rainbow. Colete pontos trocando ou transacionando no Rainbow, usando dapps ou indicando amigos.",
         "my_points": "Meus Pontos",
         "refer_friends": "Indicar Amigos",
         "try_again": "Tente Novamente",
