@@ -19,12 +19,13 @@ import { getProvider } from '@/handlers/web3';
 import { ChainId } from '@/state/backendNetworks/types';
 import { loadWallet } from '@/model/wallet';
 import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { logger, RainbowError } from '@/logger';
 
 type OrderStatusResponse = hl.OrderSuccessResponse['response']['data']['statuses'][number];
 
 export class HyperliquidExchangeClient {
   private accountClient: HyperliquidAccountClient;
-  private exchangeClient: Promise<hl.ExchangeClient> | undefined;
+  private exchangeClient: Promise<hl.ExchangeClient | undefined> | undefined;
   private userAddress: Address;
 
   constructor(accountClient: HyperliquidAccountClient, userAddress: Address) {
@@ -32,16 +33,19 @@ export class HyperliquidExchangeClient {
     this.userAddress = userAddress;
   }
 
-  private async getExchangeClient(): Promise<hl.ExchangeClient> {
+  private async getExchangeClient(): Promise<hl.ExchangeClient | undefined> {
     if (!this.exchangeClient) {
       this.exchangeClient = (async () => {
         const wallet = await loadWallet({
           address: this.userAddress,
           provider: getProvider({ chainId: ChainId.arbitrum }),
-          showErrorIfNotLoaded: false,
+          showErrorIfNotLoaded: true,
         });
 
-        if (!wallet) throw new Error('[HyperliquidExchangeClient] Failed to load wallet for signing');
+        if (!wallet) {
+          logger.error(new RainbowError('[HyperliquidExchangeClient] Failed to load wallet for signing'));
+          return undefined;
+        }
 
         return new hl.ExchangeClient({
           transport: new hl.HttpTransport(),
@@ -51,15 +55,17 @@ export class HyperliquidExchangeClient {
     }
 
     const client = await this.exchangeClient;
+    if (!client) this.exchangeClient = undefined;
     return client;
   }
 
   async withdraw(amount: string): Promise<void | undefined> {
     if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
 
-    await (
-      await this.getExchangeClient()
-    ).withdraw3({
+    const exchangeClient = await this.getExchangeClient();
+    if (!exchangeClient) return undefined;
+
+    await exchangeClient.withdraw3({
       destination: this.userAddress,
       amount,
     });
@@ -92,9 +98,12 @@ export class HyperliquidExchangeClient {
   }): Promise<hl.OrderSuccessResponse | undefined> {
     if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
 
+    const exchangeClient = await this.getExchangeClient();
+    if (!exchangeClient) return undefined;
+
     await Promise.all([
       // TODO: This step could be skipped if we have already traded this asset in the session
-      (await this.getExchangeClient()).updateLeverage({
+      exchangeClient.updateLeverage({
         asset: assetId,
         isCross: false,
         leverage,
@@ -132,9 +141,7 @@ export class HyperliquidExchangeClient {
       });
     });
 
-    return await (
-      await this.getExchangeClient()
-    ).order({
+    return await exchangeClient.order({
       orders: [positionMarketOrder, ...hlTriggerOrders],
       // grouping: positionTpsl requires that all orders in the group are trigger orders
       grouping: 'na',
@@ -161,6 +168,9 @@ export class HyperliquidExchangeClient {
   }): Promise<hl.OrderSuccessResponse | undefined> {
     if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
 
+    const exchangeClient = await this.getExchangeClient();
+    if (!exchangeClient) return undefined;
+
     await this.ensureApprovedBuilderFee();
 
     const marketType = getMarketType(assetId);
@@ -176,9 +186,7 @@ export class HyperliquidExchangeClient {
       size: orderSize,
     });
 
-    return await (
-      await this.getExchangeClient()
-    ).order({
+    return await exchangeClient.order({
       orders: [triggerOrder],
       grouping: 'na',
       builder: RAINBOW_BUILDER_SETTINGS,
@@ -212,11 +220,12 @@ export class HyperliquidExchangeClient {
       reduceOnly: true,
     });
 
+    const exchangeClient = await this.getExchangeClient();
+    if (!exchangeClient) return undefined;
+
     await this.ensureApprovedBuilderFee();
 
-    const result = await (
-      await this.getExchangeClient()
-    ).order({
+    const result = await exchangeClient.order({
       orders: [closeOrder],
       grouping: 'na',
       builder: RAINBOW_BUILDER_SETTINGS,
@@ -228,9 +237,10 @@ export class HyperliquidExchangeClient {
   async cancelOrder({ assetId, orderId }: { assetId: number; orderId: number }): Promise<CancelSuccessResponse | undefined> {
     if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
 
-    return await (
-      await this.getExchangeClient()
-    ).cancel({
+    const exchangeClient = await this.getExchangeClient();
+    if (!exchangeClient) return undefined;
+
+    return await exchangeClient.cancel({
       cancels: [{ a: assetId, o: orderId }],
     });
   }
@@ -241,9 +251,10 @@ export class HyperliquidExchangeClient {
     const isApproved = await this.accountClient.isBuilderFeeApproved();
     if (isApproved) return;
 
-    return await (
-      await this.getExchangeClient()
-    ).approveBuilderFee({
+    const exchangeClient = await this.getExchangeClient();
+    if (!exchangeClient) return;
+
+    return await exchangeClient.approveBuilderFee({
       builder: RAINBOW_BUILDER_SETTINGS.b,
       maxFeeRate: toMaxFeeRate(RAINBOW_BUILDER_SETTINGS.f),
     });
