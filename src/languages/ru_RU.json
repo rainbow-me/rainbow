@@ -1583,141 +1583,141 @@
     },
     "perps": {
       "common": {
-        "not_available": "N/A",
-        "current_price": "Current Price",
+        "not_available": "Н/Д",
+        "current_price": "Текущая цена",
         "title": "Perps",
-        "error_submitting_order": "Error submitting order",
-        "submitting": "Submitting...",
+        "error_submitting_order": "Ошибка при подаче ордера",
+        "submitting": "Отправка...",
         "more": "Больше",
         "error": "Ошибка",
         "cancel": "Отменить",
-        "liq_price": "liq. price",
-        "liq": "liq"
+        "liq_price": "Цена ликв.",
+        "liq": "ликв."
       },
       "feature_card": {
         "title": "Perps",
-        "subtitle": "High-risk, high-reward trading"
+        "subtitle": "Торговля с высоким риском и высокой наградой"
       },
       "actions": {
-        "fund_wallet": "Fund Wallet",
-        "new_position": "New Position",
-        "close_position": "Close Position",
-        "open_position": "Open Position"
+        "fund_wallet": "Пополнить мой кошелек",
+        "new_position": "Новая позиция",
+        "close_position": "Закрыть позицию",
+        "open_position": "Открыть позицию"
       },
       "account": {
         "available_balance": "Доступный баланс"
       },
       "markets": {
-        "title": "Markets",
-        "up_to": "UP TO",
-        "already_open": "Already Open"
+        "title": "Рынки",
+        "up_to": "ДО",
+        "already_open": "Уже открыто"
       },
       "deposit": {
         "title": "Депозит",
         "no_balance": "Нет Баланса",
         "receive": "Получить",
         "slider_label": "Пополнение",
-        "zero_amount_error": "Enter an amount to deposit",
+        "zero_amount_error": "Введите сумму для депозита",
         "confirm_button_text": "Удерживайте для внесения депозита",
-        "confirm_button_loading_text": "Depositing...",
+        "confirm_button_loading_text": "Пополнение...",
         "confirm_button_zero_text": "Введите сумму",
         "confirm_button_over_balance_text": "Недостаточно средств",
         "confirm_button_error_text": "Ошибка котировки",
-        "quote_error": "􀇿 No quote available",
-        "insufficient_balance": "􀫲 Insufficient Funds"
+        "quote_error": "􀇿 Нет доступной цитаты",
+        "insufficient_balance": "􀫲 Недостаточно средств"
       },
       "withdraw": {
         "title": "Вывести",
         "slider_label": "Снятие",
         "confirm_button_text": "Удерживайте для снятия",
-        "confirm_button_loading_text": "Withdrawing...",
-        "available_balance_suffix": " Available",
+        "confirm_button_loading_text": "Снятие...",
+        "available_balance_suffix": " Доступны",
         "confirm_button_zero_text": "Введите сумму",
         "confirm_button_over_balance_text": "Недостаточно средств",
-        "info_card_title_prefix": "Withdrawing to ",
+        "info_card_title_prefix": "Снятие в ",
         "info_card_title_suffix": "Arbitrum",
-        "info_card_subtitle": "Additional networks coming soon. Withdrawals currently include a $1.00 Hyperliquid fee."
+        "info_card_subtitle": "Новые сети будут скоро добавлены. Текущие снятия включают комиссию в размере $1,00 за Hyperliquid."
       },
       "position_side": {
-        "long": "Long",
-        "short": "Short"
+        "long": "Длинная",
+        "short": "Короткая"
       },
       "positions": {
-        "entry": "ENTRY",
-        "mark_price": "MARK PRICE",
-        "open_positions": "Open Positions",
-        "no_open_positions": "No Open Positions",
-        "position_value": "Position Value",
-        "mark_price_full": "Mark Price",
-        "entry_price": "Entry Price",
-        "funding": "Funding",
-        "liquidation_price": "Liquidation Price",
+        "entry": "ВХОД",
+        "mark_price": "МАРКЕТИНГОВАЯ ЦЕНА",
+        "open_positions": "Открытые позиции",
+        "no_open_positions": "Нет открытых позиций",
+        "position_value": "Стоимость позиции",
+        "mark_price_full": "Маркетинговая цена",
+        "entry_price": "Цена входа",
+        "funding": "Финансирование",
+        "liquidation_price": "Цена ликвидации",
         "total": "Всего",
-        "learn_more_about_perps": "Learn more about Perps"
+        "learn_more_about_perps": "Узнайте больше о Perps"
       },
       "new_position": {
-        "hold_to_long": "Hold to Long",
-        "hold_to_short": "Hold to Short",
-        "liquidated_at": "Liquidated at",
-        "from_current_price": "from current price",
+        "hold_to_long": "Удерживать, чтобы открыть длинную",
+        "hold_to_short": "Удерживать, чтобы открыть короткую",
+        "liquidated_at": "Ликвидировано по",
+        "from_current_price": "от текущей цены",
         "details": "Подробности",
-        "funding_rate": "Funding Rate",
+        "funding_rate": "Ставка финансирования",
         "max_slippage": "Максимальный скольжение",
-        "no_liquidation_risk": "No Liquidation Risk",
-        "trading_without_leverage": "Trading without leverage"
+        "no_liquidation_risk": "Нет риска ликвидации",
+        "trading_without_leverage": "Торговля без рычагов"
       },
       "inputs": {
         "amount": "Сумма",
-        "available": "Available",
+        "available": "Доступны",
         "max": "Макс.",
-        "maximum_amount_is": "Maximum amount is",
-        "minimum": "Minimum",
-        "minimum_amount_is": "Minimum amount is",
+        "maximum_amount_is": "Максимальная сумма составляет",
+        "minimum": "Минимум",
+        "minimum_amount_is": "Минимальная сумма составляет",
         "no_balance": "Нет Баланса"
       },
       "history": {
         "title": "История",
-        "no_trades": "No trades",
+        "no_trades": "Нет сделок",
         "trade_execution": {
-          "take_profit_executed": "Take Profit Executed",
-          "stop_loss_executed": "Stop Loss Executed",
-          "long_opened": "Long Opened",
-          "short_opened": "Short Opened",
-          "long_closed": "Long Closed",
-          "short_closed": "Short Closed",
-          "long_liquidated": "Long Liquidated",
-          "short_liquidated": "Short Liquidated"
+          "take_profit_executed": "Получение прибыли выполнено",
+          "stop_loss_executed": "Стоп-лосс выполнен",
+          "long_opened": "Открыта длинная",
+          "short_opened": "Открыта короткая",
+          "long_closed": "Закрыта длинная",
+          "short_closed": "Закрыта короткая",
+          "long_liquidated": "Ликвидирована длинная",
+          "short_liquidated": "Ликвидирована короткая"
         }
       },
       "trigger_orders": {
-        "title": "Trigger Orders",
-        "take_profit": "Take Profit",
-        "stop_loss": "Stop Loss",
-        "sell": "Sell",
-        "cancel_failed": "Failed to cancel order",
-        "add_stop_loss": "Add Stop Loss",
-        "add_take_profit": "Add Take Profit",
+        "title": "Триггерные ордеры",
+        "take_profit": "Взять прибыль",
+        "stop_loss": "Стоп-лосс",
+        "sell": "Продать",
+        "cancel_failed": "Не удалось отменить ордер",
+        "add_stop_loss": "Добавить стоп-лосс",
+        "add_take_profit": "Добавить получение прибыли",
         "price": "Цена",
-        "projected_profit": "Projected Profit",
-        "projected_loss": "Projected Loss",
+        "projected_profit": "Ожидаемая прибыль",
+        "projected_loss": "Ожидаемая потеря",
         "add": "Добавить",
-        "adding": "Adding...",
-        "above": "above",
-        "below": "below",
-        "must_be": "Must be",
-        "failed_to_create": "Failed to create trigger order"
+        "adding": "Добавление...",
+        "above": "выше",
+        "below": "ниже",
+        "must_be": "Должен быть",
+        "failed_to_create": "Не удалось создать триггерный ордер"
       },
       "search": {
-        "search_markets": "Search markets",
-        "markets_count": "%{count} MARKETS",
-        "choose_a_market": "CHOOSE A MARKET"
+        "search_markets": "Поиск рынков",
+        "markets_count": "%{count} РЫНКОВ",
+        "choose_a_market": "ВЫБЕРИТЕ РЫНОК"
       },
       "close_position": {
-        "estimated_loss": "Estimated Loss",
-        "estimated_profit": "Estimated Profit",
-        "minimum_amount_is": "Minimum amount is",
-        "closing": "Closing...",
-        "hold_to_close": "Hold to Close"
+        "estimated_loss": "Ожидаемая потеря",
+        "estimated_profit": "Ожидаемая прибыль",
+        "minimum_amount_is": "Минимальная сумма составляет",
+        "closing": "Закрытие...",
+        "hold_to_close": "Удерживайте, чтобы закрыть"
       },
       "explain_sheet": {
         "next": "Далее",
@@ -1726,35 +1726,35 @@
         "steps": {
           "step_1": {
             "title_parts": [
-              "Perpetual Futures"
+              "Бессрочные фьючерсы"
             ],
             "subtitle_parts": [
-              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
+              "Ставка на ценовые движения. Открывайте и закрывайте позиции, когда вам угодно, без сроков истечения. Питается от Hyperliquid."
             ]
           },
           "step_2": {
             "title_parts": [
-              "Go",
-              "Long",
-              "or",
-              "Short"
+              "Вперед",
+              "Длинная",
+              "или",
+              "Короткая"
             ],
             "subtitle_parts": [
-              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
+              "Длинная позиция, когда считаете, что цена возрастет. Короткая, когда считаете, что она упадет. Получите прибыль, если вы угадали направление."
             ]
           },
           "step_3": {
             "title_parts": [
-              "Trade with Leverage"
+              "Торговля с кредитным плечом"
             ],
             "subtitle_parts": [
-              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+              "Увеличение плеча увеличивает ваш риск. Больше прибыыл, если вы правы. Быстрее убытки и ликвидация, если вы ошибаетесь."
             ]
           }
         }
       },
-      "leverage": "Leverage",
-      "up_to": "Up to"
+      "leverage": "Рычаг",
+      "up_to": "До"
     },
     "points": {
       "placeholder": {
@@ -1832,8 +1832,6 @@
         "claimed_earnings": "Полученные заработки",
         "current_value": "Текущая стоимость",
         "rainbow_users_have_earned": "Каждую неделю лучшие зарабатыватели баллов получат часть дохода Rainbow в сети. Собирайте баллы, обменяя или проводя транзакции в Rainbow, используя dapps или приглашая друзей.",
-        "earn_eth_rewards": "Зарабатывайте ETH награды",
-        "rewards_explainer": "Каждую неделю лучшие зарабатыватели баллов получат часть дохода Rainbow в сети. Собирайте баллы, обменяя или проводя транзакции в Rainbow, используя dapps или приглашая друзей.",
         "my_points": "Мои баллы",
         "refer_friends": "Пригласить друзей",
         "try_again": "Попробуйте снова",
