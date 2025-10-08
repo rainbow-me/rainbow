@@ -53,6 +53,7 @@ export async function fetchUserAssets(
   params: UserAssetsParams,
   abortController: AbortController | null
 ): Promise<{ chainIdsWithErrors: ChainId[] | null; userAssets: UserAsset[] } | null> {
+  if (!params.address) return null;
   const { address, currency, testnetMode } = params;
 
   if (testnetMode) {

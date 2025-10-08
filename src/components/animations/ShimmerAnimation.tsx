@@ -89,7 +89,7 @@ export default function ShimmerAnimation({
       enabled: isEnabled.value,
     }),
     (current, previous) => {
-      if (!current.width || current.width === previous?.width) return;
+      if ((!current.width || current.width === previous?.width) && current.enabled === previous?.enabled) return;
 
       if (current.enabled) {
         startAnimation();

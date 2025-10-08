@@ -180,9 +180,6 @@ const displayDappNames: {
   'tokensets.com': {
     name: 'TokenSets',
   },
-  'twitter.com': {
-    name: 'Twitter',
-  },
   'umaproject.org': {
     name: 'UMA',
   },

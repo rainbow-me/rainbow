@@ -25,7 +25,7 @@ const imageKeyMap = {
 };
 
 const icons = {
-  [ENS_RECORDS.twitter]: 'twitter',
+  [ENS_RECORDS.twitter]: 'x',
   [ENS_RECORDS.github]: 'github',
   [ENS_RECORDS.instagram]: 'instagram',
   [ENS_RECORDS.snapchat]: 'snapchat',
@@ -38,7 +38,7 @@ const icons = {
 } as { [key: string]: string };
 
 const links = {
-  [ENS_RECORDS.twitter]: 'https://twitter.com/',
+  [ENS_RECORDS.twitter]: 'https://x.com/',
   [ENS_RECORDS.github]: 'https://github.com/',
   [ENS_RECORDS.instagram]: 'https://instagram.com/',
   [ENS_RECORDS.reddit]: 'https://reddit.com/',

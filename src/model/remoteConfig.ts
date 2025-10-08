@@ -9,15 +9,21 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
+import * as i18n from '@/languages';
 
 // ============ RainbowConfig ================================================== //
 
 const REMOTE_CONFIG_VERSION = digitsOnly(CURRENT_APP_VERSION);
 
-export interface RainbowConfig extends Record<string, string | boolean | number | Record<string, number> | number[]> {
+export interface RainbowConfig
+  extends Record<string, string | boolean | number | Record<string, number> | number[] | { title: string; subtitle: string }> {
   /* Objects */
   default_slippage_bips: Record<string, number>;
   default_slippage_bips_chainId: Record<string, number>;
+  perps_feature_card_copy: {
+    title: string;
+    subtitle: string;
+  };
 
   /* Arrays */
   rewards_claim_networks: number[];
@@ -87,6 +93,7 @@ export interface RainbowConfig extends Record<string, string | boolean | number 
   candlestick_charts_enabled: boolean;
   rainbow_toasts_enabled: boolean;
   king_of_the_hill2_enabled: boolean;
+  perps_enabled: boolean;
 }
 
 const Bips = {
@@ -137,10 +144,16 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.zora]: Bips.default,
 };
 
+const DEFAULT_PERPS_FEATURE_CARD_COPY = {
+  title: i18n.t(i18n.l.perps.feature_card.title),
+  subtitle: i18n.t(i18n.l.perps.feature_card.subtitle),
+};
+
 export const DEFAULT_CONFIG = {
   /* Objects */
   default_slippage_bips: DEFAULT_SLIPPAGE_BIPS,
   default_slippage_bips_chainId: DEFAULT_SLIPPAGE_BIPS_CHAINID,
+  perps_feature_card_copy: DEFAULT_PERPS_FEATURE_CARD_COPY,
 
   /* Arrays */
   rewards_claim_networks: [ChainId.optimism],
@@ -211,6 +224,7 @@ export const DEFAULT_CONFIG = {
   prince_of_the_hill_enabled: false,
   candlestick_charts_enabled: IS_DEV || isTestFlight || false,
   rainbow_toasts_enabled: IS_DEV || isTestFlight || false,
+  perps_enabled: false,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
@@ -221,12 +235,14 @@ type StringifiedFirebaseDefaults = Readonly<{
   default_slippage_bips: string;
   default_slippage_bips_chainId: string;
   rewards_claim_networks: string;
+  perps_feature_card_copy: string;
 }>;
 
 const STRINGIFIED_FIREBASE_DEFAULTS: StringifiedFirebaseDefaults = {
   default_slippage_bips: JSON.stringify(DEFAULT_CONFIG.default_slippage_bips),
   default_slippage_bips_chainId: JSON.stringify(DEFAULT_CONFIG.default_slippage_bips_chainId),
   rewards_claim_networks: JSON.stringify(DEFAULT_CONFIG.rewards_claim_networks),
+  perps_feature_card_copy: JSON.stringify(DEFAULT_CONFIG.perps_feature_card_copy),
 };
 
 type FirebaseConfigDefaults = Omit<RainbowConfig, keyof StringifiedFirebaseDefaults> &
@@ -273,7 +289,7 @@ export const useRemoteConfigStore = createQueryStore<RainbowConfig, never, Remot
   (_, get) => ({
     config: DEFAULT_CONFIG,
     lastFetchedVersion: 0,
-    getRemoteConfigKey: key => get().config[key],
+    getRemoteConfigKey: key => get().config[key] ?? DEFAULT_CONFIG[key],
   }),
 
   { storageKey: 'remoteConfig' }
@@ -393,6 +409,6 @@ function selectRemoteConfigKeys<const K extends RemoteConfigKey>(
 ): RainbowConfig | Pick<RainbowConfig, K> {
   if (!keys) return state.config;
   const result: Partial<RainbowConfig> = {};
-  for (const key of keys) result[key] = state.config[key];
+  for (const key of keys) result[key] = state.config[key] ?? DEFAULT_CONFIG[key];
   return result as Pick<RainbowConfig, K>;
 }

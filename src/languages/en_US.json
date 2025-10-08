@@ -13,7 +13,7 @@
       "show": "Show",
       "show_all": "Show all",
       "show_less": "Show less",
-      "tab_balances": "Balances",
+      "tab_tokens": "Tokens",
       "tab_balances_empty_state": "Balance",
       "tab_balances_tooltip": "Ethereum and Token Balances",
       "tab_claimables": "Claimables",
@@ -23,6 +23,7 @@
       "tab_investments": "Pools",
       "tab_savings": "Savings",
       "tab_showcase": "Showcase",
+      "tab_perps": "Perps",
       "tab_points": "Points",
       "tab_positions": "Positions",
       "tab_rewards": "Rewards",
@@ -707,15 +708,18 @@
           "website": "Website",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter",
-          "warpcast": "Warpcast",
+          "twitter": "X (Twitter)",
           "farcaster": "Farcaster",
           "other": "Other",
-          "search_on_twitter": "Search on Twitter"
+          "search_on_twitter": "Search on X"
         },
         "uniswap_liquidity": "Uniswap liquidity",
         "value": "Value",
         "volume_24_hours": "24h volume",
+        "liquidity_cap_disclaimer": {
+          "value_lower_than": "Value is lower than",
+          "due_to_low_liquidity": "due to low liquidity"
+        },
         "menu": {
           "view_on": "View on %{blockExplorerName}",
           "share": "Share",
@@ -923,7 +927,7 @@
         "toast_removed_from_showcase": "Removed from showcase",
         "refreshing": "Refreshing metadata...",
         "reported": "Reported as spam",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "view_all_with_property": "View All with Property",
         "view_collection": "View Collection",
         "view_on_marketplace": "View on Marketplace...",
@@ -958,7 +962,7 @@
       "poolboy_title": "You've unlocked the\nRainbow Poolboy!",
       "adworld_description": "As a Rainbow World Citizen, you can now unlock a special edition\nAdWorld x Rainbow App Icon.",
       "adworld_title": "Welcome to Rainbow World!",
-      "farcaster_description": "Our most boring app icon ever, inspired by Warpcast's bland minimalism.",
+      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
       "farcaster_title": "You've unlocked\nRainbowcast",
       "redacted_description": "A stupi-exclusive Rainbow icon for the true Gdupi enjoyers.",
       "redacted_title": "You've unlocked\n Redacted Rainbow",
@@ -1568,6 +1572,172 @@
         "address_copied_to_clipboard": "Address copied to clipboard"
       }
     },
+    "perps": {
+      "common": {
+        "not_available": "N/A",
+        "current_price": "Current Price",
+        "title": "Perps",
+        "error_submitting_order": "Error submitting order",
+        "submitting": "Submitting...",
+        "more": "More",
+        "error": "Error",
+        "cancel": "Cancel",
+        "liq_price": "liq. price",
+        "liq": "liq"
+      },
+      "feature_card": {
+        "title": "Perps",
+        "subtitle": "High-risk, high-reward trading"
+      },
+      "actions": {
+        "fund_wallet": "Fund Wallet",
+        "new_position": "New Position",
+        "close_position": "Close Position",
+        "open_position": "Open Position"
+      },
+      "account": {
+        "available_balance": "Available Balance"
+      },
+      "markets": {
+        "title": "Markets",
+        "up_to": "UP TO",
+        "already_open": "Already Open"
+      },
+      "deposit": {
+        "title": "Deposit",
+        "no_balance": "No Balance",
+        "receive": "Receive",
+        "slider_label": "Depositing",
+        "zero_amount_error": "Enter an amount to deposit",
+        "confirm_button_text": "Hold to Deposit",
+        "confirm_button_loading_text": "Depositing...",
+        "confirm_button_zero_text": "Enter Amount",
+        "confirm_button_over_balance_text": "Insufficient Funds",
+        "confirm_button_error_text": "Quote Error",
+        "quote_error": "􀇿 No quote available",
+        "insufficient_balance": "􀫲 Insufficient Funds"
+      },
+      "withdraw": {
+        "title": "Withdraw",
+        "slider_label": "Withdrawing",
+        "confirm_button_text": "Hold to Withdraw",
+        "confirm_button_loading_text": "Withdrawing...",
+        "available_balance_suffix": " Available",
+        "confirm_button_zero_text": "Enter Amount",
+        "confirm_button_over_balance_text": "Insufficient Funds",
+        "info_card_title_prefix": "Withdrawing to ",
+        "info_card_title_suffix": "Arbitrum",
+        "info_card_subtitle": "Additional networks coming soon. Withdrawals currently include a $1.00 Hyperliquid fee."
+      },
+      "position_side": {
+        "long": "Long",
+        "short": "Short"
+      },
+      "positions": {
+        "entry": "ENTRY",
+        "mark_price": "MARK PRICE",
+        "open_positions": "Open Positions",
+        "no_open_positions": "No Open Positions",
+        "position_value": "Position Value",
+        "mark_price_full": "Mark Price",
+        "entry_price": "Entry Price",
+        "funding": "Funding",
+        "liquidation_price": "Liquidation Price",
+        "total": "Total",
+        "learn_more_about_perps": "Learn more about Perps"
+      },
+      "new_position": {
+        "hold_to_long": "Hold to Long",
+        "hold_to_short": "Hold to Short",
+        "liquidated_at": "Liquidated at",
+        "from_current_price": "from current price",
+        "details": "Details",
+        "funding_rate": "Funding Rate",
+        "max_slippage": "Max Slippage",
+        "no_liquidation_risk": "No Liquidation Risk",
+        "trading_without_leverage": "Trading without leverage"
+      },
+      "inputs": {
+        "amount": "Amount",
+        "available": "Available",
+        "max": "Max",
+        "maximum_amount_is": "Maximum amount is",
+        "minimum": "Minimum",
+        "minimum_amount_is": "Minimum amount is",
+        "no_balance": "No Balance"
+      },
+      "history": {
+        "title": "History",
+        "no_trades": "No trades",
+        "trade_execution": {
+          "take_profit_executed": "Take Profit Executed",
+          "stop_loss_executed": "Stop Loss Executed",
+          "long_opened": "Long Opened",
+          "short_opened": "Short Opened",
+          "long_closed": "Long Closed",
+          "short_closed": "Short Closed",
+          "long_liquidated": "Long Liquidated",
+          "short_liquidated": "Short Liquidated"
+        }
+      },
+      "trigger_orders": {
+        "title": "Trigger Orders",
+        "take_profit": "Take Profit",
+        "stop_loss": "Stop Loss",
+        "sell": "Sell",
+        "cancel_failed": "Failed to cancel order",
+        "add_stop_loss": "Add Stop Loss",
+        "add_take_profit": "Add Take Profit",
+        "price": "Price",
+        "projected_profit": "Projected Profit",
+        "projected_loss": "Projected Loss",
+        "add": "Add",
+        "adding": "Adding...",
+        "above": "above",
+        "below": "below",
+        "must_be": "Must be",
+        "failed_to_create": "Failed to create trigger order"
+      },
+      "search": {
+        "search_markets": "Search markets",
+        "markets_count": "%{count} MARKETS",
+        "choose_a_market": "CHOOSE A MARKET"
+      },
+      "close_position": {
+        "estimated_loss": "Estimated Loss",
+        "estimated_profit": "Estimated Profit",
+        "minimum_amount_is": "Minimum amount is",
+        "closing": "Closing...",
+        "hold_to_close": "Hold to Close"
+      },
+      "explain_sheet": {
+        "next": "Next",
+        "got_it": "Got it",
+        "title": "Perps",
+        "steps": {
+          "step_1": {
+            "title_parts": ["Perpetual Futures"],
+            "subtitle_parts": [
+              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
+            ]
+          },
+          "step_2": {
+            "title_parts": ["Go", "Long", "or", "Short"],
+            "subtitle_parts": [
+              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
+            ]
+          },
+          "step_3": {
+            "title_parts": ["Trade with Leverage"],
+            "subtitle_parts": [
+              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+            ]
+          }
+        }
+      },
+      "leverage": "Leverage",
+      "up_to": "Up to"
+    },
     "points": {
       "placeholder": {
         "coming_soon_title": "Coming Soon",
@@ -1644,8 +1814,6 @@
         "claimed_earnings": "Claimed Earnings",
         "current_value": "Current Value",
         "rainbow_users_have_earned": "Rainbow users have earned",
-        "earn_eth_rewards": "Earn ETH Rewards",
-        "rewards_explainer": "Every week, the top weekly points earners will receive a portion of Rainbow’s onchain revenue. Collect points by swapping or transacting in Rainbow, using dapps, or referring friends.",
         "my_points": "My Points",
         "refer_friends": "Refer Friends",
         "try_again": "Try Again",
@@ -1792,7 +1960,7 @@
         "skip": "Skip",
         "snapchat": "Snapchat",
         "telegram": "Telegram",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "upload_photo": "Upload a Photo",
         "uploading": "Uploading",
         "username_placeholder": "username",
@@ -2148,7 +2316,7 @@
       "done": "Done",
       "feedback_and_reports": "Feedback & Bug Reports",
       "feedback_and_support": "Feedback and Support",
-      "follow_us_on_twitter": "Follow us on Twitter",
+      "follow_us_on_twitter": "Follow us on X",
       "hey_friend_message": "👋️ Hey friend! You should download Rainbow, it's my favorite Ethereum wallet 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Settings",
       "language": "Language",
@@ -3322,7 +3490,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "Available Balance: %{balance}",
-        "title": "Pre-buy more tokens"
+        "title": "Pre-buy tokens"
       },
       "review": {
         "token_allocation": "Token allocation",
@@ -3387,7 +3555,7 @@
       },
       "links": {
         "x": {
-          "name": "X/Twitter",
+          "name": "X (Twitter)",
           "placeholder": "Username"
         },
         "telegram": {
@@ -3460,6 +3628,7 @@
     "done": "Done",
     "copy": "Copy",
     "paste": "Paste",
+    "new": "New",
     "market_data": {
       "vol": "VOL",
       "price": "PRICE",
@@ -3483,7 +3652,7 @@
         "steps": {
           "step_1": {
             "title": "The race is live",
-            "subtitle_parts": ["The token with the most", " buy volume ", "right now is the current king."]
+            "subtitle_parts": ["The current king is the token created in the last 30 days with the most", " buy volume ", "today."]
           },
           "step_2": {
             "title": "One crown a day",

@@ -2,16 +2,17 @@ import { ShimmerAnimation } from '@/components/animations';
 import { useBiometryIconString } from '@/components/buttons/BiometricButtonContent';
 import HoldToAuthorizeButtonIcon from '@/components/buttons/hold-to-authorize/HoldToAuthorizeButtonIcon';
 import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
-import { Box, Text, TextProps } from '@/design-system';
+import { Box, Text, TextProps, useColorMode } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { colors } from '@/styles';
 import { useTheme } from '@/theme';
-import React, { PropsWithChildren, useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleProp, TextStyle, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 
 const BUTTON_HEIGHT = 56;
 
@@ -21,23 +22,33 @@ const LONG_PRESS_DURATION_IN_MS = 500;
 type LabelProps = Omit<TextProps, 'children'> & {
   label: string;
   showIcon?: boolean;
-  color?: string;
   testID?: string;
 };
 
-function LabelWithBiometryIcon({ label, showIcon = true, testID, color, ...textProps }: LabelProps) {
+function LabelWithBiometryIcon({ label, showIcon = true, testID, color, size, weight, ...textProps }: LabelProps) {
   const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
   const biometryIcon = useBiometryIconString({ showIcon: !IS_ANDROID && showIcon, isHardwareWallet });
+  const { colorMode } = useColorMode();
   const { colors } = useTheme();
+
+  const stringColor = useMemo(() => {
+    if (!color) return colors.appleBlue;
+    if (typeof color === 'object' && 'custom' in color) {
+      const colorForTheme = typeof color.custom === 'string' ? color.custom : color.custom[colorMode];
+      return colorForTheme;
+    }
+    return getColorForTheme(color, colorMode);
+  }, [color, colorMode, colors.appleBlue]);
 
   return (
     <>
       {/* TODO: note from Kane regarding the color of the Ledger icon potentially being off */}
-      {isHardwareWallet && showIcon && <LedgerIcon color={color || colors.appleBlue} />}
+      {isHardwareWallet && showIcon && <LedgerIcon color={stringColor} />}
       <Text
         testID={testID || label}
-        weight="heavy"
-        color="label"
+        color={color}
+        size={size}
+        weight={weight}
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...textProps}
       >
@@ -52,7 +63,7 @@ function calculateReverseDurationWorklet(longPressProgress: number) {
   return (longPressProgress / 100) * LONG_PRESS_DURATION_IN_MS;
 }
 
-export interface HoldToActivateButtonProps {
+export type HoldToActivateButtonProps = {
   backgroundColor: string;
   disabledBackgroundColor: string;
   disabled?: boolean;
@@ -62,14 +73,15 @@ export interface HoldToActivateButtonProps {
   processingLabel: string;
   onLongPress: () => void;
   showBiometryIcon: boolean;
-  testID: string;
+  testID?: string;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   progressColor?: string;
   height?: number;
-}
-
-type Props = PropsWithChildren<HoldToActivateButtonProps>;
+  color?: TextProps['color'];
+  size?: TextProps['size'];
+  weight?: TextProps['weight'];
+};
 
 export function HoldToActivateButton({
   backgroundColor,
@@ -86,8 +98,10 @@ export function HoldToActivateButton({
   height = BUTTON_HEIGHT,
   textStyle,
   progressColor,
-  ...props
-}: Props) {
+  color = 'label',
+  size = '20pt',
+  weight = 'heavy',
+}: HoldToActivateButtonProps) {
   const longPressProgress = useSharedValue(0);
   const buttonScale = useSharedValue(1);
 
@@ -134,8 +148,7 @@ export function HoldToActivateButton({
 
   return (
     <GestureDetector gesture={longPress}>
-      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-      <Animated.View {...props} style={[style, scaleStyle]}>
+      <Animated.View style={[style, scaleStyle]}>
         <Box
           justifyContent="center"
           alignItems="center"
@@ -151,9 +164,9 @@ export function HoldToActivateButton({
             label={isProcessing ? processingLabel : label}
             showIcon={showBiometryIcon && !isProcessing}
             testID={testID}
-            size="20pt"
-            weight="heavy"
-            color={'label'}
+            size={size}
+            weight={weight}
+            color={color}
             style={textStyle}
           />
           <ShimmerAnimation color={colors.whiteLabel} enabled={!disableShimmerAnimation && !disabled} />

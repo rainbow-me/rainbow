@@ -65,7 +65,7 @@ import { Navigation, useNavigation } from '@/navigation';
 import { UserAssetFilter } from '@/__swaps__/types/assets';
 import Routes from '@/navigation/routesNames';
 import { SEARCH_BAR_HEIGHT, SearchBar } from './components/SearchBar';
-import { KeyboardProvider, KeyboardStickyView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { KeyboardStickyView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { Chain } from 'viem/chains';
 
 type RouteParams = RouteProp<RootStackParamList, 'NetworkSelector'>['params'];
@@ -967,23 +967,21 @@ function Sheet({ children, onClose, expanded }: SheetProps) {
           },
         ]}
       >
-        <KeyboardProvider>
-          {children}
-          <Animated.View
-            style={[
-              easingGradientStyle,
-              { position: 'absolute', bottom: 0, height: FOOTER_HEIGHT, width: SHEET_WIDTH, pointerEvents: 'none' },
-            ]}
-          >
-            <EasingGradient
-              endColor={backgroundColor}
-              endOpacity={1}
-              startColor={backgroundColor}
-              startOpacity={0}
-              style={{ height: '100%', width: '100%' }}
-            />
-          </Animated.View>
-        </KeyboardProvider>
+        {children}
+        <Animated.View
+          style={[
+            easingGradientStyle,
+            { position: 'absolute', bottom: 0, height: FOOTER_HEIGHT, width: SHEET_WIDTH, pointerEvents: 'none' },
+          ]}
+        >
+          <EasingGradient
+            endColor={backgroundColor}
+            endOpacity={1}
+            startColor={backgroundColor}
+            startOpacity={0}
+            style={{ height: '100%', width: '100%' }}
+          />
+        </Animated.View>
       </Box>
       <TapToDismiss />
     </>

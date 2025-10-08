@@ -36,6 +36,7 @@ export const createUserAssetsStore = (address: Address | string) =>
           set(state => setUserAssets({ address, state, userAssets: data.userAssets, positionTokenAddresses }));
         }
       },
+      enabled: address.length > 0,
       keepPreviousData: true,
       params: {
         address,

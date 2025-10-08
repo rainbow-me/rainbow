@@ -24,7 +24,7 @@ import {
 } from '@/model/wallet';
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
-import { isLowerCaseMatch, time } from '@/utils';
+import { isLowerCaseMatch, time, watchingAlert } from '@/utils';
 import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
 import { shallowEqual } from '@/worklets/comparisons';
@@ -839,6 +839,15 @@ export function formatAccountLabel({
 
 async function saveSelectedWalletInKeychain(wallet: RainbowWallet, accountAddress?: string) {
   await Promise.all([accountAddress ? saveAddress(accountAddress) : null, setSelectedWalletInKeychain(wallet)]);
+}
+
+export function checkIfReadOnlyWallet(address: string) {
+  const wallet = getWalletWithAccount(address);
+  if (wallet?.type === WalletTypes.readOnly) {
+    watchingAlert();
+    return true;
+  }
+  return false;
 }
 
 // export static functions

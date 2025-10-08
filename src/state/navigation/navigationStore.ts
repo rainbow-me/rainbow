@@ -1,6 +1,7 @@
 import { makeMutable, SharedValue } from 'react-native-reanimated';
 import { Route } from '@/navigation/Navigation';
 import Routes, { POINTS_ROUTES } from '@/navigation/routesNames';
+import { VIRTUAL_NAVIGATORS } from '@/navigation/virtualNavigators';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 export type NavigationState = {
@@ -43,15 +44,17 @@ export const useNavigationStore = createRainbowStore<NavigationState>((set, get)
 
   setActiveRoute: route =>
     set(state => {
-      if (route === state.activeRoute) return state;
-      const onSwipeRoute = isSwipeRoute(route);
+      const newActiveRoute = VIRTUAL_NAVIGATORS[route]?.getActiveRoute() ?? route;
 
-      state.animatedActiveRoute.value = route;
-      if (onSwipeRoute) state.animatedActiveSwipeRoute.value = route;
+      if (newActiveRoute === state.activeRoute) return state;
+      const onSwipeRoute = isSwipeRoute(newActiveRoute);
+
+      state.animatedActiveRoute.value = newActiveRoute;
+      if (onSwipeRoute) state.animatedActiveSwipeRoute.value = newActiveRoute;
 
       return {
-        activeRoute: route,
-        activeSwipeRoute: onSwipeRoute ? route : state.activeSwipeRoute,
+        activeRoute: newActiveRoute,
+        activeSwipeRoute: onSwipeRoute ? newActiveRoute : state.activeSwipeRoute,
       };
     }),
 }));

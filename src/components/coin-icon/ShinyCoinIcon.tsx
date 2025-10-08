@@ -12,12 +12,16 @@ import {
   useImage,
 } from '@shopify/react-native-skia';
 import { SharedValue } from 'react-native-reanimated';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { ChainId } from '@/state/backendNetworks/types';
 import { opacity } from '@/__swaps__/utils/swaps';
 
 type ShinyCoinIconProps = {
-  imageUrl: string;
+  chainId: ChainId;
+  color: string | undefined;
+  imageUrl: string | undefined;
+  symbol: string;
   size?: number;
-  color?: string;
   disableShadow?: boolean;
 };
 
@@ -25,7 +29,14 @@ const DROP_SHADOW_BLUR = 9 / 2;
 const DROP_SHADOW_OFFSET_Y = 3;
 const DROP_SHADOW_OVERFLOW_BUFFER = DROP_SHADOW_BLUR * 4 + DROP_SHADOW_OFFSET_Y;
 
-export const ShinyCoinIcon = memo(function ShinyCoinIcon({ imageUrl, size = 40, color, disableShadow }: ShinyCoinIconProps) {
+export const ShinyCoinIcon = memo(function ShinyCoinIcon({
+  chainId,
+  imageUrl,
+  symbol,
+  size = 40,
+  color,
+  disableShadow,
+}: ShinyCoinIconProps) {
   const roundedRect = useMemo(() => {
     return rrect(rect(0, 0, size, size), size / 2, size / 2);
   }, [size]);
@@ -35,17 +46,17 @@ export const ShinyCoinIcon = memo(function ShinyCoinIcon({ imageUrl, size = 40, 
   const skiaImage = useImage(!isImageGif ? imageUrl : undefined);
 
   const tokenImage: SkImage | null | SharedValue<SkImage | null> = useMemo(() => {
-    if (isImageGif) {
-      return animatedSkiaImage;
-    }
-    return skiaImage;
-  }, [animatedSkiaImage, isImageGif, skiaImage]);
+    if (!imageUrl) return null;
+    return isImageGif ? animatedSkiaImage : skiaImage;
+  }, [animatedSkiaImage, imageUrl, isImageGif, skiaImage]);
 
   const accentColors = useMemo(() => {
     return {
       opacity30: opacity(color ?? '#000000', 0.3),
     };
   }, [color]);
+
+  if (!tokenImage) return <RainbowCoinIcon color={color || undefined} chainId={chainId} size={size} symbol={symbol} showBadge={false} />;
 
   return (
     <Canvas style={{ width: size + DROP_SHADOW_OVERFLOW_BUFFER, height: size + DROP_SHADOW_OVERFLOW_BUFFER }}>

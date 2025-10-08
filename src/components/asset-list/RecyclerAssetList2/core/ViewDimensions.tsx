@@ -15,6 +15,7 @@ import { ProfileStickyHeaderHeight } from '@/components/asset-list/RecyclerAsset
 import { RECEIVE_CARD_HEIGHT } from '@/components/cards/ReceiveAssetsCard';
 import { ETH_CARD_HEIGHT } from '@/components/cards/EthCard';
 import { LEARN_CARD_HEIGHT } from '@/components/cards/RotatingLearnCard';
+import { PERPS_FEATURE_CARD_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/cards/PerpsFeatureCard';
 import { DISCOVER_MORE_BUTTON_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/core/DiscoverMoreButton';
 import { CardSize, UniqueTokenCardMargin } from '@/components/unique-token/CardSize';
 import { IS_IOS } from '@/env';
@@ -30,6 +31,7 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.RECEIVE_CARD]: { height: RECEIVE_CARD_HEIGHT },
   [CellType.ETH_CARD]: { height: ETH_CARD_HEIGHT },
   [CellType.LEARN_CARD]: { height: LEARN_CARD_HEIGHT },
+  [CellType.PERPS_FEATURE_CARD]: { height: PERPS_FEATURE_CARD_HEIGHT },
   [CellType.EMPTY_WALLET_SPACER]: { height: 20 },
   [CellType.BIG_EMPTY_WALLET_SPACER]: { height: 32 },
   [CellType.PROFILE_STICKY_HEADER]: { height: ProfileStickyHeaderHeight },
@@ -81,8 +83,19 @@ const ViewDimensions: Record<CellType, Dim> = {
     height: 60,
     width: deviceUtils.dimensions.width,
   },
+  [CellType.PERPS_HEADER]: { height: AssetListHeaderHeight },
+  [CellType.PERPS_BALANCE]: {
+    height: 48,
+    width: deviceUtils.dimensions.width,
+  },
+  [CellType.PERPS_POSITION]: {
+    height: 65,
+    width: deviceUtils.dimensions.width,
+  },
+  [CellType.TOKENS_HEADER]: { height: AssetListHeaderHeight },
   [CellType.REMOTE_CARD_CAROUSEL]: { height: 112 },
   [CellType.EMPTY_REMOTE_CARD_CAROUSEL]: { height: 0 },
+  [CellType.SPACER]: { height: 0 }, // Height is set from data
 };
 
 export default ViewDimensions;

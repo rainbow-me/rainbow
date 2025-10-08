@@ -1,5 +1,4 @@
-import { LIGHT_SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
 import EthIcon from '@/assets/eth-icon.png';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -51,9 +50,8 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
-import { format, intervalToDuration, isToday } from 'date-fns';
 import { isNil } from 'lodash';
-import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useState } from 'react';
+import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { RefreshControl, Share, StyleProp, ViewStyle } from 'react-native';
 import FastImage, { Source } from 'react-native-fast-image';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -183,7 +181,15 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
   );
 };
 
-const Card = ({ borderRadius = 32, children, padding = '12px' }: { borderRadius?: number; children: React.ReactNode; padding?: Space }) => {
+export const Card = ({
+  borderRadius = 32,
+  children,
+  padding = '12px',
+}: {
+  borderRadius?: number;
+  children: React.ReactNode;
+  padding?: Space;
+}) => {
   const { isDarkMode } = useColorMode();
 
   return (
@@ -271,34 +277,6 @@ const ClaimCard = memo(function ClaimCard({ claim, value }: { claim?: string; va
           </Bleed>
         </MaskedView>
       </ButtonPressAnimation>
-    </Card>
-  );
-});
-
-const EarnRewardsCard = memo(function EarnRewardsCard() {
-  return (
-    <Card padding="20px">
-      <Box paddingVertical="8px">
-        <Stack space="20px">
-          <Inline alignHorizontal="center" alignVertical="center" space="10px">
-            <IconContainer height={12} width={24}>
-              <TextShadow>
-                <Text align="center" color="accent" size="icon 17px" weight="heavy">
-                  􀐾
-                </Text>
-              </TextShadow>
-            </IconContainer>
-            <TextShadow shadowOpacity={0.2}>
-              <Text align="center" color="label" size="20pt" weight="heavy">
-                {i18n.t(i18n.l.points.points.earn_eth_rewards)}
-              </Text>
-            </TextShadow>
-          </Inline>
-          <Text align="center" color="labelQuaternary" size="13pt / 135%" weight="semibold">
-            {i18n.t(i18n.l.points.points.rewards_explainer)}
-          </Text>
-        </Stack>
-      </Box>
     </Card>
   );
 });
@@ -454,92 +432,6 @@ export const EthRewardsCoinIcon = memo(function EthRewardsCoinIcon({
   );
 });
 
-const NextDistributionCountdown = ({ nextDistribution }: { nextDistribution: Date }) => {
-  const [nextDistributionIn, recalcNextDistributionDistance] = useReducer(
-    () =>
-      intervalToDuration({
-        start: Date.now(),
-        end: nextDistribution,
-      }),
-    intervalToDuration({
-      start: Date.now(),
-      end: nextDistribution,
-    })
-  );
-
-  useEffect(() => {
-    const interval = setInterval(recalcNextDistributionDistance, 1000);
-    return () => clearInterval(interval);
-  }, [nextDistribution]);
-
-  const { days, hours, minutes } = nextDistributionIn;
-  const dayStr = days ? `${days}d` : '';
-  const hourStr = hours ? `${hours}h` : '';
-  const minuteStr = minutes ? `${minutes}m` : '';
-
-  return (
-    <TextShadow shadowOpacity={0.24}>
-      <Text align="center" color="labelSecondary" size="17pt" weight="heavy">
-        {`${dayStr} ${hourStr} ${minuteStr}`.trim()}
-      </Text>
-    </TextShadow>
-  );
-};
-
-const NextDropCard = memo(function NextDropCard({ nextDistribution }: { nextDistribution: Date }) {
-  const { isDarkMode } = useColorMode();
-  const separatorSecondary = useForegroundColor('separatorSecondary');
-  const nextDistributionWithDay = isToday(nextDistribution)
-    ? `${i18n.t(i18n.l.points.points.today)} ${format(nextDistribution, 'p')}`
-    : format(nextDistribution, 'cccc p');
-
-  return (
-    <Card>
-      <Box alignItems="center" flexDirection="row" justifyContent="space-between" paddingLeft="8px" width="full">
-        <Box alignItems="center" flexDirection="row">
-          <IconContainer size={24}>
-            <TextShadow>
-              <Text color="accent" size="icon 17px" weight="heavy">
-                􀐫
-              </Text>
-            </TextShadow>
-          </IconContainer>
-          <Box gap={10} paddingLeft="10px">
-            <Stack space="10px">
-              <TextShadow shadowOpacity={0.2}>
-                <Text color="label" size="17pt" weight="heavy">
-                  {i18n.t(i18n.l.points.points.next_drop)}
-                </Text>
-              </TextShadow>
-              <Text color="labelTertiary" size="13pt" weight="bold">
-                {nextDistributionWithDay}
-              </Text>
-            </Stack>
-          </Box>
-        </Box>
-        <Box
-          alignItems="center"
-          background="fillQuaternary"
-          borderRadius={18}
-          height={{ custom: 36 }}
-          justifyContent="center"
-          margin={{ custom: 2 }}
-          paddingHorizontal="12px"
-          style={{
-            backgroundColor: isDarkMode ? opacity(LIGHT_SEPARATOR_COLOR, 0.05) : globalColors.white100,
-            borderColor: separatorSecondary,
-            borderCurve: 'continuous',
-            borderWidth: THICK_BORDER_WIDTH,
-            overflow: 'hidden',
-          }}
-        >
-          <NextDistributionCountdown nextDistribution={nextDistribution} />
-        </Box>
-      </Box>
-    </Card>
-  );
-});
-
 const getTextWidth = async (text: string | undefined) => {
   const { width } = await measureText(text, {
     fontSize: 44,
@@ -682,7 +574,6 @@ export function PointsContent() {
   const { claimed, claimable } = rewards || {};
   const showClaimYourPoints = claimable && claimable !== '0';
   const showMyEarnings = claimed && claimed !== '0';
-  const showNoHistoricalRewards = !showMyEarnings;
 
   const claimedBalance = convertRawAmountToBalance(claimed || '0', {
     decimals: 18,
@@ -706,8 +597,9 @@ export function PointsContent() {
     true
   )?.display;
 
-  const nextDistribution = points?.points?.meta?.distribution?.next;
-  const nextDistributionDate = nextDistribution ? new Date(nextDistribution * 1000) : null;
+  // TEMPORARILY DISABLED
+  // const nextDistribution = points?.points?.meta?.distribution?.next;
+  // const nextDistributionDate = nextDistribution ? new Date(nextDistribution * 1000) : null;
 
   const canDisplayTotalPoints = !isNil(points?.points?.user.earnings.total);
   const canDisplayCurrentRank = !!rank;
@@ -743,9 +635,8 @@ export function PointsContent() {
                   {showMyEarnings && <EarningsCard claimed={claimedBalance.display} value={claimedPrice} />}
                 </Box>
               )}
-              {rewardsEnabled && showNoHistoricalRewards && <EarnRewardsCard />}
               {rewardsEnabled && <TotalEarnedByRainbowUsers earned={totalRewardsDisplay} />}
-              {nextDistributionDate && <NextDropCard nextDistribution={nextDistributionDate} />}
+              {/* {nextDistributionDate && <NextDropCard nextDistribution={nextDistributionDate} />} */}
               <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
             </Box>
           </Inset>
