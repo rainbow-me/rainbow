@@ -1584,140 +1584,140 @@
     "perps": {
       "common": {
         "not_available": "N/A",
-        "current_price": "Current Price",
+        "current_price": "Prix actuel",
         "title": "Perps",
-        "error_submitting_order": "Error submitting order",
-        "submitting": "Submitting...",
+        "error_submitting_order": "Erreur lors de l'envoi de la commande",
+        "submitting": "En cours de soumission...",
         "more": "Plus",
         "error": "Erreur",
         "cancel": "Annuler",
-        "liq_price": "liq. price",
+        "liq_price": "prix de liquidation",
         "liq": "liq"
       },
       "feature_card": {
         "title": "Perps",
-        "subtitle": "High-risk, high-reward trading"
+        "subtitle": "Trading à haut risque et haute récompense"
       },
       "actions": {
-        "fund_wallet": "Fund Wallet",
-        "new_position": "New Position",
-        "close_position": "Close Position",
-        "open_position": "Open Position"
+        "fund_wallet": "Financer mon portefeuille",
+        "new_position": "Nouvelle position",
+        "close_position": "Fermer la position",
+        "open_position": "Ouvrir la position"
       },
       "account": {
         "available_balance": "Solde disponible"
       },
       "markets": {
-        "title": "Markets",
-        "up_to": "UP TO",
-        "already_open": "Already Open"
+        "title": "Marchés",
+        "up_to": "Jusqu'à",
+        "already_open": "Déjà ouvert"
       },
       "deposit": {
         "title": "Dépôt",
         "no_balance": "Pas de solde",
         "receive": "Recevoir",
         "slider_label": "Dépôt en cours",
-        "zero_amount_error": "Enter an amount to deposit",
+        "zero_amount_error": "Entrez un montant à déposer",
         "confirm_button_text": "Tenir pour Déposer",
-        "confirm_button_loading_text": "Depositing...",
+        "confirm_button_loading_text": "Dépôt en cours...",
         "confirm_button_zero_text": "Entrez un Montant",
         "confirm_button_over_balance_text": "Fonds insuffisants",
         "confirm_button_error_text": "Erreur de Devis",
-        "quote_error": "􀇿 No quote available",
-        "insufficient_balance": "􀫲 Insufficient Funds"
+        "quote_error": "􀇿 Aucun devis disponible",
+        "insufficient_balance": "􀫲 Fonds insuffisants"
       },
       "withdraw": {
         "title": "Retirer",
         "slider_label": "Retrait en cours",
         "confirm_button_text": "Maintenir pour retirer",
-        "confirm_button_loading_text": "Withdrawing...",
-        "available_balance_suffix": " Available",
+        "confirm_button_loading_text": "Retrait en cours...",
+        "available_balance_suffix": " Disponible",
         "confirm_button_zero_text": "Entrez un Montant",
         "confirm_button_over_balance_text": "Fonds insuffisants",
-        "info_card_title_prefix": "Withdrawing to ",
+        "info_card_title_prefix": "Retrait en cours vers ",
         "info_card_title_suffix": "Arbitrum",
-        "info_card_subtitle": "Additional networks coming soon. Withdrawals currently include a $1.00 Hyperliquid fee."
+        "info_card_subtitle": "D'autres réseaux bientôt disponibles. Les retraits incluent actuellement des frais Hyperliquid de 1,00 $."
       },
       "position_side": {
         "long": "Long",
         "short": "Short"
       },
       "positions": {
-        "entry": "ENTRY",
-        "mark_price": "MARK PRICE",
-        "open_positions": "Open Positions",
-        "no_open_positions": "No Open Positions",
-        "position_value": "Position Value",
-        "mark_price_full": "Mark Price",
-        "entry_price": "Entry Price",
-        "funding": "Funding",
-        "liquidation_price": "Liquidation Price",
+        "entry": "ENTRÉE",
+        "mark_price": "PRIX MARCHE",
+        "open_positions": "Positions ouvertes",
+        "no_open_positions": "Aucune position ouverte",
+        "position_value": "Valeur de la position",
+        "mark_price_full": "Prix du marché",
+        "entry_price": "Prix d'entrée",
+        "funding": "Financement",
+        "liquidation_price": "Prix de liquidation",
         "total": "Total",
-        "learn_more_about_perps": "Learn more about Perps"
+        "learn_more_about_perps": "En savoir plus sur Perps"
       },
       "new_position": {
-        "hold_to_long": "Hold to Long",
-        "hold_to_short": "Hold to Short",
-        "liquidated_at": "Liquidated at",
-        "from_current_price": "from current price",
+        "hold_to_long": "Tenir pour Long",
+        "hold_to_short": "Tenir pour Short",
+        "liquidated_at": "Liquidé à",
+        "from_current_price": "à partir du prix actuel",
         "details": "Détails",
-        "funding_rate": "Funding Rate",
+        "funding_rate": "Taux de financement",
         "max_slippage": "Glissement maximal",
-        "no_liquidation_risk": "No Liquidation Risk",
-        "trading_without_leverage": "Trading without leverage"
+        "no_liquidation_risk": "Pas de risque de liquidation",
+        "trading_without_leverage": "Trading sans effet de levier"
       },
       "inputs": {
         "amount": "Montant",
-        "available": "Available",
+        "available": "Disponible",
         "max": "Max",
-        "maximum_amount_is": "Maximum amount is",
+        "maximum_amount_is": "Le montant maximum est",
         "minimum": "Minimum",
-        "minimum_amount_is": "Minimum amount is",
+        "minimum_amount_is": "Le montant minimum est",
         "no_balance": "Pas de solde"
       },
       "history": {
         "title": "Historique",
-        "no_trades": "No trades",
+        "no_trades": "Aucun échange",
         "trade_execution": {
-          "take_profit_executed": "Take Profit Executed",
-          "stop_loss_executed": "Stop Loss Executed",
-          "long_opened": "Long Opened",
-          "short_opened": "Short Opened",
-          "long_closed": "Long Closed",
-          "short_closed": "Short Closed",
-          "long_liquidated": "Long Liquidated",
-          "short_liquidated": "Short Liquidated"
+          "take_profit_executed": "Prise de profit exécutée",
+          "stop_loss_executed": "Stop Loss exécuté",
+          "long_opened": "Long ouvert",
+          "short_opened": "Short ouvert",
+          "long_closed": "Long fermé",
+          "short_closed": "Short fermé",
+          "long_liquidated": "Long liquidé",
+          "short_liquidated": "Short liquidé"
         }
       },
       "trigger_orders": {
-        "title": "Trigger Orders",
-        "take_profit": "Take Profit",
+        "title": "Ordres déclencheurs",
+        "take_profit": "Prendre profit",
         "stop_loss": "Stop Loss",
-        "sell": "Sell",
-        "cancel_failed": "Failed to cancel order",
-        "add_stop_loss": "Add Stop Loss",
-        "add_take_profit": "Add Take Profit",
+        "sell": "Vendre",
+        "cancel_failed": "Échec de l'annulation de l'ordre",
+        "add_stop_loss": "Ajouter Stop Loss",
+        "add_take_profit": "Ajouter Prendre Profit",
         "price": "Prix",
-        "projected_profit": "Projected Profit",
-        "projected_loss": "Projected Loss",
+        "projected_profit": "Profit projeté",
+        "projected_loss": "Perte projetée",
         "add": "Ajouter",
-        "adding": "Adding...",
-        "above": "above",
-        "below": "below",
-        "must_be": "Must be",
-        "failed_to_create": "Failed to create trigger order"
+        "adding": "Ajout...",
+        "above": "au-dessus",
+        "below": "en dessous",
+        "must_be": "Doit être",
+        "failed_to_create": "Échec de la création de l'ordre déclencheur"
       },
       "search": {
-        "search_markets": "Search markets",
-        "markets_count": "%{count} MARKETS",
-        "choose_a_market": "CHOOSE A MARKET"
+        "search_markets": "Rechercher des marchés",
+        "markets_count": "%{count} MARCHÉS",
+        "choose_a_market": "CHOISIR UN MARCHÉ"
       },
       "close_position": {
-        "estimated_loss": "Estimated Loss",
-        "estimated_profit": "Estimated Profit",
-        "minimum_amount_is": "Minimum amount is",
-        "closing": "Closing...",
-        "hold_to_close": "Hold to Close"
+        "estimated_loss": "Perte estimée",
+        "estimated_profit": "Profit estimé",
+        "minimum_amount_is": "Le montant minimum est",
+        "closing": "Fermeture en cours...",
+        "hold_to_close": "Tenir pour fermer"
       },
       "explain_sheet": {
         "next": "Suivant",
@@ -1726,35 +1726,35 @@
         "steps": {
           "step_1": {
             "title_parts": [
-              "Perpetual Futures"
+              "Futures perpétuels"
             ],
             "subtitle_parts": [
-              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
+              "Pariez sur les mouvements de prix. Ouvrez et fermez des positions quand vous le souhaitez, sans expiration.\n Alimenté par Hyperliquid."
             ]
           },
           "step_2": {
             "title_parts": [
-              "Go",
+              "Aller",
               "Long",
-              "or",
+              "ou",
               "Short"
             ],
             "subtitle_parts": [
-              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
+              "Long lorsque vous pensez que le prix va augmenter. Short lorsque vous pensez qu'il va baisser. Profitez lorsque vous choisissez la bonne direction."
             ]
           },
           "step_3": {
             "title_parts": [
-              "Trade with Leverage"
+              "Trader avec effet de levier"
             ],
             "subtitle_parts": [
-              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+              "L'effet de levier amplifie votre risque. Des gains plus importants lorsque vous avez raison. Des pertes plus rapides, et liquidation, lorsque vous avez tort."
             ]
           }
         }
       },
-      "leverage": "Leverage",
-      "up_to": "Up to"
+      "leverage": "Levier",
+      "up_to": "Jusqu'à"
     },
     "points": {
       "placeholder": {
@@ -1832,8 +1832,6 @@
         "claimed_earnings": "Gains Réclamés",
         "current_value": "Valeur actuelle",
         "rainbow_users_have_earned": "Les utilisateurs de Rainbow ont gagné",
-        "earn_eth_rewards": "Gagner des Récompenses en ETH",
-        "rewards_explainer": "Chaque semaine, les meilleurs gagnants de points hebdomadaires recevront une partie des revenus de Rainbow sur la chaîne. Collectez des points en échangeant ou en effectuant des transactions sur Rainbow, en utilisant des dapps ou en parrainant des amis.",
         "my_points": "Mes Points",
         "refer_friends": "Parrainer des Amis",
         "try_again": "Réessayer",
