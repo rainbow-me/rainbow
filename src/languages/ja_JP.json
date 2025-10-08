@@ -23,7 +23,7 @@
       "tab_investments": "プール",
       "tab_savings": "貯蓄",
       "tab_showcase": "ショーケース",
-      "tab_perps": "Perps",
+      "tab_perps": "\"Perps\"",
       "tab_points": "ポイント",
       "tab_positions": "ポジション",
       "tab_rewards": "報酬",
@@ -1584,177 +1584,177 @@
     "perps": {
       "common": {
         "not_available": "N/A",
-        "current_price": "Current Price",
-        "title": "Perps",
-        "error_submitting_order": "Error submitting order",
-        "submitting": "Submitting...",
+        "current_price": "現在の価格",
+        "title": "\"Perps\"",
+        "error_submitting_order": "注文送信エラー",
+        "submitting": "送信中...",
         "more": "もっと",
         "error": "エラー",
         "cancel": "キャンセル",
-        "liq_price": "liq. price",
-        "liq": "liq"
+        "liq_price": "清算価格",
+        "liq": "清算"
       },
       "feature_card": {
-        "title": "Perps",
-        "subtitle": "High-risk, high-reward trading"
+        "title": "\"Perps\"",
+        "subtitle": "ハイリスク・ハイリターンの取引"
       },
       "actions": {
-        "fund_wallet": "Fund Wallet",
-        "new_position": "New Position",
-        "close_position": "Close Position",
-        "open_position": "Open Position"
+        "fund_wallet": "ウォレットに資金を追加",
+        "new_position": "新規ポジション",
+        "close_position": "ポジションをクローズする",
+        "open_position": "ポジションをオープンする"
       },
       "account": {
         "available_balance": "利用可能残高"
       },
       "markets": {
-        "title": "Markets",
-        "up_to": "UP TO",
-        "already_open": "Already Open"
+        "title": "マーケット",
+        "up_to": "最大",
+        "already_open": "既にオープン済み"
       },
       "deposit": {
         "title": "預金",
         "no_balance": "残高なし",
         "receive": "受け取る",
         "slider_label": "預け入れ中",
-        "zero_amount_error": "Enter an amount to deposit",
+        "zero_amount_error": "入金額を入力してください",
         "confirm_button_text": "デポジット保留中",
-        "confirm_button_loading_text": "Depositing...",
+        "confirm_button_loading_text": "預け入れ中...",
         "confirm_button_zero_text": "金額を入力してください",
         "confirm_button_over_balance_text": "資金が不足しています",
         "confirm_button_error_text": "見積りエラー",
-        "quote_error": "􀇿 No quote available",
-        "insufficient_balance": "􀫲 Insufficient Funds"
+        "quote_error": "􀇿 見積もりは利用できません",
+        "insufficient_balance": "􀫲 資金が不足しています"
       },
       "withdraw": {
         "title": "引き出す",
         "slider_label": "引き出し中",
         "confirm_button_text": "引き出しを保持",
-        "confirm_button_loading_text": "Withdrawing...",
-        "available_balance_suffix": " Available",
+        "confirm_button_loading_text": "引き出し中...",
+        "available_balance_suffix": " 利用可能",
         "confirm_button_zero_text": "金額を入力してください",
         "confirm_button_over_balance_text": "資金が不足しています",
-        "info_card_title_prefix": "Withdrawing to ",
+        "info_card_title_prefix": "への引き出し",
         "info_card_title_suffix": "Arbitrum",
-        "info_card_subtitle": "Additional networks coming soon. Withdrawals currently include a $1.00 Hyperliquid fee."
+        "info_card_subtitle": "追加のネットワークが近日中に登場予定です。現在、引き出しには$1.00のHyperliquid手数料がかかります。"
       },
       "position_side": {
-        "long": "Long",
-        "short": "Short"
+        "long": "ロング",
+        "short": "ショート"
       },
       "positions": {
-        "entry": "ENTRY",
-        "mark_price": "MARK PRICE",
-        "open_positions": "Open Positions",
-        "no_open_positions": "No Open Positions",
-        "position_value": "Position Value",
-        "mark_price_full": "Mark Price",
-        "entry_price": "Entry Price",
-        "funding": "Funding",
-        "liquidation_price": "Liquidation Price",
+        "entry": "エントリー",
+        "mark_price": "マーケット価格",
+        "open_positions": "オープンポジション",
+        "no_open_positions": "オープンポジションなし",
+        "position_value": "ポジションバリュー",
+        "mark_price_full": "マーケット価格",
+        "entry_price": "エントリー価格",
+        "funding": "資金調達",
+        "liquidation_price": "清算価格",
         "total": "合計",
-        "learn_more_about_perps": "Learn more about Perps"
+        "learn_more_about_perps": "Perpsについてもっと学びましょう"
       },
       "new_position": {
-        "hold_to_long": "Hold to Long",
-        "hold_to_short": "Hold to Short",
-        "liquidated_at": "Liquidated at",
-        "from_current_price": "from current price",
+        "hold_to_long": "ロングするにはホールド",
+        "hold_to_short": "ショートするにはホールド",
+        "liquidated_at": "清算された価格",
+        "from_current_price": "現在の価格から",
         "details": "詳細",
-        "funding_rate": "Funding Rate",
+        "funding_rate": "ファンディングレート",
         "max_slippage": "最大スリッページ",
-        "no_liquidation_risk": "No Liquidation Risk",
-        "trading_without_leverage": "Trading without leverage"
+        "no_liquidation_risk": "清算リスクなし",
+        "trading_without_leverage": "レバレッジなしでの取引"
       },
       "inputs": {
         "amount": "金額",
-        "available": "Available",
+        "available": "利用可能",
         "max": "最大",
-        "maximum_amount_is": "Maximum amount is",
-        "minimum": "Minimum",
-        "minimum_amount_is": "Minimum amount is",
+        "maximum_amount_is": "最大金額は",
+        "minimum": "最小",
+        "minimum_amount_is": "最小金額は",
         "no_balance": "残高なし"
       },
       "history": {
         "title": "履歴",
-        "no_trades": "No trades",
+        "no_trades": "取引なし",
         "trade_execution": {
-          "take_profit_executed": "Take Profit Executed",
-          "stop_loss_executed": "Stop Loss Executed",
-          "long_opened": "Long Opened",
-          "short_opened": "Short Opened",
-          "long_closed": "Long Closed",
-          "short_closed": "Short Closed",
-          "long_liquidated": "Long Liquidated",
-          "short_liquidated": "Short Liquidated"
+          "take_profit_executed": "利食い実行済み",
+          "stop_loss_executed": "ストップロス実行済み",
+          "long_opened": "ロング開始",
+          "short_opened": "ショート開始",
+          "long_closed": "ロング終了",
+          "short_closed": "ショート終了",
+          "long_liquidated": "ロング清算",
+          "short_liquidated": "ショート清算"
         }
       },
       "trigger_orders": {
-        "title": "Trigger Orders",
-        "take_profit": "Take Profit",
-        "stop_loss": "Stop Loss",
-        "sell": "Sell",
-        "cancel_failed": "Failed to cancel order",
-        "add_stop_loss": "Add Stop Loss",
-        "add_take_profit": "Add Take Profit",
+        "title": "トリガーオーダー",
+        "take_profit": "利食い",
+        "stop_loss": "ストップロス",
+        "sell": "売却",
+        "cancel_failed": "注文のキャンセルに失敗しました",
+        "add_stop_loss": "ストップロスを追加",
+        "add_take_profit": "利益確定の追加",
         "price": "価格",
-        "projected_profit": "Projected Profit",
-        "projected_loss": "Projected Loss",
+        "projected_profit": "予測利益",
+        "projected_loss": "予測損失",
         "add": "追加",
-        "adding": "Adding...",
-        "above": "above",
-        "below": "below",
-        "must_be": "Must be",
-        "failed_to_create": "Failed to create trigger order"
+        "adding": "追加中...",
+        "above": "上で",
+        "below": "下で",
+        "must_be": "である必要があります",
+        "failed_to_create": "トリガー注文作成に失敗しました"
       },
       "search": {
-        "search_markets": "Search markets",
-        "markets_count": "%{count} MARKETS",
-        "choose_a_market": "CHOOSE A MARKET"
+        "search_markets": "マーケットを検索",
+        "markets_count": "%{count} メーカー",
+        "choose_a_market": "マーケットを選択"
       },
       "close_position": {
-        "estimated_loss": "Estimated Loss",
-        "estimated_profit": "Estimated Profit",
-        "minimum_amount_is": "Minimum amount is",
-        "closing": "Closing...",
-        "hold_to_close": "Hold to Close"
+        "estimated_loss": "予測損失",
+        "estimated_profit": "予測利益",
+        "minimum_amount_is": "最小金額は",
+        "closing": "クローズ中...",
+        "hold_to_close": "クローズするにはホールド"
       },
       "explain_sheet": {
         "next": "次へ",
         "got_it": "理解しました",
-        "title": "Perps",
+        "title": "\"Perps\"",
         "steps": {
           "step_1": {
             "title_parts": [
-              "Perpetual Futures"
+              "永久先物"
             ],
             "subtitle_parts": [
-              "Bet on price movements. Open and close positions whenever you want, with no expiration.\nPowered by Hyperliquid."
+              "価格変動に賭けよう。いつでもポジションをオープンし、クローズできます。期限なし。\nHyperliquidが提供。"
             ]
           },
           "step_2": {
             "title_parts": [
-              "Go",
-              "Long",
-              "or",
-              "Short"
+              "行く",
+              "ロング",
+              "または",
+              "ショート"
             ],
             "subtitle_parts": [
-              "Long when you think the price will rise. Short when you think it'll fall. Profit when you call the direction right."
+              "価格が上がると思った時はロング。下がると思った時はショート。方向性をうまく予想して利益を上げましょう。"
             ]
           },
           "step_3": {
             "title_parts": [
-              "Trade with Leverage"
+              "レバレッジで取引"
             ],
             "subtitle_parts": [
-              "Leverage amplifies your risk. Bigger gains when you're right. Faster losses, and liquidation, when you're wrong."
+              "レバレッジはリスクを増幅します。当たりの時は大きな利益、間違いの時は速い損失と清算。"
             ]
           }
         }
       },
-      "leverage": "Leverage",
-      "up_to": "Up to"
+      "leverage": "レバレッジ",
+      "up_to": "最大"
     },
     "points": {
       "placeholder": {
@@ -1832,8 +1832,6 @@
         "claimed_earnings": "請求された収益",
         "current_value": "現在の値",
         "rainbow_users_have_earned": "Rainbowユーザーが稼いだ",
-        "earn_eth_rewards": "ETH報酬を稼ぐ",
-        "rewards_explainer": "毎週、トップ週次ポイント獲得者はRainbowのオンチェーン収益の一部を受け取ります。 Rainbowでのスワップまたはトランザクション、dappsの使用、または友達を紹介してポイントを集めましょう。",
         "my_points": "私のポイント",
         "refer_friends": "友達を紹介",
         "try_again": "再試行",
