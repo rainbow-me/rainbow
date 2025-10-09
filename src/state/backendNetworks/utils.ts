@@ -48,5 +48,7 @@ export function transformBackendNetworksToChains(networks?: BackendNetwork[]): C
 }
 
 export function filterSupportedNetworks(networks: BackendNetwork[]): BackendNetwork[] {
-  return networks.filter(network => IS_DEV || !network.internal);
+  // TODO: PUT BACK BEFORE PROD
+  // return networks.filter(network => IS_DEV || !network.internal);
+  return networks.filter(network => !network.internal);
 }

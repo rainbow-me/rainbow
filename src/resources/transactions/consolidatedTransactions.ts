@@ -77,9 +77,7 @@ export async function consolidatedTransactionsQueryFunction({
       method: 'get',
       params: {
         address,
-        // TODO: re-enable multi-chain support when backend supports it
-        // chainIds: chainIds.join(','),
-        chainIds: '1',
+        chainIds: chainIds.join(','),
         currency: currency.toLowerCase(),
         limit: String(30),
         ...(cursor ? { cursor } : {}),
