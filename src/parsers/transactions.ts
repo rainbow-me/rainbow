@@ -59,6 +59,9 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
   const txn = {
     ...transaction,
   };
+
+  const minedAtTimestamp = txn.minedAt ? Math.floor(new Date(txn.minedAt).getTime() / 1000) : null;
+
   const changes: TransactionChanges =
     txn.changes?.map(change => {
       return {
@@ -125,7 +128,7 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
     changes,
     asset,
     approvalAmount: meta?.quantity,
-    minedAt: txn.minedAt,
+    minedAt: minedAtTimestamp,
     blockNumber: txn.blockNumber,
     confirmations: txn.blockConfirmations,
     contract,
