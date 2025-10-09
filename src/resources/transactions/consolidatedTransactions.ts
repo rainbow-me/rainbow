@@ -64,14 +64,18 @@ export async function consolidatedTransactionsQueryFunction({
   let nextPageFromGoldsky: string | undefined = pageParam;
   let cutoffFromGoldsky: number | undefined;
   try {
+    const chainIdsString = chainIds.join(',');
+    const cursor = typeof pageParam === 'string' ? pageParam : undefined;
+
     const { data } = await getPlatformClient().get<ListTransactionsResponse>('/transactions/ListTransactions', {
       method: 'get',
       params: {
         address,
-        chainIds: '1', // TODO: Re-enable multiple chainIds when backend bug is fixed
+        chainIds: chainIdsString,
         currency: currency.toLowerCase(),
         ...(pageParam ? { pageCursor: pageParam } : {}),
         limit: String(30),
+        ...(cursor ? { cursor } : {}),
       },
     });
 

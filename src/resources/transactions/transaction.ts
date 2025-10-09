@@ -1,15 +1,8 @@
-import {
-  NativeCurrencyKey,
-  TransactionApiResponse,
-  TransactionStatus,
-  MinedTransaction,
-  RainbowTransaction,
-  TransactionType,
-} from '@/entities';
+import { NativeCurrencyKey, TransactionStatus, MinedTransaction, RainbowTransaction, TransactionType } from '@/entities';
 import { createQueryKey, queryClient, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { consolidatedTransactionsQueryFunction, consolidatedTransactionsQueryKey } from './consolidatedTransactions';
-import { isValidTransactionStatus, parseTransaction } from '@/parsers/transactions';
+import { parseTransaction } from '@/parsers/transactions';
 import { RainbowError, logger } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -20,6 +13,7 @@ import { IS_TEST } from '@/env';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getAddysHttpClient } from '@/resources/addys/client';
+import { GetTransactionByHashResponse } from '@/features/positions/types/generated/transaction/transaction';
 
 export const e2eAnvilConfirmedTransactions: RainbowTransaction[] = [];
 
@@ -60,17 +54,6 @@ export type BackendTransactionArgs = {
   hash: string;
   chainId: ChainId;
   enabled: boolean;
-};
-
-type TransactionData = {
-  meta?: { status?: string };
-  payload: { transaction: TransactionApiResponse };
-};
-
-type TransactionResponse = {
-  data: TransactionData;
-  headers: Headers;
-  status: number;
 };
 
 export const fetchRawTransaction = async ({
@@ -148,16 +131,19 @@ export const fetchRawTransaction = async ({
     }
   }
   try {
-    const url = `/${chainId}/${address}/transactions/${hash}`;
-    const response = await getAddysHttpClient().get<TransactionData>(url, {
+    const response = await getAddysHttpClient().get<GetTransactionByHashResponse>('/GetTransactionByHash', {
       params: {
         currency: currency.toLowerCase(),
+        hash,
+        address,
+        chainIds: String(chainId),
       },
       signal: abortController?.signal,
     });
 
-    const transaction = normalizeTransactionResponse(response).data.payload.transaction;
-    const parsed = parseTransaction(transaction, currency, chainId);
+    if (!response.data.result) throw new Error('No transaction data in response');
+    // const transaction = normalizeTransactionResponse(response).data.payload.transaction;
+    const parsed = parseTransaction(response.data.result, currency, chainId);
     if (!parsed) throw new Error('Failed to parse transaction');
 
     return parsed;
@@ -244,28 +230,3 @@ export const useTransaction = ({ chainId, hash }: { chainId: ChainId; hash: stri
     isFetched: backendTransactionIsFetched,
   };
 };
-
-// ///////////////////////////////////////////////
-// Helpers
-
-/**
- * Normalizes the transaction status based on the payload and meta statuses.
- *
- * Mutates the response in place.
- */
-function normalizeTransactionResponse(response: TransactionResponse): TransactionResponse {
-  const normalizedStatus = normalizeTransactionStatus(response.data.payload.transaction.status, response.data.meta?.status);
-  response.data.payload.transaction.status = normalizedStatus;
-  return response;
-}
-
-/**
- * Falls back to top-level `meta.status` when `payload.status` is empty or invalid.
- *
- * Accepts only known transaction statuses, otherwise defaults to pending.
- */
-function normalizeTransactionStatus(payloadStatus: TransactionStatus | string | undefined, metaStatus?: string): TransactionStatus {
-  if (isValidTransactionStatus(payloadStatus)) return payloadStatus;
-  if (isValidTransactionStatus(metaStatus)) return metaStatus;
-  return TransactionStatus.pending;
-}
