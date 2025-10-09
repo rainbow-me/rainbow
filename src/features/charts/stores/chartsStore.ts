@@ -1,4 +1,5 @@
 import { CANDLESTICK_CHARTS, useExperimentalFlag } from '@/config';
+import { isHyperliquidToken } from '@/features/charts/utils';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
@@ -17,6 +18,7 @@ export type ChartsState = {
    */
   snapSignal: number;
   token: Token | null;
+  getChartType: () => ChartType;
   resetChartsState: () => void;
   setCandleResolution: (candleResolution: CandleResolution) => void;
   setChartType: (chartType: ChartType) => void;
@@ -32,6 +34,12 @@ export const useChartsStore = createRainbowStore<ChartsState>(
     lineChartTimePeriod: LineChartTimePeriod.D1,
     snapSignal: 0,
     token: null,
+
+    getChartType: () => {
+      const { chartType, token } = get();
+      const shouldForceCandlestick = isHyperliquidToken(token);
+      return shouldForceCandlestick ? ChartType.Candlestick : chartType;
+    },
 
     resetChartsState: () =>
       set(state => {
@@ -89,7 +97,7 @@ export const chartsActions = createStoreActions(useChartsStore);
 export function useChartType(): ChartType {
   const { candlestick_charts_enabled } = useRemoteConfig('candlestick_charts_enabled');
   const enableCandlestickCharts = useExperimentalFlag(CANDLESTICK_CHARTS) || candlestick_charts_enabled;
-  const chartType = useChartsStore(state => state.chartType);
+  const chartType = useChartsStore(state => state.getChartType());
   return enableCandlestickCharts ? chartType : ChartType.Line;
 }
 

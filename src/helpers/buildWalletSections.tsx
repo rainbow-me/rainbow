@@ -11,6 +11,7 @@ import { useExperimentalConfig } from '@/config/experimentalHooks';
 import { ClaimablesStore } from '@/state/claimables/claimables';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { Collection, CollectionId } from '@/state/nfts/types';
+import { PerpsWalletListData } from '@/features/perps/types';
 
 const CONTENT_PLACEHOLDER: CellTypes[] = [
   { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-1' },
@@ -63,10 +64,12 @@ export type WalletSectionsState = {
   isFetchingNfts: boolean;
   positions: RainbowPositions | null;
   claimables: ClaimablesStore | null;
+  perpsData: PerpsWalletListData;
   remoteCards: string[];
   hasMoreCollections: boolean;
   isShowcaseDataMigrated: boolean;
   isHiddenDataMigrated: boolean;
+  isDismissedPerpsFeatureCard?: boolean;
 };
 
 const sortedAssetsSelector = (state: WalletSectionsState) => state.sortedAssets;
@@ -84,15 +87,18 @@ const collectionsSelector = (state: WalletSectionsState) => state.collections;
 const isFetchingNftsSelector = (state: WalletSectionsState) => state.isFetchingNfts;
 const positionsSelector = (state: WalletSectionsState) => state.positions;
 const claimablesSelector = (state: WalletSectionsState) => state.claimables;
+const perpsDataSelector = (state: WalletSectionsState) => state.perpsData;
 const remoteCardsSelector = (state: WalletSectionsState) => state.remoteCards;
 const hasMoreCollectionsSelector = (state: WalletSectionsState) => state.hasMoreCollections;
 const isShowcaseDataMigratedSelector = (state: WalletSectionsState) => state.isShowcaseDataMigrated;
 const isHiddenDataMigratedSelector = (state: WalletSectionsState) => state.isHiddenDataMigrated;
 const listTypeSelector = (state: WalletSectionsState) => state.listType;
 const isReadOnlyWalletSelector = (state: WalletSectionsState) => state.isReadOnlyWallet;
+const isDismissedPerpsFeatureCardSelector = (state: WalletSectionsState) => state.isDismissedPerpsFeatureCard;
 
 interface BalanceSectionData {
-  balanceSection: CellTypes[];
+  headerSection: CellTypes[];
+  contentSection: CellTypes[];
   isEmpty: boolean;
   isLoadingUserAssets: boolean;
 }
@@ -103,7 +109,8 @@ interface BriefWalletSectionsResult {
 }
 
 interface BalanceSectionResult {
-  balanceSection: CellTypes[];
+  headerSection: CellTypes[];
+  contentSection: CellTypes[];
   isLoadingUserAssets: boolean;
   isEmpty: boolean;
 }
@@ -117,17 +124,62 @@ const buildBriefWalletSections = (
   balanceSectionData: BalanceSectionData,
   uniqueTokenFamiliesSection: CellTypes[],
   claimables: ClaimablesStore | null,
-  positions: RainbowPositions | null
+  positions: RainbowPositions | null,
+  perpsData: PerpsWalletListData,
+  isDismissedPerpsFeatureCard?: boolean
 ): BriefWalletSectionsResult => {
-  const { isEmpty, balanceSection, isLoadingUserAssets } = balanceSectionData;
+  const { isEmpty, headerSection, contentSection, isLoadingUserAssets } = balanceSectionData;
 
   const positionsSection = withPositionsSection(positions, isLoadingUserAssets);
   const claimablesSection = withClaimablesSection(claimables, isLoadingUserAssets);
+  const perpsSection = withPerpsSection(perpsData);
+  const hasPerpsContent = (perpsData?.hasBalance || perpsData?.hasPositions) && perpsData.enabled;
+  const shouldShowPerpsFeatureCard = perpsData?.enabled && !isDismissedPerpsFeatureCard;
+  const perpsFeatureCardSection = shouldShowPerpsFeatureCard ? withPerpsFeatureCardSection() : [];
+  const tokensHeaderSection = withTokensHeaderSection({ contentSection, perpsSection });
 
-  return {
-    briefSectionsData: [...balanceSection, ...claimablesSection, ...positionsSection, ...uniqueTokenFamiliesSection],
-    isEmpty,
-  };
+  if (hasPerpsContent) {
+    return {
+      briefSectionsData: [
+        ...headerSection,
+        ...perpsFeatureCardSection,
+        ...perpsSection,
+        ...tokensHeaderSection,
+        ...contentSection,
+        ...claimablesSection,
+        ...positionsSection,
+        ...uniqueTokenFamiliesSection,
+      ],
+      isEmpty,
+    };
+  } else {
+    return {
+      briefSectionsData: [
+        ...headerSection,
+        ...perpsFeatureCardSection,
+        ...contentSection,
+        ...perpsSection,
+        ...claimablesSection,
+        ...positionsSection,
+        ...uniqueTokenFamiliesSection,
+      ],
+      isEmpty,
+    };
+  }
+};
+
+const withPerpsFeatureCardSection = (): CellTypes[] => {
+  return [
+    {
+      type: CellType.PERPS_FEATURE_CARD,
+      uid: 'perps-feature-card',
+    },
+    {
+      type: CellType.SPACER,
+      uid: 'perps-feature-card-after-spacer',
+      height: 24,
+    },
+  ];
 };
 
 const withPositionsSection = (positions: RainbowPositions | null, isLoadingUserAssets: boolean): CellTypes[] => {
@@ -182,6 +234,81 @@ const withClaimablesSection = (claimables: ClaimablesStore | null, isLoadingUser
       uid: 'claimables-spacer-after',
     },
     ...claimableSectionItems,
+  ];
+};
+
+const withPerpsSection = (perpsData: PerpsWalletListData): CellTypes[] => {
+  if (!perpsData.enabled) return [];
+
+  const perpsSectionItems: CellTypes[] = [];
+  const hasPerpsContent = perpsData.hasBalance || perpsData.hasPositions;
+
+  // Always show the balance if there are positions even if balance is zero
+  if (hasPerpsContent) {
+    perpsSectionItems.push({
+      type: CellType.PERPS_BALANCE,
+      balance: perpsData.balance,
+      uid: 'perps-balance',
+    });
+  }
+
+  if (perpsData.hasPositions) {
+    perpsData.positions.forEach((position, index) => {
+      perpsSectionItems.push({
+        type: CellType.PERPS_POSITION,
+        position,
+        uid: `perps-position-${position.symbol}-${index}`,
+        index,
+      });
+    });
+  }
+
+  return hasPerpsContent
+    ? [
+        {
+          type: CellType.PERPS_HEADER,
+          uid: 'perps-header',
+        },
+        ...perpsSectionItems,
+      ]
+    : [
+        {
+          type: CellType.SPACER,
+          uid: 'perps-header-spacer',
+          height: 8,
+        },
+        {
+          type: CellType.PERPS_HEADER,
+          uid: 'perps-header',
+        },
+      ];
+};
+
+const withTokensHeaderSection = ({
+  contentSection,
+  perpsSection,
+}: {
+  contentSection: CellTypes[];
+  perpsSection: CellTypes[];
+}): CellTypes[] => {
+  // Only show tokens header if we have token content (not empty wallet state)
+  const hasTokenContent = contentSection.some(
+    item => item.type === CellType.COIN || item.type === CellType.COIN_DIVIDER || item.type === CellType.LOADING_ASSETS
+  );
+  const hasPerpsContent = perpsSection[0]?.type !== CellType.EMPTY_ROW;
+
+  if (!hasTokenContent || !hasPerpsContent) return [];
+
+  return [
+    {
+      type: CellType.SPACER,
+      uid: 'tokens-header-spacer-after',
+      height: 10,
+    },
+    {
+      type: CellType.TOKENS_HEADER,
+      uid: 'tokens-header',
+    },
   ];
 };
 
@@ -304,7 +431,8 @@ const withBriefBalanceSection = (
   }
 
   const result = {
-    balanceSection: [...header, ...content],
+    headerSection: header,
+    contentSection: content,
     isLoadingUserAssets,
     isEmpty,
   };
@@ -345,6 +473,13 @@ const briefBalanceSectionSelector = createSelector(
 );
 
 export const buildBriefWalletSectionsSelector = createSelector(
-  [briefBalanceSectionSelector, briefUniqueTokenDataSelector, claimablesSelector, positionsSelector],
+  [
+    briefBalanceSectionSelector,
+    briefUniqueTokenDataSelector,
+    claimablesSelector,
+    positionsSelector,
+    perpsDataSelector,
+    isDismissedPerpsFeatureCardSelector,
+  ],
   buildBriefWalletSections
 );

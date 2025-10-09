@@ -77,6 +77,9 @@ import {
   tokenLauncherConfig,
   kingOfTheHillExplainSheetConfig,
   activitySheetConfig,
+  perpsAccountStackConfig,
+  perpsDepositWithdrawalConfig,
+  perpsExplainSheetConfig,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -119,6 +122,13 @@ import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
 import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
 import { ActivitySheetScreen } from '@/screens/ActivitySheetScreen';
 import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
+import { PerpsDetailScreen } from '@/features/perps/screens/perp-detail-screen/PerpDetailScreen';
+import { CreateTriggerOrderBottomSheet } from '@/features/perps/screens/CreateTriggerOrderBottomSheet';
+import { PerpsDepositScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsDepositScreen';
+import { PerpsWithdrawalScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsWithdrawalScreen';
+import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePositionBottomSheet';
+import { PerpsNavigator } from '@/features/perps/screens/PerpsNavigator';
+import { PerpsExplainSheet } from '@/features/perps/screens/perps-explain-sheet/PerpsExplainSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -287,16 +297,23 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} {...panelConfig} />
       <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
       <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
+      <NativeStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} {...perpsDepositWithdrawalConfig} />
+      <NativeStack.Screen component={PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} {...expandedAssetSheetV2Config} />
+      <NativeStack.Screen component={PerpsWithdrawalScreen} name={Routes.PERPS_WITHDRAWAL_SCREEN} {...perpsDepositWithdrawalConfig} />
       <NativeStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} {...airdropsSheetConfig} />
       <NativeStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} {...claimAirdropSheetConfig} />
       <NativeStack.Screen component={LogSheet} name={Routes.LOG_SHEET} {...panelConfig} />
       <NativeStack.Screen component={TokenLauncherScreen} name={Routes.TOKEN_LAUNCHER_SCREEN} {...tokenLauncherConfig} />
+      <NativeStack.Screen component={PerpsNavigator} name={Routes.PERPS_NAVIGATOR} {...perpsAccountStackConfig} />
+      <NativeStack.Screen component={CreateTriggerOrderBottomSheet} name={Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET} {...panelConfig} />
+      <NativeStack.Screen component={ClosePositionBottomSheet} name={Routes.CLOSE_POSITION_BOTTOM_SHEET} {...panelConfig} />
       <NativeStack.Screen
         component={KingOfTheHillExplainSheet}
         name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET}
         {...kingOfTheHillExplainSheetConfig}
       />
+      <NativeStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} {...perpsExplainSheetConfig} />
     </NativeStack.Navigator>
   );
 }

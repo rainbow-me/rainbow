@@ -4,6 +4,7 @@ import { UniqueAsset } from '@/entities';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { RainbowPosition } from '@/resources/defi/types';
+import { PerpsPosition as PerpsPosition } from '@/features/perps/types';
 export enum CellType {
   ASSETS_HEADER_SPACE_AFTER = 'ASSETS_HEADER_SPACE_AFTER',
   COIN = 'COIN',
@@ -42,6 +43,14 @@ export enum CellType {
   CLAIMABLE = 'CLAIMABLE',
   CLAIMABLES_SPACE_AFTER = 'CLAIMABLES_SPACE_AFTER',
 
+  PERPS_HEADER = 'PERPS_HEADER',
+  PERPS_BALANCE = 'PERPS_BALANCE',
+  PERPS_POSITION = 'PERPS_POSITION',
+
+  TOKENS_HEADER = 'TOKENS_HEADER',
+
+  PERPS_FEATURE_CARD = 'PERPS_FEATURE_CARD',
+
   LOADING_ASSETS = 'LOADING_ASSETS',
   RECEIVE_CARD = 'RECEIVE_CARD',
   ETH_CARD = 'ETH_CARD',
@@ -53,6 +62,8 @@ export enum CellType {
 
   REMOTE_CARD_CAROUSEL = 'REMOTE_CARD_CAROUSEL',
   EMPTY_REMOTE_CARD_CAROUSEL = 'EMPTY_REMOTE_CARD_CAROUSEL',
+
+  SPACER = 'SPACER',
 }
 export type RecyclerListViewRef = RecyclerListView<RecyclerListViewProps, RecyclerListViewState>;
 
@@ -110,6 +121,27 @@ export type ClaimablesHeaderExtraData = {
   total: string;
 };
 
+export type PerpsBalanceExtraData = {
+  type: CellType.PERPS_BALANCE;
+  balance: string;
+};
+export type PerpsPositionExtraData = {
+  type: CellType.PERPS_POSITION;
+  position: PerpsPosition;
+  index: number;
+};
+export type PerpsHeaderExtraData = {
+  type: CellType.PERPS_HEADER;
+};
+
+export type TokensHeaderExtraData = {
+  type: CellType.TOKENS_HEADER;
+};
+
+export type PerpsFeatureCardExtraData = {
+  type: CellType.PERPS_FEATURE_CARD;
+};
+
 export type LegacyNFTFamilyExtraData = {
   type: CellType.LEGACY_FAMILY_HEADER;
   name: string;
@@ -134,6 +166,11 @@ export type LoadingAssetsSection = {
   type: CellType.LOADING_ASSETS;
 };
 
+export type SpacerExtraData = {
+  type: CellType.SPACER;
+  height: number;
+};
+
 export type CellExtraData =
   | LoadingAssetsSection
   | NFTFamilyExtraData
@@ -149,6 +186,12 @@ export type CellExtraData =
   | PositionHeaderExtraData
   | ClaimableExtraData
   | ClaimablesHeaderExtraData
-  | ProfileActionButtonsRowExtraData;
+  | PerpsBalanceExtraData
+  | PerpsPositionExtraData
+  | PerpsHeaderExtraData
+  | TokensHeaderExtraData
+  | PerpsFeatureCardExtraData
+  | ProfileActionButtonsRowExtraData
+  | SpacerExtraData;
 
 export type CellTypes = BaseCellType | (CellExtraData & BaseCellType);

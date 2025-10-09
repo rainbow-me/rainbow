@@ -2,13 +2,20 @@ import { CandleResolution } from '../types';
 
 // ============ Internal Types ================================================= //
 
-export type Price = {
-  candleResolution: CandleResolution;
-  lastUpdated: number;
+export type Price<ExtendedData extends boolean = false> = {
   percentChange: number;
   price: number;
-  volume: number;
-};
+} & (ExtendedData extends true
+  ? {
+      candleResolution: CandleResolution;
+      lastUpdated: number;
+      volume: number;
+    }
+  : {
+      candleResolution?: undefined;
+      lastUpdated?: undefined;
+      volume?: undefined;
+    });
 
 export type Bar = {
   /** Close price */

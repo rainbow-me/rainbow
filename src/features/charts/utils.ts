@@ -1,5 +1,20 @@
 import { CANDLE_RESOLUTION_TO_HYPERLIQUID_INTERVAL, LINE_CHART_TIME_PERIODS } from '@/features/charts/constants';
-import { CandleResolution, HyperliquidInterval, LineChartTimePeriod, LineChartTimespan } from '@/features/charts/types';
+import {
+  CandleResolution,
+  HyperliquidInterval,
+  HyperliquidSymbol,
+  LineChartTimePeriod,
+  LineChartTimespan,
+  Token,
+} from '@/features/charts/types';
+
+/**
+ * Determines if a {@link Token} is a {@link HyperliquidSymbol}.
+ */
+export function isHyperliquidToken(token: Token | null): token is HyperliquidSymbol {
+  'worklet';
+  return typeof token === 'string';
+}
 
 /**
  * Converts a `LineChartTimePeriod` to a `LineChartTimespan`.

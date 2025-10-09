@@ -17,6 +17,12 @@ export type Device = {
    * the past. We set this to `true` immediately after checking.
    */
   branchFirstReferringParamsSet: boolean;
+
+  /**
+   * Tracks whether the user has seen the Perps explain sheet.
+   * Used to show the explain sheet only on first visit to PerpsAccountScreen.
+   */
+  hasSeenPerpsExplainSheet: boolean;
 };
 
 /**

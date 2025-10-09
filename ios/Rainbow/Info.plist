@@ -195,7 +195,6 @@
 	<array>
 		<string>itms</string>
 		<string>itms-apps</string>
-		<string>twitter</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

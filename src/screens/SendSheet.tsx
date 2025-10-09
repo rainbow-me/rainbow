@@ -134,7 +134,7 @@ type OnSubmitProps = {
 export default function SendSheet() {
   const { goBack, navigate } = useNavigation();
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
-  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus().isInitialLoading);
+  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
   const {
     gasFeeParamsBySpeed,
     gasLimit,

@@ -1,131 +1,210 @@
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
 import { RainbowError, logger } from '@/logger';
+import { time } from '@/utils/time';
 import { RAINBOW_HOME } from './constants';
 import { ScreenshotType, TabData, TabId } from './types';
 
+// ============ Storage ======================================================== //
+
 export const tabScreenshotStorage = new MMKV();
 
-export const getStoredScreenshots = (): ScreenshotType[] => {
-  const persistedScreenshots = tabScreenshotStorage.getString('tabScreenshots');
-  return persistedScreenshots ? (JSON.parse(persistedScreenshots) as ScreenshotType[]) : [];
-};
+// ============ Operation Queue ================================================ //
 
-export const findTabScreenshot = (id: string, url?: string): ScreenshotType | null => {
+const screenshotOperationLock = { pending: Promise.resolve<void | ScreenshotType | null>(null) };
+
+// ============ Constants ====================================================== //
+
+const FILE_EXTENSION = '.jpg';
+const FILE_PREFIX = 'screenshot-';
+
+const MMKV_KEY = 'tabScreenshots';
+const MMKV_LAST_FULL_CLEANUP_KEY = 'lastFullCleanup';
+
+const DEEP_PRUNE_INTERVAL = time.days(1);
+const PRUNE_BATCH_SIZE = 20;
+
+// ============ Screenshot Retrieval =========================================== //
+
+export function findTabScreenshot(id: string, url?: string): ScreenshotType | null {
   if (!url || url === RAINBOW_HOME) return null;
 
-  const persistedData = tabScreenshotStorage.getString('tabScreenshots');
-  if (persistedData) {
-    const screenshots = JSON.parse(persistedData);
+  const screenshots = getStoredScreenshots();
+  const matchingScreenshots = screenshots.filter(screenshot => screenshot.id === id && screenshot.url === url);
 
-    if (!Array.isArray(screenshots)) {
-      try {
-        logger.error(new RainbowError('[DappBrowser]: Screenshot data is malformed — expected array'), {
-          screenshots: JSON.stringify(screenshots, null, 2),
-        });
-      } catch (error) {
-        logger.error(new RainbowError('[DappBrowser]: Screenshot data is malformed — error stringifying'), {
-          message: error instanceof Error ? error.message : String(error),
-        });
-      }
-      return null;
-    }
-
-    const matchingScreenshots = screenshots.filter(screenshot => screenshot.id === id);
-    const screenshotsWithMatchingUrl = matchingScreenshots.filter(screenshot => screenshot.url === url);
-
-    if (screenshotsWithMatchingUrl.length > 0) {
-      const mostRecentScreenshot = screenshotsWithMatchingUrl.reduce((a, b) => (a.timestamp > b.timestamp ? a : b));
-      return {
-        ...mostRecentScreenshot,
-        uri: `${RNFS.DocumentDirectoryPath}/${mostRecentScreenshot.uri}`,
-      };
-    }
+  if (matchingScreenshots.length) {
+    const mostRecentScreenshot = matchingScreenshots.reduce((a, b) => (a.timestamp > b.timestamp ? a : b));
+    return {
+      ...mostRecentScreenshot,
+      uri: `${RNFS.DocumentDirectoryPath}/${mostRecentScreenshot.uri}`,
+    };
   }
 
   return null;
-};
+}
 
-export const pruneScreenshots = async (tabsData: Map<TabId, TabData>): Promise<void> => {
-  const persistedData = tabScreenshotStorage.getString('tabScreenshots');
-  if (!persistedData) return;
+function getStoredScreenshots(): ScreenshotType[] {
+  const persistedScreenshots = tabScreenshotStorage.getString(MMKV_KEY);
+  if (!persistedScreenshots) return [];
 
-  const screenshots: ScreenshotType[] = JSON.parse(persistedData);
-  const activeTabIds = new Set(tabsData.keys());
+  try {
+    const parsed = JSON.parse(persistedScreenshots);
 
-  const screenshotsToKeep: Map<string, ScreenshotType> = new Map();
-  const screenshotsToDelete: ScreenshotType[] = [];
+    if (!Array.isArray(parsed)) {
+      logger.error(new RainbowError('[DappBrowser]: Screenshot data is malformed — expected array. Resetting storage.'));
+      tabScreenshotStorage.delete(MMKV_KEY);
+      return [];
+    }
 
-  screenshots.forEach(screenshot => {
-    const tabData = tabsData.get(screenshot.id);
-    if (tabData && tabData.url === screenshot.url) {
-      const existing = screenshotsToKeep.get(screenshot.id);
-      if (!existing || existing.timestamp < screenshot.timestamp) {
-        // Keep the latest screenshot for each still-open tab
-        screenshotsToKeep.set(screenshot.id, screenshot);
-      }
-    } else if (!activeTabIds.has(screenshot.id)) {
-      // Delete screenshots for closed tabs
-      screenshotsToDelete.push(screenshot);
+    return parsed;
+  } catch (error) {
+    logger.error(new RainbowError('[DappBrowser]: Screenshot data is corrupted — invalid JSON. Resetting storage.'), { error });
+    tabScreenshotStorage.delete(MMKV_KEY);
+    return [];
+  }
+}
+
+// ============ Saving ========================================================= //
+
+export async function saveScreenshot(tempUri: string, tabId: string, timestamp: number, url: string): Promise<ScreenshotType | null> {
+  const fileName = buildFilePath(timestamp);
+
+  screenshotOperationLock.pending = screenshotOperationLock.pending.then(async () => {
+    try {
+      await RNFS.copyFile(tempUri, `${RNFS.DocumentDirectoryPath}/${fileName}`);
+      const newScreenshot: ScreenshotType = { id: tabId, timestamp, uri: fileName, url };
+
+      const screenshots = getStoredScreenshots();
+      screenshots.push(newScreenshot);
+      tabScreenshotStorage.set(MMKV_KEY, JSON.stringify(screenshots));
+
+      return { ...newScreenshot, uri: `${RNFS.DocumentDirectoryPath}/${fileName}` };
+    } catch (error) {
+      await RNFS.unlink(`${RNFS.DocumentDirectoryPath}/${fileName}`).catch(() => {
+        return;
+      });
+      logger.error(new RainbowError('[DappBrowser]: Error saving tab screenshot', error), { tabId, url });
+      return null;
     }
   });
 
-  await deletePrunedScreenshotFiles(screenshotsToDelete);
-  tabScreenshotStorage.set('tabScreenshots', JSON.stringify(Array.from(screenshotsToKeep.values())));
-};
+  return screenshotOperationLock.pending as Promise<ScreenshotType | null>;
+}
 
-const deletePrunedScreenshotFiles = async (screenshotsToDelete: ScreenshotType[]): Promise<void> => {
-  try {
-    const deletePromises = screenshotsToDelete.map(screenshot => {
-      const filePath = `${RNFS.DocumentDirectoryPath}/${screenshot.uri}`;
-      return RNFS.unlink(filePath).catch(e => {
-        logger.error(new RainbowError('[DappBrowser]: Error deleting screenshot file'), {
-          message: e.message,
-          filePath,
-          screenshot: JSON.stringify(screenshot, null, 2),
-        });
+// ============ Pruning ======================================================== //
+
+export function schedulePruneScreenshots(tabsData: Map<TabId, TabData>): () => void {
+  let shallowPruneCallbackId: number;
+  let deepPruneCallbackId: number;
+
+  const timeoutId = setTimeout(() => {
+    shallowPruneCallbackId = requestIdleCallback(async () => {
+      await pruneScreenshots(tabsData);
+      deepPruneCallbackId = requestIdleCallback(() => {
+        pruneOrphanedScreenshots();
       });
     });
-    await Promise.all(deletePromises);
-  } catch (error) {
-    logger.error(new RainbowError('[DappBrowser]: Screenshot file pruning operation failed to complete'), {
-      message: error instanceof Error ? error.message : String(error),
-    });
-  }
-};
+  }, time.seconds(10));
 
-export const saveScreenshot = async (tempUri: string, tabId: string, timestamp: number, url: string): Promise<ScreenshotType | null> => {
-  const fileName = `screenshot-${timestamp}.jpg`;
-  try {
-    await RNFS.copyFile(tempUri, `${RNFS.DocumentDirectoryPath}/${fileName}`);
-    // Once the file is copied, build the screenshot object
-    const newScreenshot: ScreenshotType = {
-      id: tabId,
-      timestamp,
-      uri: fileName,
-      url,
-    };
-    // Retrieve existing screenshots and merge in the new one
-    const existingScreenshots = getStoredScreenshots();
-    const updatedScreenshots = [...existingScreenshots, newScreenshot];
-    // Update MMKV store with the new screenshot
-    tabScreenshotStorage.set('tabScreenshots', JSON.stringify(updatedScreenshots));
-    // Determine current RNFS document directory
-    const screenshotWithRNFSPath: ScreenshotType = {
-      ...newScreenshot,
-      uri: `${RNFS.DocumentDirectoryPath}/${newScreenshot.uri}`,
-    };
-    // Set screenshot for display
-    return screenshotWithRNFSPath;
-  } catch (error) {
-    logger.error(new RainbowError('[DappBrowser]: Error saving tab screenshot to file system'), {
-      message: error instanceof Error ? error.message : String(error),
-      screenshotData: {
-        tempUri,
-        tabId,
-        url,
-      },
+  return () => {
+    clearTimeout(timeoutId);
+    if (typeof shallowPruneCallbackId === 'number') cancelIdleCallback(shallowPruneCallbackId);
+    if (typeof deepPruneCallbackId === 'number') cancelIdleCallback(deepPruneCallbackId);
+  };
+}
+
+async function pruneScreenshots(tabsData: Map<TabId, TabData>): Promise<void> {
+  screenshotOperationLock.pending = screenshotOperationLock.pending.then(async () => {
+    const screenshots = getStoredScreenshots();
+
+    const screenshotsToKeep: Partial<Record<string, ScreenshotType>> = {};
+    const screenshotsToDelete: ScreenshotType[] = [];
+
+    screenshots.forEach(screenshot => {
+      const isActiveTabWithMatchingUrl = tabsData.get(screenshot.id)?.url === screenshot.url;
+
+      if (isActiveTabWithMatchingUrl) {
+        const existing = screenshotsToKeep[screenshot.id];
+        if (!existing || existing.timestamp < screenshot.timestamp) {
+          if (existing) screenshotsToDelete.push(existing);
+          screenshotsToKeep[screenshot.id] = screenshot;
+        } else {
+          screenshotsToDelete.push(screenshot);
+        }
+      } else {
+        screenshotsToDelete.push(screenshot);
+      }
     });
+
+    if (screenshotsToDelete.length) {
+      const filesToDelete = screenshotsToDelete.map(s => `${RNFS.DocumentDirectoryPath}/${s.uri}`);
+      await deleteFilesInBatches(filesToDelete);
+    }
+
+    tabScreenshotStorage.set(MMKV_KEY, JSON.stringify(Object.values(screenshotsToKeep)));
+  });
+
+  await screenshotOperationLock.pending;
+}
+
+/**
+ * Finds and cleans up any orphaned screenshots
+ * that are not registered in `tabScreenshotStorage`.
+ */
+async function pruneOrphanedScreenshots(): Promise<void> {
+  try {
+    const lastCleanup = tabScreenshotStorage.getNumber(MMKV_LAST_FULL_CLEANUP_KEY) ?? 0;
+    const now = Date.now();
+
+    if (now - lastCleanup < DEEP_PRUNE_INTERVAL) return;
+
+    const screenshotFiles = await getScreenshotFiles();
+    const trackedScreenshots = getStoredScreenshots();
+    const trackedFileNames = new Set(trackedScreenshots.map(s => s.uri));
+    const orphanedFiles = screenshotFiles.filter(file => !trackedFileNames.has(file.name));
+
+    if (!orphanedFiles.length) {
+      tabScreenshotStorage.set(MMKV_LAST_FULL_CLEANUP_KEY, now);
+      return;
+    }
+
+    await deleteFilesInBatches(orphanedFiles.map(f => f.path));
+    tabScreenshotStorage.set(MMKV_LAST_FULL_CLEANUP_KEY, now);
+  } catch (error) {
+    logger.error(new RainbowError('[DappBrowser]: Orphaned screenshot cleanup failed', error));
   }
-  return null;
-};
+}
+
+// ============ Utilities ====================================================== //
+
+function buildFilePath(timestamp: number): string {
+  const random = Math.floor(Math.random() * 1000)
+    .toString()
+    .padStart(3, '0');
+  return `${FILE_PREFIX}${timestamp}-${random}${FILE_EXTENSION}`;
+}
+
+async function getScreenshotFiles(): Promise<RNFS.ReadDirItem[]> {
+  const files = await RNFS.readDir(RNFS.DocumentDirectoryPath);
+  return files.filter(file => file.name.startsWith(FILE_PREFIX));
+}
+
+async function deleteFilesInBatches(filePaths: string[]): Promise<void> {
+  for (let i = 0; i < filePaths.length; i += PRUNE_BATCH_SIZE) {
+    const batch = filePaths.slice(i, i + PRUNE_BATCH_SIZE);
+    const deletePromises = batch.map(filePath =>
+      RNFS.unlink(filePath).catch(error => {
+        logger.error(new RainbowError('[DappBrowser]: Error deleting screenshot file', error), {
+          filePath,
+        });
+      })
+    );
+    await Promise.allSettled(deletePromises);
+
+    if (i + PRUNE_BATCH_SIZE < filePaths.length) {
+      await new Promise(resolve => {
+        setTimeout(resolve, 50);
+      });
+    }
+  }
+}

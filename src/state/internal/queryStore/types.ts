@@ -39,9 +39,9 @@ export type QueryStatus = (typeof QueryStatuses)[keyof typeof QueryStatuses];
  */
 export type QueryStatusInfo = {
   isError: boolean;
-  isFetching: boolean;
+  isLoading: boolean;
   isIdle: boolean;
-  isInitialLoading: boolean;
+  isInitialLoad: boolean;
   isSuccess: boolean;
 };
 
@@ -129,7 +129,7 @@ export type CacheEntry<TData> = {
  * - **`queryKey`**: A string representation of the current query parameter values.
  * - **`fetch(params, options)`**: Initiates a data fetch operation.
  * - **`getData(params)`**: Returns the cached data, if available, for the current query parameters.
- * - **`getStatus()`**: Returns expanded status information for the current query parameters.
+ * - **`getStatus(statusKey?)`**: Returns expanded status information for the current query parameters.
  * - **`isDataExpired(override?)`**: Checks if the current data has expired based on `cacheTime`.
  * - **`isStale(override?)`**: Checks if the current data is stale based on `staleTime`.
  * - **`reset()`**: Resets the store to its initial state, clearing data and errors.
@@ -163,15 +163,17 @@ interface QueryCapableStore<
    */
   getData: (params?: TParams) => TData | null;
   /**
-   * Returns expanded status information for the currently specified query parameters. The raw
-   * status can be obtained by directly reading the `status` property.
+   * Returns expanded status information for the currently specified query parameters.
+   * Pass a status key to avoid building the full status object.
    * @example
    * ```ts
-   * const isInitialLoading = useMyQueryStore(state => state.getStatus().isInitialLoading);
+   * const isInitialLoad = useMyQueryStore(state => state.getStatus('isInitialLoad'));
    * ```
-   * @returns An object containing boolean flags for each status.
+   * @returns The requested status, or the full status object if no key is provided.
    */
-  getStatus: () => QueryStatusInfo;
+  getStatus(statusKey: keyof QueryStatusInfo): QueryStatusInfo[keyof QueryStatusInfo];
+  getStatus(): QueryStatusInfo;
+  getStatus(statusKey?: keyof QueryStatusInfo): QueryStatusInfo[keyof QueryStatusInfo] | QueryStatusInfo;
   /**
    * Determines if the current data is expired based on whether `cacheTime` has been exceeded.
    * @param override - An optional override for the default cache time, in milliseconds.
@@ -320,12 +322,12 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
   maxRetries?: number;
   /**
    * Delay before triggering a fetch when parameters change.
-   * Accepts a number (ms) or debounce options:
+   * Accepts a number (ms), `'microtask'` (batched via `queueMicrotask`), or debounce options:
    *
    * `{ delay: number, leading?: boolean, trailing?: boolean, maxWait?: number }`
-   * @default undefined // (No throttle)
+   * @default false
    */
-  paramChangeThrottle?: number | DebounceOptions;
+  paramChangeThrottle?: 'microtask' | false | number | DebounceOptions;
   /**
    * Parameters to be passed to the fetcher, defined as either direct values or `ParamResolvable` functions.
    * Dynamic parameters using `AttachValue` will cause the store to refetch when their values change.
@@ -350,7 +352,7 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
    * **Note:** Stale times under 5 seconds are strongly discouraged.
    * @default time.minutes(2)
    */
-  staleTime?: number;
+  staleTime?: number | ParamResolvable<number, TParams, S, TData>;
   /**
    * Suppresses warnings in the event a `staleTime` under the minimum is desired.
    * @default false

@@ -1,4 +1,4 @@
-import { MutableRefObject, useLayoutEffect } from 'react';
+import { RefObject, useLayoutEffect } from 'react';
 import { useLazyRef as useRef } from '@/hooks/useLazyRef';
 import { BaseRainbowStore, EqualityFn, Selector } from '../types';
 
@@ -121,7 +121,7 @@ export function useListen<S, Selected>(
   selector: Selector<S, Selected>,
   react: (current: Selected, previous: Selected, unsubscribe: () => void) => void,
   optionsOrEqualityFn: UseListenOptions<Selected> | UseListenOptions<Selected>['equalityFn'] = DEFAULT_OPTIONS
-): MutableRefObject<Readonly<ListenHandle>> {
+): RefObject<Readonly<ListenHandle>> {
   const listenerRef = useRef<ListenerRef<S, Selected>>(() => createListenerRef(selector, react, optionsOrEqualityFn));
   const enabled = getEnabledOption(optionsOrEqualityFn);
 
@@ -147,7 +147,7 @@ const DEFAULT_RESUBSCRIBE_OPTIONS = Object.freeze({
 
 function attachListener<S, Selected>(
   store: BaseRainbowStore<S>,
-  listenerRef: MutableRefObject<ListenerRef<S, Selected>>,
+  listenerRef: RefObject<ListenerRef<S, Selected>>,
   resubscribeOptions: ResubscribeOptions = DEFAULT_RESUBSCRIBE_OPTIONS
 ): void {
   if (listenerRef.current.isActive) {
@@ -180,7 +180,7 @@ function attachListener<S, Selected>(
   };
 }
 
-function detachListener<S, Selected>(listenerRef: MutableRefObject<ListenerRef<S, Selected>>): void {
+function detachListener<S, Selected>(listenerRef: RefObject<ListenerRef<S, Selected>>): void {
   if (listenerRef.current.options.debugMode) {
     console.log('[🗑️ useListen 🗑️] Detaching listener');
   }
@@ -228,7 +228,7 @@ function getEnabledOption<Selected>(optionsOrEqualityFn: UseListenOptions<Select
 }
 
 function setOptions<S, Selected>(
-  listenerRef: MutableRefObject<ListenerRef<S, Selected>>,
+  listenerRef: RefObject<ListenerRef<S, Selected>>,
   optionsOrEqualityFn: UseListenOptions<Selected> | UseListenOptions<Selected>['equalityFn']
 ): void {
   if (typeof optionsOrEqualityFn === 'function') listenerRef.current.options.equalityFn = optionsOrEqualityFn;

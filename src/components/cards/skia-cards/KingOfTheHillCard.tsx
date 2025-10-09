@@ -102,7 +102,9 @@ export function KingOfTheHillCard({ king }: { king: KingOfTheHillToken }) {
           <Box width="full" height="full" justifyContent="center" paddingVertical={'16px'} paddingHorizontal={'20px'}>
             <Inline wrap={false} alignVertical="center" space={'12px'}>
               <Box justifyContent="center" alignItems="center" width={48} height={48}>
-                {sizedIconUrl && <ShinyCoinIcon imageUrl={sizedIconUrl} size={40} color={primaryColor} />}
+                {sizedIconUrl && (
+                  <ShinyCoinIcon chainId={token.chainId} imageUrl={sizedIconUrl} size={40} symbol={token.symbol} color={primaryColor} />
+                )}
                 <Box position="absolute" borderRadius={24} width={48} height={48} borderWidth={2} borderColor={{ custom: primaryColor }} />
                 <Text
                   color="label"

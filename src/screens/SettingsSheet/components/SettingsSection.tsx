@@ -34,6 +34,7 @@ import { checkLocalWalletsForBackupStatus } from '../utils';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
+import { XIcon } from '@/components/icons/svg/XIcon';
 
 interface SettingsSectionProps {
   onCloseModal: () => void;
@@ -275,7 +276,11 @@ const SettingsSection = ({
           titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.learn)} />}
         />
         <MenuItem
-          leftComponent={<MenuItem.TextIcon icon="🐦" isEmoji />}
+          leftComponent={
+            <Box alignItems="center" width={{ custom: 36 }}>
+              {<XIcon color={isDarkMode ? '#FFFFFF' : '#000000'} />}
+            </Box>
+          }
           onPress={onPressTwitter}
           size={52}
           testID="twitter-section"
