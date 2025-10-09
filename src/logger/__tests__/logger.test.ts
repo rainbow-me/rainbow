@@ -8,12 +8,6 @@ jest.mock('@sentry/react-native', () => ({
   addBreadcrumb: jest.fn(),
   captureException: jest.fn(),
   captureMessage: jest.fn(),
-  Severity: {
-    Debug: 'debug',
-    Info: 'info',
-    Warning: 'warning',
-    Error: 'error',
-  },
 }));
 
 describe('general functionality', () => {
