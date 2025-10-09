@@ -61,14 +61,17 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
   };
   const changes: TransactionChanges = txn.changes.map(change => {
     return {
-      ...change,
       asset: parseAddressAsset({
         assetData: {
           asset: change.asset,
-          quantity: change.value?.toString() || '0',
+          quantity: change.quantity || '0',
         },
       }),
       value: change.value || undefined,
+      address_from: change.addressFrom,
+      address_to: change.addressTo,
+      direction: change.direction as TransactionDirection,
+      price: change.price,
     };
   });
 
@@ -93,22 +96,22 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
 
   const fee = getTransactionFee(txn, nativeCurrency, chainId);
 
-  const contract = meta.contract_name && {
-    name: meta.contract_name,
-    iconUrl: meta.contract_icon_url,
+  const contract = meta?.contractName && {
+    name: meta.contractName,
+    iconUrl: meta.contractIconUrl,
   };
 
   // NOTE: For send transactions, the to address should be pulled from the outgoing change directly, not the txn.address_to
-  let to = txn.address_to;
-  if (meta.type === 'send') {
-    to = txn.changes.find(change => change?.direction === 'out')?.address_to ?? txn.address_to;
+  let to = txn.addressTo;
+  if (meta?.type === 'send') {
+    to = txn.changes.find(change => change?.direction === 'out')?.addressTo ?? txn.addressTo;
   }
 
   return {
     chainId,
-    from: txn.address_from,
+    from: txn.addressFrom,
     to,
-    title: buildTransactionTitle(type, status),
+    title: buildTransactionTitle(type, status as TransactionStatus),
     description,
     hash,
     network: txn.network,
@@ -120,15 +123,15 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
     value,
     changes,
     asset,
-    approvalAmount: meta.quantity,
-    minedAt: txn.mined_at,
-    blockNumber: txn.block_number,
-    confirmations: txn.block_confirmations,
+    approvalAmount: meta?.quantity,
+    minedAt: txn.minedAt,
+    blockNumber: txn.blockNumber,
+    confirmations: txn.blockConfirmations,
     contract,
     native,
     fee,
-    explorerUrl: meta.explorer_url,
-    explorerLabel: meta.explorer_label,
+    explorerUrl: meta?.explorerUrl,
+    explorerLabel: meta?.explorerLabel,
   } as RainbowTransaction;
 };
 
@@ -159,11 +162,7 @@ export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): R
 /**
  * Helper for retrieving tx fee sent by zerion, works only for mainnet only
  */
-const getTransactionFee = (
-  txn: TransactionApiResponse,
-  nativeCurrency: NativeCurrencyKey,
-  chainId: ChainId
-): RainbowTransactionFee | undefined => {
+const getTransactionFee = (txn: Transaction, nativeCurrency: NativeCurrencyKey, chainId: ChainId): RainbowTransactionFee | undefined => {
   if (txn.fee === null || txn.fee === undefined) {
     return undefined;
   }
@@ -177,7 +176,7 @@ const getTransactionFee = (
       symbol: chainNativeAsset.symbol,
     }),
     native:
-      nativeCurrency !== 'ETH' && zerionFee?.price > 0
+      nativeCurrency !== 'ETH' && parseFloat(zerionFee?.price) > 0
         ? convertRawAmountToNativeDisplay(zerionFee.value, chainNativeAsset.decimals, zerionFee.price, nativeCurrency)
         : undefined,
   };
