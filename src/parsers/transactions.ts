@@ -25,6 +25,7 @@ import { ParsedAsset } from '@/resources/assets/types';
 
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { Transaction } from '@/features/positions/types/generated/transaction/transaction';
 
 const TransactionOutTypes = [
   'burn',
@@ -52,35 +53,29 @@ export const getAssetFromChanges = (changes: TransactionChanges, type: Transacti
   return changes?.[0]?.asset;
 };
 
-export const parseTransaction = (
-  transaction: TransactionApiResponse,
-  nativeCurrency: NativeCurrencyKey,
-  chainId: ChainId
-): RainbowTransaction => {
+export const parseTransaction = (transaction: Transaction, nativeCurrency: NativeCurrencyKey, chainId: ChainId): RainbowTransaction => {
   const { hash, meta, nonce, protocol, status } = transaction;
 
   const txn = {
     ...transaction,
   };
   const changes: TransactionChanges = txn.changes.map(change => {
-    if (change) {
-      return {
-        ...change,
-        asset: parseAddressAsset({
-          assetData: {
-            asset: change.asset,
-            quantity: change.value?.toString() || '0',
-          },
-        }),
-        value: change.value || undefined,
-      };
-    }
+    return {
+      ...change,
+      asset: parseAddressAsset({
+        assetData: {
+          asset: change.asset,
+          quantity: change.value?.toString() || '0',
+        },
+      }),
+      value: change.value || undefined,
+    };
   });
 
-  const type = isValidTransactionType(meta.type) ? meta.type : 'contract_interaction';
+  const type = isValidTransactionType(meta?.type) ? meta.type : 'contract_interaction';
 
-  const asset: RainbowTransaction['asset'] = meta.asset?.asset_code
-    ? parseAsset({ asset: meta.asset, address: meta.asset.asset_code })
+  const asset: RainbowTransaction['asset'] = meta?.asset?.assetCode
+    ? parseAsset({ asset: meta.asset, address: meta.asset.assetCode })
     : getAssetFromChanges(changes, type);
 
   const direction = txn.direction || getDirection(type);

@@ -6,11 +6,12 @@ import { AddysAddressAsset, AddysAsset, ParsedAsset } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
+import { Asset, Transaction } from '@/features/positions/types/generated/transaction/transaction';
 
-export function parseAsset({ address, asset }: { address: string; asset: AddysAsset }): ParsedAsset {
+export function parseAsset({ address, asset }: { address: string; asset: Asset }): ParsedAsset {
   const network = asset?.network;
   const chainId = useBackendNetworksStore.getState().getChainsIdByName()[network];
-  const mainnetAddress = asset?.networks?.[ChainId.mainnet]?.address;
+  const mainnetAddress = asset?.networks?.[ChainId.mainnet]?.tokenMapping?.address;
   const uniqueId = getUniqueId(address, chainId);
 
   const parsedAsset = {
@@ -21,7 +22,7 @@ export function parseAsset({ address, asset }: { address: string; asset: AddysAs
     chainName: network,
     decimals: asset?.decimals,
     id: address,
-    icon_url: asset?.icon_url,
+    icon_url: asset?.iconUrl,
     isNativeAsset: isNativeAsset(address, chainId),
     name: asset?.name || i18n.t(i18n.l.account.unknown_token),
     mainnet_address: mainnetAddress,
@@ -38,10 +39,10 @@ export function parseAsset({ address, asset }: { address: string; asset: AddysAs
   return parsedAsset;
 }
 
-export function parseAddressAsset({ assetData }: { assetData: AddysAddressAsset }): ParsedAddressAsset {
+export function parseAddressAsset({ assetData }: { assetData: { asset: Asset; quantity: string } }): ParsedAddressAsset {
   const asset = assetData?.asset;
   const quantity = assetData?.quantity;
-  const address = assetData?.asset?.asset_code;
+  const address = assetData?.asset?.assetCode;
 
   const parsedAsset = parseAsset({
     address,

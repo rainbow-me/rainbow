@@ -11,6 +11,7 @@ import { ChainId, Network } from '@/state/backendNetworks/types';
 import { TransactionResponse } from '@ethersproject/providers';
 
 import { BytesLike } from '@ethersproject/bytes';
+import { Transaction } from '@/features/positions/types/generated/transaction/transaction';
 
 export enum TransactionDirection {
   IN = 'in',
@@ -206,7 +207,7 @@ export interface AddressAssetsReceivedMessage {
  */
 export interface TransactionsReceivedMessage {
   payload?: {
-    transactions?: PaginatedTransactionsApiResponse[];
+    transactions?: Transaction[];
   };
   meta?: MessageMeta;
 }

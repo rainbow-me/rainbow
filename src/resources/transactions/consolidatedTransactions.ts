@@ -7,6 +7,8 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { IS_TEST } from '@/env';
 import { anvilChain, e2eAnvilConfirmedTransactions } from './transaction';
+import { getPlatformClient } from '@/resources/platform/client';
+import { ListTransactionsResponse, Transaction } from '@/features/positions/types/generated/transaction/transaction';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
 
@@ -58,29 +60,42 @@ export async function consolidatedTransactionsQueryFunction({
   queryKey: [{ address, currency, chainIds }],
   pageParam,
 }: QueryFunctionArgs<typeof consolidatedTransactionsQueryKey>): Promise<_QueryResult> {
-  let transactionsFromAddys: RainbowTransaction[] = [];
-  let nextPageFromAddys: string | undefined = pageParam;
-  let cutoffFromAddys: number | undefined;
+  let transactionsFromGoldsky: RainbowTransaction[] = [];
+  let nextPageFromGoldsky: string | undefined = pageParam;
+  let cutoffFromGoldsky: number | undefined;
   try {
     const chainIdsString = chainIds.join(',');
-    const response = await getAddysHttpClient().get(`/${chainIdsString}/${address}/transactions`, {
+    const { data } = await getPlatformClient().get<ListTransactionsResponse>('/transactions/ListTransactions', {
       method: 'get',
       params: {
+        address,
+        chainIds: chainIdsString,
         currency: currency.toLowerCase(),
         ...(pageParam ? { pageCursor: pageParam } : {}),
+        limit: String(30),
       },
     });
+    // const response = await getAddysHttpClient().get(`/${chainIdsString}/${address}/transactions`, {
+    //   method: 'get',
+    //   params: {
+    //     currency: currency.toLowerCase(),
+    //     ...(pageParam ? { pageCursor: pageParam } : {}),
+    //   },
+    // });
 
-    transactionsFromAddys = await parseConsolidatedTransactions(response?.data, currency);
-    nextPageFromAddys = response?.data?.meta?.next_page_cursor;
-    cutoffFromAddys = response?.data?.meta?.cut_off;
+    transactionsFromGoldsky = await parseConsolidatedTransactions(
+      { payload: { transactions: data.result }, meta: data.metadata },
+      currency
+    );
+    nextPageFromGoldsky = data?.pagination?.cursor;
+    // cutoffFromAddys = data?.meta?.cut_off;
   } catch (e) {
-    logger.error(new RainbowError('[consolidatedTransactions]: Error fetching from Addys', e), {
+    logger.error(new RainbowError('[consolidatedTransactions]: Error fetching from Goldsky', e), {
       message: e,
     });
   }
 
-  let finalTransactions: RainbowTransaction[] = [...transactionsFromAddys];
+  let finalTransactions: RainbowTransaction[] = [...transactionsFromGoldsky];
   if (IS_TEST && chainIds && chainIds.includes(anvilChain.id)) {
     const userAnvilTransactions = e2eAnvilConfirmedTransactions.filter(tx => {
       const fromMatch = tx.from && tx.from.toLowerCase() === address.toLowerCase();
@@ -107,8 +122,8 @@ export async function consolidatedTransactionsQueryFunction({
 
   return {
     transactions: finalTransactions,
-    nextPage: nextPageFromAddys,
-    cutoff: cutoffFromAddys,
+    nextPage: nextPageFromGoldsky,
+    cutoff: cutoffFromGoldsky,
   };
 }
 
@@ -132,7 +147,7 @@ async function parseConsolidatedTransactions(
 
   const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
 
-  const parsedTransactionPromises = data.map((tx: TransactionApiResponse) => parseTransaction(tx, currency, chainsIdByName[tx.network]));
+  const parsedTransactionPromises = data.map((tx: Transaction) => parseTransaction(tx, currency, chainsIdByName[tx.network]));
   // Filter out undefined values immediately
 
   const parsedConsolidatedTransactions = (await Promise.all(parsedTransactionPromises)).flat(); // Filter out any remaining undefined values
