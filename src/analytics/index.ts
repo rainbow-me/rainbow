@@ -84,9 +84,6 @@ export class Analytics {
   track<T extends keyof EventProperties>(event: T, params?: EventProperties[T], walletContext?: WalletContext): void {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
-    if (IS_DEV) {
-      console.log('track', event, JSON.stringify({ ...params }, null, 2));
-    }
     this.enqueue(() => this.client.track(event, { ...metadata, ...walletContext, ...params }));
   }
 
