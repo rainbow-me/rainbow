@@ -64,21 +64,31 @@ export async function consolidatedTransactionsQueryFunction({
   let nextPageFromGoldsky: string | undefined = pageParam;
   let cutoffFromGoldsky: number | undefined;
   try {
-    const chainIdsString = chainIds.join(',');
     const { data } = await getPlatformClient().get<ListTransactionsResponse>('/transactions/ListTransactions', {
       method: 'get',
       params: {
         address,
-        // chainIds: chainIdsString,
-        chainIds: '1',
+        chainIds: '1', // TODO: Re-enable multiple chainIds when backend bug is fixed
         currency: currency.toLowerCase(),
         ...(pageParam ? { pageCursor: pageParam } : {}),
         limit: String(30),
       },
     });
 
+    if (!data.result || !Array.isArray(data.result)) {
+      return {
+        transactions: [],
+        nextPage: undefined,
+        cutoff: undefined,
+      };
+    }
+
     const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
-    const parsedTransactionPromises = data.result.map((tx: Transaction) => parseTransaction(tx, currency, chainsIdByName[tx.network]));
+
+    const parsedTransactionPromises = data.result.map((tx: Transaction) => {
+      const chainId = chainsIdByName[tx.network];
+      return parseTransaction(tx, currency, chainId);
+    });
     transactionsFromGoldsky = (await Promise.all(parsedTransactionPromises)).flat();
     nextPageFromGoldsky = data?.pagination?.cursor;
   } catch (e) {

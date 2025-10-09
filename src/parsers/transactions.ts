@@ -59,21 +59,22 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
   const txn = {
     ...transaction,
   };
-  const changes: TransactionChanges = txn.changes.map(change => {
-    return {
-      asset: parseAddressAsset({
-        assetData: {
-          asset: change.asset,
-          quantity: change.quantity || '0',
-        },
-      }),
-      value: change.value || undefined,
-      address_from: change.addressFrom,
-      address_to: change.addressTo,
-      direction: change.direction as TransactionDirection,
-      price: change.price,
-    };
-  });
+  const changes: TransactionChanges =
+    txn.changes?.map(change => {
+      return {
+        asset: parseAddressAsset({
+          assetData: {
+            asset: change.asset,
+            quantity: change.quantity || '0',
+          },
+        }),
+        value: change.value ? parseFloat(change.value) : undefined,
+        address_from: change.addressFrom,
+        address_to: change.addressTo,
+        direction: change.direction as TransactionDirection,
+        price: change.price,
+      };
+    }) || [];
 
   const type = isValidTransactionType(meta?.type) ? meta.type : 'contract_interaction';
 
