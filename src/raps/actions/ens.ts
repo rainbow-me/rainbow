@@ -12,7 +12,7 @@ import { saveCommitRegistrationParameters, updateTransactionRegistrationParamete
 import store from '@/redux/store';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { Signer } from '@ethersproject/abstract-signer';
 import { Logger } from '@ethersproject/logger';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
@@ -675,8 +675,7 @@ const executeAction = async (
   try {
     logger.debug(`[raps/ens]: [${rapName}] 2 INNER executing type: ${type}`);
     const actionPromise = findENSActionByType(type);
-    nonce = await performanceTracking.getState().executeFn({
-      fn: actionPromise,
+    nonce = await executeFn(actionPromise, {
       screen: Screens.SEND_ENS,
       operation: TimeToSignOperation.SignTransaction,
     })(wallet, rap, index, parameters as RapENSActionParameters, baseNonce);
@@ -704,8 +703,7 @@ export const executeENSRap = async (
   parameters: ENSActionParameters,
   callback: (success?: boolean, errorMessage?: string | null) => void
 ) => {
-  const rap = await performanceTracking.getState().executeFn({
-    fn: createENSRapByType,
+  const rap = await executeFn(createENSRapByType, {
     operation: TimeToSignOperation.CreateRap,
     screen: Screens.SEND_ENS,
   })(type, parameters as ENSActionParameters);

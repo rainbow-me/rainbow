@@ -21,7 +21,7 @@ import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
 import { createClaimAndBridgeRap } from './claimAndBridge';
 import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
+import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { createClaimClaimableRap } from './claimClaimable';
 import { claimClaimable } from './actions/claimClaimable';
@@ -137,8 +137,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
   // NOTE: We don't care to track claimBridge raps
   const rap = PERF_TRACKING_EXEMPTIONS.includes(type)
     ? await createSwapRapByType(type, parameters)
-    : await performanceTracking.getState().executeFn({
-        fn: createSwapRapByType,
+    : await executeFn(createSwapRapByType, {
         screen: Screens.SWAPS,
         operation: TimeToSignOperation.CreateRap,
         metadata: {

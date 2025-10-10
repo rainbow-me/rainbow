@@ -45,10 +45,11 @@ import { DebugContext } from '@/logger/debugContext';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Signer } from '@ethersproject/abstract-signer';
 import { sanitizeTypedData } from '@/utils/signingUtils';
-import { ExecuteFnParamsWithoutFn, performanceTracking, Screen } from '@/state/performance/performance';
+import { executeFn, ExecuteFnParams, Screen } from '@/state/performance/performance';
 import { Network } from '@/state/backendNetworks/types';
 import { GetOptions, SetOptions } from 'react-native-keychain';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
+import { IS_IOS } from '@/env';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -293,7 +294,7 @@ export const loadWallet = async <S extends Screen>({
   address?: EthereumAddress;
   showErrorIfNotLoaded?: boolean;
   provider: Provider;
-  timeTracking?: ExecuteFnParamsWithoutFn<S>;
+  timeTracking?: ExecuteFnParams<S>;
 }): Promise<null | Wallet | LedgerSigner> => {
   const addressToUse = address || (await loadAddress());
   if (!addressToUse) {
@@ -306,10 +307,7 @@ export const loadWallet = async <S extends Screen>({
 
   let privateKey: Awaited<ReturnType<typeof loadPrivateKey>>;
   if (timeTracking) {
-    privateKey = await performanceTracking.getState().executeFn({
-      ...timeTracking,
-      fn: loadPrivateKey,
-    })(addressToUse, isHardwareWallet);
+    privateKey = await executeFn(loadPrivateKey, timeTracking)(addressToUse, isHardwareWallet);
   } else {
     privateKey = await loadPrivateKey(addressToUse, isHardwareWallet);
   }
@@ -329,7 +327,7 @@ export const loadWallet = async <S extends Screen>({
   } else if (privateKey) {
     return new Wallet(privateKey, provider);
   }
-  if (ios && showErrorIfNotLoaded) {
+  if (IS_IOS && showErrorIfNotLoaded) {
     showWalletErrorAlert();
   }
   return null;

@@ -1,10 +1,10 @@
-import { Dispatch, SetStateAction, useCallback, useState } from 'react';
-import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
+import { useCallback, useState } from 'react';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
-import { SCREEN_FOR_REQUEST_SOURCE } from '@/components/Transactions/constants';
 import { logger, RainbowError } from '@/logger';
+import { startTimeToSignTracking } from '@/state/performance/performance';
+import { SCREEN_FOR_REQUEST_SOURCE } from '@/components/Transactions/constants';
 
 export const useTransactionSubmission = ({
   isMessageRequest,
@@ -34,25 +34,18 @@ export const useTransactionSubmission = ({
     }
   }, [isAuthorizing, onConfirm, setIsAuthorizing]);
 
-  const submitFn = useCallback(
-    () =>
-      performanceTracking.getState().executeFn({
-        fn: async () => {
-          if (!isBalanceEnough && !isMessageRequest) {
-            return navigate(Routes.ADD_CASH_SHEET);
-          }
+  const submitFn = useCallback(() => {
+    if (!isBalanceEnough && !isMessageRequest) {
+      return navigate(Routes.ADD_CASH_SHEET);
+    }
 
-          if (accountInfo.isHardwareWallet) {
-            return navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onPressSend });
-          }
+    if (accountInfo.isHardwareWallet) {
+      return navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onPressSend });
+    }
 
-          return onPressSend();
-        },
-        operation: TimeToSignOperation.CallToAction,
-        screen: SCREEN_FOR_REQUEST_SOURCE[source],
-      })(),
-    [accountInfo.isHardwareWallet, isBalanceEnough, isMessageRequest, navigate, onPressSend, source]
-  );
+    startTimeToSignTracking();
+    onPressSend();
+  }, [accountInfo.isHardwareWallet, isBalanceEnough, isMessageRequest, navigate, onPressSend]);
 
   return { submitFn, isAuthorizing };
 };

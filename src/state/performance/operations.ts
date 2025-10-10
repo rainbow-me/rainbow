@@ -6,19 +6,17 @@ export enum Screens {
   WALLETCONNECT = 'WalletConnect',
   MOBILE_WALLET_PROTOCOL = 'MobileWalletProtocol',
   PERPS_DEPOSIT = 'PerpsDeposit',
-  PERPS_WITHDRAW = 'PerpsWithdraw',
 }
 
 type RouteValues = (typeof Screens)[keyof typeof Screens];
 
-// Now, define Screen as the type of these values
 export type Screen = RouteValues;
 
 export enum TimeToSignOperation {
-  CallToAction = 'CallToAction',
   KeychainRead = 'KeychainRead',
   Authentication = 'Authentication',
   CreateRap = 'CreateRap',
+  GetNonce = 'GetNonce',
   SignTransaction = 'SignTransaction',
   CreateSignableTransaction = 'CreateSignableTransaction',
   BroadcastTransaction = 'BroadcastTransaction',
@@ -47,6 +45,7 @@ export interface PerformanceLog<S extends Screen> {
   timeToCompletion: number;
   completedAt: number;
   metadata?: Record<string, string | number | boolean>;
+  resultWasNullish?: boolean;
 }
 
 export type AnyPerformanceLog = PerformanceLog<Screen>;
