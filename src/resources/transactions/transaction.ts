@@ -1,10 +1,10 @@
 import {
   NativeCurrencyKey,
-  TransactionApiResponse,
   TransactionStatus,
   MinedTransaction,
   RainbowTransaction,
   TransactionType,
+  GetTransactionByHashResponse,
 } from '@/entities';
 import { createQueryKey, queryClient, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
@@ -19,7 +19,7 @@ import { Platform } from 'react-native';
 import { IS_TEST } from '@/env';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { getAddysHttpClient } from '@/resources/addys/client';
+import { getPlatformClient } from '@/resources/platform/client';
 
 export const e2eAnvilConfirmedTransactions: RainbowTransaction[] = [];
 
@@ -148,19 +148,28 @@ export const fetchRawTransaction = async ({
     }
   }
   try {
-    const url = `/${chainId}/${address}/transactions/${hash}`;
-    const response = await getAddysHttpClient().get<TransactionData>(url, {
+    const { data } = await getPlatformClient().get<GetTransactionByHashResponse>('/GetTransactionByHash', {
       params: {
         currency: currency.toLowerCase(),
+        hash,
+        address,
+        chainIds: String(chainId),
       },
       signal: abortController?.signal,
     });
 
-    const transaction = normalizeTransactionResponse(response).data.payload.transaction;
-    const parsed = parseTransaction(transaction, currency, chainId);
-    if (!parsed) throw new Error('Failed to parse transaction');
+    const tx = data?.result;
+    if (!tx || !tx?.status || (tx?.status as string) === '') {
+      return null;
+    }
+    const parsedTx = await parseTransaction(tx, currency, chainId);
+    if (!parsedTx) throw new Error('Failed to parse transaction');
+    return parsedTx;
+    // const transaction = normalizeTransactionResponse(response).data.payload.transaction;
+    // const parsed = parseTransaction(transaction, currency, chainId);
+    // if (!parsed) throw new Error('Failed to parse transaction');
 
-    return parsed;
+    // return parsed;
   } catch (e) {
     logger.error(new RainbowError('[transaction]: Failed to fetch transaction', e));
     return null;

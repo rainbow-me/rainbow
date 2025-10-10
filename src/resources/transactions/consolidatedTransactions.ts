@@ -1,12 +1,21 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { isValid, parseISO } from 'date-fns';
 import { InfiniteQueryConfig, QueryConfig, QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
-import { NativeCurrencyKey, RainbowTransaction, TransactionApiResponse, TransactionsReceivedMessage } from '@/entities';
+import {
+  ListTransactionsResponse,
+  NativeCurrencyKey,
+  NormalizedTransactionApiResponse,
+  RainbowTransaction,
+  TransactionApiResponse,
+} from '@/entities';
 import { RainbowError, logger } from '@/logger';
 import { parseTransaction } from '@/parsers/transactions';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { getAddysHttpClient } from '@/resources/addys/client';
 import { IS_TEST } from '@/env';
 import { anvilChain, e2eAnvilConfirmedTransactions } from './transaction';
+import { getPlatformClient } from '@/resources/platform/client';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useAirdropsStore } from '@/state/claimables/airdropsStore';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
 
@@ -23,7 +32,7 @@ export type ConsolidatedTransactionsArgs = {
 // Query Key
 
 export const consolidatedTransactionsQueryKey = ({ address, currency, chainIds }: ConsolidatedTransactionsArgs) =>
-  createQueryKey('consolidatedTransactions', { address, currency, chainIds }, { persisterVersion: 1 });
+  createQueryKey('consolidatedTransactions', { address, currency, chainIds }, { persisterVersion: 2 });
 
 type ConsolidatedTransactionsQueryKey = ReturnType<typeof consolidatedTransactionsQueryKey>;
 
@@ -58,29 +67,34 @@ export async function consolidatedTransactionsQueryFunction({
   queryKey: [{ address, currency, chainIds }],
   pageParam,
 }: QueryFunctionArgs<typeof consolidatedTransactionsQueryKey>): Promise<_QueryResult> {
-  let transactionsFromAddys: RainbowTransaction[] = [];
-  let nextPageFromAddys: string | undefined = pageParam;
-  let cutoffFromAddys: number | undefined;
+  let transactionsFromGoldsky: RainbowTransaction[] = [];
+  let nextPageFromGoldsky: string | undefined;
+  let cutoffFromGoldsky: number | undefined;
   try {
-    const chainIdsString = chainIds.join(',');
-    const response = await getAddysHttpClient().get(`/${chainIdsString}/${address}/transactions`, {
+    const cursor = typeof pageParam === 'string' ? pageParam : undefined;
+
+    const { data } = await getPlatformClient().get<ListTransactionsResponse>('/transactions/ListTransactions', {
       method: 'get',
       params: {
+        address,
+        chainIds: chainIds.join(','),
         currency: currency.toLowerCase(),
-        ...(pageParam ? { pageCursor: pageParam } : {}),
+        limit: String(30),
+        ...(cursor ? { cursor } : {}),
       },
     });
 
-    transactionsFromAddys = await parseConsolidatedTransactions(response?.data, currency);
-    nextPageFromAddys = response?.data?.meta?.next_page_cursor;
-    cutoffFromAddys = response?.data?.meta?.cut_off;
+    const payload = extractTransactionsPayload(data);
+
+    transactionsFromGoldsky = await parseConsolidatedTransactions(payload, currency);
+    nextPageFromGoldsky = payload?.pagination?.cursor;
   } catch (e) {
-    logger.error(new RainbowError('[consolidatedTransactions]: Error fetching from Addys', e), {
+    logger.error(new RainbowError('[consolidatedTransactions]: Error fetching from GoldSky', e), {
       message: e,
     });
   }
 
-  let finalTransactions: RainbowTransaction[] = [...transactionsFromAddys];
+  let finalTransactions: RainbowTransaction[] = [...transactionsFromGoldsky];
   if (IS_TEST && chainIds && chainIds.includes(anvilChain.id)) {
     const userAnvilTransactions = e2eAnvilConfirmedTransactions.filter(tx => {
       const fromMatch = tx.from && tx.from.toLowerCase() === address.toLowerCase();
@@ -107,8 +121,8 @@ export async function consolidatedTransactionsQueryFunction({
 
   return {
     transactions: finalTransactions,
-    nextPage: nextPageFromAddys,
-    cutoff: cutoffFromAddys,
+    nextPage: nextPageFromGoldsky,
+    cutoff: cutoffFromGoldsky,
   };
 }
 
@@ -125,19 +139,100 @@ type ConsolidatedTransactionsResult = {
       });
  */
 async function parseConsolidatedTransactions(
-  message: TransactionsReceivedMessage,
+  message: ListTransactionsResponse | undefined,
   currency: NativeCurrencyKey
 ): Promise<RainbowTransaction[]> {
-  const data = message?.payload?.transactions || [];
+  const data = message?.result || [];
+
+  if (!data.length) {
+    return [];
+  }
 
   const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
 
-  const parsedTransactionPromises = data.map((tx: TransactionApiResponse) => parseTransaction(tx, currency, chainsIdByName[tx.network]));
-  // Filter out undefined values immediately
+  const parsedTransactionPromises = data.flatMap(tx => {
+    const chainId = resolveChainId(tx, chainsIdByName);
 
-  const parsedConsolidatedTransactions = (await Promise.all(parsedTransactionPromises)).flat(); // Filter out any remaining undefined values
+    if (!chainId) {
+      return [];
+    }
 
-  return parsedConsolidatedTransactions;
+    const normalizedTransaction = normalizeTransactionPayload(tx);
+
+    return [parseTransaction(normalizedTransaction, currency, chainId)];
+  });
+
+  return (await Promise.all(parsedTransactionPromises)).flat();
+}
+
+type TransactionChainMap = Record<string, ChainId>;
+
+function resolveChainId(tx: TransactionApiResponse, chainsIdByName: TransactionChainMap): ChainId | undefined {
+  const chainFromNetwork = chainsIdByName[tx.network];
+  if (chainFromNetwork) {
+    return chainFromNetwork;
+  }
+
+  const parsedChainId = Number(tx.chainId);
+  if (!Number.isNaN(parsedChainId)) {
+    return parsedChainId as ChainId;
+  }
+
+  logger.warn('[consolidatedTransactions]: Received transaction with unknown network', {
+    network: tx.network,
+    chainId: tx.chainId,
+  });
+  return undefined;
+}
+
+function normalizeTransactionPayload(tx: TransactionApiResponse): NormalizedTransactionApiResponse {
+  const blockNumber = toNumber(tx.blockNumber);
+  const blockConfirmations = 0; // Not provided in API response
+  const nonce = toNumber(tx.nonce, 0);
+  const minedAtSeconds = normalizeMinedAt(tx.minedAt);
+
+  return {
+    ...tx,
+    blockNumber,
+    blockConfirmations,
+    nonce,
+    minedAt: minedAtSeconds,
+  };
+}
+
+function toNumber(value: number | string | null | undefined, fallback?: number): number {
+  if (value === null || value === undefined || value === '') {
+    return fallback ?? 0;
+  }
+
+  return typeof value === 'string' ? Number(value) : value;
+}
+
+function normalizeMinedAt(value: string | undefined): number | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  const parsedDate = parseISO(value);
+  return isValid(parsedDate) ? Math.floor(parsedDate.getTime() / 1000) : undefined;
+}
+
+function extractTransactionsPayload(
+  response: ListTransactionsResponse | { data?: ListTransactionsResponse } | undefined
+): ListTransactionsResponse | undefined {
+  if (!response) {
+    return undefined;
+  }
+
+  if ('result' in response && Array.isArray(response.result)) {
+    return response;
+  }
+
+  if ('data' in response && response.data && Array.isArray(response.data.result)) {
+    return response.data;
+  }
+
+  return undefined;
 }
 
 // ///////////////////////////////////////////////

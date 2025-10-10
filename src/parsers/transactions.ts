@@ -1,12 +1,13 @@
 import {
+  EthereumAddress,
   NativeCurrencyKey,
+  NormalizedTransactionApiResponse,
   RainbowTransaction,
   TransactionDirection,
-  PaginatedTransactionsApiResponse,
-  TransactionApiResponse,
   TransactionChanges,
   TransactionStatus,
   TransactionType,
+  TransactionApiResponse,
   TransactionTypeMap,
   TransactionWithChangesType,
   TransactionWithoutChangesType,
@@ -25,6 +26,8 @@ import { ParsedAsset } from '@/resources/assets/types';
 
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 const TransactionOutTypes = [
   'burn',
@@ -53,35 +56,50 @@ export const getAssetFromChanges = (changes: TransactionChanges, type: Transacti
 };
 
 export const parseTransaction = (
-  transaction: TransactionApiResponse,
+  transaction: NormalizedTransactionApiResponse,
   nativeCurrency: NativeCurrencyKey,
   chainId: ChainId
 ): RainbowTransaction => {
-  const { hash, meta, nonce, protocol, status } = transaction;
+  const { status, hash, meta, nonce } = transaction;
 
   const txn = {
     ...transaction,
+    changes: Array.isArray(transaction.changes) ? transaction.changes : [],
   };
-  const changes: TransactionChanges = txn.changes.map(change => {
-    if (change) {
+  const changes: TransactionChanges = txn.changes
+    .map(change => {
+      if (!change) return undefined;
       return {
-        ...change,
         asset: parseAddressAsset({
           assetData: {
             asset: change.asset,
-            quantity: change.value?.toString() || '0',
+            quantity: change.quantity || '0',
           },
         }),
-        value: change.value || undefined,
+        value: change.quantity ? parseFloat(change.quantity) : undefined,
+        direction: change.direction as TransactionDirection,
+        address_from: change.addressFrom,
+        address_to: change.addressTo,
+        price: parseFloat(change.price || '0'),
       };
-    }
-  });
+    })
+    .filter((change): change is Exclude<TransactionChanges[number], undefined> => change !== undefined);
 
-  const type = isValidTransactionType(meta.type) ? meta.type : 'contract_interaction';
+  const type = isValidTransactionType(meta?.type) ? meta.type : 'contract_interaction';
 
-  const asset: RainbowTransaction['asset'] = meta.asset?.asset_code
-    ? parseAsset({ asset: meta.asset, address: meta.asset.asset_code })
+  let asset: ParsedAsset | undefined = meta?.asset?.assetCode
+    ? parseAsset({ asset: meta.asset, address: meta?.asset.assetCode })
     : getAssetFromChanges(changes, type);
+
+  if (!asset && txn.addressTo) {
+    const uniqueId = getUniqueId(txn.addressTo as EthereumAddress, chainId);
+    const cachedAsset = userAssetsStore.getState().getLegacyUserAsset(uniqueId);
+
+    if (cachedAsset) {
+      const { balance: _balance, ...cachedAssetWithoutBalance } = cachedAsset;
+      asset = cachedAssetWithoutBalance;
+    }
+  }
 
   const direction = txn.direction || getDirection(type);
 
@@ -98,20 +116,20 @@ export const parseTransaction = (
 
   const fee = getTransactionFee(txn, nativeCurrency, chainId);
 
-  const contract = meta.contract_name && {
-    name: meta.contract_name,
-    iconUrl: meta.contract_icon_url,
+  const contract = meta?.contractName && {
+    name: meta.contractName,
+    iconUrl: meta.contractIconUrl,
   };
 
   // NOTE: For send transactions, the to address should be pulled from the outgoing change directly, not the txn.address_to
-  let to = txn.address_to;
-  if (meta.type === 'send') {
-    to = txn.changes.find(change => change?.direction === 'out')?.address_to ?? txn.address_to;
+  let to = txn.addressTo;
+  if (meta?.type === 'send') {
+    to = txn.changes.find(change => change?.direction === 'out')?.addressTo ?? txn.addressTo;
   }
 
   return {
     chainId,
-    from: txn.address_from,
+    from: txn.addressFrom,
     to,
     title: buildTransactionTitle(type, status),
     description,
@@ -119,21 +137,22 @@ export const parseTransaction = (
     network: txn.network,
     status,
     nonce,
-    protocol,
+    // TODO: Fix this don't get from goldsky
+    protocol: undefined,
     type,
     direction,
     value,
     changes,
     asset,
-    approvalAmount: meta.quantity,
-    minedAt: txn.mined_at,
-    blockNumber: txn.block_number,
-    confirmations: txn.block_confirmations,
+    approvalAmount: meta?.quantity,
+    minedAt: txn.minedAt,
+    blockNumber: txn.blockNumber,
+    confirmations: txn.blockConfirmations,
     contract,
     native,
     fee,
-    explorerUrl: meta.explorer_url,
-    explorerLabel: meta.explorer_label,
+    explorerUrl: meta?.explorerUrl,
+    explorerLabel: meta?.explorerLabel,
   } as RainbowTransaction;
 };
 
@@ -182,15 +201,16 @@ const getTransactionFee = (
       symbol: chainNativeAsset.symbol,
     }),
     native:
-      nativeCurrency !== 'ETH' && zerionFee?.price > 0
+      nativeCurrency !== 'ETH' && Number(zerionFee?.value) > 0
         ? convertRawAmountToNativeDisplay(zerionFee.value, chainNativeAsset.decimals, zerionFee.price, nativeCurrency)
         : undefined,
   };
 };
 
-export const getDescription = (asset: ParsedAsset | undefined, type: TransactionType, meta: PaginatedTransactionsApiResponse['meta']) => {
+// TODO: Use paginated ?
+export const getDescription = (asset: ParsedAsset | undefined, type: TransactionType, meta?: TransactionApiResponse['meta']) => {
   if (asset?.type === 'nft') return asset.symbol || asset.name;
-  return asset?.name || meta.action;
+  return asset?.name || meta?.action;
 };
 
 export const isValidTransactionType = (type: string | undefined): type is TransactionType =>
