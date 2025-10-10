@@ -13,7 +13,7 @@
       "show": "Mostrar",
       "show_all": "Mostrar tudo",
       "show_less": "Mostrar menos",
-      "tab_balances": "Saldos",
+      "tab_tokens": "Tokens",
       "tab_balances_empty_state": "Saldo",
       "tab_balances_tooltip": "Saldos de Ethereum e Token",
       "tab_claimables": "Reivindicáveis",
@@ -23,6 +23,7 @@
       "tab_investments": "Pools",
       "tab_savings": "Poupanças",
       "tab_showcase": "Vitrine",
+      "tab_perps": "Perps",
       "tab_points": "Pontos",
       "tab_positions": "Posições",
       "tab_rewards": "Recompensas",
@@ -707,15 +708,18 @@
           "website": "Website",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter",
-          "warpcast": "Warpcast",
+          "twitter": "X (Twitter)",
           "farcaster": "Farcaster",
           "other": "Outro",
-          "search_on_twitter": "Procurar no Twitter"
+          "search_on_twitter": "Buscar no X"
         },
         "uniswap_liquidity": "Liquidez Uniswap",
         "value": "Valor",
         "volume_24_hours": "Volume 24h",
+        "liquidity_cap_disclaimer": {
+          "value_lower_than": "O valor é menor que",
+          "due_to_low_liquidity": "devido à baixa liquidez"
+        },
         "menu": {
           "view_on": "Visualizar em %{blockExplorerName}",
           "share": "Compartilhar",
@@ -774,10 +778,10 @@
       "chart": {
         "candlestick": {
           "candle_field_labels": {
-            "c": "Fechar",
+            "c": "FECHAR",
             "h": "H",
             "l": "L",
-            "o": "Abrir",
+            "o": "ABRIR",
             "t": "",
             "v": "V"
           },
@@ -923,7 +927,7 @@
         "toast_removed_from_showcase": "Removido da vitrine",
         "refreshing": "Atualizando metadados...",
         "reported": "Reportado como spam",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "view_all_with_property": "Ver tudo com propriedade",
         "view_collection": "Ver coleção",
         "view_on_marketplace": "Ver no Marketplace...",
@@ -958,7 +962,7 @@
       "poolboy_title": "Você desbloqueou o\nRainbow Poolboy!",
       "adworld_description": "Como um Cidadão do Mundo Rainbow, você agora pode desbloquear um ícone especial AdWorld x Rainbow.",
       "adworld_title": "Bem-vindo ao Mundo Rainbow!",
-      "farcaster_description": "Nosso ícone de aplicativo mais chato, inspirado no minimalismo enfadonho do Warpcast.",
+      "farcaster_description": "Nosso ícone de aplicativo mais chato, inspirado no minimalismo enfadonho do Farcaster.",
       "farcaster_title": "Você desbloqueou\nRainbowcast",
       "redacted_description": "Um ícone Rainbow exclusivo para os verdadeiros apreciadores de Gdupi.",
       "redacted_title": "Você desbloqueou o\nRedacted Rainbow",
@@ -1577,6 +1581,181 @@
         "address_copied_to_clipboard": "Endereço copiado para a área de transferência"
       }
     },
+    "perps": {
+      "common": {
+        "not_available": "N/A",
+        "current_price": "Preço Atual",
+        "title": "Perps",
+        "error_submitting_order": "Erro ao enviar ordem",
+        "submitting": "Enviando...",
+        "more": "Mais",
+        "error": "Erro",
+        "cancel": "Cancelar",
+        "liq_price": "Preço de liquidação",
+        "liq": "liq."
+      },
+      "feature_card": {
+        "title": "Perps",
+        "subtitle": "Negociação de alto risco, alta recompensa"
+      },
+      "actions": {
+        "fund_wallet": "Financiar Minha Carteira",
+        "new_position": "Nova Posição",
+        "close_position": "Fechar Posição",
+        "open_position": "Abrir Posição"
+      },
+      "account": {
+        "available_balance": "Saldo Disponível"
+      },
+      "markets": {
+        "title": "Mercados",
+        "up_to": "ATÉ",
+        "already_open": "Já Aberto"
+      },
+      "deposit": {
+        "title": "Depósito",
+        "no_balance": "Sem Saldo",
+        "receive": "Receber",
+        "slider_label": "Depositando",
+        "zero_amount_error": "Digite um valor para depositar",
+        "confirm_button_text": "Segurar para Depositar",
+        "confirm_button_loading_text": "Depositando...",
+        "confirm_button_zero_text": "Insira um valor",
+        "confirm_button_over_balance_text": "Fundos insuficientes",
+        "confirm_button_error_text": "Erro na Cotação",
+        "quote_error": "􀇿 Nenhuma cotação disponível",
+        "insufficient_balance": "􀫲 Fundos insuficientes"
+      },
+      "withdraw": {
+        "title": "Retirar",
+        "slider_label": "Sacando",
+        "confirm_button_text": "Segure para Sacar",
+        "confirm_button_loading_text": "Sacando...",
+        "available_balance_suffix": " Disponível",
+        "confirm_button_zero_text": "Insira um valor",
+        "confirm_button_over_balance_text": "Fundos insuficientes",
+        "info_card_title_prefix": "Sacando para ",
+        "info_card_title_suffix": "Arbitrum",
+        "info_card_subtitle": "Novas redes em breve. Saques atualmente incluem uma taxa de $1,00 do Hyperliquid."
+      },
+      "position_side": {
+        "long": "Longo",
+        "short": "Curto"
+      },
+      "positions": {
+        "entry": "ENTRADA",
+        "mark_price": "PREÇO DE MARCAÇÃO",
+        "open_positions": "Posições Abertas",
+        "no_open_positions": "Nenhuma Posição Aberta",
+        "position_value": "Valor da Posição",
+        "mark_price_full": "Preço de Marcação",
+        "entry_price": "Preço de Entrada",
+        "funding": "Financiamento",
+        "liquidation_price": "Preço de Liquidação",
+        "total": "Total",
+        "learn_more_about_perps": "Saiba mais sobre Perps"
+      },
+      "new_position": {
+        "hold_to_long": "Segurar para Longo",
+        "hold_to_short": "Segurar para Curto",
+        "liquidated_at": "Liquidado em",
+        "from_current_price": "do preço atual",
+        "details": "Detalhes",
+        "funding_rate": "Taxa de Financiamento",
+        "max_slippage": "Derrapagem Máxima",
+        "no_liquidation_risk": "Sem Risco de Liquidação",
+        "trading_without_leverage": "Negociando sem alavancagem"
+      },
+      "inputs": {
+        "amount": "Quantidade",
+        "available": "Disponível",
+        "max": "Máx",
+        "maximum_amount_is": "A quantidade máxima é",
+        "minimum": "Mínimo",
+        "minimum_amount_is": "A quantidade mínima é",
+        "no_balance": "Sem Saldo"
+      },
+      "history": {
+        "title": "Histórico",
+        "no_trades": "Sem negociações",
+        "trade_execution": {
+          "take_profit_executed": "Lucro Realizado",
+          "stop_loss_executed": "Perda Realizada",
+          "long_opened": "Longo Aberto",
+          "short_opened": "Curto Aberto",
+          "long_closed": "Longo Fechado",
+          "short_closed": "Curto Fechado",
+          "long_liquidated": "Longo Liquidado",
+          "short_liquidated": "Curto Liquidado"
+        }
+      },
+      "trigger_orders": {
+        "title": "Ordens de Gatilho",
+        "take_profit": "Obter Lucro",
+        "stop_loss": "Stop Loss",
+        "sell": "Vender",
+        "cancel_failed": "Falha ao cancelar ordem",
+        "add_stop_loss": "Adicionar Stop Loss",
+        "add_take_profit": "Adicionar Obter Lucro",
+        "price": "Preço",
+        "projected_profit": "Lucro Projetado",
+        "projected_loss": "Perda Projetada",
+        "add": "Adicionar",
+        "adding": "Adicionando...",
+        "above": "acima",
+        "below": "abaixo",
+        "must_be": "Deve ser",
+        "failed_to_create": "Falha ao criar ordem de gatilho"
+      },
+      "search": {
+        "search_markets": "Buscar mercados",
+        "markets_count": "%{count} MERCADOS",
+        "choose_a_market": "ESCOLHER UM MERCADO"
+      },
+      "close_position": {
+        "estimated_loss": "Perda Estimada",
+        "estimated_profit": "Lucro Estimado",
+        "minimum_amount_is": "A quantidade mínima é",
+        "closing": "Fechando...",
+        "hold_to_close": "Segurar para Fechar"
+      },
+      "explain_sheet": {
+        "next": "Avançar",
+        "got_it": "Entendi",
+        "title": "Perps",
+        "steps": {
+          "step_1": {
+            "title_parts": [
+              "Futuros Perpétuos"
+            ],
+            "subtitle_parts": [
+              "Aposte nos movimentos de preços. Abra e feche posições quando quiser, sem vencimento.\nPowered by Hyperliquid."
+            ]
+          },
+          "step_2": {
+            "title_parts": [
+              "Ir",
+              "Longo",
+              "ou",
+              "Curto"
+            ],
+            "subtitle_parts": [
+              "Longo quando você acha que o preço vai subir. Curto quando acha que vai cair. Lucro quando acerta a direção."
+            ]
+          },
+          "step_3": {
+            "title_parts": [
+              "Negociar com Alavancagem"
+            ],
+            "subtitle_parts": [
+              "A alavancagem amplifica seu risco. Ganhos maiores quando você acerta. Perdas mais rápidas, e liquidação, quando você erra."
+            ]
+          }
+        }
+      },
+      "leverage": "Alavancagem",
+      "up_to": "Até"
+    },
     "points": {
       "placeholder": {
         "coming_soon_title": "Em Breve",
@@ -1653,8 +1832,6 @@
         "claimed_earnings": "Ganhos Reivindicados",
         "current_value": "Valor atual",
         "rainbow_users_have_earned": "Os usuários do Rainbow ganharam",
-        "earn_eth_rewards": "Ganhar Recompensas em ETH",
-        "rewards_explainer": "Toda semana, os maiores ganhadores de pontos semanais receberão uma parte da receita onchain do Rainbow. Colete pontos trocando ou transacionando no Rainbow, usando dapps ou indicando amigos.",
         "my_points": "Meus Pontos",
         "refer_friends": "Indicar Amigos",
         "try_again": "Tente Novamente",
@@ -1801,7 +1978,7 @@
         "skip": "Pular",
         "snapchat": "Snapchat",
         "telegram": "Telegram",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "upload_photo": "Enviar uma Foto",
         "uploading": "Enviando",
         "username_placeholder": "nome de usuário",
@@ -2157,7 +2334,7 @@
       "done": "Concluído",
       "feedback_and_reports": "Feedback e Relatos de Erros",
       "feedback_and_support": "Feedback e Suporte",
-      "follow_us_on_twitter": "Siga-nos no Twitter",
+      "follow_us_on_twitter": "Siga-nos no X",
       "hey_friend_message": "👋️ Olá amigo! Você deveria baixar o Rainbow, é minha carteira Ethereum favorita 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Configurações",
       "language": "Idioma",
@@ -3330,7 +3507,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "Saldo Disponível: %{balance}",
-        "title": "Pré-compre mais tokens"
+        "title": "Pré-comprar tokens"
       },
       "review": {
         "token_allocation": "Alocação de Token",
@@ -3395,7 +3572,7 @@
       },
       "links": {
         "x": {
-          "name": "X/Twitter",
+          "name": "X (Twitter)",
           "placeholder": "Nome de Usuário"
         },
         "telegram": {
@@ -3468,6 +3645,7 @@
     "done": "Concluído",
     "copy": "Copiar",
     "paste": "Colar",
+    "new": "Novo",
     "market_data": {
       "vol": "VOL",
       "price": "PREÇO",
@@ -3492,9 +3670,9 @@
           "step_1": {
             "title": "A corrida está ao vivo",
             "subtitle_parts": [
-              "O token com o maior",
+              "O rei atual é o token criado nos últimos 30 dias com o máximo",
               " volume de compra ",
-              "neste momento é o rei atual."
+              "hoje."
             ]
           },
           "step_2": {
