@@ -73,7 +73,6 @@ export async function consolidatedTransactionsQueryFunction({
         address,
         chainIds: chainIdsString,
         currency: currency.toLowerCase(),
-        ...(pageParam ? { pageCursor: pageParam } : {}),
         limit: String(30),
         ...(cursor ? { cursor } : {}),
       },
