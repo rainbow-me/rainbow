@@ -54,16 +54,17 @@ export const getAssetFromChanges = (changes: TransactionChanges, type: Transacti
 };
 
 export const parseTransaction = (transaction: Transaction, nativeCurrency: NativeCurrencyKey, chainId: ChainId): RainbowTransaction => {
-  const { hash, meta, nonce, protocol, status } = transaction;
+  const { hash, meta, nonce, status } = transaction;
 
   const txn = {
     ...transaction,
+    changes: Array.isArray(transaction.changes) ? transaction.changes : [],
   };
 
   const minedAtTimestamp = txn.minedAt ? Math.floor(new Date(txn.minedAt).getTime() / 1000) : null;
 
   const changes: TransactionChanges =
-    txn.changes?.map(change => {
+    txn.changes.map(change => {
       return {
         asset: parseAddressAsset({
           assetData: {
@@ -75,7 +76,7 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
         address_from: change.addressFrom,
         address_to: change.addressTo,
         direction: change.direction as TransactionDirection,
-        price: change.price,
+        price: parseFloat(change.price),
       };
     }) || [];
 
@@ -121,7 +122,6 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
     network: txn.network,
     status,
     nonce,
-    protocol,
     type,
     direction,
     value,
@@ -180,7 +180,7 @@ const getTransactionFee = (txn: Transaction, nativeCurrency: NativeCurrencyKey, 
       symbol: chainNativeAsset.symbol,
     }),
     native:
-      nativeCurrency !== 'ETH' && parseFloat(zerionFee?.price) > 0
+      nativeCurrency !== 'ETH' && Number(zerionFee?.price) > 0
         ? convertRawAmountToNativeDisplay(zerionFee.value, chainNativeAsset.decimals, zerionFee.price, nativeCurrency)
         : undefined,
   };
