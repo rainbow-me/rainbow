@@ -191,8 +191,9 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
     const targetPrice = inputValue.value;
 
     if (isExistingPosition) {
-      const priceDifference = isLong ? subWorklet(targetPrice, position.entryPrice) : subWorklet(position.entryPrice, targetPrice);
-      const pnl = mulWorklet(position.size, priceDifference);
+      const absolutePriceDifference = Math.abs(Number(subWorklet(targetPrice, position.entryPrice)));
+      const absolutePositionSize = Math.abs(Number(position.size));
+      const pnl = mulWorklet(mulWorklet(absolutePositionSize, absolutePriceDifference), isStopLoss ? -1 : 1);
       return formatCurrency(pnl);
     }
 
