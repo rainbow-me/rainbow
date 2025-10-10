@@ -8,6 +8,7 @@ import { RainbowFetchClient } from '@/rainbow-fetch';
 import { Contract } from '@ethersproject/contracts';
 import { erc20ABI } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
@@ -49,6 +50,7 @@ type TokenSearchParams<List extends TokenLists = TokenLists> = {
 type DiscoverSearchParams = {
   list?: string;
   query: string;
+  chainIds: string;
 };
 
 type DiscoverSearchQueryState = {
@@ -115,6 +117,7 @@ export const useDiscoverSearchStore = createQueryStore<DiscoverSearchResults, Di
     keepPreviousData: true,
     params: {
       query: $ => $(useDiscoverSearchQueryStore, state => (state.searchQuery.trim().length ? state.searchQuery.trim() : '')),
+      chainIds: $ => $(useBackendNetworksStore, state => state.getTokenSearchSupportedChainIds().join(',')),
     },
     staleTime: time.minutes(2),
   },
@@ -243,11 +246,20 @@ const getTokenSearchClient = () => {
 
 /**
  * Executes a token search fetch with error handling.
+ * Endpoint currently returns tokens from unsupported chains.
  */
-async function performTokenSearch(url: string, abortController: AbortController | null, errorContext: string): Promise<SearchAsset[]> {
+async function performTokenSearch(
+  url: string,
+  abortController: AbortController | null,
+  errorContext: string,
+  chainIds?: string
+): Promise<SearchAsset[]> {
   try {
     const response = await getTokenSearchClient().get<{ data: SearchAsset[] }>(url, { abortController });
-    return response.data.data;
+    if (!chainIds) return response.data.data;
+
+    const allowedChainIds = chainIds.split(',').map(Number) as ChainId[];
+    return response.data.data.filter(asset => allowedChainIds.includes(asset.chainId));
   } catch (e: unknown) {
     if (e instanceof Error && e.name === 'AbortError') return NO_RESULTS;
     logger.error(new RainbowError(`[${errorContext}]: Token search failed`), { url });
@@ -424,10 +436,10 @@ const getImportedAsset = async (searchQuery: string, chainId: number = ChainId.m
 };
 
 export async function discoverSearchQueryFunction(
-  { query }: DiscoverSearchParams,
+  { query, chainIds }: DiscoverSearchParams,
   abortController: AbortController | null
 ): Promise<DiscoverSearchResults> {
-  const queryParams: DiscoverSearchParams = {
+  const queryParams: Omit<DiscoverSearchParams, 'chainIds'> = {
     query,
   };
 
@@ -441,7 +453,7 @@ export async function discoverSearchQueryFunction(
   const url = `${searchDefaultVerifiedList ? `/${ChainId.mainnet}` : ''}/?${qs.stringify(queryParams)}`;
 
   try {
-    const tokenSearchData = await performTokenSearch(url, abortController, 'searchVerifiedTokens');
+    const tokenSearchData = await performTokenSearch(url, abortController, 'searchVerifiedTokens', chainIds);
 
     if (isAddressSearch && (tokenSearchData.length || 0) === 0) {
       const result = await getImportedAsset(query);

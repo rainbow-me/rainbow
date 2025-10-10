@@ -441,7 +441,7 @@ export function NFTSingleOfferSheet() {
   if (!isAccepting) {
     if (insufficientEth) {
       buttonLabel = i18n.t(i18n.l.button.confirm_exchange.insufficient_token, {
-        tokenName: useBackendNetworksStore.getState().getChainsNativeAsset()[offerChainId].symbol,
+        tokenName: useBackendNetworksStore.getState().getChainsNativeAsset()[offerChainId]?.symbol,
       });
     } else {
       buttonLabel = i18n.t(i18n.l.nft_offers.single_offer_sheet.hold_to_sell);
