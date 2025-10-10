@@ -732,7 +732,7 @@ export default function SendSheet() {
     } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
       label = i18n.t(i18n.l.button.confirm_exchange.insufficient_token, {
-        tokenName: useBackendNetworksStore.getState().getChainsNativeAsset()[currentChainId || ChainId.mainnet].symbol,
+        tokenName: useBackendNetworksStore.getState().getChainsNativeAsset()[currentChainId || ChainId.mainnet]?.symbol,
       });
     } else if (!isValidGas) {
       disabled = true;
