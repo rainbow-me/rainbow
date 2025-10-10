@@ -6,8 +6,9 @@ import useIsWalletEthZero from './useIsWalletEthZero';
 import { buildBriefWalletSectionsSelector, WalletSectionsState } from '@/helpers/buildWalletSections';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { usePositionsStore } from '@/state/positions/positions';
+import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { CLAIMABLES, DEFI_POSITIONS, PERPS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
 import { analytics } from '@/analytics';
@@ -63,6 +64,7 @@ export default function useWalletSectionsData({
     state.getData({
       address: accountAddress,
       currency: nativeCurrency,
+      chainIds: useBackendNetworksStore.getState().getSupportedPositionsChainIds(),
     })
   );
 

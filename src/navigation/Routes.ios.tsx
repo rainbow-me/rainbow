@@ -99,7 +99,7 @@ import { ClaimAirdropSheet } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { Portal } from '@/screens/Portal';
 import PoapSheet from '@/screens/mints/PoapSheet';
-import { PositionSheet } from '@/screens/positions/PositionSheet';
+import { PositionSheet } from '@/features/positions/screens/PositionSheet';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import MintSheet from '@/screens/mints/MintSheet';

@@ -8,15 +8,17 @@ import { RequestVendorLogoIcon } from '@/components/coin-icon';
 import startCase from 'lodash/startCase';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '@/components/animations';
-import { SubPositionListItem } from './SubPositionListItem';
+import { SubPositionListItem } from '../components/PositionListItem';
 import * as i18n from '@/languages';
 import { capitalize } from 'lodash';
-import { RainbowPosition } from '@/resources/defi/types';
-import { LpPositionListItem } from './LpPositionListItem';
+import { RainbowPosition, PositionAsset } from '@/features/positions/types';
+import { LpPositionListItem } from '../components/LpPositionListItem';
 import { RootStackParamList } from '@/navigation/types';
 import { openInBrowser } from '@/utils/openInBrowser';
 import Routes from '@/navigation/routesNames';
 import { safeAreaInsetValues } from '@/utils';
+import { Navigation } from '@/navigation';
+import type { ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
@@ -27,14 +29,14 @@ const SECTION_TITLE_HEIGHT = 20 + ITEM_PADDING;
 
 export function getPositionSheetHeight({ position }: { position: RainbowPosition }) {
   let height = 120 + safeAreaInsetValues.bottom;
-  const numberOfDeposits = position.deposits.filter(deposit => !deposit.isLp).length || 0;
-  const numberOfLpDeposits = position.deposits.filter(deposit => deposit.isLp).length || 0;
+  const numberOfDeposits = position.deposits.length || 0;
+  const numberOfPools = position.pools.length || 0;
   const numberOfBorrows = position.borrows.length || 0;
-  const numberOfClaimables = position.claimables.length || 0;
+  const numberOfClaimables = position.rewards.length || 0;
   const numberOfStakes = position.stakes.length || 0;
 
   height += numberOfDeposits > 0 ? SECTION_TITLE_HEIGHT + numberOfDeposits * (DEPOSIT_ITEM_HEIGHT + ITEM_PADDING) : 0;
-  height += numberOfLpDeposits > 0 ? SECTION_TITLE_HEIGHT + numberOfLpDeposits * (DEPOSIT_ITEM_HEIGHT + ITEM_PADDING) : 0;
+  height += numberOfPools > 0 ? SECTION_TITLE_HEIGHT + numberOfPools * (DEPOSIT_ITEM_HEIGHT + ITEM_PADDING) : 0;
   height += numberOfBorrows > 0 ? SECTION_TITLE_HEIGHT + numberOfBorrows * (BORROW_ITEM_HEIGHT + ITEM_PADDING) : 0;
   height += numberOfClaimables > 0 ? SECTION_TITLE_HEIGHT + numberOfClaimables * (CLAIMABLE_ITEM_HEIGHT + ITEM_PADDING) : 0;
   height += numberOfStakes > 0 ? SECTION_TITLE_HEIGHT + numberOfStakes * (STAKE_ITEM_HEIGHT + ITEM_PADDING) : 0;
@@ -52,9 +54,6 @@ export const PositionSheet: React.FC = () => {
   const positionColor =
     position.dapp.colors.primary || position.dapp.colors.fallback || (isDarkMode ? globalColors.white100 : globalColors.white10);
 
-  const deposits = position.deposits.filter(deposit => !deposit.isLp);
-  const lpDeposits = position.deposits.filter(deposit => deposit.isLp);
-
   const openDapp = useCallback(() => {
     analytics.track(analytics.event.positionsOpenedExternalDapp, {
       dapp: position.type,
@@ -63,17 +62,22 @@ export const PositionSheet: React.FC = () => {
     openInBrowser(position.dapp.url);
   }, [position.dapp.url, position.type]);
 
+  const openTokenSheet = useCallback((asset: PositionAsset) => {
+    Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
+      asset: asset as unknown as ExpandedSheetParamAsset,
+      address: asset.address,
+      chainId: asset.chain_id,
+    });
+  }, []);
+
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
         <SlackSheet
           backgroundColor={backgroundColor}
-          {...(IS_IOS
-            ? { height: '100%' }
-            : {
-                additionalTopPadding: true,
-                contentHeight: getPositionSheetHeight({ position }),
-              })}
+          height={IS_IOS ? '100%' : undefined}
+          additionalTopPadding={IS_IOS ? undefined : true}
+          contentHeight={IS_IOS ? undefined : getPositionSheetHeight({ position })}
           scrollEnabled
         >
           <Box padding="20px" width="full" paddingBottom={{ custom: 50 }}>
@@ -81,7 +85,7 @@ export const PositionSheet: React.FC = () => {
               <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
                 <Box style={{ maxWidth: '58%' }}>
                   <Inline horizontalSpace={'10px'} alignVertical="center" wrap={false}>
-                    {/* @ts-ignore js component*/}
+                    {/* @ts-expect-error - RequestVendorLogoIcon is a JS component without TypeScript definitions */}
                     <RequestVendorLogoIcon
                       backgroundColor={positionColor}
                       dappName={startCase(position.type.split('-')[0])}
@@ -93,7 +97,7 @@ export const PositionSheet: React.FC = () => {
                         {capitalize(position.dapp.name.replaceAll('-', ' '))}
                       </Text>
                       <Text size="26pt" weight="heavy" color="label" numberOfLines={1}>
-                        {position.totals.totals.display}
+                        {position.totals.total.display}
                       </Text>
                     </Stack>
                   </Inline>
@@ -118,35 +122,37 @@ export const PositionSheet: React.FC = () => {
               </Inline>
 
               <Stack space={'20px'}>
-                {(deposits.length || false) && (
+                {(position.deposits.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
                     {i18n.t(i18n.l.positions.deposits)}
                   </Text>
                 )}
-                {deposits.map(deposit => (
+                {position.deposits.map(deposit => (
                   <SubPositionListItem
-                    key={`deposit-${deposit.asset.asset_code}-${deposit.quantity}-${deposit.apy}`}
+                    key={`deposit-${deposit.asset.address}-${deposit.quantity}-${deposit.apy}`}
                     asset={deposit.underlying[0].asset}
                     quantity={deposit.underlying[0].quantity}
                     native={deposit.underlying[0].native}
                     dappVersion={deposit.dappVersion}
                     positionColor={positionColor}
                     apy={deposit.apy}
+                    onPress={() => openTokenSheet(deposit.underlying[0].asset)}
                   />
                 ))}
 
-                {(lpDeposits.length || false) && (
+                {(position.pools.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
                     {i18n.t(i18n.l.positions.pools)}
                   </Text>
                 )}
-                {lpDeposits.map(deposit => (
+                {position.pools.map(pool => (
                   <LpPositionListItem
-                    key={`deposit-${deposit.asset.asset_code}-${deposit.quantity}`}
-                    assets={deposit.underlying}
-                    totalAssetsValue={deposit.totalValue}
-                    isConcentratedLiquidity={deposit.isConcentratedLiquidity}
-                    dappVersion={deposit.dappVersion}
+                    key={`pool-${pool.asset.address}-${pool.quantity}`}
+                    assets={pool.underlying}
+                    totalAssetsValue={pool.totalValue}
+                    isConcentratedLiquidity={pool.isConcentratedLiquidity}
+                    dappVersion={pool.dappVersion}
+                    onPress={openTokenSheet}
                   />
                 ))}
 
@@ -158,20 +164,22 @@ export const PositionSheet: React.FC = () => {
                 {position.stakes.map(stake =>
                   stake.isLp ? (
                     <LpPositionListItem
-                      key={`stake-${stake.asset.asset_code}-${stake.quantity}`}
+                      key={`stake-${stake.asset.address}-${stake.quantity}`}
                       assets={stake.underlying}
                       totalAssetsValue={stake.totalValue}
                       isConcentratedLiquidity={stake.isConcentratedLiquidity}
                       dappVersion={stake.dappVersion}
+                      onPress={openTokenSheet} // re-arranges assets for display
                     />
                   ) : (
                     <SubPositionListItem
-                      key={`stake-${stake.asset.asset_code}-${stake.quantity}`}
+                      key={`stake-${stake.asset.address}-${stake.quantity}`}
                       asset={stake.underlying[0].asset}
                       quantity={stake.underlying[0].quantity}
                       native={stake.underlying[0].native}
                       positionColor={positionColor}
                       apy={stake.apy}
+                      onPress={() => openTokenSheet(stake.underlying[0].asset)}
                     />
                   )
                 )}
@@ -183,28 +191,30 @@ export const PositionSheet: React.FC = () => {
                 )}
                 {position.borrows.map(borrow => (
                   <SubPositionListItem
-                    key={`borrow-${borrow.underlying[0].asset.asset_code}-${borrow.quantity}-${borrow.apy}`}
+                    key={`borrow-${borrow.underlying[0].asset.address}-${borrow.quantity}-${borrow.apy}`}
                     asset={borrow.underlying[0].asset}
                     quantity={borrow.underlying[0].quantity}
                     native={borrow.underlying[0].native}
                     positionColor={positionColor}
                     apy={borrow.apy}
+                    onPress={() => openTokenSheet(borrow.underlying[0].asset)}
                   />
                 ))}
 
-                {(position.claimables.length || false) && (
+                {(position.rewards.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
                     {i18n.t(i18n.l.positions.rewards)}
                   </Text>
                 )}
-                {position.claimables.map(claim => (
+                {position.rewards.map(reward => (
                   <SubPositionListItem
-                    key={`claimable-${claim.asset.asset_code}-${claim.quantity}`}
-                    asset={claim.asset}
-                    quantity={claim.quantity}
-                    native={claim.native}
+                    key={`claimable-${reward.asset.address}-${reward.quantity}`}
+                    asset={reward.asset}
+                    quantity={reward.quantity}
+                    native={reward.native}
                     positionColor={positionColor}
                     apy={undefined}
+                    onPress={() => openTokenSheet(reward.asset)}
                   />
                 ))}
               </Stack>

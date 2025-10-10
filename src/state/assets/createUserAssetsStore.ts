@@ -21,7 +21,7 @@ import {
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { LiveTokensData } from '@/state/liveTokens/liveTokensStore';
 import { toUnixTime } from '@/worklets/dates';
-import { usePositionsStore } from '@/state/positions/positions';
+import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();

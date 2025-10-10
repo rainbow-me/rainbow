@@ -2197,6 +2197,9 @@
         "out_of_range": "Out of Range",
         "in_range": "In Range"
       },
+      "lp_allocation": {
+        "other": "Other"
+      },
       "open_dapp": "Open 􀮶",
       "deposits": "Deposits",
       "borrows": "Borrows",

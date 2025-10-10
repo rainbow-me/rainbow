@@ -2,16 +2,16 @@ import { Box, Column, Columns, Inline, Stack, Text, globalColors } from '@/desig
 import React, { memo, useCallback, useMemo } from 'react';
 import { useTheme } from '@/theme';
 
-import { GenericCard } from '../cards/GenericCard';
+import { GenericCard } from '@/components/cards/GenericCard';
 import startCase from 'lodash/startCase';
-import { RequestVendorLogoIcon } from '../coin-icon';
+import { RequestVendorLogoIcon } from '@/components/coin-icon';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
-import { PositionAsset, RainbowBorrow, RainbowClaimable, RainbowDeposit, RainbowPosition, RainbowStake } from '@/resources/defi/types';
-import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
+import { PositionAsset, RainbowBorrow, RainbowReward, RainbowDeposit, RainbowPosition, RainbowStake } from '@/features/positions/types';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 type PositionCardProps = {
   position: RainbowPosition;
@@ -36,7 +36,7 @@ const CoinIconStack = memo(function CoinIconStack({ tokens }: { tokens: Position
       {tokens.map((token, index) => {
         return (
           <Box
-            key={`availableNetwork-${token.asset_code}`}
+            key={`token-${token.address}`}
             marginTop={{ custom: -2 }}
             marginLeft={{ custom: index > 0 ? -8 : 0 }}
             style={{
@@ -58,7 +58,11 @@ const CoinIconStack = memo(function CoinIconStack({ tokens }: { tokens: Position
 export const PositionCard = ({ position }: PositionCardProps) => {
   const { colors, isDarkMode } = useTheme();
   const totalPositions =
-    (position.borrows.length || 0) + (position.deposits.length || 0) + (position.claimables.length || 0) + (position.stakes.length || 0);
+    (position.borrows.length || 0) +
+    (position.deposits.length || 0) +
+    (position.pools.length || 0) +
+    (position.rewards.length || 0) +
+    (position.stakes.length || 0);
 
   const { navigate } = useNavigation();
 
@@ -79,8 +83,8 @@ export const PositionCard = ({ position }: PositionCardProps) => {
         tokens.push(asset);
       });
     });
-    position.claimables.forEach((claimable: RainbowClaimable) => {
-      tokens.push(claimable.asset);
+    position.rewards.forEach((reward: RainbowReward) => {
+      tokens.push(reward.asset);
     });
     position.borrows.forEach((borrow: RainbowBorrow) => {
       borrow.underlying.forEach(({ asset }) => {
@@ -110,6 +114,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
           <Box>
             <Columns space="20px" alignHorizontal="justify">
               <Column width="content">
+                {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
                 {/* @ts-ignore js component*/}
                 <RequestVendorLogoIcon
                   backgroundColor={positionColor}
@@ -151,7 +156,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
               </Inline>
             </Box>
             <Text color={{ custom: colors.black }} size="17pt" weight="semibold" numberOfLines={1}>
-              {position.totals.totals.display}
+              {position.totals.total.display}
             </Text>
           </Stack>
         </Stack>

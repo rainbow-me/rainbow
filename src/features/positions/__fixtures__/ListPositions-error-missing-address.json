@@ -1,0 +1,4 @@
+{
+  "code": 400,
+  "message": "input payload validation failed: user address unknown format , attempted to normalize to 0x: "
+}

@@ -6,7 +6,7 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { GetAssetsResponse, UserAsset } from '@/state/assets/types';
 import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { usePositionsStore } from '@/state/positions/positions';
+import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';

@@ -2,15 +2,15 @@ import React from 'react';
 import { Bleed, Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
 import { useTheme } from '@/theme';
 import {
+  convertAmountToBalanceDisplay,
   convertAmountToPercentageDisplay,
   convertAmountToPercentageDisplayWithThreshold,
-  convertRawAmountToRoundedDecimal,
 } from '@/helpers/utilities';
-import { NativeDisplay, PositionAsset } from '@/resources/defi/types';
+import { NativeDisplay, PositionAsset } from '@/features/positions/types';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { ButtonPressAnimation } from '@/components/animations';
 
 type Props = {
   asset: PositionAsset;
@@ -19,25 +19,25 @@ type Props = {
   native: NativeDisplay;
   positionColor: string;
   dappVersion?: string;
+  onPress?: () => void;
 };
 
-export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, native, positionColor, dappVersion }) => {
+export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, native, positionColor, dappVersion, onPress }) => {
   const theme = useTheme();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const chainId = useBackendNetworksStore.getState().getChainsIdByName()[asset.network];
-  const { data: externalAsset } = useExternalToken({ address: asset.asset_code, chainId, currency: nativeCurrency });
+  const { data: externalAsset } = useExternalToken({ address: asset.address, chainId: asset.chain_id, currency: nativeCurrency });
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  const priceChangeColor = (asset.price?.relative_change_24h || 0) < 0 ? theme.colors.blueGreyDark60 : theme.colors.green;
+  const priceChangeColor = (externalAsset?.price?.relativeChange24h || 0) < 0 ? theme.colors.blueGreyDark60 : theme.colors.green;
 
-  return (
+  const renderContent = () => (
     <Columns space={'10px'}>
       <Column width={'content'}>
         <RainbowCoinIcon
-          chainId={chainId}
+          chainId={asset.chain_id}
           color={externalAsset?.colors?.primary || externalAsset?.colors?.fallback || undefined}
-          icon={externalAsset?.icon_url}
+          icon={externalAsset?.icon_url || asset.icon_url}
           symbol={asset.symbol}
         />
       </Column>
@@ -47,9 +47,11 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
             <Columns alignVertical="center">
               <Column>
                 <Inline alignVertical="center" space={'6px'}>
-                  <Text size="17pt" weight="semibold" color="label" numberOfLines={1}>
-                    {asset.name}
-                  </Text>
+                  <Box style={{ maxWidth: 200 }}>
+                    <Text size="17pt" weight="semibold" color="label" numberOfLines={1}>
+                      {asset.name}
+                    </Text>
+                  </Box>
                   {dappVersion && (
                     <Box
                       borderRadius={7}
@@ -81,7 +83,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
                 <Inline alignVertical="center" space={'6px'}>
                   <Box style={{ maxWidth: 150 }}>
                     <Text size="13pt" weight="semibold" color="labelTertiary" numberOfLines={1}>
-                      {`${convertRawAmountToRoundedDecimal(quantity, asset.decimals, 3)} ${asset.symbol}`}
+                      {convertAmountToBalanceDisplay(quantity, asset)}
                     </Text>
                   </Box>
                   {apy && (
@@ -105,7 +107,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
               </Column>
               <Column width="content">
                 <Text size="13pt" weight="medium" color={{ custom: priceChangeColor }} align="right">
-                  {convertAmountToPercentageDisplay(`${asset.price?.relative_change_24h}`)}
+                  {convertAmountToPercentageDisplay(`${externalAsset?.price?.relativeChange24h}`)}
                 </Text>
               </Column>
             </Columns>
@@ -114,4 +116,6 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
       </Box>
     </Columns>
   );
+
+  return onPress ? <ButtonPressAnimation onPress={onPress}>{renderContent()}</ButtonPressAnimation> : renderContent();
 };

@@ -1,0 +1,3113 @@
+{
+  "meta": {
+    "addresses": ["0x42b9df65b219b3dd36ff330a4dd8f327a6ada990"],
+    "currency": "usd",
+    "chain_ids": [1, 10, 56, 137, 8453, 42161, 43114, 59144],
+    "errors": [],
+    "addresses_with_errors": [],
+    "chain_ids_with_errors": [],
+    "status": "ok"
+  },
+  "payload": {
+    "positions": [
+      {
+        "type": "aave-v3",
+        "network": "optimism",
+        "deposits": [
+          {
+            "quantity": "10365130",
+            "asset": {
+              "asset_code": "0x38d693cE1dF5AaDF7bC62595A37D667aD57922e5",
+              "decimals": 6,
+              "icon_url": "",
+              "name": "Aave Optimism USDCn",
+              "network": "optimism",
+              "chain_id": 10,
+              "price": {
+                "value": 0.999767515838,
+                "changed_at": 1759818717,
+                "relative_change_24h": 0.04207355721953396
+              },
+              "symbol": "aOptUSDCn",
+              "type": "aave-v3",
+              "colors": {
+                "primary": "#E95D72"
+              },
+              "networks": {
+                "10": {
+                  "address": "0x38d693ce1df5aadf7bc62595a37d667ad57922e5",
+                  "decimals": 6
+                }
+              },
+              "bridging": {
+                "bridgeable": false,
+                "networks": {}
+              },
+              "probable_spam": false,
+              "verified": true,
+              "defi_position": true,
+              "transferable": true,
+              "creation_date": "2023-11-28T12:36:31Z"
+            },
+            "underlying": [
+              {
+                "quantity": "10365130",
+                "asset": {
+                  "asset_code": "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
+                  "decimals": 6,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633498/assets/ethereum/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+                  "name": "USD Coin",
+                  "network": "optimism",
+                  "chain_id": 10,
+                  "price": {
+                    "value": 0.999767515838,
+                    "changed_at": 1759818717,
+                    "relative_change_24h": 0.04207355721953396
+                  },
+                  "symbol": "USDC",
+                  "type": "stablecoin",
+                  "colors": {
+                    "primary": "#2775CA",
+                    "fallback": "#9ABDE8"
+                  },
+                  "networks": {
+                    "1": {
+                      "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                      "decimals": 6
+                    },
+                    "10": {
+                      "address": "0x0b2c639c533813f4aa9d7837caf62653d097ff85",
+                      "decimals": 6
+                    },
+                    "56": {
+                      "address": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+                      "decimals": 18
+                    },
+                    "130": {
+                      "address": "0x078d782b760474a361dda0af3839290b0ef57ad6",
+                      "decimals": 6
+                    },
+                    "137": {
+                      "address": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+                      "decimals": 6
+                    },
+                    "8453": {
+                      "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+                      "decimals": 6
+                    },
+                    "42161": {
+                      "address": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+                      "decimals": 6
+                    },
+                    "43114": {
+                      "address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+                      "decimals": 6
+                    },
+                    "57073": {
+                      "address": "0x2d270e6886d130d724215a266106e6832161eaed",
+                      "decimals": 6
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "1": {
+                        "bridgeable": true
+                      },
+                      "56": {
+                        "bridgeable": true
+                      },
+                      "130": {
+                        "bridgeable": true
+                      },
+                      "137": {
+                        "bridgeable": true
+                      },
+                      "8453": {
+                        "bridgeable": true
+                      },
+                      "42161": {
+                        "bridgeable": true
+                      },
+                      "43114": {
+                        "bridgeable": true
+                      },
+                      "57073": {
+                        "bridgeable": false
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true,
+                  "creation_date": "2022-11-14T19:15:18Z",
+                  "mainnet_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+                }
+              }
+            ],
+            "apr": 0.04966395856344124,
+            "apy": 0.050917885663115836,
+            "total_asset": "3350793829676"
+          }
+        ],
+        "borrows": [],
+        "claimables": [],
+        "account_info": {
+          "total_collateral": "1035826162",
+          "total_debt": "0",
+          "available_borrows": "776869621",
+          "current_liquidation_threshold": "7800",
+          "ltv": "7500",
+          "health_factor": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+          "decimals": 8
+        },
+        "dapp": {
+          "name": "Aave V3",
+          "url": "https://aave.com/",
+          "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1731616710/dapps/aave.com.png",
+          "colors": {
+            "primary": "#42A7BB",
+            "fallback": "#9D60A4",
+            "shadow": ""
+          }
+        }
+      },
+      {
+        "type": "aave-v3",
+        "network": "avalanche",
+        "deposits": [
+          {
+            "quantity": "3025117439265698390",
+            "asset": {
+              "asset_code": "0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE",
+              "decimals": 18,
+              "icon_url": "",
+              "name": "Aave Avalanche DAI",
+              "network": "avalanche",
+              "chain_id": 43114,
+              "price": {
+                "value": 1.00011759012,
+                "changed_at": 1759818843,
+                "relative_change_24h": 0.013957679940206268
+              },
+              "symbol": "aAvaDAI",
+              "type": "aave-v3",
+              "colors": {
+                "primary": "#A8CE63"
+              },
+              "networks": {
+                "43114": {
+                  "address": "0x82e64f49ed5ec1bc6e43dad4fc8af9bb3a2312ee",
+                  "decimals": 18
+                }
+              },
+              "bridging": {
+                "bridgeable": false,
+                "networks": {}
+              },
+              "probable_spam": false,
+              "verified": true,
+              "defi_position": true,
+              "transferable": true,
+              "creation_date": "2022-03-11T12:28:17Z"
+            },
+            "underlying": [
+              {
+                "quantity": "3025117439265698390",
+                "asset": {
+                  "asset_code": "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+                  "decimals": 18,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633496/assets/ethereum/0x6b175474e89094c44da98b954eedeac495271d0f.png",
+                  "name": "Dai",
+                  "network": "avalanche",
+                  "chain_id": 43114,
+                  "price": {
+                    "value": 1.00011759012,
+                    "changed_at": 1759818843,
+                    "relative_change_24h": 0.013957679940206268
+                  },
+                  "symbol": "DAI",
+                  "type": "stablecoin",
+                  "colors": {
+                    "primary": "#F0B340",
+                    "fallback": "#F8D888"
+                  },
+                  "networks": {
+                    "1": {
+                      "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+                      "decimals": 18
+                    },
+                    "10": {
+                      "address": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+                      "decimals": 18
+                    },
+                    "56": {
+                      "address": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+                      "decimals": 18
+                    },
+                    "137": {
+                      "address": "0x84000b263080bc37d1dd73a29d92794a6cf1564e",
+                      "decimals": 18
+                    },
+                    "8453": {
+                      "address": "0x50c5725949a6f0c72e6c4a641f24049a917db0cb",
+                      "decimals": 18
+                    },
+                    "42161": {
+                      "address": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+                      "decimals": 18
+                    },
+                    "43114": {
+                      "address": "0xd586e7f844cea2f87f50152665bcbc2c279d8d70",
+                      "decimals": 18
+                    },
+                    "7777777": {
+                      "address": "0xd08a2917653d4e460893203471f0000826fb4034",
+                      "decimals": 18
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "1": {
+                        "bridgeable": true
+                      },
+                      "10": {
+                        "bridgeable": false
+                      },
+                      "56": {
+                        "bridgeable": false
+                      },
+                      "137": {
+                        "bridgeable": false
+                      },
+                      "8453": {
+                        "bridgeable": false
+                      },
+                      "42161": {
+                        "bridgeable": false
+                      },
+                      "7777777": {
+                        "bridgeable": false
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true,
+                  "creation_date": "2021-07-23T14:59:30Z",
+                  "mainnet_address": "0x6b175474e89094c44da98b954eedeac495271d0f"
+                }
+              }
+            ],
+            "apr": 0.032907145330890314,
+            "apy": 0.03345457019514031,
+            "total_asset": "1092915503242288824127508"
+          }
+        ],
+        "borrows": [
+          {
+            "quantity": "10842234460760",
+            "asset": {
+              "asset_code": "0x4a1c3aD6Ed28a636ee1751C69071f6be75DEb8B8",
+              "decimals": 18,
+              "icon_url": "",
+              "name": "Aave Avalanche Variable Debt WAVAX",
+              "network": "avalanche",
+              "chain_id": 43114,
+              "price": {
+                "value": 30.219475649000003,
+                "changed_at": 1759818812,
+                "relative_change_24h": 0.7031349191598979
+              },
+              "symbol": "variableDebtAvaWAVAX",
+              "type": "aave-v3",
+              "colors": {
+                "primary": "#FF9A23"
+              },
+              "networks": {
+                "43114": {
+                  "address": "0x4a1c3ad6ed28a636ee1751c69071f6be75deb8b8",
+                  "decimals": 18
+                }
+              },
+              "bridging": {
+                "bridgeable": false,
+                "networks": {}
+              },
+              "probable_spam": false,
+              "defi_position": true,
+              "transferable": true
+            },
+            "underlying": [
+              {
+                "quantity": "10842234460760",
+                "asset": {
+                  "asset_code": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+                  "decimals": 18,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1705329005/assets/avalanchec/0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7.png",
+                  "name": "Wrapped AVAX",
+                  "network": "avalanche",
+                  "chain_id": 43114,
+                  "price": {
+                    "value": 30.219475649000003,
+                    "changed_at": 1759818812,
+                    "relative_change_24h": 0.7031349191598979
+                  },
+                  "symbol": "WAVAX",
+                  "type": "wrapped-native",
+                  "colors": {
+                    "primary": "#E84040",
+                    "fallback": "#F08888"
+                  },
+                  "networks": {
+                    "43114": {
+                      "address": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+                      "decimals": 18
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": false,
+                    "networks": {}
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true
+                }
+              }
+            ],
+            "apr": 0.035356703943210284,
+            "apy": 0.035989187482798,
+            "total_asset": "5743051526191539073518574"
+          }
+        ],
+        "claimables": [
+          {
+            "quantity": "17931894538",
+            "asset": {
+              "asset_code": "0x2b2c81e08f1af8835a78bb2a90ae924ace0ea4be",
+              "decimals": 18,
+              "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1705329005/assets/avalanchec/0x2b2c81e08f1af8835a78bb2a90ae924ace0ea4be.png",
+              "name": "Staked AVAX",
+              "network": "avalanche",
+              "chain_id": 43114,
+              "price": {
+                "value": 37.3915183738,
+                "changed_at": 1759818943,
+                "relative_change_24h": 0.8881887722269435
+              },
+              "symbol": "sAVAX",
+              "colors": {
+                "primary": "#88D8F8",
+                "fallback": "#88D8F8"
+              },
+              "networks": {
+                "43114": {
+                  "address": "0x2b2c81e08f1af8835a78bb2a90ae924ace0ea4be",
+                  "decimals": 18
+                }
+              },
+              "bridging": {
+                "bridgeable": false,
+                "networks": {}
+              },
+              "probable_spam": false,
+              "verified": true,
+              "transferable": true,
+              "creation_date": "2022-01-26T12:19:27Z"
+            }
+          },
+          {
+            "quantity": "898389015613767",
+            "asset": {
+              "asset_code": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+              "decimals": 18,
+              "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1705329005/assets/avalanchec/0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7.png",
+              "name": "Wrapped AVAX",
+              "network": "avalanche",
+              "chain_id": 43114,
+              "price": {
+                "value": 30.219475649000003,
+                "changed_at": 1759818812,
+                "relative_change_24h": 0.7031349191598979
+              },
+              "symbol": "WAVAX",
+              "type": "wrapped-native",
+              "colors": {
+                "primary": "#E84040",
+                "fallback": "#F08888"
+              },
+              "networks": {
+                "43114": {
+                  "address": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+                  "decimals": 18
+                }
+              },
+              "bridging": {
+                "bridgeable": false,
+                "networks": {}
+              },
+              "probable_spam": false,
+              "verified": true,
+              "transferable": true
+            }
+          }
+        ],
+        "account_info": {
+          "total_collateral": "318015667",
+          "total_debt": "32823",
+          "available_borrows": "201080283",
+          "current_liquidation_threshold": "7680",
+          "ltv": "6324",
+          "health_factor": "7441145218053356072603",
+          "decimals": 8
+        },
+        "dapp": {
+          "name": "Aave V3",
+          "url": "https://aave.com/",
+          "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1731616710/dapps/aave.com.png",
+          "colors": {
+            "primary": "#42A7BB",
+            "fallback": "#9D60A4",
+            "shadow": ""
+          }
+        }
+      },
+      {
+        "type": "compound-v3",
+        "network": "arbitrum",
+        "deposits": [
+          {
+            "quantity": "100971368677700",
+            "asset": {
+              "asset_code": "0x6f7d514bbd4aff3bcd1140b7344b32f063dee486",
+              "decimals": 18,
+              "icon_url": "",
+              "name": "Compound WETH",
+              "network": "arbitrum",
+              "chain_id": 42161,
+              "price": {
+                "value": 4680.33,
+                "changed_at": 1759818687,
+                "relative_change_24h": 3.3950051362486633
+              },
+              "symbol": "cWETHv3",
+              "type": "compound-v3",
+              "colors": {
+                "primary": "#B6B1B6"
+              },
+              "networks": {
+                "42161": {
+                  "address": "0x6f7d514bbd4aff3bcd1140b7344b32f063dee486",
+                  "decimals": 18
+                }
+              },
+              "bridging": {
+                "bridgeable": false,
+                "networks": {}
+              },
+              "probable_spam": false,
+              "defi_position": true,
+              "transferable": true
+            },
+            "underlying": [
+              {
+                "quantity": "100971368677700",
+                "asset": {
+                  "asset_code": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+                  "decimals": 18,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+                  "name": "Wrapped Ether",
+                  "network": "arbitrum",
+                  "chain_id": 42161,
+                  "price": {
+                    "value": 4680.33,
+                    "changed_at": 1759818687,
+                    "relative_change_24h": 3.3950051362486633
+                  },
+                  "symbol": "WETH",
+                  "type": "wrapped-native",
+                  "colors": {
+                    "primary": "#25292E",
+                    "fallback": "#B6B6B7"
+                  },
+                  "networks": {
+                    "1": {
+                      "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                      "decimals": 18
+                    },
+                    "10": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "130": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "137": {
+                      "address": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+                      "decimals": 18
+                    },
+                    "324": {
+                      "address": "0x5aea5775959fbc2557cc8789bc1bf90a239d9a91",
+                      "decimals": 18
+                    },
+                    "1625": {
+                      "address": "0xf6f832466cd6c21967e0d954109403f36bc8ceaa",
+                      "decimals": 18
+                    },
+                    "1996": {
+                      "address": "0xe01e3b20c5819cf919f7f1a2b4c18bbfd222f376",
+                      "decimals": 18
+                    },
+                    "8453": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "42161": {
+                      "address": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+                      "decimals": 18
+                    },
+                    "43114": {
+                      "address": "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab",
+                      "decimals": 18
+                    },
+                    "57073": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "59144": {
+                      "address": "0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f",
+                      "decimals": 18
+                    },
+                    "81457": {
+                      "address": "0x4300000000000000000000000000000000000004",
+                      "decimals": 18
+                    },
+                    "534352": {
+                      "address": "0x5300000000000000000000000000000000000004",
+                      "decimals": 18
+                    },
+                    "7777777": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "1": {
+                        "bridgeable": true
+                      },
+                      "10": {
+                        "bridgeable": true
+                      },
+                      "130": {
+                        "bridgeable": false
+                      },
+                      "137": {
+                        "bridgeable": true
+                      },
+                      "324": {
+                        "bridgeable": false
+                      },
+                      "1625": {
+                        "bridgeable": false
+                      },
+                      "1996": {
+                        "bridgeable": false
+                      },
+                      "8453": {
+                        "bridgeable": true
+                      },
+                      "43114": {
+                        "bridgeable": true
+                      },
+                      "57073": {
+                        "bridgeable": false
+                      },
+                      "59144": {
+                        "bridgeable": false
+                      },
+                      "81457": {
+                        "bridgeable": true
+                      },
+                      "534352": {
+                        "bridgeable": false
+                      },
+                      "7777777": {
+                        "bridgeable": false
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true,
+                  "mainnet_address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+                }
+              }
+            ],
+            "apr": 0.014608337741136,
+            "apy": 0.014715564250595614
+          }
+        ],
+        "borrows": [],
+        "claimables": [],
+        "dapp": {
+          "name": "Compound V3",
+          "url": "https://app.compound.finance/",
+          "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/app.compound.finance.png",
+          "colors": {
+            "primary": "#05D89D",
+            "fallback": "#05D89D",
+            "shadow": ""
+          }
+        }
+      },
+      {
+        "type": "aave-v2",
+        "network": "polygon",
+        "deposits": [
+          {
+            "quantity": "2538862",
+            "asset": {
+              "asset_code": "0x1a13f4ca1d028320a707d99520abfefca3998b7f",
+              "decimals": 6,
+              "icon_url": "",
+              "name": "Aave Matic Market USDC",
+              "network": "polygon",
+              "chain_id": 137,
+              "price": {
+                "value": 0.99965434,
+                "changed_at": 1759818817,
+                "relative_change_24h": 0.000017005881143875987
+              },
+              "symbol": "amUSDC",
+              "type": "aave-v2",
+              "colors": {
+                "primary": "#B6B1B6"
+              },
+              "networks": {
+                "137": {
+                  "address": "0x1a13f4ca1d028320a707d99520abfefca3998b7f",
+                  "decimals": 6
+                }
+              },
+              "bridging": {
+                "bridgeable": false,
+                "networks": {}
+              },
+              "probable_spam": false,
+              "verified": true,
+              "defi_position": true,
+              "transferable": true,
+              "creation_date": "2021-03-31T09:02:31Z"
+            },
+            "underlying": [
+              {
+                "quantity": "2538862",
+                "asset": {
+                  "asset_code": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+                  "decimals": 6,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633498/assets/ethereum/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+                  "name": "USD Coin (Bridged)",
+                  "network": "polygon",
+                  "chain_id": 137,
+                  "price": {
+                    "value": 0.99965434,
+                    "changed_at": 1759818817,
+                    "relative_change_24h": 0.000017005881143875987
+                  },
+                  "symbol": "USDC.e",
+                  "type": "stablecoin",
+                  "colors": {
+                    "primary": "#2775CA",
+                    "fallback": "#9ABDE8"
+                  },
+                  "networks": {
+                    "10": {
+                      "address": "0x7f5c764cbc14f9669b88837ca1490cca17c31607",
+                      "decimals": 6
+                    },
+                    "137": {
+                      "address": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+                      "decimals": 6
+                    },
+                    "1625": {
+                      "address": "0xfbda5f676cb37624f28265a144a48b0d6e87d3b6",
+                      "decimals": 6
+                    },
+                    "1996": {
+                      "address": "0x13d675bc5e659b11cfa331594cf35a20815dcf02",
+                      "decimals": 6
+                    },
+                    "42161": {
+                      "address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+                      "decimals": 6
+                    },
+                    "43114": {
+                      "address": "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
+                      "decimals": 6
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "10": {
+                        "bridgeable": true
+                      },
+                      "1625": {
+                        "bridgeable": false
+                      },
+                      "1996": {
+                        "bridgeable": false
+                      },
+                      "42161": {
+                        "bridgeable": true
+                      },
+                      "43114": {
+                        "bridgeable": true
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true,
+                  "creation_date": "2020-09-27T09:40:11Z"
+                }
+              }
+            ],
+            "apr": 0.000008718461811826602,
+            "apy": 0.00000871802423896284,
+            "total_asset": "1143011911615"
+          }
+        ],
+        "borrows": [],
+        "claimables": null,
+        "account_info": {
+          "total_collateral": "13295",
+          "total_debt": "0",
+          "available_borrows": "0",
+          "current_liquidation_threshold": "8450",
+          "ltv": "0",
+          "health_factor": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+          "decimals": 8
+        },
+        "dapp": {
+          "name": "Aave V2",
+          "url": "https://aave.com/",
+          "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1731616710/dapps/aave.com.png",
+          "colors": {
+            "primary": "#42A7BB",
+            "fallback": "#9D60A4",
+            "shadow": ""
+          }
+        }
+      },
+      {
+        "type": "aave-v3",
+        "network": "polygon",
+        "deposits": [
+          {
+            "quantity": "4985882",
+            "asset": {
+              "asset_code": "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
+              "decimals": 6,
+              "icon_url": "",
+              "name": "Aave Polygon USDC",
+              "network": "polygon",
+              "chain_id": 137,
+              "price": {
+                "value": 0.99965434,
+                "changed_at": 1759818817,
+                "relative_change_24h": 0.000017005881143875987
+              },
+              "symbol": "aPolUSDC",
+              "type": "aave-v3",
+              "colors": {
+                "primary": "#FF8CBC"
+              },
+              "networks": {
+                "137": {
+                  "address": "0x625e7708f30ca75bfd92586e17077590c60eb4cd",
+                  "decimals": 6
+                }
+              },
+              "bridging": {
+                "bridgeable": false,
+                "networks": {}
+              },
+              "probable_spam": false,
+              "verified": true,
+              "defi_position": true,
+              "transferable": true,
+              "creation_date": "2022-03-11T10:36:57Z"
+            },
+            "underlying": [
+              {
+                "quantity": "4985882",
+                "asset": {
+                  "asset_code": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+                  "decimals": 6,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633498/assets/ethereum/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+                  "name": "USD Coin (Bridged)",
+                  "network": "polygon",
+                  "chain_id": 137,
+                  "price": {
+                    "value": 0.99965434,
+                    "changed_at": 1759818817,
+                    "relative_change_24h": 0.000017005881143875987
+                  },
+                  "symbol": "USDC.e",
+                  "type": "stablecoin",
+                  "colors": {
+                    "primary": "#2775CA",
+                    "fallback": "#9ABDE8"
+                  },
+                  "networks": {
+                    "10": {
+                      "address": "0x7f5c764cbc14f9669b88837ca1490cca17c31607",
+                      "decimals": 6
+                    },
+                    "137": {
+                      "address": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+                      "decimals": 6
+                    },
+                    "1625": {
+                      "address": "0xfbda5f676cb37624f28265a144a48b0d6e87d3b6",
+                      "decimals": 6
+                    },
+                    "1996": {
+                      "address": "0x13d675bc5e659b11cfa331594cf35a20815dcf02",
+                      "decimals": 6
+                    },
+                    "42161": {
+                      "address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+                      "decimals": 6
+                    },
+                    "43114": {
+                      "address": "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
+                      "decimals": 6
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "10": {
+                        "bridgeable": true
+                      },
+                      "1625": {
+                        "bridgeable": false
+                      },
+                      "1996": {
+                        "bridgeable": false
+                      },
+                      "42161": {
+                        "bridgeable": true
+                      },
+                      "43114": {
+                        "bridgeable": true
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true,
+                  "creation_date": "2020-09-27T09:40:11Z"
+                }
+              }
+            ],
+            "apr": 0.02779406689553752,
+            "apy": 0.02818392629327593,
+            "total_asset": "1080576317767"
+          },
+          {
+            "quantity": "4142918751886252",
+            "asset": {
+              "asset_code": "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8",
+              "decimals": 18,
+              "icon_url": "",
+              "name": "Aave Polygon WETH",
+              "network": "polygon",
+              "chain_id": 137,
+              "price": {
+                "value": 4684.15195036,
+                "changed_at": 1759818908,
+                "relative_change_24h": 2.593644855791968
+              },
+              "symbol": "aPolWETH",
+              "type": "aave-v3",
+              "colors": {
+                "primary": "#FFE279"
+              },
+              "networks": {
+                "137": {
+                  "address": "0xe50fa9b3c56ffb159cb0fca61f5c9d750e8128c8",
+                  "decimals": 18
+                }
+              },
+              "bridging": {
+                "bridgeable": false,
+                "networks": {}
+              },
+              "probable_spam": false,
+              "verified": true,
+              "defi_position": true,
+              "transferable": true,
+              "creation_date": "2022-03-11T10:42:59Z"
+            },
+            "underlying": [
+              {
+                "quantity": "4142918751886252",
+                "asset": {
+                  "asset_code": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+                  "decimals": 18,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+                  "name": "Wrapped Ether",
+                  "network": "polygon",
+                  "chain_id": 137,
+                  "price": {
+                    "value": 4684.15195036,
+                    "changed_at": 1759818908,
+                    "relative_change_24h": 2.593644855791968
+                  },
+                  "symbol": "WETH",
+                  "colors": {
+                    "primary": "#25292E",
+                    "fallback": "#B6B6B7"
+                  },
+                  "networks": {
+                    "1": {
+                      "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                      "decimals": 18
+                    },
+                    "10": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "130": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "137": {
+                      "address": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+                      "decimals": 18
+                    },
+                    "324": {
+                      "address": "0x5aea5775959fbc2557cc8789bc1bf90a239d9a91",
+                      "decimals": 18
+                    },
+                    "1625": {
+                      "address": "0xf6f832466cd6c21967e0d954109403f36bc8ceaa",
+                      "decimals": 18
+                    },
+                    "1996": {
+                      "address": "0xe01e3b20c5819cf919f7f1a2b4c18bbfd222f376",
+                      "decimals": 18
+                    },
+                    "8453": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "42161": {
+                      "address": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+                      "decimals": 18
+                    },
+                    "43114": {
+                      "address": "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab",
+                      "decimals": 18
+                    },
+                    "57073": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "59144": {
+                      "address": "0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f",
+                      "decimals": 18
+                    },
+                    "81457": {
+                      "address": "0x4300000000000000000000000000000000000004",
+                      "decimals": 18
+                    },
+                    "534352": {
+                      "address": "0x5300000000000000000000000000000000000004",
+                      "decimals": 18
+                    },
+                    "7777777": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "1": {
+                        "bridgeable": false
+                      },
+                      "10": {
+                        "bridgeable": false
+                      },
+                      "130": {
+                        "bridgeable": false
+                      },
+                      "324": {
+                        "bridgeable": false
+                      },
+                      "1625": {
+                        "bridgeable": false
+                      },
+                      "1996": {
+                        "bridgeable": false
+                      },
+                      "8453": {
+                        "bridgeable": true
+                      },
+                      "42161": {
+                        "bridgeable": true
+                      },
+                      "43114": {
+                        "bridgeable": true
+                      },
+                      "57073": {
+                        "bridgeable": false
+                      },
+                      "59144": {
+                        "bridgeable": false
+                      },
+                      "81457": {
+                        "bridgeable": false
+                      },
+                      "534352": {
+                        "bridgeable": false
+                      },
+                      "7777777": {
+                        "bridgeable": false
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true,
+                  "creation_date": "2020-08-26T12:05:25Z",
+                  "mainnet_address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+                }
+              }
+            ],
+            "apr": 0.004940298464920781,
+            "apy": 0.004952520633773716,
+            "total_asset": "12012134910991404528175"
+          },
+          {
+            "quantity": "1350754",
+            "asset": {
+              "asset_code": "0x6ab707Aca953eDAeFBc4fD23bA73294241490620",
+              "decimals": 6,
+              "icon_url": "",
+              "name": "Aave Polygon USDT",
+              "network": "polygon",
+              "chain_id": 137,
+              "price": {
+                "value": 1.00033604659,
+                "changed_at": 1759818844,
+                "relative_change_24h": 0.061934234745872355
+              },
+              "symbol": "aPolUSDT",
+              "type": "aave-v3",
+              "colors": {
+                "primary": "#FF8CBC"
+              },
+              "networks": {
+                "137": {
+                  "address": "0x6ab707aca953edaefbc4fd23ba73294241490620",
+                  "decimals": 6
+                }
+              },
+              "bridging": {
+                "bridgeable": false,
+                "networks": {}
+              },
+              "probable_spam": false,
+              "verified": true,
+              "defi_position": true,
+              "transferable": true,
+              "creation_date": "2022-03-11T10:42:59Z"
+            },
+            "underlying": [
+              {
+                "quantity": "1350754",
+                "asset": {
+                  "asset_code": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+                  "decimals": 6,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1693264951/assets/ethereum/0xdac17f958d2ee523a2206206994597c13d831ec7.png",
+                  "name": "Tether USD",
+                  "network": "polygon",
+                  "chain_id": 137,
+                  "price": {
+                    "value": 1.00033604659,
+                    "changed_at": 1759818844,
+                    "relative_change_24h": 0.061934234745872355
+                  },
+                  "symbol": "USDT",
+                  "type": "stablecoin",
+                  "colors": {
+                    "primary": "#22A079",
+                    "fallback": "#58B79B"
+                  },
+                  "networks": {
+                    "1": {
+                      "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+                      "decimals": 6
+                    },
+                    "10": {
+                      "address": "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58",
+                      "decimals": 6
+                    },
+                    "56": {
+                      "address": "0x55d398326f99059ff775485246999027b3197955",
+                      "decimals": 18
+                    },
+                    "137": {
+                      "address": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+                      "decimals": 6
+                    },
+                    "1625": {
+                      "address": "0x816e810f9f787d669fb71932deabf6c83781cd48",
+                      "decimals": 6
+                    },
+                    "8453": {
+                      "address": "0xfde4c96c8593536e31f229ea8f37b2ada2699bb2",
+                      "decimals": 6
+                    },
+                    "42161": {
+                      "address": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+                      "decimals": 6
+                    },
+                    "43114": {
+                      "address": "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7",
+                      "decimals": 6
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "1": {
+                        "bridgeable": true
+                      },
+                      "10": {
+                        "bridgeable": true
+                      },
+                      "56": {
+                        "bridgeable": true
+                      },
+                      "1625": {
+                        "bridgeable": false
+                      },
+                      "8453": {
+                        "bridgeable": true
+                      },
+                      "42161": {
+                        "bridgeable": true
+                      },
+                      "43114": {
+                        "bridgeable": true
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true,
+                  "creation_date": "2020-09-07T21:07:27Z",
+                  "mainnet_address": "0xdac17f958d2ee523a2206206994597c13d831ec7"
+                }
+              }
+            ],
+            "apr": 0.053803744166095346,
+            "apy": 0.05527747517066284,
+            "total_asset": "7128866210659"
+          }
+        ],
+        "borrows": [],
+        "claimables": [],
+        "account_info": {
+          "total_collateral": "2474230039",
+          "total_debt": "0",
+          "available_borrows": "1553569041",
+          "current_liquidation_threshold": "8190",
+          "ltv": "6279",
+          "health_factor": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+          "decimals": 8
+        },
+        "dapp": {
+          "name": "Aave V3",
+          "url": "https://aave.com/",
+          "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1731616710/dapps/aave.com.png",
+          "colors": {
+            "primary": "#42A7BB",
+            "fallback": "#9D60A4",
+            "shadow": ""
+          }
+        }
+      },
+      {
+        "type": "aave-v2",
+        "network": "mainnet",
+        "deposits": [
+          {
+            "quantity": "359886485701421",
+            "asset": {
+              "asset_code": "0x030ba81f1c18d280636f32af80b9aad02cf0854e",
+              "decimals": 18,
+              "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633501/assets/ethereum/0x030ba81f1c18d280636f32af80b9aad02cf0854e.png",
+              "name": "Aave WETH",
+              "network": "mainnet",
+              "chain_id": 1,
+              "price": {
+                "value": 4680.33,
+                "changed_at": 1759818717,
+                "relative_change_24h": 3.3950051362486633
+              },
+              "symbol": "aWETH",
+              "type": "aave-v2",
+              "colors": {
+                "primary": "#25292E",
+                "fallback": "#AC58A2",
+                "shadow": "#7285B2"
+              },
+              "networks": {
+                "1": {
+                  "address": "0x030ba81f1c18d280636f32af80b9aad02cf0854e",
+                  "decimals": 18
+                }
+              },
+              "bridging": {
+                "bridgeable": false,
+                "networks": {}
+              },
+              "probable_spam": false,
+              "verified": true,
+              "defi_position": true,
+              "transferable": true,
+              "creation_date": "2020-11-30T22:20:30Z"
+            },
+            "underlying": [
+              {
+                "quantity": "359886485701421",
+                "asset": {
+                  "asset_code": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+                  "decimals": 18,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+                  "name": "Wrapped Ether",
+                  "network": "mainnet",
+                  "chain_id": 1,
+                  "price": {
+                    "value": 4680.33,
+                    "changed_at": 1759818717,
+                    "relative_change_24h": 3.3950051362486633
+                  },
+                  "symbol": "WETH",
+                  "type": "wrapped-native",
+                  "colors": {
+                    "primary": "#25292E",
+                    "fallback": "#B6B6B7"
+                  },
+                  "networks": {
+                    "1": {
+                      "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                      "decimals": 18
+                    },
+                    "10": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "130": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "137": {
+                      "address": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+                      "decimals": 18
+                    },
+                    "324": {
+                      "address": "0x5aea5775959fbc2557cc8789bc1bf90a239d9a91",
+                      "decimals": 18
+                    },
+                    "1625": {
+                      "address": "0xf6f832466cd6c21967e0d954109403f36bc8ceaa",
+                      "decimals": 18
+                    },
+                    "1996": {
+                      "address": "0xe01e3b20c5819cf919f7f1a2b4c18bbfd222f376",
+                      "decimals": 18
+                    },
+                    "8453": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "42161": {
+                      "address": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+                      "decimals": 18
+                    },
+                    "43114": {
+                      "address": "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab",
+                      "decimals": 18
+                    },
+                    "57073": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "59144": {
+                      "address": "0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f",
+                      "decimals": 18
+                    },
+                    "81457": {
+                      "address": "0x4300000000000000000000000000000000000004",
+                      "decimals": 18
+                    },
+                    "534352": {
+                      "address": "0x5300000000000000000000000000000000000004",
+                      "decimals": 18
+                    },
+                    "7777777": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "10": {
+                        "bridgeable": true
+                      },
+                      "130": {
+                        "bridgeable": false
+                      },
+                      "137": {
+                        "bridgeable": true
+                      },
+                      "324": {
+                        "bridgeable": false
+                      },
+                      "1625": {
+                        "bridgeable": false
+                      },
+                      "1996": {
+                        "bridgeable": false
+                      },
+                      "8453": {
+                        "bridgeable": true
+                      },
+                      "42161": {
+                        "bridgeable": true
+                      },
+                      "43114": {
+                        "bridgeable": true
+                      },
+                      "57073": {
+                        "bridgeable": false
+                      },
+                      "59144": {
+                        "bridgeable": false
+                      },
+                      "81457": {
+                        "bridgeable": true
+                      },
+                      "534352": {
+                        "bridgeable": false
+                      },
+                      "7777777": {
+                        "bridgeable": false
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true
+                }
+              }
+            ],
+            "apr": 0.0004590451810043492,
+            "apy": 0.00045914761677767757,
+            "total_asset": "21528732319266501290852"
+          }
+        ],
+        "borrows": [],
+        "claimables": [
+          {
+            "quantity": "505643719165732",
+            "asset": {
+              "asset_code": "0x4da27a545c0c5b758a6ba100e3a049001de870f5",
+              "decimals": 18,
+              "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1654697838/assets/ethereum/0x4da27a545c0c5b758a6ba100e3a049001de870f5.png",
+              "name": "Staked Aave",
+              "network": "mainnet",
+              "chain_id": 1,
+              "price": {
+                "value": 296.956566136,
+                "changed_at": 1759818944,
+                "relative_change_24h": 3.3836936704933747
+              },
+              "symbol": "stAAVE",
+              "colors": {
+                "primary": "#18E0E0",
+                "fallback": "#C8DBE5"
+              },
+              "networks": {
+                "1": {
+                  "address": "0x4da27a545c0c5b758a6ba100e3a049001de870f5",
+                  "decimals": 18
+                }
+              },
+              "bridging": {
+                "bridgeable": false,
+                "networks": {}
+              },
+              "probable_spam": false,
+              "verified": true,
+              "transferable": true,
+              "creation_date": "2020-09-24T18:44:35Z"
+            }
+          }
+        ],
+        "account_info": {
+          "total_collateral": "197739019",
+          "total_debt": "0",
+          "available_borrows": "138931434",
+          "current_liquidation_threshold": "7325",
+          "ltv": "7026",
+          "health_factor": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+          "decimals": 8
+        },
+        "dapp": {
+          "name": "Aave V2",
+          "url": "https://aave.com/",
+          "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1731616710/dapps/aave.com.png",
+          "colors": {
+            "primary": "#42A7BB",
+            "fallback": "#9D60A4",
+            "shadow": ""
+          }
+        }
+      },
+      {
+        "type": "compound",
+        "network": "mainnet",
+        "deposits": [
+          {
+            "quantity": "24411438589",
+            "asset": {
+              "asset_code": "0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9",
+              "decimals": 8,
+              "icon_url": "",
+              "name": "Compound USDT",
+              "network": "mainnet",
+              "chain_id": 1,
+              "price": {
+                "value": 0,
+                "changed_at": 1759818944,
+                "relative_change_24h": 180.91811108698448
+              },
+              "symbol": "cUSDT",
+              "type": "compound",
+              "colors": {
+                "primary": "#C5DADB"
+              },
+              "networks": {
+                "1": {
+                  "address": "0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9",
+                  "decimals": 8
+                },
+                "137": {
+                  "address": "0x61b3c650154f9525dad3c1010de959fc6e2218f3",
+                  "decimals": 8
+                }
+              },
+              "bridging": {
+                "bridgeable": true,
+                "networks": {
+                  "137": {
+                    "bridgeable": true
+                  }
+                }
+              },
+              "probable_spam": false,
+              "verified": true,
+              "defi_position": true,
+              "transferable": true,
+              "creation_date": "2020-04-15T21:13:06Z"
+            },
+            "underlying": [
+              {
+                "quantity": "6245710",
+                "asset": {
+                  "asset_code": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+                  "decimals": 6,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1693264951/assets/ethereum/0xdac17f958d2ee523a2206206994597c13d831ec7.png",
+                  "name": "Tether USD",
+                  "network": "mainnet",
+                  "chain_id": 1,
+                  "price": {
+                    "value": 1.00036873792,
+                    "changed_at": 1759818817,
+                    "relative_change_24h": 0.022573778675170696
+                  },
+                  "symbol": "USDT",
+                  "type": "stablecoin",
+                  "colors": {
+                    "primary": "#22A079",
+                    "fallback": "#58B79B"
+                  },
+                  "networks": {
+                    "1": {
+                      "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+                      "decimals": 6
+                    },
+                    "10": {
+                      "address": "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58",
+                      "decimals": 6
+                    },
+                    "56": {
+                      "address": "0x55d398326f99059ff775485246999027b3197955",
+                      "decimals": 18
+                    },
+                    "137": {
+                      "address": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+                      "decimals": 6
+                    },
+                    "1625": {
+                      "address": "0x816e810f9f787d669fb71932deabf6c83781cd48",
+                      "decimals": 6
+                    },
+                    "8453": {
+                      "address": "0xfde4c96c8593536e31f229ea8f37b2ada2699bb2",
+                      "decimals": 6
+                    },
+                    "42161": {
+                      "address": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+                      "decimals": 6
+                    },
+                    "43114": {
+                      "address": "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7",
+                      "decimals": 6
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "10": {
+                        "bridgeable": true
+                      },
+                      "56": {
+                        "bridgeable": true
+                      },
+                      "137": {
+                        "bridgeable": true
+                      },
+                      "1625": {
+                        "bridgeable": false
+                      },
+                      "8453": {
+                        "bridgeable": true
+                      },
+                      "42161": {
+                        "bridgeable": true
+                      },
+                      "43114": {
+                        "bridgeable": true
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true,
+                  "creation_date": "2017-11-28T00:41:21Z"
+                }
+              }
+            ],
+            "apr": 0.0667629156484404,
+            "apy": 0.06904199380807707,
+            "total_asset": "314167532656070386"
+          },
+          {
+            "quantity": "497462",
+            "asset": {
+              "asset_code": "0xC11b1268C1A384e55C48c2391d8d480264A3A7F4",
+              "decimals": 8,
+              "icon_url": "",
+              "name": "Compound WBTC",
+              "network": "mainnet",
+              "chain_id": 1,
+              "price": {
+                "value": 0,
+                "changed_at": 1759818944,
+                "relative_change_24h": 0
+              },
+              "symbol": "cWBTC",
+              "type": "compound",
+              "colors": {
+                "primary": "#9669ED"
+              },
+              "networks": {
+                "1": {
+                  "address": "0xc11b1268c1a384e55c48c2391d8d480264a3a7f4",
+                  "decimals": 8
+                }
+              },
+              "bridging": {
+                "bridgeable": false,
+                "networks": {}
+              },
+              "probable_spam": false,
+              "verified": true,
+              "defi_position": true,
+              "transferable": true,
+              "creation_date": "2019-07-16T19:47:37Z"
+            },
+            "underlying": [
+              {
+                "quantity": "10050",
+                "asset": {
+                  "asset_code": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+                  "decimals": 8,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1693266228/assets/ethereum/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png",
+                  "name": "Wrapped Bitcoin",
+                  "network": "mainnet",
+                  "chain_id": 1,
+                  "price": {
+                    "value": 123996.578145,
+                    "changed_at": 1759818844,
+                    "relative_change_24h": 0.1041389717383309
+                  },
+                  "symbol": "WBTC",
+                  "colors": {
+                    "primary": "#FF9900",
+                    "fallback": "#F8C87B"
+                  },
+                  "networks": {
+                    "1": {
+                      "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+                      "decimals": 8
+                    },
+                    "10": {
+                      "address": "0x68f180fcce6836688e9084f035309e29bf0a2095",
+                      "decimals": 8
+                    },
+                    "137": {
+                      "address": "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
+                      "decimals": 8
+                    },
+                    "42161": {
+                      "address": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+                      "decimals": 8
+                    },
+                    "43114": {
+                      "address": "0x50b7545627a5162f82a992c33b87adc75187b218",
+                      "decimals": 8
+                    },
+                    "81457": {
+                      "address": "0xf7bc58b8d8f97adc129cfc4c9f45ce3c0e1d2692",
+                      "decimals": 8
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "10": {
+                        "bridgeable": true
+                      },
+                      "137": {
+                        "bridgeable": true
+                      },
+                      "42161": {
+                        "bridgeable": true
+                      },
+                      "43114": {
+                        "bridgeable": false
+                      },
+                      "81457": {
+                        "bridgeable": false
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true,
+                  "creation_date": "2018-11-24T21:45:52Z"
+                }
+              }
+            ],
+            "total_asset": "134349014284"
+          }
+        ],
+        "borrows": [
+          {
+            "quantity": "14143",
+            "asset": {
+              "asset_code": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+              "decimals": 6,
+              "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633498/assets/ethereum/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+              "name": "USD Coin",
+              "network": "mainnet",
+              "chain_id": 1,
+              "price": {
+                "value": 0.99963168,
+                "changed_at": 1759818660,
+                "relative_change_24h": -0.0020867250534870848
+              },
+              "symbol": "USDC",
+              "type": "stablecoin",
+              "colors": {
+                "primary": "#2775CA",
+                "fallback": "#9ABDE8"
+              },
+              "networks": {
+                "1": {
+                  "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                  "decimals": 6
+                },
+                "10": {
+                  "address": "0x0b2c639c533813f4aa9d7837caf62653d097ff85",
+                  "decimals": 6
+                },
+                "56": {
+                  "address": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+                  "decimals": 18
+                },
+                "130": {
+                  "address": "0x078d782b760474a361dda0af3839290b0ef57ad6",
+                  "decimals": 6
+                },
+                "137": {
+                  "address": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+                  "decimals": 6
+                },
+                "8453": {
+                  "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+                  "decimals": 6
+                },
+                "42161": {
+                  "address": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+                  "decimals": 6
+                },
+                "43114": {
+                  "address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+                  "decimals": 6
+                },
+                "57073": {
+                  "address": "0x2d270e6886d130d724215a266106e6832161eaed",
+                  "decimals": 6
+                }
+              },
+              "bridging": {
+                "bridgeable": true,
+                "networks": {
+                  "10": {
+                    "bridgeable": true
+                  },
+                  "56": {
+                    "bridgeable": true
+                  },
+                  "130": {
+                    "bridgeable": true
+                  },
+                  "137": {
+                    "bridgeable": true
+                  },
+                  "8453": {
+                    "bridgeable": true
+                  },
+                  "42161": {
+                    "bridgeable": true
+                  },
+                  "43114": {
+                    "bridgeable": true
+                  },
+                  "57073": {
+                    "bridgeable": false
+                  }
+                }
+              },
+              "probable_spam": false,
+              "verified": true,
+              "transferable": true,
+              "creation_date": "2018-08-03T19:28:24Z"
+            },
+            "underlying": [
+              {
+                "quantity": "14143",
+                "asset": {
+                  "asset_code": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                  "decimals": 6,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633498/assets/ethereum/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+                  "name": "USD Coin",
+                  "network": "mainnet",
+                  "chain_id": 1,
+                  "price": {
+                    "value": 0.99963168,
+                    "changed_at": 1759818660,
+                    "relative_change_24h": -0.0020867250534870848
+                  },
+                  "symbol": "USDC",
+                  "type": "stablecoin",
+                  "colors": {
+                    "primary": "#2775CA",
+                    "fallback": "#9ABDE8"
+                  },
+                  "networks": {
+                    "1": {
+                      "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                      "decimals": 6
+                    },
+                    "10": {
+                      "address": "0x0b2c639c533813f4aa9d7837caf62653d097ff85",
+                      "decimals": 6
+                    },
+                    "56": {
+                      "address": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+                      "decimals": 18
+                    },
+                    "130": {
+                      "address": "0x078d782b760474a361dda0af3839290b0ef57ad6",
+                      "decimals": 6
+                    },
+                    "137": {
+                      "address": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+                      "decimals": 6
+                    },
+                    "8453": {
+                      "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+                      "decimals": 6
+                    },
+                    "42161": {
+                      "address": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+                      "decimals": 6
+                    },
+                    "43114": {
+                      "address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+                      "decimals": 6
+                    },
+                    "57073": {
+                      "address": "0x2d270e6886d130d724215a266106e6832161eaed",
+                      "decimals": 6
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "10": {
+                        "bridgeable": true
+                      },
+                      "56": {
+                        "bridgeable": true
+                      },
+                      "130": {
+                        "bridgeable": true
+                      },
+                      "137": {
+                        "bridgeable": true
+                      },
+                      "8453": {
+                        "bridgeable": true
+                      },
+                      "42161": {
+                        "bridgeable": true
+                      },
+                      "43114": {
+                        "bridgeable": true
+                      },
+                      "57073": {
+                        "bridgeable": false
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true,
+                  "creation_date": "2018-08-03T19:28:24Z"
+                }
+              }
+            ],
+            "apr": 0.0369164750071977,
+            "apy": 0.03760635061279327,
+            "total_asset": "23316371474115"
+          },
+          {
+            "quantity": "12577335534942024",
+            "asset": {
+              "asset_code": "0x0D8775F648430679A709E98d2b0Cb6250d2887EF",
+              "decimals": 18,
+              "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633498/assets/ethereum/0x0d8775f648430679a709e98d2b0cb6250d2887ef.png",
+              "name": "Basic Attention Token",
+              "network": "mainnet",
+              "chain_id": 1,
+              "price": {
+                "value": 0.149140401313,
+                "changed_at": 1759818943,
+                "relative_change_24h": 1.323387464526186
+              },
+              "symbol": "BAT",
+              "colors": {
+                "primary": "#FF5000",
+                "fallback": "#F8A883"
+              },
+              "networks": {
+                "1": {
+                  "address": "0x0d8775f648430679a709e98d2b0cb6250d2887ef",
+                  "decimals": 18
+                },
+                "137": {
+                  "address": "0x3cef98bb43d732e2f285ee605a8158cde967d219",
+                  "decimals": 18
+                },
+                "42161": {
+                  "address": "0x3450687ef141dcd6110b77c2dc44b008616aee75",
+                  "decimals": 18
+                },
+                "43114": {
+                  "address": "0x98443b96ea4b0858fdf3219cd13e98c7a4690588",
+                  "decimals": 18
+                }
+              },
+              "bridging": {
+                "bridgeable": true,
+                "networks": {
+                  "137": {
+                    "bridgeable": true
+                  },
+                  "42161": {
+                    "bridgeable": false
+                  },
+                  "43114": {
+                    "bridgeable": false
+                  }
+                }
+              },
+              "probable_spam": false,
+              "verified": true,
+              "transferable": true,
+              "creation_date": "2017-05-29T18:45:10Z"
+            },
+            "underlying": [
+              {
+                "quantity": "12577335534942024",
+                "asset": {
+                  "asset_code": "0x0D8775F648430679A709E98d2b0Cb6250d2887EF",
+                  "decimals": 18,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633498/assets/ethereum/0x0d8775f648430679a709e98d2b0cb6250d2887ef.png",
+                  "name": "Basic Attention Token",
+                  "network": "mainnet",
+                  "chain_id": 1,
+                  "price": {
+                    "value": 0.149140401313,
+                    "changed_at": 1759818943,
+                    "relative_change_24h": 1.323387464526186
+                  },
+                  "symbol": "BAT",
+                  "colors": {
+                    "primary": "#FF5000",
+                    "fallback": "#F8A883"
+                  },
+                  "networks": {
+                    "1": {
+                      "address": "0x0d8775f648430679a709e98d2b0cb6250d2887ef",
+                      "decimals": 18
+                    },
+                    "137": {
+                      "address": "0x3cef98bb43d732e2f285ee605a8158cde967d219",
+                      "decimals": 18
+                    },
+                    "42161": {
+                      "address": "0x3450687ef141dcd6110b77c2dc44b008616aee75",
+                      "decimals": 18
+                    },
+                    "43114": {
+                      "address": "0x98443b96ea4b0858fdf3219cd13e98c7a4690588",
+                      "decimals": 18
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "137": {
+                        "bridgeable": true
+                      },
+                      "42161": {
+                        "bridgeable": false
+                      },
+                      "43114": {
+                        "bridgeable": false
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true,
+                  "creation_date": "2017-05-29T18:45:10Z"
+                }
+              }
+            ],
+            "apr": 0.0231826325784255,
+            "apy": 0.023453438412696537,
+            "total_asset": "143130930261224939715368"
+          },
+          {
+            "quantity": "13559690190047866",
+            "asset": {
+              "asset_code": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+              "decimals": 18,
+              "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633496/assets/ethereum/0x6b175474e89094c44da98b954eedeac495271d0f.png",
+              "name": "Dai",
+              "network": "mainnet",
+              "chain_id": 1,
+              "price": {
+                "value": 0.99973,
+                "changed_at": 1759818908,
+                "relative_change_24h": 0.037023695164905536
+              },
+              "symbol": "DAI",
+              "type": "stablecoin",
+              "colors": {
+                "primary": "#F0B340",
+                "fallback": "#F8D888"
+              },
+              "networks": {
+                "1": {
+                  "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+                  "decimals": 18
+                },
+                "10": {
+                  "address": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+                  "decimals": 18
+                },
+                "56": {
+                  "address": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+                  "decimals": 18
+                },
+                "137": {
+                  "address": "0x84000b263080bc37d1dd73a29d92794a6cf1564e",
+                  "decimals": 18
+                },
+                "8453": {
+                  "address": "0x50c5725949a6f0c72e6c4a641f24049a917db0cb",
+                  "decimals": 18
+                },
+                "42161": {
+                  "address": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+                  "decimals": 18
+                },
+                "43114": {
+                  "address": "0xd586e7f844cea2f87f50152665bcbc2c279d8d70",
+                  "decimals": 18
+                },
+                "7777777": {
+                  "address": "0xd08a2917653d4e460893203471f0000826fb4034",
+                  "decimals": 18
+                }
+              },
+              "bridging": {
+                "bridgeable": true,
+                "networks": {
+                  "10": {
+                    "bridgeable": true
+                  },
+                  "56": {
+                    "bridgeable": true
+                  },
+                  "137": {
+                    "bridgeable": true
+                  },
+                  "8453": {
+                    "bridgeable": true
+                  },
+                  "42161": {
+                    "bridgeable": true
+                  },
+                  "43114": {
+                    "bridgeable": true
+                  },
+                  "7777777": {
+                    "bridgeable": false
+                  }
+                }
+              },
+              "probable_spam": false,
+              "verified": true,
+              "transferable": true,
+              "creation_date": "2019-11-13T19:17:57Z"
+            },
+            "underlying": [
+              {
+                "quantity": "13559690190047866",
+                "asset": {
+                  "asset_code": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+                  "decimals": 18,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633496/assets/ethereum/0x6b175474e89094c44da98b954eedeac495271d0f.png",
+                  "name": "Dai",
+                  "network": "mainnet",
+                  "chain_id": 1,
+                  "price": {
+                    "value": 0.99973,
+                    "changed_at": 1759818908,
+                    "relative_change_24h": 0.037023695164905536
+                  },
+                  "symbol": "DAI",
+                  "type": "stablecoin",
+                  "colors": {
+                    "primary": "#F0B340",
+                    "fallback": "#F8D888"
+                  },
+                  "networks": {
+                    "1": {
+                      "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+                      "decimals": 18
+                    },
+                    "10": {
+                      "address": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+                      "decimals": 18
+                    },
+                    "56": {
+                      "address": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+                      "decimals": 18
+                    },
+                    "137": {
+                      "address": "0x84000b263080bc37d1dd73a29d92794a6cf1564e",
+                      "decimals": 18
+                    },
+                    "8453": {
+                      "address": "0x50c5725949a6f0c72e6c4a641f24049a917db0cb",
+                      "decimals": 18
+                    },
+                    "42161": {
+                      "address": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+                      "decimals": 18
+                    },
+                    "43114": {
+                      "address": "0xd586e7f844cea2f87f50152665bcbc2c279d8d70",
+                      "decimals": 18
+                    },
+                    "7777777": {
+                      "address": "0xd08a2917653d4e460893203471f0000826fb4034",
+                      "decimals": 18
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "10": {
+                        "bridgeable": true
+                      },
+                      "56": {
+                        "bridgeable": true
+                      },
+                      "137": {
+                        "bridgeable": true
+                      },
+                      "8453": {
+                        "bridgeable": true
+                      },
+                      "42161": {
+                        "bridgeable": true
+                      },
+                      "43114": {
+                        "bridgeable": true
+                      },
+                      "7777777": {
+                        "bridgeable": false
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true,
+                  "creation_date": "2019-11-13T19:17:57Z"
+                }
+              }
+            ],
+            "apr": 0.043969998381642,
+            "apy": 0.044951004018082275,
+            "total_asset": "16645932847635951389723968"
+          },
+          {
+            "quantity": "115750466321608",
+            "asset": {
+              "asset_code": "eth",
+              "decimals": 18,
+              "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png",
+              "name": "Ethereum",
+              "network": "mainnet",
+              "chain_id": 1,
+              "price": {
+                "value": 4679.88,
+                "changed_at": 1759818852,
+                "relative_change_24h": 3.3850640098085805
+              },
+              "symbol": "ETH",
+              "type": "native",
+              "colors": {
+                "primary": "#808088",
+                "fallback": "#E8EAF5"
+              },
+              "networks": {
+                "1": {
+                  "address": "eth",
+                  "decimals": 18
+                },
+                "10": {
+                  "address": "0x0000000000000000000000000000000000000000",
+                  "decimals": 18
+                },
+                "56": {
+                  "address": "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+                  "decimals": 18
+                },
+                "130": {
+                  "address": "0x0000000000000000000000000000000000000000",
+                  "decimals": 18
+                },
+                "324": {
+                  "address": "0x0000000000000000000000000000000000000000",
+                  "decimals": 18
+                },
+                "8453": {
+                  "address": "0x0000000000000000000000000000000000000000",
+                  "decimals": 18
+                },
+                "42161": {
+                  "address": "0x0000000000000000000000000000000000000000",
+                  "decimals": 18
+                },
+                "57073": {
+                  "address": "0x0000000000000000000000000000000000000000",
+                  "decimals": 18
+                },
+                "59144": {
+                  "address": "0x0000000000000000000000000000000000000000",
+                  "decimals": 18
+                },
+                "81457": {
+                  "address": "0x0000000000000000000000000000000000000000",
+                  "decimals": 18
+                },
+                "534352": {
+                  "address": "0x0000000000000000000000000000000000000000",
+                  "decimals": 18
+                },
+                "7777777": {
+                  "address": "0x0000000000000000000000000000000000000000",
+                  "decimals": 18
+                }
+              },
+              "bridging": {
+                "bridgeable": true,
+                "networks": {
+                  "10": {
+                    "bridgeable": true
+                  },
+                  "56": {
+                    "bridgeable": true
+                  },
+                  "130": {
+                    "bridgeable": true
+                  },
+                  "324": {
+                    "bridgeable": true
+                  },
+                  "8453": {
+                    "bridgeable": true
+                  },
+                  "42161": {
+                    "bridgeable": true
+                  },
+                  "57073": {
+                    "bridgeable": true
+                  },
+                  "59144": {
+                    "bridgeable": true
+                  },
+                  "81457": {
+                    "bridgeable": true
+                  },
+                  "534352": {
+                    "bridgeable": true
+                  },
+                  "7777777": {
+                    "bridgeable": true
+                  }
+                }
+              },
+              "probable_spam": false,
+              "verified": true,
+              "transferable": true
+            },
+            "underlying": [
+              {
+                "quantity": "115750466321608",
+                "asset": {
+                  "asset_code": "eth",
+                  "decimals": 18,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png",
+                  "name": "Ethereum",
+                  "network": "mainnet",
+                  "chain_id": 1,
+                  "price": {
+                    "value": 4679.88,
+                    "changed_at": 1759818852,
+                    "relative_change_24h": 3.3850640098085805
+                  },
+                  "symbol": "ETH",
+                  "type": "native",
+                  "colors": {
+                    "primary": "#808088",
+                    "fallback": "#E8EAF5"
+                  },
+                  "networks": {
+                    "1": {
+                      "address": "eth",
+                      "decimals": 18
+                    },
+                    "10": {
+                      "address": "0x0000000000000000000000000000000000000000",
+                      "decimals": 18
+                    },
+                    "56": {
+                      "address": "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+                      "decimals": 18
+                    },
+                    "130": {
+                      "address": "0x0000000000000000000000000000000000000000",
+                      "decimals": 18
+                    },
+                    "324": {
+                      "address": "0x0000000000000000000000000000000000000000",
+                      "decimals": 18
+                    },
+                    "8453": {
+                      "address": "0x0000000000000000000000000000000000000000",
+                      "decimals": 18
+                    },
+                    "42161": {
+                      "address": "0x0000000000000000000000000000000000000000",
+                      "decimals": 18
+                    },
+                    "57073": {
+                      "address": "0x0000000000000000000000000000000000000000",
+                      "decimals": 18
+                    },
+                    "59144": {
+                      "address": "0x0000000000000000000000000000000000000000",
+                      "decimals": 18
+                    },
+                    "81457": {
+                      "address": "0x0000000000000000000000000000000000000000",
+                      "decimals": 18
+                    },
+                    "534352": {
+                      "address": "0x0000000000000000000000000000000000000000",
+                      "decimals": 18
+                    },
+                    "7777777": {
+                      "address": "0x0000000000000000000000000000000000000000",
+                      "decimals": 18
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "10": {
+                        "bridgeable": true
+                      },
+                      "56": {
+                        "bridgeable": true
+                      },
+                      "130": {
+                        "bridgeable": true
+                      },
+                      "324": {
+                        "bridgeable": true
+                      },
+                      "8453": {
+                        "bridgeable": true
+                      },
+                      "42161": {
+                        "bridgeable": true
+                      },
+                      "57073": {
+                        "bridgeable": true
+                      },
+                      "59144": {
+                        "bridgeable": true
+                      },
+                      "81457": {
+                        "bridgeable": true
+                      },
+                      "534352": {
+                        "bridgeable": true
+                      },
+                      "7777777": {
+                        "bridgeable": true
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true
+                }
+              }
+            ],
+            "apr": 0.02075642923881465,
+            "apy": 0.020973341634483278,
+            "total_asset": "430177995883314218527"
+          }
+        ],
+        "claimables": [
+          {
+            "quantity": "4627580577738399",
+            "asset": {
+              "asset_code": "0xc00e94cb662c3520282e6f5717214004a7f26888",
+              "decimals": 18,
+              "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc00e94cb662c3520282e6f5717214004a7f26888.png",
+              "name": "Compound",
+              "network": "mainnet",
+              "chain_id": 1,
+              "price": {
+                "value": 43.8149571642,
+                "changed_at": 1759818805,
+                "relative_change_24h": 1.6042017726100155
+              },
+              "symbol": "COMP",
+              "colors": {
+                "primary": "#00D395",
+                "fallback": "#223335",
+                "shadow": "#25292E"
+              },
+              "networks": {
+                "1": {
+                  "address": "0xc00e94cb662c3520282e6f5717214004a7f26888",
+                  "decimals": 18
+                },
+                "10": {
+                  "address": "0x7e7d4467112689329f7e06571ed0e8cbad4910ee",
+                  "decimals": 18
+                },
+                "137": {
+                  "address": "0x8505b9d2254a7ae468c0e9dd10ccea3a837aef5c",
+                  "decimals": 18
+                },
+                "8453": {
+                  "address": "0x9e1028f5f1d5ede59748ffcee5532509976840e0",
+                  "decimals": 18
+                },
+                "42161": {
+                  "address": "0x354a6da3fcde098f8389cad84b0182725c6c91de",
+                  "decimals": 18
+                },
+                "43114": {
+                  "address": "0xc3048e19e76cb9a3aa9d77d8c03c29fc906e2437",
+                  "decimals": 18
+                }
+              },
+              "bridging": {
+                "bridgeable": true,
+                "networks": {
+                  "10": {
+                    "bridgeable": false
+                  },
+                  "137": {
+                    "bridgeable": true
+                  },
+                  "8453": {
+                    "bridgeable": true
+                  },
+                  "42161": {
+                    "bridgeable": true
+                  },
+                  "43114": {
+                    "bridgeable": false
+                  }
+                }
+              },
+              "probable_spam": false,
+              "verified": true,
+              "transferable": true,
+              "creation_date": "2020-03-04T00:08:55Z"
+            }
+          }
+        ],
+        "dapp": {
+          "name": "Compound",
+          "url": "https://app.compound.finance/",
+          "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/app.compound.finance.png",
+          "colors": {
+            "primary": "#05D89D",
+            "fallback": "#05D89D",
+            "shadow": ""
+          }
+        }
+      },
+      {
+        "type": "compound-v3",
+        "network": "mainnet",
+        "deposits": [
+          {
+            "quantity": "2309061",
+            "asset": {
+              "asset_code": "0xc3d688b66703497daa19211eedff47f25384cdc3",
+              "decimals": 6,
+              "icon_url": "",
+              "name": "Compound USDC",
+              "network": "mainnet",
+              "chain_id": 1,
+              "price": {
+                "value": 0.99963168,
+                "changed_at": 1759818660,
+                "relative_change_24h": -0.0020867250534870848
+              },
+              "symbol": "cUSDCv3",
+              "type": "compound-v3",
+              "colors": {
+                "primary": "#A8CE63"
+              },
+              "networks": {
+                "1": {
+                  "address": "0xc3d688b66703497daa19211eedff47f25384cdc3",
+                  "decimals": 6
+                }
+              },
+              "bridging": {
+                "bridgeable": false,
+                "networks": {}
+              },
+              "probable_spam": false,
+              "defi_position": true,
+              "transferable": true
+            },
+            "underlying": [
+              {
+                "quantity": "2309061",
+                "asset": {
+                  "asset_code": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                  "decimals": 6,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633498/assets/ethereum/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+                  "name": "USD Coin",
+                  "network": "mainnet",
+                  "chain_id": 1,
+                  "price": {
+                    "value": 0.99963168,
+                    "changed_at": 1759818660,
+                    "relative_change_24h": -0.0020867250534870848
+                  },
+                  "symbol": "USDC",
+                  "type": "stablecoin",
+                  "colors": {
+                    "primary": "#2775CA",
+                    "fallback": "#9ABDE8"
+                  },
+                  "networks": {
+                    "1": {
+                      "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                      "decimals": 6
+                    },
+                    "10": {
+                      "address": "0x0b2c639c533813f4aa9d7837caf62653d097ff85",
+                      "decimals": 6
+                    },
+                    "56": {
+                      "address": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+                      "decimals": 18
+                    },
+                    "130": {
+                      "address": "0x078d782b760474a361dda0af3839290b0ef57ad6",
+                      "decimals": 6
+                    },
+                    "137": {
+                      "address": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+                      "decimals": 6
+                    },
+                    "8453": {
+                      "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+                      "decimals": 6
+                    },
+                    "42161": {
+                      "address": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+                      "decimals": 6
+                    },
+                    "43114": {
+                      "address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+                      "decimals": 6
+                    },
+                    "57073": {
+                      "address": "0x2d270e6886d130d724215a266106e6832161eaed",
+                      "decimals": 6
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "10": {
+                        "bridgeable": true
+                      },
+                      "56": {
+                        "bridgeable": true
+                      },
+                      "130": {
+                        "bridgeable": true
+                      },
+                      "137": {
+                        "bridgeable": true
+                      },
+                      "8453": {
+                        "bridgeable": true
+                      },
+                      "42161": {
+                        "bridgeable": true
+                      },
+                      "43114": {
+                        "bridgeable": true
+                      },
+                      "57073": {
+                        "bridgeable": false
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true,
+                  "creation_date": "2018-08-03T19:28:24Z"
+                }
+              }
+            ],
+            "apr": 0.033480605219472,
+            "apy": 0.03404738650009853
+          },
+          {
+            "quantity": "2309061",
+            "asset": {
+              "asset_code": "0xc3d688b66703497daa19211eedff47f25384cdc3",
+              "decimals": 6,
+              "icon_url": "",
+              "name": "Compound USDC",
+              "network": "mainnet",
+              "chain_id": 1,
+              "price": {
+                "value": 0.99963168,
+                "changed_at": 1759818660,
+                "relative_change_24h": -0.0020867250534870848
+              },
+              "symbol": "cUSDCv3",
+              "type": "compound-v3",
+              "colors": {
+                "primary": "#A8CE63"
+              },
+              "networks": {
+                "1": {
+                  "address": "0xc3d688b66703497daa19211eedff47f25384cdc3",
+                  "decimals": 6
+                }
+              },
+              "bridging": {
+                "bridgeable": false,
+                "networks": {}
+              },
+              "probable_spam": false,
+              "defi_position": true,
+              "transferable": true
+            },
+            "underlying": [
+              {
+                "quantity": "5000000000000000",
+                "asset": {
+                  "asset_code": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                  "decimals": 18,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+                  "name": "Wrapped Ether",
+                  "network": "mainnet",
+                  "chain_id": 1,
+                  "price": {
+                    "value": 4680.33,
+                    "changed_at": 1759818717,
+                    "relative_change_24h": 3.3950051362486633
+                  },
+                  "symbol": "WETH",
+                  "type": "wrapped-native",
+                  "colors": {
+                    "primary": "#25292E",
+                    "fallback": "#B6B6B7"
+                  },
+                  "networks": {
+                    "1": {
+                      "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                      "decimals": 18
+                    },
+                    "10": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "130": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "137": {
+                      "address": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+                      "decimals": 18
+                    },
+                    "324": {
+                      "address": "0x5aea5775959fbc2557cc8789bc1bf90a239d9a91",
+                      "decimals": 18
+                    },
+                    "1625": {
+                      "address": "0xf6f832466cd6c21967e0d954109403f36bc8ceaa",
+                      "decimals": 18
+                    },
+                    "1996": {
+                      "address": "0xe01e3b20c5819cf919f7f1a2b4c18bbfd222f376",
+                      "decimals": 18
+                    },
+                    "8453": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "42161": {
+                      "address": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+                      "decimals": 18
+                    },
+                    "43114": {
+                      "address": "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab",
+                      "decimals": 18
+                    },
+                    "57073": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "59144": {
+                      "address": "0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f",
+                      "decimals": 18
+                    },
+                    "81457": {
+                      "address": "0x4300000000000000000000000000000000000004",
+                      "decimals": 18
+                    },
+                    "534352": {
+                      "address": "0x5300000000000000000000000000000000000004",
+                      "decimals": 18
+                    },
+                    "7777777": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "10": {
+                        "bridgeable": true
+                      },
+                      "130": {
+                        "bridgeable": false
+                      },
+                      "137": {
+                        "bridgeable": true
+                      },
+                      "324": {
+                        "bridgeable": false
+                      },
+                      "1625": {
+                        "bridgeable": false
+                      },
+                      "1996": {
+                        "bridgeable": false
+                      },
+                      "8453": {
+                        "bridgeable": true
+                      },
+                      "42161": {
+                        "bridgeable": true
+                      },
+                      "43114": {
+                        "bridgeable": true
+                      },
+                      "57073": {
+                        "bridgeable": false
+                      },
+                      "59144": {
+                        "bridgeable": false
+                      },
+                      "81457": {
+                        "bridgeable": true
+                      },
+                      "534352": {
+                        "bridgeable": false
+                      },
+                      "7777777": {
+                        "bridgeable": false
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true
+                }
+              }
+            ]
+          }
+        ],
+        "borrows": [],
+        "claimables": [
+          {
+            "quantity": "517000000000000",
+            "asset": {
+              "asset_code": "0xc00e94cb662c3520282e6f5717214004a7f26888",
+              "decimals": 18,
+              "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc00e94cb662c3520282e6f5717214004a7f26888.png",
+              "name": "Compound",
+              "network": "mainnet",
+              "chain_id": 1,
+              "price": {
+                "value": 43.8149571642,
+                "changed_at": 1759818805,
+                "relative_change_24h": 1.6042017726100155
+              },
+              "symbol": "COMP",
+              "colors": {
+                "primary": "#00D395",
+                "fallback": "#223335",
+                "shadow": "#25292E"
+              },
+              "networks": {
+                "1": {
+                  "address": "0xc00e94cb662c3520282e6f5717214004a7f26888",
+                  "decimals": 18
+                },
+                "10": {
+                  "address": "0x7e7d4467112689329f7e06571ed0e8cbad4910ee",
+                  "decimals": 18
+                },
+                "137": {
+                  "address": "0x8505b9d2254a7ae468c0e9dd10ccea3a837aef5c",
+                  "decimals": 18
+                },
+                "8453": {
+                  "address": "0x9e1028f5f1d5ede59748ffcee5532509976840e0",
+                  "decimals": 18
+                },
+                "42161": {
+                  "address": "0x354a6da3fcde098f8389cad84b0182725c6c91de",
+                  "decimals": 18
+                },
+                "43114": {
+                  "address": "0xc3048e19e76cb9a3aa9d77d8c03c29fc906e2437",
+                  "decimals": 18
+                }
+              },
+              "bridging": {
+                "bridgeable": true,
+                "networks": {
+                  "10": {
+                    "bridgeable": false
+                  },
+                  "137": {
+                    "bridgeable": true
+                  },
+                  "8453": {
+                    "bridgeable": true
+                  },
+                  "42161": {
+                    "bridgeable": true
+                  },
+                  "43114": {
+                    "bridgeable": false
+                  }
+                }
+              },
+              "probable_spam": false,
+              "verified": true,
+              "transferable": true,
+              "creation_date": "2020-03-04T00:08:55Z"
+            }
+          }
+        ],
+        "dapp": {
+          "name": "Compound V3",
+          "url": "https://app.compound.finance/",
+          "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/app.compound.finance.png",
+          "colors": {
+            "primary": "#05D89D",
+            "fallback": "#05D89D",
+            "shadow": ""
+          }
+        }
+      },
+      {
+        "type": "maker",
+        "network": "mainnet",
+        "deposits": [
+          {
+            "quantity": "100000000000000",
+            "asset": {
+              "asset_code": "0x29604c784102D453B476fB099b8DCfc83b508F55",
+              "decimals": 18,
+              "icon_url": "",
+              "name": "CDP:383",
+              "network": "mainnet",
+              "price": {
+                "value": 4680.33,
+                "changed_at": 1759818717,
+                "relative_change_24h": 3.3950051362486633
+              },
+              "symbol": "ETH-A",
+              "type": "maker",
+              "colors": {},
+              "probable_spam": false
+            },
+            "underlying": [
+              {
+                "quantity": "100000000000000",
+                "asset": {
+                  "asset_code": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+                  "decimals": 18,
+                  "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+                  "name": "Wrapped Ether",
+                  "network": "mainnet",
+                  "chain_id": 1,
+                  "price": {
+                    "value": 4680.33,
+                    "changed_at": 1759818717,
+                    "relative_change_24h": 3.3950051362486633
+                  },
+                  "symbol": "WETH",
+                  "type": "wrapped-native",
+                  "colors": {
+                    "primary": "#25292E",
+                    "fallback": "#B6B6B7"
+                  },
+                  "networks": {
+                    "1": {
+                      "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                      "decimals": 18
+                    },
+                    "10": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "130": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "137": {
+                      "address": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+                      "decimals": 18
+                    },
+                    "324": {
+                      "address": "0x5aea5775959fbc2557cc8789bc1bf90a239d9a91",
+                      "decimals": 18
+                    },
+                    "1625": {
+                      "address": "0xf6f832466cd6c21967e0d954109403f36bc8ceaa",
+                      "decimals": 18
+                    },
+                    "1996": {
+                      "address": "0xe01e3b20c5819cf919f7f1a2b4c18bbfd222f376",
+                      "decimals": 18
+                    },
+                    "8453": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "42161": {
+                      "address": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+                      "decimals": 18
+                    },
+                    "43114": {
+                      "address": "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab",
+                      "decimals": 18
+                    },
+                    "57073": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    },
+                    "59144": {
+                      "address": "0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f",
+                      "decimals": 18
+                    },
+                    "81457": {
+                      "address": "0x4300000000000000000000000000000000000004",
+                      "decimals": 18
+                    },
+                    "534352": {
+                      "address": "0x5300000000000000000000000000000000000004",
+                      "decimals": 18
+                    },
+                    "7777777": {
+                      "address": "0x4200000000000000000000000000000000000006",
+                      "decimals": 18
+                    }
+                  },
+                  "bridging": {
+                    "bridgeable": true,
+                    "networks": {
+                      "10": {
+                        "bridgeable": true
+                      },
+                      "130": {
+                        "bridgeable": false
+                      },
+                      "137": {
+                        "bridgeable": true
+                      },
+                      "324": {
+                        "bridgeable": false
+                      },
+                      "1625": {
+                        "bridgeable": false
+                      },
+                      "1996": {
+                        "bridgeable": false
+                      },
+                      "8453": {
+                        "bridgeable": true
+                      },
+                      "42161": {
+                        "bridgeable": true
+                      },
+                      "43114": {
+                        "bridgeable": true
+                      },
+                      "57073": {
+                        "bridgeable": false
+                      },
+                      "59144": {
+                        "bridgeable": false
+                      },
+                      "81457": {
+                        "bridgeable": true
+                      },
+                      "534352": {
+                        "bridgeable": false
+                      },
+                      "7777777": {
+                        "bridgeable": false
+                      }
+                    }
+                  },
+                  "probable_spam": false,
+                  "verified": true,
+                  "transferable": true
+                }
+              }
+            ],
+            "total_asset": "100000000000000"
+          }
+        ],
+        "borrows": [],
+        "dapp": {
+          "name": "Makerdao",
+          "url": "https://makerdao.com/",
+          "icon_url": "https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/cdp.makerdao.png",
+          "colors": {
+            "primary": "#818286",
+            "fallback": "#818286",
+            "shadow": ""
+          }
+        }
+      }
+    ]
+  }
+}

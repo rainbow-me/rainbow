@@ -1,4 +1,4 @@
-import { usePositionsStore } from '@/state/positions/positions';
+import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { userAssetsStore } from './userAssets';
 
 let unsubscribe: (() => void) | null = null;

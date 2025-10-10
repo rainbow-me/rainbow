@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, BoxProps } from '@/design-system';
-import { PositionCard } from '@/components/positions/PositionsCard';
-import { RainbowPosition } from '@/resources/defi/types';
+import { PositionCard } from '@/features/positions/components/PositionCard';
+import { RainbowPosition } from '@/features/positions/types';
 
 type Props = {
   position: RainbowPosition;

@@ -3,7 +3,7 @@ import { RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/Re
 import { UniqueAsset } from '@/entities';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { Claimable } from '@/resources/addys/claimables/types';
-import { RainbowPosition } from '@/resources/defi/types';
+import { RainbowPosition } from '@/features/positions/types';
 import { PerpsPosition as PerpsPosition } from '@/features/perps/types';
 export enum CellType {
   ASSETS_HEADER_SPACE_AFTER = 'ASSETS_HEADER_SPACE_AFTER',
