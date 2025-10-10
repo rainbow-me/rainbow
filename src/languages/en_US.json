@@ -1668,6 +1668,7 @@
       },
       "history": {
         "title": "History",
+        "orders_count": "%{count} ORDERS",
         "no_trades": "No trades",
         "trade_execution": {
           "take_profit_executed": "Take Profit Executed",

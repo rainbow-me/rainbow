@@ -131,6 +131,7 @@ const Routes = {
   CREATE_TRIGGER_ORDER_BOTTOM_SHEET: 'CreateTriggerOrderBottomSheet',
   CLOSE_POSITION_BOTTOM_SHEET: 'ClosePositionBottomSheet',
   PERPS_EXPLAIN_SHEET: 'PerpsExplainSheet',
+  PERPS_TRADE_HISTORY_SCREEN: 'PerpsTradeHistoryScreen',
 } as const;
 
 export const NATIVE_ROUTES = new Set<Route>([
@@ -146,6 +147,7 @@ export const NATIVE_ROUTES = new Set<Route>([
   Routes.PERPS_DEPOSIT_SCREEN,
   Routes.PERPS_DETAIL_SCREEN,
   Routes.PERPS_NAVIGATOR,
+  Routes.PERPS_TRADE_HISTORY_SCREEN,
   Routes.PERPS_WITHDRAWAL_SCREEN,
   Routes.POSITION_SHEET,
   Routes.RECEIVE_MODAL,
