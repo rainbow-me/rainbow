@@ -4,7 +4,7 @@ import { NativeCurrencyKey, RainbowTransaction, TransactionApiResponse, Transact
 import { RainbowError, logger } from '@/logger';
 import { parseTransaction } from '@/parsers/transactions';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { getAddysHttpClient } from '@/resources/addys/client';
+import { getPlatformClient } from '@/resources/platform/client';
 import { IS_TEST } from '@/env';
 import { anvilChain, e2eAnvilConfirmedTransactions } from './transaction';
 
@@ -62,10 +62,11 @@ export async function consolidatedTransactionsQueryFunction({
   let nextPageFromAddys: string | undefined = pageParam;
   let cutoffFromAddys: number | undefined;
   try {
-    const chainIdsString = chainIds.join(',');
-    const response = await getAddysHttpClient().get(`/${chainIdsString}/${address}/transactions`, {
+    const response = await getPlatformClient().get(`/transactions/ListTransactions`, {
       method: 'get',
       params: {
+        address: address,
+        chainIds: chainIds.join(','),
         currency: currency.toLowerCase(),
         ...(pageParam ? { pageCursor: pageParam } : {}),
       },
