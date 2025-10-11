@@ -20,7 +20,7 @@ jobs:
       artifact-id: ${{ steps.rock-build-simulator.outputs.artifact-id }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Set Xcode version
         run: sudo xcode-select --switch /Applications/Xcode_16.4.app
@@ -63,7 +63,7 @@ jobs:
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
       - name: Cache Yarn dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: |
             ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -81,7 +81,7 @@ jobs:
 
       - name: Rock Build - iOS simulator
         id: rock-build-simulator
-        uses: callstackincubator/ios@v3
+        uses: callstackincubator/ios@0b4a5a6e4d6865d697bd5f277460088501982a5e
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         with:
@@ -107,7 +107,7 @@ jobs:
       artifact-id: ${{ steps.rock-build-device.outputs.artifact-id }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Set Xcode version
         run: sudo xcode-select --switch /Applications/Xcode_16.4.app
@@ -156,7 +156,7 @@ jobs:
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
       - name: Cache Yarn dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: |
             ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -224,7 +224,7 @@ jobs:
 
       - name: Rock Build - iOS device
         id: rock-build-device
-        uses: callstackincubator/ios@v3
+        uses: callstackincubator/ios@0b4a5a6e4d6865d697bd5f277460088501982a5e
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         with:
