@@ -28,7 +28,7 @@ let navigationRef: NavigationContainerRef<RootStackParamList> | null = null;
 export type { Route };
 
 export type RouteParams<RouteName extends Route> = RootStackParamList[RouteName];
-export type UseRouteHook<RouteName extends Route = Route> = () => RouteProp<RootStackParamList, RouteName>;
+export type UseRouteHook = <RouteName extends Route = Route>() => RouteProp<RootStackParamList, RouteName>;
 
 export type NavigateArgs<RouteName extends Route> = RouteName extends RoutesWithOptionalParams
   ? [screen: RouteName, params?: RootStackParamList[RouteName]]
@@ -82,13 +82,13 @@ export function useNavigation<RouteName extends Route>() {
 const UseRouteContext = createContext<UseRouteHook>(useDefaultUseRoute);
 export const UseRouteProvider = UseRouteContext.Provider;
 
-export function useRoute(): RouteProp<RootStackParamList, Route> {
+export function useRoute<RouteName extends Route = Route>(): RouteProp<RootStackParamList, RouteName> {
   const useRouteHook = useContext(UseRouteContext);
   return useRouteHook();
 }
 
-function useDefaultUseRoute(): RouteProp<RootStackParamList, Route> {
-  return useReactNavigationRoute<RouteProp<RootStackParamList, Route>>();
+function useDefaultUseRoute<RouteName extends Route = Route>(): RouteProp<RootStackParamList, RouteName> {
+  return useReactNavigationRoute<RouteProp<RootStackParamList, RouteName>>();
 }
 
 // ============ Core Navigation Functions ====================================== //
