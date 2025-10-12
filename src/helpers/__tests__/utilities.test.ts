@@ -5,6 +5,7 @@ import {
   handleSignificantDecimals,
   updatePrecisionToDisplay,
 } from '../utilities';
+import { containsEmoji } from '../strings';
 
 it('convertAmountFromNativeValue', () => {
   const result = convertAmountFromNativeValue('1', '40.00505', 5);
@@ -64,6 +65,10 @@ it('convertBipsToPercentage, returns 0 when given nullish value', () => {
 it('convertBipsToPercentage', () => {
   const result = convertBipsToPercentage('12.34567', 2);
   expect(result).toBe('0.12');
+});
+
+it('containsEmoji handles non-string inputs', () => {
+  expect(containsEmoji(undefined as never)).toBe(false);
 });
 
 it('updatePrecisionToDisplay1', () => {
