@@ -28,7 +28,11 @@ let navigationRef: NavigationContainerRef<RootStackParamList> | null = null;
 export type { Route };
 
 export type RouteParams<RouteName extends Route> = RootStackParamList[RouteName];
-export type UseRouteHook = <RouteName extends Route = Route>() => RouteProp<RootStackParamList, RouteName>;
+
+export type UseRouteHook = {
+  <RouteName extends Route = Route>(): RouteProp<RootStackParamList, RouteName>;
+  (): RouteProp<RootStackParamList, Route>;
+};
 
 export type NavigateArgs<RouteName extends Route> = RouteName extends RoutesWithOptionalParams
   ? [screen: RouteName, params?: RootStackParamList[RouteName]]
