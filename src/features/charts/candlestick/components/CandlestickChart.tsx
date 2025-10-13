@@ -626,6 +626,7 @@ class CandlestickChartManager {
         perpsIndicatorData,
         yAxisWidth: this.yAxisWidth,
       });
+      this.perpsIndicatorBuilder.updateData(perpsIndicatorData);
     }
 
     this.buildBaseCandlesPicture();
@@ -1380,7 +1381,6 @@ class CandlestickChartManager {
         this.getPriceBounds();
       }
 
-      // const shouldAnimate = wasDataPrepended && isDecelerating;
       const shouldAnimate = !wasPinnedToRight;
       this.rebuildChart(shouldAnimate, true);
     }
@@ -1833,8 +1833,7 @@ function useCandlestickChart({
   useListen(
     usePerpsIndicatorData,
     state => state,
-    perpsData => runOnUI(() => chartManager.value?.updatePerpsIndicatorData?.(perpsData))(),
-    { fireImmediately: true }
+    perpsData => runOnUI(() => chartManager.value?.updatePerpsIndicatorData?.(perpsData))()
   );
 
   const chartTransform = useDerivedValue(() => [{ scale: !_WORKLET ? 1 : chartScale.value }]);

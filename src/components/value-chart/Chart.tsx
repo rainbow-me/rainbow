@@ -38,8 +38,8 @@ const CHART_BOTTOM_PADDING = 32;
 const CHART_TOP_PADDING = 20;
 
 type ChartProps = ({ asset: ExpandedSheetAsset; hyperliquidSymbol?: never } | { asset?: never; hyperliquidSymbol: string }) & {
-  backgroundColor: string;
   accentColors: Pick<AssetAccentColors, 'color' | 'opacity12' | 'opacity24'> & { timeframeSelector?: string };
+  backgroundColor: string;
   hideChartTypeToggle?: boolean;
 };
 
@@ -86,7 +86,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors,
   const liveTokenPrice = useLiveTokenSharedValue({
     tokenId,
     initialValue: asset?.price.value?.toString() ?? '0',
-    selector: state => state.price,
+    selector: state => state.midPrice ?? state.price,
   });
 
   const price = useDerivedValue(() => {
