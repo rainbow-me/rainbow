@@ -35,7 +35,7 @@ import { AddressZero } from '@ethersproject/constants';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty } from 'lodash';
-import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
 import L2Disclaimer from '../components/L2Disclaimer';
@@ -586,7 +586,7 @@ export const SendConfirmationSheet = () => {
             <Inset bottom="30px (Deprecated)" horizontal="19px (Deprecated)">
               <Stack space="19px (Deprecated)">
                 {isL2 && (
-                  <Fragment>
+                  <>
                     <L2Disclaimer
                       chainId={asset.chainId}
                       colors={theme.colors}
@@ -600,7 +600,7 @@ export const SendConfirmationSheet = () => {
                       })}
                       symbol={assetSymbolForDisclaimer}
                     />
-                  </Fragment>
+                  </>
                 )}
                 {isENS && checkboxes.length > 0 && (
                   <ButtonPressAnimation onPress={handleENSConfigurationPress} scale={0.95}>
