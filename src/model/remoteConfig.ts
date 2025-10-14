@@ -292,7 +292,7 @@ export const useRemoteConfigStore = createQueryStore<RainbowConfig, never, Remot
     getRemoteConfigKey: key => get().config[key] ?? DEFAULT_CONFIG[key],
   }),
 
-  { storageKey: 'remoteConfig' }
+  { storageKey: 'remoteConfig', version: REMOTE_CONFIG_VERSION }
 );
 
 // ============ Public Methods ================================================= //
