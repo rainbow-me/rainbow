@@ -21,17 +21,17 @@ const EMPTY_PERPS_INDICATOR_DATA: PerpsIndicatorData = Object.freeze({
 });
 
 /**
- * Derives perps indicator data for the currently viewed chart, if applicable.
- * Returns liquidation and trigger order prices (SL/TP).
+ * Derives perps indicator data for candlestick charts.
+ * @returns An object with liquidation and trigger order prices.
  */
 export const usePerpsIndicatorData = createDerivedStore<PerpsIndicatorData | null>(
   $ => {
-    const { enablePerpsIndicators, token } = $(useChartsStore);
+    const token = $(useChartsStore).token;
     const symbol = isHyperliquidToken(token) ? token : '';
     const position = $(useHyperliquidAccountStore, state => state.getPosition(symbol));
     const openOrders = $(useHlOpenOrdersStore, state => state.getData()?.ordersBySymbol[symbol]);
 
-    if (!enablePerpsIndicators || !position || !symbol) return EMPTY_PERPS_INDICATOR_DATA;
+    if (!position || !symbol) return EMPTY_PERPS_INDICATOR_DATA;
 
     const liquidationPrice = position?.liquidationPrice ? Number(position.liquidationPrice) : null;
 
