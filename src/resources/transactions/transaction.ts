@@ -12,8 +12,8 @@ import { Platform } from 'react-native';
 import { IS_TEST } from '@/env';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { getAddysHttpClient } from '@/resources/addys/client';
 import { GetTransactionByHashResponse } from '@/features/positions/types/generated/transaction/transaction';
+import { getPlatformClient } from '@/resources/platform/client';
 
 export const e2eAnvilConfirmedTransactions: RainbowTransaction[] = [];
 
@@ -131,7 +131,13 @@ export const fetchRawTransaction = async ({
     }
   }
   try {
-    const response = await getAddysHttpClient().get<GetTransactionByHashResponse>('/GetTransactionByHash', {
+    console.log({
+      currency: currency.toLowerCase(),
+      hash,
+      address,
+      chainIds: String(chainId),
+    });
+    const response = await getPlatformClient().get<GetTransactionByHashResponse>('/transactions/GetTransactionByHash', {
       params: {
         currency: currency.toLowerCase(),
         hash,
