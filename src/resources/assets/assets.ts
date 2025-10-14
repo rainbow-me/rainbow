@@ -23,6 +23,7 @@ export function parseAsset({ address, asset }: { address: string; asset: Asset }
     decimals: asset?.decimals,
     id: address,
     icon_url: asset?.iconUrl,
+    // TODO: Why not just use asset.type === 'native',
     isNativeAsset: isNativeAsset(address, chainId),
     name: asset?.name || i18n.t(i18n.l.account.unknown_token),
     mainnet_address: mainnetAddress,

@@ -44,6 +44,7 @@ export default React.memo(function RainbowCoinIcon({
     y?: number;
   };
 }) {
+  console.log('icon', icon);
   const theme = useTheme();
   const fallbackIconColor = color ?? theme.colors.purpleUniswap;
   const shadowColor = theme.isDarkMode || forceDarkMode ? theme.colors.shadow : color || fallbackIconColor;

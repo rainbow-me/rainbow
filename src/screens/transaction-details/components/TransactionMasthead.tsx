@@ -80,6 +80,9 @@ function CurrencyTile({
   address?: string;
   onAddressCopied: () => void;
 }) {
+  console.log({
+    asset,
+  });
   const accountAddress = useAccountAddress();
   const theme = useTheme();
   const { contacts } = useContacts();
@@ -305,6 +308,8 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
 
     const inAsset = change.asset;
 
+    console.log('inAsset', inAsset);
+
     return {
       inAssetValueDisplay: convertAmountToBalanceDisplay(inAsset?.balance?.amount || '0', inAsset),
       inAssetNativeDisplay: inAsset?.price?.value
@@ -352,15 +357,20 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
   const contractImage = transaction?.contract?.iconUrl;
   const contractName = transaction?.contract?.name;
 
+  // console.log('contract', transaction);
+
+  console.log('inputAsset', JSON.stringify(inputAsset, null, 2));
+
   // if its a mint then we want to show the mint contract first
   const toAddress = (transaction.type === 'mint' ? transaction?.from : transaction?.to) || undefined;
   const fromAddress = (transaction.type === 'mint' ? transaction?.to : transaction?.from) || undefined;
 
   const getRightMasteadData = (): { title?: string; subtitle?: string; image?: string } => {
-    if (transaction.type === 'swap') {
+    if (transaction.type === 'swap' || transaction.type === 'trade') {
       return {
         title: inputAsset?.inAssetValueDisplay,
         subtitle: inputAsset?.inAssetNativeDisplay,
+        image: inputAsset?.icon_url || '',
       };
     }
     if (transaction.type === 'contract_interaction' || transaction.type === 'approve') {
@@ -395,13 +405,17 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
   const leftMasteadData = getLeftMasteadData();
   const rightMasteadData = getRightMasteadData();
 
+  console.log({
+    rightMasteadData,
+  });
+
   return (
     <Stack space="19px (Deprecated)">
       <Separator color="divider40 (Deprecated)" thickness={2} />
 
       <Box alignItems="center" width={'full'}>
         <Columns space={{ custom: 9 }}>
-          <CurrencyTile
+          {/* <CurrencyTile
             address={fromAddress}
             title={leftMasteadData?.title}
             subtitle={leftMasteadData?.subtitle}
@@ -410,7 +424,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
             showAsset={transaction.type === 'swap' || transaction.type === 'bridge'}
             fallback={transaction?.asset?.symbol}
             onAddressCopied={() => {}}
-          />
+          /> */}
 
           <CurrencyTile
             address={toAddress}

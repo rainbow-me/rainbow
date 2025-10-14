@@ -76,11 +76,11 @@ export const parseTransaction = (
             quantity: change.quantity || '0',
           },
         }),
-        value: change.quantity ? parseFloat(change.quantity) : undefined,
-        direction: change.direction as TransactionDirection,
+        value: change.value ? parseFloat(change.value) : undefined,
         address_from: change.addressFrom,
         address_to: change.addressTo,
-        price: parseFloat(change.price || '0'),
+        direction: change.direction as TransactionDirection,
+        price: parseFloat(change.price),
       };
     })
     .filter((change): change is Exclude<TransactionChanges[number], undefined> => change !== undefined);
@@ -106,7 +106,7 @@ export const parseTransaction = (
   const description = getDescription(asset, type, meta);
 
   const nativeAsset = changes.find(change => change?.asset.isNativeAsset);
-  const nativeAssetPrice = nativeAsset?.price?.toString() || '0';
+  const nativeAssetPrice = nativeAsset?.price || '0';
 
   const decimals = typeof nativeAsset?.asset?.decimals === 'number' ? nativeAsset.asset.decimals : 18;
   const value = toFixedDecimals(nativeAsset?.value || '', decimals);
