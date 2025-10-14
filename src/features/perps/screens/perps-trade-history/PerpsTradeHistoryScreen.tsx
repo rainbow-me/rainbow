@@ -1,5 +1,5 @@
 import { LegendList } from '@legendapp/list';
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { Navbar } from '@/components/navbar/Navbar';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
@@ -11,14 +11,14 @@ import { HlTrade } from '@/features/perps/types';
 import { Box, Separator, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
-const ITEM_SEPARATOR = () => <Separator color="separatorTertiary" direction="horizontal" thickness={4 / 3} />;
-const ESTIMATED_ITEM_HEIGHT = 104;
-const BASE_BOTTOM_PADDING = 32;
+const ESTIMATED_ITEM_HEIGHT = 68;
+const SCROLL_INSETS = { bottom: 48 };
 
 export const PerpsTradeHistoryScreen = memo(function PerpsTradeHistoryScreen() {
   const { isDarkMode } = useColorMode();
-  const insets = useSafeAreaInsets();
+  const safeAreaInsets = useSafeAreaInsets();
   const trades = useHlTradesStore(state => state.getTrades() ?? []);
 
   const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
@@ -27,43 +27,31 @@ export const PerpsTradeHistoryScreen = memo(function PerpsTradeHistoryScreen() {
     return i18n.t(i18n.l.perps.history.orders_count, { count: trades.length });
   }, [trades.length]);
 
-  const sortedTrades = useMemo(() => {
-    return trades.slice().sort((a, b) => b.executedAt.getTime() - a.executedAt.getTime());
-  }, [trades]);
-
-  const renderTradeItem = useCallback(({ item, index }: { item: HlTrade; index: number }) => {
-    return <TradeListItem paddingTop={index === 0 ? '8px' : '16px'} trade={item} showMarketIcon />;
-  }, []);
-
-  const contentContainerStyle = useMemo(
-    () => [styles.contentContainer, { paddingBottom: BASE_BOTTOM_PADDING + insets.bottom }],
-    [insets.bottom]
-  );
-
   return (
     <PerpsAccentColorContextProvider>
       <Box backgroundColor={backgroundColor} flexGrow={1} width="full">
-        <SheetHandle />
-
-        <Box paddingBottom="20px" paddingTop="24px">
-          <Navbar
-            hasStatusBarInset
-            titleComponent={
-              <Box alignItems="center" gap={12}>
-                <Text align="center" color="label" size="20pt" weight="heavy">
-                  {`${i18n.t(i18n.l.perps.common.title)} ${i18n.t(i18n.l.perps.history.title)}`}
-                </Text>
-                <Text align="center" color="labelQuaternary" size="11pt" weight="heavy">
-                  {ordersCountLabel}
-                </Text>
-              </Box>
-            }
-          />
+        <Box alignItems="center" backgroundColor={backgroundColor} width="full">
+          <SheetHandle />
+          <Box marginTop={{ custom: safeAreaInsets.top + 16 }} width="full">
+            <Navbar
+              titleComponent={
+                <Box alignItems="center" gap={12}>
+                  <Text align="center" color="label" size="20pt" weight="heavy">
+                    {`${i18n.t(i18n.l.perps.common.title)} ${i18n.t(i18n.l.perps.history.title)}`}
+                  </Text>
+                  <Text align="center" color="labelQuaternary" size="11pt" weight="heavy">
+                    {ordersCountLabel}
+                  </Text>
+                </Box>
+              }
+            />
+          </Box>
         </Box>
-        {ITEM_SEPARATOR()}
-
+        <Box marginTop={{ custom: 8 }} paddingHorizontal="24px">
+          <Separator color="separatorTertiary" direction="horizontal" thickness={THICK_BORDER_WIDTH} />
+        </Box>
         <LegendList
-          ItemSeparatorComponent={ITEM_SEPARATOR}
+          ItemSeparatorComponent={() => <Separator color="separatorTertiary" direction="horizontal" thickness={THICK_BORDER_WIDTH} />}
           ListEmptyComponent={
             <Box alignItems="center" justifyContent="center" paddingVertical={{ custom: 40 }}>
               <Text color="labelQuaternary" size="17pt" weight="heavy">
@@ -71,14 +59,12 @@ export const PerpsTradeHistoryScreen = memo(function PerpsTradeHistoryScreen() {
               </Text>
             </Box>
           }
-          ListFooterComponent={<Box height={24} />}
-          contentContainerStyle={contentContainerStyle}
-          data={sortedTrades}
+          contentContainerStyle={styles.contentContainer}
+          data={trades}
           estimatedItemSize={ESTIMATED_ITEM_HEIGHT}
           keyExtractor={keyExtractor}
-          maintainVisibleContentPosition={false}
           renderItem={renderTradeItem}
-          scrollIndicatorInsets={{ bottom: insets.bottom, top: 0 }}
+          scrollIndicatorInsets={SCROLL_INSETS}
           style={styles.list}
         />
       </Box>
@@ -86,14 +72,17 @@ export const PerpsTradeHistoryScreen = memo(function PerpsTradeHistoryScreen() {
   );
 });
 
+function renderTradeItem({ item }: { item: HlTrade }) {
+  return <TradeListItem trade={item} showMarketIcon />;
+}
+
 function keyExtractor(trade: HlTrade): string {
-  return `${trade.id}`;
+  return String(trade.id);
 }
 
 const styles = StyleSheet.create({
   contentContainer: {
     paddingHorizontal: 24,
-    paddingTop: 12,
     paddingBottom: 32,
   },
   list: {

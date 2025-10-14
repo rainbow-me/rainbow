@@ -1,7 +1,8 @@
 import { memo, useMemo } from 'react';
+import { StyleSheet } from 'react-native';
 import { HlTrade } from '@/features/perps/types';
 import { tradeExecutionDescriptions } from '@/features/perps/stores/hlTradesStore';
-import { Box, BoxProps, Text, TextIcon } from '@/design-system';
+import { Box, Text, TextIcon } from '@/design-system';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { format } from 'date-fns';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
@@ -23,12 +24,11 @@ const descriptionIcons = {
 };
 
 type TradeListItemProps = {
-  paddingTop?: BoxProps['paddingTop'];
   trade: HlTrade;
   showMarketIcon?: boolean;
 };
 
-export const TradeListItem = memo(function TradeListItem({ paddingTop = '16px', trade, showMarketIcon = false }: TradeListItemProps) {
+export const TradeListItem = memo(function TradeListItem({ trade, showMarketIcon = false }: TradeListItemProps) {
   const pnlValue = Number(trade.pnl);
   const isPositivePnl = pnlValue >= 0;
   const pnlColor = isPositivePnl ? 'green' : 'red';
@@ -51,6 +51,10 @@ export const TradeListItem = memo(function TradeListItem({ paddingTop = '16px', 
     return `${isPositivePnl ? '+' : ''} ${formatCurrency(trade.netPnl)}`;
   }, [trade.netPnl, isPositivePnl]);
 
+  const formattedPrice = useMemo(() => {
+    return formatPerpAssetPrice(trade.price);
+  }, [trade.price]);
+
   const isLiquidation =
     trade.description === tradeExecutionDescriptions.longLiquidated || trade.description === tradeExecutionDescriptions.shortLiquidated;
   const descriptionColor = isLiquidation ? 'red' : 'labelTertiary';
@@ -60,7 +64,7 @@ export const TradeListItem = memo(function TradeListItem({ paddingTop = '16px', 
     <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={10}>
       {showMarketIcon && <HyperliquidTokenIcon size={36} symbol={trade.symbol} />}
 
-      <Box paddingBottom="16px" paddingTop={paddingTop} gap={12} style={{ flex: 1 }}>
+      <Box paddingVertical={'16px'} gap={12} style={styles.flex}>
         <Box flexDirection="row" justifyContent="space-between" alignItems="center">
           <Box flexDirection="row" alignItems="center" gap={2}>
             <TextIcon color={descriptionColor} height={8} size="icon 11px" weight="semibold" width={18}>
@@ -81,7 +85,7 @@ export const TradeListItem = memo(function TradeListItem({ paddingTop = '16px', 
             <Text size="17pt" color="labelQuaternary" weight="semibold">
               {`${LARGE_SPACE}@${LARGE_SPACE}`}
             </Text>
-            {formatPerpAssetPrice(trade.price)}
+            {formattedPrice}
           </Text>
           {pnlValue !== 0 && (
             <Text align="right" size="17pt" weight="semibold" color={pnlColor}>
@@ -92,4 +96,10 @@ export const TradeListItem = memo(function TradeListItem({ paddingTop = '16px', 
       </Box>
     </Box>
   );
+});
+
+const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
 });

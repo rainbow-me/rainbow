@@ -35,7 +35,9 @@ export const HistorySection = memo(function HistorySection({ market }: { market:
           <Box>
             {visibleTrades.map((trade, index) => (
               <Fragment key={trade.id}>
-                <TradeListItem paddingTop={index === 0 ? '10px' : '16px'} trade={trade} />
+                <Box marginTop={{ custom: index === 0 ? -6 : 0 }}>
+                  <TradeListItem trade={trade} />
+                </Box>
                 {index < visibleTrades.length - 1 && <Separator color={'separatorTertiary'} direction="horizontal" thickness={4 / 3} />}
               </Fragment>
             ))}
