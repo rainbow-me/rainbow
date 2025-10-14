@@ -415,7 +415,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
 
       <Box alignItems="center" width={'full'}>
         <Columns space={{ custom: 9 }}>
-          {/* <CurrencyTile
+          <CurrencyTile
             address={fromAddress}
             title={leftMasteadData?.title}
             subtitle={leftMasteadData?.subtitle}
@@ -424,7 +424,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
             showAsset={transaction.type === 'swap' || transaction.type === 'bridge'}
             fallback={transaction?.asset?.symbol}
             onAddressCopied={() => {}}
-          /> */}
+          />
 
           <CurrencyTile
             address={toAddress}
