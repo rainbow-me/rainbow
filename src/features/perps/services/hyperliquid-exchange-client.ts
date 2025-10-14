@@ -2,7 +2,7 @@ import { multiply } from '@/helpers/utilities';
 import * as hl from '@nktkas/hyperliquid';
 import { CancelSuccessResponse } from '@nktkas/hyperliquid/script/src/types/mod';
 import { Address, Hex } from 'viem';
-import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS } from '../constants';
+import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS, RAINBOW_REFERRAL_CODE } from '../constants';
 import { PerpPositionSide, TriggerOrder, TriggerOrderType } from '../types';
 import { HyperliquidAccountClient } from './hyperliquid-account-client';
 import { Wallet } from '@ethersproject/wallet';
@@ -109,6 +109,7 @@ export class HyperliquidExchangeClient {
         leverage,
       }),
       this.ensureApprovedBuilderFee(),
+      this.ensureReferralCodeSet(),
     ]);
 
     const marketType = getMarketType(assetId);
@@ -171,7 +172,7 @@ export class HyperliquidExchangeClient {
     const exchangeClient = await this.getExchangeClient();
     if (!exchangeClient) return undefined;
 
-    await this.ensureApprovedBuilderFee();
+    await Promise.all([this.ensureApprovedBuilderFee(), this.ensureReferralCodeSet()]);
 
     const marketType = getMarketType(assetId);
     const formattedTriggerPrice = formatOrderPrice({ price: triggerPrice, sizeDecimals, marketType });
@@ -223,7 +224,7 @@ export class HyperliquidExchangeClient {
     const exchangeClient = await this.getExchangeClient();
     if (!exchangeClient) return undefined;
 
-    await this.ensureApprovedBuilderFee();
+    await Promise.all([this.ensureApprovedBuilderFee(), this.ensureReferralCodeSet()]);
 
     const result = await exchangeClient.order({
       orders: [closeOrder],
@@ -242,6 +243,20 @@ export class HyperliquidExchangeClient {
 
     return await exchangeClient.cancel({
       cancels: [{ a: assetId, o: orderId }],
+    });
+  }
+
+  async ensureReferralCodeSet(): Promise<hl.SuccessResponse | undefined> {
+    if (checkIfReadOnlyWallet(this.userAddress)) return;
+
+    const isSet = await this.accountClient.isReferralCodeSet();
+    if (isSet) return;
+
+    const exchangeClient = await this.getExchangeClient();
+    if (!exchangeClient) return;
+
+    return await exchangeClient.setReferrer({
+      code: RAINBOW_REFERRAL_CODE,
     });
   }
 
