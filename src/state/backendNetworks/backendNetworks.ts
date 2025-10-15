@@ -61,7 +61,7 @@ export type BackendNetworksState = {
 
   getChainGasUnits: (chainId?: ChainId) => BackendNetwork['gasUnits'];
   getChainDefaultRpc: (chainId: ChainId) => string;
-}
+};
 
 function createSelector<T>(selectorFn: (networks: BackendNetwork[], transformed: Chain[]) => T): () => T {
   const uninitialized = Symbol();
