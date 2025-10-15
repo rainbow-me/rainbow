@@ -56,8 +56,6 @@
     "android-reverse-ports-all": "yarn adb-all reverse tcp:8097 tcp:8097 && yarn adb-all reverse tcp:8081 tcp:8081",
     "update-tokens": "yarn update-token-list",
     "update-token-list": "sh ./scripts/update-token-list.sh",
-    "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t",
-    "codegen-translations": "node ./scripts/codegen-translations.js",
     "prepare": "husky install",
     "bundle-inpage": "yarn webpack --config src/browser/webpack.config.js && cp InjectedJSBundle.js android/app/src/main/res/raw/injected_js_bundle.js",
     "// Fetch backend networks": "",
