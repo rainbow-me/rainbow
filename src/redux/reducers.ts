@@ -8,7 +8,6 @@ import ensRegistration from './ensRegistration';
 import gas from './gas';
 import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';
-import settings from './settings';
 import transactionSignatures from './transactionSignatures';
 
 export default combineReducers({
@@ -19,6 +18,5 @@ export default combineReducers({
   gas,
   imageMetadata,
   keyboardHeight,
-  settings,
   transactionSignatures,
 });
