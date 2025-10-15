@@ -143,6 +143,24 @@ lang.translations = Object.assign(
   }))
 );
 
+// Initialize locale from persisted storage synchronously
+// This runs at module load time to ensure i18n is set before first render
+// Using dynamic import to avoid circular dependencies
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { rainbowStorage } = require('@/state/internal/rainbowStorage');
+  const persistedSettings = rainbowStorage.getString('settings:settings');
+  if (persistedSettings) {
+    const settings = JSON.parse(persistedSettings);
+    const storedLanguage = settings?.state?.language;
+    if (storedLanguage && storedLanguage !== Language.EN_US) {
+      lang.locale = storedLanguage;
+    }
+  }
+} catch (error) {
+  // If storage isn't available yet, just use default
+}
+
 export const updateLanguageLocale = (code: Language) => {
   lang.locale = code;
 };
