@@ -19,15 +19,15 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
     transform: transformPositions,
     params: {
       address: $ => $(userAssetsStoreManager).address,
+      backendNetworksKey: $ => $(useBackendNetworksStore, s => s.backendNetworksKey),
       currency: $ => $(userAssetsStoreManager).currency,
-      chainIds: $ => $(useBackendNetworksStore, s => s.getSupportedPositionsChainIds()),
     },
     keepPreviousData: true,
     cacheTime: CACHE_TIME,
     staleTime: STALE_TIME,
     enabled: $ => $(userAssetsStoreManager, state => !!state.address),
   },
-  (_: unknown, get) => ({
+  (_, get) => ({
     getPositionTokenAddresses: () => {
       const positionTokenAddresses = new Set<string>();
       const data = get().getData() as RainbowPositions;

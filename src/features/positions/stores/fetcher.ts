@@ -1,6 +1,7 @@
 import { getPlatformClient } from '@/resources/platform/client';
 import { logger } from '@/logger';
 import type { NativeCurrencyKey } from '@/entities';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import type { ListPositionsResponse } from '../types';
 import type { Address } from 'viem';
 
@@ -19,8 +20,8 @@ export const DEFAULT_TIMEOUT = 1000 * 30; // 30 seconds
  */
 export type PositionsParams = {
   address: Address | string | null;
+  backendNetworksKey: number;
   currency: NativeCurrencyKey;
-  chainIds?: number[];
 };
 
 // ============ Fetcher ======================================================== //
@@ -29,12 +30,14 @@ export type PositionsParams = {
  * Fetches positions data from the platform API
  */
 export async function fetchPositions(params: PositionsParams, abortController: AbortController | null): Promise<ListPositionsResponse> {
-  const { address, currency, chainIds = [] } = params;
+  const { address, currency } = params;
 
   if (!address) {
     logger.debug('[Positions] No address provided');
     throw new Error('Address is required');
   }
+
+  const chainIds = useBackendNetworksStore.getState().getSupportedPositionsChainIds();
 
   try {
     const response = await getPlatformClient().get<ListPositionsResponse>(POSITIONS_ENDPOINT, {

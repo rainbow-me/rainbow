@@ -12,7 +12,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
+import { SearchAsset, TokenSearchAssetKey } from '@/__swaps__/types/search';
 import { time } from '@/utils';
 import { parseTokenSearchResults, parseTokenSearchAcrossNetworks } from './utils';
 import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
@@ -48,9 +48,9 @@ type TokenSearchParams<List extends TokenLists = TokenLists> = {
 };
 
 type DiscoverSearchParams = {
+  backendNetworksKey: number;
   list?: string;
   query: string;
-  chainIds: string;
 };
 
 type DiscoverSearchQueryState = {
@@ -116,8 +116,8 @@ export const useDiscoverSearchStore = createQueryStore<DiscoverSearchResults, Di
     disableAutoRefetching: true,
     keepPreviousData: true,
     params: {
+      backendNetworksKey: $ => $(useBackendNetworksStore, state => state.backendNetworksKey),
       query: $ => $(useDiscoverSearchQueryStore, state => (state.searchQuery.trim().length ? state.searchQuery.trim() : '')),
-      chainIds: $ => $(useBackendNetworksStore, state => state.getTokenSearchSupportedChainIds().join(',')),
     },
     staleTime: time.minutes(2),
   },
@@ -252,18 +252,16 @@ async function performTokenSearch(
   url: string,
   abortController: AbortController | null,
   errorContext: string,
-  chainIds?: string
+  chainIds?: ChainId[]
 ): Promise<SearchAsset[]> {
   try {
     const response = await getTokenSearchClient().get<{ data: SearchAsset[] }>(url, { abortController });
     if (!chainIds) return response.data.data;
 
-    const allowedChainIds = chainIds.split(',').map(Number) as ChainId[];
-    return response.data.data.filter(asset => allowedChainIds.includes(asset.chainId));
+    return response.data.data.filter(asset => chainIds.includes(asset.chainId));
   } catch (e: unknown) {
-    if (e instanceof Error && e.name === 'AbortError') return NO_RESULTS;
-    logger.error(new RainbowError(`[${errorContext}]: Token search failed`), { url });
-    return NO_RESULTS;
+    if (e instanceof Error && e.message.includes('AbortError')) throw e;
+    throw new RainbowError(`[${errorContext}]: Token search failed for URL: ${url}`, e);
   }
 }
 
@@ -436,10 +434,10 @@ const getImportedAsset = async (searchQuery: string, chainId: number = ChainId.m
 };
 
 export async function discoverSearchQueryFunction(
-  { query, chainIds }: DiscoverSearchParams,
+  { query }: DiscoverSearchParams,
   abortController: AbortController | null
 ): Promise<DiscoverSearchResults> {
-  const queryParams: Omit<DiscoverSearchParams, 'chainIds'> = {
+  const queryParams: Omit<DiscoverSearchParams, 'backendNetworksKey'> = {
     query,
   };
 
@@ -451,11 +449,12 @@ export async function discoverSearchQueryFunction(
   }
 
   const url = `${searchDefaultVerifiedList ? `/${ChainId.mainnet}` : ''}/?${qs.stringify(queryParams)}`;
+  const chainIds = useBackendNetworksStore.getState().getTokenSearchSupportedChainIds();
 
   try {
     const tokenSearchData = await performTokenSearch(url, abortController, 'searchVerifiedTokens', chainIds);
 
-    if (isAddressSearch && (tokenSearchData.length || 0) === 0) {
+    if (isAddressSearch && !tokenSearchData.length) {
       const result = await getImportedAsset(query);
       return {
         verifiedAssets: [],

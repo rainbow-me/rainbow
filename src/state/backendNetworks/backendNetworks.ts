@@ -14,9 +14,10 @@ import { time } from '@/utils';
 const INITIAL_BACKEND_NETWORKS = buildTimeNetworks.networks;
 const DEFAULT_PRIVATE_MEMPOOL_TIMEOUT = time.minutes(2);
 
-export interface BackendNetworksState {
+export type BackendNetworksState = {
   backendChains: Chain[];
   backendNetworks: BackendNetwork[];
+  backendNetworksKey: number;
 
   getSupportedChains: () => Chain[];
   getSortedSupportedChainIds: () => number[];
@@ -121,6 +122,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
         return {
           backendChains: transformBackendNetworksToChains(filteredNetworks),
           backendNetworks: filteredNetworks,
+          backendNetworksKey: state.backendNetworksKey + 1,
         };
       });
     },
@@ -130,6 +132,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
   (_, get) => ({
     backendChains: transformBackendNetworksToChains(filterSupportedNetworks(INITIAL_BACKEND_NETWORKS)),
     backendNetworks: filterSupportedNetworks(INITIAL_BACKEND_NETWORKS),
+    backendNetworksKey: 0,
 
     getSupportedChains: createSelector((_, transformed) => {
       return IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
@@ -371,7 +374,10 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
   }),
 
   {
-    partialize: state => ({ backendChains: state.backendChains, backendNetworks: state.backendNetworks }),
+    partialize: state => ({
+      backendChains: state.backendChains,
+      backendNetworks: state.backendNetworks,
+    }),
     storageKey: 'backendNetworks',
     version: 1,
   }
