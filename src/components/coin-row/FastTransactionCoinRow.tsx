@@ -330,10 +330,6 @@ export default React.memo(function TransactionCoinRow({
 
   const [topValue] = activityValues(item, nativeCurrency) ?? [];
 
-  if (item.hash === '0x3dae77def41cc00f2e2e8520e4802d28061955860fa47e2e677641ea64a14849') {
-    console.log('item', JSON.stringify(item, null, 2));
-  }
-
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.96} uniqueId={`${item.hash}-${item.chainId}`}>
       <View style={sx.wholeRow} testID={`${item.title}-${item.description}-${item.balance?.display}`}>

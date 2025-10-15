@@ -28,19 +28,16 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
   const theme = useTheme();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { fee } = transaction;
-  const change = transaction?.changes?.[1];
-  const assetData = transaction?.changes?.[1]?.asset;
+  const change = transaction?.changes?.[0];
+  const assetData = transaction?.changes?.[0]?.asset;
 
   const isPendingSwap = checkForPendingSwap(transaction);
   const isSpeedUpOrCancel = transaction.type === 'speed_up' || transaction.type === 'cancel';
 
-  console.log('change', change);
-  console.log('assetData', assetData);
-
   // const value = change?.value || transaction.balance?.display;
   const value = change?.value || change?.asset.balance?.display;
-  // const valueDisplay = value ? convertRawAmountToBalance(value || '', assetData!).display : '';
-  const valueDisplay = change?.asset?.balance?.display;
+  const valueDisplay = value ? convertRawAmountToBalance(value || '', assetData!).display : '';
+  // const valueDisplay = change?.asset?.balance?.display;
   const nativeCurrencyValue = change?.asset?.price?.value
     ? convertAmountAndPriceToNativeDisplay(change?.asset?.balance?.amount || '', change?.asset?.price?.value || '', nativeCurrency).display
     : '';

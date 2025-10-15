@@ -308,8 +308,6 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
 
     const inAsset = change.asset;
 
-    console.log('inAsset', inAsset);
-
     return {
       inAssetValueDisplay: convertAmountToBalanceDisplay(inAsset?.balance?.amount || '0', inAsset),
       inAssetNativeDisplay: inAsset?.price?.value
