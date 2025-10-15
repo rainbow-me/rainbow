@@ -42,23 +42,21 @@ import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { TextSegment, useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
 import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities';
 import { IS_DEV, IS_IOS } from '@/env';
-import { areCandlesEqual } from '@/features/charts/candlestick/utils';
+import { areCandlesEqual, formatCandlestickPrice } from '@/features/charts/candlestick/utils';
 import { candlestickActions, fetchHistoricalCandles, useCandlestickStore } from '@/features/charts/stores/candlestickStore';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';
 import Routes from '@/navigation/routesNames';
 import { supportedNativeCurrencies } from '@/references';
-import { greaterThanOrEqualToWorklet } from '@/safe-math/SafeMath';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
-import { addCommasToNumber, clamp, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { clamp, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { DeepPartial } from '@/types/objects';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -67,6 +65,8 @@ import { DampingMassStiffnessConfig, normalizeSpringConfig } from '@/worklets/an
 import { createBlankPicture } from '@/worklets/skia';
 import { NoChartData } from '../../components/NoChartData';
 import { HyperliquidSymbol, Token } from '../../types';
+import { IndicatorPosition, PerpsIndicatorData, PerpsIndicatorBuilder } from '@/features/perps/charts-plugin/PerpsIndicatorBuilder';
+import { usePerpsIndicatorData } from '@/features/perps/charts-plugin/usePerpsIndicatorData';
 import { Animator } from '../classes/Animator';
 import { EmaIndicator, IndicatorBuilder, IndicatorKey } from '../classes/IndicatorBuilder';
 import { TimeFormatter } from '../classes/TimeFormatter';
@@ -181,6 +181,7 @@ type CandlestickConfig = {
   };
 
   indicators: {
+    enablePerpsIndicators: boolean;
     strokeWidth: number;
   };
 
@@ -248,6 +249,7 @@ export const DEFAULT_CANDLESTICK_CONFIG = deepFreeze({
   },
 
   indicators: {
+    enablePerpsIndicators: true,
     strokeWidth: 4 / 3,
   },
 
@@ -295,26 +297,6 @@ function findPercentile(array: number[], percentile: number): number {
     else right = i - 1;
   }
   return a[Math.min(percentile, a.length - 1)];
-}
-
-export function formatCandlestickPrice(price: number | string, currency: NativeCurrencyKey, isHyperliquidPrice: boolean): string {
-  'worklet';
-  if (!price) return '$0.00';
-  const isNumber = typeof price === 'number';
-
-  const priceString = formatAssetPrice({
-    currency,
-    decimalPlaces: supportedNativeCurrencies[currency].decimals,
-    prefix: supportedNativeCurrencies[currency].symbol,
-    value: price,
-  });
-
-  if (isHyperliquidPrice && isNumber ? price >= 100_000 : greaterThanOrEqualToWorklet(price, '100000')) {
-    const toFixedPrice = isNumber ? price.toFixed(0) : price;
-    return `$${addCommasToNumber(toFixedPrice, '0')}`;
-  }
-
-  return priceString;
 }
 
 function getEmaPeriod(type: IndicatorKey): number {
@@ -399,6 +381,7 @@ class CandlestickChartManager {
 
   private animator = new Animator(() => this.rebuildChart());
   private indicatorBuilder = new IndicatorBuilder<IndicatorKey>();
+  private perpsIndicatorBuilder: PerpsIndicatorBuilder | null = null;
   private timeFormatter = new TimeFormatter();
 
   private colors = {
@@ -459,6 +442,7 @@ class CandlestickChartManager {
     isLoadingHistoricalCandles,
     maxDisplayedVolume,
     nativeCurrency,
+    perpsIndicatorData,
     token,
   }: {
     activeCandle: SharedValue<Bar | undefined>;
@@ -482,6 +466,7 @@ class CandlestickChartManager {
     isLoadingHistoricalCandles: SharedValue<boolean>;
     maxDisplayedVolume: SharedValue<number>;
     nativeCurrency: { currency: NativeCurrencyKey; decimals: number };
+    perpsIndicatorData: PerpsIndicatorData | null;
     token: Token;
   }) {
     // ========== Core State ==========
@@ -631,6 +616,19 @@ class CandlestickChartManager {
     this.yAxisWidth = this.getYAxisWidth(min, max);
     this.offset.value = this.getMinOffset();
 
+    // ========== Perps Indicators ==========
+    if (perpsIndicatorData && this.isHyperliquidToken && this.config.indicators.enablePerpsIndicators) {
+      this.perpsIndicatorBuilder = new PerpsIndicatorBuilder({
+        backgroundColor: this.backgroundColor,
+        buildParagraph,
+        chartWidth,
+        isDarkMode,
+        perpsIndicatorData,
+        yAxisWidth: this.yAxisWidth,
+      });
+      this.perpsIndicatorBuilder.updateData(perpsIndicatorData);
+    }
+
     this.buildBaseCandlesPicture();
   }
 
@@ -669,6 +667,12 @@ class CandlestickChartManager {
     if (indicatorRange) {
       if (indicatorRange.min < min) min = indicatorRange.min;
       if (indicatorRange.max > max) max = indicatorRange.max;
+    }
+
+    const perpsIndicatorRange = this.perpsIndicatorBuilder?.getMinMaxForRange();
+    if (perpsIndicatorRange) {
+      if (perpsIndicatorRange.min < min) min = perpsIndicatorRange.min;
+      if (perpsIndicatorRange.max > max) max = perpsIndicatorRange.max;
     }
 
     if (min === Infinity || max === -Infinity) {
@@ -915,6 +919,21 @@ class CandlestickChartManager {
       canvas.drawLine(0, currentPriceY, chartWidth - this.yAxisWidth / 2, currentPriceY, this.paints.candleWick);
     }
 
+    // ========== Perps Indicator Lines ==========
+    let perpsIndicatorPositions: IndicatorPosition[] = [];
+    if (this.perpsIndicatorBuilder) {
+      perpsIndicatorPositions = this.perpsIndicatorBuilder.drawLines(canvas, {
+        candleRegionHeight,
+        candleWidth,
+        endIndex,
+        maxPrice,
+        minPrice,
+        offsetX: currentOffset,
+        startIndex,
+        stride,
+      });
+    }
+
     // ========== Candle Wicks ==========
     this.paints.candleWick.setColor(this.colors.green);
     this.paints.candleWick.setAlphaf(0.7);
@@ -981,6 +1000,11 @@ class CandlestickChartManager {
         priceOrLabel: lastCandle.c,
         strokeOpacity: 0.15,
       });
+    }
+
+    // ========== Perps Indicator Bubbles ==========
+    if (this.perpsIndicatorBuilder) {
+      this.perpsIndicatorBuilder.drawBubbles(canvas, perpsIndicatorPositions);
     }
 
     const oldPicture = this.chartPicture.value;
@@ -1315,6 +1339,7 @@ class CandlestickChartManager {
 
   public setBuildParagraph(buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null): void {
     this.buildParagraph = buildParagraph;
+    this.perpsIndicatorBuilder?.setBuildParagraph(buildParagraph);
     this.buildBaseCandlesPicture();
   }
 
@@ -1323,18 +1348,22 @@ class CandlestickChartManager {
     { hasPreviousCandles, shouldResetOffset = false }: { hasPreviousCandles: boolean; shouldResetOffset?: boolean }
   ): void {
     const oldCandleCount = this.candles.length;
-    const wasDataPrepended =
-      !shouldResetOffset && !!oldCandleCount && newCandles.length > oldCandleCount && newCandles[0].t < this.candles[0].t;
+    const wasDataAdded = oldCandleCount > 0 && newCandles.length > oldCandleCount;
+    const wasDataAppended = wasDataAdded && newCandles[newCandles.length - 1].t > this.candles[oldCandleCount - 1].t;
+    const wasDataPrepended = wasDataAdded && newCandles[0].t < this.candles[0].t;
+    const shouldRegisterOffsetAdjustment = !shouldResetOffset && wasDataPrepended;
 
     const currentOffset = this.getOffsetX();
     const currentMinOffset = this.getMinOffset();
-    const wasPinnedToRight = shouldResetOffset || !oldCandleCount || Math.abs(currentOffset - currentMinOffset) < 1;
+    const isDecelerating = this.isDecelerating.value;
+    const wasPinnedToRight =
+      shouldResetOffset || !oldCandleCount || (wasDataAppended && Math.abs(currentOffset - currentMinOffset) < 1 && !isDecelerating);
 
     this.candles = newCandles;
     this.hasPreviousCandles = hasPreviousCandles;
     this.indicatorBuilder.computeAll(newCandles);
 
-    if (wasDataPrepended) {
+    if (shouldRegisterOffsetAdjustment) {
       this.registerOffsetAdjustment({ newCandleCount: newCandles.length, oldCandleCount });
       this.getPriceBounds();
       this.animator.runAfterAnimations(() => {
@@ -1355,10 +1384,11 @@ class CandlestickChartManager {
         this.getPriceBounds();
       }
 
-      this.rebuildChart(false, true);
+      const shouldAnimate = !wasPinnedToRight;
+      this.rebuildChart(shouldAnimate, true);
     }
 
-    if (!wasDataPrepended && this.isChartGestureActive.value) {
+    if (!shouldRegisterOffsetAdjustment && this.isChartGestureActive.value) {
       this.buildCrosshairPicture(this.lastCrosshairPosition.x, this.lastCrosshairPosition.y, true);
     }
   }
@@ -1378,25 +1408,23 @@ class CandlestickChartManager {
     this.rebuildChart(false, true);
   }
 
-  public setColorMode(
-    colorMode: 'dark' | 'light',
-    backgroundColor: string | undefined,
-    providedConfig: CandlestickChartProps['config']
-  ): void {
+  public setColorMode(colorMode: 'dark' | 'light', backgroundColor: string, providedConfig: CandlestickChartProps['config']): void {
     const isDarkMode = colorMode === 'dark';
     this.isDarkMode = isDarkMode;
     this.colors.crosshairPriceBubble = Skia.Color(getColorForTheme('fill', colorMode));
     this.colors.labelSecondary = Skia.Color(getColorForTheme('labelSecondary', colorMode));
     this.colors.labelQuinary = Skia.Color(getColorForTheme('labelQuinary', colorMode));
 
-    if (backgroundColor) {
-      this.backgroundColor = Skia.Color(backgroundColor);
-      this.paints.bottomShadow.setColor(this.backgroundColor);
-      this.paints.bottomShadow.setAlphaf(0.48);
-      this.paints.bottomShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 4, 5, 5, this.backgroundColor, null));
-      this.paints.topShadow.setColor(this.backgroundColor);
-      this.paints.topShadow.setAlphaf(0.48);
-      this.paints.topShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, -4, 5, 5, this.backgroundColor, null));
+    this.backgroundColor = Skia.Color(backgroundColor);
+    this.paints.bottomShadow.setColor(this.backgroundColor);
+    this.paints.bottomShadow.setAlphaf(0.48);
+    this.paints.bottomShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 4, 5, 5, this.backgroundColor, null));
+    this.paints.topShadow.setColor(this.backgroundColor);
+    this.paints.topShadow.setAlphaf(0.48);
+    this.paints.topShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, -4, 5, 5, this.backgroundColor, null));
+
+    if (this.perpsIndicatorBuilder) {
+      this.perpsIndicatorBuilder.setColorMode(isDarkMode, this.backgroundColor);
     }
 
     if (providedConfig?.crosshair?.dotColor) {
@@ -1445,8 +1473,18 @@ class CandlestickChartManager {
 
     this.animator.dispose();
     this.indicatorBuilder.dispose();
+    this.perpsIndicatorBuilder?.dispose();
 
     for (const paint of Object.values(this.paints)) paint.dispose();
+  }
+
+  // ============ Perps Indicators ============================================= //
+
+  public updatePerpsIndicatorData(data: PerpsIndicatorData | null): void {
+    if (!this.perpsIndicatorBuilder) return;
+    this.perpsIndicatorBuilder.updateData(data);
+    if (!this.candles.length) return;
+    this.rebuildChart(true, true);
   }
 
   // ============ Indicator Toggles ============================================ //
@@ -1650,15 +1688,16 @@ function useCandlestickChart({
   providedConfig: CandlestickChartProps['config'];
   providedToken: Token;
 }) {
-  const { candles, config, hasPreviousCandles, initialPicture, isFetchingInitialData, nativeCurrency, token } = useStableValue(() =>
-    buildChartConfig({
-      backgroundColor,
-      chartHeight,
-      chartWidth,
-      providedConfig,
-      token: providedToken,
-    })
-  );
+  const { candles, config, hasPreviousCandles, initialPicture, isFetchingInitialData, nativeCurrency, perpsIndicatorData, token } =
+    useStableValue(() =>
+      buildChartConfig({
+        backgroundColor,
+        chartHeight,
+        chartWidth,
+        providedConfig,
+        token: providedToken,
+      })
+    );
 
   const buildParagraph = useSkiaText({
     align: 'left',
@@ -1733,6 +1772,7 @@ function useCandlestickChart({
       isLoadingHistoricalCandles,
       maxDisplayedVolume,
       nativeCurrency,
+      perpsIndicatorData,
       token,
     });
   }, true);
@@ -1784,15 +1824,19 @@ function useCandlestickChart({
       equalityFn: isCandlestickDataEqual,
       fireImmediately: true,
     }),
-    {
-      additionalRoutes: Routes.CLOSE_POSITION_BOTTOM_SHEET,
-    }
+    { additionalRoutes: Routes.CLOSE_POSITION_BOTTOM_SHEET }
   );
 
   useListen(
     useChartsStore,
     state => state.snapSignal,
     () => runOnUI(() => chartManager.value?.snapToCurrentCandle?.())()
+  );
+
+  useListen(
+    usePerpsIndicatorData,
+    state => state,
+    perpsData => runOnUI(() => chartManager.value?.updatePerpsIndicatorData?.(perpsData))()
   );
 
   const chartTransform = useDerivedValue(() => [{ scale: !_WORKLET ? 1 : chartScale.value }]);
@@ -2192,6 +2236,7 @@ function buildChartConfig({
   initialPicture: SkPicture;
   isFetchingInitialData: boolean;
   nativeCurrency: { currency: NativeCurrencyKey; decimals: number };
+  perpsIndicatorData: PerpsIndicatorData | null;
   token: Token;
 } {
   const { candles, hasPreviousCandles, isFetchingInitialData, nativeCurrency } = prepareCandlestickData();
@@ -2207,6 +2252,7 @@ function buildChartConfig({
     initialPicture: createBlankPicture(chartWidth, chartHeight),
     isFetchingInitialData,
     nativeCurrency,
+    perpsIndicatorData: usePerpsIndicatorData.getState(),
     token,
   };
 }

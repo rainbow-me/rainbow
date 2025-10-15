@@ -1,3 +1,8 @@
+import { NativeCurrencyKey } from '@/entities';
+import { formatAssetPrice } from '@/helpers/formatAssetPrice';
+import { supportedNativeCurrencies } from '@/references';
+import { greaterThanOrEqualToWorklet } from '@/safe-math/SafeMath';
+import { addCommasToNumber } from '@/__swaps__/utils/swaps';
 import { CandleResolution } from '../types';
 import { Bar, CandlestickEndpointResponse, Price } from './types';
 
@@ -17,6 +22,26 @@ export function arePricesEqual(previousPrice: Price | undefined, price: Price | 
   if (!price && !previousPrice) return true;
   if (!price || !previousPrice) return false;
   return price.price === previousPrice.price && price.percentChange === previousPrice.percentChange;
+}
+
+export function formatCandlestickPrice(price: number | string, currency: NativeCurrencyKey, isHyperliquidPrice: boolean): string {
+  'worklet';
+  if (!price) return '$0.00';
+  const isNumber = typeof price === 'number';
+
+  const priceString = formatAssetPrice({
+    currency,
+    decimalPlaces: supportedNativeCurrencies[currency].decimals,
+    prefix: supportedNativeCurrencies[currency].symbol,
+    value: price,
+  });
+
+  if (isHyperliquidPrice && isNumber ? price >= 100_000 : greaterThanOrEqualToWorklet(price, '100000')) {
+    const toFixedPrice = isNumber ? price.toFixed(0) : price;
+    return `$${addCommasToNumber(toFixedPrice, '0')}`;
+  }
+
+  return priceString;
 }
 
 export function transformApiResponseToBars(response: CandlestickEndpointResponse, filterEmptyVolumes = false): Bar[] {
