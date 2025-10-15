@@ -1348,13 +1348,16 @@ class CandlestickChartManager {
     { hasPreviousCandles, shouldResetOffset = false }: { hasPreviousCandles: boolean; shouldResetOffset?: boolean }
   ): void {
     const oldCandleCount = this.candles.length;
-    const wasDataPrepended = oldCandleCount > 0 && newCandles.length > oldCandleCount && newCandles[0].t < this.candles[0].t;
+    const wasDataAdded = oldCandleCount > 0 && newCandles.length > oldCandleCount;
+    const wasDataAppended = wasDataAdded && newCandles[newCandles.length - 1].t > this.candles[oldCandleCount - 1].t;
+    const wasDataPrepended = wasDataAdded && newCandles[0].t < this.candles[0].t;
     const shouldRegisterOffsetAdjustment = !shouldResetOffset && wasDataPrepended;
 
     const currentOffset = this.getOffsetX();
     const currentMinOffset = this.getMinOffset();
     const isDecelerating = this.isDecelerating.value;
-    const wasPinnedToRight = shouldResetOffset || !oldCandleCount || (Math.abs(currentOffset - currentMinOffset) < 1 && !isDecelerating);
+    const wasPinnedToRight =
+      shouldResetOffset || !oldCandleCount || (wasDataAppended && Math.abs(currentOffset - currentMinOffset) < 1 && !isDecelerating);
 
     this.candles = newCandles;
     this.hasPreviousCandles = hasPreviousCandles;
@@ -1481,7 +1484,7 @@ class CandlestickChartManager {
     if (!this.perpsIndicatorBuilder) return;
     this.perpsIndicatorBuilder.updateData(data);
     if (!this.candles.length) return;
-    this.rebuildChart(false, true);
+    this.rebuildChart(true, true);
   }
 
   // ============ Indicator Toggles ============================================ //

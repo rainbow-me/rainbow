@@ -268,8 +268,10 @@ function drawIndicatorBubbleWithLabel(
     ry: BUBBLE_HEIGHT / 2,
   };
 
-  canvas.drawRRect(rect, style.bottomShadowPaint);
-  canvas.drawRRect(rect, style.topShadowPaint);
+  if (isDarkMode) {
+    canvas.drawRRect(rect, style.bottomShadowPaint);
+    canvas.drawRRect(rect, style.topShadowPaint);
+  }
 
   fillPaint.setBlendMode(BlendMode.Src);
   fillPaint.setAntiAlias(true);
@@ -542,6 +544,8 @@ export class PerpsIndicatorBuilder {
   }
 
   public setColorMode(isDarkMode: boolean, backgroundColor: SkColor): void {
+    this.config.backgroundColor = backgroundColor;
+    this.config.isDarkMode = isDarkMode;
     for (const indicator of this.indicators.values()) {
       if (!indicator) continue;
       indicator.setColorMode(isDarkMode, backgroundColor);

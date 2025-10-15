@@ -26,12 +26,12 @@ const EMPTY_PERPS_INDICATOR_DATA: PerpsIndicatorData = Object.freeze({
  */
 export const usePerpsIndicatorData = createDerivedStore<PerpsIndicatorData | null>(
   $ => {
-    const token = $(useChartsStore).token;
+    const { enablePerpsIndicators, token } = $(useChartsStore);
     const symbol = isHyperliquidToken(token) ? token : '';
     const position = $(useHyperliquidAccountStore, state => state.getPosition(symbol));
     const openOrders = $(useHlOpenOrdersStore, state => state.getData()?.ordersBySymbol[symbol]);
 
-    if (!position || !symbol) return EMPTY_PERPS_INDICATOR_DATA;
+    if (!enablePerpsIndicators || !position || !symbol) return EMPTY_PERPS_INDICATOR_DATA;
 
     const liquidationPrice = position?.liquidationPrice ? Number(position.liquidationPrice) : null;
 

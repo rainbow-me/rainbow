@@ -14,10 +14,12 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { Box, useColorMode } from '@/design-system';
 import { IS_DEV } from '@/env';
+import { ChartIndicatorsToggle } from '@/features/charts/candlestick/components/PerpsIndicatorsToggle';
 import { CandlestickChart, PartialCandlestickConfig } from '@/features/charts/candlestick/components/CandlestickChart';
 import { arePricesEqual } from '@/features/charts/candlestick/utils';
 import { TimeframeSelector } from '@/features/charts/components/TimeframeSelector';
 import { chartsActions, useChartsStore, useChartType } from '@/features/charts/stores/chartsStore';
+import { useCandlestickPrice } from '@/features/charts/stores/derived/useCandlestickPrice';
 import { ChartType, LineChartTimePeriod } from '@/features/charts/types';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { useCleanup } from '@/hooks/useCleanup';
@@ -29,7 +31,6 @@ import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue'
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { LineChart } from './LineChart';
-import { useCandlestickPrice } from '@/features/charts/stores/derived/useCandlestickPrice';
 
 const BASE_CHART_HEIGHT = 292;
 const LINE_CHART_HEIGHT = BASE_CHART_HEIGHT - 6;
@@ -143,6 +144,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors,
         backgroundColor={backgroundColor}
         chartGestureUnixTimestamp={chartGestureUnixTimestamp}
         chartType={chartType}
+        hyperliquidSymbol={hyperliquidSymbol}
         isChartGestureActive={isChartGestureActive}
         price={price}
         priceRelativeChange={priceRelativeChange}
@@ -190,6 +192,7 @@ const ChartHeader = memo(function ChartHeader({
   backgroundColor,
   chartGestureUnixTimestamp,
   chartType,
+  hyperliquidSymbol,
   isChartGestureActive,
   price,
   priceRelativeChange,
@@ -198,6 +201,7 @@ const ChartHeader = memo(function ChartHeader({
   backgroundColor: string;
   chartGestureUnixTimestamp: SharedValue<number>;
   chartType: ChartType;
+  hyperliquidSymbol: string | undefined;
   isChartGestureActive: SharedValue<boolean>;
   price: DerivedValue<string | number | undefined>;
   priceRelativeChange: DerivedValue<string | number | undefined>;
@@ -216,18 +220,38 @@ const ChartHeader = memo(function ChartHeader({
 
   const headerComponent = useMemo(
     () => (
-      <Box as={Animated.View} paddingBottom="4px" paddingHorizontal="24px" style={chartHeaderStyle}>
-        <ChartExpandedStateHeader
-          accentColor={accentColor}
-          backgroundColor={backgroundColor}
-          chartGestureUnixTimestamp={chartGestureUnixTimestamp}
-          isLineChartGestureActive={isLineChartGestureActive}
-          price={price}
-          priceRelativeChange={priceRelativeChange}
-        />
+      <Box alignItems="center" flexDirection="row" justifyContent="space-between" width="full" zIndex={1}>
+        <Box as={Animated.View} paddingBottom="4px" paddingHorizontal="24px" style={chartHeaderStyle}>
+          <ChartExpandedStateHeader
+            accentColor={accentColor}
+            backgroundColor={backgroundColor}
+            chartGestureUnixTimestamp={chartGestureUnixTimestamp}
+            isLineChartGestureActive={isLineChartGestureActive}
+            price={price}
+            priceRelativeChange={priceRelativeChange}
+          />
+        </Box>
+        {hyperliquidSymbol ? (
+          <ChartIndicatorsToggle
+            backgroundColor={backgroundColor}
+            color={accentColor}
+            hyperliquidSymbol={hyperliquidSymbol}
+            isChartGestureActive={isChartGestureActive}
+          />
+        ) : null}
       </Box>
     ),
-    [accentColor, backgroundColor, chartGestureUnixTimestamp, chartHeaderStyle, isLineChartGestureActive, price, priceRelativeChange]
+    [
+      accentColor,
+      backgroundColor,
+      chartGestureUnixTimestamp,
+      chartHeaderStyle,
+      hyperliquidSymbol,
+      isChartGestureActive,
+      isLineChartGestureActive,
+      price,
+      priceRelativeChange,
+    ]
   );
 
   return headerComponent;
