@@ -13,7 +13,7 @@ import th_TH from './th_TH.json';
 import tr_TR from './tr_TR.json';
 import zh_CN from './zh_CN.json';
 
-import { simpleObjectProxy } from '@/languages/utils';
+import { getValueAtPath } from '@/languages/utils';
 import { enUS, es, fr, hi, id, ja, ptBR, ru, tr, zhCN, ar, th, ko } from 'date-fns/locale';
 
 /**
@@ -146,32 +146,75 @@ export const updateLanguageLocale = (code: Language) => {
   lang.locale = code;
 };
 
+type TranslationParams = Record<string, string | number>;
+
+interface TranslationLeaf {
+  (params?: TranslationParams): string;
+  toString(): string;
+  __keypath__?: string;
+}
+
+type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+type DepthLimitedProxy<T, D extends number> =
+  // If we've hit max depth, give up on being perfectly typed:
+  D extends 0
+    ? any
+    : // If it's a string, treat it as a TranslationLeaf
+      T extends string
+      ? TranslationLeaf
+      : // Otherwise recurse, subtracting 1 from the depth
+        {
+          [K in keyof T]: DepthLimitedProxy<T[K], Prev[D]>;
+        };
+
+type MaxDepth = 10;
+
+type LanguageProxy = DepthLimitedProxy<Translation['translation'], MaxDepth>;
+
 /**
- * Returns a i18n string for a given object-keypath or string
- * and optional template literal args.
- *   `import * as i18n from '@/languages'`
- *
- * Type-safe usage:
- *   `i18n.t(i18n.l.account.hide, { accountName: 'myAccount' })`
- *
- * Alternative standard usage:
- *   `i18n.t('account.hide', { accountName: 'myAccount' })`
+ * Creates a runtime Proxy that dynamically resolves:
+ *  - Leaf nodes to a callable string function
+ *  - Nested objects to sub-proxies
  */
-export function t(keypath: string, args?: { [key: string]: string | number }) {
-  // if it's anything truthy, try __keypath__ or fall back to the value
-  // otherwise let falsy values fall through
-  // @ts-expect-error
-  return lang.t(keypath ? keypath.__keypath__ || keypath : keypath, args);
+function createLangProxy(keypath: string[] = []): any {
+  return new Proxy(
+    {},
+    {
+      get(_target, prop: string | symbol) {
+        if (typeof prop === 'symbol') return undefined;
+        // Build up the keypath
+        const nextPath = [...keypath, prop];
+        const pathString = nextPath.join('.');
+
+        // Attempt to see if we've got a leaf in en_US
+        const value = getValueAtPath(en_US.translation, nextPath);
+
+        if (typeof value === 'string') {
+          // Return a "callable string" function
+          const fn = (params?: TranslationParams) => lang.t(pathString, params);
+          fn.toString = () => lang.t(pathString);
+          fn.__keypath__ = pathString;
+          return fn;
+        }
+        // Otherwise return another nested proxy
+        return createLangProxy(nextPath);
+      },
+    }
+  );
 }
 
 /**
- * A proxied object used to generate keypaths for use with `i18n.translate` via
- *   `import * as i18n from '@/languages'`
+ * Callable i18n proxy
  *
  * Type-safe usage:
- *   `i18n.t(i18n.l.account.hide)`
+ *   `i18n.account.hide()`
+ *   `i18n.account.hide({ accountName: 'myAccount' })`
+ *   `i18n.account.hide.toString()`
  *
- * Alternative standard usage:
- *   `i18n.t('account.hide')`
+ * Proxy behavior:
+ *   `typeof i18n.account === 'object'`
+ *   `typeof i18n.account.hide === 'function'`
  */
-export const l = simpleObjectProxy<Translation['translation']>(en_US['translation']);
+const i18n: LanguageProxy = createLangProxy();
+
+export default i18n;

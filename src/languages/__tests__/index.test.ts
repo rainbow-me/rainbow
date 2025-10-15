@@ -1,19 +1,27 @@
 import { describe, test, expect } from '@jest/globals';
 
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 describe('@/languages', () => {
-  test('translate with keypath', () => {
-    expect(i18n.t(i18n.l.account.hide)).toEqual('Hide');
+  test('translate with callable syntax', () => {
+    expect(i18n.account.hide()).toEqual('Hide');
   });
 
-  test('translate with string for backwards compat', () => {
-    expect(i18n.t('account.hide')).toEqual('Hide');
+  test('translate with toString()', () => {
+    expect(i18n.account.hide.toString()).toEqual('Hide');
+  });
+
+  test('proxy behavior - typeof checks', () => {
+    expect(typeof i18n.account).toEqual('object');
+    expect(typeof i18n.account.hide).toEqual('function');
+  });
+
+  test('__keypath__ property', () => {
+    expect(i18n.account.hide.__keypath__).toEqual('account.hide');
   });
 
   test('falls back with undefined values', () => {
     // @ts-ignore We know it's undefined
-    const translations = i18n.l.promos.foo.bar.baz;
-    expect(i18n.t(translations.header)).toEqual(`[missing "en_US.promos.foo.bar.baz.header" translation]`);
+    expect(i18n.promos.foo.bar.baz.header()).toEqual(`[missing "en_US.promos.foo.bar.baz.header" translation]`);
   });
 });
