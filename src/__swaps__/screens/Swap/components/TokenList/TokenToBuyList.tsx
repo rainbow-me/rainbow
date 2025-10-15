@@ -6,7 +6,7 @@ import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIc
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Inline, Text, TextIcon, useColorMode } from '@/design-system';
 import { palettes } from '@/design-system/color/palettes';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { equalWorklet } from '@/safe-math/SafeMath';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -44,37 +44,37 @@ interface SectionHeaderProp {
 
 const SECTION_HEADER_INFO: { [id in AssetToBuySectionId]: SectionHeaderProp } = {
   popular: {
-    title: i18n.t(i18n.l.token_search.section_header.popular),
+    title: i18n.token_search.section_header.popular(),
     symbol: '􀙬',
     color: 'rgba(255, 88, 77, 1)',
   },
   recent: {
-    title: i18n.t(i18n.l.token_search.section_header.recent),
+    title: i18n.token_search.section_header.recent(),
     symbol: '􀐫',
     color: 'rgba(38, 143, 255, 1)',
   },
   favorites: {
-    title: i18n.t(i18n.l.token_search.section_header.favorites),
+    title: i18n.token_search.section_header.favorites(),
     symbol: '􀋃',
     color: 'rgba(255, 218, 36, 1)',
   },
   bridge: {
-    title: i18n.t(i18n.l.token_search.section_header.bridge),
+    title: i18n.token_search.section_header.bridge(),
     symbol: '􀊝',
     color: undefined,
   },
   verified: {
-    title: i18n.t(i18n.l.token_search.section_header.verified),
+    title: i18n.token_search.section_header.verified(),
     symbol: '􀇻',
     color: 'rgba(38, 143, 255, 1)',
   },
   unverified: {
-    title: i18n.t(i18n.l.token_search.section_header.unverified),
+    title: i18n.token_search.section_header.unverified(),
     symbol: '􀇿',
     color: 'rgba(255, 218, 36, 1)',
   },
   other_networks: {
-    title: i18n.t(i18n.l.token_search.section_header.on_other_networks),
+    title: i18n.token_search.section_header.on_other_networks(),
     symbol: '􀊫',
     color: palettes.dark.foregroundColors.blue,
   },

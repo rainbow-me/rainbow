@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { PropsWithChildren, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
@@ -21,8 +21,8 @@ const menuOptionStyle = (pressed: boolean) =>
     opacity: pressed ? 0.9 : 1,
   }) as const;
 
-const copy = i18n.t(i18n.l.copy);
-const paste = i18n.t(i18n.l.paste);
+const copy = i18n.copy();
+const paste = i18n.paste();
 
 function CopyPasteMenuBubble({
   x,

@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
 import { Bleed, Box, Stack } from '@/design-system';
 import { abbreviateNumber } from '@/helpers/utilities';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
 import React, { useState } from 'react';
@@ -40,7 +40,7 @@ export const Calculate = () => {
       <Stack separator={<LineBreak lines={3} />}>
         <Paragraph>
           <Line>
-            <AnimatedText color={textColors.gray} skipAnimation textContent={`${i18n.t(i18n.l.points.console.account)}:`} weight="normal" />
+            <AnimatedText color={textColors.gray} skipAnimation textContent={`${i18n.points.console.account()}:`} weight="normal" />
             <AnimatedText color={textColors.account} skipAnimation textContent={accountName} />
           </Line>
           <Line gap={0}>
@@ -48,7 +48,7 @@ export const Calculate = () => {
               color={textColors.gray}
               delayStart={500}
               weight="normal"
-              textContent={`> ${i18n.t(i18n.l.points.console.calculating_points)}`}
+              textContent={`> ${i18n.points.console.calculating_points()}`}
             />
             <AnimatedText color={textColors.gray} repeat={!isCalculationComplete} textContent="..." typingSpeed={500} weight="normal" />
           </Line>
@@ -57,11 +57,7 @@ export const Calculate = () => {
           <>
             <Stack separator={<LineBreak lines={2} />}>
               <Line alignHorizontal="justify">
-                <AnimatedText
-                  color={rainbowColors.blue}
-                  enableHapticTyping
-                  textContent={`${i18n.t(i18n.l.points.console.rainbow_swaps)}:`}
-                />
+                <AnimatedText color={rainbowColors.blue} enableHapticTyping textContent={`${i18n.points.console.rainbow_swaps()}:`} />
                 <AnimatedText
                   color={rainbowColors.blue}
                   delayStart={1000}
@@ -76,7 +72,7 @@ export const Calculate = () => {
                   color={rainbowColors.green}
                   delayStart={1000}
                   enableHapticTyping
-                  textContent={`${i18n.t(i18n.l.points.console.rainbow_nfts_owned)}:`}
+                  textContent={`${i18n.points.console.rainbow_nfts_owned()}:`}
                 />
                 <AnimatedText
                   color={rainbowColors.green}
@@ -92,7 +88,7 @@ export const Calculate = () => {
                   color={rainbowColors.yellow}
                   delayStart={1000}
                   enableHapticTyping
-                  textContent={`${i18n.t(i18n.l.points.console.wallet_balance)}:`}
+                  textContent={`${i18n.points.console.wallet_balance()}:`}
                 />
                 <AnimatedText
                   color={rainbowColors.yellow}
@@ -109,7 +105,7 @@ export const Calculate = () => {
                     color={rainbowColors.red}
                     delayStart={1000}
                     enableHapticTyping
-                    textContent={`${i18n.t(i18n.l.points.console.metamask_swaps)}:`}
+                    textContent={`${i18n.points.console.metamask_swaps()}:`}
                   />
                   <AnimatedText
                     color={rainbowColors.red}
@@ -128,7 +124,7 @@ export const Calculate = () => {
                   color={rainbowColors.purple}
                   delayStart={1000}
                   enableHapticTyping
-                  textContent={`${i18n.t(i18n.l.points.console.true_believer)}:`}
+                  textContent={`${i18n.points.console.true_believer()}:`}
                 />
                 <AnimatedText
                   color={rainbowColors.purple}
@@ -150,7 +146,7 @@ export const Calculate = () => {
               <AnimatedText
                 color={textColors.gray}
                 delayStart={1000}
-                textContent={`> ${i18n.t(i18n.l.points.console.calculation_complete)}`}
+                textContent={`> ${i18n.points.console.calculation_complete()}`}
                 weight="normal"
               />
               <Line alignHorizontal="justify">
@@ -158,7 +154,7 @@ export const Calculate = () => {
                   color={textColors.white}
                   delayStart={1000}
                   enableHapticTyping
-                  textContent={`${i18n.t(i18n.l.points.console.points_earned)}:`}
+                  textContent={`${i18n.points.console.points_earned()}:`}
                 />
                 <AnimatedText
                   color={textColors.white}
@@ -182,7 +178,7 @@ export const Calculate = () => {
                 color={rainbowColors.purple}
                 delayStart={1000}
                 enableHapticTyping
-                textContent={`${i18n.t(i18n.l.points.console.welcome_bonus)}:`}
+                textContent={`${i18n.points.console.welcome_bonus()}:`}
               />
               <AnimatedText
                 color={rainbowColors.purple}
@@ -205,7 +201,7 @@ export const Calculate = () => {
               }}
               weight="normal"
               multiline
-              textContent={i18n.t(i18n.l.points.console.claim_bonus_paragraph)}
+              textContent={i18n.points.console.claim_bonus_paragraph()}
             />
           </>
         )}
@@ -214,7 +210,7 @@ export const Calculate = () => {
         <Bleed horizontal={{ custom: 14 }}>
           <NeonButton
             color="#FEC101"
-            label={i18n.t(i18n.l.points.console.proceed_to_share)}
+            label={i18n.points.console.proceed_to_share()}
             onPress={() => {
               analytics.track(analytics.event.pointsOnboardingScreenPressedContinueButton);
               const beginNextPhase = setTimeout(() => {

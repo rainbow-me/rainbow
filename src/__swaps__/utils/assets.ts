@@ -13,7 +13,7 @@ import {
 } from '@/__swaps__/types/assets';
 import { ChainId, ChainName } from '@/state/backendNetworks/types';
 
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { SearchAsset } from '@/__swaps__/types/search';
 
 import { isNativeAsset } from '@/handlers/assets';
@@ -107,7 +107,7 @@ export function parseAsset({ asset, currency }: { asset: ZerionAsset | AssetApiR
         priceData: asset?.price,
       }),
     },
-    name: asset.name || i18n.t(i18n.l.tokens_tab.unknown_token),
+    name: asset.name || i18n.tokens_tab.unknown_token(),
     price: asset.price,
     symbol: asset.symbol,
     type: asset.type,
@@ -169,7 +169,7 @@ export function parseAssetMetadata({
     icon_url: asset?.iconUrl,
     isNativeAsset: isNativeAsset(address, chainId),
     mainnetAddress,
-    name: asset?.name || i18n.t(i18n.l.tokens_tab.unknown_token),
+    name: asset?.name || i18n.tokens_tab.unknown_token(),
     native: {
       price: getNativeAssetPrice({
         currency,

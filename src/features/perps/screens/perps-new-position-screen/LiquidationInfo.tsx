@@ -9,7 +9,7 @@ import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTok
 import { LiquidationData, useLiquidationInfo } from '@/features/perps/stores/derived/useLiquidationInfo';
 import { PerpMarket } from '@/features/perps/types';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
 
 export const LiquidationInfo = memo(function LiquidationInfo({ leverage, market }: { leverage: SharedValue<number>; market: PerpMarket }) {
@@ -32,10 +32,10 @@ export const LiquidationInfo = memo(function LiquidationInfo({ leverage, market 
 });
 
 const translations = {
-  fromCurrentPrice: i18n.t(i18n.l.perps.new_position.from_current_price),
-  liquidatedAt: i18n.t(i18n.l.perps.new_position.liquidated_at),
-  noLiquidationRisk: i18n.t(i18n.l.perps.new_position.no_liquidation_risk),
-  tradingWithoutLeverage: i18n.t(i18n.l.perps.new_position.trading_without_leverage),
+  fromCurrentPrice: i18n.perps.new_position.from_current_price(),
+  liquidatedAt: i18n.perps.new_position.liquidated_at(),
+  noLiquidationRisk: i18n.perps.new_position.no_liquidation_risk(),
+  tradingWithoutLeverage: i18n.perps.new_position.trading_without_leverage(),
 };
 
 const infoSelectors = {

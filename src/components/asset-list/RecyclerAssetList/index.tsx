@@ -16,7 +16,7 @@ import { EthereumAddress } from '@/entities';
 import { useCoinListEdited, usePrevious, useRefreshAccountData } from '@/hooks';
 import styled from '@/styled-thing';
 import { deviceUtils } from '@/utils';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { logger } from '@/logger';
 import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
@@ -531,9 +531,9 @@ function RecyclerAssetList({
       if (
         collectibles.data &&
         prevCollectibles.data &&
-        collectibles.data[0]?.familyName === i18n.t(i18n.l.account.tab_showcase) &&
+        collectibles.data[0]?.familyName === i18n.account.tab_showcase() &&
         (collectibles.data[0]?.childrenAmount > prevCollectibles.data[0]?.childrenAmount ||
-          prevCollectibles.data[0]?.familyName !== i18n.t(i18n.l.account.tab_showcase))
+          prevCollectibles.data[0]?.familyName !== i18n.account.tab_showcase())
       ) {
         const showcaseHeight = colleciblesStartHeight + AssetListHeaderHeight;
         setTimeout(() => !disableAutoScrolling && ref?.scrollToOffset(0, showcaseHeight, true), 100);

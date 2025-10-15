@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React from 'react';
 import Toast from './Toast';
 import { useAccountSettings, useIsOffline } from '@/hooks';
@@ -11,7 +11,7 @@ const OfflineToast = () => {
   const { chainId } = useAccountSettings();
   const connectedToAnvil = useConnectedToAnvilStore(state => state.connectedToAnvil);
   const isMainnet = chainId === ChainId.mainnet && !connectedToAnvil;
-  return <Toast icon="offline" isVisible={isOffline && isMainnet} text={i18n.t(i18n.l.button.offline)} />;
+  return <Toast icon="offline" isVisible={isOffline && isMainnet} text={i18n.button.offline()} />;
 };
 
 const neverRerender = () => true;

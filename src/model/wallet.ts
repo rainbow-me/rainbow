@@ -8,7 +8,7 @@ import { signTypedData, SignTypedDataVersion, TypedMessage } from '@metamask/eth
 import { generateMnemonic } from 'bip39';
 import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
 import { hdkey as EthereumHDKey, default as LibWallet } from 'ethereumjs-wallet';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { findKey, isEmpty } from 'lodash';
 import { lightModeThemeColors } from '../styles/colors';
 import {
@@ -179,7 +179,7 @@ export const allWalletsVersion = 1.0;
 export const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
-const authenticationPrompt = { title: i18n.t(i18n.l.wallet.authenticate.please) };
+const authenticationPrompt = { title: i18n.wallet.authenticate.please() };
 
 export const createdWithBiometricError = 'createdWithBiometricError';
 
@@ -363,7 +363,7 @@ export const sendTransaction = async ({
       if (isHardwareWallet) {
         setHardwareTXError(true);
       } else {
-        Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.failed_transaction));
+        Alert.alert(i18n.wallet.transaction.alert.failed_transaction());
       }
 
       return { error };
@@ -372,7 +372,7 @@ export const sendTransaction = async ({
     if (isHardwareWallet) {
       setHardwareTXError(true);
     } else {
-      Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.failed_transaction));
+      Alert.alert(i18n.wallet.transaction.alert.failed_transaction());
     }
     logger.error(new RainbowError(`[wallet]: Failed to send transaction due to auth`), {
       error,
@@ -409,7 +409,7 @@ export const signTransaction = async ({
       if (isHardwareWallet) {
         setHardwareTXError(true);
       } else {
-        Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.failed_transaction));
+        Alert.alert(i18n.wallet.transaction.alert.failed_transaction());
       }
       logger.error(new RainbowError(`[wallet]: Failed to sign transaction`), { error });
       return { error };
@@ -418,7 +418,7 @@ export const signTransaction = async ({
     if (isHardwareWallet) {
       setHardwareTXError(true);
     } else {
-      Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.authentication));
+      Alert.alert(i18n.wallet.transaction.alert.authentication());
     }
     logger.error(new RainbowError(`[wallet]: Failed to sign transaction due to auth`), {
       error,
@@ -457,7 +457,7 @@ export const signPersonalMessage = async (
       if (isHardwareWallet) {
         setHardwareTXError(true);
       } else {
-        Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.failed_sign_message));
+        Alert.alert(i18n.wallet.transaction.alert.failed_sign_message());
       }
       logger.error(new RainbowError(`[wallet]: Failed to sign personal message`), {
         error,
@@ -468,7 +468,7 @@ export const signPersonalMessage = async (
     if (isHardwareWallet) {
       setHardwareTXError(true);
     } else {
-      Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.authentication));
+      Alert.alert(i18n.wallet.transaction.alert.authentication());
     }
     logger.error(new RainbowError(`[wallet]: Failed to sign personal message due to auth`), { error });
     return null;
@@ -535,7 +535,7 @@ export const signTypedDataMessage = async (
       if (isHardwareWallet) {
         setHardwareTXError(true);
       } else {
-        Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.failed_sign_message));
+        Alert.alert(i18n.wallet.transaction.alert.failed_sign_message());
       }
       logger.error(new RainbowError(`[wallet]: Failed to sign typed data message`), {
         error,
@@ -546,7 +546,7 @@ export const signTypedDataMessage = async (
     if (isHardwareWallet) {
       setHardwareTXError(true);
     } else {
-      Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.authentication));
+      Alert.alert(i18n.wallet.transaction.alert.authentication());
     }
     logger.error(new RainbowError(`[wallet]: Failed to sign typed data message due to auth`), { error });
     return null;
@@ -696,10 +696,7 @@ export const createWallet = async ({
         (alreadyExistingWallet?.type === EthereumWalletType.seed || alreadyExistingWallet?.type === EthereumWalletType.mnemonic);
       if (!overwrite && alreadyExistingWallet && (isReadOnlyType || isPrivateKeyOverwritingSeedMnemonic)) {
         if (!isRestoring) {
-          setTimeout(
-            () => Alert.alert(i18n.t(i18n.l.wallet.new.alert.oops), i18n.t(i18n.l.wallet.new.alert.looks_like_already_imported)),
-            1
-          );
+          setTimeout(() => Alert.alert(i18n.wallet.new.alert.oops(), i18n.wallet.new.alert.looks_like_already_imported()), 1);
         }
         logger.debug('[wallet]: already imported this wallet', {}, DebugContext.wallet);
         return null;
@@ -1029,10 +1026,7 @@ export const getPrivateKey = async (
         return kc.ErrorType.UserCanceled;
       case kc.ErrorType.NotAuthenticated:
         // Alert the user and bubble up the error code.
-        Alert.alert(
-          i18n.t(i18n.l.wallet.authenticate.alert.error),
-          i18n.t(i18n.l.wallet.authenticate.alert.current_authentication_not_secure_enough)
-        );
+        Alert.alert(i18n.wallet.authenticate.alert.error(), i18n.wallet.authenticate.alert.current_authentication_not_secure_enough());
         return kc.ErrorType.NotAuthenticated;
       case kc.ErrorType.Unavailable: {
         // Retry with checksummed address if needed
@@ -1107,10 +1101,7 @@ export const getSeedPhrase = async (
     });
 
     if (error === kc.ErrorType.NotAuthenticated) {
-      Alert.alert(
-        i18n.t(i18n.l.wallet.authenticate.alert.error),
-        i18n.t(i18n.l.wallet.authenticate.alert.current_authentication_not_secure_enough)
-      );
+      Alert.alert(i18n.wallet.authenticate.alert.error(), i18n.wallet.authenticate.alert.current_authentication_not_secure_enough());
       return null;
     }
 

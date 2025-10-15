@@ -14,7 +14,7 @@ import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { ETH_COLOR_DARK, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 type PerpPositionCardProps = {
   position: PerpsPosition;
@@ -35,9 +35,7 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
   const formattedValues = useMemo(() => {
     return {
       entryPrice: formatPerpAssetPrice(position.entryPrice),
-      liquidationPrice: position.liquidationPrice
-        ? formatPerpAssetPrice(position.liquidationPrice)
-        : i18n.t(i18n.l.perps.common.not_available),
+      liquidationPrice: position.liquidationPrice ? formatPerpAssetPrice(position.liquidationPrice) : i18n.perps.common.not_available(),
       unrealizedPnl: `${position.unrealizedPnl.includes('-') ? '-' : '+'} ${formatCurrency(abs(position.unrealizedPnl))}`,
       positionEquity: formatCurrency(position.equity),
     };
@@ -105,7 +103,7 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
         <Box flexDirection="row" alignItems="center" justifyContent="space-between">
           <Stack alignHorizontal="left" space={'10px'}>
             <Text size="11pt" weight="bold" color="labelQuaternary">
-              {i18n.t(i18n.l.perps.positions.entry)}
+              {i18n.perps.positions.entry()}
             </Text>
             <Text size="15pt" weight="bold" color="labelSecondary">
               {entryPrice}
@@ -113,7 +111,7 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
           </Stack>
           <Stack alignHorizontal="left" space={'10px'}>
             <Text size="11pt" weight="bold" color="labelQuaternary">
-              {i18n.t(i18n.l.perps.positions.mark_price)}
+              {i18n.perps.positions.mark_price()}
             </Text>
             <LiveTokenText
               tokenId={getHyperliquidTokenId(position.symbol)}
@@ -126,7 +124,7 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
           </Stack>
           <Stack alignHorizontal="right" space={'10px'}>
             <Text align="right" size="11pt" weight="bold" color="labelQuaternary">
-              {i18n.t(i18n.l.perps.common.liq_price).toUpperCase()}
+              {i18n.perps.common.liq_price().toUpperCase()}
             </Text>
             <Text align="right" size="15pt" weight="bold" color="labelSecondary">
               {liquidationPrice}

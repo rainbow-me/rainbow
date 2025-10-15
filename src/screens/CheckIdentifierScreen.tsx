@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { logger, RainbowError } from '@/logger';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -36,15 +36,15 @@ export default function CheckIdentifierScreen() {
       buttons: [
         {
           onPress: () => openInBrowser('https://rainbow.me/support'),
-          text: i18n.t(i18n.l.check_identifier.error_alert.contact_support),
+          text: i18n.check_identifier.error_alert.contact_support(),
         },
         {
           style: 'cancel',
-          text: i18n.t(i18n.l.check_identifier.error_alert.cancel),
+          text: i18n.check_identifier.error_alert.cancel(),
         },
       ],
-      message: i18n.t(i18n.l.check_identifier.error_alert.message),
-      title: i18n.t(i18n.l.check_identifier.error_alert.title),
+      message: i18n.check_identifier.error_alert.message(),
+      title: i18n.check_identifier.error_alert.title(),
     });
 
   useAndroidBackHandler(() => {
@@ -108,10 +108,10 @@ export default function CheckIdentifierScreen() {
                 />
                 <Stack space="24px">
                   <Text align="center" size="26pt" weight="bold" color="label">
-                    {i18n.t(i18n.l.check_identifier.title)}
+                    {i18n.check_identifier.title()}
                   </Text>
                   <Text align="center" size="15pt" weight="semibold" color="labelTertiary">
-                    {i18n.t(i18n.l.check_identifier.description)}
+                    {i18n.check_identifier.description()}
                   </Text>
                 </Stack>
               </Stack>
@@ -126,7 +126,7 @@ export default function CheckIdentifierScreen() {
                 <Box alignItems="center" justifyContent="center" width="full">
                   <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
                     <Text color={'action (Deprecated)'} size="20pt" weight="bold">
-                      {i18n.t(i18n.l.check_identifier.action)}
+                      {i18n.check_identifier.action()}
                     </Text>
                   </Inline>
                 </Box>
@@ -142,7 +142,7 @@ export default function CheckIdentifierScreen() {
                 <Box alignItems="center" justifyContent="center" width="full">
                   <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
                     <Text color={'labelSecondary'} size="20pt" weight="bold">
-                      {i18n.t(i18n.l.check_identifier.dismiss)}
+                      {i18n.check_identifier.dismiss()}
                     </Text>
                   </Inline>
                 </Box>

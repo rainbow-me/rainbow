@@ -14,7 +14,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Bleed, Box, Inline, Inset, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Dapp, useBrowserDappsStore } from '@/resources/metadata/dapps';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -189,7 +189,7 @@ export const SearchResults = React.memo(function SearchResults({ goToUrl }: { go
                   􀊫
                 </Text>
                 <Text align="center" color="labelQuaternary" size="17pt" weight="heavy">
-                  {i18n.t(i18n.l.dapp_browser.search.find_apps_and_more)}
+                  {i18n.dapp_browser.search.find_apps_and_more()}
                 </Text>
               </Stack>
             </Animated.View>
@@ -233,7 +233,7 @@ export const SearchResults = React.memo(function SearchResults({ goToUrl }: { go
                         􀊫
                       </TextIcon>
                       <Text color="label" size="20pt" weight="heavy">
-                        {i18n.t(i18n.l.dapp_browser.search.more_results)}
+                        {i18n.dapp_browser.search.more_results()}
                       </Text>
                     </Inline>
                   </Inset>

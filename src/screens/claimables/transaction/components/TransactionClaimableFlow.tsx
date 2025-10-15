@@ -1,5 +1,5 @@
 import { Box } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { ClaimableType } from '@/resources/addys/claimables/types';
 import { useWalletsStore, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
@@ -41,52 +41,52 @@ export function TransactionClaimableFlow() {
   const shimmer = !disabled || claimStatus === 'claiming';
   const buttonLabel = useMemo(() => {
     if (!outputChainId) {
-      return i18n.t(i18n.l.claimables.panel.select_a_network);
+      return i18n.claimables.panel.select_a_network();
     }
 
     if (!outputToken) {
-      return i18n.t(i18n.l.claimables.panel.select_a_token);
+      return i18n.claimables.panel.select_a_token();
     }
 
     switch (claimStatus) {
       case 'notReady':
         if (quoteState.status === 'success' || !requiresSwap) {
           if (gasState.status === 'error') {
-            return i18n.t(i18n.l.claimables.panel.gas_error);
+            return i18n.claimables.panel.gas_error();
           } else if (gasState.status === 'success' && !gasState.isSufficientGas) {
-            return i18n.t(i18n.l.claimables.panel.insufficient_funds);
+            return i18n.claimables.panel.insufficient_funds();
           } else {
-            return i18n.t(i18n.l.claimables.panel.estimating_gas_fee);
+            return i18n.claimables.panel.estimating_gas_fee();
           }
         } else {
           switch (quoteState.status) {
             case 'noQuoteError':
-              return i18n.t(i18n.l.claimables.panel.quote_error);
+              return i18n.claimables.panel.quote_error();
             case 'noRouteError':
-              return i18n.t(i18n.l.claimables.panel.no_route_found);
+              return i18n.claimables.panel.no_route_found();
             case 'fetching':
             default:
-              return i18n.t(i18n.l.claimables.panel.fetching_quote);
+              return i18n.claimables.panel.fetching_quote();
           }
         }
       case 'ready': {
         if (claimable.assets.length > 1) {
-          return i18n.t(i18n.l.claimables.panel.hold_to_claim);
+          return i18n.claimables.panel.hold_to_claim();
         }
         const [asset] = claimable.assets;
-        return i18n.t(i18n.l.claimables.panel.claim_amount, {
+        return i18n.claimables.panel.claim_amount({
           amount: requiresSwap && quoteState.tokenAmountDisplay ? quoteState.tokenAmountDisplay : asset.amount.display,
         });
       }
       case 'claiming':
-        return i18n.t(i18n.l.claimables.panel.claim_in_progress);
+        return i18n.claimables.panel.claim_in_progress();
       case 'pending':
       case 'success':
       case 'unrecoverableError':
-        return i18n.t(i18n.l.button.done);
+        return i18n.button.done();
       case 'recoverableError':
       default:
-        return i18n.t(i18n.l.points.points.try_again);
+        return i18n.points.points.try_again();
     }
   }, [claimStatus, claimable.assets, requiresSwap, quoteState, gasState, outputChainId, outputToken]);
 
@@ -106,22 +106,22 @@ export function TransactionClaimableFlow() {
   const title = useMemo(() => {
     switch (type) {
       case ClaimableType.RainbowSuperTokenCreatorFees:
-        return i18n.t(i18n.l.claimables.panel.creator_lp_fees);
+        return i18n.claimables.panel.creator_lp_fees();
       default:
-        return i18n.t(i18n.l.claimables.panel.claim);
+        return i18n.claimables.panel.claim();
     }
   }, [type]);
 
   const subtitle = useMemo(() => {
     switch (type) {
       case ClaimableType.RainbowSuperTokenCreatorFees:
-        return i18n.t(i18n.l.claimables.panel.rainbow_token_launcher);
+        return i18n.claimables.panel.rainbow_token_launcher();
       case ClaimableType.merklClaimable: {
         const assetSymbols = claimable.assets
           .slice(0, 2)
           .map(asset => asset.asset.symbol)
           .join(' / ');
-        return i18n.t(i18n.l.claimables.panel.merkl_claimable_description, { assetSymbols });
+        return i18n.claimables.panel.merkl_claimable_description({ assetSymbols });
       }
       default:
         return undefined;

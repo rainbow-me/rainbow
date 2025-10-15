@@ -3,7 +3,7 @@ import { Bleed, Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { useDimensions, useWalletManualBackup } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { createdWithBiometricError, identifyWalletType, loadPrivateKey, loadSeedPhraseAndMigrateIfNeeded } from '@/model/wallet';
 import { useTheme } from '@/theme';
@@ -65,9 +65,9 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
   const currentWallet = wallets?.[walletId];
 
   const isSecretPhrase = WalletTypes.mnemonic === currentWallet?.type && !privateKeyAddress;
-  const btnText = isSecretPhrase ? i18n.t(i18n.l.back_up.manual.seed.confirm_save) : i18n.t(i18n.l.back_up.manual.pkey.confirm_save);
+  const btnText = isSecretPhrase ? i18n.back_up.manual.seed.confirm_save() : i18n.back_up.manual.pkey.confirm_save();
 
-  const description = isSecretPhrase ? i18n.t(i18n.l.back_up.manual.seed.description) : i18n.t(i18n.l.back_up.manual.pkey.description);
+  const description = isSecretPhrase ? i18n.back_up.manual.seed.description() : i18n.back_up.manual.pkey.description();
 
   const [sectionState, setSectionState] = useState<SecretDisplayStatesType>(SecretDisplayStates.loading);
   const [seed, setSeed] = useState<string | null>(null);
@@ -141,12 +141,12 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
 
   const getTitleForBackupType = useCallback(() => {
     if (isBackingUp) {
-      return i18n.t(i18n.l.back_up.manual.label, {
+      return i18n.back_up.manual.label({
         typeName: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
       });
     }
 
-    return i18n.t(i18n.l.back_up.manual.with_your_label, {
+    return i18n.back_up.manual.with_your_label({
       typeName: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
     });
   }, [isBackingUp, isSecretPhrase]);
@@ -162,9 +162,9 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
         </Wrapper>
       );
     case SecretDisplayStates.noSeed:
-      return <SecretDisplayError message={i18n.t(i18n.l.back_up.secret.no_seed_phrase)} />;
+      return <SecretDisplayError message={i18n.back_up.secret.no_seed_phrase()} />;
     case SecretDisplayStates.securedWithBiometrics:
-      return <SecretDisplayError message={i18n.t(i18n.l.back_up.secret.biometrically_secured)} />;
+      return <SecretDisplayError message={i18n.back_up.secret.biometrically_secured()} />;
     case SecretDisplayStates.revealed:
       return (
         <Box style={{ height: contentHeight }}>
@@ -202,7 +202,7 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
                   <CopyFloatingEmojis textToCopy={seed}>
                     <Inline alignHorizontal="center" alignVertical="center" space="6px">
                       <Text color="action (Deprecated)" size="16px / 22px (Deprecated)" weight="bold" align="center">
-                        􀐅 {i18n.t(i18n.l.back_up.secret.copy_to_clipboard)}
+                        􀐅 {i18n.back_up.secret.copy_to_clipboard()}
                       </Text>
                     </Inline>
                   </CopyFloatingEmojis>

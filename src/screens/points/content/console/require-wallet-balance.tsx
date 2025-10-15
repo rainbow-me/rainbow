@@ -1,6 +1,6 @@
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
 import { Bleed, Box, Stack } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
@@ -24,13 +24,13 @@ export const RequireWalletBalance = () => {
       <Stack separator={<LineBreak lines={3} />}>
         <Paragraph>
           <Line>
-            <AnimatedText color={textColors.gray} textContent={`${i18n.t(i18n.l.points.console.account)}:`} skipAnimation weight="normal" />
+            <AnimatedText color={textColors.gray} textContent={`${i18n.points.console.account()}:`} skipAnimation weight="normal" />
             <AnimatedText color={textColors.account} skipAnimation textContent={accountName} />
           </Line>
           <AnimatedText
             color={textColors.red}
             delayStart={500}
-            textContent={`> ${i18n.t(i18n.l.points.console.wallet_balance_required)}`}
+            textContent={`> ${i18n.points.console.wallet_balance_required()}`}
             weight="normal"
           />
         </Paragraph>
@@ -40,7 +40,7 @@ export const RequireWalletBalance = () => {
             delayStart={1000}
             weight="normal"
             multiline
-            textContent={i18n.t(i18n.l.points.console.require_balance_paragraph_one)}
+            textContent={i18n.points.console.require_balance_paragraph_one()}
           />
           <Paragraph gap={10}>
             <AnimatedText color={textColors.gray} delayStart={500} weight="normal" textContent={' - Ethereum'} />
@@ -60,17 +60,13 @@ export const RequireWalletBalance = () => {
             }}
             weight="normal"
             multiline
-            textContent={i18n.t(i18n.l.points.console.require_balance_paragraph_two)}
+            textContent={i18n.points.console.require_balance_paragraph_two()}
           />
         </Stack>
       </Stack>
       <AnimatePresence condition={shouldShowButton} duration={300}>
         <Bleed horizontal={{ custom: 14 }}>
-          <NeonButton
-            color="#FEC101"
-            label={i18n.t(i18n.l.points.console.fund_my_wallet)}
-            onPress={() => navigate(Routes.ADD_CASH_SHEET)}
-          />
+          <NeonButton color="#FEC101" label={i18n.points.console.fund_my_wallet()} onPress={() => navigate(Routes.ADD_CASH_SHEET)} />
         </Bleed>
       </AnimatePresence>
     </Box>

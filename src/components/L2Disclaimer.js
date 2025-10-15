@@ -7,7 +7,7 @@ import { Column, Row } from './layout';
 import { Text } from './text';
 import { padding, position } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const L2Disclaimer = ({
@@ -50,7 +50,7 @@ const L2Disclaimer = ({
             >
               {customText
                 ? customText
-                : i18n.t(i18n.l.expanded_state.asset.l2_disclaimer, {
+                : i18n.expanded_state.asset.l2_disclaimer({
                     symbol,
                     network: useBackendNetworksStore.getState().getChainsLabel()[chainId],
                   })}

@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenuButton } from '@/components/context-menu';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
 import { setClipboard } from '@/hooks/useClipboard';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { ETH_ADDRESS } from '@/references';
 import { toggleFavorite } from '@/resources/favorites';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -219,13 +219,13 @@ const InfoButton = ({
   const { options, menuConfig } = useMemo(() => {
     const options = {
       copy: {
-        title: i18n.t(i18n.l.exchange.coin_row.copy_contract_address),
+        title: i18n.exchange.coin_row.copy_contract_address(),
         action: handleCopy,
       },
       ...(isSupportedChain
         ? {
             blockExplorer: {
-              title: i18n.t(i18n.l.exchange.coin_row.view_on, {
+              title: i18n.exchange.coin_row.view_on({
                 blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })),
               }),
               action: () => ethereumUtils.openAddressInBlockExplorer({ address, chainId }),
@@ -257,7 +257,7 @@ const InfoButton = ({
             ]
           : []),
       ],
-      menuTitle: `${isVerified ? i18n.t(i18n.l.token_search.section_header.verified) : i18n.t(i18n.l.token_search.section_header.unverified)} ${i18n.t(i18n.l.exchange.coin_row.token)}`,
+      menuTitle: `${isVerified ? i18n.token_search.section_header.verified() : i18n.token_search.section_header.unverified()} ${i18n.exchange.coin_row.token()}`,
     };
 
     return { options, menuConfig };

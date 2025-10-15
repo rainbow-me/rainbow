@@ -4,17 +4,14 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { ChainId } from '@/state/backendNetworks/types';
 
 const showAlert = () => {
-  Alert.alert(
-    i18n.t(i18n.l.minting.could_not_find_collection),
-    i18n.t(i18n.l.minting.unable_to_find_check_again),
-    [{ text: i18n.t(i18n.l.button.ok) }],
-    { cancelable: false }
-  );
+  Alert.alert(i18n.minting.could_not_find_collection(), i18n.minting.unable_to_find_check_again(), [{ text: i18n.button.ok() }], {
+    cancelable: false,
+  });
 };
 
 export const navigateToMintCollection = async (

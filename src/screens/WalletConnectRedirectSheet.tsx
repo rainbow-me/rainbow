@@ -1,5 +1,5 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useEffect } from 'react';
 import { Centered } from '@/components/layout';
 import { Sheet } from '@/components/sheet';
@@ -31,13 +31,13 @@ const emojisMap = {
 };
 
 const titlesMap = {
-  'connect': i18n.t(i18n.l.walletconnect.titles.connect),
-  'timedOut': i18n.t(i18n.l.walletconnect.titles.reject),
-  'reject': i18n.t(i18n.l.walletconnect.titles.reject),
-  'sign': i18n.t(i18n.l.walletconnect.titles.sign),
-  'sign-canceled': i18n.t(i18n.l.walletconnect.titles.sign_canceled),
-  'transaction': i18n.t(i18n.l.walletconnect.titles.transaction_sent),
-  'transaction-canceled': i18n.t(i18n.l.walletconnect.titles.transaction_canceled),
+  'connect': i18n.walletconnect.titles.connect(),
+  'timedOut': i18n.walletconnect.titles.reject(),
+  'reject': i18n.walletconnect.titles.reject(),
+  'sign': i18n.walletconnect.titles.sign(),
+  'sign-canceled': i18n.walletconnect.titles.sign_canceled(),
+  'transaction': i18n.walletconnect.titles.transaction_sent(),
+  'transaction-canceled': i18n.walletconnect.titles.transaction_canceled(),
 };
 
 function WalletConnectRedirectSheet() {
@@ -65,7 +65,7 @@ function WalletConnectRedirectSheet() {
             {titlesMap[type]}
           </Text>
         </Centered>
-        <BodyText color={colors.dark}>{i18n.t(i18n.l.walletconnect.go_back_to_your_browser)}</BodyText>
+        <BodyText color={colors.dark}>{i18n.walletconnect.go_back_to_your_browser()}</BodyText>
       </Centered>
     </Sheet>
   );

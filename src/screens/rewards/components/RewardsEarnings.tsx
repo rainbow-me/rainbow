@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Image, ImageBackground } from 'react-native';
 import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
 import { AccentColorProvider, Box, Columns, Inline, Stack, Text } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { RewardsAmount } from '@/graphql/__generated__/metadata';
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
 import { addDays, differenceInDays, differenceInHours, fromUnixTime, isPast } from 'date-fns';
@@ -53,7 +53,7 @@ export const RewardsEarnings: React.FC<Props> = ({
     const days = differenceInDays(dayOfNextDistribution, today);
     const hours = differenceInHours(dayOfNextDistribution, addDays(today, days));
 
-    const airdropTitle = isPast(dayOfNextDistribution) ? i18n.t(i18n.l.rewards.last_airdrop) : i18n.t(i18n.l.rewards.next_airdrop);
+    const airdropTitle = isPast(dayOfNextDistribution) ? i18n.rewards.last_airdrop() : i18n.rewards.next_airdrop();
     const airdropTime = `${Math.abs(days)}d ${Math.abs(hours)}h`;
 
     return {
@@ -81,7 +81,7 @@ export const RewardsEarnings: React.FC<Props> = ({
               <Stack space="32px" alignHorizontal="left">
                 <Stack space="12px">
                   <Text color="labelSecondary" size="15pt" weight="semibold">
-                    {i18n.t(i18n.l.rewards.pending_earnings)}
+                    {i18n.rewards.pending_earnings()}
                   </Text>
                   <Inline space="6px" alignVertical="center">
                     <Box
@@ -102,7 +102,7 @@ export const RewardsEarnings: React.FC<Props> = ({
                 </Stack>
                 <Stack space="12px">
                   <Text color="labelSecondary" size="15pt" weight="semibold">
-                    {i18n.t(i18n.l.rewards.total_earnings)}
+                    {i18n.rewards.total_earnings()}
                   </Text>
                   <Inline space="6px" alignVertical="center">
                     <Box
@@ -143,7 +143,7 @@ export const RewardsEarnings: React.FC<Props> = ({
                 </Stack>
                 <Stack space="12px" alignHorizontal="right">
                   <Text color="labelSecondary" size="15pt" weight="semibold">
-                    {i18n.t(i18n.l.rewards.current_value)}
+                    {i18n.rewards.current_value()}
                   </Text>
                   <Text color="labelSecondary" size="22pt" weight="bold">
                     {formattedTotalEarningsNative}

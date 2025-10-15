@@ -4,7 +4,7 @@ import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTok
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { memo } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 type PerpBottomSheetHeaderProps = {
   title: string;
@@ -19,7 +19,7 @@ export const PerpBottomSheetHeader = memo(function PerpBottomSheetHeader({ title
       </Text>
       <Box gap={12} alignItems="flex-end">
         <Text size="15pt" weight="bold" color={'labelQuaternary'}>
-          {i18n.t(i18n.l.perps.common.current_price)}
+          {i18n.perps.common.current_price()}
         </Text>
         <Box flexDirection="row" alignItems="center" gap={4}>
           <HyperliquidTokenIcon symbol={symbol} size={14} />

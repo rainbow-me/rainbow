@@ -16,7 +16,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { getUserError } from '@/hooks/useWalletCloudBackup';
 import * as kc from '@/keychain';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import * as keychain from '@/model/keychain';
 import { Navigation } from '@/navigation';
@@ -115,7 +115,7 @@ export const executeFnIfCloudBackupAvailable = async <T>({ fn, logout = false }:
 
       const userData = await getGoogleAccountUserData();
       if (!userData) {
-        Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+        Alert.alert(i18n.back_up.errors.no_account_found());
         backupsStore.getState().setStatus(CloudBackupState.NotAvailable);
         return;
       }
@@ -128,28 +128,24 @@ export const executeFnIfCloudBackupAvailable = async <T>({ fn, logout = false }:
       logger.error(new RainbowError('[BackupSheetSectionNoProvider]: No account found'), {
         error: e,
       });
-      Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+      Alert.alert(i18n.back_up.errors.no_account_found());
       backupsStore.getState().setStatus(CloudBackupState.NotAvailable);
     }
   } else {
     const isAvailable = await isCloudBackupAvailable();
     if (!isAvailable) {
-      Alert.alert(
-        i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.label),
-        i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.description),
-        [
-          {
-            onPress: () => {
-              openInBrowser('https://support.apple.com/en-us/HT204025');
-            },
-            text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.show_me),
+      Alert.alert(i18n.modal.back_up.alerts.cloud_not_enabled.label(), i18n.modal.back_up.alerts.cloud_not_enabled.description(), [
+        {
+          onPress: () => {
+            openInBrowser('https://support.apple.com/en-us/HT204025');
           },
-          {
-            style: 'cancel',
-            text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.no_thanks),
-          },
-        ]
-      );
+          text: i18n.modal.back_up.alerts.cloud_not_enabled.show_me(),
+        },
+        {
+          style: 'cancel',
+          text: i18n.modal.back_up.alerts.cloud_not_enabled.no_thanks(),
+        },
+      ]);
       backupsStore.getState().setStatus(CloudBackupState.NotAvailable);
       return;
     }
@@ -243,7 +239,7 @@ export async function createBackup({ onError, now = Date.now(), userPIN }: Creat
    */
   const allKeys = await kc.getAllKeys();
   if (!allKeys) {
-    onError?.(i18n.t(i18n.l.back_up.errors.no_keys_found));
+    onError?.(i18n.back_up.errors.no_keys_found());
     return;
   }
 
@@ -638,11 +634,11 @@ const FailureAlert = () =>
     buttons: [
       {
         style: 'cancel',
-        text: i18n.t(i18n.l.check_identifier.failure_alert.action),
+        text: i18n.check_identifier.failure_alert.action(),
       },
     ],
-    message: i18n.t(i18n.l.check_identifier.failure_alert.message),
-    title: i18n.t(i18n.l.check_identifier.failure_alert.title),
+    message: i18n.check_identifier.failure_alert.message(),
+    title: i18n.check_identifier.failure_alert.title(),
   });
 
 /**

@@ -14,7 +14,7 @@ import { Moonpay as MoonpayLogo } from '@/components/icons/svg/Moonpay';
 import { FiatProviderName } from '@/entities/f2c';
 import { convertAPINetworkToInternalChainIds } from '@/screens/AddCash/utils';
 import { ProviderConfig, CalloutType, PaymentMethod } from '@/screens/AddCash/types';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { ChainId } from '@/state/backendNetworks/types';
 
 type PaymentMethodConfig = {
@@ -164,7 +164,7 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
 
               switch (callout.type) {
                 case CalloutType.Rate: {
-                  title = i18n.t(i18n.l.wallet.add_cash_v2.fees_title);
+                  title = i18n.wallet.add_cash_v2.fees_title();
                   content = (
                     <Box flexDirection="row" alignItems="center" paddingTop="12px">
                       <Text size="15pt" weight="bold" color="label">
@@ -175,7 +175,7 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
                   break;
                 }
                 case CalloutType.InstantAvailable: {
-                  title = i18n.t(i18n.l.wallet.add_cash_v2.instant_title);
+                  title = i18n.wallet.add_cash_v2.instant_title();
                   content = (
                     <Box flexDirection="row" alignItems="center" paddingTop="12px">
                       <Text size="12pt" weight="bold" color={{ custom: config.metadata.accentColor }}>
@@ -193,7 +193,7 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
                 case CalloutType.PaymentMethods: {
                   const methods = getPaymentMethodConfigs(callout.methods);
                   const multi = methods.length > 1;
-                  title = multi ? i18n.t(i18n.l.wallet.add_cash_v2.methods_title) : i18n.t(i18n.l.wallet.add_cash_v2.method_title);
+                  title = multi ? i18n.wallet.add_cash_v2.methods_title() : i18n.wallet.add_cash_v2.method_title();
                   content = (
                     <Box flexDirection="row">
                       {methods.map(m => {
@@ -218,10 +218,7 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
                   break;
                 }
                 case CalloutType.Networks: {
-                  title =
-                    callout.networks.length > 1
-                      ? i18n.t(i18n.l.wallet.add_cash_v2.networks_title)
-                      : i18n.t(i18n.l.wallet.add_cash_v2.network_title);
+                  title = callout.networks.length > 1 ? i18n.wallet.add_cash_v2.networks_title() : i18n.wallet.add_cash_v2.network_title();
                   content = (
                     <Box flexDirection="row" alignItems="center" paddingTop="8px">
                       <NetworkIcons chainIds={callout.networks.map(convertAPINetworkToInternalChainIds).filter(Boolean)} />

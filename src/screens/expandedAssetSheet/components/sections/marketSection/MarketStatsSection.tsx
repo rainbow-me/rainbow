@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import Animated from 'react-native-reanimated';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Box } from '@/design-system';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '@/screens/expandedAssetSheet/components/shared/CollapsibleSection';
 import { SheetSeparator } from '@/screens/expandedAssetSheet/components/shared/Separator';
@@ -20,7 +20,7 @@ export const MarketStatsSection = memo(function MarketStatsSection() {
         }
         icon="􀑃"
         id={SectionId.MARKET_STATS}
-        primaryText={i18n.t(i18n.l.expanded_state.sections.market_stats.title)}
+        primaryText={i18n.expanded_state.sections.market_stats.title()}
       />
       <SheetSeparator />
     </Box>

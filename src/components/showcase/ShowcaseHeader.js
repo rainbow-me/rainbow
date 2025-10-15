@@ -6,7 +6,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { colors, padding } from '@/styles';
 import { abbreviations, profileUtils } from '@/utils';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { ColumnWithMargins } from '../layout';
@@ -157,7 +157,7 @@ export function Header() {
         <SheetActionButtonRow ignorePaddingBottom>
           <SheetActionButton
             color={color}
-            label={` 􀜖 ${i18n.t(i18n.l.button.add)}`}
+            label={` 􀜖 ${i18n.button.add()}`}
             onPress={onAddToContact}
             size="big"
             textColor={colors.whiteLabel}
@@ -166,7 +166,7 @@ export function Header() {
           {!isReadOnlyWallet && (
             <SheetActionButton
               color={color}
-              label={` 􀈠 ${i18n.t(i18n.l.button.send)}`}
+              label={` 􀈠 ${i18n.button.send()}`}
               onPress={onSend}
               size="big"
               textColor={colors.whiteLabel}
@@ -178,7 +178,7 @@ export function Header() {
         <SheetActionButtonRow ignorePaddingBottom>
           <SheetActionButton
             color={colors.blueGreyDark30}
-            label={`􀨭 ${i18n.t(i18n.l.button.watch_this_wallet)}`}
+            label={`􀨭 ${i18n.button.watch_this_wallet()}`}
             onPress={onWatchAddress}
             size="big"
             textColor={colors.whiteLabel}

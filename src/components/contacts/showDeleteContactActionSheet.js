@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { showActionSheetWithOptions } from '@/utils';
@@ -9,7 +9,7 @@ const showDeleteContactActionSheet = ({ address, nickname, onDelete = () => unde
       cancelButtonIndex: 1,
       destructiveButtonIndex: 0,
       message: `Are you sure you want to delete "${removeFirstEmojiFromString(nickname) || address}" from your contacts?`,
-      options: [i18n.t(i18n.l.contacts.options.delete), i18n.t(i18n.l.contacts.options.cancel)],
+      options: [i18n.contacts.options.delete(), i18n.contacts.options.cancel()],
     },
     async buttonIndex => {
       if (buttonIndex === 0) {

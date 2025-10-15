@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback } from 'react';
 import { Text as RNText } from '../text';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
@@ -90,7 +90,7 @@ export function ChooseBackupStep() {
               size={72}
             />
             <Stack space="12px">
-              <Title>{i18n.t(i18n.l.back_up.cloud.choose_backup)}</Title>
+              <Title>{i18n.back_up.cloud.choose_backup()}</Title>
             </Stack>
           </Masthead>
 
@@ -101,7 +101,7 @@ export function ChooseBackupStep() {
                   disabled
                   width="full"
                   size={60}
-                  titleComponent={<MenuItem.Title disabled text={i18n.t(i18n.l.back_up.cloud.failed_to_fetch_backups)} />}
+                  titleComponent={<MenuItem.Title disabled text={i18n.back_up.cloud.failed_to_fetch_backups()} />}
                 />
               </Menu>
 
@@ -110,7 +110,7 @@ export function ChooseBackupStep() {
                   size={52}
                   width="full"
                   onPress={() => backupsStore.getState().syncAndFetchBackups()}
-                  titleComponent={<MenuItem.Title disabled text={i18n.t(i18n.l.back_up.cloud.retry)} />}
+                  titleComponent={<MenuItem.Title disabled text={i18n.back_up.cloud.retry()} />}
                 />
               </Menu>
             </Stack>
@@ -120,11 +120,7 @@ export function ChooseBackupStep() {
             <Stack width="full" space="44px">
               <Box>
                 <Menu>
-                  <MenuItem
-                    disabled
-                    size={52}
-                    titleComponent={<MenuItem.Title disabled text={i18n.t(i18n.l.back_up.cloud.no_backups)} />}
-                  />
+                  <MenuItem disabled size={52} titleComponent={<MenuItem.Title disabled text={i18n.back_up.cloud.no_backups()} />} />
                 </Menu>
               </Box>
 
@@ -133,7 +129,7 @@ export function ChooseBackupStep() {
                   size={52}
                   width="full"
                   onPress={() => backupsStore.getState().syncAndFetchBackups()}
-                  titleComponent={<MenuItem.Title disabled text={i18n.t(i18n.l.back_up.cloud.refresh)} />}
+                  titleComponent={<MenuItem.Title disabled text={i18n.back_up.cloud.refresh()} />}
                 />
               </Menu>
             </Stack>
@@ -144,7 +140,7 @@ export function ChooseBackupStep() {
               {mostRecentBackup && (
                 <Box>
                   <Menu
-                    description={i18n.t(i18n.l.back_up.cloud.latest_backup, {
+                    description={i18n.back_up.cloud.latest_backup({
                       date: dateFormatter(mostRecentBackup.lastModified),
                     })}
                   >
@@ -154,7 +150,7 @@ export function ChooseBackupStep() {
                       onPress={() => onSelectCloudBackup(mostRecentBackup)}
                       size={52}
                       width="full"
-                      titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.cloud.most_recent_backup)} />}
+                      titleComponent={<MenuItem.Title isLink text={i18n.back_up.cloud.most_recent_backup()} />}
                     />
                   </Menu>
                 </Box>
@@ -162,7 +158,7 @@ export function ChooseBackupStep() {
 
               <Box gap={24}>
                 <Box>
-                  <Menu header={i18n.t(i18n.l.back_up.cloud.older_backups)}>
+                  <Menu header={i18n.back_up.cloud.older_backups()}>
                     {backups.files
                       .filter(backup => backup.name !== mostRecentBackup?.name)
                       .sort((a, b) => {
@@ -183,7 +179,7 @@ export function ChooseBackupStep() {
                           titleComponent={
                             <MenuItem.Title
                               isLink
-                              text={i18n.t(i18n.l.back_up.cloud.older_backups_title, {
+                              text={i18n.back_up.cloud.older_backups_title({
                                 date: dateFormatter(parseTimestampFromFilename(backup.name), 'M/d/yy'),
                                 time: dateFormatter(parseTimestampFromFilename(backup.name), 'p'),
                               })}
@@ -195,7 +191,7 @@ export function ChooseBackupStep() {
                       <MenuItem
                         disabled
                         size={52}
-                        titleComponent={<MenuItem.Title disabled text={i18n.t(i18n.l.back_up.cloud.no_older_backups)} />}
+                        titleComponent={<MenuItem.Title disabled text={i18n.back_up.cloud.no_older_backups()} />}
                       />
                     )}
                   </Menu>
@@ -206,7 +202,7 @@ export function ChooseBackupStep() {
                     size={52}
                     width="full"
                     onPress={() => backupsStore.getState().syncAndFetchBackups()}
-                    titleComponent={<MenuItem.Title disabled text={i18n.t(i18n.l.back_up.cloud.refresh)} />}
+                    titleComponent={<MenuItem.Title disabled text={i18n.back_up.cloud.refresh()} />}
                   />
                 </Menu>
               </Box>

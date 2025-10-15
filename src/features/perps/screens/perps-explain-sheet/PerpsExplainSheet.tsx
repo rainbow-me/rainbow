@@ -9,14 +9,12 @@ import longShortImage from '@/assets/perpsExplainer/long-short.png';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { useFocusEffect } from '@react-navigation/native';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useRoute } from '@/navigation/Navigation';
 import { HyperliquidLogo } from '@/features/perps/components/HyperliquidLogo';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { easing } from '@/components/animations/animationConfigs';
-
-const translations = i18n.l.perps.explain_sheet;
 
 const config = {
   titleShadow: {
@@ -45,7 +43,7 @@ const STEPS: ExplainerSheetStep[] = [
         shadowOpacity={config.titleShadow.shadowOpacity}
       >
         <Text color={'label'} align="center" size="44pt" weight="heavy">
-          {i18n.t(translations.steps.step_1.title_parts[0])}
+          {i18n.perps.explain_sheet.steps.step_1.title_parts[0]()}
         </Text>
       </TextShadow>
     ),
@@ -67,7 +65,7 @@ const STEPS: ExplainerSheetStep[] = [
     ),
     subtitleComponent: () => (
       <Text align="center" size="17pt / 135%" weight="semibold" color="labelTertiary" style={config.subtitleStyle}>
-        {i18n.t(translations.steps.step_1.subtitle_parts[0])}
+        {i18n.perps.explain_sheet.steps.step_1.subtitle_parts[0]()}
       </Text>
     ),
   },
@@ -81,13 +79,13 @@ const STEPS: ExplainerSheetStep[] = [
         shadowOpacity={config.titleShadow.shadowOpacity}
       >
         <Text align="center" size="44pt" weight="heavy" color="label" style={{ maxWidth: 200, alignSelf: 'center' }}>
-          {`${i18n.t(translations.steps.step_2.title_parts[0])} `}
+          {`${i18n.perps.explain_sheet.steps.step_2.title_parts[0]()} `}
           <Text size="44pt" weight="heavy" color="green">
-            {`${i18n.t(translations.steps.step_2.title_parts[1])} `}
+            {`${i18n.perps.explain_sheet.steps.step_2.title_parts[1]()} `}
           </Text>
-          {`${i18n.t(translations.steps.step_2.title_parts[2])} `}
+          {`${i18n.perps.explain_sheet.steps.step_2.title_parts[2]()} `}
           <Text size="44pt" weight="heavy" color="red">
-            {i18n.t(translations.steps.step_2.title_parts[3])}
+            {i18n.perps.explain_sheet.steps.step_2.title_parts[3]()}
           </Text>
         </Text>
       </TextShadow>
@@ -120,7 +118,7 @@ const STEPS: ExplainerSheetStep[] = [
     ),
     subtitleComponent: () => (
       <Text align="center" size="17pt / 135%" weight="semibold" color="labelTertiary" style={[config.subtitleStyle, { maxWidth: 260 }]}>
-        {i18n.t(translations.steps.step_2.subtitle_parts[0])}
+        {i18n.perps.explain_sheet.steps.step_2.subtitle_parts[0]()}
       </Text>
     ),
   },
@@ -134,7 +132,7 @@ const STEPS: ExplainerSheetStep[] = [
         shadowOpacity={config.titleShadow.shadowOpacity}
       >
         <Text align="center" size="44pt" weight="heavy" color="label">
-          {i18n.t(translations.steps.step_3.title_parts[0])}
+          {i18n.perps.explain_sheet.steps.step_3.title_parts[0]()}
         </Text>
       </TextShadow>
     ),
@@ -143,7 +141,7 @@ const STEPS: ExplainerSheetStep[] = [
     ),
     subtitleComponent: () => (
       <Text align="center" size="17pt / 135%" weight="semibold" color="labelTertiary" style={config.subtitleStyle}>
-        {i18n.t(translations.steps.step_3.subtitle_parts[0])}
+        {i18n.perps.explain_sheet.steps.step_3.subtitle_parts[0]()}
       </Text>
     ),
   },
@@ -172,7 +170,7 @@ export function PerpsExplainSheet() {
             <Box flexDirection="row" alignItems="center" justifyContent="center" gap={10}>
               <HyperliquidLogo />
               <Text color="label" size="20pt" weight="black">
-                {i18n.t(i18n.l.perps.common.title)}
+                {i18n.perps.common.title()}
               </Text>
             </Box>
           )}

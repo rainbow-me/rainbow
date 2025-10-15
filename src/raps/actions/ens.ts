@@ -4,7 +4,7 @@ import { IS_TEST } from '@/env';
 import { estimateENSTransactionGasLimit, formatRecordsForTransaction } from '@/handlers/ens';
 import { toHex } from '@/handlers/web3';
 import { ENSRegistrationTransactionType, getENSExecutionDetails, REGISTRATION_MODES } from '@/helpers/ens';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { parseGasParamAmounts } from '@/parsers';
 import { ENSActionParameters, ENSRap, ENSRapActionType, RapENSAction, RapENSActionParameters } from '@/raps/common';
@@ -653,11 +653,11 @@ const parseError = (error: EthersError): string => {
   const errorCode = error?.code;
   switch (errorCode) {
     case Logger.errors.UNPREDICTABLE_GAS_LIMIT:
-      return i18n.t(i18n.l.wallet.transaction.errors.unpredictable_gas);
+      return i18n.wallet.transaction.errors.unpredictable_gas();
     case Logger.errors.INSUFFICIENT_FUNDS:
-      return i18n.t(i18n.l.wallet.transaction.errors.insufficient_funds);
+      return i18n.wallet.transaction.errors.insufficient_funds();
     default:
-      return i18n.t(i18n.l.wallet.transaction.errors.generic);
+      return i18n.wallet.transaction.errors.generic();
   }
 };
 

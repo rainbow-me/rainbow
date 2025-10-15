@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useDimensions } from '@/hooks';
 import { SkiaCard } from './SkiaCard';
 import { Blur, Group, Image, Paint, useImage } from '@shopify/react-native-skia';
@@ -16,8 +16,8 @@ import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
 const CARD_HEIGHT = 84;
-const startingNextRoundText = i18n.t(i18n.l.king_of_hill.starting_next_round);
-const leftText = i18n.t(i18n.l.king_of_hill.left);
+const startingNextRoundText = i18n.king_of_hill.starting_next_round();
+const leftText = i18n.king_of_hill.left();
 
 function AnimatedCountdownText({ targetUnixTimestamp, color }: { targetUnixTimestamp: number; color: string }) {
   const countdown = useAnimatedCountdown(targetUnixTimestamp);
@@ -119,7 +119,7 @@ export function KingOfTheHillCard({ king }: { king: KingOfTheHillToken }) {
                 <Inline wrap={false} alignVertical="center" alignHorizontal="justify" space={'8px'}>
                   <TextShadow blur={8} shadowOpacity={0.24} color={primaryColor}>
                     <Text color={{ custom: primaryColor }} size="11pt" weight="black">
-                      {i18n.t(i18n.l.king_of_hill.current_king)}
+                      {i18n.king_of_hill.current_king()}
                     </Text>
                   </TextShadow>
                   <AnimatedCountdownText targetUnixTimestamp={king.window.end} color={primaryColor} />
@@ -151,7 +151,7 @@ export function KingOfTheHillCard({ king }: { king: KingOfTheHillToken }) {
                 >
                   <Inline space="4px">
                     <Text color="labelQuaternary" size="11pt" weight="bold">
-                      {i18n.t(i18n.l.market_data.vol)}
+                      {i18n.market_data.vol()}
                     </Text>
                     <Text color="labelTertiary" size="11pt" weight="bold">
                       {volume}
@@ -159,7 +159,7 @@ export function KingOfTheHillCard({ king }: { king: KingOfTheHillToken }) {
                   </Inline>
                   <Inline space="4px">
                     <Text color="labelQuaternary" size="11pt" weight="bold">
-                      {i18n.t(i18n.l.market_data.mcap)}
+                      {i18n.market_data.mcap()}
                     </Text>
                     <Text color="labelTertiary" size="11pt" weight="bold">
                       {liveMarketCap}

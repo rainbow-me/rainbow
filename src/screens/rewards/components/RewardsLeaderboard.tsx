@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Columns, Separator, Stack, Text } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
 import { RewardsLeaderboardItem } from '@/screens/rewards/components/RewardsLeaderboardItem';
 import { differenceInDays, fromUnixTime } from 'date-fns';
@@ -9,11 +9,11 @@ import { RewardsLeaderboardAccount, RewardsMetaStatus } from '@/graphql/__genera
 const getRHSValueBasedOnStatus = (status: RewardsMetaStatus, daysLeftValue: number) => {
   switch (status) {
     case RewardsMetaStatus.Paused:
-      return i18n.t(i18n.l.rewards.program_paused);
+      return i18n.rewards.program_paused();
     case RewardsMetaStatus.Finished:
-      return i18n.t(i18n.l.rewards.program_finished);
+      return i18n.rewards.program_finished();
     default:
-      return i18n.t(i18n.l.rewards.days_left, {
+      return i18n.rewards.days_left({
         days: daysLeftValue,
       });
   }
@@ -22,11 +22,11 @@ const getRHSValueBasedOnStatus = (status: RewardsMetaStatus, daysLeftValue: numb
 const getDisclaimerBasedOnStatus = (status: RewardsMetaStatus) => {
   switch (status) {
     case RewardsMetaStatus.Paused:
-      return i18n.t(i18n.l.rewards.program_paused_description);
+      return i18n.rewards.program_paused_description();
     case RewardsMetaStatus.Finished:
-      return i18n.t(i18n.l.rewards.program_finished_description);
+      return i18n.rewards.program_finished_description();
     default:
-      return i18n.t(i18n.l.rewards.leaderboard_data_refresh_notice);
+      return i18n.rewards.leaderboard_data_refresh_notice();
   }
 };
 
@@ -45,7 +45,7 @@ export const RewardsLeaderboard: React.FC<Props> = ({ status, leaderboard, progr
       <Stack space="12px">
         <Columns>
           <Text size="20pt" weight="heavy" color="label">
-            {i18n.t(i18n.l.rewards.leaderboard)}
+            {i18n.rewards.leaderboard()}
           </Text>
           <Text align="right" size="20pt" weight="semibold" color="labelTertiary">
             {getRHSValueBasedOnStatus(status, daysLeft)}

@@ -14,7 +14,7 @@ import { SliderWithLabels } from '@/features/perps/components/Slider';
 import { HYPERLIQUID_COLORS, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, USD_DECIMALS, USDC_ASSET } from '@/features/perps/constants';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { Navigation } from '@/navigation';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
@@ -125,15 +125,15 @@ const PerpsWithdrawalScreenContent = memo(function PerpsWithdrawalScreenContent(
 
   const getConfirmButtonLabel = useCallback(() => {
     if (inputAmountError === 'zero') {
-      return i18n.t(i18n.l.perps.withdraw.confirm_button_zero_text);
+      return i18n.perps.withdraw.confirm_button_zero_text();
     }
     if (inputAmountError === 'overBalance') {
-      return i18n.t(i18n.l.perps.withdraw.confirm_button_over_balance_text);
+      return i18n.perps.withdraw.confirm_button_over_balance_text();
     }
     if (useWithdrawalStore.getState().isSubmitting) {
-      return i18n.t(i18n.l.perps.withdraw.confirm_button_loading_text);
+      return i18n.perps.withdraw.confirm_button_loading_text();
     }
-    return i18n.t(i18n.l.perps.withdraw.confirm_button_text);
+    return i18n.perps.withdraw.confirm_button_text();
   }, [inputAmountError, useWithdrawalStore]);
 
   return (
@@ -147,7 +147,7 @@ const PerpsWithdrawalScreenContent = memo(function PerpsWithdrawalScreenContent(
       >
         <SheetHandle />
         <Box paddingTop="8px">
-          <Navbar hasStatusBarInset leftComponent={<AccountImage />} title={i18n.t(i18n.l.perps.withdraw.title)} />
+          <Navbar hasStatusBarInset leftComponent={<AccountImage />} title={i18n.perps.withdraw.title()} />
         </Box>
 
         <View style={{ top: -10, alignSelf: 'center' }}>
@@ -157,7 +157,7 @@ const PerpsWithdrawalScreenContent = memo(function PerpsWithdrawalScreenContent(
             <Text align="center" size="15pt" weight="bold" color="labelTertiary">
               {formattedBalance}
               <Text color="labelQuaternary" size="15pt" weight="bold">
-                {i18n.t(i18n.l.perps.withdraw.available_balance_suffix)}
+                {i18n.perps.withdraw.available_balance_suffix()}
               </Text>
             </Text>
           )}
@@ -175,7 +175,7 @@ const PerpsWithdrawalScreenContent = memo(function PerpsWithdrawalScreenContent(
           onPressMaxWorklet={handlePressMaxWorklet}
           showMaxButton={true}
           showPercentage={true}
-          labels={{ title: i18n.t(i18n.l.perps.withdraw.slider_label) }}
+          labels={{ title: i18n.perps.withdraw.slider_label() }}
           icon={<AssetCoinIcon asset={USDC_ASSET} size={16} showBadge={false} />}
           colors={sliderColors}
         />
@@ -232,14 +232,14 @@ const WithdrawalInfoCard = memo(function WithdrawalInfoCard() {
             􀄵
           </TextIcon>
           <Text color="labelQuaternary" size="15pt" weight="bold">
-            {i18n.t(i18n.l.perps.withdraw.info_card_title_prefix)}
+            {i18n.perps.withdraw.info_card_title_prefix()}
             <Text color="labelTertiary" size="15pt" weight="bold">
-              {i18n.t(i18n.l.perps.withdraw.info_card_title_suffix)}
+              {i18n.perps.withdraw.info_card_title_suffix()}
             </Text>
           </Text>
         </Inline>
         <Text color={isDarkMode ? 'labelQuinary' : 'labelQuaternary'} size="13pt" weight="semibold">
-          {i18n.t(i18n.l.perps.withdraw.info_card_subtitle)}
+          {i18n.perps.withdraw.info_card_subtitle()}
         </Text>
       </Box>
     </Inset>

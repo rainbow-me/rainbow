@@ -6,7 +6,7 @@ import { IS_IOS } from '@/env';
 import showWalletErrorAlert from '@/helpers/support';
 import { useChartThrottledPoints, useColorForAsset } from '@/hooks';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -181,7 +181,7 @@ export const EthCard = () => {
                     </Text>
                   </Inline>
                   <Text size="13pt" color={{ custom: priceChangeColor }} weight="bold">
-                    {i18n.t(i18n.l.cards.eth.today)}
+                    {i18n.cards.eth.today()}
                   </Text>
                 </Inline>
               )}
@@ -259,7 +259,7 @@ export const EthCard = () => {
             <AccentColorProvider color={colors.alpha(colorForAsset, 0.1)}>
               <Box width="full" height={{ custom: 36 }} borderRadius={99} alignItems="center" justifyContent="center" background="accent">
                 <Text color={{ custom: colorForAsset }} containsEmoji size="15pt" weight="bold">
-                  {`􀍯 ${i18n.t(i18n.l.button.buy_eth)}`}
+                  {`􀍯 ${i18n.button.buy_eth()}`}
                 </Text>
               </Box>
             </AccentColorProvider>

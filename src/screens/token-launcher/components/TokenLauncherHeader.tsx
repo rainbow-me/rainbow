@@ -4,7 +4,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import { Box, Text, TextIcon } from '@/design-system';
 import { useDimensions } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
@@ -31,11 +31,11 @@ export function TokenLauncherHeader() {
 
   let title = '';
   if (step === NavigationSteps.INFO) {
-    title = i18n.t(i18n.l.token_launcher.header.new_coin);
+    title = i18n.token_launcher.header.new_coin();
   } else if (step === NavigationSteps.REVIEW) {
-    title = i18n.t(i18n.l.token_launcher.header.review);
+    title = i18n.token_launcher.header.review();
   } else if (step === NavigationSteps.CREATING) {
-    title = i18n.t(i18n.l.token_launcher.header.creating);
+    title = i18n.token_launcher.header.creating();
   }
 
   const handlePressExit = useCallback(() => {
@@ -48,7 +48,7 @@ export function TokenLauncherHeader() {
       {
         cancelButtonIndex: 1,
         destructiveButtonIndex: 0,
-        options: [i18n.t(i18n.l.token_launcher.discard_and_exit), i18n.t(i18n.l.button.cancel)],
+        options: [i18n.token_launcher.discard_and_exit(), i18n.button.cancel()],
       },
       buttonIndex => {
         if (buttonIndex === 0) {

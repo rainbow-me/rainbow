@@ -2,7 +2,7 @@ import { ListHeader } from '@/components/SmoothPager/ListPanel';
 import { Box, Text, TextShadow } from '@/design-system';
 import { FasterImageView } from '@candlefinance/faster-image';
 import React, { useMemo } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { TextColor } from '@/design-system/color/palettes';
 import { ClaimStatus } from '../../shared/types';
 
@@ -21,17 +21,17 @@ export function ClaimPanelHeader({
     switch (claimStatus) {
       case 'notReady':
       case 'ready':
-        return title ?? i18n.t(i18n.l.claimables.panel.claim);
+        return title ?? i18n.claimables.panel.claim();
       case 'claiming':
-        return i18n.t(i18n.l.claimables.panel.claiming);
+        return i18n.claimables.panel.claiming();
       case 'pending':
-        return i18n.t(i18n.l.claimables.panel.tokens_on_the_way);
+        return i18n.claimables.panel.tokens_on_the_way();
       case 'success':
-        return i18n.t(i18n.l.claimables.panel.claimed);
+        return i18n.claimables.panel.claimed();
       case 'unrecoverableError':
-        return i18n.t(i18n.l.claimables.panel.swap_failed);
+        return i18n.claimables.panel.swap_failed();
       default:
-        return i18n.t(i18n.l.claimables.panel.claiming_failed);
+        return i18n.claimables.panel.claiming_failed();
     }
   }, [claimStatus, title]);
 

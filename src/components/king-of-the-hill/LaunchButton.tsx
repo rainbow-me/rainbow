@@ -2,7 +2,7 @@ import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { GradientText } from '@/components/text';
 import { globalColors, Text, useColorMode } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { Canvas, Group, Paint, RoundedRect, Shadow, LinearGradient, vec } from '@shopify/react-native-skia';
@@ -40,7 +40,7 @@ export const LaunchButton = memo(function LaunchButton() {
               </GradientText>
               <GradientText colors={['#3D1E0A', '#7A600A']}>
                 <Text color="accent" size="20pt" weight="heavy" style={{ marginTop: -1 }}>
-                  {i18n.t(i18n.l.king_of_hill.launch)}
+                  {i18n.king_of_hill.launch()}
                 </Text>
               </GradientText>
             </View>

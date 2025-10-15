@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React from 'react';
 import { useNavigation } from '../../navigation/Navigation';
 import { analytics } from '@/analytics';
@@ -13,7 +13,7 @@ import ledgerNano from '@/assets/ledger-nano.png';
 import { Source } from 'react-native-fast-image';
 import { LEDGER_NANO_HEIGHT, LEDGER_NANO_WIDTH } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 
-const TRANSLATIONS = i18n.l.cards.ledger;
+// Removed: const TRANSLATIONS = i18n.l.cards.ledger;
 const GRADIENT: Gradient = {
   colors: ['#313233', '#3B3C3D'],
   start: { x: 0, y: 0 },
@@ -44,10 +44,10 @@ export const LedgerCard = () => {
             <Column>
               <Stack space={{ custom: 14 }}>
                 <Text size="20pt" weight="heavy" color="label">
-                  {i18n.t(TRANSLATIONS.title)}
+                  {i18n.cards.ledger.title()}
                 </Text>
                 <Text size="15pt" weight="semibold" color="labelSecondary">
-                  {i18n.t(TRANSLATIONS.body)}
+                  {i18n.cards.ledger.body()}
                 </Text>
               </Stack>
             </Column>

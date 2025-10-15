@@ -2,7 +2,7 @@ import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
 import { add, greaterThan } from './utilities';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { supportedNativeCurrencies } from '@/references';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { AssetType, NativeCurrencyKey, ParsedAddressAsset, UniqueAsset } from '@/entities';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
@@ -236,7 +236,7 @@ export const buildUniqueTokenList = (uniqueTokens: UniqueAsset[], selectedShowca
     rows = [
       {
         childrenAmount: showcaseTokens.length,
-        familyName: i18n.t(i18n.l.account.tab_showcase),
+        familyName: i18n.account.tab_showcase(),
         isHeader: true,
         stableId: 'showcase_stable_id',
         tokens: bundledShowcaseTokens,
@@ -280,7 +280,7 @@ export const buildBriefUniqueTokenList = (
   } else {
     if (isShowcaseDataMigrated && showcaseTokens.length > 0 && listType !== 'select-nft') {
       result.push({
-        name: i18n.t(i18n.l.account.tab_showcase),
+        name: i18n.account.tab_showcase(),
         total: showcaseTokens.length,
         type: CellType.FAMILY_HEADER,
         uid: 'showcase',
@@ -304,7 +304,7 @@ export const buildBriefUniqueTokenList = (
     // i18n all names
     if (sellingTokens.length > 0) {
       result.push({
-        name: i18n.t(i18n.l.nfts.selling),
+        name: i18n.nfts.selling(),
         total: sellingTokens.length,
         type: CellType.FAMILY_HEADER,
         uid: 'selling',
@@ -362,7 +362,7 @@ export const buildBriefUniqueTokenList = (
 
     if (isHiddenDataMigrated && hiddenTokens.length > 0 && listType === 'wallet' && !isReadOnlyWallet && !hasMoreCollections) {
       result.push({
-        name: i18n.t(i18n.l.button.hidden),
+        name: i18n.button.hidden(),
         total: hiddenTokens.length,
         type: CellType.FAMILY_HEADER,
         uid: 'hidden',
@@ -437,7 +437,7 @@ export const legacyBuildBriefUniqueTokenList = (
   ];
   if (uniqueTokensInShowcaseIds.length > 0 && listType !== 'select-nft') {
     result.push({
-      name: i18n.t(i18n.l.account.tab_showcase),
+      name: i18n.account.tab_showcase(),
       total: uniqueTokensInShowcaseIds.length,
       type: CellType.LEGACY_FAMILY_HEADER,
       uid: 'showcase',
@@ -458,7 +458,7 @@ export const legacyBuildBriefUniqueTokenList = (
   // i18n all names
   if (sellingTokens.length > 0) {
     result.push({
-      name: i18n.t(i18n.l.nfts.selling),
+      name: i18n.nfts.selling(),
       total: sellingTokens.length,
       type: CellType.LEGACY_FAMILY_HEADER,
       uid: 'selling',
@@ -502,7 +502,7 @@ export const legacyBuildBriefUniqueTokenList = (
 
   if (hiddenUniqueTokensIds?.length > 0 && listType === 'wallet' && !isReadOnlyWallet) {
     result.push({
-      name: i18n.t(i18n.l.button.hidden),
+      name: i18n.button.hidden(),
       total: hiddenUniqueTokensIds.length,
       type: CellType.LEGACY_FAMILY_HEADER,
       uid: 'hidden',

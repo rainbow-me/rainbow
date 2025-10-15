@@ -4,7 +4,7 @@ import { toast } from 'sonner-native';
 import { globalColors } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_IOS } from '@/env';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { fontWithWidth } from '@/styles';
 import font from '@/styles/fonts';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -29,7 +29,7 @@ export const showWalletConnectToast = async ({ isTransactionRequest = false }: {
 
   const isDarkMode = await isDarkTheme();
 
-  toast(i18n.t(i18n.l.walletconnect[isTransactionRequest ? 'loading' : 'connecting']), {
+  toast(isTransactionRequest ? i18n.walletconnect.loading() : i18n.walletconnect.connecting(), {
     dismissible: false,
     duration: 10000, // Auto hide after 10 seconds
     icon: <EmptyComponent />,

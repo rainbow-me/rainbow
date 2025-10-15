@@ -1,6 +1,6 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { useIsFocused } from '@react-navigation/native';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { isNaN } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
@@ -15,7 +15,7 @@ type AnimationConfigOptions = {
   easing: Animated.EasingFunction;
 };
 
-const TRANSLATIONS = i18n.l.cards.gas;
+// Removed: const TRANSLATIONS = i18n.l.cards.gas;
 
 const containerConfig = {
   damping: 15,
@@ -113,17 +113,17 @@ export const GasCard = () => {
     const gwei = Math.round(Number(currentGwei)) || Math.round(Number(lastKnownGwei));
 
     if (!gwei) {
-      return i18n.t(TRANSLATIONS.loading);
+      return i18n.cards.gas.loading();
     } else if (gwei < 30) {
-      return i18n.t(TRANSLATIONS.very_low);
+      return i18n.cards.gas.very_low();
     } else if (gwei < 40) {
-      return i18n.t(TRANSLATIONS.low);
+      return i18n.cards.gas.low();
     } else if (gwei < 100) {
-      return i18n.t(TRANSLATIONS.average);
+      return i18n.cards.gas.average();
     } else if (gwei < 200) {
-      return i18n.t(TRANSLATIONS.high);
+      return i18n.cards.gas.high();
     } else {
-      return i18n.t(TRANSLATIONS.surging);
+      return i18n.cards.gas.surging();
     }
   };
 
@@ -180,12 +180,12 @@ export const GasCard = () => {
                 value={currentGwei || lastKnownGwei}
               />
               <Text color="accent" size="17pt" weight="bold">
-                {!isCurrentGweiLoaded && !lastKnownGwei ? '' : i18n.t(TRANSLATIONS.gwei)}
+                {!isCurrentGweiLoaded && !lastKnownGwei ? '' : i18n.cards.gas.gwei()}
               </Text>
             </Stack>
             <Stack space="10px">
               <Text color="labelTertiary" size="13pt" weight="bold">
-                {i18n.t(TRANSLATIONS.network_fees)}
+                {i18n.cards.gas.network_fees()}
               </Text>
               <Text color={!isCurrentGweiLoaded && !lastKnownGwei ? 'labelTertiary' : 'labelSecondary'} size="20pt" weight="bold">
                 {getCurrentPriceComparison(currentGwei, lastKnownGwei)}

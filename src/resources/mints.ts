@@ -8,7 +8,7 @@ import { createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { atom, useRecoilState } from 'recoil';
 import { MMKV } from 'react-native-mmkv';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 
 const mmkv = new MMKV();
@@ -36,11 +36,11 @@ export function mintsQueryKey({ address }: { address: string }) {
 export function getMintsFilterLabel(filter: MintsFilter) {
   switch (filter) {
     case MintsFilter.All:
-      return i18n.t(i18n.l.mints.filter.all);
+      return i18n.mints.filter.all();
     case MintsFilter.Paid:
-      return i18n.t(i18n.l.mints.filter.paid);
+      return i18n.mints.filter.paid();
     case MintsFilter.Free:
-      return i18n.t(i18n.l.mints.filter.free);
+      return i18n.mints.filter.free();
   }
 }
 

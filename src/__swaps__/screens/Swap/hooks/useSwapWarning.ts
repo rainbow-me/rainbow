@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { DerivedValue, SharedValue, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { useForegroundColor } from '@/design-system';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { divWorklet, greaterThanOrEqualToWorklet, mulWorklet, subWorklet } from '@/safe-math/SafeMath';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -49,20 +49,20 @@ type UsePriceImpactWarningProps = {
 
 const I18N_WARNINGS = {
   subtitles: {
-    [SwapWarningType.unknown]: i18n.t(i18n.l.exchange.price_impact.unknown_price.description),
-    [SwapWarningType.high]: i18n.t(i18n.l.exchange.price_impact.small_market_try_smaller_amount),
-    [SwapWarningType.long_wait]: i18n.t(i18n.l.exchange.price_impact.long_wait.description_prefix),
-    [SwapWarningType.severe]: i18n.t(i18n.l.exchange.price_impact.small_market_try_smaller_amount),
+    [SwapWarningType.unknown]: i18n.exchange.price_impact.unknown_price.description(),
+    [SwapWarningType.high]: i18n.exchange.price_impact.small_market_try_smaller_amount(),
+    [SwapWarningType.long_wait]: i18n.exchange.price_impact.long_wait.description_prefix(),
+    [SwapWarningType.severe]: i18n.exchange.price_impact.small_market_try_smaller_amount(),
   },
   titles: {
-    [SwapWarningType.unknown]: i18n.t(i18n.l.exchange.price_impact.unknown_price.title),
-    [SwapWarningType.high]: i18n.t(i18n.l.exchange.price_impact.you_are_losing_prefix),
-    [SwapWarningType.long_wait]: i18n.t(i18n.l.exchange.price_impact.long_wait.title),
-    [SwapWarningType.severe]: i18n.t(i18n.l.exchange.price_impact.you_are_losing_prefix),
-    [SwapWarningType.no_quote_available]: i18n.t(i18n.l.exchange.quote_errors.no_quote_available),
-    [SwapWarningType.insufficient_liquidity]: i18n.t(i18n.l.exchange.quote_errors.insufficient_liquidity),
-    [SwapWarningType.fee_on_transfer]: i18n.t(i18n.l.exchange.quote_errors.fee_on_transfer),
-    [SwapWarningType.no_route_found]: i18n.t(i18n.l.exchange.quote_errors.no_route_found),
+    [SwapWarningType.unknown]: i18n.exchange.price_impact.unknown_price.title(),
+    [SwapWarningType.high]: i18n.exchange.price_impact.you_are_losing_prefix(),
+    [SwapWarningType.long_wait]: i18n.exchange.price_impact.long_wait.title(),
+    [SwapWarningType.severe]: i18n.exchange.price_impact.you_are_losing_prefix(),
+    [SwapWarningType.no_quote_available]: i18n.exchange.quote_errors.no_quote_available(),
+    [SwapWarningType.insufficient_liquidity]: i18n.exchange.quote_errors.insufficient_liquidity(),
+    [SwapWarningType.fee_on_transfer]: i18n.exchange.quote_errors.fee_on_transfer(),
+    [SwapWarningType.no_route_found]: i18n.exchange.quote_errors.no_route_found(),
   },
 };
 

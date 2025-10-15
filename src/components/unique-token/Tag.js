@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { upperCase, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -22,7 +22,7 @@ const PropertyActionsEnum = {
 const getViewTraitOnNftMarketplaceAction = marketplaceName => {
   return {
     actionKey: PropertyActionsEnum.viewTraitOnNftMarketplace,
-    actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.view_all_with_property),
+    actionTitle: i18n.expanded_state.unique_expanded.view_all_with_property(),
     discoverabilityTitle: marketplaceName,
     icon: {
       iconType: 'SYSTEM',
@@ -33,7 +33,7 @@ const getViewTraitOnNftMarketplaceAction = marketplaceName => {
 
 const openTraitURLInBrowserAction = {
   actionKey: PropertyActionsEnum.openURL,
-  actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.open_in_web_browser),
+  actionTitle: i18n.expanded_state.unique_expanded.open_in_web_browser(),
   icon: {
     iconType: 'SYSTEM',
     iconValue: 'safari.fill',

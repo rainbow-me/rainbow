@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useCallback, useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import useGas from '@/hooks/useGas';
@@ -48,7 +48,7 @@ export const useTransactionSetup = ({
           startPollingGasFees(chainId);
           fetchMethodName(transactionDetails?.payload?.params?.[0].data);
         } else {
-          setMethodName(i18n.t(i18n.l.wallet.message_signing.request));
+          setMethodName(i18n.wallet.message_signing.request());
         }
         analytics.track(analytics.event.txRequestShownSheet, { source });
       }

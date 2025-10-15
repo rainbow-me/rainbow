@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { PropsWithChildren, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
@@ -182,7 +182,7 @@ function CurrentBaseFeeSlot({ baseFee, gasTrend = 'notrend' }: { baseFee?: strin
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-      <PressableLabel onPress={onPressLabel}>{i18n.t(i18n.l.gas.current_base_fee)}</PressableLabel>
+      <PressableLabel onPress={onPressLabel}>{i18n.gas.current_base_fee()}</PressableLabel>
       <Bleed top="16px">
         <Stack space="8px">
           <Text
@@ -256,9 +256,9 @@ const setGasPanelState = (update: Partial<GasPanelState>) => {
   });
 };
 
-const likely_to_fail = i18n.t(i18n.l.gas.likely_to_fail);
-const higher_than_suggested = i18n.t(i18n.l.gas.higher_than_suggested);
-const lower_than_suggested = i18n.t(i18n.l.gas.lower_than_suggested);
+const likely_to_fail = i18n.gas.likely_to_fail();
+const higher_than_suggested = i18n.gas.higher_than_suggested();
+const lower_than_suggested = i18n.gas.lower_than_suggested();
 
 const useMaxBaseFeeWarning = (maxBaseFee: string | undefined) => {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
@@ -305,7 +305,7 @@ function EditMaxBaseFee() {
     <Box flexDirection="row" alignItems="center" justifyContent="space-between">
       <Box gap={8} style={{ marginTop: warning ? -10 : 0, marginBottom: warning ? -10 : 0 }}>
         <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
-          {i18n.t(i18n.l.gas.max_base_fee)}
+          {i18n.gas.max_base_fee()}
         </PressableLabel>
         {warning && <Warning>{warning}</Warning>}
       </Box>
@@ -320,9 +320,7 @@ function EditPriorityFee() {
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-      <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MINER_TIP_TYPE })}>
-        {i18n.t(i18n.l.gas.miner_tip)}
-      </PressableLabel>
+      <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MINER_TIP_TYPE })}>{i18n.gas.miner_tip()}</PressableLabel>
       <GasSettingInput value={maxPriorityFee} onChange={maxPriorityFee => setGasPanelState({ maxPriorityFee })} min={'0'} />
     </Inline>
   );
@@ -335,9 +333,7 @@ function EditGasPrice() {
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-      <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
-        {i18n.t(i18n.l.gas.gas_price)}
-      </PressableLabel>
+      <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>{i18n.gas.gas_price()}</PressableLabel>
       <GasSettingInput value={gasPrice} onChange={gasPrice => setGasPanelState({ gasPrice })} />
     </Inline>
   );
@@ -357,7 +353,7 @@ function MaxTransactionFee() {
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
       <Text color="labelTertiary" weight="semibold" size="15pt">
-        {i18n.t(i18n.l.gas.max_transaction_fee)}
+        {i18n.gas.max_transaction_fee()}
       </Text>
 
       <Inline horizontalSpace="6px">
@@ -449,7 +445,7 @@ export function GasPanel() {
     <Box as={Animated.View} paddingHorizontal="12px" zIndex={12} style={styles} testID="gas-panel" width="full" onLayout={onLayout}>
       <Stack alignHorizontal="center" space="28px">
         <Text weight="heavy" color="label" size="20pt">
-          {i18n.t(i18n.l.gas.gas_settings)}
+          {i18n.gas.gas_settings()}
         </Text>
 
         <Box gap={24} width="full" alignItems="stretch" marginBottom={{ custom: 30 }}>

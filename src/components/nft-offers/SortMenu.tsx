@@ -4,7 +4,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Inline, Inset, Text } from '@/design-system';
 import { haptics } from '@/utils';
 import { SortCriterion } from '@/graphql/__generated__/arc';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import ConditionalWrap from 'conditional-wrap';
 import { analytics } from '@/analytics';
 import { atom, useRecoilState } from 'recoil';
@@ -20,17 +20,17 @@ export type SortOption = {
 
 export const SortOptions: { [key: string]: SortOption } = {
   Highest: {
-    name: i18n.t(i18n.l.nft_offers.sort_menu.highest),
+    name: i18n.nft_offers.sort_menu.highest(),
     icon: '􀑁',
     criterion: SortCriterion.TopBidValue,
   },
   FromFloor: {
-    name: i18n.t(i18n.l.nft_offers.sort_menu.from_floor),
+    name: i18n.nft_offers.sort_menu.from_floor(),
     icon: '􀅺',
     criterion: SortCriterion.FloorDifferencePercentage,
   },
   Recent: {
-    name: i18n.t(i18n.l.nft_offers.sort_menu.recent),
+    name: i18n.nft_offers.sort_menu.recent(),
     icon: '􀐫',
     criterion: SortCriterion.DateCreated,
   },

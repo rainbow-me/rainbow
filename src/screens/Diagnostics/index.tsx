@@ -14,7 +14,7 @@ import { UserCredentials } from 'react-native-keychain';
 import { DiagnosticsContent } from '@/screens/Diagnostics/DiagnosticsContent';
 import { BackgroundProvider, Box } from '@/design-system';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { createAndShareStateDumpFile } from './helpers/createAndShareStateDumpFile';
 import { haptics } from '@/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -188,7 +188,7 @@ export const WalletDiagnosticsSheet = () => {
         )}
       </BackgroundProvider>
       <ToastPositionContainer>
-        <Toast isVisible={toastVisible} text={i18n.t(i18n.l.wallet.diagnostics.uuid_copied)} testID="uuid-copied-toast" />
+        <Toast isVisible={toastVisible} text={i18n.wallet.diagnostics.uuid_copied()} testID="uuid-copied-toast" />
       </ToastPositionContainer>
     </>
   );

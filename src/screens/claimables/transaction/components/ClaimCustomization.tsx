@@ -9,7 +9,7 @@ import { TokenToReceive } from '../types';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
 import { searchVerifiedTokens, TokenLists } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { SearchAsset } from '@/__swaps__/types/search';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { IS_ANDROID } from '@/env';
 import { MenuItem } from '@/components/DropdownMenu';
 import { NetworkSelectorButton } from '@/components/buttons/NetworkSelectorButton';
@@ -235,17 +235,17 @@ export function ClaimCustomization() {
   return (
     <Box justifyContent="center" alignItems="center" flexDirection="row" gap={5}>
       <Text align="center" weight="bold" color="labelTertiary" size="17pt">
-        {i18n.t(i18n.l.claimables.panel.receive)}
+        {i18n.claimables.panel.receive()}
       </Text>
       <ClaimableMenu
         disabled={isDisabled}
         menuConfig={tokenMenuConfig}
         onPressMenuItem={handleTokenSelection}
-        text={outputToken?.symbol ?? i18n.t(i18n.l.claimables.panel.a_token)}
+        text={outputToken?.symbol ?? i18n.claimables.panel.a_token()}
         muted={isInitialState}
       />
       <Text align="center" weight="bold" color="labelTertiary" size="17pt">
-        {i18n.t(i18n.l.claimables.panel.on)}
+        {i18n.claimables.panel.on()}
       </Text>
 
       <Box
@@ -272,7 +272,7 @@ export function ClaimCustomization() {
           )}
           actionButton={{
             icon: '􀅉',
-            label: i18n.t(i18n.l.claimables.panel.reset),
+            label: i18n.claimables.panel.reset(),
             color: 'labelTertiary',
             onPress: resetState,
           }}

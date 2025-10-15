@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import Animated from 'react-native-reanimated';
 import { Box, Stack, Text, useColorMode } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { TokenFamilyHeaderHeight } from './NFTLoadingSkeleton';
 import { MINTS, NFTS_ENABLED, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -48,7 +48,7 @@ const LaunchFeaturedMintButton = React.memo(function LaunchFeaturedMintButton({ 
             style={[{ backgroundColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }]}
           >
             <Text size="13pt" color={'label'} style={{ opacity: isDarkMode ? 0.6 : 0.75 }} weight="heavy">
-              {i18n.t(i18n.l.nfts.collect_now)}
+              {i18n.nfts.collect_now()}
             </Text>
           </Box>
         </Box>
@@ -83,11 +83,11 @@ export function NFTEmptyState() {
           </Text>
 
           <Text color="labelTertiary" size="20pt" weight="semibold" align="center">
-            {i18n.t(i18n.l.nfts.empty)}
+            {i18n.nfts.empty()}
           </Text>
 
           <Text color="labelQuaternary" size="14px / 19px (Deprecated)" weight="regular" align="center">
-            {i18n.t(i18n.l.nfts.will_appear_here)}
+            {i18n.nfts.will_appear_here()}
           </Text>
 
           {mintsEnabled && featuredMint && <LaunchFeaturedMintButton featuredMint={featuredMint} />}

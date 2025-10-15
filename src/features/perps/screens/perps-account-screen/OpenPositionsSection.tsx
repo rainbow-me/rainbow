@@ -9,7 +9,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { Image, StyleSheet } from 'react-native';
 import infinityIcon from '@/assets/infinity.png';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 export const OpenPositionsSection = function OpenPositionsSection() {
   const positionsInfo = usePerpsPositionsInfo();
@@ -19,7 +19,7 @@ export const OpenPositionsSection = function OpenPositionsSection() {
         <Box gap={16} paddingHorizontal="4px">
           <Box flexDirection="row" alignItems="center" justifyContent="space-between">
             <Text size="17pt" weight="heavy" color={positionsInfo.hasPositions ? 'labelTertiary' : 'labelQuaternary'}>
-              {i18n.t(i18n.l.perps.positions.open_positions)}
+              {i18n.perps.positions.open_positions()}
             </Text>
             {positionsInfo.hasPositions && (
               <Box flexDirection="row" alignItems="center" gap={2}>
@@ -61,7 +61,7 @@ export const OpenPositionsSection = function OpenPositionsSection() {
             <Box height={124} justifyContent="center" alignItems="center" gap={20} paddingBottom="24px">
               <Image source={infinityIcon} tintColor={HYPERLIQUID_COLORS.green} />
               <Text align="center" size="20pt" weight="heavy" color="labelSecondary">
-                {i18n.t(i18n.l.perps.positions.no_open_positions)}
+                {i18n.perps.positions.no_open_positions()}
               </Text>
               <ButtonPressAnimation
                 onPress={() => {
@@ -70,7 +70,7 @@ export const OpenPositionsSection = function OpenPositionsSection() {
               >
                 <Box flexDirection="row" alignItems="center" gap={4}>
                   <Text align="center" size="15pt" weight="bold" color={'labelTertiary'}>
-                    {i18n.t(i18n.l.perps.positions.learn_more_about_perps)}
+                    {i18n.perps.positions.learn_more_about_perps()}
                   </Text>
                   <Text align="center" size="icon 11px" weight="heavy" color={'labelQuaternary'} style={{ top: StyleSheet.hairlineWidth }}>
                     {'􀆊'}

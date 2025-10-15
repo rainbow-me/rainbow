@@ -20,7 +20,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { isENSAddressFormat } from '@/helpers/validators';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import ContextMenu from '@/components/context-menu/ContextMenu.android';
 
 type ContextMenuRendererProps = {
@@ -48,7 +48,7 @@ const ContextMenuRenderer = ({
       menuItems: [
         {
           actionKey: 'send',
-          actionTitle: i18n.t(i18n.l.transaction_details.context_menu.send),
+          actionTitle: i18n.transaction_details.context_menu.send(),
           icon: {
             iconType: 'SYSTEM',
             iconValue: 'paperplane',
@@ -59,8 +59,8 @@ const ContextMenuRenderer = ({
               {
                 actionKey: 'contact',
                 actionTitle: contact
-                  ? i18n.t(i18n.l.transaction_details.context_menu.edit_contact)
-                  : i18n.t(i18n.l.transaction_details.context_menu.add_contact),
+                  ? i18n.transaction_details.context_menu.edit_contact()
+                  : i18n.transaction_details.context_menu.add_contact(),
                 icon: {
                   iconType: 'SYSTEM',
                   iconValue: contact ? 'person.crop.circle' : 'person.crop.circle.badge.plus',
@@ -70,7 +70,7 @@ const ContextMenuRenderer = ({
           : []),
         {
           actionKey: 'copy',
-          actionTitle: i18n.t(i18n.l.transaction_details.context_menu.copy_address),
+          actionTitle: i18n.transaction_details.context_menu.copy_address(),
           actionSubtitle: isENSAddressFormat(name) ? name : formattedAddress,
           icon: {
             iconType: 'SYSTEM',

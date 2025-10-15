@@ -7,7 +7,7 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { LpRangeBadge } from './LpRangeBadge';
 import { TwoCoinsIcon } from '@/components/coin-icon/TwoCoinsIcon';
 import { IS_IOS } from '@/env';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 function getRangeStatus(assets: RainbowUnderlyingAsset[], isConcentratedLiquidity: boolean) {
@@ -134,7 +134,7 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
                   />
                   <Box style={{ maxWidth: 150 }}>
                     <Text size="13pt" weight="semibold" color="labelTertiary" numberOfLines={1}>
-                      {i18n.t(i18n.l.positions.lp_range_status[rangeStatus])}
+                      {i18n.positions.lp_range_status[rangeStatus]()}
                     </Text>
                   </Box>
                   <LpRangeBadge

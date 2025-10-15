@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Box, Text, TextShadow } from '@/design-system';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { Canvas, LinearGradient, Path, vec, Skia, Group, BlurMask } from '@shopify/react-native-skia';
@@ -165,7 +165,7 @@ export function SuccessStep() {
       <Box style={{ position: 'absolute', bottom: 40 }} paddingHorizontal={'44px'} gap={20} alignItems="center">
         <TextShadow blur={10} color="rgba(255, 255, 255, 0.12)">
           <Text numberOfLines={2} ellipsizeMode="tail" align="center" size={titleFontSize} weight="bold" color={'label'}>
-            {i18n.t(i18n.l.token_launcher.success.title, { symbol: `$${symbol}` })}
+            {i18n.token_launcher.success.title({ symbol: `$${symbol}` })}
           </Text>
         </TextShadow>
         <Text
@@ -177,7 +177,7 @@ export function SuccessStep() {
           color={'labelSecondary'}
           style={{ lineHeight: 27 }}
         >
-          {i18n.t(i18n.l.token_launcher.success.congrats, { name })}
+          {i18n.token_launcher.success.congrats({ name })}
         </Text>
       </Box>
     </Box>

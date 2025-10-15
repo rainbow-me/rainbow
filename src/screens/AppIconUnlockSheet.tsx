@@ -8,7 +8,7 @@ import { ImgixImage } from '@/components/images';
 import { Source } from 'react-native-fast-image';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useTheme } from '@/theme';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { delay } from '@/utils/delay';
 import Routes from '@/navigation/routesNames';
 import { SheetActionButton } from '@/components/sheet';
@@ -63,17 +63,17 @@ export default function AppIconUnlockSheet() {
                   />
                 </AccentColorProvider>
                 <Text size="22pt" weight="heavy" color="label" align="center">
-                  {i18n.t(i18n.l.app_icon_unlock_sheet[`${appIconKey}_title`])}
+                  {i18n.app_icon_unlock_sheet[`${appIconKey}_title` as keyof typeof i18n.app_icon_unlock_sheet]()}
                 </Text>
                 <Text size="18px / 27px (Deprecated)" weight="regular" color="labelTertiary" align="center">
-                  {i18n.t(i18n.l.app_icon_unlock_sheet[`${appIconKey}_description`])}
+                  {i18n.app_icon_unlock_sheet[`${appIconKey}_description` as keyof typeof i18n.app_icon_unlock_sheet]()}
                 </Text>
               </Stack>
             </Inset>
             <SheetActionButton
               color={colors.alpha(accentColor, 0.06)}
               isTransparent
-              label={i18n.t(i18n.l.app_icon_unlock_sheet.button)}
+              label={i18n.app_icon_unlock_sheet.button()}
               onPress={navigateToAppIconSettings}
               size="big"
               textColor={accentColor}

@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import { Keyboard, Share } from 'react-native';
 import { IS_ANDROID, IS_IOS } from '@/env';
@@ -47,7 +47,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
         ? [
             {
               actionKey: ACTIONS.OPEN_WALLET,
-              actionTitle: i18n.t(i18n.l.profiles.details.open_wallet),
+              actionTitle: i18n.profiles.details.open_wallet(),
               icon: {
                 iconType: 'SYSTEM',
                 iconValue: 'iphone.and.arrow.forward',
@@ -57,7 +57,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
         : []),
       {
         actionKey: ACTIONS.COPY_ADDRESS,
-        actionTitle: i18n.t(i18n.l.profiles.details.copy_address),
+        actionTitle: i18n.profiles.details.copy_address(),
         discoverabilityTitle: formattedAddress,
         icon: {
           iconType: 'SYSTEM',
@@ -67,7 +67,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
       contact
         ? {
             actionKey: ACTIONS.REMOVE_CONTACT,
-            actionTitle: i18n.t(i18n.l.profiles.details.remove_from_contacts),
+            actionTitle: i18n.profiles.details.remove_from_contacts(),
             icon: {
               iconType: 'SYSTEM',
               iconValue: 'person.crop.circle.badge.minus',
@@ -75,7 +75,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
           }
         : {
             actionKey: ACTIONS.ADD_CONTACT,
-            actionTitle: i18n.t(i18n.l.profiles.details.add_to_contacts),
+            actionTitle: i18n.profiles.details.add_to_contacts(),
             icon: {
               iconType: 'SYSTEM',
               iconValue: 'person.crop.circle.badge.plus',
@@ -83,7 +83,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
           },
       {
         actionKey: ACTIONS.ETHERSCAN,
-        actionTitle: i18n.t(i18n.l.profiles.details.view_on_etherscan),
+        actionTitle: i18n.profiles.details.view_on_etherscan(),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'link',
@@ -91,7 +91,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
       },
       {
         actionKey: ACTIONS.SHARE,
-        actionTitle: i18n.t(i18n.l.profiles.details.share),
+        actionTitle: i18n.profiles.details.share(),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'square.and.arrow.up',

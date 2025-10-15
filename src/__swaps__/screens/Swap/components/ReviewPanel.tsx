@@ -20,7 +20,7 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
@@ -44,14 +44,14 @@ import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 
-const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
-const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
-const NETWORK_LABEL = i18n.t(i18n.l.settings.network);
-const MINIMUM_RECEIVED_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.minimum_received);
-const MAXIMUM_SOLD_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.maximum_sold);
-const RAINBOW_FEE_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.rainbow_fee);
-const MAX_SLIPPAGE_LABEL = i18n.t(i18n.l.exchange.slippage_tolerance);
-const ESTIMATED_NETWORK_FEE_LABEL = i18n.t(i18n.l.gas.network_fee);
+const UNKNOWN_LABEL = i18n.swap.unknown();
+const REVIEW_LABEL = i18n.expanded_state.swap_details.review();
+const NETWORK_LABEL = i18n.settings.network();
+const MINIMUM_RECEIVED_LABEL = i18n.expanded_state.swap_details_v2.minimum_received();
+const MAXIMUM_SOLD_LABEL = i18n.expanded_state.swap_details_v2.maximum_sold();
+const RAINBOW_FEE_LABEL = i18n.expanded_state.swap_details_v2.rainbow_fee();
+const MAX_SLIPPAGE_LABEL = i18n.exchange.slippage_tolerance();
+const ESTIMATED_NETWORK_FEE_LABEL = i18n.gas.network_fee();
 
 const RainbowFee = () => {
   const { isDarkMode } = useColorMode();
@@ -251,7 +251,7 @@ export function ReviewPanel() {
   const labelTertiary = useForegroundColor('labelTertiary');
   const separator = useForegroundColor('separator');
 
-  const unknown = i18n.t(i18n.l.swap.unknown);
+  const unknown = i18n.swap.unknown();
 
   const chainName = useDerivedValue(() => chainLabels[internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet]);
 

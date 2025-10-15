@@ -2,7 +2,7 @@ import { TextColor } from '@/design-system/color/palettes';
 import { NativeCurrencyKey } from '@/entities';
 import { IS_IOS } from '@/env';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { colors } from '@/styles';
 
 const CUSTOM = 'custom';
@@ -69,35 +69,35 @@ const GAS_EMOJIS: {
 const GAS_TRENDS = {
   [FALLING]: {
     color: colors.green,
-    label: `􀄱 ${i18n.t(i18n.l.gas.card.falling)}`,
+    label: `􀄱 ${i18n.gas.card.falling()}`,
   },
   [NO_TREND]: { color: colors.appleBlue, label: '' },
   [RISING]: {
     color: colors.orange,
-    label: `􀰾  ${i18n.t(i18n.l.gas.card.rising)}`,
+    label: `􀰾  ${i18n.gas.card.rising()}`,
   },
   [STABLE]: {
     color: colors.yellowFavorite,
-    label: `􀆮  ${i18n.t(i18n.l.gas.card.stable)}`,
+    label: `􀆮  ${i18n.gas.card.stable()}`,
   },
   [SURGING]: {
     color: colors.red,
-    label: `􀇿  ${i18n.t(i18n.l.gas.card.surging)}`,
+    label: `􀇿  ${i18n.gas.card.surging()}`,
   },
 };
 
 const getGasLabel = (speed: string) => {
   switch (speed) {
     case CUSTOM:
-      return i18n.t(i18n.l.gas.speeds.custom);
+      return i18n.gas.speeds.custom();
     case URGENT:
-      return i18n.t(i18n.l.gas.speeds.urgent);
+      return i18n.gas.speeds.urgent();
     case FAST:
-      return i18n.t(i18n.l.gas.speeds.fast);
+      return i18n.gas.speeds.fast();
     case SLOW:
-      return i18n.t(i18n.l.gas.speeds.slow);
+      return i18n.gas.speeds.slow();
     default:
-      return i18n.t(i18n.l.gas.speeds.normal);
+      return i18n.gas.speeds.normal();
   }
 };
 

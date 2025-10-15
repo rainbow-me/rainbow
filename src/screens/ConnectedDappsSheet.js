@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useEffect, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Divider from '@/components/Divider';
@@ -48,7 +48,7 @@ export default function ConnectedDappsSheet() {
   return (
     <Sheet borderRadius={30} hideHandle noInsets paddingBottom={0} paddingTop={0}>
       <SheetHandleFixedToTop />
-      <SheetTitleWithPadding>{i18n.t(i18n.l.walletconnect.connected_apps)}</SheetTitleWithPadding>
+      <SheetTitleWithPadding>{i18n.walletconnect.connected_apps()}</SheetTitleWithPadding>
       <Divider color={colors.rowDividerExtraLight} inset={[0, 19]} />
       <ScrollableItems length={numOfRows}>
         <Row height={4} />
@@ -58,7 +58,7 @@ export default function ConnectedDappsSheet() {
         {numOfRows === 0 && (
           <Box paddingTop="6px">
             <Text size="13pt" color="labelSecondary" weight="semibold" align="center" containsEmoji>
-              {i18n.t(i18n.l.walletconnect.no_connected_apps)}
+              {i18n.walletconnect.no_connected_apps()}
             </Text>
           </Box>
         )}

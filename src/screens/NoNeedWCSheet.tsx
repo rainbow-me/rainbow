@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback, useEffect } from 'react';
 import { Centered } from '../components/layout';
 import { Sheet, SheetActionButton } from '../components/sheet';
@@ -48,19 +48,13 @@ const WalletConnectRedirectSheet = () => {
         </Text>
         <Centered marginTop={9}>
           <Text color={colors.dark} size="big" weight="bold">
-            {i18n.t(i18n.l.dapp_browser.no_wc_needed.title)}
+            {i18n.dapp_browser.no_wc_needed.title()}
           </Text>
         </Centered>
         <Box padding={'12px'}>
-          <BodyText color={colors.dark}>{i18n.t(i18n.l.dapp_browser.no_wc_needed.description)}</BodyText>
+          <BodyText color={colors.dark}>{i18n.dapp_browser.no_wc_needed.description()}</BodyText>
           <Box>
-            <SheetActionButton
-              label={i18n.t(i18n.l.dapp_browser.no_wc_needed.cta)}
-              newShadows
-              onPress={handleOnPress}
-              size="big"
-              weight="heavy"
-            />
+            <SheetActionButton label={i18n.dapp_browser.no_wc_needed.cta()} newShadows onPress={handleOnPress} size="big" weight="heavy" />
           </Box>
         </Box>
       </Centered>

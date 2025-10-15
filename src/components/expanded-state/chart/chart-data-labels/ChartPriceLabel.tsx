@@ -5,12 +5,12 @@ import { formatCandlestickPrice } from '@/features/charts/candlestick/components
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
 const translations = {
-  noPriceData: i18n.t(i18n.l.expanded_state.chart.no_price_data),
+  noPriceData: i18n.expanded_state.chart.no_price_data(),
 };
 
 type ChartPriceLabelProps = {

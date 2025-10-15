@@ -1,5 +1,5 @@
 import React, { memo, useMemo, useState } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Bleed, Box, IconContainer, Inline, Text, TextShadow } from '@/design-system';
 import { Row } from '../shared/Row';
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
@@ -174,7 +174,7 @@ const Description = memo(function Description({ text }: { text: string }) {
                 </Box>
                 <TextShadow blur={12} shadowOpacity={0.24}>
                   <Text color={{ custom: accentColors.color }} size="17pt" weight="semibold">
-                    {i18n.t(i18n.l.button.more)}
+                    {i18n.button.more()}
                   </Text>
                 </TextShadow>
               </Box>
@@ -196,14 +196,14 @@ export const AboutContent = memo(function AboutContent() {
     if (isRainbowToken && rainbowUrl) {
       items.push({
         icon: '􀎞',
-        title: i18n.t(i18n.l.expanded_state.asset.social.website),
+        title: i18n.expanded_state.asset.social.website(),
         url: rainbowUrl,
         value: formatUrl(rainbowUrl, false, true, true),
       });
     } else if (metadata?.links?.homepage?.url) {
       items.push({
         icon: '􀎞',
-        title: i18n.t(i18n.l.expanded_state.asset.social.website),
+        title: i18n.expanded_state.asset.social.website(),
         url: metadata?.links?.homepage?.url,
         value: formatURLForDisplay(metadata?.links?.homepage?.url),
         openInDappBrowser: true, // could be a dapp
@@ -213,7 +213,7 @@ export const AboutContent = memo(function AboutContent() {
     if (metadata?.links?.twitter?.url) {
       items.push({
         iconName: 'x',
-        title: i18n.t(i18n.l.expanded_state.asset.social.twitter),
+        title: i18n.expanded_state.asset.social.twitter(),
         url: metadata.links.twitter.url,
         value: `@${metadata.links.twitter.url.split('/').pop()}`,
       });
@@ -222,7 +222,7 @@ export const AboutContent = memo(function AboutContent() {
     if (metadata?.links?.farcaster?.url) {
       items.push({
         iconName: 'farcaster',
-        title: i18n.t(i18n.l.expanded_state.asset.social.farcaster),
+        title: i18n.expanded_state.asset.social.farcaster(),
         url: metadata.links.farcaster.url,
         value: `@${metadata.links.farcaster.url.split('/').pop()}`,
       });
@@ -231,7 +231,7 @@ export const AboutContent = memo(function AboutContent() {
     if (metadata?.links?.telegram?.url) {
       items.push({
         iconName: 'telegram',
-        title: i18n.t(i18n.l.expanded_state.asset.social.telegram),
+        title: i18n.expanded_state.asset.social.telegram(),
         url: metadata.links.telegram.url,
         value: formatURLForDisplay(metadata.links.telegram.url),
       });
@@ -240,7 +240,7 @@ export const AboutContent = memo(function AboutContent() {
     if (metadata?.links?.other?.url) {
       items.push({
         icon: '􀆪',
-        title: i18n.t(i18n.l.expanded_state.asset.social.other),
+        title: i18n.expanded_state.asset.social.other(),
         url: metadata.links.other.url,
         value: formatURLForDisplay(metadata.links.other.url),
         openInDappBrowser: true, // could be dapp
@@ -249,7 +249,7 @@ export const AboutContent = memo(function AboutContent() {
 
     items.push({
       icon: '􀊫',
-      title: i18n.t(i18n.l.expanded_state.asset.social.search_on_twitter),
+      title: i18n.expanded_state.asset.social.search_on_twitter(),
       url: `https://x.com/search?q=$${asset.symbol}`,
     });
 
@@ -274,7 +274,7 @@ export const AboutContent = memo(function AboutContent() {
       {metadata?.description && (
         <Box gap={24}>
           <Text weight="bold" size="20pt" color="labelSecondary">
-            {i18n.t(i18n.l.expanded_state.sections.about.what_is, { assetName: asset.name })}
+            {i18n.expanded_state.sections.about.what_is({ assetName: asset.name })}
           </Text>
           <Description text={metadata.description} />
         </Box>
@@ -285,11 +285,6 @@ export const AboutContent = memo(function AboutContent() {
 
 export const AboutSection = memo(function AboutSection() {
   return (
-    <CollapsibleSection
-      content={<AboutContent />}
-      icon="􁜾"
-      id={SectionId.ABOUT}
-      primaryText={i18n.t(i18n.l.expanded_state.sections.about.title)}
-    />
+    <CollapsibleSection content={<AboutContent />} icon="􁜾" id={SectionId.ABOUT} primaryText={i18n.expanded_state.sections.about.title()} />
   );
 });

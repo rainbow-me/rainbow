@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { formatCurrency } from '@/helpers/strings';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
@@ -28,7 +28,7 @@ export const PerpsHeader = React.memo(function PerpsHeader({ isDarkMode }: { isD
         <Inline alignHorizontal="justify" alignVertical="center">
           <Inline horizontalSpace={'8px'} alignVertical="center">
             <Text size="22pt" color="label" weight="heavy">
-              {i18n.t(i18n.l.account.tab_perps)}
+              {i18n.account.tab_perps()}
             </Text>
             <Box
               borderWidth={5 / 3}

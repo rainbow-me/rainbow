@@ -16,7 +16,7 @@ import { PointsErrorType } from '@/graphql/__generated__/metadata';
 import { getProvider } from '@/handlers/web3';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
 import { useAccountAccentColor, useAccountSettings } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -136,7 +136,7 @@ const ChooseClaimNetwork = ({
       TitleComponent={
         <TextShadow shadowOpacity={0.3}>
           <Text align="center" color={{ custom: highContrastAccentColor }} numberOfLines={1} size="20pt" weight="heavy">
-            {i18n.t(i18n.l.points.points.choose_claim_network)}
+            {i18n.points.points.choose_claim_network()}
           </Text>
         </TextShadow>
       }
@@ -144,7 +144,7 @@ const ChooseClaimNetwork = ({
       goBack={goBack}
       items={networkListItems}
       onSelect={handleOnSelect}
-      pageTitle={i18n.t(i18n.l.points.points.choose_claim_network)}
+      pageTitle={i18n.points.points.choose_claim_network()}
       renderLabelComponent={label => (
         <TextShadow shadowOpacity={0.3}>
           <Text color="label" size="17pt" weight={isDarkMode ? 'bold' : 'heavy'}>
@@ -328,13 +328,13 @@ const ClaimingRewards = ({
     switch (claimStatus) {
       case 'idle':
       case 'claiming':
-        return i18n.t(i18n.l.points.points.claim_rewards);
+        return i18n.points.points.claim_rewards();
       case 'success':
       case 'bridge-error':
-        return i18n.t(i18n.l.button.done);
+        return i18n.button.done();
       case 'error':
       default:
-        return i18n.t(i18n.l.points.points.try_again);
+        return i18n.points.points.try_again();
     }
   }, [claimStatus]);
 
@@ -342,22 +342,22 @@ const ClaimingRewards = ({
     const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
     switch (claimStatus) {
       case 'idle':
-        return i18n.t(i18n.l.points.points.claim_on_network, {
+        return i18n.points.points.claim_on_network({
           network: chainId ? chainsLabel[chainId] : '',
         });
       case 'claiming':
-        return i18n.t(i18n.l.points.points.claiming_on_network, {
+        return i18n.points.points.claiming_on_network({
           network: chainId ? chainsLabel[chainId] : '',
         });
       case 'success':
-        return i18n.t(i18n.l.points.points.claimed_on_network, {
+        return i18n.points.points.claimed_on_network({
           network: chainId ? chainsLabel[chainId] : '',
         });
       case 'bridge-error':
-        return i18n.t(i18n.l.points.points.bridge_error);
+        return i18n.points.points.bridge_error();
       case 'error':
       default:
-        return i18n.t(i18n.l.points.points.error_claiming);
+        return i18n.points.points.error_claiming();
     }
   }, [chainId, claimStatus]);
 
@@ -489,7 +489,7 @@ const ClaimingRewards = ({
                 {claimStatus === 'bridge-error' ? (
                   <Box paddingHorizontal="44px">
                     <Text align="center" color="labelQuaternary" size="13pt / 135%" weight="semibold">
-                      {i18n.t(i18n.l.points.points.bridge_error_explainer, {
+                      {i18n.points.points.bridge_error_explainer({
                         network: chainId ? useBackendNetworksStore.getState().getChainsLabel()[chainId] : '',
                       })}
                     </Text>

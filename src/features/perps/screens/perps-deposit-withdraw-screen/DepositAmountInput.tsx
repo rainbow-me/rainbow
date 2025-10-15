@@ -9,7 +9,7 @@ import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton
 import { USDC_ASSET } from '@/features/perps/constants';
 import { usePerpsDepositContext } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsDepositContext';
 import { QuoteStatus } from '@/features/perps/screens/perps-deposit-withdraw-screen/types';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
@@ -37,7 +37,7 @@ export const DepositAmountInput = memo(function DepositAmountInput({
   const { minifiedAsset, primaryFormattedInput, secondaryFormattedInput, useDepositStore } = usePerpsDepositContext();
 
   const isAssetSelected = useDepositStore(state => state.hasAsset());
-  const noBalanceLabel = i18n.t(i18n.l.perps.deposit.no_balance);
+  const noBalanceLabel = i18n.perps.deposit.no_balance();
 
   const assetSymbol = useDerivedValue(() => minifiedAsset.value?.symbol || '');
   const textColor = useDerivedValue(() =>
@@ -176,7 +176,7 @@ const QuoteOutput = memo(function ReceiveAmount() {
               />
             </Bleed>
             <Text color="labelQuaternary" size="15pt" weight="bold">
-              {i18n.t(i18n.l.perps.deposit.receive)}{' '}
+              {i18n.perps.deposit.receive()}{' '}
             </Text>
 
             {status === QuoteStatus.Pending ? (
@@ -196,11 +196,11 @@ const QuoteOutput = memo(function ReceiveAmount() {
 function getErrorLabel(status: QuoteStatus.Error | QuoteStatus.InsufficientBalance | QuoteStatus.ZeroAmountError): string {
   switch (status) {
     case QuoteStatus.Error:
-      return i18n.t(i18n.l.perps.deposit.quote_error);
+      return i18n.perps.deposit.quote_error();
     case QuoteStatus.InsufficientBalance:
-      return i18n.t(i18n.l.perps.deposit.insufficient_balance);
+      return i18n.perps.deposit.insufficient_balance();
     case QuoteStatus.ZeroAmountError:
-      return i18n.t(i18n.l.perps.deposit.zero_amount_error);
+      return i18n.perps.deposit.zero_amount_error();
   }
 }
 

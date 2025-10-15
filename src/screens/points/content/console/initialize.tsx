@@ -1,6 +1,6 @@
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
 import { Bleed, Box, Stack } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
 import React, { useState } from 'react';
@@ -24,31 +24,21 @@ export const Initialize = () => {
       <Stack separator={<LineBreak lines={3} />}>
         <Paragraph>
           <Line>
-            <AnimatedText
-              delayStart={500}
-              color={textColors.gray}
-              textContent={`${i18n.t(i18n.l.points.console.account)}:`}
-              weight="normal"
-            />
+            <AnimatedText delayStart={500} color={textColors.gray} textContent={`${i18n.points.console.account()}:`} weight="normal" />
             <AnimatedText color={textColors.account} enableHapticTyping delayStart={300} textContent={accountName} />
           </Line>
-          <AnimatedText
-            color={textColors.gray}
-            delayStart={500}
-            textContent={`> ${i18n.t(i18n.l.points.console.auth_required)}`}
-            weight="normal"
-          />
+          <AnimatedText color={textColors.gray} delayStart={500} textContent={`> ${i18n.points.console.auth_required()}`} weight="normal" />
           <AnimatedText
             color={textColors.gray}
             onComplete={() => setShowSignInButton(true)}
-            textContent={`> ${i18n.t(i18n.l.points.console.sign_in_with_wallet)}`}
+            textContent={`> ${i18n.points.console.sign_in_with_wallet()}`}
             weight="normal"
           />
           <AnimatedText
             color={textColors.green}
             enableHapticTyping
             startWhenTrue={!!profile}
-            textContent={`> ${i18n.t(i18n.l.points.console.access_granted)}`}
+            textContent={`> ${i18n.points.console.access_granted()}`}
           />
         </Paragraph>
         <Paragraph leftIndent={2}>
@@ -79,7 +69,7 @@ export const Initialize = () => {
       </Stack>
       <AnimatePresence condition={showSignInButton && !profile} duration={300}>
         <Bleed horizontal={{ custom: 14 }}>
-          <NeonButton label={`􀎽 ${i18n.t(i18n.l.points.console.sign_in)}`} onPress={signIn} />
+          <NeonButton label={`􀎽 ${i18n.points.console.sign_in()}`} onPress={signIn} />
         </Bleed>
       </AnimatePresence>
     </Box>

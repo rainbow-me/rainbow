@@ -1,5 +1,5 @@
 import { isValidAddress } from 'ethereumjs-util';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, TextInput } from 'react-native';
@@ -144,7 +144,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           ]);
           if (!address) {
             setBusy(false);
-            Alert.alert(i18n.t(i18n.l.wallet.invalid_ens_name));
+            Alert.alert(i18n.wallet.invalid_ens_name());
             return;
           }
           setResolvedAddress(address);
@@ -167,7 +167,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           });
         } catch (e) {
           setBusy(false);
-          Alert.alert(i18n.t(i18n.l.wallet.sorry_cannot_add_ens));
+          Alert.alert(i18n.wallet.sorry_cannot_add_ens());
           return;
         }
         // Look up ENS for 0x address
@@ -176,7 +176,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           const address = await resolveUnstoppableDomain(input);
           if (!address) {
             setBusy(false);
-            Alert.alert(i18n.t(i18n.l.wallet.invalid_unstoppable_name));
+            Alert.alert(i18n.wallet.invalid_unstoppable_name());
             return;
           }
           setResolvedAddress(address);
@@ -197,7 +197,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           });
         } catch (e) {
           setBusy(false);
-          Alert.alert(i18n.t(i18n.l.wallet.sorry_cannot_add_unstoppable));
+          Alert.alert(i18n.wallet.sorry_cannot_add_unstoppable());
           return;
         }
       } else if (isValidAddress(input)) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { TouchableWithoutFeedback } from 'react-native';
 
 import { ButtonPressAnimation } from '@/components/animations';
@@ -61,30 +61,30 @@ export const TransactionDetailsRow = ({ chainId, detailType, onPress, value }: T
 const infoForDetailType: { [key: string]: DetailInfo } = {
   chain: {
     icon: '􀤆',
-    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.chain),
+    label: i18n.walletconnect.simulation.details_card.types.chain(),
   },
   contract: {
     icon: '􀉆',
-    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.contract),
+    label: i18n.walletconnect.simulation.details_card.types.contract(),
   },
   to: {
     icon: '􀉩',
-    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.to),
+    label: i18n.walletconnect.simulation.details_card.types.to(),
   },
   function: {
     icon: '􀡅',
-    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.function),
+    label: i18n.walletconnect.simulation.details_card.types.function(),
   },
   sourceCodeVerification: {
     icon: '􀕹',
-    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.source_code),
+    label: i18n.walletconnect.simulation.details_card.types.source_code(),
   },
   dateCreated: {
     icon: '􀉉',
-    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.contract_created),
+    label: i18n.walletconnect.simulation.details_card.types.contract_created(),
   },
   nonce: {
     icon: '􀆃',
-    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.nonce),
+    label: i18n.walletconnect.simulation.details_card.types.nonce(),
   },
 };

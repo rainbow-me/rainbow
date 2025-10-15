@@ -23,7 +23,7 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -31,8 +31,8 @@ import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { safeAreaInsetValues } from '@/utils';
 import { GestureHandlerButton } from './GestureHandlerButton';
 
-const SWAP_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.swap);
-const BRIDGE_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.bridge);
+const SWAP_TITLE_LABEL = i18n.swap.modal_types.swap();
+const BRIDGE_TITLE_LABEL = i18n.swap.modal_types.bridge();
 
 function SwapSettings() {
   const { SwapNavigation, configProgress } = useSwapContext();

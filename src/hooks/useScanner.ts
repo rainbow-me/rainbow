@@ -1,5 +1,5 @@
 import { isValidAddress } from 'ethereumjs-util';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import qs from 'qs';
 import { useCallback, useEffect, useRef } from 'react';
 import { InteractionManager } from 'react-native';
@@ -122,9 +122,9 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       analytics.track(analytics.event.qrCodeScannedInvalid, { qrCodeData });
 
       Alert({
-        buttons: [{ onPress: enableScanning, text: i18n.t(i18n.l.button.okay) }],
-        message: i18n.t(i18n.l.wallet.qr.sorry_could_not_be_recognized),
-        title: i18n.t(i18n.l.wallet.qr.unrecognized_qr_code_title),
+        buttons: [{ onPress: enableScanning, text: i18n.button.okay() }],
+        message: i18n.wallet.qr.sorry_could_not_be_recognized(),
+        title: i18n.wallet.qr.unrecognized_qr_code_title(),
       });
     },
     [enableScanning]

@@ -1,6 +1,6 @@
 import { safeAreaInsetValues } from '@/utils';
 import { OnboardPointsMutation, PointsOnboardingCategory } from '@/graphql/__generated__/metadata';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { IS_IOS } from '@/env';
 import { getNumberFormatter } from '@/helpers/intl';
 
@@ -97,13 +97,13 @@ export const buildTwitterIntentMessage = (
 
 export const displayNextDistribution = (seconds: number) => {
   const days = [
-    i18n.t(i18n.l.points.points.sunday),
-    i18n.t(i18n.l.points.points.monday),
-    i18n.t(i18n.l.points.points.tuesday),
-    i18n.t(i18n.l.points.points.wednesday),
-    i18n.t(i18n.l.points.points.thursday),
-    i18n.t(i18n.l.points.points.friday),
-    i18n.t(i18n.l.points.points.saturday),
+    i18n.points.points.sunday(),
+    i18n.points.points.monday(),
+    i18n.points.points.tuesday(),
+    i18n.points.points.wednesday(),
+    i18n.points.points.thursday(),
+    i18n.points.points.friday(),
+    i18n.points.points.saturday(),
   ];
 
   const ms = seconds * 1000;
@@ -123,7 +123,7 @@ export const displayNextDistribution = (seconds: number) => {
     let dayOfWeek = days[date.getDay()];
     const today = new Date().getDay();
     if (days[today] === dayOfWeek && ms - Date.now() < ONE_DAY_MS) {
-      dayOfWeek = i18n.t(i18n.l.points.points.today);
+      dayOfWeek = i18n.points.points.today();
     }
 
     return `${hours}:${minutes}${ampm} ${dayOfWeek}`;

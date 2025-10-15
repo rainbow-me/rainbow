@@ -9,7 +9,7 @@ import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-deta
 import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
 import { TransactionDetailsFromToSection } from '@/screens/transaction-details/components/TransactionDetailsFromToSection';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
 import { useTransactionDetailsToasts } from '@/screens/transaction-details/hooks/useTransactionDetailsToasts';
 import { useDimensions } from '@/hooks';
@@ -76,10 +76,10 @@ export const TransactionDetails = () => {
           <ToastPositionContainer>
             <Toast
               isVisible={presentedToast === 'address'}
-              text={i18n.t(i18n.l.transaction_details.address_copied)}
+              text={i18n.transaction_details.address_copied()}
               testID="address-copied-toast"
             />
-            <Toast isVisible={presentedToast === 'hash'} text={i18n.t(i18n.l.transaction_details.hash_copied)} testID="hash-copied-toast" />
+            <Toast isVisible={presentedToast === 'hash'} text={i18n.transaction_details.hash_copied()} testID="hash-copied-toast" />
           </ToastPositionContainer>
         </SlackSheet>
       )}

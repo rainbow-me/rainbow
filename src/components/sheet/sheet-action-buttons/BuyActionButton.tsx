@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback } from 'react';
 import SheetActionButton, { SheetActionButtonProps } from './SheetActionButton';
 import { analytics } from '@/analytics';
@@ -41,7 +41,7 @@ function BuyActionButton({ color: givenColor, ...props }: BuyActionButtonProps) 
       onPress={handlePress}
     >
       <Text align="center" color="label" size="20pt" weight="heavy">
-        {`􀍰 ${i18n.t(i18n.l.button.buy_eth)}`}
+        {`􀍰 ${i18n.button.buy_eth()}`}
       </Text>
     </SheetActionButton>
   );

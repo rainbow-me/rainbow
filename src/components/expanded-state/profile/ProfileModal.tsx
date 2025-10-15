@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback, useRef } from 'react';
 import { View } from 'react-native';
 import Divider from '@/components/Divider';
@@ -129,11 +129,7 @@ const ProfileModal = ({
           value={inputValue}
         />
         {address && (
-          <CopyTooltip
-            onHide={handleTriggerFocusInput}
-            textToCopy={address}
-            tooltipText={i18n.t(i18n.l.wallet.settings.copy_address_capitalized)}
-          >
+          <CopyTooltip onHide={handleTriggerFocusInput} textToCopy={address} tooltipText={i18n.wallet.settings.copy_address_capitalized()}>
             <ProfileAddressText address={address} />
           </CopyTooltip>
         )}
@@ -150,7 +146,7 @@ const ProfileModal = ({
             weight="medium"
             {...(android && { lineHeight: 21 })}
           >
-            {i18n.t(i18n.l.button.cancel)}
+            {i18n.button.cancel()}
           </ProfileButtonText>
         </ProfileButton>
       </ColumnWithDividers>

@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { deepFreeze } from '@/utils/deepFreeze';
 
 // ============ Types ======================================================== //
@@ -28,30 +28,30 @@ export type FormatTimestampOptions = {
 
 const I18N = deepFreeze({
   months: [
-    i18n.t(i18n.l.expanded_state.chart.date.months.month_00),
-    i18n.t(i18n.l.expanded_state.chart.date.months.month_01),
-    i18n.t(i18n.l.expanded_state.chart.date.months.month_02),
-    i18n.t(i18n.l.expanded_state.chart.date.months.month_03),
-    i18n.t(i18n.l.expanded_state.chart.date.months.month_04),
-    i18n.t(i18n.l.expanded_state.chart.date.months.month_05),
-    i18n.t(i18n.l.expanded_state.chart.date.months.month_06),
-    i18n.t(i18n.l.expanded_state.chart.date.months.month_07),
-    i18n.t(i18n.l.expanded_state.chart.date.months.month_08),
-    i18n.t(i18n.l.expanded_state.chart.date.months.month_09),
-    i18n.t(i18n.l.expanded_state.chart.date.months.month_10),
-    i18n.t(i18n.l.expanded_state.chart.date.months.month_11),
+    i18n.expanded_state.chart.date.months.month_00(),
+    i18n.expanded_state.chart.date.months.month_01(),
+    i18n.expanded_state.chart.date.months.month_02(),
+    i18n.expanded_state.chart.date.months.month_03(),
+    i18n.expanded_state.chart.date.months.month_04(),
+    i18n.expanded_state.chart.date.months.month_05(),
+    i18n.expanded_state.chart.date.months.month_06(),
+    i18n.expanded_state.chart.date.months.month_07(),
+    i18n.expanded_state.chart.date.months.month_08(),
+    i18n.expanded_state.chart.date.months.month_09(),
+    i18n.expanded_state.chart.date.months.month_10(),
+    i18n.expanded_state.chart.date.months.month_11(),
   ],
 
   today: {
-    lowercase: i18n.t(i18n.l.time.today),
-    normal: i18n.t(i18n.l.time.today_caps),
-    uppercase: i18n.t(i18n.l.time.today).toUpperCase(),
+    lowercase: i18n.time.today(),
+    normal: i18n.time.today_caps(),
+    uppercase: i18n.time.today().toUpperCase(),
   },
 
   yesterday: {
-    lowercase: i18n.t(i18n.l.time.yesterday),
-    normal: i18n.t(i18n.l.time.yesterday_caps),
-    uppercase: i18n.t(i18n.l.time.yesterday).toUpperCase(),
+    lowercase: i18n.time.yesterday(),
+    normal: i18n.time.yesterday_caps(),
+    uppercase: i18n.time.yesterday().toUpperCase(),
   },
 });
 

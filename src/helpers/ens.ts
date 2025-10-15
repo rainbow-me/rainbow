@@ -3,7 +3,7 @@ import { hash } from '@ensdomains/eth-ens-namehash';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { Signer } from '@ethersproject/abstract-signer';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
 import { add, addBuffer, convertAmountAndPriceToNativeDisplay, divide, fromWei, handleSignificantDecimals, multiply } from './utilities';
@@ -111,8 +111,8 @@ export const textRecordFields = {
       maxLength: 50,
     },
     key: ENS_RECORDS.name,
-    label: i18n.t(i18n.l.profiles.create.name),
-    placeholder: i18n.t(i18n.l.profiles.create.name_placeholder),
+    label: i18n.profiles.create.name(),
+    placeholder: i18n.profiles.create.name_placeholder(),
   },
   [ENS_RECORDS.description]: {
     id: 'bio',
@@ -121,8 +121,8 @@ export const textRecordFields = {
       multiline: true,
     },
     key: ENS_RECORDS.description,
-    label: i18n.t(i18n.l.profiles.create.bio),
-    placeholder: i18n.t(i18n.l.profiles.create.bio_placeholder),
+    label: i18n.profiles.create.bio(),
+    placeholder: i18n.profiles.create.bio_placeholder(),
   },
   [ENS_RECORDS.url]: {
     id: 'website',
@@ -131,10 +131,10 @@ export const textRecordFields = {
       maxLength: 100,
     },
     key: ENS_RECORDS.url,
-    label: i18n.t(i18n.l.profiles.create.website),
-    placeholder: i18n.t(i18n.l.profiles.create.website_placeholder),
+    label: i18n.profiles.create.website(),
+    placeholder: i18n.profiles.create.website_placeholder(),
     validation: {
-      message: i18n.t(i18n.l.profiles.create.invalid_website),
+      message: i18n.profiles.create.invalid_website(),
       validator: value => /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(value),
     },
   },
@@ -144,12 +144,12 @@ export const textRecordFields = {
       maxLength: 16,
     },
     key: ENS_RECORDS.twitter,
-    label: i18n.t(i18n.l.profiles.create.twitter),
-    placeholder: i18n.t(i18n.l.profiles.create.username_placeholder),
+    label: i18n.profiles.create.twitter(),
+    placeholder: i18n.profiles.create.username_placeholder(),
     startsWith: '@',
     validation: {
-      message: i18n.t(i18n.l.profiles.create.invalid_username, {
-        app: i18n.t(i18n.l.profiles.create.twitter),
+      message: i18n.profiles.create.invalid_username({
+        app: i18n.profiles.create.twitter(),
       }),
       validator: value => /^\w*$/.test(value),
     },
@@ -161,10 +161,10 @@ export const textRecordFields = {
       maxLength: 50,
     },
     key: ENS_RECORDS.email,
-    label: i18n.t(i18n.l.profiles.create.email),
-    placeholder: i18n.t(i18n.l.profiles.create.email_placeholder),
+    label: i18n.profiles.create.email(),
+    placeholder: i18n.profiles.create.email_placeholder(),
     validation: {
-      message: i18n.t(i18n.l.profiles.create.invalid_email),
+      message: i18n.profiles.create.invalid_email(),
       validator: value => /^\S+@\S+\.\S+$/.test(value),
     },
   },
@@ -174,12 +174,12 @@ export const textRecordFields = {
       maxLength: 30,
     },
     key: ENS_RECORDS.instagram,
-    label: i18n.t(i18n.l.profiles.create.instagram),
-    placeholder: i18n.t(i18n.l.profiles.create.username_placeholder),
+    label: i18n.profiles.create.instagram(),
+    placeholder: i18n.profiles.create.username_placeholder(),
     startsWith: '@',
     validation: {
-      message: i18n.t(i18n.l.profiles.create.invalid_username, {
-        app: i18n.t(i18n.l.profiles.create.instagram),
+      message: i18n.profiles.create.invalid_username({
+        app: i18n.profiles.create.instagram(),
       }),
       validator: value => /^([\w.])*$/.test(value),
     },
@@ -190,12 +190,12 @@ export const textRecordFields = {
       maxLength: 50,
     },
     key: ENS_RECORDS.discord,
-    label: i18n.t(i18n.l.profiles.create.discord),
-    placeholder: i18n.t(i18n.l.profiles.create.username_placeholder),
+    label: i18n.profiles.create.discord(),
+    placeholder: i18n.profiles.create.username_placeholder(),
     startsWith: '@',
     validation: {
-      message: i18n.t(i18n.l.profiles.create.invalid_username, {
-        app: i18n.t(i18n.l.profiles.create.discord),
+      message: i18n.profiles.create.invalid_username({
+        app: i18n.profiles.create.discord(),
       }),
       validator: value => /^(\w)+#[0-9]{4}$/.test(value),
     },
@@ -206,12 +206,12 @@ export const textRecordFields = {
       maxLength: 20,
     },
     key: ENS_RECORDS.github,
-    label: i18n.t(i18n.l.profiles.create.github),
-    placeholder: i18n.t(i18n.l.profiles.create.username_placeholder),
+    label: i18n.profiles.create.github(),
+    placeholder: i18n.profiles.create.username_placeholder(),
     startsWith: '@',
     validation: {
-      message: i18n.t(i18n.l.profiles.create.invalid_username, {
-        app: i18n.t(i18n.l.profiles.create.github),
+      message: i18n.profiles.create.invalid_username({
+        app: i18n.profiles.create.github(),
       }),
       validator: value => /^([\w.-])*$/.test(value),
     },
@@ -223,12 +223,12 @@ export const textRecordFields = {
       multiline: true,
     },
     key: ENS_RECORDS.BTC,
-    label: i18n.t(i18n.l.profiles.create.btc),
-    placeholder: i18n.t(i18n.l.profiles.create.wallet_placeholder, {
-      coin: i18n.t(i18n.l.profiles.create.btc),
+    label: i18n.profiles.create.btc(),
+    placeholder: i18n.profiles.create.wallet_placeholder({
+      coin: i18n.profiles.create.btc(),
     }),
     validation: {
-      message: i18n.t(i18n.l.profiles.create.invalid_asset, {
+      message: i18n.profiles.create.invalid_asset({
         coin: ENS_RECORDS.BTC,
       }),
       validator: value => validateCoinRecordValue(value, ENS_RECORDS.BTC),
@@ -240,12 +240,12 @@ export const textRecordFields = {
       maxLength: 16,
     },
     key: ENS_RECORDS.snapchat,
-    label: i18n.t(i18n.l.profiles.create.snapchat),
-    placeholder: i18n.t(i18n.l.profiles.create.username_placeholder),
+    label: i18n.profiles.create.snapchat(),
+    placeholder: i18n.profiles.create.username_placeholder(),
     startsWith: '@',
     validation: {
-      message: i18n.t(i18n.l.profiles.create.invalid_username, {
-        app: i18n.t(i18n.l.profiles.create.snapchat),
+      message: i18n.profiles.create.invalid_username({
+        app: i18n.profiles.create.snapchat(),
       }),
       validator: value => /^([\w.])*$/.test(value),
     },
@@ -256,12 +256,12 @@ export const textRecordFields = {
       maxLength: 30,
     },
     key: ENS_RECORDS.telegram,
-    label: i18n.t(i18n.l.profiles.create.telegram),
-    placeholder: i18n.t(i18n.l.profiles.create.username_placeholder),
+    label: i18n.profiles.create.telegram(),
+    placeholder: i18n.profiles.create.username_placeholder(),
     startsWith: '@',
     validation: {
-      message: i18n.t(i18n.l.profiles.create.invalid_username, {
-        app: i18n.t(i18n.l.profiles.create.telegram),
+      message: i18n.profiles.create.invalid_username({
+        app: i18n.profiles.create.telegram(),
       }),
       validator: value => /^([\w#.])*$/.test(value),
     },
@@ -272,12 +272,12 @@ export const textRecordFields = {
       maxLength: 30,
     },
     key: ENS_RECORDS.reddit,
-    label: i18n.t(i18n.l.profiles.create.reddit),
-    placeholder: i18n.t(i18n.l.profiles.create.username_placeholder),
+    label: i18n.profiles.create.reddit(),
+    placeholder: i18n.profiles.create.username_placeholder(),
     startsWith: '@',
     validation: {
-      message: i18n.t(i18n.l.profiles.create.invalid_username, {
-        app: i18n.t(i18n.l.profiles.create.reddit),
+      message: i18n.profiles.create.invalid_username({
+        app: i18n.profiles.create.reddit(),
       }),
       validator: value => /^([\w#.])*$/.test(value),
     },
@@ -288,8 +288,8 @@ export const textRecordFields = {
       maxLength: 42,
     },
     key: ENS_RECORDS.pronouns,
-    label: i18n.t(i18n.l.profiles.create.pronouns),
-    placeholder: i18n.t(i18n.l.profiles.create.pronouns_placeholder),
+    label: i18n.profiles.create.pronouns(),
+    placeholder: i18n.profiles.create.pronouns_placeholder(),
   },
   [ENS_RECORDS.notice]: {
     id: 'notice',
@@ -297,8 +297,8 @@ export const textRecordFields = {
       maxLength: 100,
     },
     key: ENS_RECORDS.notice,
-    label: i18n.t(i18n.l.profiles.create.notice),
-    placeholder: i18n.t(i18n.l.profiles.create.notice_placeholder),
+    label: i18n.profiles.create.notice(),
+    placeholder: i18n.profiles.create.notice_placeholder(),
   },
   [ENS_RECORDS.keywords]: {
     id: 'keywords',
@@ -306,8 +306,8 @@ export const textRecordFields = {
       maxLength: 100,
     },
     key: ENS_RECORDS.keywords,
-    label: i18n.t(i18n.l.profiles.create.keywords),
-    placeholder: i18n.t(i18n.l.profiles.create.keywords_placeholder),
+    label: i18n.profiles.create.keywords(),
+    placeholder: i18n.profiles.create.keywords_placeholder(),
   },
   [ENS_RECORDS.LTC]: {
     id: 'ltc',
@@ -315,12 +315,12 @@ export const textRecordFields = {
       maxLength: 64,
     },
     key: ENS_RECORDS.LTC,
-    label: i18n.t(i18n.l.profiles.create.ltc),
-    placeholder: i18n.t(i18n.l.profiles.create.wallet_placeholder, {
-      coin: i18n.t(i18n.l.profiles.create.ltc),
+    label: i18n.profiles.create.ltc(),
+    placeholder: i18n.profiles.create.wallet_placeholder({
+      coin: i18n.profiles.create.ltc(),
     }),
     validation: {
-      message: i18n.t(i18n.l.profiles.create.invalid_asset, {
+      message: i18n.profiles.create.invalid_asset({
         coin: ENS_RECORDS.LTC,
       }),
       validator: value => validateCoinRecordValue(value, ENS_RECORDS.LTC),
@@ -332,12 +332,12 @@ export const textRecordFields = {
       maxLength: 34,
     },
     key: ENS_RECORDS.DOGE,
-    label: i18n.t(i18n.l.profiles.create.doge),
-    placeholder: i18n.t(i18n.l.profiles.create.wallet_placeholder, {
-      coin: i18n.t(i18n.l.profiles.create.doge),
+    label: i18n.profiles.create.doge(),
+    placeholder: i18n.profiles.create.wallet_placeholder({
+      coin: i18n.profiles.create.doge(),
     }),
     validation: {
-      message: i18n.t(i18n.l.profiles.create.invalid_asset, {
+      message: i18n.profiles.create.invalid_asset({
         coin: ENS_RECORDS.DOGE,
       }),
       validator: value => validateCoinRecordValue(value, ENS_RECORDS.DOGE),
@@ -347,10 +347,10 @@ export const textRecordFields = {
     id: 'contenthash',
     inputProps: {},
     key: ENS_RECORDS.contenthash,
-    label: i18n.t(i18n.l.profiles.create.content),
-    placeholder: i18n.t(i18n.l.profiles.create.content_placeholder),
+    label: i18n.profiles.create.content(),
+    placeholder: i18n.profiles.create.content_placeholder(),
     validation: {
-      message: i18n.t(i18n.l.profiles.create.invalid_content_hash),
+      message: i18n.profiles.create.invalid_content_hash(),
       validator: value => validateContentHashRecordValue(value),
     },
   },

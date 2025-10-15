@@ -2,7 +2,7 @@ import c from 'chroma-js';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Text as RNText, StyleSheet } from 'react-native';
 import Animated, { AnimatedRef, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
 import { opacity } from '@/__swaps__/utils/swaps';
@@ -102,7 +102,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
               􀆪
             </TextIcon>
             <Text color="labelSecondary" size="15pt" weight="heavy">
-              {i18n.t(i18n.l.exchange.filter_by_network)}
+              {i18n.exchange.filter_by_network()}
             </Text>
           </Inline>
         ) : (
@@ -130,7 +130,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
               </Box>
             </Bleed>
             <Text color="label" size="15pt" weight="heavy">
-              {i18n.t(i18n.l.exchange.my_tokens)}
+              {i18n.exchange.my_tokens()}
             </Text>
           </Inline>
         )}

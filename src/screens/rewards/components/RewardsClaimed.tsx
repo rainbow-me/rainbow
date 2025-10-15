@@ -1,7 +1,7 @@
 import React from 'react';
 import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
 import { Box, Column, Columns, Stack, Text } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
 import { RewardsProgressBar } from '@/screens/rewards/components/RewardsProgressBar';
 import { addDays, differenceInDays, differenceInHours, fromUnixTime } from 'date-fns';
@@ -48,11 +48,11 @@ export const RewardsClaimed: React.FC<Props> = ({
 
     const formattedTimeUntilNextDistribution =
       days > 0
-        ? i18n.t(i18n.l.rewards.refreshes_in_with_days, {
+        ? i18n.rewards.refreshes_in_with_days({
             days,
             hours,
           })
-        : i18n.t(i18n.l.rewards.refreshes_in_without_days, { hours });
+        : i18n.rewards.refreshes_in_without_days({ hours });
 
     return (
       <Box paddingBottom="36px">
@@ -60,12 +60,12 @@ export const RewardsClaimed: React.FC<Props> = ({
           <Stack space="16px">
             <Stack space="8px">
               <Text size="20pt" weight="heavy" color="label">
-                {i18n.t(i18n.l.rewards.all_rewards_claimed)}
+                {i18n.rewards.all_rewards_claimed()}
               </Text>
               <RewardsProgressBar progress={1} color={color} />
             </Stack>
             <Text size="13pt" weight="semibold" color={{ custom: color }}>
-              {i18n.t(i18n.l.rewards.rainbow_users_claimed, {
+              {i18n.rewards.rainbow_users_claimed({
                 amount: formattedTotalAvailableRewards,
               })}
             </Text>
@@ -94,7 +94,7 @@ export const RewardsClaimed: React.FC<Props> = ({
               <Stack space="12px">
                 <Columns alignVertical="center">
                   <Text size="15pt" weight="semibold" color="labelSecondary">
-                    {i18n.t(i18n.l.rewards.rewards_claimed)}
+                    {i18n.rewards.rewards_claimed()}
                   </Text>
                   <Column width="content">
                     <Text size="15pt" weight="semibold" color={{ custom: infoIconColor }}>
@@ -110,7 +110,7 @@ export const RewardsClaimed: React.FC<Props> = ({
                 </Text>
                 <Column width="content">
                   <Text size="13pt" weight="semibold" color="labelTertiary">
-                    {i18n.t(i18n.l.rewards.refreshes_next_week)}
+                    {i18n.rewards.refreshes_next_week()}
                   </Text>
                 </Column>
               </Columns>

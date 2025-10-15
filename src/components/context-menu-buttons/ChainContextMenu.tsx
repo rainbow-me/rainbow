@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContextMenuButton } from '@/components/context-menu';
 import { Bleed, Box, Inline, Text, TextProps } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { showActionSheetWithOptions } from '@/utils';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -31,7 +31,7 @@ type ChainContextMenuProps = {
 
 export const ChainContextMenu = ({
   allNetworksIcon,
-  allNetworksText = i18n.t(i18n.l.exchange.all_networks),
+  allNetworksText = i18n.exchange.all_networks(),
   chainsToDisplay,
   customButtonComponent: CustomButtonComponent,
   defaultButtonOptions = {},

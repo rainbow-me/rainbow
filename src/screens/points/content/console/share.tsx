@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
 import { Bleed, Box, Inline, Stack } from '@/design-system';
 import { useDimensions } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
 import { openInBrowser } from '@/utils/openInBrowser';
@@ -29,14 +29,14 @@ export const Share = () => {
       <Stack separator={<LineBreak lines={3} />}>
         <Paragraph>
           <Line>
-            <AnimatedText color={textColors.gray} skipAnimation textContent={`${i18n.t(i18n.l.points.console.account)}:`} weight="normal" />
+            <AnimatedText color={textColors.gray} skipAnimation textContent={`${i18n.points.console.account()}:`} weight="normal" />
             <AnimatedText color={textColors.account} skipAnimation textContent={accountName} />
           </Line>
           <AnimatedText
             color={textColors.gray}
             delayStart={500}
             weight="normal"
-            textContent={`> ${i18n.t(i18n.l.points.console.referral_link_is_ready)}`}
+            textContent={`> ${i18n.points.console.referral_link_is_ready()}`}
           />
         </Paragraph>
         <AnimatedText
@@ -49,7 +49,7 @@ export const Share = () => {
             return () => clearTimeout(complete);
           }}
           multiline
-          textContent={i18n.t(i18n.l.points.console.referral_link_bonus_text)}
+          textContent={i18n.points.console.referral_link_bonus_text()}
         />
       </Stack>
       <AnimatePresence condition={showShareButtons && !!intent?.length} duration={300}>
@@ -57,7 +57,7 @@ export const Share = () => {
           <Inline wrap={false} horizontalSpace="12px">
             <NeonButton
               color="#F5F8FF8F"
-              label={i18n.t(i18n.l.points.console.skip_referral)}
+              label={i18n.points.console.skip_referral()}
               onPress={() => {
                 analytics.track(analytics.event.pointsOnboardingScreenPressedSkipShareToXButton);
                 const beginNextPhase = setTimeout(() => {
@@ -70,7 +70,7 @@ export const Share = () => {
             />
             <NeonButton
               color="#FEC101"
-              label={i18n.t(i18n.l.points.console.share_to_x)}
+              label={i18n.points.console.share_to_x()}
               onPress={() => {
                 analytics.track(analytics.event.pointsOnboardingScreenPressedShareToXButton);
                 const beginNextPhase = setTimeout(async () => {

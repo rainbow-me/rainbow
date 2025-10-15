@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import styled from '@/styled-thing';
 import React, { useCallback } from 'react';
 import { Text as RNText } from '@/components/text';
@@ -50,8 +50,8 @@ const ViewCloudBackups = () => {
 
   const renderNoBackupsState = () => (
     <>
-      <Menu header={i18n.t(i18n.l.back_up.cloud.latest_backup)}>
-        <MenuItem disabled size={52} titleComponent={<MenuItem.Title disabled text={i18n.t(i18n.l.back_up.cloud.no_backups)} />} />
+      <Menu header={i18n.back_up.cloud.latest_backup()}>
+        <MenuItem disabled size={52} titleComponent={<MenuItem.Title disabled text={i18n.back_up.cloud.no_backups()} />} />
       </Menu>
     </>
   );
@@ -64,7 +64,7 @@ const ViewCloudBackups = () => {
     return (
       <Box>
         <Menu
-          description={i18n.t(i18n.l.back_up.cloud.latest_backup, {
+          description={i18n.back_up.cloud.latest_backup({
             date: dateFormatter(mostRecentBackup.lastModified),
           })}
         >
@@ -74,7 +74,7 @@ const ViewCloudBackups = () => {
             onPress={() => onSelectCloudBackup(mostRecentBackup)}
             size={52}
             width="full"
-            titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.cloud.most_recent_backup)} />}
+            titleComponent={<MenuItem.Title isLink text={i18n.back_up.cloud.most_recent_backup()} />}
           />
         </Menu>
       </Box>
@@ -84,7 +84,7 @@ const ViewCloudBackups = () => {
   const renderOlderBackups = () => (
     <>
       <Box>
-        <Menu header={i18n.t(i18n.l.back_up.cloud.older_backups)}>
+        <Menu header={i18n.back_up.cloud.older_backups()}>
           {backups.files
             .filter(backup => backup.name !== mostRecentBackup?.name)
             .sort((a, b) => {
@@ -105,7 +105,7 @@ const ViewCloudBackups = () => {
                 titleComponent={
                   <MenuItem.Title
                     isLink
-                    text={i18n.t(i18n.l.back_up.cloud.older_backups_title, {
+                    text={i18n.back_up.cloud.older_backups_title({
                       date: dateFormatter(parseTimestampFromFilename(backup.name), 'M/d/yy'),
                       time: dateFormatter(parseTimestampFromFilename(backup.name), 'p'),
                     })}
@@ -114,11 +114,7 @@ const ViewCloudBackups = () => {
               />
             ))}
           {backups.files.length === 1 && (
-            <MenuItem
-              disabled
-              size={52}
-              titleComponent={<MenuItem.Title disabled text={i18n.t(i18n.l.back_up.cloud.no_older_backups)} />}
-            />
+            <MenuItem disabled size={52} titleComponent={<MenuItem.Title disabled text={i18n.back_up.cloud.no_older_backups()} />} />
           )}
         </Menu>
       </Box>
@@ -128,7 +124,7 @@ const ViewCloudBackups = () => {
           size={52}
           width="full"
           onPress={() => backupsStore.getState().syncAndFetchBackups()}
-          titleComponent={<MenuItem.Title disabled text={i18n.t(i18n.l.back_up.cloud.refresh)} />}
+          titleComponent={<MenuItem.Title disabled text={i18n.back_up.cloud.refresh()} />}
         />
       </Menu>
     </>

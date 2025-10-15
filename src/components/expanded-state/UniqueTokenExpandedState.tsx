@@ -40,7 +40,7 @@ import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { useFocusEffect } from '@react-navigation/native';
 import c from 'chroma-js';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Share, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
@@ -485,15 +485,15 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                         {isActionsEnabled ? (
                           <TextButton onPress={handlePressShowcase}>
                             {isShowcaseAsset
-                              ? `􀁏 ${i18n.t(i18n.l.expanded_state.unique_expanded.in_showcase)}`
-                              : `􀁍 ${i18n.t(i18n.l.expanded_state.unique_expanded.showcase)}`}
+                              ? `􀁏 ${i18n.expanded_state.unique_expanded.in_showcase()}`
+                              : `􀁍 ${i18n.expanded_state.unique_expanded.showcase()}`}
                           </TextButton>
                         ) : (
                           <View />
                         )}
                         {isSupportedOnRainbowWeb || asset.marketplaceUrl ? (
                           <TextButton align="right" onPress={handlePressShare}>
-                            􀈂 {i18n.t(i18n.l.button.share)}
+                            􀈂 {i18n.button.share()}
                           </TextButton>
                         ) : null}
                       </Inline>
@@ -513,7 +513,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                           {hasEditButton ? (
                             <SheetActionButton
                               color={imageColor}
-                              label={`􀉮 ${i18n.t(i18n.l.expanded_state.unique_expanded.edit)}`}
+                              label={`􀉮 ${i18n.expanded_state.unique_expanded.edit()}`}
                               nftShadows
                               onPress={handlePressEdit}
                               testID="edit"
@@ -540,7 +540,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                               label={
                                 hasSendButton
                                   ? `􀮶 ${asset.marketplaceName}`
-                                  : `􀮶 ${i18n.t(i18n.l.expanded_state.unique_expanded.view_on_marketplace_name, {
+                                  : `􀮶 ${i18n.expanded_state.unique_expanded.view_on_marketplace_name({
                                       marketplaceName: asset.marketplaceName,
                                     })}`
                               }
@@ -557,7 +557,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                       {!!offer && (
                         <SheetActionButton
                           color={imageColor}
-                          label={`􀋡 ${i18n.t(i18n.l.expanded_state.unique_expanded.sell_for_x, {
+                          label={`􀋡 ${i18n.expanded_state.unique_expanded.sell_for_x({
                             price: offerValue as string,
                           })}`}
                           nftShadows
@@ -602,12 +602,12 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                       {(isNFT || isPoap) && (
                         <>
                           {asset.description ? (
-                            <Section title={`${i18n.t(i18n.l.expanded_state.unique_expanded.description)}`} titleEmoji="📖">
+                            <Section title={`${i18n.expanded_state.unique_expanded.description()}`} titleEmoji="📖">
                               <Markdown>{asset.description}</Markdown>
                             </Section>
                           ) : null}
                           {filteredTraits.length ? (
-                            <Section title={`${i18n.t(i18n.l.expanded_state.unique_expanded.properties)}`} titleEmoji="🎨">
+                            <Section title={`${i18n.expanded_state.unique_expanded.properties()}`} titleEmoji="🎨">
                               <UniqueTokenAttributes
                                 {...asset}
                                 color={imageColor}
@@ -625,12 +625,12 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                               addonComponent={
                                 hasEditButton && (
                                   <TextButton align="right" onPress={handlePressEdit} size="18px / 27px (Deprecated)" weight="bold">
-                                    {i18n.t(i18n.l.expanded_state.unique_expanded.edit)}
+                                    {i18n.expanded_state.unique_expanded.edit()}
                                   </TextButton>
                                 )
                               }
                               paragraphSpace={{ custom: 22 }}
-                              title={`${i18n.t(i18n.l.expanded_state.unique_expanded.profile_info)}`}
+                              title={`${i18n.expanded_state.unique_expanded.profile_info()}`}
                               titleEmoji="🤿"
                             >
                               <ProfileInfoSection
@@ -645,7 +645,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                           )}
                           <Section
                             paragraphSpace={{ custom: 22 }}
-                            title={`${i18n.t(i18n.l.expanded_state.unique_expanded.configuration)}`}
+                            title={`${i18n.expanded_state.unique_expanded.configuration()}`}
                             titleEmoji="⚙️"
                           >
                             <ConfigurationSection
@@ -667,7 +667,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                       {asset.collectionDescription ? (
                         <Section
                           paragraphSpace={{ custom: 26 }}
-                          title={`${i18n.t(i18n.l.expanded_state.unique_expanded.about, { assetFamilyName: asset.collectionName as string })}`}
+                          title={`${i18n.expanded_state.unique_expanded.about({ assetFamilyName: asset.collectionName as string })}`}
                           titleImageUrl={asset.collectionImageUrl}
                         >
                           <Stack space={sectionSpace}>
@@ -695,12 +695,12 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
       </SlackSheet>
       <ToastPositionContainer>
         <ToggleStateToast
-          addCopy={i18n.t(i18n.l.expanded_state.unique_expanded.toast_added_to_showcase)}
+          addCopy={i18n.expanded_state.unique_expanded.toast_added_to_showcase()}
           isAdded={isShowcaseAsset}
-          removeCopy={i18n.t(i18n.l.expanded_state.unique_expanded.toast_removed_from_showcase)}
+          removeCopy={i18n.expanded_state.unique_expanded.toast_removed_from_showcase()}
         />
-        <Toast isVisible={isRefreshMetadataToastActive} text={i18n.t(i18n.l.expanded_state.unique_expanded.refreshing)} />
-        <Toast isVisible={isReportSpamToastActive} text={i18n.t(i18n.l.expanded_state.unique_expanded.reported)} />
+        <Toast isVisible={isRefreshMetadataToastActive} text={i18n.expanded_state.unique_expanded.refreshing()} />
+        <Toast isVisible={isReportSpamToastActive} text={i18n.expanded_state.unique_expanded.reported()} />
       </ToastPositionContainer>
     </>
   );

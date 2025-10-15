@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Inline, Text } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 // import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';
 // import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
 // import { colors } from '@/styles';
@@ -56,7 +56,7 @@ const CollectiblesHeader = () => {
     >
       <Inline alignHorizontal="justify" alignVertical="center">
         <Text size="22pt" color={'label'} weight="heavy">
-          {i18n.t(i18n.l.account.tab_collectibles)}
+          {i18n.account.tab_collectibles()}
         </Text>
 
         {/* TODO: Bring this back once we can sort with pagination */}
@@ -67,13 +67,13 @@ const CollectiblesHeader = () => {
               icon: { iconType: 'SYSTEM', iconValue: getMenuItemIcon(sortCriterion) },
               ...(sortBy === sortCriterion && IS_IOS // submenus look weird in android, so it toggles when clicking the same item
                 ? {
-                    menuTitle: i18n.t(i18n.l.nfts.sort[sortCriterion]),
+                    menuTitle: i18n.nfts.sort[sortCriterion](),
                     menuPreferredElementSize: 'small',
                     menuState: 'on',
                     menuItems: [
                       {
                         actionKey: `${sortCriterion}|${SortDirection.Asc}`,
-                        actionTitle: i18n.t(i18n.l.nfts.sort.order.asc),
+                        actionTitle: i18n.nfts.sort.order.asc(),
                         icon: {
                           iconType: 'SYSTEM',
                           iconValue: 'arrow.up.circle',
@@ -82,7 +82,7 @@ const CollectiblesHeader = () => {
                       },
                       {
                         actionKey: `${sortCriterion}|${SortDirection.Desc}`,
-                        actionTitle: i18n.t(i18n.l.nfts.sort.order.desc),
+                        actionTitle: i18n.nfts.sort.order.desc(),
                         icon: {
                           iconType: 'SYSTEM',
                           iconValue: 'arrow.down.circle',
@@ -93,14 +93,14 @@ const CollectiblesHeader = () => {
                   }
                 : {
                     actionKey: `${sortCriterion}|${sortDirection === SortDirection.Asc ? SortDirection.Desc : SortDirection.Asc}`,
-                    actionTitle: i18n.t(i18n.l.nfts.sort[sortCriterion]),
+                    actionTitle: i18n.nfts.sort[sortCriterion](),
                     menuState: 'off',
                   }),
             };
           })}
           selectItem={updateNFTSort}
           icon={getIconForSortType(sortBy)}
-          text={i18n.t(i18n.l.nfts.sort[sortBy])}
+          text={i18n.nfts.sort[sortBy]()}
         /> */}
       </Inline>
     </Box>

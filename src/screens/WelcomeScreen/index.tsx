@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Reanimated, {
@@ -223,7 +223,7 @@ export default function WelcomeScreen() {
               shadowStyle={createWalletButtonAnimatedShadowStyle}
               style={createWalletButtonAnimatedStyle}
               testID="new-wallet-button"
-              text={i18n.t(i18n.l.wallet.new.get_new_wallet)}
+              text={i18n.wallet.new.get_new_wallet()}
               textColor={isDarkMode ? colors.dark : colors.white}
             />
           </ButtonWrapper>
@@ -236,14 +236,14 @@ export default function WelcomeScreen() {
               shadowStyle={sx.existingWalletShadow}
               style={[sx.existingWallet, { backgroundColor: colors.blueGreyDarkLight }]}
               testID="already-have-wallet-button"
-              text={i18n.t(i18n.l.wallet.new.already_have_wallet)}
+              text={i18n.wallet.new.already_have_wallet()}
               textColor={colors.alpha(colors.blueGreyDark, 0.8)}
             />
           </ButtonWrapper>
         </ContentWrapper>
         <TermsOfUse bottomInset={insets.bottom}>
           <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.5)} lineHeight="loose" size="smedium" weight="semibold">
-            {i18n.t(i18n.l.wallet.new.terms)}
+            {i18n.wallet.new.terms()}
             <Text
               color={colors.paleBlue}
               lineHeight="loose"
@@ -252,7 +252,7 @@ export default function WelcomeScreen() {
               suppressHighlighting
               weight="semibold"
             >
-              {i18n.t(i18n.l.wallet.new.terms_link)}
+              {i18n.wallet.new.terms_link()}
             </Text>
           </Text>
         </TermsOfUse>

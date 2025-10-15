@@ -6,7 +6,7 @@ import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_ANDROID } from '@/env';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { add, formatNumber } from '@/helpers/utilities';
 import { weiToGwei } from '@/parsers';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
@@ -69,7 +69,7 @@ export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; o
 
       return {
         actionKey: gasOption,
-        actionTitle: i18n.t(i18n.l.gas.speeds[gasOption]),
+        actionTitle: i18n.gas.speeds[gasOption](),
         discoverabilityTitle: subtitle,
         icon: { iconType: 'SYSTEM', iconValue: SWAP_GAS_ICONS[gasOption].symbolName },
       };

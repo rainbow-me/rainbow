@@ -29,7 +29,7 @@ import { useOrderAmountValidation } from '@/features/perps/stores/derived/useOrd
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import LinearGradient from 'react-native-linear-gradient';
 import { IS_ANDROID } from '@/env';
 import { analytics } from '@/analytics';
@@ -104,7 +104,7 @@ const PerpsSearchScreenFooter = () => {
           clearButtonMode="while-editing"
           enablesReturnKeyAutomatically
           onChange={onSearchQueryChange}
-          placeholder={i18n.t(i18n.l.perps.search.search_markets)}
+          placeholder={i18n.perps.search.search_markets()}
           placeholderTextColor={accentColors.opacity40}
           ref={inputRef}
           returnKeyType="go"
@@ -162,11 +162,7 @@ const PerpsAccountScreenFooter = () => {
         alignItems={'center'}
       >
         <Text size="20pt" weight={'black'} color={isDarkMode ? 'black' : 'white'}>
-          {hasNoAssets
-            ? i18n.t(i18n.l.perps.actions.fund_wallet)
-            : hasZeroBalance
-              ? i18n.t(i18n.l.perps.deposit.title)
-              : i18n.t(i18n.l.perps.actions.new_position)}
+          {hasNoAssets ? i18n.perps.actions.fund_wallet() : hasZeroBalance ? i18n.perps.deposit.title() : i18n.perps.actions.new_position()}
         </Text>
       </HyperliquidButton>
     </>
@@ -197,7 +193,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
       backTextColor,
       backgroundColor: positionSideColor,
       borderColor: 'rgba(255, 255, 255, 0.12)',
-      text: isLong ? i18n.t(i18n.l.perps.new_position.hold_to_long) : i18n.t(i18n.l.perps.new_position.hold_to_short),
+      text: isLong ? i18n.perps.new_position.hold_to_long() : i18n.perps.new_position.hold_to_short(),
       disabledBackgroundColor: getSolidColorEquivalent({
         background: accentColors.surfacePrimary,
         foreground: positionSideColor,
@@ -254,7 +250,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
         perpsBalance,
         errorMessage,
       });
-      Alert.alert(i18n.t(i18n.l.perps.common.error_submitting_order), errorMessage);
+      Alert.alert(i18n.perps.common.error_submitting_order(), errorMessage);
       logger.error(new RainbowError('[PerpsNewPositionScreenFooter] Failed to submit new position', e));
     }
     setIsSubmitting(false);
@@ -295,7 +291,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
             disabledBackgroundColor={button.disabledBackgroundColor}
             isProcessing={isSubmitting}
             showBiometryIcon={false}
-            processingLabel={i18n.t(i18n.l.perps.common.submitting)}
+            processingLabel={i18n.perps.common.submitting()}
             label={button.text}
             onLongPress={submitNewPosition}
             height={BUTTON_HEIGHT}

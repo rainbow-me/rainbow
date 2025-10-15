@@ -2,7 +2,7 @@ import React, { memo, useCallback } from 'react';
 import { AnimatedText, Box, Text, useColorMode } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { INPUT_CARD_HEIGHT, SLIDER_WIDTH } from '@/features/perps/constants';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { SharedValue, useDerivedValue } from 'react-native-reanimated';
 import { Slider, SliderChangeSource } from '@/features/perps/components/Slider';
 
@@ -81,7 +81,7 @@ export const PositionPercentageSlider = memo(function PositionPercentageSlider({
           <Text size="15pt" weight="heavy" color="labelSecondary">
             {totalValue}
             <Text size="15pt" weight="bold" color="labelQuaternary">
-              {` ${i18n.t(i18n.l.perps.positions.total)}`}
+              {` ${i18n.perps.positions.total()}`}
             </Text>
           </Text>
         </Box>

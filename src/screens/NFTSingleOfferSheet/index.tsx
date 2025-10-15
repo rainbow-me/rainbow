@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { View } from 'react-native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -423,13 +423,13 @@ export function NFTSingleOfferSheet() {
         status: 'failed',
         ...analyticsEventObject,
       });
-      Alert.alert(i18n.t(i18n.l.nft_offers.single_offer_sheet.error.title), i18n.t(i18n.l.nft_offers.single_offer_sheet.error.message), [
+      Alert.alert(i18n.nft_offers.single_offer_sheet.error.title(), i18n.nft_offers.single_offer_sheet.error.message(), [
         {
           onPress: () => navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer }),
-          text: i18n.t(i18n.l.button.go_back),
+          text: i18n.button.go_back(),
         },
         {
-          text: i18n.t(i18n.l.button.cancel),
+          text: i18n.button.cancel(),
         },
       ]);
     } finally {
@@ -440,14 +440,14 @@ export function NFTSingleOfferSheet() {
   let buttonLabel = '';
   if (!isAccepting) {
     if (insufficientEth) {
-      buttonLabel = i18n.t(i18n.l.button.confirm_exchange.insufficient_token, {
+      buttonLabel = i18n.button.confirm_exchange.insufficient_token({
         tokenName: useBackendNetworksStore.getState().getChainsNativeAsset()[offerChainId]?.symbol,
       });
     } else {
-      buttonLabel = i18n.t(i18n.l.nft_offers.single_offer_sheet.hold_to_sell);
+      buttonLabel = i18n.nft_offers.single_offer_sheet.hold_to_sell();
     }
   } else {
-    buttonLabel = i18n.t(i18n.l.nft_offers.single_offer_sheet.selling);
+    buttonLabel = i18n.nft_offers.single_offer_sheet.selling();
   }
 
   return (
@@ -458,7 +458,7 @@ export function NFTSingleOfferSheet() {
             <Inset top="32px" horizontal="28px" bottom="52px">
               <Inset bottom="36px">
                 <Text color="label" align="center" size="20pt" weight="heavy">
-                  {i18n.t(i18n.l.nft_offers.single_offer_sheet.title)}
+                  {i18n.nft_offers.single_offer_sheet.title()}
                 </Text>
                 <Inset top="10px">
                   {timeRemaining !== undefined && (
@@ -468,8 +468,8 @@ export function NFTSingleOfferSheet() {
                       </Text>
                       <Text color={isExpiring || isExpired ? 'red' : 'labelTertiary'} align="center" size="15pt" weight="semibold">
                         {isExpired
-                          ? i18n.t(i18n.l.nft_offers.single_offer_sheet.expired)
-                          : i18n.t(i18n.l.nft_offers.single_offer_sheet.expires_in, {
+                          ? i18n.nft_offers.single_offer_sheet.expired()
+                          : i18n.nft_offers.single_offer_sheet.expires_in({
                               timeLeft: time!,
                             })}
                       </Text>
@@ -551,9 +551,7 @@ export function NFTSingleOfferSheet() {
                           {`${isFloorDiffPercentagePositive ? '+' : ''}${offer.floorDifferencePercentage}% `}
                         </Text>
                         <Text size="13pt" weight="medium" color="labelTertiary">
-                          {i18n.t(
-                            isFloorDiffPercentagePositive ? i18n.l.nft_offers.sheet.above_floor : i18n.l.nft_offers.sheet.below_floor
-                          )}
+                          {isFloorDiffPercentagePositive ? i18n.nft_offers.sheet.above_floor() : i18n.nft_offers.sheet.below_floor()}
                         </Text>
                       </Inline>
                     </Inset>
@@ -566,7 +564,7 @@ export function NFTSingleOfferSheet() {
               <Inset top="24px">
                 <Row
                   symbol="􀐾"
-                  label={i18n.t(i18n.l.nft_offers.single_offer_sheet.floor_price)}
+                  label={i18n.nft_offers.single_offer_sheet.floor_price()}
                   value={
                     <Inline space="4px" alignVertical="center" alignHorizontal="right">
                       <RainbowCoinIcon
@@ -587,7 +585,7 @@ export function NFTSingleOfferSheet() {
 
                 <Row
                   symbol="􀍩"
-                  label={i18n.t(i18n.l.nft_offers.single_offer_sheet.marketplace)}
+                  label={i18n.nft_offers.single_offer_sheet.marketplace()}
                   value={
                     <Inline space="4px" alignVertical="center" alignHorizontal="right">
                       <Box
@@ -610,7 +608,7 @@ export function NFTSingleOfferSheet() {
                 {!!feesPercentage && (
                   <Row
                     symbol="􀘾"
-                    label={i18n.t(i18n.l.nft_offers.single_offer_sheet.marketplace_fees, { marketplace: offer.marketplace.name })}
+                    label={i18n.nft_offers.single_offer_sheet.marketplace_fees({ marketplace: offer.marketplace.name })}
                     value={
                       <Text color="labelSecondary" align="right" size="17pt" weight="medium">
                         {feesPercentage}%
@@ -621,7 +619,7 @@ export function NFTSingleOfferSheet() {
                 {!!royaltiesPercentage && (
                   <Row
                     symbol="􀣶"
-                    label={i18n.t(i18n.l.nft_offers.single_offer_sheet.creator_royalties)}
+                    label={i18n.nft_offers.single_offer_sheet.creator_royalties()}
                     value={
                       <Text color="labelSecondary" align="right" size="17pt" weight="medium">
                         {royaltiesPercentage}%
@@ -631,7 +629,7 @@ export function NFTSingleOfferSheet() {
                 )}
                 {/* <Row
                 symbol="􀖅"
-                label={i18n.t(i18n.l.nft_offers.single_offer_sheet.receive)}
+                label={i18n.nft_offers.single_offer_sheet.receive()}
                 value={
                   <Text
                     color="labelSecondary"
@@ -651,7 +649,7 @@ export function NFTSingleOfferSheet() {
                 <Columns alignVertical="center">
                   <Column>
                     <Text color="label" size="17pt" weight="bold">
-                      {i18n.t(i18n.l.nft_offers.single_offer_sheet.proceeds)}
+                      {i18n.nft_offers.single_offer_sheet.proceeds()}
                     </Text>
                   </Column>
                   <Column>
@@ -709,9 +707,7 @@ export function NFTSingleOfferSheet() {
                     }}
                   >
                     <Text color="label" align="center" size="17pt" weight="heavy">
-                      {i18n.t(
-                        isExpired ? i18n.l.nft_offers.single_offer_sheet.offer_expired : i18n.l.nft_offers.single_offer_sheet.view_offer
-                      )}
+                      {isExpired ? i18n.nft_offers.single_offer_sheet.offer_expired() : i18n.nft_offers.single_offer_sheet.view_offer()}
                     </Text>
                   </Box>
                 </AccentColorProvider>

@@ -10,7 +10,7 @@ import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
 import { SortDirection, Timeframe, TrendingSort } from '@/graphql/__generated__/arc';
 import { categories, TrendingCategory, sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { FarcasterUser, TrendingToken, useTrendingTokens } from '@/resources/trendingTokens/trendingTokens';
@@ -33,7 +33,7 @@ import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { LiveTokenText } from '../live-token-text/LiveTokenText';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
-const t = i18n.l.trending_tokens;
+// Removed: // Removed: // Removed: const t = i18n.l.trending_tokens;
 
 function FilterButton({
   icon,
@@ -297,7 +297,7 @@ function FriendHolders({
 }) {
   if (friends.length === 0) return null;
   const howManyOthers = Math.max(1, remainingFriendsCountParam);
-  const separator = howManyOthers === 1 && friends.length === 2 ? ` ${i18n.t(t.and)} ` : ', ';
+  const separator = howManyOthers === 1 && friends.length === 2 ? ` ${i18n.trending_tokens.and()} ` : ', ';
 
   return (
     <View style={{ alignItems: 'center', flexDirection: 'row', flexWrap: 'nowrap', gap: 5.67, height: 7 }}>
@@ -321,7 +321,9 @@ function FriendHolders({
         {howManyOthers > 1 && (
           <Text color="labelQuaternary" size="11pt" weight="bold">
             {' '}
-            {i18n.t(t.and_others[howManyOthers === 1 ? 'one' : 'other'], { count: howManyOthers })}
+            {howManyOthers === 1
+              ? i18n.trending_tokens.and_others.one({ count: howManyOthers })
+              : i18n.trending_tokens.and_others.other({ count: howManyOthers })}
           </Text>
         )}
       </View>
@@ -550,10 +552,10 @@ function NoResults() {
     <View style={{ flex: 1, padding: 20, flexDirection: 'row', justifyContent: 'space-between', backgroundColor, borderRadius: 20 }}>
       <View style={{ flex: 1, gap: 16 }}>
         <Text color="label" size="20pt" weight="heavy">
-          {i18n.t(t.no_results.title)}
+          {i18n.trending_tokens.no_results.title()}
         </Text>
         <Text color="labelSecondary" size="15pt" weight="semibold">
-          {i18n.t(t.no_results.body)}
+          {i18n.trending_tokens.no_results.body()}
         </Text>
       </View>
       <View style={{ backgroundColor: '#FF584D', height: 36, width: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' }}>
@@ -579,7 +581,7 @@ function NetworkFilter({ selectedChainId }: { selectedChainId: SharedValue<Chain
   const tokenLauncherNetworks = useBackendNetworksStore(state => state.getTokenLauncherSupportedChainIds());
 
   const { icon, label, lightenedNetworkColor } = useMemo(() => {
-    if (!chainId) return { icon: '􀤆', label: i18n.t(t.all), lightenedNetworkColor: undefined };
+    if (!chainId) return { icon: '􀤆', label: i18n.trending_tokens.all(), lightenedNetworkColor: undefined };
     return {
       icon: (
         <View style={{ marginRight: 2 }}>
@@ -626,7 +628,7 @@ function TimeFilter() {
     <DropdownMenu
       menuConfig={{
         menuItems: timeFilters.map(time => ({
-          actionTitle: i18n.t(t.filters.time[time]),
+          actionTitle: i18n.trending_tokens.filters.time[time](),
           menuState: time === timeframe ? 'on' : 'off',
           actionKey: time,
         })),
@@ -638,7 +640,11 @@ function TimeFilter() {
       <FilterButton
         selected={timeframe !== Timeframe.D3}
         highlightedBackgroundColor={undefined}
-        label={shouldAbbreviate ? i18n.t(t.filters.time[`${timeframe}_ABBREVIATED`]) : i18n.t(t.filters.time[timeframe])}
+        label={
+          shouldAbbreviate
+            ? i18n.trending_tokens.filters.time[`${timeframe}_ABBREVIATED` as keyof typeof i18n.trending_tokens.filters.time]()
+            : i18n.trending_tokens.filters.time[timeframe]()
+        }
         icon="􀐫"
       />
     </DropdownMenu>
@@ -653,15 +659,18 @@ function SortFilter() {
   const iconColor = getColorWorklet(selected ? 'labelSecondary' : 'labelTertiary', selected ? false : isDarkMode);
 
   const sortLabel = useMemo(() => {
-    if (sort === TrendingSort.Recommended) return i18n.t(t.filters.sort.RECOMMENDED.label);
-    return i18n.t(t.filters.sort[sort]);
+    if (sort === TrendingSort.Recommended) return i18n.trending_tokens.filters.sort.RECOMMENDED.label();
+    return i18n.trending_tokens.filters.sort[sort]();
   }, [sort]);
 
   return (
     <DropdownMenu
       menuConfig={{
         menuItems: sortFilters.map(s => ({
-          actionTitle: s === TrendingSort.Recommended ? i18n.t(t.filters.sort.RECOMMENDED.menuOption) : i18n.t(t.filters.sort[s]),
+          actionTitle:
+            s === TrendingSort.Recommended
+              ? i18n.trending_tokens.filters.sort.RECOMMENDED.menuOption()
+              : i18n.trending_tokens.filters.sort[s](),
           menuState: s === sort ? 'on' : 'off',
           actionKey: s,
         })),
@@ -756,7 +765,7 @@ export function TrendingTokens() {
         >
           <CategoryFilterButton
             category={categories[0]}
-            label={i18n.t(t.filters.categories.TRENDING)}
+            label={i18n.trending_tokens.filters.categories.TRENDING()}
             icon="􀙭"
             iconColor={'#D0281C'}
             highlightedBackgroundColor={'#E6A39E'}
@@ -764,7 +773,7 @@ export function TrendingTokens() {
           />
           <CategoryFilterButton
             category={categories[2]}
-            label={i18n.t(t.filters.categories.NEW)}
+            label={i18n.trending_tokens.filters.categories.NEW()}
             icon="􀋃"
             iconColor={{ default: isDarkMode ? globalColors.yellow60 : '#FFBB00', selected: '#F5A200' }}
             highlightedBackgroundColor={'#FFEAC2'}
@@ -773,7 +782,7 @@ export function TrendingTokens() {
           />
           <CategoryFilterButton
             category={categories[3]}
-            label={i18n.t(t.filters.categories.FARCASTER)}
+            label={i18n.trending_tokens.filters.categories.FARCASTER()}
             icon="􀌥"
             iconColor={'#5F5AFA'}
             highlightedBackgroundColor={'#B9B7F7'}

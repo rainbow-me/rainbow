@@ -3,7 +3,7 @@ import { FloatingEmojis } from '@/components/floating-emojis';
 import { AccentColorProvider, Box, Inline, Stack, Text } from '@/design-system';
 import { useClipboard } from '@/hooks';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
@@ -18,7 +18,7 @@ import { IconOrb } from './reusables/IconOrb';
 import { TintButton } from './reusables/TintButton';
 
 export const RECEIVE_CARD_HEIGHT = 174;
-const TRANSLATIONS = i18n.l.cards.receive;
+// Removed: const TRANSLATIONS = i18n.l.cards.receive;
 
 export const ReceiveAssetsCard = React.memo(function ReceiveAssetsCard() {
   const accountAddress = useAccountAddress();
@@ -57,7 +57,7 @@ export const ReceiveAssetsCard = React.memo(function ReceiveAssetsCard() {
           <Stack space="16px">
             {accentColorLoaded ? (
               <Text size="22pt" weight="heavy" color="label">
-                {i18n.t(TRANSLATIONS.receive_assets)}
+                {i18n.cards.receive.receive_assets()}
               </Text>
             ) : (
               <Box height={{ custom: 16 }}>
@@ -69,7 +69,7 @@ export const ReceiveAssetsCard = React.memo(function ReceiveAssetsCard() {
             {accentColorLoaded ? (
               <Box style={{ maxWidth: 210 }}>
                 <Text size="15pt" weight="semibold" color="labelSecondary" numberOfLines={2}>
-                  {i18n.t(TRANSLATIONS.description)}
+                  {i18n.cards.receive.description()}
                 </Text>
               </Box>
             ) : (
@@ -93,7 +93,7 @@ export const ReceiveAssetsCard = React.memo(function ReceiveAssetsCard() {
           {({ onNewEmoji }: { onNewEmoji: () => void }) => (
             <AccentColorProvider color={accentColor}>
               <TintButton onPress={() => onPressCopy(onNewEmoji)} height={36} loaded={accentColorLoaded} testID="copy-address-button">
-                {`􀐅 ${i18n.t(TRANSLATIONS.copy_address)}`}
+                {`􀐅 ${i18n.cards.receive.copy_address()}`}
               </TintButton>
             </AccentColorProvider>
           )}

@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Bleed, Box, Separator, Text, TextIcon, TextShadow, useForegroundColor } from '@/design-system';
 import { CollapsableField } from './CollapsableField';
 import { SingleFieldInput } from './SingleFieldInput';
@@ -91,7 +91,7 @@ function SuggestedUsers({ users }: { users: SuggestedUser[] }) {
   return (
     <Box gap={12}>
       <Text color="labelTertiary" size="13pt" weight="heavy">
-        {i18n.t(i18n.l.token_launcher.airdrop.suggested_users)}
+        {i18n.token_launcher.airdrop.suggested_users()}
       </Text>
       <Bleed horizontal={'20px'}>
         <Box gap={8}>
@@ -136,7 +136,7 @@ function AirdropGroups({
   return (
     <Box gap={12}>
       <Text color="labelTertiary" size="13pt" weight="heavy">
-        {i18n.t(i18n.l.token_launcher.airdrop.airdrop_lists)}
+        {i18n.token_launcher.airdrop.airdrop_lists()}
       </Text>
       <Bleed vertical={'3px'} horizontal={'20px'}>
         <ScrollView
@@ -345,7 +345,7 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
     <SingleFieldInput
       showPaste
       icon={labelIcon}
-      placeholder={i18n.t(i18n.l.token_launcher.airdrop.address_or_ens)}
+      placeholder={i18n.token_launcher.airdrop.address_or_ens()}
       textAlign="left"
       inputStyle={{ textAlign: 'left', paddingLeft: 8 }}
       validationWorklet={(text: string) => {
@@ -500,13 +500,13 @@ export function AirdropSection() {
 
   return (
     <CollapsableField
-      title={i18n.t(i18n.l.token_launcher.titles.airdrop)}
+      title={i18n.token_launcher.titles.airdrop()}
       style={{ borderColor: hasExceededMaxAirdropRecipients ? ERROR_RED : borderColor }}
     >
       <Box gap={16}>
         {hasExceededMaxAirdropRecipients && (
           <Text color={{ custom: ERROR_RED }} size="15pt" weight="heavy">
-            {i18n.t(i18n.l.token_launcher.airdrop.max_recipients_reached, {
+            {i18n.token_launcher.airdrop.max_recipients_reached({
               maxRecipientCount: abbreviateNumber(maxRecipientCount, 0, 'short'),
             })}
           </Text>

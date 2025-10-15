@@ -13,7 +13,7 @@ import { BiometryTypes } from '@/helpers';
 import showWalletErrorAlert from '@/helpers/support';
 import { useBiometryType } from '@/hooks';
 import { useTokenLauncher } from '@/hooks/useTokenLauncher';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
@@ -117,8 +117,8 @@ function HoldToCreateButton() {
       disabledBackgroundColor={accentColors.opacity12}
       isProcessing={isProcessing}
       showBiometryIcon={showBiometryIcon}
-      processingLabel={i18n.t(i18n.l.token_launcher.buttons.creating)}
-      label={i18n.t(i18n.l.token_launcher.buttons.hold_to_create)}
+      processingLabel={i18n.token_launcher.buttons.creating()}
+      label={i18n.token_launcher.buttons.hold_to_create()}
       onLongPress={handleLongPress}
       height={48}
       textStyle={{
@@ -155,7 +155,7 @@ function ContinueButton() {
           weight="heavy"
           style={{ opacity: canContinueToReview ? 1 : 0.4 }}
         >
-          {i18n.t(i18n.l.button.continue)}
+          {i18n.button.continue()}
         </Text>
       </Box>
     </ButtonPressAnimation>
@@ -204,7 +204,7 @@ function ShareButton() {
         height={48}
       >
         <Text color={{ custom: accentColors.highContrastTextColor }} size="20pt" weight="heavy">
-          {`􀈂 ${i18n.t(i18n.l.token_launcher.buttons.share_link)}`}
+          {`􀈂 ${i18n.token_launcher.buttons.share_link()}`}
         </Text>
       </Box>
     </ButtonPressAnimation>
@@ -217,7 +217,7 @@ function TokenPreview() {
   const chainId = useTokenLauncherStore(state => state.chainId);
   const tokenPrice = useTokenLauncherStore(state => state.tokenPrice());
   const tokenMarketCap = useTokenLauncherStore(state => state.tokenMarketCap());
-  const symbolLabel = symbol === '' ? i18n.t(i18n.l.token_launcher.placeholders.ticker) : `$${symbol}`;
+  const symbolLabel = symbol === '' ? i18n.token_launcher.placeholders.ticker() : `$${symbol}`;
 
   return (
     <Animated.View exiting={FadeOut.duration(STEP_TRANSITION_DURATION)} style={{ flex: 1 }}>
@@ -255,7 +255,7 @@ function TokenPreview() {
           </Box>
           <Box flexDirection="row" alignItems="center" gap={4}>
             <Text color="labelQuaternary" size="11pt" weight="bold">
-              {i18n.t(i18n.l.token_launcher.titles.mcap)}
+              {i18n.token_launcher.titles.mcap()}
             </Text>
             <Text color="labelTertiary" size="11pt" weight="bold">
               {tokenMarketCap}
@@ -398,7 +398,7 @@ export function TokenLauncherFooter() {
           }}
         >
           <Text align="center" color="labelTertiary" size="20pt" weight="heavy">
-            {i18n.t(i18n.l.button.skip)}
+            {i18n.button.skip()}
           </Text>
         </ButtonPressAnimation>
       </Animated.View>

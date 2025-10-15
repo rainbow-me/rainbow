@@ -1,6 +1,6 @@
 // @ts-expect-error - changeIcon has no declaration file
 import { changeIcon } from 'react-native-change-icon';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { Language, updateLanguageLocale } from '../languages';
@@ -179,14 +179,14 @@ export const settingsChangeAppIcon = (appIcon: string) => (dispatch: Dispatch<Se
   };
 
   if (android) {
-    Alert.alert(i18n.t(i18n.l.settings.icon_change.title), i18n.t(i18n.l.settings.icon_change.warning), [
+    Alert.alert(i18n.settings.icon_change.title(), i18n.settings.icon_change.warning(), [
       {
         onPress: () => {},
-        text: i18n.t(i18n.l.settings.icon_change.cancel),
+        text: i18n.settings.icon_change.cancel(),
       },
       {
         onPress: callback,
-        text: i18n.t(i18n.l.settings.icon_change.confirm),
+        text: i18n.settings.icon_change.confirm(),
       },
     ]);
   } else {

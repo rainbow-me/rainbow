@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { startCase } from 'lodash';
 import React from 'react';
 import { View } from 'react-native';
@@ -58,7 +58,7 @@ const ContactRowActionsEnum = {
 const ContactRowActions = {
   [ContactRowActionsEnum.copyAddress]: {
     actionKey: ContactRowActionsEnum.copyAddress,
-    actionTitle: i18n.t(i18n.l.wallet.copy_address),
+    actionTitle: i18n.wallet.copy_address(),
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'doc.on.doc',
@@ -67,7 +67,7 @@ const ContactRowActions = {
 };
 
 const buildBlockExplorerAction = chainId => {
-  const blockExplorerText = i18n.t(i18n.l.wallet.action.view_on, {
+  const blockExplorerText = i18n.wallet.action.view_on({
     blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })),
   });
 
@@ -93,7 +93,7 @@ const ContactRowInfoButton = ({ children, item, chainId, scaleTo }) => {
 
   const onPressAndroid = useCallback(() => {
     const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer({ chainId }))}`;
-    const androidContractActions = [i18n.t(i18n.l.wallet.action.copy_contract_address), blockExplorerText, i18n.t(i18n.l.button.cancel)];
+    const androidContractActions = [i18n.wallet.action.copy_contract_address(), blockExplorerText, i18n.button.cancel()];
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 2,

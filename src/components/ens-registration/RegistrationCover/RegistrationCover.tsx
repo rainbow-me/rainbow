@@ -1,5 +1,5 @@
 import ConditionalWrap from 'conditional-wrap';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
@@ -147,7 +147,7 @@ const RegistrationCover = ({
         >
           {(!coverUrl || isUploading || isLoadingImage) && (
             <Text align="center" color="accent" size="18px / 27px (Deprecated)" weight="heavy">
-              􀣵 {isUploading || isLoadingImage ? i18n.t(i18n.l.profiles.create.uploading) : i18n.t(i18n.l.profiles.create.add_cover)}
+              􀣵 {isUploading || isLoadingImage ? i18n.profiles.create.uploading() : i18n.profiles.create.add_cover()}
             </Text>
           )}
         </Box>

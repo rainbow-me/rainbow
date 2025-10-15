@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import uts46 from 'idna-uts46-hx';
 import { UniqueAsset } from '@/entities';
 import { isLowerCaseMatch } from '@/utils';
@@ -109,7 +109,7 @@ export function validateENS(
   if (splitDomain.length < 2) {
     return {
       code: ERROR_CODES.INVALID_DOMAIN,
-      hint: i18n.t(i18n.l.profiles.search_validation.invalid_domain),
+      hint: i18n.profiles.search_validation.invalid_domain(),
       valid: false,
     };
   }
@@ -119,7 +119,7 @@ export function validateENS(
   if (!supportedTLDs.includes(tld)) {
     return {
       code: ERROR_CODES.INVALID_TLD,
-      hint: i18n.t(i18n.l.profiles.search_validation.tld_not_supported),
+      hint: i18n.profiles.search_validation.tld_not_supported(),
       valid: false,
     };
   }
@@ -127,7 +127,7 @@ export function validateENS(
   if (!includeSubdomains && (subDomainName || subDomainName === '')) {
     return {
       code: ERROR_CODES.SUBDOMAINS_NOT_SUPPORTED,
-      hint: i18n.t(i18n.l.profiles.search_validation.subdomains_not_supported),
+      hint: i18n.profiles.search_validation.subdomains_not_supported(),
       valid: false,
     };
   }
@@ -135,7 +135,7 @@ export function validateENS(
   if (domainName.length < 3) {
     return {
       code: ERROR_CODES.INVALID_LENGTH,
-      hint: i18n.t(i18n.l.profiles.search_validation.invalid_length),
+      hint: i18n.profiles.search_validation.invalid_length(),
       valid: false,
     };
   }
@@ -145,7 +145,7 @@ export function validateENS(
   if (!validDomainName) {
     return {
       code: ERROR_CODES.INVALID_SUBDOMAIN_NAME,
-      hint: i18n.t(i18n.l.profiles.search_validation.invalid_special_characters),
+      hint: i18n.profiles.search_validation.invalid_special_characters(),
       valid: false,
     };
   }
@@ -155,7 +155,7 @@ export function validateENS(
     if (!validSubDomainName) {
       return {
         code: ERROR_CODES.INVALID_SUBDOMAIN_NAME,
-        hint: i18n.t(i18n.l.profiles.search_validation.invalid_special_characters),
+        hint: i18n.profiles.search_validation.invalid_special_characters(),
         valid: false,
       };
     }

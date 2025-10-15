@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Switch } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, withTiming } from 'react-native-reanimated';
@@ -28,50 +28,50 @@ const makeTopicRowsData = (colors: ThemeContextProps['colors']) => [
     topic: WalletNotificationTopic.SENT,
     icon: '􀈟',
     iconColor: colors.appleBlue,
-    text: i18n.t(i18n.l.settings.notifications_section.sent),
+    text: i18n.settings.notifications_section.sent(),
   },
   {
     topic: WalletNotificationTopic.RECEIVED,
     icon: '􀅀',
     iconColor: colors.green,
-    text: i18n.t(i18n.l.settings.notifications_section.received),
+    text: i18n.settings.notifications_section.received(),
   },
   {
     topic: WalletNotificationTopic.PURCHASED,
     icon: '􀑉',
     iconColor: colors.pink,
 
-    text: i18n.t(i18n.l.settings.notifications_section.purchased),
+    text: i18n.settings.notifications_section.purchased(),
   },
   {
     topic: WalletNotificationTopic.SOLD,
     icon: '􀋡',
     iconColor: colors.orange,
-    text: i18n.t(i18n.l.settings.notifications_section.sold),
+    text: i18n.settings.notifications_section.sold(),
   },
   {
     topic: WalletNotificationTopic.MINTED,
     icon: '􀆿',
     iconColor: colors.yellowOrange,
-    text: i18n.t(i18n.l.settings.notifications_section.minted),
+    text: i18n.settings.notifications_section.minted(),
   },
   {
     topic: WalletNotificationTopic.SWAPPED,
     icon: '􀖅',
     iconColor: colors.swapPurple,
-    text: i18n.t(i18n.l.settings.notifications_section.swapped),
+    text: i18n.settings.notifications_section.swapped(),
   },
   {
     topic: WalletNotificationTopic.APPROVALS,
     icon: '􀁢',
     iconColor: colors.green,
-    text: i18n.t(i18n.l.settings.notifications_section.approvals),
+    text: i18n.settings.notifications_section.approvals(),
   },
   {
     topic: WalletNotificationTopic.OTHER,
     icon: '􀍡',
     iconColor: colors.blueGreyDark60,
-    text: i18n.t(i18n.l.settings.notifications_section.other),
+    text: i18n.settings.notifications_section.other(),
   },
 ];
 
@@ -234,7 +234,7 @@ const WalletNotificationsSettings = () => {
             </>
           }
           size={52}
-          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.notifications_section.allow_notifications)} weight="bold" />}
+          titleComponent={<MenuItem.Title text={i18n.settings.notifications_section.allow_notifications()} weight="bold" />}
         />
       </Menu>
       <Animated.View style={animatedStyle}>

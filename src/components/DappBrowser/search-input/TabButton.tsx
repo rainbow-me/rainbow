@@ -7,7 +7,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { AnimatedText, Bleed, Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import position from '@/styles/position';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
@@ -73,13 +73,13 @@ export const TabButton = React.memo(function TabButton({
     let closeAllTabsTitle: string;
     switch (numberOfClosableTabs) {
       case 1:
-        closeAllTabsTitle = i18n.t(i18n.l.dapp_browser.menus.close_this_tab);
+        closeAllTabsTitle = i18n.dapp_browser.menus.close_this_tab();
         break;
       case 2:
-        closeAllTabsTitle = i18n.t(i18n.l.dapp_browser.menus.close_both_tabs);
+        closeAllTabsTitle = i18n.dapp_browser.menus.close_both_tabs();
         break;
       default:
-        closeAllTabsTitle = i18n.t(i18n.l.dapp_browser.menus.close_all_tabs, { numberOfClosableTabs });
+        closeAllTabsTitle = i18n.dapp_browser.menus.close_all_tabs({ numberOfClosableTabs });
     }
 
     const menuItems = [
@@ -103,7 +103,7 @@ export const TabButton = React.memo(function TabButton({
         ? [
             {
               actionKey: 'closeThisTab',
-              actionTitle: i18n.t(i18n.l.dapp_browser.menus.close_this_tab),
+              actionTitle: i18n.dapp_browser.menus.close_this_tab(),
               icon: {
                 iconType: 'SYSTEM',
                 iconValue: 'xmark',
@@ -116,7 +116,7 @@ export const TabButton = React.memo(function TabButton({
       // New tab (always present)
       {
         actionKey: 'newTab',
-        actionTitle: i18n.t(i18n.l.dapp_browser.menus.new_tab),
+        actionTitle: i18n.dapp_browser.menus.new_tab(),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'plus.square.on.square',

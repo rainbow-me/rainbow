@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Screens } from '@/state/performance/operations';
 import { safeAreaInsetValues } from '@/utils';
 import { TransitionConfig } from 'moti';
@@ -66,35 +66,35 @@ export const infoForEventType: { [key: string]: EventInfo } = {
     amountPrefix: '- ',
     icon: '􀁷',
     iconColor: 'red',
-    label: i18n.t(i18n.l.walletconnect.simulation.simulation_card.event_row.types.send),
+    label: i18n.walletconnect.simulation.simulation_card.event_row.types.send(),
     textColor: 'red',
   },
   receive: {
     amountPrefix: '+ ',
     icon: '􀁹',
     iconColor: 'green',
-    label: i18n.t(i18n.l.walletconnect.simulation.simulation_card.event_row.types.receive),
+    label: i18n.walletconnect.simulation.simulation_card.event_row.types.receive(),
     textColor: 'green',
   },
   approve: {
     amountPrefix: '',
     icon: '􀎤',
     iconColor: 'green',
-    label: i18n.t(i18n.l.walletconnect.simulation.simulation_card.event_row.types.approve),
+    label: i18n.walletconnect.simulation.simulation_card.event_row.types.approve(),
     textColor: 'label',
   },
   revoke: {
     amountPrefix: '',
     icon: '􀎠',
     iconColor: 'red',
-    label: i18n.t(i18n.l.walletconnect.simulation.simulation_card.event_row.types.revoke),
+    label: i18n.walletconnect.simulation.simulation_card.event_row.types.revoke(),
     textColor: 'label',
   },
   failed: {
     amountPrefix: '',
     icon: '􀇿',
     iconColor: 'red',
-    label: i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.likely_to_fail),
+    label: i18n.walletconnect.simulation.simulation_card.titles.likely_to_fail(),
     textColor: 'red',
   },
   insufficientBalance: {

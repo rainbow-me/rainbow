@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box, Inline } from '@/design-system';
 import { changeConnectionMenuItems } from '@/helpers/walletConnectNetworks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -28,7 +28,7 @@ const CONTAINER_PADDING = 15;
 const VENDOR_LOGO_ICON_SIZE = 50;
 export const WALLET_CONNECT_LIST_ITEM_HEIGHT = VENDOR_LOGO_ICON_SIZE + CONTAINER_PADDING * 2;
 
-const androidContextMenuActions = [i18n.t(i18n.l.walletconnect.switch_wallet), i18n.t(i18n.l.walletconnect.disconnect)];
+const androidContextMenuActions = [i18n.walletconnect.switch_wallet(), i18n.walletconnect.disconnect()];
 
 const SessionRow = styled(Row)({
   alignItems: 'center',
@@ -154,7 +154,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
           <ColumnWithMargins flex={1} margin={android ? -4 : 5} style={columnStyle}>
             <Row width="95%">
               <TruncatedText size="lmedium" weight="heavy">
-                {dappName || i18n.t(i18n.l.walletconnect.unknown_application)}
+                {dappName || i18n.walletconnect.unknown_application()}
               </TruncatedText>
             </Row>
 

@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Bleed, Inline, Text, TextProps } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -36,7 +36,7 @@ export const NetworkSelectorButton = ({
   onSelectChain,
   selectedChainId,
   actionButton = {
-    label: i18n.t(i18n.l.exchange.all_networks),
+    label: i18n.exchange.all_networks(),
     color: 'labelSecondary',
     weight: 'bold',
   },

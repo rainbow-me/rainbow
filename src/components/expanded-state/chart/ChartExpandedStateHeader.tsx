@@ -6,7 +6,7 @@ import { AnimatedText, Bleed, Box, Stack, globalColors, useColorMode } from '@/d
 import { CANDLE_RESOLUTIONS, LINE_CHART_TIME_PERIODS } from '@/features/charts/constants';
 import { useChartsStore, useChartType } from '@/features/charts/stores/chartsStore';
 import { ChartType, LineChartTimePeriod } from '@/features/charts/types';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { getSolidColorEquivalent } from '@/worklets/colors';
@@ -120,7 +120,7 @@ const LineChartTimeLabel = ({
 };
 
 function formatLineChartTimespan(lineChartTimePeriod: LineChartTimePeriod): string {
-  return i18n.t(i18n.l.expanded_state.chart.past_timespan, {
+  return i18n.expanded_state.chart.past_timespan({
     formattedTimespan: LINE_CHART_TIME_PERIODS[lineChartTimePeriod].suffix,
   });
 }

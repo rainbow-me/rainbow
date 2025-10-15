@@ -3,7 +3,7 @@ import { Insets, InteractionManager, StyleSheet } from 'react-native';
 import Animated, { runOnUI, useAnimatedRef, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { analytics } from '@/analytics';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
@@ -120,7 +120,7 @@ const TokenToSellListComponent = () => {
 
   return (
     <>
-      <ChainSelection allText={i18n.t(i18n.l.exchange.all_networks)} animatedRef={animatedRef} output={false} />
+      <ChainSelection allText={i18n.exchange.all_networks()} animatedRef={animatedRef} output={false} />
       <Animated.FlatList
         ListEmptyComponent={<ListEmpty />}
         ListFooterComponent={listFooter}

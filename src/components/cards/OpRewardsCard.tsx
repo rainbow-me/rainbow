@@ -4,7 +4,7 @@ import { AccentColorProvider, Box, Cover, globalColors, Stack, Text, useColorMod
 import { ButtonPressAnimation } from '@/components/animations';
 import { ImageBackground } from 'react-native';
 import OpRewardsCardBackgroundImage from '../../assets/opRewardsCardBackgroundImage.png';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -43,18 +43,18 @@ export const OpRewardsCard: React.FC = () => {
         <Stack space="32px">
           <Stack space="10px">
             <Text color="accent" size="20pt" weight="heavy">
-              {i18n.t(i18n.l.discover.op_rewards.card_title)}
+              {i18n.discover.op_rewards.card_title()}
             </Text>
             <Box width="4/5">
               <Text size="15pt / 135%" color={{ custom: globalColors.white100 }} weight="bold">
-                {i18n.t(i18n.l.discover.op_rewards.card_subtitle)}
+                {i18n.discover.op_rewards.card_subtitle()}
               </Text>
             </Box>
           </Stack>
           <ButtonPressAnimation onPress={navigateToRewardsSheet} scaleTo={0.96}>
             <Box height="36px" background="accent" borderRadius={18} justifyContent="center" alignItems="center">
               <Text size="15pt" weight="bold" color={{ custom: globalColors.white100 }}>
-                {i18n.t(i18n.l.discover.op_rewards.button_title)}
+                {i18n.discover.op_rewards.button_title()}
               </Text>
             </Box>
           </ButtonPressAnimation>

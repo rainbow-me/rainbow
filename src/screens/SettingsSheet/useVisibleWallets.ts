@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
@@ -22,12 +22,12 @@ export const getTitleForWalletType = (type: EthereumWalletType, walletTypeCount:
   switch (type) {
     case EthereumWalletType.mnemonic:
       return walletTypeCount.phrase > 0
-        ? i18n.t(i18n.l.back_up.wallet_group_title_plural, { walletGroupNumber: walletTypeCount.phrase })
-        : i18n.t(i18n.l.back_up.wallet_group_title_singular);
+        ? i18n.back_up.wallet_group_title_plural({ walletGroupNumber: walletTypeCount.phrase })
+        : i18n.back_up.wallet_group_title_singular();
     case EthereumWalletType.privateKey:
       return walletTypeCount.privateKey > 0
-        ? i18n.t(i18n.l.back_up.private_key_plural, { privateKeyNumber: walletTypeCount.privateKey })
-        : i18n.t(i18n.l.back_up.private_key_singluar);
+        ? i18n.back_up.private_key_plural({ privateKeyNumber: walletTypeCount.privateKey })
+        : i18n.back_up.private_key_singluar();
     default:
       return '';
   }

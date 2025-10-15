@@ -1,6 +1,6 @@
 import { Box, Inline, Text } from '@/design-system';
 import React, { useEffect } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
@@ -50,7 +50,7 @@ export function GasDetails() {
               􀵟
             </Text>
             <Text color="labelQuaternary" size="13pt" weight="bold">
-              {i18n.t(i18n.l.claimables.panel.amount_to_claim_on_network, {
+              {i18n.claimables.panel.amount_to_claim_on_network({
                 amount: gasFeeDisplay,
                 network: useBackendNetworksStore.getState().getChainsLabel()[chainId],
               })}

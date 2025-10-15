@@ -18,15 +18,15 @@ import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH 
 
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 import { CopyPasteMenu } from './CopyPasteMenu';
 
-const SELECT_LABEL = i18n.t(i18n.l.swap.select);
-const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
-const TOKEN_TO_SWAP_LABEL = i18n.t(i18n.l.swap.token_to_swap);
+const SELECT_LABEL = i18n.swap.select();
+const NO_BALANCE_LABEL = i18n.swap.no_balance();
+const TOKEN_TO_SWAP_LABEL = i18n.swap.token_to_swap();
 
 function SwapInputActionButton() {
   const { isDarkMode } = useColorMode();

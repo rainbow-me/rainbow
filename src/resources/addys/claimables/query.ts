@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { NativeCurrencyKey } from '@/entities';
 import { Claimable, ClaimableType, ConsolidatedClaimablesResponse } from './types';
 import { logger, RainbowError } from '@/logger';
@@ -103,7 +103,7 @@ export async function getClaimables({ address, currency, abortController }: Clai
               method: 'GET',
             },
             chainId: ChainId.mainnet,
-            name: i18n.t(i18n.l.claimables.panel.rainbow_eth_rewards),
+            name: i18n.claimables.panel.rainbow_eth_rewards(),
             iconUrl: 'https://rainbow.me/favicon.ico',
             type: ClaimableType.RainbowEthRewards,
           };

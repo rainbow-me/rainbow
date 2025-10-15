@@ -1,7 +1,7 @@
 import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Box, Text, TextIcon, useColorMode } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { GestureHandlerButton } from './GestureHandlerButton';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
 import { useSwapContext } from '../providers/swap-provider';
@@ -42,7 +42,7 @@ export function ReviewButton() {
               {'􀕹'}
             </TextIcon>
             <Text color="labelQuaternary" size="13pt" weight="heavy">
-              {i18n.t(i18n.l.swap.actions.review)}
+              {i18n.swap.actions.review()}
             </Text>
           </Box>
         </Box>

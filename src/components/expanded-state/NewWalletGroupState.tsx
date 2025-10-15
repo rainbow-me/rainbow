@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback, useState } from 'react';
 import ProfileModal from './profile/ProfileModal';
 import { analytics } from '@/analytics';
@@ -30,10 +30,10 @@ export default function NewWalletGroupState({ onCloseModal, numWalletGroups }: N
       handleSubmit={handleSubmit}
       inputValue={value}
       onChange={setValue}
-      placeholder={i18n.t(i18n.l.wallet.action.create_wallet_group_placeholder, {
+      placeholder={i18n.wallet.action.create_wallet_group_placeholder({
         numWalletGroups: numWalletGroups + 1,
       })}
-      submitButtonText={i18n.t(i18n.l.wallet.action.create_wallet_group)}
+      submitButtonText={i18n.wallet.action.create_wallet_group()}
     />
   );
 }

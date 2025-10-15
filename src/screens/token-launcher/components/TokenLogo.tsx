@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import Svg, { Circle } from 'react-native-svg';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Box, Text, TextIcon, TextShadow } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -133,10 +133,10 @@ export function TokenLogo({ size = SIZE, disabled = false }: { size?: number; di
       {error && (
         <Box gap={8} paddingTop={'12px'}>
           <Text align="center" size="13pt" color={{ custom: ERROR_RED }} weight="medium">
-            {i18n.t(i18n.l.token_launcher.image_upload_error.title)}
+            {i18n.token_launcher.image_upload_error.title()}
           </Text>
           <Text align="center" size="13pt" color={{ custom: ERROR_RED }} weight="medium">
-            {i18n.t(i18n.l.token_launcher.image_upload_error.subtitle)}
+            {i18n.token_launcher.image_upload_error.subtitle()}
           </Text>
         </Box>
       )}

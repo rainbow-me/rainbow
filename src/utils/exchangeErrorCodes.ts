@@ -1,5 +1,5 @@
 import { QuoteError } from '@rainbow-me/swaps';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 export interface ExchangeQuoteError extends QuoteError {
   buttonLabel: string;
@@ -11,20 +11,20 @@ export default function handleSwapErrorCodes(quoteError: QuoteError): ExchangeQu
   switch (errorCode) {
     case 501:
       return {
-        buttonLabel: i18n.t(i18n.l.button.confirm_exchange.no_quote_available),
+        buttonLabel: i18n.button.confirm_exchange.no_quote_available(),
         explainerType: 'noQuote',
         ...quoteError,
       };
     case 502:
       return {
-        buttonLabel: i18n.t(i18n.l.button.confirm_exchange.insufficient_liquidity),
+        buttonLabel: i18n.button.confirm_exchange.insufficient_liquidity(),
         explainerType: 'insufficientLiquidity',
         ...quoteError,
       };
 
     case 503: {
       return {
-        buttonLabel: i18n.t(i18n.l.button.confirm_exchange.fee_on_transfer),
+        buttonLabel: i18n.button.confirm_exchange.fee_on_transfer(),
         explainerType: 'feeOnTransfer',
         ...quoteError,
       };
@@ -32,14 +32,14 @@ export default function handleSwapErrorCodes(quoteError: QuoteError): ExchangeQu
 
     case 504:
       return {
-        buttonLabel: i18n.t(i18n.l.button.confirm_exchange.no_route_found),
+        buttonLabel: i18n.button.confirm_exchange.no_route_found(),
         explainerType: 'noRouteFound',
         ...quoteError,
       };
 
     default:
       return {
-        buttonLabel: i18n.t(i18n.l.button.confirm_exchange.no_quote_available),
+        buttonLabel: i18n.button.confirm_exchange.no_quote_available(),
         explainerType: 'noQuote',
         ...quoteError,
       };

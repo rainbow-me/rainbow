@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Box, Stack, Text } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { RewardsStatsCard } from './RewardsStatsCard';
 import { RewardStatsAction, RewardStatsActionType } from '@/graphql/__generated__/metadata';
 import { useNavigation } from '@/navigation';
@@ -67,14 +67,14 @@ export const RewardsStats: React.FC<Props> = ({ assetPrice, actions, color }) =>
     <Box width="full" paddingBottom="12px">
       <Stack space="16px">
         <Text size="20pt" color="label" weight="heavy">
-          {i18n.t(i18n.l.rewards.my_stats)}
+          {i18n.rewards.my_stats()}
         </Text>
 
         <Box alignItems="flex-start" flexDirection="row" justifyContent="flex-start" flexGrow={1} style={{ gap: 12 }}>
           <Box flexGrow={1}>
             <RewardsStatsCard
               key={RewardStatsActionType.Swap}
-              title={i18n.t(i18n.l.rewards.swapped)}
+              title={i18n.rewards.swapped()}
               value={getSwapsValue}
               secondaryValue={`${swapsData?.rewardPercent?.toString() ?? '0'}% reward`}
               secondaryValueColor={{ custom: color }}
@@ -86,7 +86,7 @@ export const RewardsStats: React.FC<Props> = ({ assetPrice, actions, color }) =>
           <Box flexGrow={1}>
             <RewardsStatsCard
               key={RewardStatsActionType.Bridge}
-              title={i18n.t(i18n.l.rewards.bridged)}
+              title={i18n.rewards.bridged()}
               value={getBridgeValue}
               secondaryValue={`${bridgeData?.rewardPercent?.toString() ?? '0'}% reward`}
               secondaryValueColor={{ custom: color }}

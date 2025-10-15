@@ -31,7 +31,7 @@ import { uniqBy } from 'lodash';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { EXTRA_WEBVIEW_HEIGHT, WEBVIEW_HEIGHT } from './Dimensions';
 import { analytics } from '@/analytics';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { DndProvider, Draggable, DraggableGrid, DraggableGridProps, UniqueIdentifier } from '../drag-and-drop';
 import { EasingGradient } from '../easing-gradient/EasingGradient';
@@ -121,7 +121,7 @@ const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
           􀙭
         </Text>
         <Text color="label" size="20pt" weight="heavy">
-          {i18n.t(i18n.l.dapp_browser.homepage.trending)}
+          {i18n.dapp_browser.homepage.trending()}
         </Text>
       </Inline>
       <Bleed space="24px">
@@ -228,7 +228,7 @@ const Favorites = ({ goToUrl, tabId }: { goToUrl: (url: string) => void; tabId: 
           􀋃
         </Text>
         <Text color="label" size="20pt" weight="heavy">
-          {i18n.t(i18n.l.dapp_browser.homepage.favorites)}
+          {i18n.dapp_browser.homepage.favorites()}
         </Text>
       </Inline>
       {favoriteDapps.length > 0 && localGridSort ? (
@@ -272,7 +272,7 @@ const Recents = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
           􀐫
         </Text>
         <Text color="label" size="20pt" weight="heavy">
-          {i18n.t(i18n.l.dapp_browser.homepage.recents)}
+          {i18n.dapp_browser.homepage.recents()}
         </Text>
       </Inline>
       <Box width={{ custom: DEVICE_WIDTH }}>
@@ -349,7 +349,7 @@ const Card = memo(function Card({
     const menuItems = [
       {
         actionKey: 'favorite',
-        actionTitle: isFavorite ? i18n.t(i18n.l.dapp_browser.menus.undo_favorite) : i18n.t(i18n.l.dapp_browser.menus.favorite),
+        actionTitle: isFavorite ? i18n.dapp_browser.menus.undo_favorite() : i18n.dapp_browser.menus.favorite(),
         icon: {
           iconType: 'SYSTEM',
           iconValue: isFavorite ? 'star.slash' : 'star',
@@ -357,7 +357,7 @@ const Card = memo(function Card({
       },
       {
         actionKey: 'remove',
-        actionTitle: i18n.t(i18n.l.dapp_browser.menus.remove),
+        actionTitle: i18n.dapp_browser.menus.remove(),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'trash',

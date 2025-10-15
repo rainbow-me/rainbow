@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import pWaitFor from 'p-wait-for';
 import React, { useCallback } from 'react';
 import { AppState, Linking } from 'react-native';
@@ -59,10 +59,10 @@ export default function QRCodeScannerNeedsAuthorization({ onGetBack }) {
   return (
     <Box alignItems="center">
       <QRIcon />
-      <Title>{i18n.t(i18n.l.wallet.qr.scan_to_pay_or_connect)}</Title>
-      <Subtitle>{i18n.t(i18n.l.wallet.qr.camera_access_needed)}</Subtitle>
+      <Title>{i18n.wallet.qr.scan_to_pay_or_connect()}</Title>
+      <Subtitle>{i18n.wallet.qr.camera_access_needed()}</Subtitle>
       <Button onPress={handlePressSettings}>
-        <ButtonLabel>{i18n.t(i18n.l.wallet.qr.enable_camera_access)}</ButtonLabel>
+        <ButtonLabel>{i18n.wallet.qr.enable_camera_access()}</ButtonLabel>
       </Button>
     </Box>
   );

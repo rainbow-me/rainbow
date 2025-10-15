@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Source } from 'react-native-fast-image';
@@ -32,7 +32,7 @@ export default React.memo(function TokenFamilyHeaderIcon({ familyImage, familyNa
 
   const shadows = useMemo(() => shadowsFactory(colors), [colors]);
 
-  if (familyName === i18n.t(i18n.l.account.tab_showcase)) {
+  if (familyName === i18n.account.tab_showcase()) {
     return (
       <View style={sx.trophy}>
         <Text align="center" containsEmoji color="primary (Deprecated)" size="16px / 22px (Deprecated)">
@@ -52,7 +52,7 @@ export default React.memo(function TokenFamilyHeaderIcon({ familyImage, familyNa
     );
   }
 
-  if (familyName === i18n.t(i18n.l.button.hidden)) {
+  if (familyName === i18n.button.hidden()) {
     return (
       <View
         style={[

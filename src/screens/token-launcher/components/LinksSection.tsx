@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { StyleSheet } from 'react-native';
 import { CollapsableField } from './CollapsableField';
 import { Bleed, Box, IconContainer, Separator, Text, TextIcon, TextShadow } from '@/design-system';
@@ -31,8 +31,8 @@ export const LINK_SETTINGS = {
     Icon: () => <Icon name="x" color={'white'} size={26} />,
     iconBackgroundColor: '#000000',
     primaryColor: '#000000',
-    placeholder: i18n.t(i18n.l.token_launcher.links.x.placeholder),
-    displayName: i18n.t(i18n.l.token_launcher.links.x.name),
+    placeholder: i18n.token_launcher.links.x.placeholder(),
+    displayName: i18n.token_launcher.links.x.name(),
     type: 'x',
   },
   telegram: {
@@ -45,8 +45,8 @@ export const LINK_SETTINGS = {
     ),
     iconBackgroundColor: '#24A1DE',
     primaryColor: '#24A1DE',
-    placeholder: i18n.t(i18n.l.token_launcher.links.telegram.placeholder),
-    displayName: i18n.t(i18n.l.token_launcher.links.telegram.name),
+    placeholder: i18n.token_launcher.links.telegram.placeholder(),
+    displayName: i18n.token_launcher.links.telegram.name(),
     type: 'telegram',
   },
   farcaster: {
@@ -57,8 +57,8 @@ export const LINK_SETTINGS = {
     ),
     iconBackgroundColor: '#855DCD',
     primaryColor: '#855DCD',
-    placeholder: i18n.t(i18n.l.token_launcher.links.farcaster.placeholder),
-    displayName: i18n.t(i18n.l.token_launcher.links.farcaster.name),
+    placeholder: i18n.token_launcher.links.farcaster.placeholder(),
+    displayName: i18n.token_launcher.links.farcaster.name(),
     type: 'farcaster',
   },
   website: {
@@ -76,8 +76,8 @@ export const LINK_SETTINGS = {
     ),
     iconBackgroundColor: colors.appleBlue,
     primaryColor: '#fff',
-    placeholder: i18n.t(i18n.l.token_launcher.links.website.placeholder),
-    displayName: i18n.t(i18n.l.token_launcher.links.website.name),
+    placeholder: i18n.token_launcher.links.website.placeholder(),
+    displayName: i18n.token_launcher.links.website.name(),
     type: 'website',
   },
   other: {
@@ -88,8 +88,8 @@ export const LINK_SETTINGS = {
     ),
     iconBackgroundColor: '#000000',
     primaryColor: '#000000',
-    placeholder: i18n.t(i18n.l.token_launcher.links.other.placeholder),
-    displayName: i18n.t(i18n.l.token_launcher.links.other.name),
+    placeholder: i18n.token_launcher.links.other.placeholder(),
+    displayName: i18n.token_launcher.links.other.name(),
     type: 'other' as const,
   },
 } satisfies Record<
@@ -188,7 +188,7 @@ function LinkField({ link, index }: { link: Link; index: number }) {
       {!isValid && (
         <Box paddingVertical={'8px'} paddingHorizontal={'20px'}>
           <Text color={{ custom: ERROR_RED }} size="13pt" weight="heavy">
-            {i18n.t(i18n.l.token_launcher.input_errors.invalid_input)}
+            {i18n.token_launcher.input_errors.invalid_input()}
           </Text>
         </Box>
       )}
@@ -216,7 +216,7 @@ export function LinksSection() {
         <Box paddingVertical="16px">
           <Separator color="separatorSecondary" />
           <Text style={{ paddingTop: 16 }} color="labelSecondary" size="17pt" weight="heavy">
-            {i18n.t(i18n.l.token_launcher.links.add_more)}
+            {i18n.token_launcher.links.add_more()}
           </Text>
         </Box>
         <Grid columns={2} spacing={8}>

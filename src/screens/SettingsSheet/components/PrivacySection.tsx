@@ -1,6 +1,6 @@
 import { analytics } from '@/analytics';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { logger } from '@/logger';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -14,7 +14,7 @@ import MenuItem from './MenuItem';
 import { useHiddenTokens, useShowcaseTokens } from '@/hooks';
 import { wipeWebData, initWebData } from '@/helpers/webData';
 
-const TRANSLATIONS = i18n.l.settings.privacy_section;
+// Removed: const TRANSLATIONS = i18n.l.settings.privacy_section;
 
 const PrivacySection = () => {
   const { showcaseTokens } = useShowcaseTokens();
@@ -55,17 +55,17 @@ const PrivacySection = () => {
 
   return (
     <MenuContainer>
-      <Menu description={i18n.t(TRANSLATIONS.analytics_toggle_description)}>
+      <Menu description={i18n.settings.privacy_section.analytics_toggle_description()}>
         <MenuItem
           disabled
           hasSfSymbol
           leftComponent={<MenuItem.TextIcon icon="􀣉" isLink />}
           rightComponent={<Switch onValueChange={toggleAnalytics} value={analyticsEnabled} />}
           size={52}
-          titleComponent={<MenuItem.Title text={i18n.t(TRANSLATIONS.analytics_toggle)} />}
+          titleComponent={<MenuItem.Title text={i18n.settings.privacy_section.analytics_toggle()} />}
         />
       </Menu>
-      <Menu description={i18n.t(TRANSLATIONS.when_public)}>
+      <Menu description={i18n.settings.privacy_section.when_public()}>
         <MenuItem
           disabled
           hasSfSymbol
@@ -73,7 +73,7 @@ const PrivacySection = () => {
           rightComponent={<Switch onValueChange={toggleWebData} value={showcaseTokens.length > 0} />}
           size={52}
           testID="public-showcase"
-          titleComponent={<MenuItem.Title text={i18n.t(TRANSLATIONS.public_showcase)} />}
+          titleComponent={<MenuItem.Title text={i18n.settings.privacy_section.public_showcase()} />}
         />
       </Menu>
       {profilesEnabled && accountENS && (
@@ -88,7 +88,7 @@ const PrivacySection = () => {
               });
             }}
             size={52}
-            titleComponent={<MenuItem.Title isLink text={i18n.t(TRANSLATIONS.view_profile)} />}
+            titleComponent={<MenuItem.Title isLink text={i18n.settings.privacy_section.view_profile()} />}
           />
         </Menu>
       )}

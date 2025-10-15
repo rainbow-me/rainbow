@@ -7,15 +7,15 @@ import { USD_DECIMALS } from '@/features/perps/constants';
 import { useOrderAmountValidation } from '@/features/perps/stores/derived/useOrderAmountValidation';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { truncateToDecimals } from '@/safe-math/SafeMath';
 import { ReadOnlySharedValue, useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
 const translations = {
-  availableSuffix: i18n.t(i18n.l.perps.inputs.available),
-  maxSuffix: i18n.t(i18n.l.perps.inputs.max),
-  minimumSuffix: i18n.t(i18n.l.perps.inputs.minimum),
-  noBalance: i18n.t(i18n.l.perps.inputs.no_balance),
+  availableSuffix: i18n.perps.inputs.available(),
+  maxSuffix: i18n.perps.inputs.max(),
+  minimumSuffix: i18n.perps.inputs.minimum(),
+  noBalance: i18n.perps.inputs.no_balance(),
 };
 
 export const AmountInputCardSubtitle = ({ availableBalanceString }: { availableBalanceString: ReadOnlySharedValue<string> }) => {

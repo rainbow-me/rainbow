@@ -10,7 +10,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
 import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import ConditionalWrap from 'conditional-wrap';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
@@ -96,7 +96,7 @@ export const PerpsFeatureCard = memo(function PerpsFeatureCard({
                 <Box>
                   <Stack space="10px">
                     <Text size="12pt" weight="black" color={{ custom: accentColor }}>
-                      {i18n.t(i18n.l.new).toUpperCase()}
+                      {i18n.new().toUpperCase()}
                     </Text>
                     <Stack space={'12px'}>
                       <Inline alignVertical="center" space="6px">

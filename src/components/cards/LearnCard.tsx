@@ -6,7 +6,7 @@ import { LearnCardDetails } from './utils/types';
 import { IconOrb } from './reusables/IconOrb';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useTheme } from '@/theme';
 import { useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
@@ -40,8 +40,6 @@ export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
     rotate?.();
   };
 
-  const translations = i18n.l.cards.learn;
-
   return (
     <GenericCard
       type={type}
@@ -58,17 +56,17 @@ export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
           <Inline alignHorizontal="justify">
             <Box style={{ maxWidth: 80 }}>
               <Text size="13pt" weight="heavy" color={{ custom: primaryTextColor }} numberOfLines={1}>
-                {`􀫸 ${i18n.t(translations.learn).toUpperCase()}`}
+                {`􀫸 ${i18n.cards.learn.learn().toUpperCase()}`}
               </Text>
             </Box>
             <IconOrb color={orbColorLight} icon={emoji} />
           </Inline>
           <Stack space="10px">
             <Text color={{ custom: secondaryTextColor }} size="13pt" weight="bold">
-              {i18n.t(translations.categories[category])}
+              {i18n.cards.learn.categories[category as keyof typeof i18n.cards.learn.categories]()}
             </Text>
             <Text color={{ custom: primaryTextColor }} size="17pt" weight="heavy" numberOfLines={2}>
-              {i18n.t(translations.cards[key].title)}
+              {i18n.cards.learn.cards[key as keyof typeof i18n.cards.learn.cards].title()}
             </Text>
           </Stack>
         </Box>
@@ -79,10 +77,10 @@ export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
               <Column>
                 <Stack space="12px">
                   <Text size="13pt" weight="bold" color={{ custom: secondaryTextColor }}>
-                    {i18n.t(translations.categories[category])}
+                    {i18n.cards.learn.categories[category as keyof typeof i18n.cards.learn.categories]()}
                   </Text>
                   <Text size="22pt" weight="heavy" color={{ custom: primaryTextColor }}>
-                    {i18n.t(translations.cards[key].title)}
+                    {i18n.cards.learn.cards[key as keyof typeof i18n.cards.learn.cards].title()}
                   </Text>
                 </Stack>
               </Column>
@@ -92,7 +90,7 @@ export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
             </Columns>
           </Box>
           <Text color={{ custom: primaryTextColor }} size="13pt" weight="semibold" numberOfLines={3}>
-            {i18n.t(translations.cards[key].description)}
+            {i18n.cards.learn.cards[key as keyof typeof i18n.cards.learn.cards].description()}
           </Text>
         </Stack>
       )}

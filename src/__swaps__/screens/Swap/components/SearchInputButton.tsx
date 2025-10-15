@@ -5,16 +5,16 @@ import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, with
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import Clipboard from '@react-native-clipboard/clipboard';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '../constants';
 import { useSwapsSearchStore } from '../resources/search/searchV2';
 import { useClipboard } from '@/hooks';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { IS_ANDROID } from '@/env';
 
-const CANCEL_LABEL = i18n.t(i18n.l.button.cancel);
-const CLOSE_LABEL = i18n.t(i18n.l.button.close);
-const PASTE_LABEL = i18n.t(i18n.l.button.paste);
+const CANCEL_LABEL = i18n.button.cancel();
+const CLOSE_LABEL = i18n.button.close();
+const PASTE_LABEL = i18n.button.paste();
 
 export const SearchInputButton = ({
   output,

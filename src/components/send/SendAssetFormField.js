@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { useTheme } from '@/theme';
@@ -87,7 +87,7 @@ const SendAssetFormField = (
       <RowWithMargins align="center" flex={1} justify="space-between" margin={12} {...props}>
         <BubbleField
           autoFocus={autoFocus}
-          buttonText={i18n.t(i18n.l.wallet.transaction.max)}
+          buttonText={i18n.wallet.transaction.max()}
           colorForAsset={colorForAsset || colors.dark}
           format={format}
           keyboardType="decimal-pad"

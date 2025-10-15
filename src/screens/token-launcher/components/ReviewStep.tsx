@@ -6,7 +6,7 @@ import { Box, Text, TextShadow } from '@/design-system';
 import { TextSize } from '@/design-system/components/Text/Text';
 import { abbreviateNumber, convertAmountToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import { isENSAddressFormat } from '@/helpers/validators';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
@@ -45,7 +45,7 @@ function TokenAllocationCard() {
   return (
     <Box gap={20} backgroundColor={CARD_BACKGROUND_COLOR} padding={'20px'} borderRadius={FIELD_BORDER_RADIUS} width={'full'}>
       <Text size="17pt" weight="heavy" color={'label'}>
-        {i18n.t(i18n.l.token_launcher.review.token_allocation)}
+        {i18n.token_launcher.review.token_allocation()}
       </Text>
       <Box gap={4}>
         <Box
@@ -60,7 +60,7 @@ function TokenAllocationCard() {
           <Box flexGrow={1} flexDirection="row" alignItems="center" gap={10}>
             <AddressAvatar url={accountImage} address={accountAddress} label={accountAddress} color={accountColor} size={20} />
             <Text size="17pt" weight="medium" color={'labelSecondary'}>
-              {i18n.t(i18n.l.token_launcher.review.your_share)}
+              {i18n.token_launcher.review.your_share()}
             </Text>
           </Box>
           <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
@@ -157,7 +157,7 @@ function AboutCard() {
   return (
     <Box gap={20} backgroundColor={CARD_BACKGROUND_COLOR} padding={'20px'} borderRadius={FIELD_BORDER_RADIUS} width={'full'}>
       <Text size="17pt" weight="heavy" color={'label'}>
-        {i18n.t(i18n.l.token_launcher.review.about)}
+        {i18n.token_launcher.review.about()}
       </Text>
       {description !== '' && (
         <Text size="17pt" weight="medium" color={'labelSecondary'}>
@@ -234,7 +234,7 @@ function NetworkCard() {
       borderRadius={FIELD_BORDER_RADIUS}
     >
       <Text size="17pt" weight="heavy" color={'label'}>
-        {i18n.t(i18n.l.token_launcher.review.network)}
+        {i18n.token_launcher.review.network()}
       </Text>
       <Box flexDirection="row" alignItems="center" gap={8}>
         <ChainImage position="relative" chainId={tokenChainId} size={16} />
@@ -263,7 +263,7 @@ function TotalSupplyCard() {
       borderRadius={FIELD_BORDER_RADIUS}
     >
       <Text size="17pt" weight="heavy" color={'label'}>
-        {i18n.t(i18n.l.token_launcher.review.total_supply)}
+        {i18n.token_launcher.review.total_supply()}
       </Text>
       <Text size="17pt" weight="bold" style={{ textTransform: 'capitalize' }} color={{ custom: accentColors.opacity100 }}>
         {abbreviateNumber(tokenSupply, 2, 'long', true)}
@@ -305,7 +305,7 @@ function TotalCostPill() {
       <Box style={StyleSheet.absoluteFill} backgroundColor={accentColors.opacity40} />
       <Box style={StyleSheet.absoluteFill} backgroundColor={'rgba(255, 255, 255, 0.08)'} />
       <Text size="17pt" weight="heavy" color={'label'}>
-        {i18n.t(i18n.l.token_launcher.review.total_cost)}
+        {i18n.token_launcher.review.total_cost()}
       </Text>
       <Box flexDirection="row" alignItems="center" gap={4}>
         <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
@@ -369,7 +369,7 @@ function TokenPriceAndMarketCap() {
           </Text>
         </TextShadow>
         <Text size="15pt" weight="bold" color={'labelSecondary'}>
-          {i18n.t(i18n.l.token_launcher.review.initial_price)}
+          {i18n.token_launcher.review.initial_price()}
         </Text>
       </Box>
       <Box gap={12} flexGrow={1} padding={'20px'} backgroundColor={accentColors.opacity12} borderRadius={FIELD_BORDER_RADIUS}>
@@ -379,7 +379,7 @@ function TokenPriceAndMarketCap() {
           </Text>
         </TextShadow>
         <Text size="15pt" weight="bold" color={'labelSecondary'}>
-          {i18n.t(i18n.l.token_launcher.review.market_cap)}
+          {i18n.token_launcher.review.market_cap()}
         </Text>
       </Box>
     </Box>

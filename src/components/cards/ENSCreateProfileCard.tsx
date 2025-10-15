@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { Bleed, Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
 import { prefetchENSAvatar, prefetchENSRecords, useAccountENSDomains, useDimensions } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { watchingAlert } from '@/utils';
 import { useRoute } from '@react-navigation/native';
@@ -17,7 +17,7 @@ import { ORB_SIZE } from './reusables/IconOrb';
 
 const ASPECT_RATIO = 112 / 350;
 const ARBITRARILY_LARGE_NUMBER = 1000;
-const TRANSLATIONS = i18n.l.cards.ens_create_profile;
+// Removed: const TRANSLATIONS = i18n.l.cards.ens_create_profile;
 const GRADIENT: Gradient = {
   colors: ['#DADEE5', '#E6E9F0'],
   start: { x: 0, y: 0 },
@@ -61,10 +61,10 @@ export const ENSCreateProfileCard = () => {
             <Column>
               <Stack space={{ custom: 14 }}>
                 <Text weight="heavy" color="label" size="20pt">
-                  {i18n.t(TRANSLATIONS.title)}
+                  {i18n.cards.ens_create_profile.title()}
                 </Text>
                 <Text weight="semibold" color="labelSecondary" size="15pt">
-                  {i18n.t(TRANSLATIONS.body)}
+                  {i18n.cards.ens_create_profile.body()}
                 </Text>
               </Stack>
             </Column>

@@ -10,7 +10,7 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';
 import { Box, globalColors, TextIcon, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -74,7 +74,7 @@ const Content = () => {
               </ButtonPressAnimation>
             }
             testID={'discover-header'}
-            title={i18n.t(i18n.l.discover.search.discover)}
+            title={i18n.discover.search.discover()}
           />
         )}
       </Box>

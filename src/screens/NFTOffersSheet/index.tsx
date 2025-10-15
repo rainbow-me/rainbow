@@ -18,7 +18,7 @@ import {
 import { NftOffer } from '@/graphql/__generated__/arc';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { queryClient } from '@/react-query';
 import { nftOffersQueryKey, useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
@@ -81,7 +81,7 @@ export const NFTOffersSheet = () => {
                     )}
                   </AccentColorProvider>
                   <Text size="20pt" weight="heavy" color="label" align="center">
-                    {i18n.t(i18n.l.nft_offers.sheet.title)}
+                    {i18n.nft_offers.sheet.title()}
                   </Text>
                   <Box
                     paddingHorizontal={{ custom: 6.5 }}
@@ -113,7 +113,7 @@ export const NFTOffersSheet = () => {
                 <Inline alignHorizontal="justify" alignVertical="center">
                   <Stack space="10px">
                     <Text size="15pt" weight="semibold" color="labelSecondary">
-                      {i18n.t(i18n.l.nft_offers.sheet.total)}
+                      {i18n.nft_offers.sheet.total()}
                     </Text>
                     {isLoading ? (
                       <Box
@@ -167,7 +167,7 @@ export const NFTOffersSheet = () => {
               <Box paddingTop={{ custom: 180 }} width="full" alignItems="center">
                 <Stack space="36px">
                   <Text align="center" color="labelSecondary" weight="bold" size="20pt">
-                    {i18n.t(i18n.l.nft_offers.sheet.no_offers_found)}
+                    {i18n.nft_offers.sheet.no_offers_found()}
                   </Text>
                   <ButtonPressAnimation
                     onPress={() => {

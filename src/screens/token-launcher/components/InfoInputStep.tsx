@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Bleed, Box, Text, Separator } from '@/design-system';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { FOOTER_HEIGHT } from './TokenLauncherFooter';
@@ -36,8 +36,8 @@ function SymbolInput() {
       }}
       spellCheck={false}
       autoCapitalize="characters"
-      title={i18n.t(i18n.l.token_launcher.titles.ticker)}
-      placeholder={i18n.t(i18n.l.token_launcher.placeholders.ticker)}
+      title={i18n.token_launcher.titles.ticker()}
+      placeholder={i18n.token_launcher.placeholders.ticker()}
     />
   );
 }
@@ -53,8 +53,8 @@ function NameInput() {
       }}
       spellCheck={false}
       autoCapitalize="words"
-      title={i18n.t(i18n.l.token_launcher.titles.name)}
-      placeholder={i18n.t(i18n.l.token_launcher.placeholders.enter_coin_name)}
+      title={i18n.token_launcher.titles.name()}
+      placeholder={i18n.token_launcher.placeholders.enter_coin_name()}
     />
   );
 }
@@ -65,7 +65,7 @@ function RequiredInfoSection() {
       <Box flexDirection="row" alignItems="center" gap={10}>
         <Icon name="asterisk" color={LABEL_QUINARY.custom} size={10} />
         <Text color={LABEL_QUINARY} size="13pt" weight="heavy">
-          {i18n.t(i18n.l.token_launcher.titles.required_info)}
+          {i18n.token_launcher.titles.required_info()}
         </Text>
       </Box>
       <Box gap={8}>
@@ -82,7 +82,7 @@ function AboutSection() {
     <Box gap={16} paddingVertical={'20px'}>
       <Box paddingHorizontal={'20px'}>
         <Text color={LABEL_QUINARY} size="13pt" weight="heavy">
-          {i18n.t(i18n.l.token_launcher.titles.about)}
+          {i18n.token_launcher.titles.about()}
         </Text>
       </Box>
       <Box gap={12} width={'full'}>

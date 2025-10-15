@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import ProfileModal from './profile/ProfileModal';
 import { analytics } from '@/analytics';
@@ -96,13 +96,9 @@ export default function WalletProfileState({
       imageAvatar={profileImage}
       inputValue={value}
       onChange={setValue}
-      placeholder={i18n.t(i18n.l.wallet.new.name_wallet)}
+      placeholder={i18n.wallet.new.name_wallet()}
       submitButtonText={
-        isNewProfile
-          ? actionType === 'Create'
-            ? i18n.t(i18n.l.wallet.new.create_wallet)
-            : i18n.t(i18n.l.wallet.new.import_wallet)
-          : i18n.t(i18n.l.button.done)
+        isNewProfile ? (actionType === 'Create' ? i18n.wallet.new.create_wallet() : i18n.wallet.new.import_wallet()) : i18n.button.done()
       }
       toggleAvatar={!isNewProfile || address}
       toggleSubmitButtonIcon={actionType === 'Create'}

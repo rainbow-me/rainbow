@@ -11,7 +11,7 @@ import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/feature
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
 import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrderButton';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { LAYOUT_ANIMATION } from '@/features/perps/constants';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { analytics } from '@/analytics';
@@ -61,7 +61,7 @@ const ExistingTriggerOrderCard = memo(function ExistingTriggerOrderCard({ order 
         perpsBalance,
         errorMessage,
       });
-      Alert.alert(i18n.t(i18n.l.perps.common.error), i18n.t(i18n.l.perps.trigger_orders.cancel_failed));
+      Alert.alert(i18n.perps.common.error(), i18n.perps.trigger_orders.cancel_failed());
       logger.error(new RainbowError('[ExistingTriggerOrderCard]: error cancelling order', e));
     } finally {
       setIsCancelling(false);
@@ -104,7 +104,7 @@ export const TriggerOrdersSection = memo(function TriggerOrdersSection({ symbol 
           </TextShadow>
         </IconContainer>
         <Text size="20pt" weight="heavy" color="label">
-          {i18n.t(i18n.l.perps.trigger_orders.title)}
+          {i18n.perps.trigger_orders.title()}
         </Text>
       </Inline>
       {triggerOrders?.length ? (

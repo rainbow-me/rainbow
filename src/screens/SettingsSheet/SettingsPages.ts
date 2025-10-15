@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 import Routes from '@/navigation/routesNames';
 
@@ -14,47 +14,47 @@ import NotificationsSection from './components/NotificationsSection';
 export const SettingsPages = {
   appIcon: {
     component: AppIconSection,
-    getTitle: () => i18n.t(i18n.l.settings.app_icon),
+    getTitle: () => i18n.settings.app_icon(),
     key: Routes.SETTINGS_SECTION_APP_ICON,
   },
   backup: {
     component: WalletsAndBackup,
-    getTitle: () => i18n.t(i18n.l.settings.backup),
+    getTitle: () => i18n.settings.backup(),
     key: Routes.SETTINGS_SECTION_BACKUP,
   },
   currency: {
     component: CurrencySection,
-    getTitle: () => i18n.t(i18n.l.settings.currency.title),
+    getTitle: () => i18n.settings.currency.title(),
     key: Routes.SETTINGS_SECTION_CURRENCY,
   },
   default: {
     component: null,
-    getTitle: () => i18n.t(i18n.l.settings.label),
+    getTitle: () => i18n.settings.label(),
     key: Routes.SETTINGS_SECTION,
   },
   dev: {
     component: DevSection,
-    getTitle: () => i18n.t(i18n.l.settings.developer),
+    getTitle: () => i18n.settings.developer(),
     key: Routes.SETTINGS_SECTION_DEV,
   },
   language: {
     component: LanguageSection,
-    getTitle: () => i18n.t(i18n.l.settings.language),
+    getTitle: () => i18n.settings.language(),
     key: Routes.SETTINGS_SECTION_LANGUAGE,
   },
   network: {
     component: NetworkSection,
-    getTitle: () => i18n.t(i18n.l.settings.network),
+    getTitle: () => i18n.settings.network(),
     key: Routes.SETTINGS_SECTION_NETWORK,
   },
   notifications: {
     component: NotificationsSection,
-    getTitle: () => i18n.t(i18n.l.settings.notifications),
+    getTitle: () => i18n.settings.notifications(),
     key: Routes.SETTINGS_SECTION_NOTIFICATIONS,
   },
   privacy: {
     component: PrivacySection,
-    getTitle: () => i18n.t(i18n.l.settings.privacy),
+    getTitle: () => i18n.settings.privacy(),
     key: Routes.SETTINGS_SECTION_PRIVACY,
   },
 };

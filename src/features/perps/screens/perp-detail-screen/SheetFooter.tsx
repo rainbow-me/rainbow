@@ -11,7 +11,7 @@ import { PerpMarket } from '@/features/perps/types';
 import { useNavigation } from '@react-navigation/native';
 import { InteractionManager } from 'react-native';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 // 32px for the easing gradient + 48px for the buttons + 12px for the extra bottom padding away from the area inset
 export const SHEET_FOOTER_HEIGHT = 32 + 48 + 12;
@@ -36,7 +36,7 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
         onPress: () => {
           Navigation.handleAction(Routes.ADD_CASH_SHEET);
         },
-        buttonText: i18n.t(i18n.l.perps.actions.fund_wallet),
+        buttonText: i18n.perps.actions.fund_wallet(),
       };
     }
     if (hasPosition) {
@@ -46,7 +46,7 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
             symbol: market.symbol,
           });
         },
-        buttonText: i18n.t(i18n.l.perps.actions.close_position),
+        buttonText: i18n.perps.actions.close_position(),
       };
     }
     if (!hasPerpsBalance) {
@@ -54,7 +54,7 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
         onPress: () => {
           Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
         },
-        buttonText: i18n.t(i18n.l.perps.deposit.title),
+        buttonText: i18n.perps.deposit.title(),
       };
     }
     return {
@@ -66,7 +66,7 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
           });
         }, 150);
       },
-      buttonText: i18n.t(i18n.l.perps.actions.open_position),
+      buttonText: i18n.perps.actions.open_position(),
     };
   }, [hasPerpsBalance, hasUserAssets, hasPosition, market, navigation]);
 

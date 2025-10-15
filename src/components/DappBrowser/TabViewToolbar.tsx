@@ -7,7 +7,7 @@ import { TextColor } from '@/design-system/color/palettes';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { IS_IOS } from '@/env';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { position } from '@/styles';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
@@ -69,7 +69,7 @@ const DoneButton = ({ toggleTabViewWorklet }: { toggleTabViewWorklet: (activeInd
   return (
     <BaseButton onPressWorklet={toggleTabViewWorklet} paddingHorizontal="20px">
       <Text align="center" color="label" size="20pt" weight="heavy">
-        {i18n.t(i18n.l.button.done)}
+        {i18n.button.done()}
       </Text>
     </BaseButton>
   );

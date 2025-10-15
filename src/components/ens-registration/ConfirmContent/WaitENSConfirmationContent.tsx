@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React from 'react';
 import LargeCountdownClock from '../../../components/large-countdown-clock/LargeCountdownClock';
 import StepIndicator from '../../../components/step-indicator/StepIndicator';
@@ -18,10 +18,10 @@ const WaitENSConfirmationContent = ({ seconds }: { seconds: number | undefined }
               <LargeCountdownClock initialSeconds={ENS_SECONDS_WAIT} onFinished={() => {}} seconds={seconds || ENS_SECONDS_WAIT} />
               <Stack alignHorizontal="center" space="19px (Deprecated)">
                 <Heading color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">
-                  {i18n.t(i18n.l.profiles.confirm.wait_one_minute)}
+                  {i18n.profiles.confirm.wait_one_minute()}
                 </Heading>
                 <Text align="center" color="secondary60 (Deprecated)" size="16px / 22px (Deprecated)" weight="semibold">
-                  {i18n.t(i18n.l.profiles.confirm.wait_one_minute_description)}
+                  {i18n.profiles.confirm.wait_one_minute_description()}
                 </Text>
               </Stack>
             </Stack>

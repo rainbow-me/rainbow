@@ -1,5 +1,5 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
@@ -96,7 +96,7 @@ export default function SelectENSSheet() {
       <Inset top="6px">
         <Stack space="24px">
           <Heading align="center" color="primary (Deprecated)" size="18px / 21px (Deprecated)" weight="heavy">
-            {i18n.t(i18n.l.profiles.select_ens_name)}
+            {i18n.profiles.select_ens_name()}
           </Heading>
           {isSuccess && (
             <Bleed bottom={{ custom: scrollEnabled ? 34 : 26 }}>

@@ -8,7 +8,7 @@ import { USDC_ASSET } from '@/features/perps/constants';
 import { PerpsDepositContextType } from '@/features/perps/screens/perps-deposit-withdraw-screen/types';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider } from '@/handlers/web3';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
@@ -106,7 +106,7 @@ export function usePerpsDepositHandler({
         if (errorMessage !== 'handled') {
           logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
           const extractedError = errorMessage.split('[')[0];
-          Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), extractedError);
+          Alert.alert(i18n.swap.error_executing_swap(), extractedError);
           return;
         }
       }

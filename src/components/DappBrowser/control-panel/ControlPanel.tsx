@@ -30,7 +30,7 @@ import WalletTypes from '@/helpers/walletTypes';
 import { useWalletsWithBalancesAndNames } from '@/hooks';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import store from '@/redux/store';
@@ -137,7 +137,7 @@ export const ControlPanel = () => {
         .forEach(account => {
           const balanceText = account.balancesMinusHiddenBalances
             ? account.balancesMinusHiddenBalances
-            : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
+            : i18n.wallet.change_wallet.loading_balance();
 
           const item: ControlPanelMenuItemProps = {
             IconComponent: account.image ? (
@@ -146,7 +146,7 @@ export const ControlPanel = () => {
               <ListEmojiAvatar address={account.address} color={account.color} emoji={account.emoji} label={account.label} />
             ),
             label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
-            secondaryLabel: wallet.type === WalletTypes.readOnly ? i18n.t(i18n.l.wallet.change_wallet.watching) : balanceText,
+            secondaryLabel: wallet.type === WalletTypes.readOnly ? i18n.wallet.change_wallet.watching() : balanceText,
             uniqueId: account.address,
             color: colors.avatarBackgrounds[account.color],
             imageUrl: account.image || undefined,
@@ -182,11 +182,10 @@ export const ControlPanel = () => {
         return {
           IconComponent: <ChainImage chainId={chain.id} position="relative" size={36} />,
           label: useBackendNetworksStore.getState().getChainsLabel()[chain.id],
-          secondaryLabel: i18n.t(
+          secondaryLabel:
             isConnected && chain.id === currentChainId
-              ? i18n.l.dapp_browser.control_panel.connected
-              : i18n.l.dapp_browser.control_panel.not_connected
-          ),
+              ? i18n.dapp_browser.control_panel.connected()
+              : i18n.dapp_browser.control_panel.not_connected(),
           uniqueId: String(chain.id),
           selected: chain.id === currentChainId,
         };
@@ -465,22 +464,22 @@ const HomePanel = memo(function HomePanel({
               <ControlPanelButton
                 animatedAccentColor={animatedAccentColor}
                 icon="􀖅"
-                label={i18n.t(i18n.l.dapp_browser.control_panel.swap)}
+                label={i18n.dapp_browser.control_panel.swap()}
                 onPress={handleOnPressSwap}
               />
               <ControlPanelButton
                 animatedAccentColor={animatedAccentColor}
                 icon="􀄹"
-                label={i18n.t(i18n.l.dapp_browser.control_panel.bridge)}
+                label={i18n.dapp_browser.control_panel.bridge()}
                 onPress={handleOnPressBridge}
               />
               {isOnHomepage ? (
-                <DisabledControlPanelButton icon="􀋦" label={i18n.t(i18n.l.dapp_browser.control_panel.connect)} />
+                <DisabledControlPanelButton icon="􀋦" label={i18n.dapp_browser.control_panel.connect()} />
               ) : (
                 <ConnectButton isConnected={isConnected} onConnect={onConnect} onDisconnect={onDisconnect} />
               )}
               {isOnHomepage ? (
-                <DisabledControlPanelButton icon="􀋂" label={i18n.t(i18n.l.dapp_browser.control_panel.favorite)} />
+                <DisabledControlPanelButton icon="􀋂" label={i18n.dapp_browser.control_panel.favorite()} />
               ) : (
                 <FavoriteButton animatedAccentColor={animatedAccentColor} />
               )}
@@ -550,7 +549,7 @@ const SwitchWalletPanel = memo(function SwitchWalletPanel({
       animatedAccentColor={animatedAccentColor}
       goBack={goBack}
       items={allWalletItems}
-      pageTitle={i18n.t(i18n.l.dapp_browser.control_panel.switch_wallet)}
+      pageTitle={i18n.dapp_browser.control_panel.switch_wallet()}
       onSelect={handleOnSelect}
       selectedItemId={selectedWalletId}
     />
@@ -582,7 +581,7 @@ const SwitchNetworkPanel = memo(function SwitchNetworkPanel({
       animatedAccentColor={animatedAccentColor}
       goBack={goBack}
       items={allNetworkItems}
-      pageTitle={i18n.t(i18n.l.dapp_browser.control_panel.switch_network)}
+      pageTitle={i18n.dapp_browser.control_panel.switch_network()}
       selectedItemId={selectedNetworkId}
       onSelect={handleOnSelect}
     />
@@ -895,7 +894,7 @@ const FavoriteButton = memo(function FavButton({ animatedAccentColor }: { animat
     <ControlPanelButton
       animatedAccentColor={animatedAccentColor}
       icon={isFavorite ? '􀋇' : '􀋂'}
-      label={isFavorite ? i18n.t(i18n.l.dapp_browser.control_panel.undo_favorite) : i18n.t(i18n.l.dapp_browser.control_panel.favorite)}
+      label={isFavorite ? i18n.dapp_browser.control_panel.undo_favorite() : i18n.dapp_browser.control_panel.favorite()}
       onPress={handlePress}
     />
   );
@@ -955,8 +954,8 @@ const ConnectButton = memo(function ControlPanelButton({
     return isConnected ? '􀋪' : '􀋦';
   });
 
-  const disconnectLabel = i18n.t(i18n.l.dapp_browser.control_panel.disconnect);
-  const connectLabel = i18n.t(i18n.l.dapp_browser.control_panel.connect);
+  const disconnectLabel = i18n.dapp_browser.control_panel.disconnect();
+  const connectLabel = i18n.dapp_browser.control_panel.connect();
   const buttonLabel = useDerivedValue(() => {
     return isConnected ? disconnectLabel : connectLabel;
   });

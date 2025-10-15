@@ -7,7 +7,7 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { PerpMarket } from '@/features/perps/types';
 import { DEFAULT_SLIPPAGE_BIPS } from '@/features/perps/constants';
 import { mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 interface RowProps {
   children: React.ReactNode;
@@ -42,7 +42,7 @@ export const DetailsSection = memo(function DetailsSection({ market }: { market:
   return (
     <View>
       <Text size="20pt" weight="bold" color={'labelSecondary'}>
-        {i18n.t(i18n.l.perps.new_position.details)}
+        {i18n.perps.new_position.details()}
       </Text>
       <Box paddingTop={'20px'} gap={4}>
         <Row highlighted={true}>
@@ -51,7 +51,7 @@ export const DetailsSection = memo(function DetailsSection({ market }: { market:
               {'􁎢'}
             </TextIcon>
             <Text color="labelSecondary" size="17pt" weight="medium">
-              {i18n.t(i18n.l.perps.new_position.funding_rate)}
+              {i18n.perps.new_position.funding_rate()}
             </Text>
           </Box>
           <Text align="right" color="labelSecondary" size="17pt" weight="semibold">
@@ -64,7 +64,7 @@ export const DetailsSection = memo(function DetailsSection({ market }: { market:
               {'􀘾'}
             </TextIcon>
             <Text color="labelSecondary" size="17pt" weight="medium">
-              {i18n.t(i18n.l.perps.new_position.max_slippage)}
+              {i18n.perps.new_position.max_slippage()}
             </Text>
           </Box>
           <Text align="right" color="labelSecondary" size="17pt" weight="semibold">

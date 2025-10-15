@@ -10,7 +10,7 @@ import { queryClient } from '@/react-query';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { Box, Text, useForegroundColor } from '@/design-system';
 import { analytics } from '@/analytics';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 export function MintsCard() {
@@ -30,7 +30,7 @@ export function MintsCard() {
   const fillSecondary = useForegroundColor('fillSecondary');
   return (
     <CarouselCard
-      title={i18n.t(i18n.l.mints.mints_card.mints)}
+      title={i18n.mints.mints_card.mints()}
       data={mints?.filter(c => c.contractAddress !== featuredMint?.contractAddress)}
       loading={isFetching}
       emptyMessage={filter === 'all' ? 'No mints' : `No ${filter} mints`}
@@ -62,7 +62,7 @@ export function MintsCard() {
         >
           <ShimmerAnimation color={fillSecondary} />
           <Text color="label" align="center" size="15pt" weight="bold">
-            {i18n.t(i18n.l.mints.mints_card.view_all_mints)}
+            {i18n.mints.mints_card.view_all_mints()}
           </Text>
         </Box>
       }

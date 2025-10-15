@@ -11,7 +11,7 @@ import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccent
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { useAnimatedTimeout } from '@/hooks/reanimated/useAnimatedTimeout';
 import { useStableValue } from '@/hooks/useStableValue';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { time } from '@/utils/time';
@@ -239,11 +239,11 @@ export const LeverageInputCard = memo(function LeverageInputCard({
       <Box width="full" flexDirection="row" alignItems="center">
         <Box gap={12}>
           <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-            {i18n.t(i18n.l.perps.leverage)}
+            {i18n.perps.leverage()}
           </Text>
           <Inline>
             <Text size="15pt" weight="bold" color="labelQuaternary">
-              {`${i18n.t(i18n.l.perps.up_to)} `}
+              {`${i18n.perps.up_to()} `}
             </Text>
             <AnimatedText size="15pt" weight="heavy" color="labelSecondary">
               {maxLeverageText}

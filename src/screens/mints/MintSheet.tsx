@@ -24,7 +24,7 @@ import {
 } from '@/helpers/utilities';
 import { useDimensions, useENSAvatar, useGas, usePersistentAspectRatio } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { loadPrivateKey } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
@@ -323,7 +323,7 @@ const MintSheet = () => {
   const buildMintDotFunUrl = (contract: string, chainId: ChainId) => {
     const MintDotFunNetworks = [ChainId.mainnet, ChainId.optimism, ChainId.base, ChainId.zora];
     if (!MintDotFunNetworks.includes(chainId)) {
-      Alert.alert(i18n.t(i18n.l.minting.mintdotfun_unsupported_network));
+      Alert.alert(i18n.minting.mintdotfun_unsupported_network());
     }
 
     let chainSlug = 'ethereum';
@@ -503,21 +503,21 @@ const MintSheet = () => {
 
   const buttonLabel = useMemo(() => {
     if (!isMintingAvailable) {
-      return i18n.t(i18n.l.minting.mint_on_mintdotfun);
+      return i18n.minting.mint_on_mintdotfun();
     }
     if (insufficientEth) {
-      return i18n.t(i18n.l.button.confirm_exchange.insufficient_eth);
+      return i18n.button.confirm_exchange.insufficient_eth();
     }
 
     if (mintStatus === 'minting') {
-      return i18n.t(i18n.l.minting.minting);
+      return i18n.minting.minting();
     } else if (mintStatus === 'minted') {
-      return i18n.t(i18n.l.minting.minted);
+      return i18n.minting.minted();
     } else if (mintStatus === 'error') {
-      return i18n.t(i18n.l.minting.error_minting);
+      return i18n.minting.error_minting();
     }
 
-    return i18n.t(i18n.l.minting.hold_to_mint);
+    return i18n.minting.hold_to_mint();
   }, [insufficientEth, isMintingAvailable, mintStatus]);
 
   return (
@@ -574,7 +574,7 @@ const MintSheet = () => {
                     </Text>
                     <Inline alignVertical="center" space={'2px'}>
                       <Text size="15pt" color="labelSecondary" weight="bold">
-                        {`${i18n.t(i18n.l.minting.by)} `}
+                        {`${i18n.minting.by()} `}
                       </Text>
 
                       {ensAvatar?.imageUrl ? (
@@ -588,7 +588,7 @@ const MintSheet = () => {
                         />
                       )}
                       <Text size="15pt" color="labelSecondary" weight="bold">
-                        {` ${ensName || deployerDisplay || i18n.t(i18n.l.minting.unknown)}`}
+                        {` ${ensName || deployerDisplay || i18n.minting.unknown()}`}
                       </Text>
                     </Inline>
                   </Stack>
@@ -603,16 +603,12 @@ const MintSheet = () => {
                     <Column width={'content'}>
                       <Stack space={{ custom: 14 }}>
                         <Text color="labelSecondary" align="left" size="13pt" weight="semibold">
-                          {i18n.t(i18n.l.minting.mint_price)}
+                          {i18n.minting.mint_price()}
                         </Text>
                         <ButtonPressAnimation disabled={isZero(mintPriceAmount)} onPress={() => setShowNativePrice(!showNativePrice)}>
                           <Inline alignVertical="center">
                             <Text color="label" align="left" size="22pt" weight="bold">
-                              {isZero(mintPriceAmount)
-                                ? i18n.t(i18n.l.minting.free)
-                                : showNativePrice
-                                  ? nativeMintPriceDisplay
-                                  : mintPriceDisplay}
+                              {isZero(mintPriceAmount) ? i18n.minting.free() : showNativePrice ? nativeMintPriceDisplay : mintPriceDisplay}
                             </Text>
                           </Inline>
                         </ButtonPressAnimation>
@@ -623,7 +619,7 @@ const MintSheet = () => {
                       <Stack space="2px">
                         {
                           <Text color="labelSecondary" align="center" size="13pt" weight="semibold" numberOfLines={1}>
-                            {quantity === Number(maxMintsPerWallet) ? i18n.t(i18n.l.minting.max) : ''}
+                            {quantity === Number(maxMintsPerWallet) ? i18n.minting.max() : ''}
                           </Text>
                         }
 
@@ -665,7 +661,7 @@ const MintSheet = () => {
               {mintCollection.description && (
                 <Stack space={'20px'}>
                   <Text color="label" align="left" size="17pt" weight="heavy">
-                    {i18n.t(i18n.l.minting.description)}
+                    {i18n.minting.description()}
                   </Text>
                   <Text color="labelTertiary" align="left" size="17pt" weight="medium">
                     {mintCollection.description}
@@ -676,10 +672,10 @@ const MintSheet = () => {
                 {mintCollection?.tokenCount && (
                   <MintInfoRow
                     symbol="􀐾"
-                    label={i18n.t(i18n.l.minting.total_minted)}
+                    label={i18n.minting.total_minted()}
                     value={
                       <Text color="labelSecondary" align="right" size="17pt" weight="medium">
-                        {i18n.t(i18n.l.minting.nft_count, {
+                        {i18n.minting.nft_count({
                           number: mintCollection.tokenCount,
                         })}
                       </Text>
@@ -689,7 +685,7 @@ const MintSheet = () => {
                 {mintCollection?.createdAt && (
                   <MintInfoRow
                     symbol="􀐫"
-                    label={i18n.t(i18n.l.minting.first_event)}
+                    label={i18n.minting.first_event()}
                     value={
                       <Text color="labelSecondary" align="right" size="17pt" weight="medium">
                         {getFormattedDate(mintCollection?.createdAt)}
@@ -701,7 +697,7 @@ const MintSheet = () => {
                 {mintCollection?.id && (
                   <MintInfoRow
                     symbol="􀉆"
-                    label={i18n.t(i18n.l.minting.contract)}
+                    label={i18n.minting.contract()}
                     value={
                       <ButtonPressAnimation
                         onPress={() => ethereumUtils.openAddressInBlockExplorer({ address: mintCollection.id!, chainId })}
@@ -716,7 +712,7 @@ const MintSheet = () => {
 
                 <MintInfoRow
                   symbol="􀤆"
-                  label={i18n.t(i18n.l.minting.network)}
+                  label={i18n.minting.network()}
                   value={
                     <Bleed vertical="4px">
                       <Inline alignHorizontal="right" alignVertical="center" space="6px">

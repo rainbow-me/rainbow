@@ -15,7 +15,7 @@ import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
 import { watchingAlert } from '@/utils';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { ButtonPressAnimation } from '../animations';
@@ -204,10 +204,10 @@ const AvailableNetworksv2 = ({
                   >
                     <Text color="labelQuaternary" size="13pt" weight="bold" numberOfLines={1} align="right">
                       {availableChainIds?.length > 1
-                        ? i18n.t(i18n.l.expanded_state.asset.available_networks, {
+                        ? i18n.expanded_state.asset.available_networks({
                             availableNetworks: availableChainIds?.length,
                           })
-                        : i18n.t(i18n.l.expanded_state.asset.available_networkv2, {
+                        : i18n.expanded_state.asset.available_networkv2({
                             availableNetwork: useBackendNetworksStore.getState().getChainsLabel()[availableChainIds[0]],
                           })}
                     </Text>

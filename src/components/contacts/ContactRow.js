@@ -14,7 +14,7 @@ import { useContacts, useDimensions, useENSAvatar } from '@/hooks';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { StyleSheet } from 'react-native';
 
 const ContactAddress = styled(TruncatedAddress).attrs(({ theme: { colors }, lite }) => ({
@@ -65,7 +65,7 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   const { colors } = useTheme();
   const { accountType, balances, ens, image, label, onPress, showcaseItem, testID } = props;
 
-  const balanceText = balances ? balances.totalBalanceDisplay : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
+  const balanceText = balances ? balances.totalBalanceDisplay : i18n.wallet.change_wallet.loading_balance();
 
   // show avatar for contact rows that are accounts, not contacts
   const avatar = accountType !== 'contacts' ? returnStringFirstEmoji(label) || profileUtils.addressHashedEmoji(address) : null;

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { AnimatedText, Box, Text, TextShadow } from '@/design-system';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -98,10 +98,10 @@ export function BalanceSection() {
         >
           <Box flexDirection="row" justifyContent="space-between">
             <Text color="labelTertiary" size="15pt" weight="bold">
-              {i18n.t(i18n.l.expanded_state.asset.balance)}
+              {i18n.expanded_state.asset.balance()}
             </Text>
             <Text color="labelTertiary" size="15pt" weight="bold" align="right">
-              {i18n.t(i18n.l.expanded_state.asset.value)}
+              {i18n.expanded_state.asset.value()}
             </Text>
           </Box>
           <Box alignItems="center" width="full" gap={8} flexDirection="row" justifyContent="flex-start">
@@ -133,13 +133,13 @@ export function BalanceSection() {
         <Animated.View style={liquidityCapDisclaimerStyle}>
           <Box paddingHorizontal="16px" flexDirection="row" gap={2}>
             <Text align="center" color="labelTertiary" size="13pt" weight="bold">
-              {i18n.t(i18n.l.expanded_state.asset.liquidity_cap_disclaimer.value_lower_than)}
+              {i18n.expanded_state.asset.liquidity_cap_disclaimer.value_lower_than()}
             </Text>
             <AnimatedText selector={uncappedValueSelector} align="center" color="labelTertiary" size="13pt" weight="heavy">
               {tokenBalanceData}
             </AnimatedText>
             <Text align="center" color="labelTertiary" size="13pt" weight="bold">
-              {i18n.t(i18n.l.expanded_state.asset.liquidity_cap_disclaimer.due_to_low_liquidity)}
+              {i18n.expanded_state.asset.liquidity_cap_disclaimer.due_to_low_liquidity()}
             </Text>
           </Box>
         </Animated.View>

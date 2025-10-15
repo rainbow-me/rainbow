@@ -20,7 +20,7 @@ import { metadataPOSTClient } from '@/graphql';
 import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountAccentColor, useDimensions, useKeyboardHeight } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -91,7 +91,7 @@ export function ReferralContent() {
           logger.error(new RainbowError('[ReferralContent]: Error validating referral code'), {
             referralCode: code,
           });
-          Alert.alert(i18n.t(i18n.l.points.referral.error));
+          Alert.alert(i18n.points.referral.error());
         }
       } else {
         setStatus('valid');
@@ -243,11 +243,11 @@ export function ReferralContent() {
                   <Stack space="28px" alignHorizontal="center">
                     <PointsIconAnimation />
                     <Text size="22pt" weight="heavy" align="center" color="label">
-                      {i18n.t(i18n.l.points.referral.title)}
+                      {i18n.points.referral.title()}
                     </Text>
                   </Stack>
                   <Text size="15pt" weight="semibold" align="center" color="labelTertiary">
-                    {i18n.t(i18n.l.points.referral.subtitle)}
+                    {i18n.points.referral.subtitle()}
                   </Text>
                 </Stack>
 
@@ -306,7 +306,7 @@ export function ReferralContent() {
                 </Box>
               </Stack>
               <Text size="13pt" weight="heavy" align="center" color={{ custom: status === 'invalid' ? red : 'transparent' }}>
-                {i18n.t(i18n.l.points.referral.invalid_code)}
+                {i18n.points.referral.invalid_code()}
               </Text>
             </Stack>
           </Box>
@@ -315,7 +315,7 @@ export function ReferralContent() {
               <Box alignItems="center" width="full">
                 <ActionButton
                   color={accentColor}
-                  label={i18n.t(i18n.l.points.referral.get_started)}
+                  label={i18n.points.referral.get_started()}
                   onPress={() => (isReadOnlyWallet ? watchingAlert() : navigate(Routes.CONSOLE_SHEET, { referralCode, deeplinked }))}
                 />
               </Box>
@@ -335,7 +335,7 @@ export function ReferralContent() {
                       }}
                     >
                       <Text color={{ custom: accentColor }} size="20pt" weight="bold">
-                        {`􀆉 ${i18n.t(i18n.l.points.referral.back)}`}
+                        {`􀆉 ${i18n.points.referral.back()}`}
                       </Text>
                     </ButtonPressAnimation>
                   </Column>

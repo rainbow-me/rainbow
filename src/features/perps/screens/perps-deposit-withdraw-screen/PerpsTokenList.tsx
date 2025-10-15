@@ -4,7 +4,7 @@ import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { AnimatedText, Bleed, Box, globalColors, Inline, Text, useColorMode } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -27,7 +27,7 @@ type ChainSelectionProps = {
   selectedChainId: ChainId | undefined;
 };
 
-const allText = i18n.t(i18n.l.exchange.all_networks);
+const allText = i18n.exchange.all_networks();
 
 const PerpsChainSelection = memo(function ChainSelection({ onChainSelected, selectedChainId }: ChainSelectionProps) {
   const { isDarkMode } = useColorMode();
@@ -85,7 +85,7 @@ const PerpsChainSelection = memo(function ChainSelection({ onChainSelected, sele
             </Box>
           </Bleed>
           <Text color="label" size="15pt" weight="heavy">
-            {i18n.t(i18n.l.exchange.my_tokens)}
+            {i18n.exchange.my_tokens()}
           </Text>
         </Inline>
 

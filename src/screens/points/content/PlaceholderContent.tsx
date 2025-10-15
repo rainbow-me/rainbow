@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Stack, Text } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useDimensions } from '@/hooks';
 import { FloatingEmojisTapper } from '@/components/floating-emojis';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
@@ -16,10 +16,10 @@ export function PlaceholderContent() {
             <PointsIconAnimation />
             <Stack alignHorizontal="center" space="20px">
               <Text align="center" color="labelTertiary" size="26pt" weight="semibold">
-                {i18n.t(i18n.l.points.placeholder.coming_soon_title)}
+                {i18n.points.placeholder.coming_soon_title()}
               </Text>
               <Text align="center" color="labelQuaternary" size="15pt" weight="medium">
-                {i18n.t(i18n.l.points.placeholder.coming_soon_description)}
+                {i18n.points.placeholder.coming_soon_description()}
               </Text>
             </Stack>
           </Stack>

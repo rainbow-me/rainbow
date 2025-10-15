@@ -31,7 +31,7 @@ import { convertAmountToBalanceDisplay } from '@/helpers/utilities';
 import { useCleanup } from '@/hooks';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
@@ -61,12 +61,12 @@ const EXTRA_BUTTON_HEIGHT = 64;
 const SINGLE_BUTTON_PANEL_HEIGHT = PANEL_HEIGHT - EXTRA_BUTTON_HEIGHT;
 
 const BUTTON_LABELS = {
-  claiming: i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.claiming),
-  done: i18n.t(i18n.l.button.done),
-  estimatingGasFee: i18n.t(i18n.l.button.loading),
-  holdToClaim: `􀎽 ${i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.hold_to_claim)}`,
-  holdToRetry: `􀎽 ${i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.hold_to_retry)}`,
-  insufficientFunds: i18n.t(i18n.l.claimables.panel.insufficient_funds),
+  claiming: i18n.token_launcher.claim_airdrop_sheet.claiming(),
+  done: i18n.button.done(),
+  estimatingGasFee: i18n.button.loading(),
+  holdToClaim: `􀎽 ${i18n.token_launcher.claim_airdrop_sheet.hold_to_claim()}`,
+  holdToRetry: `􀎽 ${i18n.token_launcher.claim_airdrop_sheet.hold_to_retry()}`,
+  insufficientFunds: i18n.claimables.panel.insufficient_funds(),
 };
 
 function getButtonLabel(claimStatus: ClaimStatus, gasInfo: GasInfo) {
@@ -148,7 +148,7 @@ const PanelHeader = memo(function PanelHeader({ symbol, symbolHasEmoji }: { symb
     <Box alignItems="center" gap={24} justifyContent="center" paddingHorizontal="44px" paddingTop="32px" width="full">
       <SheetHandleFixedToTop color={sheetHandleColor} showBlur={true} top={10} />
       <Text align="center" color="label" containsEmoji={symbolHasEmoji} numberOfLines={1} size="20pt" weight="heavy">
-        {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.title, { symbol })}
+        {i18n.token_launcher.claim_airdrop_sheet.title({ symbol })}
       </Text>
       <Box width={DEVICE_WIDTH - 30 * 2}>
         <Separator color="separatorTertiary" thickness={THICK_BORDER_WIDTH} />
@@ -237,13 +237,13 @@ const CreatedBySection = memo(function CreatedBySection({ creatorAddress }: { cr
         <CreatorAvatar avatarUrl={avatarUrl} creatorAddress={creatorAddress} />
         <Inline alignHorizontal="center" alignVertical="center" space="3px">
           <Text align="center" color="labelQuaternary" size="13pt" weight="semibold">
-            {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.gifted_to)}
+            {i18n.token_launcher.claim_airdrop_sheet.gifted_to()}
           </Text>
           <Text align="center" color="labelTertiary" size="13pt" weight="bold">
-            {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.you)}
+            {i18n.token_launcher.claim_airdrop_sheet.you()}
           </Text>
           <Text align="center" color="labelQuaternary" size="13pt" weight="semibold">
-            {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.by)}
+            {i18n.token_launcher.claim_airdrop_sheet.by()}
           </Text>
           <CreatorAddress ensOrAddress={ensOrAddress} />
         </Inline>
@@ -440,7 +440,7 @@ const PanelFooterContent = ({
             >
               <TextShadow blur={16} color={highContrastColor} shadowOpacity={0.2}>
                 <Text align="center" color={{ custom: highContrastColor }} size="20pt" weight="heavy">
-                  {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.view_coin)}
+                  {i18n.token_launcher.claim_airdrop_sheet.view_coin()}
                 </Text>
               </TextShadow>
             </Box>
@@ -463,7 +463,7 @@ const PanelFooterContent = ({
           {gasFeeDisplay}
         </AnimatedText>
         <Text align="center" color="labelQuaternary" size="13pt" weight="semibold">
-          {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.to_claim_on, { network: chainLabel })}
+          {i18n.token_launcher.claim_airdrop_sheet.to_claim_on({ network: chainLabel })}
         </Text>
       </Animated.View>
 
@@ -477,7 +477,7 @@ const PanelFooterContent = ({
         </IconContainer>
         <TextShadow blur={16} shadowOpacity={0.4}>
           <Text align="center" color={{ custom: highContrastColor }} size="13pt" weight="heavy">
-            {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.successfully_claimed)}
+            {i18n.token_launcher.claim_airdrop_sheet.successfully_claimed()}
           </Text>
         </TextShadow>
       </Animated.View>

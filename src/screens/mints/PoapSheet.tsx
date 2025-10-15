@@ -8,7 +8,7 @@ import { arcClient } from '@/graphql';
 import { maybeSignUri } from '@/handlers/imgix';
 import { useDimensions } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
@@ -194,11 +194,11 @@ const PoapSheet = () => {
 
   const getErrorMessage = () => {
     if (errorCode === 'LIMIT_EXCEEDED') {
-      return i18n.t(i18n.l.poaps.error_messages.limit_exceeded);
+      return i18n.poaps.error_messages.limit_exceeded();
     } else if (errorCode === 'EVENT_EXPIRED') {
-      return i18n.t(i18n.l.poaps.error_messages.event_expired);
+      return i18n.poaps.error_messages.event_expired();
     }
-    return i18n.t(i18n.l.poaps.error_messages.event_expired);
+    return i18n.poaps.error_messages.event_expired();
   };
 
   useFocusEffect(() => {
@@ -245,7 +245,7 @@ const PoapSheet = () => {
                 <Box paddingTop={'104px'}>
                   <Stack space={'28px'} alignHorizontal="center">
                     <Text size="26pt" color="label" weight="bold">
-                      {i18n.t(i18n.l.poaps.title)}
+                      {i18n.poaps.title()}
                     </Text>
                     <ImgixImage
                       source={{ uri: imageUrl }}
@@ -277,12 +277,12 @@ const PoapSheet = () => {
                     <Text size="17pt" color="label" weight="bold">
                       {/* eslint-disable-next-line no-nested-ternary*/}
                       {claimStatus === 'claimed'
-                        ? i18n.t(i18n.l.poaps.minted)
+                        ? i18n.poaps.minted()
                         : claimStatus === 'claiming'
-                          ? i18n.t(i18n.l.poaps.minting)
+                          ? i18n.poaps.minting()
                           : claimStatus === 'none'
-                            ? i18n.t(i18n.l.poaps.mint_poap)
-                            : i18n.t(i18n.l.poaps.error)}
+                            ? i18n.poaps.mint_poap()
+                            : i18n.poaps.error()}
                     </Text>
                   </SheetActionButton>
                 </SheetActionButtonRow>
@@ -295,7 +295,7 @@ const PoapSheet = () => {
                   }}
                 >
                   <Text size="15pt" color="labelSecondary" weight="bold">
-                    {i18n.t(i18n.l.poaps.view_on_poap)}
+                    {i18n.poaps.view_on_poap()}
                   </Text>
                 </ButtonPressAnimation>
               </Stack>

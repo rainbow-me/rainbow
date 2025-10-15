@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Stack, Text } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { useSwapContext } from '../../providers/swap-provider';
@@ -41,13 +41,13 @@ export const ListEmpty = memo(function ListEmpty({ action = 'swap', output = fal
           </Text>
 
           <Text color="labelTertiary" size="20pt" weight="semibold" align="center">
-            {i18n.t(i18n.l.swap.tokens_input.nothing_found)}
+            {i18n.swap.tokens_input.nothing_found()}
           </Text>
 
           <Text color="labelQuaternary" size="14px / 19px (Deprecated)" weight="regular" align="center">
-            {i18n.t(i18n.l.swap.tokens_input[isL2 ? 'nothing_found_description_l2' : 'nothing_found_description'], {
-              action,
-            })}
+            {isL2
+              ? i18n.swap.tokens_input.nothing_found_description_l2({ action })
+              : i18n.swap.tokens_input.nothing_found_description({ action })}
           </Text>
         </Stack>
       </Box>

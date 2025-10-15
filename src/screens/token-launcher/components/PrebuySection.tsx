@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { AnimatedText, Box, Separator, TextShadow, useForegroundColor } from '@/design-system';
 import { CollapsableField } from './CollapsableField';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
@@ -111,7 +111,7 @@ export function PrebuySection() {
   }, [chainNativeAssetAvailableBalance, chainNativeAsset]);
 
   const balanceAfterGasFeeText = useMemo(() => {
-    return `${i18n.t(i18n.l.token_launcher.prebuy.balance_after_gas_fee, { balance: nativeAssetForChainAvailableBalanceDisplay })}`;
+    return `${i18n.token_launcher.prebuy.balance_after_gas_fee({ balance: nativeAssetForChainAvailableBalanceDisplay })}`;
   }, [nativeAssetForChainAvailableBalanceDisplay]);
 
   const inputRef = useRef<SingleFieldInputRef>(null);
@@ -178,18 +178,18 @@ export function PrebuySection() {
       const amount = parseFloat(text) || 0;
 
       if (lessThanWorklet(chainNativeAssetAvailableBalance, amount)) {
-        error.value = i18n.t(i18n.l.token_launcher.input_errors.amount_is_greater_than_balance);
+        error.value = i18n.token_launcher.input_errors.amount_is_greater_than_balance();
         return { error: true };
       }
 
       const MIN_SAFE_VALUE = 1e-7;
       if (amount > 0 && amount < MIN_SAFE_VALUE) {
-        error.value = i18n.t(i18n.l.token_launcher.input_errors.amount_too_small);
+        error.value = i18n.token_launcher.input_errors.amount_too_small();
         return { error: true };
       }
 
       if (lessThanWorklet(maxPrebuyAmount, amount)) {
-        error.value = i18n.t(i18n.l.token_launcher.input_errors.amount_is_greater_than_max_prebuy_amount, {
+        error.value = i18n.token_launcher.input_errors.amount_is_greater_than_max_prebuy_amount({
           maxPrebuyAmount: maxPrebuyAmount,
           chainNativeAssetSymbol,
         });
@@ -204,7 +204,7 @@ export function PrebuySection() {
   );
 
   return (
-    <CollapsableField title={i18n.t(i18n.l.token_launcher.prebuy.title)}>
+    <CollapsableField title={i18n.token_launcher.prebuy.title()}>
       <Box gap={16}>
         <Grid columns={2} spacing={8}>
           {prebuyOptions.map(option => (

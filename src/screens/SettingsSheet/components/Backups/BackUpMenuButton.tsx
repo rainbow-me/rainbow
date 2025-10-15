@@ -1,6 +1,6 @@
 import { useTheme } from '@/theme';
 import React, { useState, useMemo, useEffect } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import MenuItem from '../MenuItem';
 import Spinner from '@/components/Spinner';
 import { FloatingEmojis } from '@/components/floating-emojis';
@@ -48,11 +48,11 @@ export const BackUpMenuItem = ({
   const titleText = useMemo(() => {
     switch (backupState) {
       case CloudBackupState.InProgress:
-        return i18n.t(i18n.l.back_up.cloud.backing_up);
+        return i18n.back_up.cloud.backing_up();
       case CloudBackupState.Success:
-        return i18n.t(i18n.l.back_up.cloud.backup_success);
+        return i18n.back_up.cloud.backup_success();
       case CloudBackupState.Error:
-        return i18n.t(i18n.l.back_up.cloud.backup_failed);
+        return i18n.back_up.cloud.backup_failed();
       default:
         return title;
     }

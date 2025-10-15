@@ -4,7 +4,7 @@ import { TransactionDetailsSymbol } from '@/screens/transaction-details/componen
 import { RainbowTransaction } from '@/entities/transactions/transaction';
 import { Box, Stack, globalColors } from '@/design-system';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
@@ -94,7 +94,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
                   />
                 )
               }
-              title={i18n.t(i18n.l.transaction_details.value)}
+              title={i18n.transaction_details.value()}
               value={valueDisplay || ''}
               secondaryValue={nativeCurrencyValue}
             />
@@ -102,7 +102,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
           {fee && (
             <DoubleLineTransactionDetailsRow
               leftComponent={<TransactionDetailsSymbol icon="􀵟" withBackground />}
-              title={i18n.t(i18n.l.transaction_details.network_fee)}
+              title={i18n.transaction_details.network_fee()}
               value={feeValue}
               secondaryValue={feeNativeCurrencyValue}
             />

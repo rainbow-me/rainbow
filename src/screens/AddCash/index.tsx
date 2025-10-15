@@ -19,7 +19,7 @@ import { Ramp } from '@/screens/AddCash/providers/Ramp';
 import { Coinbase } from '@/screens/AddCash/providers/Coinbase';
 import { Moonpay } from '@/screens/AddCash/providers/Moonpay';
 import { FiatProviderName } from '@/entities/f2c';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const deviceHeight = deviceUtils.dimensions.height;
@@ -67,9 +67,9 @@ export function AddCashSheet() {
     if (error) {
       Navigation.goBack();
 
-      WrappedAlert.alert(i18n.t(i18n.l.wallet.add_cash_v2.generic_error.title), i18n.t(i18n.l.wallet.add_cash_v2.generic_error.message), [
+      WrappedAlert.alert(i18n.wallet.add_cash_v2.generic_error.title(), i18n.wallet.add_cash_v2.generic_error.message(), [
         {
-          text: i18n.t(i18n.l.wallet.add_cash_v2.generic_error.button),
+          text: i18n.wallet.add_cash_v2.generic_error.button(),
         },
       ]);
     }
@@ -109,7 +109,7 @@ export function AddCashSheet() {
         <Box width="full" paddingTop="52px" paddingHorizontal="20px" paddingBottom={{ custom: isNarrowPhone ? 15 : insets.bottom + 11 }}>
           <Box paddingHorizontal="20px">
             <Text size="26pt" weight="heavy" color="label" align="center">
-              {i18n.t(i18n.l.wallet.add_cash_v2.sheet_title)}
+              {i18n.wallet.add_cash_v2.sheet_title()}
             </Text>
           </Box>
 
@@ -156,12 +156,12 @@ export function AddCashSheet() {
               >
                 <Box paddingBottom="12px">
                   <Text size="17pt" weight="bold" color="labelTertiary">
-                    􀵲 {i18n.t(i18n.l.wallet.add_cash_v2.sheet_empty_state.title)}
+                    􀵲 {i18n.wallet.add_cash_v2.sheet_empty_state.title()}
                   </Text>
                 </Box>
 
                 <Text size="15pt" weight="semibold" color="labelQuaternary">
-                  {i18n.t(i18n.l.wallet.add_cash_v2.sheet_empty_state.description)}
+                  {i18n.wallet.add_cash_v2.sheet_empty_state.description()}
                 </Text>
               </Box>
             </Box>

@@ -3,7 +3,7 @@ import { debounce } from 'lodash';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import Mailer from 'react-native-mail';
 import { Alert } from '../components/alerts';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { openInBrowser } from '@/utils/openInBrowser';
 const SupportEmailAddress = 'support@rainbow.me';
 
@@ -16,15 +16,15 @@ const SupportErrorAlert = () =>
     buttons: [
       {
         onPress: setClipboardToSupportEmail,
-        text: i18n.t(i18n.l.support.error_alert.copy_email_address),
+        text: i18n.support.error_alert.copy_email_address(),
       },
       {
         style: 'cancel',
-        text: i18n.t(i18n.l.support.error_alert.no_thanks),
+        text: i18n.support.error_alert.no_thanks(),
       },
     ],
-    message: i18n.t(i18n.l.support.error_alert.message),
-    title: i18n.t(i18n.l.support.error_alert.title),
+    message: i18n.support.error_alert.message(),
+    title: i18n.support.error_alert.title(),
   });
 
 const handleMailError = debounce(error => (error ? SupportErrorAlert() : null), 250);
@@ -44,19 +44,19 @@ export default function showWalletErrorAlert() {
     buttons: [
       {
         onPress: openLearnMorePage,
-        text: i18n.t(i18n.l.support.wallet_alert.learn_more),
+        text: i18n.support.wallet_alert.learn_more(),
       },
       {
         onPress: messageSupport,
         isPreferred: true,
-        text: i18n.t(i18n.l.support.wallet_alert.message_support),
+        text: i18n.support.wallet_alert.message_support(),
       },
       {
-        text: i18n.t(i18n.l.support.wallet_alert.close),
+        text: i18n.support.wallet_alert.close(),
         style: 'destructive',
       },
     ],
-    message: i18n.t(i18n.l.support.wallet_alert.message),
-    title: i18n.t(i18n.l.support.wallet_alert.title),
+    message: i18n.support.wallet_alert.message(),
+    title: i18n.support.wallet_alert.title(),
   });
 }

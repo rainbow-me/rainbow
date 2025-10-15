@@ -7,7 +7,7 @@ import {
   greaterThan,
   handleSignificantDecimals,
 } from '@/helpers/utilities';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 import { useMemo } from 'react';
 
@@ -66,8 +66,8 @@ export const checkForPendingSwap = (transaction: RainbowTransaction) => {
 
 export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
   if (!approvalAmount || !asset) return;
-  if (approvalAmount === 'UNLIMITED') return i18n.t(i18n.l.transactions.approvals.unlimited);
-  if (type === 'revoke') return i18n.t(i18n.l.transactions.approvals.no_allowance);
+  if (approvalAmount === 'UNLIMITED') return i18n.transactions.approvals.unlimited();
+  if (type === 'revoke') return i18n.transactions.approvals.no_allowance();
   const amountDisplay = convertRawAmountToBalance(
     approvalAmount,
     { decimals: asset?.decimals, symbol: asset?.symbol },
@@ -134,7 +134,7 @@ export const activityValues = (transaction: RainbowTransaction, nativeCurrency: 
   const nativeBalance = convertAmountAndPriceToNativeDisplay(balance?.amount || '0', change.asset.price?.value || '0', nativeCurrency);
   const assetNativeValue = greaterThan(nativeBalance.amount, '0')
     ? `${valueSymbol}${nativeBalance?.display}`
-    : i18n.t(i18n.l.transactions.no_value);
+    : i18n.transactions.no_value();
 
   return greaterThan(nativeBalance.amount, '0') ? [`${assetValue}`, assetNativeValue] : [assetNativeValue, `${valueSymbol}${assetValue}`];
 };

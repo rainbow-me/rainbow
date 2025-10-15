@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Box, Text, TextIcon, TextShadow, useColorMode, useBackgroundColor, AnimatedText, Bleed } from '@/design-system';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { Row } from '../../shared/Row';
@@ -201,7 +201,7 @@ const CreatedBySection = memo(function CreatedBySection() {
             􀫸
           </TextIcon>
           <Text style={{ flex: 1 }} numberOfLines={1} ellipsizeMode="tail" color="labelSecondary" weight="medium" size="17pt">
-            {i18n.t(i18n.l.expanded_state.sections.market_stats.created_by)}
+            {i18n.expanded_state.sections.market_stats.created_by()}
           </Text>
           <Box flexDirection="row" alignItems="center" gap={6}>
             <CreatorAvatar avatarUrl={avatarUrl} creatorAddress={creatorAddress} />
@@ -219,8 +219,8 @@ export function AssetInfoList() {
 
   const isExpanded = useSharedValue(true);
 
-  const moreText = i18n.t(i18n.l.button.more);
-  const lessText = i18n.t(i18n.l.button.less);
+  const moreText = i18n.button.more();
+  const lessText = i18n.button.less();
 
   const expandedText = useDerivedValue(() => {
     return isExpanded.value ? lessText : moreText;
@@ -256,21 +256,21 @@ export function AssetInfoList() {
 
     if (metadata.marketCap) {
       items.push({
-        title: i18n.t(i18n.l.expanded_state.sections.market_stats.market_cap),
+        title: i18n.expanded_state.sections.market_stats.market_cap(),
         value: bigNumberFormat(liveTokenMarketCap, nativeCurrency, true),
         icon: '􁎢',
       });
     }
     if (metadata.volume1d) {
       items.push({
-        title: i18n.t(i18n.l.expanded_state.sections.market_stats.volume_24_hours),
+        title: i18n.expanded_state.sections.market_stats.volume_24_hours(),
         value: bigNumberFormat(metadata.volume1d, nativeCurrency, true),
         icon: '􀣉',
       });
     }
     if (asset.creationDate) {
       items.push({
-        title: i18n.t(i18n.l.expanded_state.sections.market_stats.created),
+        title: i18n.expanded_state.sections.market_stats.created(),
         value: formatDate(asset.creationDate, 'minutes'),
         icon: '􁖩',
       });
@@ -278,7 +278,7 @@ export function AssetInfoList() {
     // TODO: will fully diluted valuation be available? If not, should we calculate it?
     if (metadata.fullyDilutedValuation) {
       items.push({
-        title: i18n.t(i18n.l.expanded_state.sections.market_stats.fully_diluted_valuation),
+        title: i18n.expanded_state.sections.market_stats.fully_diluted_valuation(),
         value: bigNumberFormat(metadata.fullyDilutedValuation, nativeCurrency, true),
         icon: '􀑀',
       });
@@ -286,21 +286,21 @@ export function AssetInfoList() {
     // BLOCKED: Do not currently have rank data
     // if (metadata.rank) {
     //   items.push({
-    //     title: i18n.t(i18n.l.expanded_state.sections.market_stats.rank),
+    //     title: i18n.expanded_state.sections.market_stats.rank(),
     //     value: `#${metadata.rank}`,
     //     icon: '􀄯',
     //   });
     // }
     if (metadata.circulatingSupply) {
       items.push({
-        title: i18n.t(i18n.l.expanded_state.sections.market_stats.circulating_supply),
+        title: i18n.expanded_state.sections.market_stats.circulating_supply(),
         value: abbreviateNumber(metadata.circulatingSupply),
         icon: '􂣽',
       });
     }
     if (metadata.totalSupply) {
       items.push({
-        title: i18n.t(i18n.l.expanded_state.sections.market_stats.max_supply),
+        title: i18n.expanded_state.sections.market_stats.max_supply(),
         value: abbreviateNumber(metadata.totalSupply),
         icon: '􀅃',
       });
@@ -321,7 +321,7 @@ export function AssetInfoList() {
       {assetInfoItems.length === 0 && !isLoadingMetadata && (
         <Box justifyContent="center" alignItems="center" paddingVertical="24px" style={{ opacity: 0.8 }}>
           <Text align="center" color="labelQuaternary" size="17pt" weight="heavy">
-            {i18n.t(i18n.l.expanded_state.asset.no_data_available)}
+            {i18n.expanded_state.asset.no_data_available()}
           </Text>
         </Box>
       )}

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import Animated, {
   interpolate,
   useAnimatedReaction,
@@ -156,27 +156,27 @@ export const TransactionSimulationCard = ({
 
   const titleText = useMemo(() => {
     if (isLoading) {
-      return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.simulating);
+      return i18n.walletconnect.simulation.simulation_card.titles.simulating();
     }
     if (isBalanceEnough === false) {
-      return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.not_enough_native_balance, { symbol: nativeAsset.symbol });
+      return i18n.walletconnect.simulation.simulation_card.titles.not_enough_native_balance({ symbol: nativeAsset.symbol });
     }
     if (txSimulationApiError || isPersonalSignRequest) {
-      return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.simulation_unavailable);
+      return i18n.walletconnect.simulation.simulation_card.titles.simulation_unavailable();
     }
     if (simulationScanResult === TransactionScanResultType.Warning) {
-      return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.proceed_carefully);
+      return i18n.walletconnect.simulation.simulation_card.titles.proceed_carefully();
     }
     if (simulationScanResult === TransactionScanResultType.Malicious) {
-      return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.suspicious_transaction);
+      return i18n.walletconnect.simulation.simulation_card.titles.suspicious_transaction();
     }
     if (noChanges) {
-      return i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.no_changes);
+      return i18n.walletconnect.simulation.simulation_card.messages.no_changes();
     }
     if (simulationError) {
-      return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.likely_to_fail);
+      return i18n.walletconnect.simulation.simulation_card.titles.likely_to_fail();
     }
-    return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.simulation_result);
+    return i18n.walletconnect.simulation.simulation_card.titles.simulation_result();
   }, [
     isLoading,
     isBalanceEnough,
@@ -264,7 +264,7 @@ export const TransactionSimulationCard = ({
           <Stack space="20px">
             {isBalanceEnough === false ? (
               <Text color="labelQuaternary" size="13pt" weight="semibold">
-                {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.need_more_native, {
+                {i18n.walletconnect.simulation.simulation_card.messages.need_more_native({
                   symbol: nativeAsset.symbol,
                   network: useBackendNetworksStore.getState().getChainsName()[chainId],
                 })}
@@ -274,28 +274,28 @@ export const TransactionSimulationCard = ({
                 {isPersonalSignRequest && (
                   <Box style={{ opacity: 0.6 }}>
                     <Text color="labelQuaternary" size="13pt" weight="semibold">
-                      {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.unavailable_personal_sign)}
+                      {i18n.walletconnect.simulation.simulation_card.messages.unavailable_personal_sign()}
                     </Text>
                   </Box>
                 )}
                 {txSimulationApiError && (
                   <Text color="labelQuaternary" size="13pt" weight="semibold">
-                    {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.tx_api_error)}
+                    {i18n.walletconnect.simulation.simulation_card.messages.tx_api_error()}
                   </Text>
                 )}
                 {simulationError && (
                   <Text color="labelQuaternary" size="13pt" weight="semibold">
-                    {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.failed_to_simulate)}
+                    {i18n.walletconnect.simulation.simulation_card.messages.failed_to_simulate()}
                   </Text>
                 )}
                 {simulationScanResult === TransactionScanResultType.Warning && (
                   <Text color="labelQuaternary" size="13pt" weight="semibold">
-                    {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.warning)}{' '}
+                    {i18n.walletconnect.simulation.simulation_card.messages.warning()}{' '}
                   </Text>
                 )}
                 {simulationScanResult === TransactionScanResultType.Malicious && (
                   <Text color="labelQuaternary" size="13pt" weight="semibold">
-                    {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.malicious)}
+                    {i18n.walletconnect.simulation.simulation_card.messages.malicious()}
                   </Text>
                 )}
               </>

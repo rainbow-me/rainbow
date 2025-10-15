@@ -10,7 +10,7 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { IS_TEST } from '@/env';
 import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { usePoints, usePointsReferralCode } from '@/resources/points';
@@ -55,7 +55,7 @@ export function PointsScreen() {
           if (!isOnboarded) {
             Navigation.handleAction(POINTS_ROUTES.REFERRAL_CONTENT);
           } else {
-            Alert.alert(i18n.t(i18n.l.points.points.already_claimed_points));
+            Alert.alert(i18n.points.points.already_claimed_points());
           }
         })
         .then(() => resetReferralCode());
@@ -85,7 +85,7 @@ export function PointsScreen() {
           ) : null
         }
         rightComponent={pointsNotificationsToggleEnabled ? <NotificationToggleContextMenu /> : undefined}
-        title={rewardsEnabled ? i18n.t(i18n.l.account.tab_rewards) : i18n.t(i18n.l.account.tab_points)}
+        title={rewardsEnabled ? i18n.account.tab_rewards() : i18n.account.tab_points()}
       />
       {/* eslint-disable-next-line no-nested-ternary */}
       {pointsEnabled ? (

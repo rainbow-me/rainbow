@@ -19,7 +19,7 @@ import {
 } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { queryClient } from '@/react-query';
@@ -88,7 +88,7 @@ export function MintsSheet() {
                     </Column>
                     <Column>
                       <Text color="label" size="20pt" align="center" weight="heavy">
-                        {i18n.t(i18n.l.mints.mints_sheet.mints)}
+                        {i18n.mints.mints_sheet.mints()}
                       </Text>
                     </Column>
                     <Column width="content">
@@ -120,7 +120,7 @@ export function MintsSheet() {
           {!isFetching ? (
             <Stack space="20px">
               <Text size="17pt" weight="bold" align="center" color="labelSecondary">
-                {i18n.t(i18n.l.mints.mints_sheet.no_data_found)}
+                {i18n.mints.mints_sheet.no_data_found()}
               </Text>
               <ButtonPressAnimation
                 onPress={() => {

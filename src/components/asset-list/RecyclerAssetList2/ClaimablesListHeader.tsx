@@ -4,7 +4,7 @@ import CaretImageSource from '@/assets/family-dropdown-arrow.png';
 import { useTheme } from '@/theme/ThemeContext';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Inline, Text } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import useOpenClaimables from '@/hooks/useOpenClaimables';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(Image);
@@ -68,7 +68,7 @@ export const ClaimablesListHeader = React.memo(function ClaimablesListHeader({ t
       <Box height={{ custom: TokenFamilyHeaderHeight }} paddingHorizontal={'19px (Deprecated)'} justifyContent="center">
         <Inline alignHorizontal="justify" alignVertical="center">
           <Text size="22pt" color={'label'} weight="heavy">
-            {i18n.t(i18n.l.account.tab_claimables)}
+            {i18n.account.tab_claimables()}
           </Text>
           <Inline horizontalSpace={'8px'} alignVertical="center">
             {!isClaimablesOpen && (

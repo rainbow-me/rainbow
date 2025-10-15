@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useSharedValue } from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations';
@@ -61,7 +61,7 @@ function TransactionHeader({ message }: { message: string }) {
           </Text>
         </IconContainer>
         <Text color="label" size="17pt" weight="bold">
-          {i18n.t(i18n.l.walletconnect.simulation.message_card.title)}
+          {i18n.walletconnect.simulation.message_card.title()}
         </Text>
       </Inline>
       <ButtonPressAnimation hitSlop={20} disabled={didCopy} onPress={() => handleCopyPress(message)}>
@@ -70,7 +70,7 @@ function TransactionHeader({ message }: { message: string }) {
             <Inline alignHorizontal="right" alignVertical="center" space={{ custom: 4 }}>
               <AnimatedCheckmark visible={didCopy} />
               <Text align="right" color={didCopy ? 'labelQuaternary' : 'blue'} size="15pt" weight="bold">
-                {i18n.t(i18n.l.walletconnect.simulation.message_card.copy)}
+                {i18n.walletconnect.simulation.message_card.copy()}
               </Text>
             </Inline>
           </Box>

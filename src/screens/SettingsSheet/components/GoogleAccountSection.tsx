@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getGoogleAccountUserData, GoogleDriveUserData, logoutFromGoogleDrive } from '@/handlers/cloudBackup';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { showActionSheetWithOptions } from '@/utils';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import Menu from './Menu';
 import MenuItem from './MenuItem';
 import { logger, RainbowError } from '@/logger';
@@ -31,11 +31,7 @@ export const GoogleAccountSection: React.FC = () => {
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 2,
-        options: [
-          i18n.t(i18n.l.settings.backup_switch_google_account),
-          i18n.t(i18n.l.settings.backup_sign_out),
-          i18n.t(i18n.l.button.cancel),
-        ],
+        options: [i18n.settings.backup_switch_google_account(), i18n.settings.backup_sign_out(), i18n.button.cancel()],
       },
       buttonIndex => {
         if (buttonIndex === 0) {
@@ -77,22 +73,20 @@ export const GoogleAccountSection: React.FC = () => {
   };
 
   return (
-    <Menu header={i18n.t(i18n.l.settings.google_account_used)}>
+    <Menu header={i18n.settings.google_account_used()}>
       {loading && (
         <MenuItem
           hasSfSymbol
           size={52}
           leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
-          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.backup_loading)} isLink />}
+          titleComponent={<MenuItem.Title text={i18n.settings.backup_loading()} isLink />}
         />
       )}
       {!loading && accountDetails && (
         <MenuItem
           size={60}
           leftComponent={accountDetails.avatarUrl ? <ImageAvatar image={accountDetails.avatarUrl} size="smedium" /> : undefined}
-          titleComponent={
-            <MenuItem.Title text={accountDetails.name ?? accountDetails.email ?? i18n.t(i18n.l.settings.backup_google_account)} />
-          }
+          titleComponent={<MenuItem.Title text={accountDetails.name ?? accountDetails.email ?? i18n.settings.backup_google_account()} />}
           labelComponent={accountDetails.name && accountDetails.email && <MenuItem.Label text={accountDetails.email ?? ''} />}
           rightComponent={<MenuItem.TextIcon icon="􀍡" isLink />}
           onPress={onGoogleAccountPress}
@@ -102,7 +96,7 @@ export const GoogleAccountSection: React.FC = () => {
         <MenuItem
           hasSfSymbol
           size={52}
-          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.backup_sign_in)} isLink />}
+          titleComponent={<MenuItem.Title text={i18n.settings.backup_sign_in()} isLink />}
           leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
           onPress={onSignInPress}
         />

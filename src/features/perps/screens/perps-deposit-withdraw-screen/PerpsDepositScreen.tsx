@@ -10,7 +10,7 @@ import { NumberPad } from '@/features/perps/components/NumberPad/NumberPad';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import React, { memo, ReactNode, useCallback, useMemo } from 'react';
 import Animated, {
@@ -116,7 +116,7 @@ const PerpsDepositScreenContent = memo(function PerpsDepositScreenContent() {
       >
         <SheetHandle />
         <Box paddingVertical="8px">
-          <Navbar hasStatusBarInset leftComponent={<AccountImage />} title={i18n.t(i18n.l.perps.deposit.title)} />
+          <Navbar hasStatusBarInset leftComponent={<AccountImage />} title={i18n.perps.deposit.title()} />
         </Box>
 
         <Box alignItems="center">
@@ -161,8 +161,8 @@ const DepositSlider = ({ assetColor, sliderColors }: { assetColor: SharedValue<s
       icon={<SliderCoinIcon />}
       isEnabled={isAssetSelected}
       labels={{
-        disabledText: i18n.t(i18n.l.perps.deposit.no_balance),
-        title: i18n.t(i18n.l.perps.deposit.slider_label),
+        disabledText: i18n.perps.deposit.no_balance(),
+        title: i18n.perps.deposit.slider_label(),
       }}
       maxButtonColor={assetColor}
       onGestureBeginWorklet={handleSliderBeginWorklet}

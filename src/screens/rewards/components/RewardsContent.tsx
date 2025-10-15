@@ -5,7 +5,7 @@ import { GetRewardsDataForWalletQuery } from '@/graphql/__generated__/metadata';
 import { RewardsStats } from './RewardsStats';
 import { RewardsFakeContent } from '@/screens/rewards/components/RewardsFakeContent';
 import { RewardsProgramStatus } from '@/screens/rewards/components/RewardsProgramStatus';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { InfoAlert } from '@/components/info-alert/info-alert';
 import { Box, Text } from '@/design-system';
 
@@ -22,7 +22,7 @@ export const RewardsContent: React.FC<Props> = ({ assetPrice, data, isLoading, i
   }
 
   if (isLoadingError || !data || !data.rewards) {
-    return <RewardsProgramStatus emoji="😵" title={i18n.t(i18n.l.rewards.error_title)} text={i18n.t(i18n.l.rewards.error_text)} />;
+    return <RewardsProgramStatus emoji="😵" title={i18n.rewards.error_title()} text={i18n.rewards.error_text()} />;
   }
 
   return (
@@ -30,8 +30,8 @@ export const RewardsContent: React.FC<Props> = ({ assetPrice, data, isLoading, i
       <RewardsTitle text={data.rewards.meta.title} />
       <Box paddingBottom="20px">
         <InfoAlert
-          title={i18n.t(i18n.l.rewards.info.title)}
-          description={i18n.t(i18n.l.rewards.info.description)}
+          title={i18n.rewards.info.title()}
+          description={i18n.rewards.info.description()}
           rightIcon={
             <Text size="20pt" color={{ custom: data.rewards.meta.color }}>
               􀫸

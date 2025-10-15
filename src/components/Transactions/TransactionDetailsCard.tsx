@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 import { Box, Inline, Stack, Text } from '@/design-system';
@@ -87,7 +87,7 @@ export const TransactionDetailsCard = ({
               </Text>
             </IconContainer>
             <Text color={isExpanded || noChanges ? 'label' : collapsedTextColor} size="17pt" weight="bold">
-              {i18n.t(i18n.l.walletconnect.simulation.details_card.title)}
+              {i18n.walletconnect.simulation.details_card.title()}
             </Text>
           </Inline>
         </Box>

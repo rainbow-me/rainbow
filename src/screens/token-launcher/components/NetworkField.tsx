@@ -1,5 +1,5 @@
 import React from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Bleed, Box, Inline, Text, TextIcon } from '@/design-system';
 import { FieldContainer } from './FieldContainer';
 import { FieldLabel } from './FieldLabel';
@@ -45,9 +45,9 @@ export function NetworkField() {
         }}
       >
         <Box gap={10} style={{ flex: 1 }}>
-          <FieldLabel>{i18n.t(i18n.l.token_launcher.titles.network)}</FieldLabel>
+          <FieldLabel>{i18n.token_launcher.titles.network()}</FieldLabel>
           <Text color="labelQuaternary" size="13pt" weight="bold" numberOfLines={1}>
-            {i18n.t(i18n.l.token_launcher.network_field.balance, { balance: chainNativeAsset?.balance.display ?? '0.00' })}
+            {i18n.token_launcher.network_field.balance({ balance: chainNativeAsset?.balance.display ?? '0.00' })}
           </Text>
         </Box>
         <Bleed right={{ custom: 7 }}>
@@ -99,7 +99,7 @@ export function NetworkField() {
       {!hasSufficientChainNativeAssetForTransactionGas && (
         <Box paddingHorizontal={'20px'}>
           <Text color={{ custom: ERROR_RED }} size="13pt" weight="bold">
-            {i18n.t(i18n.l.token_launcher.network_field.not_enough_funds)}
+            {i18n.token_launcher.network_field.not_enough_funds()}
           </Text>
         </Box>
       )}

@@ -25,7 +25,7 @@ import {
   toFixedWorklet,
 } from '@/safe-math/SafeMath';
 import { useListen } from '@/state/internal/hooks/useListen';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useDebouncedCallback } from 'use-debounce';
 import { time } from '@/utils/time';
 import { useStableValue } from '@/hooks/useStableValue';
@@ -388,7 +388,7 @@ export const AmountInputCard = memo(function AmountInputCard() {
       <Box width="full" flexDirection="row" alignItems="center" zIndex={2}>
         <Box gap={12}>
           <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-            {i18n.t(i18n.l.perps.inputs.amount)}
+            {i18n.perps.inputs.amount()}
           </Text>
           <AmountInputCardSubtitle availableBalanceString={availableBalanceString} />
         </Box>

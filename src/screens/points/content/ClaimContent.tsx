@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import { ETH_REWARDS, useExperimentalFlag } from '@/config';
 import { Box, Row, Rows, Stack, Text, globalColors, useColorMode } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -44,17 +44,17 @@ export function ClaimContent() {
                 <PointsIconAnimation />
                 <Text size="22pt" weight="heavy" align="center" color="label">
                   {rewardsEnabled
-                    ? `${i18n.t(i18n.l.points.claim.title_rewards_line_1)}\n${i18n.t(i18n.l.points.claim.title_rewards_line_2)}`
-                    : i18n.t(i18n.l.points.claim.title)}
+                    ? `${i18n.points.claim.title_rewards_line_1()}\n${i18n.points.claim.title_rewards_line_2()}`
+                    : i18n.points.claim.title()}
                 </Text>
               </Stack>
               <Text size="15pt" weight="semibold" align="center" color="labelTertiary">
-                {rewardsEnabled ? i18n.t(i18n.l.points.claim.subtitle_rewards) : i18n.t(i18n.l.points.claim.subtitle)}
+                {rewardsEnabled ? i18n.points.claim.subtitle_rewards() : i18n.points.claim.subtitle()}
               </Text>
             </Stack>
             <ActionButton
               color={accentColor}
-              label={i18n.t(i18n.l.points.claim.get_started)}
+              label={i18n.points.claim.get_started()}
               onPress={() => (isReadOnlyWallet ? watchingAlert() : navigate(Routes.CONSOLE_SHEET))}
             />
           </Stack>
@@ -62,7 +62,7 @@ export function ClaimContent() {
         <Row height="content">
           <ActionButton
             color={accentColor}
-            label={i18n.t(i18n.l.points.claim.use_referral_code)}
+            label={i18n.points.claim.use_referral_code()}
             onPress={() => (isReadOnlyWallet ? watchingAlert() : navigate(POINTS_ROUTES.REFERRAL_CONTENT))}
             outline
             small

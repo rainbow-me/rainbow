@@ -10,7 +10,7 @@ import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST'
 import { getProvider } from '@/handlers/web3';
 import { delay } from '@/helpers/utilities';
 import { useGas } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { useNavigation } from '@/navigation';
 import { ChainId, Network } from '@/state/backendNetworks/types';
@@ -565,14 +565,14 @@ export const SignTransactionSheet = () => {
 
   const primaryActionButtonLabel = useMemo(() => {
     if (isAuthorizing) {
-      return i18n.t(i18n.l.walletconnect.simulation.buttons.confirming);
+      return i18n.walletconnect.simulation.buttons.confirming();
     }
 
     if (!txSimulationLoading && isBalanceEnough === false) {
-      return i18n.t(i18n.l.walletconnect.simulation.buttons.buy_native_token, { symbol: nativeAsset.symbol });
+      return i18n.walletconnect.simulation.buttons.buy_native_token({ symbol: nativeAsset.symbol });
     }
 
-    return i18n.t(i18n.l.walletconnect.simulation.buttons.confirm);
+    return i18n.walletconnect.simulation.buttons.confirm();
   }, [isAuthorizing, txSimulationLoading, isBalanceEnough, nativeAsset.symbol]);
 
   const primaryActionButtonColor = useMemo(() => {
@@ -658,8 +658,8 @@ export const SignTransactionSheet = () => {
                       </Inline>
                       <Text color="labelTertiary" size="15pt" weight="bold">
                         {isMessageRequest
-                          ? i18n.t(i18n.l.walletconnect.simulation.titles.message_request)
-                          : i18n.t(i18n.l.walletconnect.simulation.titles.transaction_request)}
+                          ? i18n.walletconnect.simulation.titles.message_request()
+                          : i18n.walletconnect.simulation.titles.transaction_request()}
                       </Text>
                     </Stack>
                   </Inline>
@@ -695,7 +695,7 @@ export const SignTransactionSheet = () => {
                       methodName={
                         methodName ||
                         simulationResult?.simulationData?.meta?.to?.function ||
-                        i18n.t(i18n.l.walletconnect.simulation.details_card.unknown)
+                        i18n.walletconnect.simulation.details_card.unknown()
                       }
                       noChanges={noChanges}
                       nonce={nonceForDisplay}
@@ -719,7 +719,7 @@ export const SignTransactionSheet = () => {
                       <Stack space="10px">
                         <Inline space="3px" wrap={false}>
                           <Text color="labelTertiary" size="15pt" weight="semibold">
-                            {i18n.t(i18n.l.walletconnect.simulation.profile_section.signing_with)}
+                            {i18n.walletconnect.simulation.profile_section.signing_with()}
                           </Text>
                           <Text color="label" size="15pt" weight="bold" numberOfLines={1}>
                             {accountInfo.accountName}
@@ -727,7 +727,7 @@ export const SignTransactionSheet = () => {
                         </Inline>
                         {isMessageRequest ? (
                           <Text color="labelQuaternary" size="13pt" weight="semibold">
-                            {i18n.t(i18n.l.walletconnect.simulation.profile_section.free_to_sign)}
+                            {i18n.walletconnect.simulation.profile_section.free_to_sign()}
                           </Text>
                         ) : (
                           <Box style={{ height: 9 }}>
@@ -739,8 +739,7 @@ export const SignTransactionSheet = () => {
                                       <ChainImage chainId={chainId} size={12} position="relative" />
                                     </Bleed>
                                     <Text color="labelQuaternary" size="13pt" weight="semibold">
-                                      {`${nativeAssetBalance?.balance?.display || `0 ${nativeAsset.symbol}`} ${i18n.t(
-                                        i18n.l.walletconnect.simulation.profile_section.on_network,
+                                      {`${nativeAssetBalance?.balance?.display || `0 ${nativeAsset.symbol}`} ${i18n.walletconnect.simulation.profile_section.on_network(
                                         {
                                           network: useBackendNetworksStore.getState().getChainsName()[chainId],
                                         }
@@ -761,7 +760,7 @@ export const SignTransactionSheet = () => {
                   <SheetActionButton
                     color={isDarkMode ? globalColors.blueGrey100 : '#F5F5F7'}
                     isTransparent
-                    label={i18n.t(i18n.l.walletconnect.simulation.buttons.cancel)}
+                    label={i18n.walletconnect.simulation.buttons.cancel()}
                     textColor={label}
                     onPress={onPressCancel}
                     size="big"

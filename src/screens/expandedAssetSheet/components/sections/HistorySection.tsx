@@ -24,7 +24,7 @@ import { format } from 'date-fns';
 import { convertRawAmountToBalanceWorklet, convertRawAmountToNativeDisplay } from '@/helpers/utilities';
 import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { openInBrowser } from '@/utils/openInBrowser';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { minWorklet, mulWorklet, subWorklet, sumWorklet } from '@/safe-math/SafeMath';
 import { useTokenInteractions } from '@/resources/metadata/tokenInteractions';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
@@ -32,7 +32,7 @@ import { SheetSeparator } from '../shared/Separator';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
-const l = i18n.l.expanded_state.sections.history;
+// Removed: // Removed: // Removed: const l = i18n.l.expanded_state.sections.history;
 
 // Layout constants
 const DEFAULT_VISIBLE_ITEM_COUNT = 4;
@@ -76,8 +76,8 @@ function MoreButton({ tokenInteractions }: MoreButtonProps) {
   const { accentColors } = useExpandedAssetSheetContext();
   const { isExpanded } = useTabContext();
 
-  const less = i18n.t(l.less);
-  const more = i18n.t(l.more);
+  const less = i18n.expanded_state.sections.history.less();
+  const more = i18n.expanded_state.sections.history.more();
 
   const buttonLabel = useDerivedValue<string>(() => {
     return isExpanded.value ? less : more;
@@ -195,15 +195,15 @@ export const ListItem = memo(function ListItem({ index, item, nativeCurrency, li
   const direction = useMemo(() => {
     switch (item.type) {
       case TokenInteractionType.Bought:
-        return i18n.t(l.bought);
+        return i18n.expanded_state.sections.history.bought();
       case TokenInteractionType.Sold:
-        return i18n.t(l.sold);
+        return i18n.expanded_state.sections.history.sold();
       case TokenInteractionType.Received:
-        return i18n.t(l.received);
+        return i18n.expanded_state.sections.history.received();
       case TokenInteractionType.Sent:
-        return i18n.t(l.sent);
+        return i18n.expanded_state.sections.history.sent();
       default:
-        return i18n.t(l.unknown);
+        return i18n.expanded_state.sections.history.unknown();
     }
   }, [item.type]);
 
@@ -395,9 +395,9 @@ const HistoryContent = memo(function HistoryContent({
   }, [tokenInteractions]);
 
   const TABS = useMemo(() => {
-    const tabs = [i18n.t(l.tabs.all)];
-    if (buys.length > 0) tabs.push(i18n.t(l.tabs.buys));
-    if (sells.length > 0) tabs.push(i18n.t(l.tabs.sells));
+    const tabs = [l.tabs.all()];
+    if (buys.length > 0) tabs.push(l.tabs.buys());
+    if (sells.length > 0) tabs.push(l.tabs.sells());
     return tabs;
   }, [buys, sells]);
 
@@ -440,7 +440,7 @@ export const HistorySection = memo(function HistorySection() {
         content={<HistoryContent tokenInteractions={tokenInteractions} isLoadingTokenInteractions={isLoadingTokenInteractions} />}
         icon="􀐫"
         id={SectionId.HISTORY}
-        primaryText={i18n.t(l.title)}
+        primaryText={i18n.expanded_state.sections.history.title()}
       />
       <SheetSeparator />
     </Box>

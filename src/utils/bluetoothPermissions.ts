@@ -1,7 +1,7 @@
 import { IS_IOS } from '@/env';
 import { logger } from '@/logger';
 import { Alert, Linking } from 'react-native';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import {
   checkMultiple as checkForMultiplePermissions,
   PERMISSIONS,
@@ -15,17 +15,17 @@ import {
  * Shows an alert if device's bluetooth is powered off
  */
 export const showBluetoothPoweredOffAlert = async () => {
-  await Alert.alert(i18n.t(i18n.l.bluetooth.powered_off_alert.title), i18n.t(i18n.l.bluetooth.powered_off_alert.message), [
+  await Alert.alert(i18n.bluetooth.powered_off_alert.title(), i18n.bluetooth.powered_off_alert.message(), [
     {
       onPress: () => {
         IS_IOS ? Linking.openURL('App-Prefs:Bluetooth') : Linking.sendIntent('android.settings.BLUETOOTH_SETTINGS');
       },
-      text: i18n.t(i18n.l.bluetooth.powered_off_alert.open_settings),
+      text: i18n.bluetooth.powered_off_alert.open_settings(),
     },
     {
       onPress: () => null,
       style: 'cancel',
-      text: i18n.t(i18n.l.bluetooth.powered_off_alert.cancel),
+      text: i18n.bluetooth.powered_off_alert.cancel(),
     },
   ]);
 };
@@ -34,17 +34,17 @@ export const showBluetoothPoweredOffAlert = async () => {
  * Shows an alert w/ deeplink to settings to enable bluetooth permissions for iOS
  */
 export const showBluetoothPermissionsAlert = async () => {
-  await Alert.alert(i18n.t(i18n.l.bluetooth.permissions_alert.title), i18n.t(i18n.l.bluetooth.permissions_alert.message), [
+  await Alert.alert(i18n.bluetooth.permissions_alert.title(), i18n.bluetooth.permissions_alert.message(), [
     {
       onPress: () => {
         Linking.openSettings();
       },
-      text: i18n.t(i18n.l.bluetooth.permissions_alert.open_settings),
+      text: i18n.bluetooth.permissions_alert.open_settings(),
     },
     {
       onPress: () => null,
       style: 'cancel',
-      text: i18n.t(i18n.l.bluetooth.permissions_alert.cancel),
+      text: i18n.bluetooth.permissions_alert.cancel(),
     },
   ]);
 };

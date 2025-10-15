@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Inline, Text, TextIcon } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { IS_ANDROID } from '@/env';
 import { gasUtils } from '@/utils';
 import { usePerpsDepositContext } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsDepositContext';
@@ -25,7 +25,7 @@ export const SelectedGasSpeed = memo(function SelectedGasSpeed({ isPill }: { isP
           {SWAP_GAS_ICONS[selectedGasSpeed].icon}
         </TextIcon>
         <Text align={isPill ? 'center' : 'left'} color="label" size="15pt" weight="heavy">
-          {i18n.t(i18n.l.gas.speeds[selectedGasSpeed])}
+          {i18n.gas.speeds[selectedGasSpeed]()}
         </Text>
       </Inline>
       <TextIcon color="labelSecondary" height={10} size="icon 13px" weight="bold" width={12}>

@@ -38,7 +38,7 @@ import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/
 import { getProvider } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
@@ -65,17 +65,17 @@ import { getRemoteConfig } from '@/model/remoteConfig';
 import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
 import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
 
-const swapping = i18n.t(i18n.l.swap.actions.swapping);
-const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
-const holdToBridge = i18n.t(i18n.l.swap.actions.hold_to_bridge);
-const done = i18n.t(i18n.l.button.done);
-const enterAmount = i18n.t(i18n.l.swap.actions.enter_amount);
-const review = i18n.t(i18n.l.swap.actions.review);
-const fetchingPrices = i18n.t(i18n.l.swap.actions.fetching_prices);
-const selectToken = i18n.t(i18n.l.swap.actions.select_token);
-const insufficientFunds = i18n.t(i18n.l.swap.actions.insufficient_funds);
-const insufficient = i18n.t(i18n.l.swap.actions.insufficient);
-const quoteError = i18n.t(i18n.l.swap.actions.quote_error);
+const swapping = i18n.swap.actions.swapping();
+const holdToSwap = i18n.swap.actions.hold_to_swap();
+const holdToBridge = i18n.swap.actions.hold_to_bridge();
+const done = i18n.button.done();
+const enterAmount = i18n.swap.actions.enter_amount();
+const review = i18n.swap.actions.review();
+const fetchingPrices = i18n.swap.actions.fetching_prices();
+const selectToken = i18n.swap.actions.select_token();
+const insufficientFunds = i18n.swap.actions.insufficient_funds();
+const insufficient = i18n.swap.actions.insufficient();
+const quoteError = i18n.swap.actions.quote_error();
 
 type ConfirmButtonProps = {
   label: string;
@@ -263,7 +263,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const selectedGas = getSelectedGas(parameters.chainId);
       if (!selectedGas) {
         isSwapping.value = false;
-        Alert.alert(i18n.t(i18n.l.gas.unable_to_determine_selected_gas));
+        Alert.alert(i18n.gas.unable_to_determine_selected_gas());
         return;
       }
 
@@ -341,7 +341,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         if (errorMessage !== 'handled') {
           logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
           const extractedError = errorMessage.split('[')[0];
-          Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), extractedError);
+          Alert.alert(i18n.swap.error_executing_swap(), extractedError);
           return;
         }
       }

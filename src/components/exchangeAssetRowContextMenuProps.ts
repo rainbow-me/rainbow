@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { startCase } from 'lodash';
 import { NativeSyntheticEvent } from 'react-native';
 import { setClipboard } from '@/hooks/useClipboard';
@@ -7,7 +7,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const buildBlockExplorerAction = (chainId: ChainId) => {
-  const blockExplorerText = i18n.t(i18n.l.exchange.coin_row.view_on, {
+  const blockExplorerText = i18n.exchange.coin_row.view_on({
     blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })),
   });
   return {
@@ -28,7 +28,7 @@ const CoinRowActionsEnum = {
 const CoinRowActions = {
   [CoinRowActionsEnum.copyAddress]: {
     actionKey: CoinRowActionsEnum.copyAddress,
-    actionTitle: i18n.t(i18n.l.wallet.action.copy_contract_address),
+    actionTitle: i18n.wallet.action.copy_contract_address(),
     icon: {
       iconType: 'SYSTEM',
       iconValue: ios ? 'doc.on.doc' : null,
@@ -45,7 +45,7 @@ export default function contextMenuProps(item: any, onCopySwapDetailsText: (addr
 
   const onPressAndroid = () => {
     const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer({ chainId: useBackendNetworksStore.getState().getChainsIdByName()[item?.network] }))}`;
-    const androidContractActions = [i18n.t(i18n.l.wallet.action.copy_contract_address), blockExplorerText, i18n.t(i18n.l.button.cancel)];
+    const androidContractActions = [i18n.wallet.action.copy_contract_address(), blockExplorerText, i18n.button.cancel()];
 
     showActionSheetWithOptions(
       {

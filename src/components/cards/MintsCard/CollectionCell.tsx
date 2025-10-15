@@ -8,7 +8,7 @@ import { View } from 'react-native';
 import { MintableCollection } from '@/graphql/__generated__/arc';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 import { analytics } from '@/analytics';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { IS_IOS } from '@/env';
 import { ImgixImage } from '@/components/images';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
@@ -139,7 +139,7 @@ export function CollectionCell({ collection }: { collection: MintableCollection 
         )}
         <View style={{ width: NFT_IMAGE_SIZE - 16 }}>
           <Text color="label" size="11pt" weight="bold" numberOfLines={1}>
-            {isFree ? i18n.t(i18n.l.mints.mints_card.collection_cell.free) : amount}
+            {isFree ? i18n.mints.mints_card.collection_cell.free() : amount}
           </Text>
         </View>
       </View>

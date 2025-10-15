@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React from 'react';
 import { neverRerender } from '@/utils';
 import { Inset, Stack, Text } from '@/design-system';
@@ -21,26 +21,26 @@ export const NoResults = ({ onL2, type }: { onL2?: boolean; type: NoResultsType 
 
   switch (type) {
     case NoResultsType.Discover:
-      title = i18n.t(i18n.l.exchange.no_results.nothing_here);
+      title = i18n.exchange.no_results.nothing_here();
       break;
     case NoResultsType.Swap:
-      title = i18n.t(i18n.l.exchange.no_results.nothing_found);
+      title = i18n.exchange.no_results.nothing_found();
       if (assetCount) {
-        description = onL2 ? i18n.t(i18n.l.exchange.no_results.description_l2) : i18n.t(i18n.l.exchange.no_results.description);
+        description = onL2 ? i18n.exchange.no_results.description_l2() : i18n.exchange.no_results.description();
       } else {
-        description = i18n.t(i18n.l.exchange.no_results.description_no_assets, {
+        description = i18n.exchange.no_results.description_no_assets({
           action: type,
         });
       }
       break;
     case NoResultsType.Send:
-      title = i18n.t(i18n.l.exchange.no_results.nothing_to_send);
-      description = i18n.t(i18n.l.exchange.no_results.description_no_assets, {
+      title = i18n.exchange.no_results.nothing_to_send();
+      description = i18n.exchange.no_results.description_no_assets({
         action: type,
       });
       break;
     default:
-      title = i18n.t(i18n.l.exchange.no_results.nothing_found);
+      title = i18n.exchange.no_results.nothing_found();
       logger.warn('[NoResults]: unknown type, falling back to default message');
       break;
   }

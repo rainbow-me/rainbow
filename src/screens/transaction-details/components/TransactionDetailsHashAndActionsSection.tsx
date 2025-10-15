@@ -3,7 +3,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { SheetActionButton } from '@/components/sheet';
 import { Box, Stack } from '@/design-system';
 import { RainbowTransaction, TransactionStatus } from '@/entities';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { swapMetadataStorage } from '@/raps/common';
@@ -76,7 +76,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
           {formattedHash && (
             <ButtonPressAnimation onPress={onHashPress} scaleTo={0.96}>
               <Box paddingVertical="12px">
-                <SingleLineTransactionDetailsRow icon="􀆃" title={i18n.t(i18n.l.transaction_details.hash)} value={formattedHash} />
+                <SingleLineTransactionDetailsRow icon="􀆃" title={i18n.transaction_details.hash()} value={formattedHash} />
               </Box>
             </ButtonPressAnimation>
           )}
@@ -85,7 +85,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
               color={colors.transparent}
               textColor={colors.appleBlue}
               onPress={onRetrySwap}
-              label={i18n.t(i18n.l.transaction_details.try_again)}
+              label={i18n.transaction_details.try_again()}
               weight="heavy"
               isTransparent
             />
@@ -94,7 +94,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
             color={colors.appleBlue}
             weight="heavy"
             onPress={onViewOnBlockExplorerPress}
-            label={i18n.t(i18n.l.wallet.action.view_on, {
+            label={i18n.wallet.action.view_on({
               blockExplorerName: transaction.explorerLabel ?? startCase(ethereumUtils.getBlockExplorer({ chainId: transaction.chainId })),
             })}
             lightShadows

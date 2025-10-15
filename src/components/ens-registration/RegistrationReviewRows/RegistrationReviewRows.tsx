@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
@@ -97,9 +97,7 @@ export default function RegistrationReviewRows({
         <Columns>
           <Column width="3/5">
             <Text color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy">
-              {i18n.t(
-                mode === REGISTRATION_MODES.CREATE ? i18n.l.profiles.confirm.registration_duration : i18n.l.profiles.confirm.extend_by
-              )}
+              {mode === REGISTRATION_MODES.CREATE ? i18n.profiles.confirm.registration_duration() : i18n.profiles.confirm.extend_by()}
             </Text>
           </Column>
           <Column width="2/5">
@@ -117,10 +115,10 @@ export default function RegistrationReviewRows({
                 <Box height={{ custom: 16 }}>
                   <Text align="center" color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy">
                     {duration > 1
-                      ? i18n.t(i18n.l.profiles.confirm.duration_plural, {
+                      ? i18n.profiles.confirm.duration_plural({
                           content: duration,
                         })
-                      : i18n.t(i18n.l.profiles.confirm.duration_singular)}
+                      : i18n.profiles.confirm.duration_singular()}
                   </Text>
                 </Box>
                 <Column width="content">
@@ -141,7 +139,7 @@ export default function RegistrationReviewRows({
           <Columns>
             <Column width="2/3">
               <Text color="secondary80 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold" numberOfLines={2}>
-                {i18n.t(i18n.l.profiles.confirm.new_expiration_date)}
+                {i18n.profiles.confirm.new_expiration_date()}
               </Text>
             </Column>
             <Column width="1/3">
@@ -155,7 +153,7 @@ export default function RegistrationReviewRows({
         <Columns>
           <Column width="2/3">
             <Text color="secondary80 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold" numberOfLines={2}>
-              {i18n.t(i18n.l.profiles.confirm.registration_cost)}
+              {i18n.profiles.confirm.registration_cost()}
             </Text>
           </Column>
           <Column width="1/3">
@@ -174,7 +172,7 @@ export default function RegistrationReviewRows({
         <Columns>
           <Column width="2/3">
             <Text color="secondary80 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold" numberOfLines={2}>
-              {i18n.t(i18n.l.profiles.confirm.estimated_fees)}
+              {i18n.profiles.confirm.estimated_fees()}
             </Text>
           </Column>
           <Column width="1/3">
@@ -194,7 +192,7 @@ export default function RegistrationReviewRows({
           <Columns>
             <Column width="2/3">
               <Text color="secondary80 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold" numberOfLines={2}>
-                {i18n.t(i18n.l.profiles.confirm.estimated_total_eth)}
+                {i18n.profiles.confirm.estimated_total_eth()}
               </Text>
             </Column>
             <Column width="1/3">
@@ -214,7 +212,7 @@ export default function RegistrationReviewRows({
         <Columns>
           <Column width="2/3">
             <Text color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy" numberOfLines={2}>
-              {i18n.t(i18n.l.profiles.confirm.estimated_total)}
+              {i18n.profiles.confirm.estimated_total()}
             </Text>
           </Column>
           <Column width="1/3">

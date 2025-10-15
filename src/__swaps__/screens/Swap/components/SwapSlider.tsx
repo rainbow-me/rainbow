@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { PanGestureHandler, State, TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -42,10 +42,10 @@ type SwapSliderProps = {
   width?: number;
 };
 
-const SWAP_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.swap);
-const BRIDGE_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.bridge);
-const MAX_LABEL = i18n.t(i18n.l.swap.max);
-const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
+const SWAP_TITLE_LABEL = i18n.swap.modal_types.swap();
+const BRIDGE_TITLE_LABEL = i18n.swap.modal_types.bridge();
+const MAX_LABEL = i18n.swap.max();
+const NO_BALANCE_LABEL = i18n.swap.no_balance();
 
 export const SwapSlider = ({
   dualColor,

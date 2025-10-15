@@ -17,7 +17,7 @@ import { IS_IOS } from '@/env';
 import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useMints } from '@/resources/mints';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import styled from '@/styled-thing';
@@ -177,7 +177,7 @@ export function FeaturedMintCard() {
                           􀫸
                         </Text>
                         <Text size="13pt" weight="heavy" color={secondaryTextColor}>
-                          {i18n.t(i18n.l.mints.featured_mint_card.featured_mint)}
+                          {i18n.mints.featured_mint_card.featured_mint()}
                         </Text>
                       </Inline>
                       <Box height={{ custom: 36 }} justifyContent="center" alignItems="flex-start">
@@ -193,8 +193,8 @@ export function FeaturedMintCard() {
                         </Text>
                         <Text size="13pt" weight="heavy" color="label">
                           {featuredMint.totalMints === 1
-                            ? i18n.t(i18n.l.mints.featured_mint_card.one_mint)
-                            : i18n.t(i18n.l.mints.featured_mint_card.x_mints, {
+                            ? i18n.mints.featured_mint_card.one_mint()
+                            : i18n.mints.featured_mint_card.x_mints({
                                 numMints: abbreviateNumber(featuredMint.totalMints),
                               })}
                         </Text>
@@ -204,7 +204,7 @@ export function FeaturedMintCard() {
                           􀐫
                         </Text>
                         <Text size="13pt" weight="heavy" color="label">
-                          {i18n.t(i18n.l.mints.featured_mint_card.x_past_hour, {
+                          {i18n.mints.featured_mint_card.x_past_hour({
                             numMints: abbreviateNumber(featuredMint.mintsLastHour),
                           })}
                         </Text>

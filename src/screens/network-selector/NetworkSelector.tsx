@@ -18,7 +18,7 @@ import {
   useColorMode,
 } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
 import chroma from 'chroma-js';
@@ -82,7 +82,7 @@ const enum Section {
   unpinned,
 }
 
-const t = i18n.l.network_selector;
+// Removed: // Removed: // Removed: const t = i18n.l.network_selector;
 const MAX_HEIGHT = deviceUtils.dimensions.height * 0.875 - safeAreaInsetValues.top;
 const HEADER_HEIGHT = 66;
 const FOOTER_HEIGHT = 91;
@@ -115,14 +115,14 @@ const ALL_BADGE_BORDER_COLORS = {
 };
 
 const translations = {
-  edit: i18n.t(i18n.l.button.edit),
-  done: i18n.t(i18n.l.button.done),
-  cancel: i18n.t(i18n.l.button.cancel),
-  more: i18n.t(i18n.l.button.more),
-  network: i18n.t(t.network),
-  show_more: i18n.t(t.show_more),
-  show_less: i18n.t(t.show_less),
-  drag_to_rearrange: i18n.t(t.drag_to_rearrange),
+  edit: i18n.button.edit(),
+  done: i18n.button.done(),
+  cancel: i18n.button.cancel(),
+  more: i18n.button.more(),
+  network: i18n.network_selector.network(),
+  show_more: i18n.network_selector.show_more(),
+  show_less: i18n.network_selector.show_less(),
+  drag_to_rearrange: i18n.network_selector.drag_to_rearrange(),
 };
 
 function HeaderActionButton({ onPress, text }: { onPress: () => void; text: SharedValue<string> | DerivedValue<string> }) {
@@ -210,14 +210,14 @@ const CustomizeNetworksBanner = !shouldShowCustomizeNetworksBanner(customizeNetw
                 </LinearGradient>
                 <View style={{ gap: 10 }}>
                   <Text weight="heavy" size="15pt" color="labelSecondary">
-                    {i18n.t(t.customize_networks_banner.title)}
+                    {t.customize_networks_banner.title()}
                   </Text>
                   <Text weight="semibold" size="13pt" color="labelQuaternary">
-                    {i18n.t(t.customize_networks_banner.tap_the)}{' '}
+                    {t.customize_networks_banner.tap_the()}{' '}
                     <Text weight="bold" size="13pt" color={{ custom: blue }}>
-                      {i18n.t(t.edit)}
+                      {i18n.network_selector.edit()}
                     </Text>{' '}
-                    {i18n.t(t.customize_networks_banner.button_to_set_up)}
+                    {t.customize_networks_banner.button_to_set_up()}
                   </Text>
                 </View>
                 <Pressable style={{ marginLeft: 'auto', height: '100%' }} onPress={dismissCustomizeNetworksBanner}>
@@ -296,7 +296,7 @@ function AllNetworksOption({
   const isSelected = useDerivedValue(() => selected.value === undefined);
   const { animatedStyle } = useNetworkOptionStyle(isSelected, color, true);
 
-  const label = actionButton?.label || i18n.t(t.all_networks);
+  const label = actionButton?.label || i18n.network_selector.all_networks();
 
   const overlappingBadge = useAnimatedStyle(() => {
     return {
@@ -598,7 +598,7 @@ function EmptyUnpinnedPlaceholder({
       style={[sx.emptyUnpinnedPlaceholder, { backgroundColor: isDarkMode ? globalColors.white10 : globalColors.grey20 }, animatedStyle]}
     >
       <Text align="center" color="labelQuaternary" size="17pt" style={sx.flex} weight="bold">
-        {i18n.t(t.drop_here_to_unpin)}
+        {i18n.network_selector.drop_here_to_unpin()}
       </Text>
     </Animated.View>
   );

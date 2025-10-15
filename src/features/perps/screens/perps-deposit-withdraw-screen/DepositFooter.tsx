@@ -5,17 +5,17 @@ import { PerpsSwapButton } from '@/features/perps/components/PerpsSwapButton';
 import { GasButton } from '@/features/perps/screens/perps-deposit-withdraw-screen/components/gas/GasButton';
 import { usePerpsDepositContext } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsDepositContext';
 import { useStableValue } from '@/hooks/useStableValue';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { time } from '@/utils/time';
 
 const translations = {
-  confirmButtonZero: i18n.t(i18n.l.perps.deposit.confirm_button_zero_text),
-  confirmButtonOverBalance: i18n.t(i18n.l.perps.deposit.confirm_button_over_balance_text),
-  confirmButtonError: i18n.t(i18n.l.perps.deposit.confirm_button_error_text),
-  confirmButtonLoading: i18n.t(i18n.l.perps.deposit.confirm_button_loading_text),
-  confirmButton: i18n.t(i18n.l.perps.deposit.confirm_button_text),
+  confirmButtonZero: i18n.perps.deposit.confirm_button_zero_text(),
+  confirmButtonOverBalance: i18n.perps.deposit.confirm_button_over_balance_text(),
+  confirmButtonError: i18n.perps.deposit.confirm_button_error_text(),
+  confirmButtonLoading: i18n.perps.deposit.confirm_button_loading_text(),
+  confirmButton: i18n.perps.deposit.confirm_button_text(),
 };
 
 export const GasButtonWrapper = memo(function GasButtonWrapper() {

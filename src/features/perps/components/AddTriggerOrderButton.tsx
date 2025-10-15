@@ -5,7 +5,7 @@ import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccent
 import { useCallback } from 'react';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
 type AddTriggerOrderButtonProps = {
@@ -56,9 +56,7 @@ export const AddTriggerOrderButton = function AddTriggerOrderButton({
       >
         <TextShadow blur={8} shadowOpacity={0.2}>
           <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-            {type === TriggerOrderType.STOP_LOSS
-              ? i18n.t(i18n.l.perps.trigger_orders.add_stop_loss)
-              : i18n.t(i18n.l.perps.trigger_orders.add_take_profit)}
+            {type === TriggerOrderType.STOP_LOSS ? i18n.perps.trigger_orders.add_stop_loss() : i18n.perps.trigger_orders.add_take_profit()}
           </Text>
         </TextShadow>
         <TextIcon color={{ custom: accentColors.opacity100 }} size="icon 20px" weight="heavy" width={24}>

@@ -1,7 +1,7 @@
 import { analytics } from '@/analytics';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
 import { Bleed, Box, Stack } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
@@ -27,28 +27,24 @@ export const Review = () => {
       <Stack separator={<LineBreak lines={3} />}>
         <Paragraph>
           <Line>
-            <AnimatedText color={textColors.gray} skipAnimation textContent={`${i18n.t(i18n.l.points.console.account)}:`} weight="normal" />
+            <AnimatedText color={textColors.gray} skipAnimation textContent={`${i18n.points.console.account()}:`} weight="normal" />
             <AnimatedText color={textColors.account} skipAnimation textContent={accountName} />
           </Line>
-          <AnimatedText
-            color={textColors.green}
-            delayStart={500}
-            textContent={`> ${i18n.t(i18n.l.points.console.registration_complete)}`}
-          />
+          <AnimatedText color={textColors.green} delayStart={500} textContent={`> ${i18n.points.console.registration_complete()}`} />
         </Paragraph>
         <Stack separator={<LineBreak lines={2} />}>
           <Paragraph>
             <AnimatedText
               delayStart={500}
               color={textColors.gray}
-              textContent={i18n.t(i18n.l.points.console.share_bonus_paragraph_one)}
+              textContent={i18n.points.console.share_bonus_paragraph_one()}
               multiline
               weight="normal"
             />
             <AnimatedText
               color={textColors.gray}
               delayStart={500}
-              textContent={i18n.t(i18n.l.points.console.share_bonus_paragraph_two)}
+              textContent={i18n.points.console.share_bonus_paragraph_two()}
               multiline
               weight="normal"
             />
@@ -60,7 +56,7 @@ export const Review = () => {
                 }, 500);
                 return () => clearTimeout(complete);
               }}
-              textContent={i18n.t(i18n.l.points.console.share_bonus_paragraph_three)}
+              textContent={i18n.points.console.share_bonus_paragraph_three()}
               multiline
               weight="normal"
             />
@@ -71,7 +67,7 @@ export const Review = () => {
         <Bleed horizontal={{ custom: 14 }}>
           <NeonButton
             color="#FEC101"
-            label={i18n.t(i18n.l.points.console.complete_onboarding)}
+            label={i18n.points.console.complete_onboarding()}
             onPress={() => {
               analytics.track(analytics.event.pointsOnboardingScreenPressedDoneButton);
               goBack();

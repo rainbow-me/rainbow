@@ -16,7 +16,7 @@ import { getDappHostname } from '@/helpers/dappNameHandler';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 import { NETWORK_MENU_ACTION_KEY_FILTER, networksMenuItems } from '@/helpers/walletConnectNetworks';
 import { useAccountSettings } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { RainbowWallet } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -323,10 +323,10 @@ export function WalletConnectApprovalSheet() {
       setSelected: noop,
       title:
         chainIds.length > 1
-          ? i18n.t(i18n.l.walletconnect.approval_sheet_networks, {
+          ? i18n.walletconnect.approval_sheet_networks({
               length: chainIds.length,
             })
-          : i18n.t(i18n.l.walletconnect.approval_sheet_network),
+          : i18n.walletconnect.approval_sheet_network(),
     });
   }, [chainIds]);
 
@@ -335,7 +335,7 @@ export function WalletConnectApprovalSheet() {
       if (!chainIds?.length) {
         return (
           <Box height={{ custom: 38 }} justifyContent="center" width="full">
-            <LabelText align="right">{i18n.t(i18n.l.walletconnect.none)}</LabelText>
+            <LabelText align="right">{i18n.walletconnect.none()}</LabelText>
           </Box>
         );
       } else {
@@ -397,8 +397,8 @@ export function WalletConnectApprovalSheet() {
                 </Row>
                 <Text align="center" color="secondary60 (Deprecated)" size="23px / 27px (Deprecated)" weight="semibold">
                   {type === WalletConnectApprovalSheetType.connect
-                    ? i18n.t(i18n.l.walletconnect.wants_to_connect)
-                    : i18n.t(i18n.l.walletconnect.wants_to_connect_to_network, {
+                    ? i18n.walletconnect.wants_to_connect()
+                    : i18n.walletconnect.wants_to_connect_to_network({
                         network: useBackendNetworksStore.getState().getChainsLabel()[chainId],
                       })}
                 </Text>
@@ -423,15 +423,15 @@ export function WalletConnectApprovalSheet() {
                     􀘰
                   </Text>
                 }
-                title={i18n.t(i18n.l.walletconnect.dapp_warnings.info_alert.title)}
-                description={i18n.t(i18n.l.walletconnect.dapp_warnings.info_alert.description)}
+                title={i18n.walletconnect.dapp_warnings.info_alert.title()}
+                description={i18n.walletconnect.dapp_warnings.info_alert.description()}
               />
             </Box>
           )}
           <SheetActionButtonRow paddingBottom={android ? 20 : 30}>
             <SheetActionButton
               color={colors.white}
-              label={i18n.t(i18n.l.button.cancel)}
+              label={i18n.button.cancel()}
               onPress={handleCancel}
               size="big"
               textColor={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -439,7 +439,7 @@ export function WalletConnectApprovalSheet() {
             />
             <SheetActionButton
               color={accentColor}
-              label={i18n.t(i18n.l.button.connect)}
+              label={i18n.button.connect()}
               onPress={handleConnect}
               size="big"
               testID="wc-connect"
@@ -449,7 +449,7 @@ export function WalletConnectApprovalSheet() {
           <Box paddingBottom={{ custom: 21 }} paddingHorizontal={{ custom: 24 }}>
             <Columns>
               <RDSColumn>
-                <SwitchText>{i18n.t(i18n.l.wallet.wallet_title)}</SwitchText>
+                <SwitchText>{i18n.wallet.wallet_title()}</SwitchText>
                 <ButtonPressAnimation
                   onPress={handlePressChangeWallet}
                   style={{
@@ -489,10 +489,10 @@ export function WalletConnectApprovalSheet() {
                 <Flex justify="end">
                   <SwitchText align="right">
                     {chainIds.length > 1
-                      ? i18n.t(i18n.l.walletconnect.approval_sheet_networks, {
+                      ? i18n.walletconnect.approval_sheet_networks({
                           length: chainIds.length,
                         })
-                      : i18n.t(i18n.l.walletconnect.approval_sheet_network)}
+                      : i18n.walletconnect.approval_sheet_network()}
                   </SwitchText>
                 </Flex>
                 {renderNetworks()}

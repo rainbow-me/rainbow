@@ -1,6 +1,6 @@
 import { OnboardPointsMutation, PointsErrorType, PointsOnboardingCategory } from '@/graphql/__generated__/metadataPOST';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { pointsQueryKey } from '@/resources/points';
 import { noop } from 'lodash';
@@ -128,13 +128,13 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
       });
       const challenge = challengeResponse?.pointsOnboardChallenge;
       if (!challenge) {
-        Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
+        Alert.alert(i18n.points.console.generic_alert());
         throw new RainbowError('Points: Error getting onboard challenge');
       }
       const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({ address: accountAddress, provider });
       if (!wallet) {
-        Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
+        Alert.alert(i18n.points.console.generic_alert());
         throw new RainbowError('Points: Error loading wallet');
       }
       const signatureResponse = await signPersonalMessage(challenge, provider, wallet);
@@ -143,7 +143,7 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
       }
       const signature = signatureResponse?.result;
       if (!signature) {
-        Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
+        Alert.alert(i18n.points.console.generic_alert());
         throw new RainbowError('Points: Error signing challenge');
       }
       const points = await metadataPOSTClient.onboardPoints({
@@ -152,7 +152,7 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
         referral: referralCode,
       });
       if (!points || !points.onboardPoints) {
-        Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
+        Alert.alert(i18n.points.console.generic_alert());
         throw new RainbowError('Points: Error onboarding user');
       }
 
@@ -160,17 +160,17 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
       if (errorType) {
         switch (errorType) {
           case PointsErrorType.ExistingUser:
-            Alert.alert(i18n.t(i18n.l.points.console.existing_user_alert));
+            Alert.alert(i18n.points.console.existing_user_alert());
             break;
           case PointsErrorType.InvalidReferralCode:
-            Alert.alert(i18n.t(i18n.l.points.console.invalid_referral_code_alert));
+            Alert.alert(i18n.points.console.invalid_referral_code_alert());
             break;
           case PointsErrorType.NoBalance:
             setAnimationKey(prevKey => prevKey + 1);
             setStep(RainbowPointsFlowSteps.RequireWalletBalance);
             break;
           default:
-            Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
+            Alert.alert(i18n.points.console.generic_alert());
             break;
         }
         logger.error(new RainbowError('[PointsProfileContext]: Failed to onboard user'), { errorType });

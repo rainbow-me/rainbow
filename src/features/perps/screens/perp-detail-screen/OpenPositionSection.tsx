@@ -10,7 +10,7 @@ import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
@@ -42,7 +42,7 @@ export const PositionValueCard = memo(function PositionValueCard({ position }: {
     >
       <Box flexDirection="row" alignItems="center" justifyContent="space-between">
         <Text size="17pt" weight="bold" color={isDarkMode ? 'labelSecondary' : 'labelTertiary'}>
-          {i18n.t(i18n.l.perps.positions.position_value)}
+          {i18n.perps.positions.position_value()}
         </Text>
         <Box flexDirection="row" alignItems="center" gap={3}>
           <TextShadow blur={8} shadowOpacity={0.2}>
@@ -84,9 +84,7 @@ const PositionDetailsCard = memo(function PositionDetailsCard({ market, position
   const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
 
-  const liquidationPrice = position.liquidationPrice
-    ? formatPerpAssetPrice(position.liquidationPrice)
-    : i18n.t(i18n.l.perps.common.not_available);
+  const liquidationPrice = position.liquidationPrice ? formatPerpAssetPrice(position.liquidationPrice) : i18n.perps.common.not_available();
   const liveMarkPrice = useLiveTokenValue({
     tokenId: getHyperliquidTokenId(market.symbol),
     initialValue: market.price,
@@ -100,15 +98,15 @@ const PositionDetailsCard = memo(function PositionDetailsCard({ market, position
 
   const items = [
     {
-      title: i18n.t(i18n.l.perps.positions.mark_price_full),
+      title: i18n.perps.positions.mark_price_full(),
       value: formatPerpAssetPrice(liveMarkPrice),
     },
     {
-      title: i18n.t(i18n.l.perps.positions.entry_price),
+      title: i18n.perps.positions.entry_price(),
       value: formatPerpAssetPrice(position.entryPrice),
     },
     {
-      title: i18n.t(i18n.l.perps.positions.funding),
+      title: i18n.perps.positions.funding(),
       value: `${isPositive(position.funding) ? '-' : ''}${formatCurrency(position.funding)}`,
     },
   ];
@@ -133,7 +131,7 @@ const PositionDetailsCard = memo(function PositionDetailsCard({ market, position
               </Text>
             )}
             <Text size="17pt" weight="semibold" color="labelSecondary">
-              {i18n.t(i18n.l.perps.positions.liquidation_price)}
+              {i18n.perps.positions.liquidation_price()}
             </Text>
           </Box>
           {targetPriceDifferential && (
@@ -142,7 +140,7 @@ const PositionDetailsCard = memo(function PositionDetailsCard({ market, position
                 {`${toFixedWorklet(targetPriceDifferential, 2)}%`}
               </Text>
               <Text color="labelTertiary" size="13pt" weight="bold">
-                {i18n.t(i18n.l.perps.new_position.from_current_price)}
+                {i18n.perps.new_position.from_current_price()}
               </Text>
             </Box>
           )}

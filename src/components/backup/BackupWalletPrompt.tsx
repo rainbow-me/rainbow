@@ -7,7 +7,7 @@ import { TextColor } from '@/design-system/color/palettes';
 import { CustomColor } from '@/design-system/color/useForegroundColor';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -75,20 +75,20 @@ export default function BackupSheetSectionNoProvider() {
   const { color, text } = useMemo<{ text: string; color: TextColor | CustomColor }>(() => {
     if (status === CloudBackupState.FailedToInitialize || status === CloudBackupState.NotAvailable) {
       return {
-        text: i18n.t(i18n.l.back_up.cloud.statuses.not_enabled),
+        text: i18n.back_up.cloud.statuses.not_enabled(),
         color: 'primary (Deprecated)',
       };
     }
 
     if (status === CloudBackupState.Ready) {
       return {
-        text: i18n.t(i18n.l.back_up.cloud.cloud_backup),
+        text: i18n.back_up.cloud.cloud_backup(),
         color: 'primary (Deprecated)',
       };
     }
 
     return {
-      text: i18n.t(i18n.l.back_up.cloud.statuses.syncing),
+      text: i18n.back_up.cloud.statuses.syncing(),
       color: 'yellow',
     };
   }, [status]);
@@ -97,7 +97,7 @@ export default function BackupSheetSectionNoProvider() {
     <Inset horizontal={'24px'} vertical={'44px'} testId={'backup-reminder-sheet'}>
       <Inset bottom={'44px'} horizontal={'24px'}>
         <Text align="center" size="26pt" weight="bold" color="label">
-          {i18n.t(i18n.l.back_up.cloud.how_would_you_like_to_backup)}
+          {i18n.back_up.cloud.how_would_you_like_to_backup()}
         </Text>
       </Inset>
 
@@ -130,9 +130,9 @@ export default function BackupSheetSectionNoProvider() {
                       </Text>
                       <Text color={'labelSecondary'} size="14px / 19px (Deprecated)" weight="medium">
                         <Text color={'action (Deprecated)'} size="14px / 19px (Deprecated)" weight="bold">
-                          {i18n.t(i18n.l.back_up.cloud.recommended_for_beginners)}
+                          {i18n.back_up.cloud.recommended_for_beginners()}
                         </Text>{' '}
-                        {i18n.t(i18n.l.back_up.cloud.choose_backup_cloud_description, {
+                        {i18n.back_up.cloud.choose_backup_cloud_description({
                           cloudPlatform,
                         })}
                       </Text>
@@ -180,10 +180,10 @@ export default function BackupSheetSectionNoProvider() {
                         size={imageSize}
                       />
                       <Text color={'primary (Deprecated)'} size="18px / 27px (Deprecated)" weight="heavy" numberOfLines={1}>
-                        {i18n.t(i18n.l.back_up.cloud.manual_backup)}
+                        {i18n.back_up.cloud.manual_backup()}
                       </Text>
                       <Text color={'labelSecondary'} size="14px / 19px (Deprecated)" weight="medium">
-                        {i18n.t(i18n.l.back_up.cloud.choose_backup_manual_description)}
+                        {i18n.back_up.cloud.choose_backup_manual_description()}
                       </Text>
                     </Stack>
                   </Box>

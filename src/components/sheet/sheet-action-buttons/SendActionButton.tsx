@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback } from 'react';
 import SheetActionButton, { SheetActionButtonProps } from './SheetActionButton';
 import Routes from '@/navigation/routesNames';
@@ -34,7 +34,7 @@ function SendActionButton({ asset, color: givenColor, textColor, ...props }: Sen
       testID="send"
     >
       <Text align="center" color={textColor ? { custom: textColor } : 'label'} size="20pt" weight="heavy">
-        {i18n.t(i18n.l.button.send)}
+        {i18n.button.send()}
       </Text>
     </SheetActionButton>
   );

@@ -3,7 +3,7 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import { Box, ColorModeProvider, globalColors, Stack, Text } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useENSPendingRegistrations } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { watchingAlert } from '@/utils';
 import { useRoute } from '@react-navigation/native';
@@ -14,7 +14,7 @@ import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { GenericCard, Gradient } from './GenericCard';
 import { IconOrb } from './reusables/IconOrb';
 
-const TRANSLATIONS = i18n.l.cards.ens_search;
+// Removed: const TRANSLATIONS = i18n.l.cards.ens_search;
 const GRADIENT: Gradient = {
   colors: ['#0E76FD', '#61B5FF'],
   start: { x: 0, y: 0 },
@@ -103,10 +103,10 @@ export const ENSSearchCard = () => {
           </Box>
           <Stack space="10px">
             <Text color={{ custom: globalColors.blue20 }} size="13pt" weight="bold">
-              {i18n.t(TRANSLATIONS.mini_title)}
+              {i18n.cards.ens_search.mini_title()}
             </Text>
             <Text color="label" size="20pt" weight="heavy">
-              {i18n.t(TRANSLATIONS.title)}
+              {i18n.cards.ens_search.title()}
             </Text>
           </Stack>
         </Box>

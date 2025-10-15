@@ -1,5 +1,5 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styled from 'styled-components';
@@ -65,7 +65,7 @@ const ExternalLinkWarningSheet = () => {
               size="big"
               weight="heavy"
             >
-              {i18n.t(i18n.l.modal.external_link_warning.visit_external_link)}
+              {i18n.modal.external_link_warning.visit_external_link()}
             </SheetTitle>
 
             <Text
@@ -80,7 +80,7 @@ const ExternalLinkWarningSheet = () => {
                 paddingHorizontal: 23,
               }}
             >
-              {i18n.t(i18n.l.modal.external_link_warning.you_are_attempting_to_visit)}
+              {i18n.modal.external_link_warning.you_are_attempting_to_visit()}
             </Text>
 
             <Column height={60}>
@@ -98,7 +98,7 @@ const ExternalLinkWarningSheet = () => {
             <SheetActionButton
               color={colors.blueGreyDarkLight}
               isTransparent
-              label={i18n.t(i18n.l.modal.external_link_warning.go_back)}
+              label={i18n.modal.external_link_warning.go_back()}
               onPress={handleClose}
               size="big"
               textColor={colors.blueGreyDark60}

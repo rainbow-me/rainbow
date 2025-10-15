@@ -31,7 +31,7 @@ import { IS_ANDROID, IS_TEST } from '@/env';
 import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
 import { useAccountAccentColor, useAccountSettings, useClipboard, useDimensions } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -117,23 +117,23 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
   };
 
   const getRankCardSubtitle = () => {
-    if (isUnranked) return i18n.t(i18n.l.points.points.points_to_rank);
+    if (isUnranked) return i18n.points.points.points_to_rank();
 
     if (rankChange === undefined) return '';
-    if (rankChange === 0) return i18n.t(i18n.l.points.points.no_change);
+    if (rankChange === 0) return i18n.points.points.no_change();
 
     return getNumberFormatter('en-US').format(rankChange);
   };
 
   const getRankCardMainText = () => {
     if (!rank) return '';
-    return isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${getNumberFormatter('en-US').format(rank)}`;
+    return isUnranked ? i18n.points.points.unranked() : `#${getNumberFormatter('en-US').format(rank)}`;
   };
 
   const getEarnedLastWeekSubtitle = () => {
-    if (lastPeriodUnranked || !lastPeriodRank) return i18n.t(i18n.l.points.points.no_weekly_rank);
-    if (lastPeriodRank <= 10) return i18n.t(i18n.l.points.points.top_10_earner);
-    return i18n.t(i18n.l.points.points.ranking, {
+    if (lastPeriodUnranked || !lastPeriodRank) return i18n.points.points.no_weekly_rank();
+    if (lastPeriodRank <= 10) return i18n.points.points.top_10_earner();
+    return i18n.points.points.ranking({
       rank: getNumberFormatter('en-US').format(lastPeriodRank),
     });
   };
@@ -145,29 +145,29 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
           <Inline separator={<Box width={{ custom: 12 }} />} wrap={false}>
             <InfoCard
               loading={lastPeriodLoading}
-              title={i18n.t(i18n.l.points.points.earned_last_week)}
+              title={i18n.points.points.earned_last_week()}
               mainText={
                 lastPeriodEarnings
-                  ? `${getNumberFormatter('en-US').format(lastPeriodEarnings)} ${i18n.t(i18n.l.points.points.points_capitalized)}`
+                  ? `${getNumberFormatter('en-US').format(lastPeriodEarnings)} ${i18n.points.points.points_capitalized()}`
                   : undefined
               }
-              placeholderMainText={i18n.t(i18n.l.points.points.zero_points)}
+              placeholderMainText={i18n.points.points.zero_points()}
               icon="􀠐"
               subtitle={getEarnedLastWeekSubtitle()}
               accentColor={labelSecondary}
             />
             <InfoCard
               loading={isLoadingReferralsCard}
-              title={i18n.t(i18n.l.points.points.referrals)}
+              title={i18n.points.points.referrals()}
               mainText={qualifiedReferees ? getNumberFormatter('en-US').format(qualifiedReferees) : undefined}
-              placeholderMainText={i18n.t(i18n.l.points.points.none)}
+              placeholderMainText={i18n.points.points.none()}
               icon="􀇯"
-              subtitle={`${getNumberFormatter('en-US').format(referralsEarnings ?? 0)} ${i18n.t(i18n.l.points.points.points_capitalized)}`}
+              subtitle={`${getNumberFormatter('en-US').format(referralsEarnings ?? 0)} ${i18n.points.points.points_capitalized()}`}
               accentColor={yellow}
             />
             <InfoCard
               loading={isLoadingRankCard}
-              title={i18n.t(i18n.l.points.points.your_rank)}
+              title={i18n.points.points.your_rank()}
               mainText={getRankCardMainText()}
               icon={getRankChangeIcon()}
               subtitle={getRankCardSubtitle()}
@@ -215,7 +215,7 @@ const ClaimCard = memo(function ClaimCard({ claim, value }: { claim?: string; va
       <Box alignItems="center" gap={20} paddingBottom="28px" paddingTop="16px">
         <TextShadow shadowOpacity={0.3}>
           <Text align="center" color="label" size="20pt" weight="heavy">
-            {i18n.t(i18n.l.points.points.available_to_claim)}
+            {i18n.points.points.available_to_claim()}
           </Text>
         </TextShadow>
         <Box alignItems="center" flexDirection="row" gap={8}>
@@ -246,7 +246,7 @@ const ClaimCard = memo(function ClaimCard({ claim, value }: { claim?: string; va
         <MaskedView
           maskElement={
             <RewardsActionButton
-              label={i18n.t(i18n.l.points.points.claim, {
+              label={i18n.points.points.claim({
                 value: claim || '',
               })}
             />
@@ -296,7 +296,7 @@ const EarningsCard = memo(function EarningsCard({ claimed, value }: { claimed?: 
             </IconContainer>
             <TextShadow shadowOpacity={0.2}>
               <Text align="center" color="label" size="17pt" weight="heavy">
-                {i18n.t(i18n.l.points.points.my_earnings)}
+                {i18n.points.points.my_earnings()}
               </Text>
             </TextShadow>
           </Inline>
@@ -317,7 +317,7 @@ const EarningsCard = memo(function EarningsCard({ claimed, value }: { claimed?: 
             </Bleed>
             <Stack space="10px">
               <Text color="labelTertiary" size="13pt" weight="bold">
-                {i18n.t(i18n.l.points.points.claimed_earnings)}
+                {i18n.points.points.claimed_earnings()}
               </Text>
               <TextShadow shadowOpacity={0.2}>
                 <Text color="label" size="17pt" weight="heavy">
@@ -328,7 +328,7 @@ const EarningsCard = memo(function EarningsCard({ claimed, value }: { claimed?: 
           </Box>
           <Stack alignHorizontal="right" space="10px">
             <Text align="right" color="labelTertiary" size="13pt" weight="bold">
-              {i18n.t(i18n.l.points.points.current_value)}
+              {i18n.points.points.current_value()}
             </Text>
             <TextShadow shadowOpacity={0.2}>
               <Text align="right" color="label" size="17pt" weight="heavy">
@@ -349,7 +349,7 @@ const TotalEarnedByRainbowUsers = memo(function TotalEarnedByRainbowUsers({ earn
       <Columns alignHorizontal="center" alignVertical="center" space="6px">
         <Column width="content">
           <Text align="center" color="labelTertiary" size="13pt" weight="bold">
-            {i18n.t(i18n.l.points.points.rainbow_users_have_earned)}
+            {i18n.points.points.rainbow_users_have_earned()}
           </Text>
         </Column>
         <Column width="content">
@@ -645,7 +645,7 @@ export function PointsContent() {
               <Box gap={28}>
                 <Box gap={20}>
                   <Text color="label" size="20pt" style={{ marginLeft: 4 }} weight="heavy">
-                    {i18n.t(i18n.l.points.points.my_points)}
+                    {i18n.points.points.my_points()}
                   </Text>
                   <Box flexDirection="row" alignItems="center" paddingLeft="4px">
                     {canDisplayTotalPoints ? <RainbowText totalPointsString={totalPointsString} /> : <Skeleton height={31} width={200} />}
@@ -660,7 +660,7 @@ export function PointsContent() {
                   <>
                     <Stack space="20px">
                       <Text color="label" size="20pt" style={{ marginLeft: 4 }} weight="heavy">
-                        {i18n.t(i18n.l.points.points.refer_friends)}
+                        {i18n.points.points.refer_friends()}
                       </Text>
                       {referralCode ? (
                         <Columns space="12px">
@@ -732,7 +732,7 @@ export function PointsContent() {
                                       </TextShadow>
                                       <TextShadow blur={12}>
                                         <Text align="center" weight="heavy" color="label" size="16px / 22px (Deprecated)">
-                                          {i18n.t(i18n.l.points.points.share_link)}
+                                          {i18n.points.points.share_link()}
                                         </Text>
                                       </TextShadow>
                                     </Box>
@@ -765,7 +765,7 @@ export function PointsContent() {
                       )}
                       <Inset horizontal="4px">
                         <Text color="labelQuaternary" size="13pt" weight="semibold" align="left">
-                          {i18n.t(i18n.l.points.points.earn_points_for_referring)}
+                          {i18n.points.points.earn_points_for_referring()}
                         </Text>
                       </Inset>
                     </Stack>
@@ -775,7 +775,7 @@ export function PointsContent() {
                 <Box gap={20}>
                   <Inset left="4px">
                     <Text color="label" size="20pt" weight="heavy">
-                      {i18n.t(i18n.l.points.points.leaderboard)}
+                      {i18n.points.points.leaderboard()}
                     </Text>
                   </Inset>
                   {canDisplayCurrentRank ? (
@@ -806,7 +806,7 @@ export function PointsContent() {
                           </Text>
                         </Box>
                         <Text color={isUnranked ? 'labelQuaternary' : 'label'} size="17pt" weight="heavy">
-                          {isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${getNumberFormatter('en-US').format(rank)}`}
+                          {isUnranked ? i18n.points.points.unranked() : `#${getNumberFormatter('en-US').format(rank)}`}
                         </Text>
                       </Box>
                     </Box>
@@ -845,14 +845,14 @@ export function PointsContent() {
           ) : (
             <Box alignItems="center" justifyContent="center" height="full" width="full">
               <Text size="17pt" weight="bold" align="center" color="labelTertiary">
-                {i18n.t(i18n.l.points.points.error)}
+                {i18n.points.points.error()}
               </Text>
             </Box>
           )}
         </AccentColorProvider>
       </ScrollView>
       <ToastPositionContainer>
-        <Toast isVisible={isToastActive} text={`􀁣 ${i18n.t(i18n.l.points.points.referral_code_copied)}`} />
+        <Toast isVisible={isToastActive} text={`􀁣 ${i18n.points.points.referral_code_copied()}`} />
       </ToastPositionContainer>
     </Box>
   );

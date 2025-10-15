@@ -1,6 +1,6 @@
 import { Messenger } from '@/browserMessaging/AppMessenger';
 import { AddEthereumChainProposedChain, RequestArguments, RequestResponse, handleProviderRequest } from '@rainbow-me/provider';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 import { getProvider } from '@/handlers/web3';
 import { UserRejectedRequestError } from 'viem';
@@ -265,7 +265,7 @@ const debouncedUnsupportedChainAlert = debounce(
   () => {
     const isDappBrowserFocused = useNavigationStore.getState().activeRoute === Routes.DAPP_BROWSER_SCREEN;
     if (isDappBrowserFocused) {
-      Alert.alert(i18n.t(i18n.l.dapp_browser.provider_error.unsupported_chain));
+      Alert.alert(i18n.dapp_browser.provider_error.unsupported_chain());
     }
   },
   time.seconds(1),
@@ -276,7 +276,7 @@ const debouncedNoActiveSessionAlert = debounce(
   () => {
     const isDappBrowserFocused = useNavigationStore.getState().activeRoute === Routes.DAPP_BROWSER_SCREEN;
     if (isDappBrowserFocused) {
-      Alert.alert(i18n.t(i18n.l.dapp_browser.provider_error.no_active_session));
+      Alert.alert(i18n.dapp_browser.provider_error.no_active_session());
     }
   },
   time.seconds(1),

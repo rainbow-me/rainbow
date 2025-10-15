@@ -12,7 +12,7 @@ import {
 import { globalColors } from '@/design-system';
 import { ForegroundColor, palettes } from '@/design-system/color/palettes';
 import { TokenColors } from '@/graphql/__generated__/metadata';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { DEFAULT_SLIPPAGE_BIPS_CHAINID, RainbowConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
 import { supportedNativeCurrencies } from '@/references';
@@ -469,14 +469,14 @@ export const getQuoteServiceTimeWorklet = ({ quote }: { quote: Quote | Crosschai
 
 const I18N_TIME = {
   singular: {
-    hours_long: i18n.t(i18n.l.time.hours.long.singular),
-    minutes_short: i18n.t(i18n.l.time.minutes.short.singular),
-    seconds_short: i18n.t(i18n.l.time.seconds.short.singular),
+    hours_long: i18n.time.hours.long.singular(),
+    minutes_short: i18n.time.minutes.short.singular(),
+    seconds_short: i18n.time.seconds.short.singular(),
   },
   plural: {
-    hours_long: i18n.t(i18n.l.time.hours.long.plural),
-    minutes_short: i18n.t(i18n.l.time.minutes.short.plural),
-    seconds_short: i18n.t(i18n.l.time.seconds.short.plural),
+    hours_long: i18n.time.hours.long.plural(),
+    minutes_short: i18n.time.minutes.short.plural(),
+    seconds_short: i18n.time.seconds.short.plural(),
   },
 };
 

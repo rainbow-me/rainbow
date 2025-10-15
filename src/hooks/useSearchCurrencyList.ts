@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { rankings } from 'match-sorter';
 import { useCallback, useMemo } from 'react';
 import { useTheme } from '../theme/ThemeContext';
@@ -92,18 +92,14 @@ const useSearchCurrencyList = () => {
           color: colors.yellowFavorite,
           data: abcSort(favoriteAssets, 'name'),
           key: 'favorites',
-          title: i18n.t(
-            i18n.l.exchange.token_sections[tokenSectionTypes.favoriteTokenSection as keyof typeof i18n.l.exchange.token_sections]
-          ),
+          title: i18n.exchange.token_sections[tokenSectionTypes.favoriteTokenSection](),
         });
       }
       if (verifiedAssets?.length) {
         list.push({
           data: verifiedAssets,
           key: 'verified',
-          title: i18n.t(
-            i18n.l.exchange.token_sections[tokenSectionTypes.verifiedTokenSection as keyof typeof i18n.l.exchange.token_sections]
-          ),
+          title: i18n.exchange.token_sections[tokenSectionTypes.verifiedTokenSection](),
           useGradientText: !IS_TEST,
         });
       }
@@ -111,18 +107,14 @@ const useSearchCurrencyList = () => {
         list.push({
           data: highLiquidityAssets,
           key: 'highLiquidity',
-          title: i18n.t(
-            i18n.l.exchange.token_sections[tokenSectionTypes.unverifiedTokenSection as keyof typeof i18n.l.exchange.token_sections]
-          ),
+          title: i18n.exchange.token_sections[tokenSectionTypes.unverifiedTokenSection](),
         });
       }
       if (lowLiquidityAssets?.length) {
         list.push({
           data: lowLiquidityAssets,
           key: 'lowLiquidity',
-          title: i18n.t(
-            i18n.l.exchange.token_sections[tokenSectionTypes.lowLiquidityTokenSection as keyof typeof i18n.l.exchange.token_sections]
-          ),
+          title: i18n.exchange.token_sections[tokenSectionTypes.lowLiquidityTokenSection](),
         });
       }
     } else {
@@ -131,18 +123,14 @@ const useSearchCurrencyList = () => {
           color: colors.yellowFavorite,
           data: abcSort(favoriteAssets, 'name'),
           key: 'unfilteredFavorites',
-          title: i18n.t(
-            i18n.l.exchange.token_sections[tokenSectionTypes.favoriteTokenSection as keyof typeof i18n.l.exchange.token_sections]
-          ),
+          title: i18n.exchange.token_sections[tokenSectionTypes.favoriteTokenSection](),
         });
       }
       if (verifiedAssets?.length) {
         list.push({
           data: verifiedAssets,
           key: 'verified',
-          title: i18n.t(
-            i18n.l.exchange.token_sections[tokenSectionTypes.verifiedTokenSection as keyof typeof i18n.l.exchange.token_sections]
-          ),
+          title: i18n.exchange.token_sections[tokenSectionTypes.verifiedTokenSection](),
           useGradientText: !IS_TEST,
         });
       }

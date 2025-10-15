@@ -11,7 +11,7 @@ import { setAllGlobalNotificationSettingsToStorage } from '@/notifications/setti
 import { IS_ANDROID } from '@/env';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { opacity } from '@/__swaps__/utils/swaps';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
@@ -53,8 +53,8 @@ export const NotificationToggleContextMenu = () => {
       {
         actionKey: 'toggle',
         actionTitle: globalNotificationSettings[GlobalNotificationTopic.POINTS]
-          ? i18n.t(i18n.l.points.notifications.disable)
-          : i18n.t(i18n.l.points.notifications.enable),
+          ? i18n.points.notifications.disable()
+          : i18n.points.notifications.enable(),
       },
     ],
   };

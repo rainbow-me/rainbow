@@ -1,6 +1,6 @@
 import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -61,7 +61,7 @@ export default function CloudBackupPrompt() {
             size={imageSize}
           />
           <Text align="center" size="26pt" weight="bold" color="label">
-            {i18n.t(i18n.l.back_up.cloud.add_wallet_to_cloud_backups)}
+            {i18n.back_up.cloud.add_wallet_to_cloud_backups()}
           </Text>
         </Stack>
       </Inset>
@@ -76,7 +76,7 @@ export default function CloudBackupPrompt() {
             <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
               <Text color={'action (Deprecated)'} size="20pt" weight="bold">
                 􀎽{' '}
-                {i18n.t(i18n.l.back_up.cloud.back_to_cloud_platform_now, {
+                {i18n.back_up.cloud.back_to_cloud_platform_now({
                   cloudPlatform,
                 })}
               </Text>
@@ -94,7 +94,7 @@ export default function CloudBackupPrompt() {
           <Box alignItems="center" justifyContent="center" width="full">
             <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
               <Text color={'labelSecondary'} size="20pt" weight="bold">
-                {i18n.t(i18n.l.back_up.cloud.mayber_later)}
+                {i18n.back_up.cloud.mayber_later()}
               </Text>
             </Inline>
           </Box>
@@ -110,7 +110,7 @@ export default function CloudBackupPrompt() {
           <Box alignItems="center" justifyContent="center" width="full">
             <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
               <Text color={'labelTertiary'} size="15pt" weight="medium">
-                {i18n.t(i18n.l.back_up.cloud.latest_backup, {
+                {i18n.back_up.cloud.latest_backup({
                   date: format(new Date(mostRecentBackup.lastModified), "M/d/yy 'at' h:mm a"),
                 })}
               </Text>

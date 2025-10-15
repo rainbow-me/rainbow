@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback } from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
@@ -56,11 +56,11 @@ export const PairHardwareWalletErrorSheet = () => {
       <Inset horizontal="36px">
         <Stack alignHorizontal="center" space="20px">
           <Text align="center" color="label" weight="bold" size="26pt">
-            {i18n.t(TRANSLATIONS[errorType === 'no_eth_app' ? 'open_eth_app' : 'unlock_ledger'])}
+            {TRANSLATIONS[errorType === 'no_eth_app' ? 'open_eth_app' : 'unlock_ledger']()}
           </Text>
           <Stack space="10px">
             <Text align="center" color="labelTertiary" weight="semibold" size="15pt / 135%">
-              {i18n.t(TRANSLATIONS.open_eth_app_description)}
+              {TRANSLATIONS.open_eth_app_description()}
             </Text>
           </Stack>
         </Stack>
@@ -77,7 +77,7 @@ export const PairHardwareWalletErrorSheet = () => {
         />
         <Box paddingHorizontal="36px" top={{ custom: -35 }}>
           <Text align="center" color="labelTertiary" weight="semibold" size="15pt / 135%">
-            {i18n.t(TRANSLATIONS.enter_passcode)}
+            {TRANSLATIONS.enter_passcode()}
           </Text>
         </Box>
       </Box>

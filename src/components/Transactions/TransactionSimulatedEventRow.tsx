@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Image, PixelRatio } from 'react-native';
 
 import { Bleed, Box, Inline, Text } from '@/design-system';
@@ -50,7 +50,7 @@ export const TransactionSimulatedEventRow = ({ amount, asset, eventType, price }
         ? `${amount}${shortenedDisplayName ? ' ' + shortenedDisplayName : ''}`
         : convertRawAmountToBalance(amount, { decimals: asset?.decimals || 18, symbol: shortenedDisplayName }, 3, true).display;
 
-    const unlimitedApproval = `${i18n.t(i18n.l.walletconnect.simulation.simulation_card.event_row.unlimited)} ${asset?.symbol}`;
+    const unlimitedApproval = `${i18n.walletconnect.simulation.simulation_card.event_row.unlimited()} ${asset?.symbol}`;
 
     return `${eventInfo.amountPrefix}${amount === 'UNLIMITED' ? unlimitedApproval : displayAmount}`;
   }, [amount, asset, eventInfo?.amountPrefix]);

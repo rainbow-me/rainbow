@@ -8,7 +8,7 @@ import { useTheme } from '@/theme';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { Box, Stack, Text } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
@@ -47,7 +47,7 @@ export function DiagnosticsContent({
     <>
       <Box paddingBottom="24px" paddingTop="24px">
         <Text color="label" size="30pt" weight="heavy">
-          {i18n.t(i18n.l.wallet.diagnostics.sheet_title)}
+          {i18n.wallet.diagnostics.sheet_title()}
         </Text>
       </Box>
 
@@ -56,10 +56,10 @@ export function DiagnosticsContent({
       <Box paddingBottom="16px">
         <Stack space="10px">
           <Text size="20pt" weight="heavy" color="label">
-            {i18n.t(i18n.l.wallet.diagnostics.uuid)}
+            {i18n.wallet.diagnostics.uuid()}
           </Text>
           <Text size="13pt" weight="semibold" color="labelQuaternary">
-            {i18n.t(i18n.l.wallet.diagnostics.uuid_description)}
+            {i18n.wallet.diagnostics.uuid_description()}
           </Text>
         </Stack>
       </Box>
@@ -67,7 +67,7 @@ export function DiagnosticsContent({
       <Box paddingBottom="36px" justifyContent="center" alignItems="center">
         <ButtonPressAnimation onPress={copyUUID} overflowMargin={20}>
           <Text color="label" size="20pt" weight="semibold">
-            {uuid ?? i18n.t(i18n.l.wallet.diagnostics.loading)}
+            {uuid ?? i18n.wallet.diagnostics.loading()}
           </Text>
         </ButtonPressAnimation>
       </Box>
@@ -77,17 +77,17 @@ export function DiagnosticsContent({
       <Box paddingBottom="16px">
         <Stack space="10px">
           <Text size="20pt" weight="heavy" color="label">
-            {i18n.t(i18n.l.wallet.diagnostics.app_state_diagnostics_title)}
+            {i18n.wallet.diagnostics.app_state_diagnostics_title()}
           </Text>
           <Text size="13pt" weight="semibold" color="labelQuaternary">
-            {i18n.t(i18n.l.wallet.diagnostics.app_state_diagnostics_description)}
+            {i18n.wallet.diagnostics.app_state_diagnostics_description()}
           </Text>
         </Stack>
       </Box>
       <Box paddingBottom="36px">
         <SheetActionButton
           color={colors.appleBlue}
-          label={i18n.t(i18n.l.wallet.diagnostics.share_application_state)}
+          label={i18n.wallet.diagnostics.share_application_state()}
           nftShadows
           onPress={shareAppState}
           weight="heavy"
@@ -100,17 +100,17 @@ export function DiagnosticsContent({
           <Box paddingBottom="16px">
             <Stack space="10px">
               <Text size="20pt" weight="heavy" color="label">
-                {i18n.t(i18n.l.wallet.diagnostics.pin_auth_title)}
+                {i18n.wallet.diagnostics.pin_auth_title()}
               </Text>
               <Text size="13pt" weight="semibold" color="labelQuaternary">
-                {i18n.t(i18n.l.wallet.diagnostics.you_need_to_authenticate_with_your_pin)}
+                {i18n.wallet.diagnostics.you_need_to_authenticate_with_your_pin()}
               </Text>
             </Stack>
           </Box>
           <Box paddingBottom="36px">
             <SheetActionButton
               color={colors.appleBlue}
-              label={i18n.t(i18n.l.wallet.diagnostics.authenticate_with_pin)}
+              label={i18n.wallet.diagnostics.authenticate_with_pin()}
               nftShadows
               onPress={onPinAuth}
               weight="heavy"
@@ -123,7 +123,7 @@ export function DiagnosticsContent({
 
       <Box paddingBottom="16px">
         <Text size="20pt" weight="heavy" color="label">
-          {i18n.t(i18n.l.wallet.diagnostics.wallet_details_title)}
+          {i18n.wallet.diagnostics.wallet_details_title()}
         </Text>
       </Box>
       {!keys && (
@@ -160,7 +160,7 @@ export function DiagnosticsContent({
           <SheetActionButton
             color={colors.alpha(colors.appleBlue, 0.06)}
             isTransparent
-            label={i18n.t(i18n.l.button.got_it)}
+            label={i18n.button.got_it()}
             onPress={onClose}
             size="big"
             style={{ margin: 0, padding: 0 }}

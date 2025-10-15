@@ -1,5 +1,5 @@
 import Clipboard from '@react-native-clipboard/clipboard';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { debounce } from 'lodash';
 import { useCallback } from 'react';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
@@ -16,15 +16,15 @@ const FeedbackErrorAlert = () =>
     buttons: [
       {
         onPress: setClipboardToFeedbackEmail,
-        text: i18n.t(i18n.l.send_feedback.copy_email),
+        text: i18n.send_feedback.copy_email(),
       },
       {
         style: 'cancel',
-        text: i18n.t(i18n.l.send_feedback.no_thanks),
+        text: i18n.send_feedback.no_thanks(),
       },
     ],
-    message: i18n.t(i18n.l.send_feedback.email_error.description),
-    title: i18n.t(i18n.l.send_feedback.email_error.title),
+    message: i18n.send_feedback.email_error.description(),
+    title: i18n.send_feedback.email_error.title(),
   });
 
 const handleMailError = debounce(error => (error ? FeedbackErrorAlert() : null), 250);

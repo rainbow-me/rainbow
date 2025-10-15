@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Box, ColorModeProvider, Column, Columns, useColorMode } from '@/design-system';
 import { useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { BuyActionButton, SendActionButton, SwapActionButton } from '@/components/sheet';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -68,7 +68,7 @@ export function SheetFooter() {
                 color={accentColors.color}
                 height={48}
                 inputType={SwapAssetType.outputAsset}
-                label={i18n.t(i18n.l.expanded_state.asset.get_asset, {
+                label={i18n.expanded_state.asset.get_asset({
                   assetSymbol: asset?.symbol,
                 })}
               />

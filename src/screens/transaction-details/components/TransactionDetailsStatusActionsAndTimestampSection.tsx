@@ -2,7 +2,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import ContextMenuButton, { MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { Box, Stack, Text } from '@/design-system';
 import { PendingTransaction, RainbowTransaction, TransactionStatus } from '@/entities';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { formatTransactionDetailsDate } from '@/screens/transaction-details/helpers/formatTransactionDetailsDate';
 import { getIconColorAndGradientForTransactionStatus } from '@/screens/transaction-details/helpers/getIconColorAndGradientForTransactionStatus';
 import { useTheme } from '@/theme';
@@ -42,7 +42,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
             ? [
                 {
                   actionKey: 'speedUp',
-                  actionTitle: i18n.t(i18n.l.transaction_details.actions_menu.speed_up),
+                  actionTitle: i18n.transaction_details.actions_menu.speed_up(),
                   icon: {
                     iconType: 'SYSTEM',
                     iconValue: 'speedometer',
@@ -54,7 +54,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
             ? [
                 {
                   actionKey: 'cancel',
-                  actionTitle: i18n.t(i18n.l.transaction_details.actions_menu.cancel),
+                  actionTitle: i18n.transaction_details.actions_menu.cancel(),
                   menuAttributes: ['destructive' as const],
                   icon: {
                     iconType: 'SYSTEM',
@@ -134,7 +134,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
             {type && (
               <Text size="22pt" weight="heavy" color={color}>
                 {/* @ts-ignore */}
-                {i18n.t(i18n.l.transactions.type[transaction?.title])}
+                {i18n.transactions.type[transaction?.title as keyof typeof i18n.transactions.type]()}
               </Text>
             )}
             {date && (

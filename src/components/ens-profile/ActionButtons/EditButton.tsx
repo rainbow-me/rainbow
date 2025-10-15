@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback } from 'react';
 import ActionButton from './ActionButton';
 import { REGISTRATION_MODES } from '@/helpers/ens';
@@ -22,7 +22,7 @@ export default function WatchButton({ ensName }: { ensName?: string }) {
 
   return (
     <ActionButton onPress={handlePressEdit} testID="edit-profile-button" variant="outlined">
-      {i18n.t(i18n.l.profiles.actions.edit_profile)}
+      {i18n.profiles.actions.edit_profile()}
     </ActionButton>
   );
 }

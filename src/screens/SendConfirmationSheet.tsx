@@ -18,7 +18,7 @@ import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/em
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import { useColorForAsset, useContacts, useDimensions, useENSAvatar, useGas, useUserAccounts } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -101,19 +101,19 @@ export function getDefaultCheckboxes({
         ensProfile?.isOwner && {
           checked: false,
           id: 'clear-records',
-          label: i18n.t(i18n.l.wallet.transaction.checkboxes.clear_profile_information),
+          label: i18n.wallet.transaction.checkboxes.clear_profile_information(),
         },
       !doesNamePointToRecipient(ensProfile, toAddress) &&
         ensProfile?.isOwner && {
           checked: false,
           id: 'set-address',
-          label: i18n.t(i18n.l.wallet.transaction.checkboxes.point_name_to_recipient),
+          label: i18n.wallet.transaction.checkboxes.point_name_to_recipient(),
         },
       isRegistrant(ensProfile) &&
         ensProfile?.data?.owner?.address?.toLowerCase() !== toAddress.toLowerCase() && {
           checked: false,
           id: 'transfer-control',
-          label: i18n.t(i18n.l.wallet.transaction.checkboxes.transfer_control),
+          label: i18n.wallet.transaction.checkboxes.transfer_control(),
         },
     ].filter(Boolean) as Checkbox[];
   }
@@ -121,7 +121,7 @@ export function getDefaultCheckboxes({
     {
       checked: false,
       id: 'has-wallet-that-supports',
-      label: i18n.t(i18n.l.wallet.transaction.checkboxes.has_a_wallet_that_supports, {
+      label: i18n.wallet.transaction.checkboxes.has_a_wallet_that_supports({
         networkName: useBackendNetworksStore.getState().getChainsLabel()[chainId],
       }),
     },
@@ -446,13 +446,14 @@ export const SendConfirmationSheet = () => {
   const getMessage = () => {
     let message;
     if (isSendingToUserAccount) {
-      message = i18n.t(i18n.l.wallet.transaction.you_own_this_wallet);
+      message = i18n.wallet.transaction.you_own_this_wallet();
     } else if (interactions?.totalCount === 0) {
-      message = i18n.t(i18n.l.wallet.transaction.first_time_send);
+      message = i18n.wallet.transaction.first_time_send();
     } else if (interactions?.totalCount) {
-      message = i18n.t(i18n.l.wallet.transaction[interactions.totalCount > 1 ? 'previous_sends' : 'previous_send'], {
-        number: interactions?.totalCount,
-      });
+      message =
+        interactions.totalCount > 1
+          ? i18n.wallet.transaction.previous_sends({ number: interactions.totalCount })
+          : i18n.wallet.transaction.previous_send({ number: interactions.totalCount });
     }
     return message;
   };
@@ -462,7 +463,7 @@ export const SendConfirmationSheet = () => {
       {IS_IOS && <TouchableBackdrop onPress={goBack} />}
 
       <SlackSheet additionalTopPadding={IS_ANDROID} contentHeight={contentHeight} scrollEnabled={false}>
-        <SheetTitle>{i18n.t(i18n.l.wallet.transaction.sending_title)}</SheetTitle>
+        <SheetTitle>{i18n.wallet.transaction.sending_title()}</SheetTitle>
         <Column>
           <Column padding={24}>
             <Row>
@@ -519,7 +520,7 @@ export const SendConfirmationSheet = () => {
                   size="large"
                   weight="heavy"
                 >
-                  {i18n.t(i18n.l.account.tx_to_lowercase)}
+                  {i18n.account.tx_to_lowercase()}
                 </OldText>
               </Pill>
 
@@ -595,7 +596,7 @@ export const SendConfirmationSheet = () => {
                       marginHorizontal={0}
                       onPress={handleL2DisclaimerPress}
                       prominent
-                      customText={i18n.t(i18n.l.expanded_state.asset.l2_disclaimer_send, {
+                      customText={i18n.expanded_state.asset.l2_disclaimer_send({
                         network: useBackendNetworksStore.getState().getChainsLabel()[asset.chainId],
                       })}
                       symbol={assetSymbolForDisclaimer}
@@ -621,7 +622,7 @@ export const SendConfirmationSheet = () => {
                         </Box>
                       }
                     >
-                      {i18n.t(i18n.l.wallet.transaction.ens_configuration_options)}
+                      {i18n.wallet.transaction.ens_configuration_options()}
                     </Callout>
                   </ButtonPressAnimation>
                 )}

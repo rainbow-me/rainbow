@@ -4,7 +4,7 @@ import { getOrCreateDeviceId } from '@/analytics/utils';
 import { getWalletContext } from '@/analytics/getWalletContext';
 import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { RainbowError, ensureError, logger } from '@/logger';
 import * as Sentry from '@sentry/react-native';
 import { isNil } from 'lodash';
@@ -138,7 +138,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
 
     if (isNil(walletAddress)) {
       logger.debug('[initializeWallet]: walletAddress is nil');
-      Alert.alert(i18n.t(i18n.l.wallet.import_failed_invalid_private_key));
+      Alert.alert(i18n.wallet.import_failed_invalid_private_key());
       if (!isImporting) {
         setWalletReady();
       }
@@ -187,7 +187,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
       });
     }
 
-    Alert.alert(i18n.t(i18n.l.wallet.something_went_wrong_importing));
+    Alert.alert(i18n.wallet.something_went_wrong_importing());
     setWalletReady();
     return null;
   }

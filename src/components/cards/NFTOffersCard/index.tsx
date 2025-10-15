@@ -17,7 +17,7 @@ import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations'
 import { useDimensions } from '@/hooks';
 import { nftOffersQueryKey, useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { CELL_HORIZONTAL_PADDING, FakeOffer, NFT_IMAGE_SIZE, Offer } from './Offer';
 import Navigation from '@/navigation/Navigation';
@@ -113,8 +113,8 @@ export const NFTOffersCard = () => {
                     <>
                       <Text color="label" weight="heavy" size="20pt">
                         {offers.length === 1
-                          ? i18n.t(i18n.l.nft_offers.card.title.singular)
-                          : i18n.t(i18n.l.nft_offers.card.title.plural, {
+                          ? i18n.nft_offers.card.title.singular()
+                          : i18n.nft_offers.card.title.plural({
                               numOffers: offers.length,
                             })}
                       </Text>
@@ -186,7 +186,7 @@ export const NFTOffersCard = () => {
                   >
                     <ShimmerAnimation color={buttonColor} />
                     <Text color="label" align="center" size="15pt" weight="bold">
-                      {i18n.t(i18n.l.nft_offers.card.button)}
+                      {i18n.nft_offers.card.button()}
                     </Text>
                   </Box>
                 </Column>

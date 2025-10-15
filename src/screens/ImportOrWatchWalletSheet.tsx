@@ -5,7 +5,7 @@ import { IS_ANDROID } from '@/env';
 import { useImportingWallet, useKeyboardHeight } from '@/hooks';
 import { colors } from '@/styles';
 import React, { useCallback, useRef } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -14,7 +14,7 @@ import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { Keyboard } from 'react-native';
 
-const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
+// Removed: // Removed: // Removed: // Removed: const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
 
 export const ImportOrWatchWalletSheet = () => {
   const { params: { type = 'watch' } = {} } = useRoute<RouteProp<RootStackParamList, typeof Routes.IMPORT_OR_WATCH_WALLET_SHEET>>();
@@ -61,11 +61,11 @@ export const ImportOrWatchWalletSheet = () => {
         <Box alignItems="center" justifyContent="space-between" paddingTop={{ custom: 38 }} paddingHorizontal="20px" testID="import-sheet">
           <Stack space="20px">
             <Text align="center" color="label" size="26pt" weight="bold">
-              {i18n.t(TRANSLATIONS[type].title)}
+              {i18n.wallet.new.import_or_watch_wallet_sheet[type].title()}
             </Text>
             {type === 'import' && (
               <Text align="center" color="labelTertiary" size="15pt / 135%" weight="semibold">
-                {i18n.t(TRANSLATIONS.import.description)}
+                {i18n.wallet.new.import_or_watch_wallet_sheet.import.description()}
               </Text>
             )}
           </Stack>
@@ -91,7 +91,7 @@ export const ImportOrWatchWalletSheet = () => {
             onSubmitEditing={() => {
               if (isSecretValid) handlePressImportButton({ type });
             }}
-            placeholder={i18n.t(TRANSLATIONS[type].placeholder)}
+            placeholder={i18n.wallet.new.import_or_watch_wallet_sheet[type].placeholder()}
             placeholderTextColor={labelTertiary}
             ref={inputRef}
             selectionColor={globalColors.purple60}
@@ -135,7 +135,9 @@ export const ImportOrWatchWalletSheet = () => {
                     testID="import-sheet-button-label"
                     weight="bold"
                   >
-                    {seedPhrase ? i18n.t(TRANSLATIONS.continue) : `􀉃 ${i18n.t(TRANSLATIONS.paste)}`}
+                    {seedPhrase
+                      ? i18n.wallet.new.import_or_watch_wallet_sheet.continue()
+                      : `􀉃 ${i18n.wallet.new.import_or_watch_wallet_sheet.paste()}`}
                   </Text>
                 </Box>
               </ButtonPressAnimation>

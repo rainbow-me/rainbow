@@ -6,7 +6,7 @@ import { NftOffer } from '@/graphql/__generated__/arc';
 import { ImgixImage } from '@/components/images';
 import { convertAmountToNativeDisplay, handleSignificantDecimals } from '@/helpers/utilities';
 import { ButtonPressAnimation } from '@/components/animations';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { useTheme } from '@/theme';
@@ -230,7 +230,7 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
               {`${isFloorDiffPercentagePositive ? '+' : ''}${offer.floorDifferencePercentage}% `}
             </Text>
             <Text size="13pt" weight="medium" color="labelTertiary">
-              {i18n.t(isFloorDiffPercentagePositive ? i18n.l.nft_offers.sheet.above_floor : i18n.l.nft_offers.sheet.below_floor)}
+              {isFloorDiffPercentagePositive ? i18n.nft_offers.sheet.above_floor() : i18n.nft_offers.sheet.below_floor()}
             </Text>
           </View>
         </View>

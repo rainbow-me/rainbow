@@ -41,18 +41,18 @@ import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import { calculateIsolatedLiquidationPriceFromMargin } from '@/features/perps/utils/calculateLiquidationPrice';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { logger, RainbowError } from '@/logger';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { analytics } from '@/analytics';
 import { sanitizeAmount } from '@/worklets/strings';
 import { useStableValue } from '@/hooks/useStableValue';
 
 // Translations for worklets
 const translations = {
-  above: i18n.t(i18n.l.perps.trigger_orders.above),
-  below: i18n.t(i18n.l.perps.trigger_orders.below),
-  mustBe: i18n.t(i18n.l.perps.trigger_orders.must_be),
-  liqPrice: i18n.t(i18n.l.perps.common.liq_price),
-  currentPrice: i18n.t(i18n.l.perps.common.current_price),
+  above: i18n.perps.trigger_orders.above(),
+  below: i18n.perps.trigger_orders.below(),
+  mustBe: i18n.perps.trigger_orders.must_be(),
+  liqPrice: i18n.perps.common.liq_price(),
+  currentPrice: i18n.perps.common.current_price(),
 };
 
 const PANEL_HEIGHT = 360;
@@ -283,7 +283,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
           perpsBalance,
           errorMessage,
         });
-        Alert.alert(i18n.t(i18n.l.perps.common.error), i18n.t(i18n.l.perps.trigger_orders.failed_to_create));
+        Alert.alert(i18n.perps.common.error(), i18n.perps.trigger_orders.failed_to_create());
         logger.error(new RainbowError('[CreateTriggerOrderBottomSheet] Failed to create trigger order', error));
       } finally {
         setIsSubmitting(false);
@@ -304,8 +304,8 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
           <PerpBottomSheetHeader
             title={
               triggerOrderType === TriggerOrderType.TAKE_PROFIT
-                ? i18n.t(i18n.l.perps.trigger_orders.take_profit)
-                : i18n.t(i18n.l.perps.trigger_orders.stop_loss)
+                ? i18n.perps.trigger_orders.take_profit()
+                : i18n.perps.trigger_orders.stop_loss()
             }
             symbol={market.symbol}
           />
@@ -324,7 +324,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
               shadow={'18px'}
             >
               <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-                {i18n.t(i18n.l.perps.trigger_orders.price)}
+                {i18n.perps.trigger_orders.price()}
               </Text>
               <CurrencyInput
                 autoFocus={true}
@@ -363,7 +363,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
             padding={'12px'}
           >
             <Text size="17pt" weight="medium" color={'labelSecondary'}>
-              {isTakeProfit ? i18n.t(i18n.l.perps.trigger_orders.projected_profit) : i18n.t(i18n.l.perps.trigger_orders.projected_loss)}
+              {isTakeProfit ? i18n.perps.trigger_orders.projected_profit() : i18n.perps.trigger_orders.projected_loss()}
             </Text>
             <AnimatedText size="17pt" weight="semibold" color={'labelSecondary'} align="right" numberOfLines={1} style={{ width: '50%' }}>
               {projectedPnl}
@@ -387,7 +387,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
                 alignItems="center"
               >
                 <Text size="20pt" weight="bold" color={'labelTertiary'}>
-                  {i18n.t(i18n.l.perps.common.cancel)}
+                  {i18n.perps.common.cancel()}
                 </Text>
               </Box>
             </ButtonPressAnimation>
@@ -398,7 +398,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
               buttonProps={{ style: { opacity: isAddDisabled ? 0.5 : 1 }, disabled: isAddDisabled }}
             >
               <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
-                {isSubmitting ? i18n.t(i18n.l.perps.trigger_orders.adding) : i18n.t(i18n.l.perps.trigger_orders.add)}
+                {isSubmitting ? i18n.perps.trigger_orders.adding() : i18n.perps.trigger_orders.add()}
               </Text>
             </HyperliquidButton>
           </View>

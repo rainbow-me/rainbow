@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useNavigation } from '../../navigation/Navigation';
@@ -55,9 +55,9 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
       imageAvatar={avatarUrl}
       inputValue={value}
       onChange={setValue}
-      placeholder={i18n.t(i18n.l.contacts.input_placeholder)}
+      placeholder={i18n.contacts.input_placeholder()}
       profileName={ens}
-      submitButtonText={i18n.t(i18n.l.contacts.options.add)}
+      submitButtonText={i18n.contacts.options.add()}
       toggleAvatar
       toggleSubmitButtonIcon={false}
     />

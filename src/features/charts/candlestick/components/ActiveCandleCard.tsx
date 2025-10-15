@@ -8,7 +8,7 @@ import { NativeCurrencyKey } from '@/entities';
 import { IS_IOS } from '@/env';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { SupportedCurrencyKey, supportedNativeCurrencies } from '@/references';
 import { addCommasToNumber, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -379,7 +379,7 @@ function insertCurrencySymbol(value: string, currency: SupportedCurrencyKey): st
 }
 
 const SPACER = ' ';
-const NO_VOLUME_LABEL = i18n.t(i18n.l.expanded_state.chart.candlestick.no_volume_label).toUpperCase();
+const NO_VOLUME_LABEL = i18n.expanded_state.chart.candlestick.no_volume_label().toUpperCase();
 
 function formatVolume(volume: number | undefined, currency: NativeCurrencyKey): string {
   'worklet';
@@ -459,7 +459,7 @@ function getCloseColor(theme: Exclude<BadgeTheme, BadgeTheme.Accent>, isDarkMode
 
 function getFieldLabel(field: Field): string {
   'worklet';
-  return i18n.t(i18n.l.expanded_state.chart.candlestick.candle_field_labels[field]);
+  return i18n.expanded_state.chart.candlestick.candle_field_labels[field]();
 }
 
 function getFieldPaddingHorizontal(field: Field): { custom: number } | undefined {

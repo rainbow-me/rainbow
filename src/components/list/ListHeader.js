@@ -1,6 +1,6 @@
 import Divider from '@/components/Divider';
 import { useDimensions, useHiddenTokens, useShowcaseTokens } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import { getIsReadOnlyWallet, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
@@ -28,7 +28,7 @@ const ShareCollectiblesBPA = styled(ButtonPressAnimation)({
 
 const ShareCollectiblesButton = ({ onPress }) => (
   <ShareCollectiblesBPA onPress={onPress} scale={0.9}>
-    <CoinDividerButtonLabel align="center" label={`􀈂 ${i18n.t(i18n.l.button.share)}`} shareButton />
+    <CoinDividerButtonLabel align="center" label={`􀈂 ${i18n.button.share()}`} shareButton />
   </ShareCollectiblesBPA>
 );
 
@@ -64,9 +64,7 @@ export default function ListHeader({ children, contextMenuOptions, isCoinListEdi
     }
     const showcaseUrl = `${RAINBOW_PROFILES_BASE_URL}/${accountENS || accountAddress}`;
     const shareOptions = {
-      message: isReadOnly
-        ? i18n.t(i18n.l.list.share.check_out_this_wallet, { showcaseUrl })
-        : i18n.t(i18n.l.list.share.check_out_my_wallet, { showcaseUrl }),
+      message: isReadOnly ? i18n.list.share.check_out_this_wallet({ showcaseUrl }) : i18n.list.share.check_out_my_wallet({ showcaseUrl }),
     };
     Share.share(shareOptions);
   }, [accountAddress, accountColorHex, accountENS, accountSymbol, hiddenTokens, showcaseTokens]);
@@ -82,7 +80,7 @@ export default function ListHeader({ children, contextMenuOptions, isCoinListEdi
                 {title}
               </H1>
             </Row>
-            {title === i18n.t(i18n.l.account.tab_collectibles) && (
+            {title === i18n.account.tab_collectibles() && (
               <Column align="flex-end" flex={1}>
                 <ShareCollectiblesButton onPress={() => handleShare(getIsReadOnlyWallet(), accountAddress)} />
               </Column>

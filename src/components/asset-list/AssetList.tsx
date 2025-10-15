@@ -4,7 +4,7 @@ import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../fab';
 import RecyclerAssetList, { RecyclerAssetListProps, RecyclerAssetListSection } from './RecyclerAssetList';
 import RecyclerAssetList2, { AssetListType, RecyclerAssetList2Props } from './RecyclerAssetList2';
 import EmptyAssetList, { EmptyAssetListProps } from './EmptyAssetList';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { UniqueAsset } from '@/entities';
 import { ListFooterHeight } from '../list/ListFooter';
 import { useWalletSectionsData } from '@/hooks';
@@ -72,7 +72,7 @@ const AssetList = (props: AssetListProps) => {
         hideHeader={props.hideHeader}
         isLoading={true}
         isWalletEthZero={props.isWalletEthZero || false}
-        title={i18n.t(i18n.l.account.tokens)}
+        title={i18n.account.tokens()}
         {...restProps}
       />
     );

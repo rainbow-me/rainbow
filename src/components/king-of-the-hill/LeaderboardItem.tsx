@@ -5,7 +5,7 @@ import { RainbowImage } from '@/components/RainbowImage';
 import { Inline, Text, useColorMode } from '@/design-system';
 import { Token } from '@/graphql/__generated__/metadata';
 import { getSizedImageUrl } from '@/handlers/imgix';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -149,13 +149,13 @@ export const LeaderboardItem = memo(function LeaderboardItem({
               </View>
 
               <View style={styles.statsRow}>
-                <SmallLabeledRow label={i18n.t(i18n.l.market_data.vol)} value={volume} />
+                <SmallLabeledRow label={i18n.market_data.vol()} value={volume} />
 
                 <View
                   style={[styles.statsSeparator, { backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.08)' : 'rgba(9, 17, 31, 0.08)' }]}
                 />
 
-                <SmallLabeledRow label={i18n.t(i18n.l.market_data.mcap)} value={marketCap} />
+                <SmallLabeledRow label={i18n.market_data.mcap()} value={marketCap} />
               </View>
             </Inline>
           </View>

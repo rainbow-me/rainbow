@@ -7,7 +7,7 @@ import { Text } from '../text';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { ImgixImage } from '@/components/images';
 
@@ -71,7 +71,7 @@ const CoinDividerEditButton = ({ isSmallBalancesOpen, onPress }) => {
             size="lmedium"
             weight="bold"
           >
-            {isSmallBalancesOpen ? i18n.t(i18n.l.button.less) : i18n.t(i18n.l.button.all)}
+            {isSmallBalancesOpen ? i18n.button.less() : i18n.button.all()}
           </Text>
           <Animated.View style={style}>
             <CaretIcon />

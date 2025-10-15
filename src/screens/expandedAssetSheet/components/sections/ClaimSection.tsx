@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Border, Box, Text, TextShadow, globalColors } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
@@ -59,7 +59,7 @@ export const ClaimContent = memo(function ClaimContent({ claimable }: { claimabl
       >
         <TextShadow blur={12} shadowOpacity={0.24}>
           <Text align="center" color={{ custom: accentColors.color }} size="17pt" weight="heavy">
-            {i18n.t(i18n.l.expanded_state.sections.claim.claim_button)}
+            {i18n.expanded_state.sections.claim.claim_button()}
           </Text>
         </TextShadow>
         <Border borderColor={{ custom: accentColors.opacity6 }} borderRadius={18} borderWidth={THICK_BORDER_WIDTH} />
@@ -104,7 +104,7 @@ export const ClaimSection = memo(function ClaimSection() {
         content={<ClaimContent claimable={claimable} />}
         icon="􀑉"
         id={SectionId.CLAIM}
-        primaryText={i18n.t(i18n.l.expanded_state.sections.claim.title)}
+        primaryText={i18n.expanded_state.sections.claim.title()}
       />
       <SheetSeparator />
     </Box>

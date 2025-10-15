@@ -15,7 +15,7 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { useENSAvatar, useManageCloudBackups } from '@/hooks';
 import { useStableValue } from '@/hooks/useStableValue';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { RainbowAccount, createWallet } from '@/model/wallet';
@@ -225,54 +225,54 @@ export const WalletsAndBackup = () => {
       if (status === CloudBackupState.FailedToInitialize || status === CloudBackupState.NotAvailable) {
         return {
           status: 'not-enabled',
-          text: i18n.t(i18n.l.back_up.cloud.statuses.not_enabled),
+          text: i18n.back_up.cloud.statuses.not_enabled(),
         };
       }
 
       if (status !== CloudBackupState.Ready) {
         return {
           status: 'out-of-sync',
-          text: i18n.t(i18n.l.back_up.cloud.statuses.syncing),
+          text: i18n.back_up.cloud.statuses.syncing(),
         };
       }
 
       if (!allBackedUp) {
         return {
           status: 'out-of-date',
-          text: i18n.t(i18n.l.back_up.cloud.statuses.out_of_date),
+          text: i18n.back_up.cloud.statuses.out_of_date(),
         };
       }
 
       return {
         status: 'up-to-date',
-        text: i18n.t(i18n.l.back_up.cloud.statuses.up_to_date),
+        text: i18n.back_up.cloud.statuses.up_to_date(),
       };
     }
 
     if (status === CloudBackupState.FailedToInitialize || status === CloudBackupState.NotAvailable) {
       return {
         status: 'not-enabled',
-        text: i18n.t(i18n.l.back_up.cloud.statuses.not_enabled),
+        text: i18n.back_up.cloud.statuses.not_enabled(),
       };
     }
 
     if (status !== CloudBackupState.Ready) {
       return {
         status: 'out-of-sync',
-        text: i18n.t(i18n.l.back_up.cloud.statuses.syncing),
+        text: i18n.back_up.cloud.statuses.syncing(),
       };
     }
 
     if (!allBackedUp) {
       return {
         status: 'out-of-date',
-        text: i18n.t(i18n.l.back_up.cloud.statuses.out_of_date),
+        text: i18n.back_up.cloud.statuses.out_of_date(),
       };
     }
 
     return {
       status: 'up-to-date',
-      text: i18n.t(i18n.l.back_up.cloud.statuses.up_to_date),
+      text: i18n.back_up.cloud.statuses.up_to_date(),
     };
   }, [backupProvider, status, allBackedUp]);
 
@@ -291,15 +291,15 @@ export const WalletsAndBackup = () => {
                 paddingBottom={{ custom: 24 }}
                 paddingTop={{ custom: 8 }}
                 iconComponent={<MenuHeader.ImageIcon source={WalletsAndBackupIcon} size={72} />}
-                titleComponent={<MenuHeader.Title text={i18n.t(i18n.l.wallet.back_ups.cloud_backup_title)} weight="heavy" />}
+                titleComponent={<MenuHeader.Title text={i18n.wallet.back_ups.cloud_backup_title()} weight="heavy" />}
                 statusComponent={<MenuHeader.StatusIcon status={iconStatusType} text={text} />}
                 labelComponent={
                   <MenuHeader.Label
-                    text={i18n.t(i18n.l.wallet.back_ups.cloud_backup_description, {
-                      link: i18n.t(i18n.l.wallet.back_ups.cloud_backup_link),
+                    text={i18n.wallet.back_ups.cloud_backup_description({
+                      link: i18n.wallet.back_ups.cloud_backup_link(),
                       cloudPlatform,
                     })}
-                    linkText={i18n.t(i18n.l.wallet.back_ups.cloud_backup_link)}
+                    linkText={i18n.wallet.back_ups.cloud_backup_link()}
                     onPress={onPressLearnMoreAboutCloudBackups}
                   />
                 }
@@ -307,9 +307,9 @@ export const WalletsAndBackup = () => {
             </Menu>
 
             <Box>
-              <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>
+              <Menu description={i18n.back_up.cloud.enable_cloud_backups_description()}>
                 <BackUpMenuItem
-                  title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
+                  title={i18n.back_up.cloud.enable_cloud_backups()}
                   backupState={status}
                   disabled={isCloudBackupDisabled}
                   onPress={enableCloudBackups}
@@ -338,20 +338,16 @@ export const WalletsAndBackup = () => {
                           }
                         >
                           {!isBackedUp && (
-                            <MenuItem.Label
-                              testID="not-backed-up"
-                              color={'#FF584D'}
-                              text={i18n.t(i18n.l.back_up.needs_backup.not_backed_up)}
-                            />
+                            <MenuItem.Label testID="not-backed-up" color={'#FF584D'} text={i18n.back_up.needs_backup.not_backed_up()} />
                           )}
-                          {imported && <MenuItem.Label text={i18n.t(i18n.l.wallet.back_ups.imported)} />}
+                          {imported && <MenuItem.Label text={i18n.wallet.back_ups.imported()} />}
                           <MenuItem.Label
                             text={
                               addresses.length > 1
-                                ? i18n.t(i18n.l.wallet.back_ups.wallet_count_gt_one, {
+                                ? i18n.wallet.back_ups.wallet_count_gt_one({
                                     numAccounts: addresses.length,
                                   })
-                                : i18n.t(i18n.l.wallet.back_ups.wallet_count, {
+                                : i18n.wallet.back_ups.wallet_count({
                                     numAccounts: addresses.length,
                                   })
                             }
@@ -393,7 +389,7 @@ export const WalletsAndBackup = () => {
                   leftComponent={<MenuItem.TextIcon icon="􀁍" isLink />}
                   onPress={onCreateNewSecretPhrase}
                   size={52}
-                  titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.manual.create_new_secret_phrase)} />}
+                  titleComponent={<MenuItem.Title isLink text={i18n.back_up.manual.create_new_secret_phrase()} />}
                 />
               </Menu>
             </Stack>
@@ -410,26 +406,26 @@ export const WalletsAndBackup = () => {
                   paddingBottom={{ custom: 24 }}
                   paddingTop={{ custom: 8 }}
                   iconComponent={<MenuHeader.ImageIcon source={allBackedUp ? CloudBackedUpIcon : CloudBackupWarningIcon} size={72} />}
-                  titleComponent={<MenuHeader.Title text={i18n.t(i18n.l.wallet.back_ups.cloud_backup_title)} weight="heavy" />}
+                  titleComponent={<MenuHeader.Title text={i18n.wallet.back_ups.cloud_backup_title()} weight="heavy" />}
                   statusComponent={<MenuHeader.StatusIcon status={iconStatusType} text={text} />}
                   labelComponent={
                     allBackedUp ? (
                       <MenuHeader.Label
-                        linkText={i18n.t(i18n.l.wallet.back_ups.cloud_backup_link)}
+                        linkText={i18n.wallet.back_ups.cloud_backup_link()}
                         onPress={onPressLearnMoreAboutCloudBackups}
                         text={
                           allBackedUp
-                            ? i18n.t(i18n.l.wallet.back_ups.backed_up_to_cloud_message, {
+                            ? i18n.wallet.back_ups.backed_up_to_cloud_message({
                                 cloudPlatform,
                               })
-                            : i18n.t(i18n.l.wallet.back_ups.cloud_backup_description, {
+                            : i18n.wallet.back_ups.cloud_backup_description({
                                 cloudPlatform,
                               })
                         }
                       />
                     ) : (
                       <MenuHeader.Label
-                        text={i18n.t(i18n.l.wallet.back_ups.cloud_backup_out_of_date_description, {
+                        text={i18n.wallet.back_ups.cloud_backup_out_of_date_description({
                           cloudPlatform,
                         })}
                       />
@@ -442,14 +438,14 @@ export const WalletsAndBackup = () => {
                 <Menu
                   description={
                     mostRecentBackup
-                      ? i18n.t(i18n.l.back_up.cloud.latest_backup, {
+                      ? i18n.back_up.cloud.latest_backup({
                           date: format(new Date(mostRecentBackup.lastModified), "M/d/yy 'at' h:mm a"),
                         })
                       : undefined
                   }
                 >
                   <BackUpMenuItem
-                    title={i18n.t(i18n.l.back_up.cloud.backup_to_cloud_now, {
+                    title={i18n.back_up.cloud.backup_to_cloud_now({
                       cloudPlatformName: cloudPlatform,
                     })}
                     icon="􀎽"
@@ -486,17 +482,17 @@ export const WalletsAndBackup = () => {
                             <MenuItem.Label
                               testID={`${id}-not-backed-up`}
                               color={'#FF584D'}
-                              text={i18n.t(i18n.l.back_up.needs_backup.not_backed_up)}
+                              text={i18n.back_up.needs_backup.not_backed_up()}
                             />
                           )}
-                          {imported && <MenuItem.Label text={i18n.t(i18n.l.wallet.back_ups.imported)} />}
+                          {imported && <MenuItem.Label text={i18n.wallet.back_ups.imported()} />}
                           <MenuItem.Label
                             text={
                               addresses.length > 1
-                                ? i18n.t(i18n.l.wallet.back_ups.wallet_count_gt_one, {
+                                ? i18n.wallet.back_ups.wallet_count_gt_one({
                                     numAccounts: addresses.length,
                                   })
-                                : i18n.t(i18n.l.wallet.back_ups.wallet_count, {
+                                : i18n.wallet.back_ups.wallet_count({
                                     numAccounts: addresses.length,
                                   })
                             }
@@ -538,7 +534,7 @@ export const WalletsAndBackup = () => {
                   leftComponent={<MenuItem.TextIcon icon="􀁍" isLink />}
                   onPress={onCreateNewSecretPhrase}
                   size={52}
-                  titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.manual.create_new_secret_phrase)} />}
+                  titleComponent={<MenuItem.Title isLink text={i18n.back_up.manual.create_new_secret_phrase()} />}
                 />
               </Menu>
 
@@ -551,7 +547,7 @@ export const WalletsAndBackup = () => {
                   titleComponent={
                     <MenuItem.Title
                       isLink
-                      text={i18n.t(i18n.l.back_up.cloud.manage_platform_backups, {
+                      text={i18n.back_up.cloud.manage_platform_backups({
                         cloudPlatformName: cloudPlatform,
                       })}
                     />
@@ -566,7 +562,7 @@ export const WalletsAndBackup = () => {
                   titleComponent={
                     <MenuItem.Title
                       isLink
-                      text={i18n.t(i18n.l.back_up.cloud.cloud_platform_backup_settings, {
+                      text={i18n.back_up.cloud.cloud_platform_backup_settings({
                         cloudPlatformName: cloudPlatform,
                       })}
                     />
@@ -604,17 +600,17 @@ export const WalletsAndBackup = () => {
                           <MenuItem.Label
                             testID={`${id}-not-backed-up`}
                             color={'#FF584D'}
-                            text={i18n.t(i18n.l.back_up.needs_backup.not_backed_up)}
+                            text={i18n.back_up.needs_backup.not_backed_up()}
                           />
                         )}
-                        {imported && <MenuItem.Label testID={'back-ups-imported'} text={i18n.t(i18n.l.wallet.back_ups.imported)} />}
+                        {imported && <MenuItem.Label testID={'back-ups-imported'} text={i18n.wallet.back_ups.imported()} />}
                         <MenuItem.Label
                           text={
                             addresses.length > 1
-                              ? i18n.t(i18n.l.wallet.back_ups.wallet_count_gt_one, {
+                              ? i18n.wallet.back_ups.wallet_count_gt_one({
                                   numAccounts: addresses.length,
                                 })
-                              : i18n.t(i18n.l.wallet.back_ups.wallet_count, {
+                              : i18n.wallet.back_ups.wallet_count({
                                   numAccounts: addresses.length,
                                 })
                           }
@@ -657,7 +653,7 @@ export const WalletsAndBackup = () => {
                   leftComponent={<MenuItem.TextIcon icon="􀁍" isLink />}
                   onPress={onCreateNewSecretPhrase}
                   size={52}
-                  titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.manual.create_new_secret_phrase)} />}
+                  titleComponent={<MenuItem.Title isLink text={i18n.back_up.manual.create_new_secret_phrase()} />}
                 />
               </Menu>
 
@@ -665,19 +661,19 @@ export const WalletsAndBackup = () => {
                 <Menu
                   description={
                     <Text color="secondary60 (Deprecated)" size="14px / 19px (Deprecated)" weight="regular">
-                      {i18n.t(i18n.l.wallet.back_ups.cloud_backup_description, {
+                      {i18n.wallet.back_ups.cloud_backup_description({
                         cloudPlatform,
                       })}
 
                       <Text onPress={onPressLearnMoreAboutCloudBackups} color="blue" size="14px / 19px (Deprecated)" weight="medium">
                         {' '}
-                        {i18n.t(i18n.l.wallet.back_ups.cloud_backup_link)}
+                        {i18n.wallet.back_ups.cloud_backup_link()}
                       </Text>
                     </Text>
                   }
                 >
                   <BackUpMenuItem
-                    title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
+                    title={i18n.back_up.cloud.enable_cloud_backups()}
                     backupState={status}
                     onPress={backupAllNonBackedUpWalletsTocloud}
                     disabled={status !== CloudBackupState.Ready}

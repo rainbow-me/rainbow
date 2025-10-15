@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '@/theme/ThemeContext';
@@ -164,7 +164,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
                   // eslint-disable-next-line react/jsx-props-no-spreading
                   <LinearGradient {...linearGradientProps}>
                     <Text color="labelTertiary" size="13pt" weight="bold">
-                      {i18n.t(i18n.l.wallet.change_wallet.watching)}
+                      {i18n.wallet.change_wallet.watching()}
                     </Text>
                   </LinearGradient>
                 ) : (
@@ -184,7 +184,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
                         􀤃
                       </TextIcon>
                       <Text color="labelTertiary" size="13pt" weight="bold">
-                        {i18n.t(i18n.l.wallet.change_wallet.ledger)}
+                        {i18n.wallet.change_wallet.ledger()}
                       </Text>
                     </Inline>
                   </LinearGradient>

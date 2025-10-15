@@ -1,7 +1,7 @@
 import React, { memo, useReducer, useEffect } from 'react';
 import { Box, Text, TextShadow, Stack, IconContainer, useForegroundColor, globalColors, useColorMode } from '@/design-system';
 import { isToday, intervalToDuration, format } from 'date-fns';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { LIGHT_SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { Card } from './PointsContent';
@@ -10,7 +10,7 @@ export const NextDropCard = memo(function NextDropCard({ nextDistribution }: { n
   const { isDarkMode } = useColorMode();
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const nextDistributionWithDay = isToday(nextDistribution)
-    ? `${i18n.t(i18n.l.points.points.today)} ${format(nextDistribution, 'p')}`
+    ? `${i18n.points.points.today()} ${format(nextDistribution, 'p')}`
     : format(nextDistribution, 'cccc p');
 
   return (
@@ -28,7 +28,7 @@ export const NextDropCard = memo(function NextDropCard({ nextDistribution }: { n
             <Stack space="10px">
               <TextShadow shadowOpacity={0.2}>
                 <Text color="label" size="17pt" weight="heavy">
-                  {i18n.t(i18n.l.points.points.next_drop)}
+                  {i18n.points.points.next_drop()}
                 </Text>
               </TextShadow>
               <Text color="labelTertiary" size="13pt" weight="bold">

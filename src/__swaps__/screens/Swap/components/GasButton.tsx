@@ -9,7 +9,7 @@ import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { gasUtils } from '@/utils';
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
@@ -75,7 +75,7 @@ function SelectedGas({ isPill }: { isPill?: boolean }) {
           {SWAP_GAS_ICONS[selectedGasSpeed].icon}
         </TextIcon>
         <Text align={isPill ? 'center' : 'left'} color="label" size="15pt" weight="heavy">
-          {i18n.t(i18n.l.gas.speeds[selectedGasSpeed])}
+          {i18n.gas.speeds[selectedGasSpeed]()}
         </Text>
       </Inline>
       <TextIcon color="labelSecondary" height={10} size="icon 13px" weight="bold" width={12}>
@@ -154,7 +154,7 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
 
       return {
         actionKey: gasOption,
-        actionTitle: i18n.t(i18n.l.gas.speeds[gasOption]),
+        actionTitle: i18n.gas.speeds[gasOption](),
         discoverabilityTitle: subtitle,
         icon: { iconType: 'SYSTEM', iconValue: SWAP_GAS_ICONS[gasOption].symbolName },
       };

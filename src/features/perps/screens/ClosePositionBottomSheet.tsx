@@ -21,7 +21,7 @@ import { divWorklet, mulWorklet } from '@/safe-math/SafeMath';
 import { logger, RainbowError } from '@/logger';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { colors } from '@/styles';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { analytics } from '@/analytics';
 import { useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
 import { TriggerOrderType } from '@/features/perps/types';
@@ -55,9 +55,7 @@ function PanelContent({ symbol }: PanelContentProps) {
   const position = useHyperliquidAccountStore(state => state.getPosition(symbol));
   const navigation = useNavigation();
   const isNegativePnl = position ? Number(position.unrealizedPnl) < 0 : false;
-  const pnlLabel = isNegativePnl
-    ? i18n.t(i18n.l.perps.close_position.estimated_loss)
-    : i18n.t(i18n.l.perps.close_position.estimated_profit);
+  const pnlLabel = isNegativePnl ? i18n.perps.close_position.estimated_loss() : i18n.perps.close_position.estimated_profit();
   const pnlColor = isNegativePnl ? 'red' : 'green';
 
   const minPercentage = useMemo(() => {
@@ -154,7 +152,7 @@ function PanelContent({ symbol }: PanelContentProps) {
         perpsBalance,
         errorMessage,
       });
-      Alert.alert(i18n.t(i18n.l.perps.common.error_submitting_order), errorMessage);
+      Alert.alert(i18n.perps.common.error_submitting_order(), errorMessage);
       logger.error(new RainbowError('[ClosePositionBottomSheet] Failed to close position', e));
     }
     setIsSubmitting(false);
@@ -165,7 +163,7 @@ function PanelContent({ symbol }: PanelContentProps) {
   return (
     <Box paddingHorizontal={'24px'} paddingTop={'28px'} paddingBottom={'20px'} alignItems="center" style={{ flex: 1 }}>
       <Box width="full" gap={24}>
-        <PerpBottomSheetHeader title={i18n.t(i18n.l.perps.actions.close_position)} symbol={symbol} />
+        <PerpBottomSheetHeader title={i18n.perps.actions.close_position()} symbol={symbol} />
         <Box>
           {isBelowMinimum && (
             <Box paddingBottom={'12px'} justifyContent="center" paddingHorizontal={'8px'}>
@@ -174,7 +172,7 @@ function PanelContent({ symbol }: PanelContentProps) {
                   {'􀇿'}
                 </TextIcon>
                 <Text color="labelTertiary" size="15pt" weight="bold">
-                  {`${i18n.t(i18n.l.perps.close_position.minimum_amount_is)} `}
+                  {`${i18n.perps.close_position.minimum_amount_is()} `}
                   <Text color="labelSecondary" size="15pt" weight="heavy">
                     {`${minPercentage}%`}
                   </Text>
@@ -184,7 +182,7 @@ function PanelContent({ symbol }: PanelContentProps) {
           )}
           <PositionPercentageSlider
             totalValue={formatCurrency(positionEquity)}
-            title={i18n.t(i18n.l.perps.inputs.amount)}
+            title={i18n.perps.inputs.amount()}
             progressValue={closeProgress}
             sliderWidth={SLIDER_WIDTH - 8 * 2}
           />
@@ -201,7 +199,7 @@ function PanelContent({ symbol }: PanelContentProps) {
         >
           <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="full">
             <Text size="17pt" weight="medium" color={'labelSecondary'}>
-              {i18n.t(i18n.l.perps.deposit.receive)}
+              {i18n.perps.deposit.receive()}
             </Text>
             <AnimatedText size="17pt" weight="semibold" color={'labelSecondary'}>
               {receivedAmount}
@@ -222,8 +220,8 @@ function PanelContent({ symbol }: PanelContentProps) {
           disabledBackgroundColor={accentColors.opacity24}
           isProcessing={isSubmitting}
           showBiometryIcon={false}
-          processingLabel={i18n.t(i18n.l.perps.close_position.closing)}
-          label={i18n.t(i18n.l.perps.close_position.hold_to_close)}
+          processingLabel={i18n.perps.close_position.closing()}
+          label={i18n.perps.close_position.hold_to_close()}
           onLongPress={closePosition}
           height={48}
           textStyle={{

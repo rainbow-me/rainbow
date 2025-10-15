@@ -1,5 +1,5 @@
 import { addHours, differenceInMinutes, isPast } from 'date-fns';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
@@ -39,7 +39,7 @@ const TopRow = ({ expirationColor, expiresAt }) => {
     <RowWithMargins margin={2}>
       <ClockEmoji />
       <Text color={expirationColor} size="smedium" weight="semibold">
-        {i18n.t(i18n.l.exchange.coin_row.expires_in, { minutes: minutes || 0 })}
+        {i18n.exchange.coin_row.expires_in({ minutes: minutes || 0 })}
       </Text>
     </RowWithMargins>
   );

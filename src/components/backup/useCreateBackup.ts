@@ -5,7 +5,7 @@ import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 import showWalletErrorAlert from '@/helpers/support';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { useWalletCloudBackup } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { backupAllWalletsToCloud, getLocalBackupPassword, saveLocalBackupPassword } from '@/model/backup';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -93,14 +93,14 @@ export const useCreateBackup = () => {
 
       if (typeof walletId === 'undefined') {
         if (!wallets) {
-          onError(i18n.t(i18n.l.back_up.errors.no_keys_found));
+          onError(i18n.back_up.errors.no_keys_found());
           backupsStore.getState().setStatus(CloudBackupState.Error);
           return;
         }
 
         const validWallets = Object.fromEntries(Object.entries(wallets).filter(([_, wallet]) => !wallet.damaged));
         if (Object.keys(validWallets).length === 0) {
-          onError(i18n.t(i18n.l.back_up.errors.no_keys_found), true);
+          onError(i18n.back_up.errors.no_keys_found(), true);
           backupsStore.getState().setStatus(CloudBackupState.Error);
           return;
         }
@@ -158,7 +158,7 @@ export const useCreateBackup = () => {
       try {
         userPIN = await maybeAuthenticateWithPIN();
       } catch (e) {
-        onError?.(i18n.t(i18n.l.back_up.wrong_pin));
+        onError?.(i18n.back_up.wrong_pin());
         return;
       }
 

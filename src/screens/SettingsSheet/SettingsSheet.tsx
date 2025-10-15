@@ -1,5 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import { useTheme } from '@/theme';
@@ -29,10 +29,7 @@ export function SettingsSheet() {
     navigate(section);
   };
 
-  const renderHeaderRight = useCallback(
-    () => <ModalHeaderButton label={i18n.t(i18n.l.settings.done)} onPress={goBack} side="right" />,
-    [goBack]
-  );
+  const renderHeaderRight = useCallback(() => <ModalHeaderButton label={i18n.settings.done()} onPress={goBack} side="right" />, [goBack]);
 
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
 
@@ -50,7 +47,7 @@ export function SettingsSheet() {
               name={Routes.SETTINGS_SECTION}
               options={{
                 cardStyleInterpolator: settingsCardStyleInterpolator,
-                title: i18n.t(i18n.l.settings.label),
+                title: i18n.settings.label(),
               }}
             >
               {() => (

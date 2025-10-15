@@ -1,6 +1,6 @@
 import store from '@/redux/store';
 import { showActionSheetWithOptions } from '@/utils';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { MenuItem } from '@/components/DropdownMenu';
@@ -37,7 +37,7 @@ export const changeConnectionMenuItems = ({ isWalletConnectV2 }: { isWalletConne
   const baseOptions = [
     {
       actionKey: 'disconnect',
-      actionTitle: i18n.t(i18n.l.walletconnect.menu_options.disconnect),
+      actionTitle: i18n.walletconnect.menu_options.disconnect(),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'xmark.square',
@@ -46,7 +46,7 @@ export const changeConnectionMenuItems = ({ isWalletConnectV2 }: { isWalletConne
     },
     {
       actionKey: 'switch-account',
-      actionTitle: i18n.t(i18n.l.walletconnect.menu_options.switch_wallet),
+      actionTitle: i18n.walletconnect.menu_options.switch_wallet(),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'rectangle.stack.person.crop',
@@ -63,7 +63,7 @@ export const changeConnectionMenuItems = ({ isWalletConnectV2 }: { isWalletConne
           iconValue: 'network',
         },
         menuItems: networksMenuItems(),
-        menuTitle: i18n.t(i18n.l.walletconnect.menu_options.switch_network),
+        menuTitle: i18n.walletconnect.menu_options.switch_network(),
       },
     ];
   }
@@ -74,7 +74,7 @@ export const androidShowNetworksActionSheet = (callback: any) => {
   showActionSheetWithOptions(
     {
       options: androidNetworkActions(),
-      title: i18n.t(i18n.l.walletconnect.menu_options.available_networks),
+      title: i18n.walletconnect.menu_options.available_networks(),
     },
     idx => {
       if (idx !== undefined) {

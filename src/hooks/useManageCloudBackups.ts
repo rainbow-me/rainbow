@@ -9,7 +9,7 @@ import {
 } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as keychain from '@/keychain';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { CloudBackupState, backupsStore } from '@/state/backups/backups';
 import { clearAllWalletsBackupStatus } from '@/state/wallets/walletsStore';
@@ -36,18 +36,18 @@ export default function useManageCloudBackups() {
 
   const manageCloudBackups = useCallback(() => {
     const buttons = [
-      i18n.t(i18n.l.settings.delete_backups, { cloudPlatform }),
-      IS_ANDROID ? i18n.t(i18n.l.settings.backup_switch_google_account) : undefined,
-      i18n.t(i18n.l.button.cancel),
+      i18n.settings.delete_backups({ cloudPlatform }),
+      IS_ANDROID ? i18n.settings.backup_switch_google_account() : undefined,
+      i18n.button.cancel(),
     ].filter(Boolean);
 
     const getTitleForPlatform = () => {
       if (IS_ANDROID && accountDetails?.email) {
-        return i18n.t(i18n.l.settings.manage_backups, {
+        return i18n.settings.manage_backups({
           cloudPlatformOrEmail: accountDetails.email,
         });
       }
-      return i18n.t(i18n.l.settings.manage_backups, {
+      return i18n.settings.manage_backups({
         cloudPlatformOrEmail: cloudPlatform,
       });
     };
@@ -92,8 +92,8 @@ export default function useManageCloudBackups() {
             {
               cancelButtonIndex: 1,
               destructiveButtonIndex: 0,
-              message: i18n.t(i18n.l.settings.confirm_delete_backups_description, { cloudPlatform }),
-              options: [i18n.t(i18n.l.settings.confirm_delete_backups), i18n.t(i18n.l.button.cancel)],
+              message: i18n.settings.confirm_delete_backups_description({ cloudPlatform }),
+              options: [i18n.settings.confirm_delete_backups(), i18n.button.cancel()],
             },
             async nextButtonIndex => {
               if (nextButtonIndex === 0) {
@@ -101,7 +101,7 @@ export default function useManageCloudBackups() {
                   try {
                     await maybeAuthenticateWithPIN();
                   } catch (e) {
-                    Alert.alert(i18n.t(i18n.l.back_up.wrong_pin));
+                    Alert.alert(i18n.back_up.wrong_pin());
                     return;
                   }
 
@@ -115,13 +115,13 @@ export default function useManageCloudBackups() {
                   removeBackupStateFromAllWallets();
 
                   await deleteAllBackups();
-                  Alert.alert(i18n.t(i18n.l.back_up.backup_deleted_successfully));
+                  Alert.alert(i18n.back_up.backup_deleted_successfully());
                 } catch (e) {
                   logger.error(new RainbowError(`[useManageCloudBackups]: Error deleting all backups`), {
                     error: (e as Error).message,
                   });
 
-                  Alert.alert(i18n.t(i18n.l.back_up.errors.keychain_access));
+                  Alert.alert(i18n.back_up.errors.keychain_access());
                 }
               }
             }

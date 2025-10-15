@@ -7,7 +7,7 @@ import showWalletErrorAlert from '@/helpers/support';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { createWallet, RainbowAccount, RainbowWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
@@ -91,10 +91,10 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
       <ImgixImage style={{ height: 36, width: 36, borderRadius: 18 }} source={CreateNewWalletGroupIcon} />
       <View style={{ gap: 10 }}>
         <Text color="blue" size="17pt" weight="heavy">
-          {i18n.t(i18n.l.wallet.new.new_wallet_group.title)}
+          {i18n.wallet.new.new_wallet_group.title()}
         </Text>
         <Text color="labelQuaternary" size="13pt" weight="bold">
-          {i18n.t(i18n.l.wallet.new.new_wallet_group.description)}
+          {i18n.wallet.new.new_wallet_group.description()}
         </Text>
       </View>
     </ButtonPressAnimation>
@@ -228,10 +228,10 @@ export function ChooseWalletGroup() {
           </ButtonPressAnimation>
         </View>
         <Text color="label" size="22pt" weight="heavy" align="center">
-          {i18n.t(i18n.l.wallet.new.choose_wallet_group.title)}
+          {i18n.wallet.new.choose_wallet_group.title()}
         </Text>
         <Text color="labelQuaternary" size="15pt" weight="semibold" align="center">
-          {i18n.t(i18n.l.wallet.new.choose_wallet_group.description)}
+          {i18n.wallet.new.choose_wallet_group.description()}
         </Text>
 
         <View style={{ width: '100%' }}>

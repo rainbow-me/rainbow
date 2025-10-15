@@ -5,7 +5,7 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import { SkiaText, SkiaTextChild } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
 import { useCleanup } from '@/hooks/useCleanup';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { watchingAlert } from '@/utils';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
@@ -161,8 +161,8 @@ export const LaunchCard = memo(function LaunchCard() {
                 x={20}
                 y={CARD_HEIGHT - (42 + 30)}
               >
-                <SkiaTextChild>{i18n.t(i18n.l.token_launcher.cards.launch.line_one)}</SkiaTextChild>
-                <SkiaTextChild opacity={0.6}>{i18n.t(i18n.l.token_launcher.cards.launch.line_two)}</SkiaTextChild>
+                <SkiaTextChild>{i18n.token_launcher.cards.launch.line_one()}</SkiaTextChild>
+                <SkiaTextChild opacity={0.6}>{i18n.token_launcher.cards.launch.line_two()}</SkiaTextChild>
               </SkiaText>
             }
           >

@@ -11,7 +11,7 @@ import headerImageAndroid from '@/assets/notificationsPromoSheetHeaderAndroid.pn
 import { delay } from '@/helpers/utilities';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { IS_IOS } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import { analytics } from '@/analytics';
@@ -19,7 +19,7 @@ import { SettingsPages } from '../SettingsSheet/SettingsPages';
 
 const HEADER_HEIGHT = 255;
 const HEADER_WIDTH = 390;
-const TRANSLATIONS = i18n.l.promos.notifications_launch;
+// Removed: // Removed: // Removed: // Removed: const TRANSLATIONS = i18n.l.promos.notifications_launch;
 
 export function NotificationsPromoSheetInner({
   status,
@@ -88,36 +88,36 @@ export function NotificationsPromoSheetInner({
       headerImage={IS_IOS ? headerImageIOS : headerImageAndroid}
       headerImageAspectRatio={HEADER_WIDTH / HEADER_HEIGHT}
       sheetHandleColor={colors.whiteLabel}
-      header={i18n.t(TRANSLATIONS.header)}
-      subHeader={i18n.t(TRANSLATIONS.subheader)}
+      header={i18n.promos.notifications_launch.header()}
+      subHeader={i18n.promos.notifications_launch.subheader()}
       primaryButtonProps={{
         label: notificationsEnabled
-          ? `􀜊 ${i18n.t(TRANSLATIONS.primary_button.permissions_enabled)}`
-          : `􀝖 ${i18n.t(TRANSLATIONS.primary_button.permissions_not_enabled)}`,
+          ? `􀜊 ${i18n.promos.notifications_launch.primary_button.permissions_enabled()}`
+          : `􀝖 ${i18n.promos.notifications_launch.primary_button.permissions_not_enabled()}`,
         textColor: colors.trueBlack,
         onPress: primaryButtonOnPress,
       }}
       secondaryButtonProps={{
-        label: i18n.t(TRANSLATIONS.secondary_button),
+        label: i18n.promos.notifications_launch.secondary_button(),
         textColor: colors.whiteLabel,
         onPress: goBack,
       }}
       items={[
         {
-          title: i18n.t(TRANSLATIONS.info_row_1.title),
-          description: i18n.t(TRANSLATIONS.info_row_1.title),
+          title: i18n.promos.notifications_launch.info_row_1.title(),
+          description: i18n.promos.notifications_launch.info_row_1.title(),
           icon: '􀖅',
           gradient: colors.gradients.appleBlueTintToAppleBlue,
         },
         {
-          title: i18n.t(TRANSLATIONS.info_row_2.title),
-          description: i18n.t(TRANSLATIONS.info_row_2.description),
+          title: i18n.promos.notifications_launch.info_row_2.title(),
+          description: i18n.promos.notifications_launch.info_row_2.description(),
           icon: '􀯮',
           gradient: colors.gradients.appleBlueTintToAppleBlue,
         },
         {
-          title: i18n.t(TRANSLATIONS.info_row_3.title),
-          description: i18n.t(TRANSLATIONS.info_row_3.description),
+          title: i18n.promos.notifications_launch.info_row_3.title(),
+          description: i18n.promos.notifications_launch.info_row_3.description(),
           icon: '􀙨',
           gradient: colors.gradients.appleBlueTintToAppleBlue,
         },

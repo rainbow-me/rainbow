@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 import React, { useCallback, useMemo } from 'react';
@@ -20,18 +20,18 @@ export function SponsoredClaimableFlow() {
     switch (claimStatus) {
       case 'ready':
         if (shouldShowClaimText) {
-          return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: asset.amount.display });
+          return i18n.claimables.panel.claim_amount({ amount: asset.amount.display });
         } else {
-          return i18n.t(i18n.l.claimables.panel.insufficient_funds);
+          return i18n.claimables.panel.insufficient_funds();
         }
       case 'claiming':
-        return i18n.t(i18n.l.claimables.panel.claim_in_progress);
+        return i18n.claimables.panel.claim_in_progress();
       case 'pending':
       case 'success':
-        return i18n.t(i18n.l.button.done);
+        return i18n.button.done();
       case 'recoverableError':
       default:
-        return i18n.t(i18n.l.points.points.try_again);
+        return i18n.points.points.try_again();
     }
   }, [claimStatus, shouldShowClaimText, asset.amount.display]);
 

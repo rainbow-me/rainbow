@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React from 'react';
 import { Centered } from '../layout';
 import { Text } from '../text';
@@ -40,11 +40,11 @@ export const ErrorPage = () => {
         </Text>
         <Centered marginTop={9}>
           <Text color={colors.dark} size="big" weight="bold">
-            {i18n.t(i18n.l.dapp_browser.error.title)}
+            {i18n.dapp_browser.error.title()}
           </Text>
         </Centered>
         <Box padding={'12px'}>
-          <BodyText color={colors.dark}>{i18n.t(i18n.l.dapp_browser.error.default_msg)}</BodyText>
+          <BodyText color={colors.dark}>{i18n.dapp_browser.error.default_msg()}</BodyText>
         </Box>
       </Box>
     </View>

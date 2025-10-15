@@ -2,7 +2,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { BackupFile, CloudBackups, parseTimestampFromFilename } from '@/model/backup';
 import { RainbowWallet } from '@/model/wallet';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
@@ -91,13 +91,13 @@ export const getMostRecentCloudBackup = (backups: BackupFile[]) => {
 };
 
 export const titleForBackupState: Partial<Record<CloudBackupState, string>> = {
-  [CloudBackupState.Initializing]: i18n.t(i18n.l.back_up.cloud.syncing_cloud_store, {
+  [CloudBackupState.Initializing]: i18n.back_up.cloud.syncing_cloud_store({
     cloudPlatformName: cloudPlatform,
   }),
-  [CloudBackupState.Syncing]: i18n.t(i18n.l.back_up.cloud.syncing_cloud_store, {
+  [CloudBackupState.Syncing]: i18n.back_up.cloud.syncing_cloud_store({
     cloudPlatformName: cloudPlatform,
   }),
-  [CloudBackupState.Fetching]: i18n.t(i18n.l.back_up.cloud.fetching_backups, {
+  [CloudBackupState.Fetching]: i18n.back_up.cloud.fetching_backups({
     cloudPlatformName: cloudPlatform,
   }),
 };

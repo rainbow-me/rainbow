@@ -1,5 +1,5 @@
 import React from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Inline, Text } from '@/design-system';
 import DiscoverSearchInput from '@/components/Discover/DiscoverSearchInput';
@@ -10,9 +10,7 @@ import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/
 import { NAVBAR_HORIZONTAL_INSET, navbarHeight } from '../navbar/Navbar';
 import { useTheme } from '@/theme';
 
-const placeholderText = deviceUtils.isNarrowPhone
-  ? i18n.t(i18n.l.discover.search.search_ethereum_short)
-  : i18n.t(i18n.l.discover.search.search_ethereum);
+const placeholderText = deviceUtils.isNarrowPhone ? i18n.discover.search.search_ethereum_short() : i18n.discover.search.search_ethereum();
 
 export function DiscoverSearchBar() {
   const { colors } = useTheme();
@@ -35,7 +33,7 @@ export function DiscoverSearchBar() {
         <ButtonPressAnimation onPress={cancelSearch} testID="done-button">
           {delayedShowSearch && (
             <Text color={{ custom: colors.appleBlue }} size="17pt" weight="semibold">
-              {i18n.t(i18n.l.button.done)}
+              {i18n.button.done()}
             </Text>
           )}
         </ButtonPressAnimation>

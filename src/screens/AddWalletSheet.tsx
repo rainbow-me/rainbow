@@ -4,7 +4,7 @@ import { Box, globalColors, Inset } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import React from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { analytics } from '@/analytics';
 import { InteractionManager } from 'react-native';
@@ -21,7 +21,7 @@ import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { RootStackParamList } from '@/navigation/types';
 import { IS_DEV } from '@/env';
 
-const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
+// Removed: // Removed: // Removed: // Removed: const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
 export type AddWalletSheetParams = {
   isFirstWallet: boolean;
@@ -86,7 +86,7 @@ export const AddWalletSheet = () => {
     });
   };
 
-  const restoreFromCloudDescription = i18n.t(TRANSLATIONS.options.cloud.description_restore_sheet, {
+  const restoreFromCloudDescription = i18n.wallet.new.add_wallet_sheet.options.cloud.description_restore_sheet({
     cloudPlatform,
   });
 
@@ -105,8 +105,8 @@ export const AddWalletSheet = () => {
   };
 
   const create: AddWalletItem = {
-    title: i18n.t(TRANSLATIONS.options.create_new.title),
-    description: i18n.t(TRANSLATIONS.options.create_new.description),
+    title: i18n.wallet.new.add_wallet_sheet.options.create_new.title(),
+    description: i18n.wallet.new.add_wallet_sheet.options.create_new.description(),
     icon: CreateNewWallet,
     iconColor: globalColors.pink60,
     testID: 'create-new-button',
@@ -114,7 +114,7 @@ export const AddWalletSheet = () => {
   };
 
   const restoreFromCloud: AddWalletItem = {
-    title: i18n.t(TRANSLATIONS.options.cloud.title, {
+    title: i18n.wallet.new.add_wallet_sheet.options.cloud.title({
       platform: cloudPlatform,
     }),
     description: restoreFromCloudDescription,
@@ -124,24 +124,24 @@ export const AddWalletSheet = () => {
   };
 
   const restoreFromSeed: AddWalletItem = {
-    title: i18n.t(TRANSLATIONS.options.seed.title),
-    description: i18n.t(TRANSLATIONS.options.seed.description),
+    title: i18n.wallet.new.add_wallet_sheet.options.seed.title(),
+    description: i18n.wallet.new.add_wallet_sheet.options.seed.description(),
     icon: ImportSecretPhraseOrPrivateKey,
     testID: 'restore-with-key-button',
     onPress: onPressRestoreFromSeed,
   };
 
   const watch: AddWalletItem = {
-    title: i18n.t(TRANSLATIONS.options.watch.title),
-    description: i18n.t(TRANSLATIONS.options.watch.description),
+    title: i18n.wallet.new.add_wallet_sheet.options.watch.title(),
+    description: i18n.wallet.new.add_wallet_sheet.options.watch.description(),
     icon: WatchWalletIcon,
     testID: 'watch-address-button',
     onPress: onPressWatch,
   };
 
   const connectHardwareWallet: AddWalletItem = {
-    title: i18n.t(TRANSLATIONS.options.hardware_wallet.title),
-    description: i18n.t(TRANSLATIONS.options.hardware_wallet.description),
+    title: i18n.wallet.new.add_wallet_sheet.options.hardware_wallet.title(),
+    description: i18n.wallet.new.add_wallet_sheet.options.hardware_wallet.description(),
     icon: PairHairwareWallet,
     iconColor: globalColors.blue60,
     testID: 'connect-hardware-wallet-button',

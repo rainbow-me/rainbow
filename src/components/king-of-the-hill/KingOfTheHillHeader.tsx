@@ -10,7 +10,7 @@ import { getSizedImageUrl } from '@/handlers/imgix';
 import { formatCurrency } from '@/helpers/strings';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
@@ -154,7 +154,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
         <BlurView blurStyle="light" blurIntensity={10} style={[StyleSheet.absoluteFill, { opacity: 0.3 }]} />
         <Box paddingHorizontal="12px" borderWidth={1.5} borderColor="fillTertiary" borderRadius={11} justifyContent="center" flexGrow={1}>
           <Text color="labelSecondary" size="13pt" weight="heavy">
-            {i18n.t(i18n.l.king_of_hill.round_ends_in)} {timeRemaining}
+            {i18n.king_of_hill.round_ends_in()} {timeRemaining}
           </Text>
         </Box>
       </View>
@@ -191,7 +191,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
         )}
         <View style={styles.statItem}>
           <Text color="labelQuaternary" size="13pt" weight="bold">
-            {i18n.t(i18n.l.market_data.vol)}
+            {i18n.market_data.vol()}
           </Text>
           <Text color="labelTertiary" size="13pt" weight="bold">
             {volume}
@@ -202,7 +202,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
         </View>
         <View style={styles.statItem}>
           <Text color="labelQuaternary" size="13pt" weight="bold">
-            {i18n.t(i18n.l.market_data.mcap)}
+            {i18n.market_data.mcap()}
           </Text>
           <Text color="labelTertiary" size="13pt" weight="bold">
             {marketCap}
@@ -222,13 +222,13 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
             </View>
           )}
           <Text color="labelQuaternary" size="13pt" weight="bold">
-            {lastWinner ? i18n.t(i18n.l.king_of_hill.last_winner) : i18n.t(i18n.l.king_of_hill.no_previous_winner)}
+            {lastWinner ? i18n.king_of_hill.last_winner() : i18n.king_of_hill.no_previous_winner()}
           </Text>
         </HeaderButton>
 
         <HeaderButton onPress={navigateToExplainSheet}>
           <Text color="labelTertiary" size="13pt" weight="bold">
-            {i18n.t(i18n.l.king_of_hill.how_it_works)}
+            {i18n.king_of_hill.how_it_works()}
           </Text>
         </HeaderButton>
       </View>

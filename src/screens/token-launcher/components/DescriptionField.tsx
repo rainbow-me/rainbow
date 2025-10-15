@@ -1,5 +1,5 @@
 import React from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { CollapsableField } from './CollapsableField';
 import { SingleFieldInput } from './SingleFieldInput';
 import { FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR } from '../constants';
@@ -11,7 +11,7 @@ export function DescriptionField() {
   const setDescription = useTokenLauncherStore(state => state.setDescription);
 
   return (
-    <CollapsableField title={i18n.t(i18n.l.token_launcher.titles.description)}>
+    <CollapsableField title={i18n.token_launcher.titles.description()}>
       <Box style={{ minHeight: 75 }}>
         <SingleFieldInput
           multiline
@@ -30,7 +30,7 @@ export function DescriptionField() {
           textAlign="left"
           inputStyle={{ textAlign: 'left' }}
           autoCorrect={true}
-          placeholder={i18n.t(i18n.l.token_launcher.placeholders.describe_your_coin)}
+          placeholder={i18n.token_launcher.placeholders.describe_your_coin()}
         />
       </Box>
     </CollapsableField>

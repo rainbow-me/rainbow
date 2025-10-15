@@ -65,7 +65,7 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { isEmpty, isEqual, isString } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, TextInput, View } from 'react-native';
@@ -527,7 +527,7 @@ export default function SendSheet() {
             txDetails,
             signableTransaction,
           });
-          Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.invalid_transaction));
+          Alert.alert(i18n.wallet.transaction.alert.invalid_transaction());
           submitSuccess = false;
         } else {
           const sendTransactionResult = await executeFn(sendTransaction, {
@@ -711,10 +711,10 @@ export default function SendSheet() {
   const { buttonDisabled, buttonLabel } = useMemo(() => {
     const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
     let disabled = true;
-    let label = i18n.t(i18n.l.button.confirm_exchange.enter_amount);
+    let label = i18n.button.confirm_exchange.enter_amount();
 
     if (isENS && !ensProfile.isSuccess) {
-      label = i18n.t(i18n.l.button.confirm_exchange.loading);
+      label = i18n.button.confirm_exchange.loading();
       disabled = true;
     } else if (
       isEmpty(gasFeeParamsBySpeed) ||
@@ -723,22 +723,22 @@ export default function SendSheet() {
       !toAddress ||
       (useBackendNetworksStore.getState().getNeedsL1SecurityFeeChains().includes(currentChainId) && l1GasFeeOptimism === null)
     ) {
-      label = i18n.t(i18n.l.button.confirm_exchange.loading);
+      label = i18n.button.confirm_exchange.loading();
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
-      label = i18n.t(i18n.l.button.confirm_exchange.insufficient_token, {
+      label = i18n.button.confirm_exchange.insufficient_token({
         tokenName: useBackendNetworksStore.getState().getChainsNativeAsset()[currentChainId || ChainId.mainnet]?.symbol,
       });
     } else if (!isValidGas) {
       disabled = true;
-      label = i18n.t(i18n.l.button.confirm_exchange.invalid_fee);
+      label = i18n.button.confirm_exchange.invalid_fee();
     } else if (!isZeroAssetAmount && !amountDetails.isSufficientBalance) {
       disabled = true;
-      label = i18n.t(i18n.l.button.confirm_exchange.insufficient_funds);
+      label = i18n.button.confirm_exchange.insufficient_funds();
     } else if (!isZeroAssetAmount) {
       disabled = false;
-      label = `􀕹 ${i18n.t(i18n.l.button.confirm_exchange.review)}`;
+      label = `􀕹 ${i18n.button.confirm_exchange.review()}`;
     }
 
     return { buttonDisabled: disabled, buttonLabel: label };

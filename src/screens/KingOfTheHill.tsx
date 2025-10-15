@@ -7,7 +7,7 @@ import { Navbar } from '@/components/navbar/Navbar';
 import { Text, useColorMode } from '@/design-system';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { usePrevious } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useAirdropsStore } from '@/state/claimables/airdropsStore';
@@ -44,7 +44,7 @@ export const KingOfTheHillScreen = () => {
         <Navbar
           scrollY={scrollY}
           testID="koth-header"
-          title={i18n.t(i18n.l.king_of_hill.title)}
+          title={i18n.king_of_hill.title()}
           floating
           leftComponent={
             <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8} overflowMargin={50}>

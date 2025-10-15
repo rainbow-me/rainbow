@@ -4,7 +4,7 @@ import { getProvider, isL2Chain, toHex } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { greaterThan } from '@/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
@@ -90,14 +90,14 @@ const SPEED_UP = 'speed_up';
 // i18n
 
 const title = {
-  [CANCEL_TX]: i18n.t(i18n.l.wallet.transaction.speed_up.cancel_tx_title),
-  [SPEED_UP]: i18n.t(i18n.l.wallet.transaction.speed_up.speed_up_title),
+  [CANCEL_TX]: i18n.wallet.transaction.speed_up.cancel_tx_title(),
+  [SPEED_UP]: i18n.wallet.transaction.speed_up.speed_up_title(),
 };
 // i18n
 
 const text = {
-  [CANCEL_TX]: i18n.t(i18n.l.wallet.transaction.speed_up.cancel_tx_text),
-  [SPEED_UP]: i18n.t(i18n.l.wallet.transaction.speed_up.speed_up_text),
+  [CANCEL_TX]: i18n.wallet.transaction.speed_up.cancel_tx_text(),
+  [SPEED_UP]: i18n.wallet.transaction.speed_up.speed_up_text(),
 };
 
 const calcGasParamRetryValue = (prevWeiValue: BigNumberish) => {
@@ -382,15 +382,11 @@ export default function SpeedUpAndCancelSheet() {
 
           // NOTE: We don't care about this for cancellations
           if (type === SPEED_UP) {
-            Alert.alert(
-              i18n.t(i18n.l.wallet.speed_up.unable_to_speed_up),
-              i18n.t(i18n.l.wallet.speed_up.problem_while_fetching_transaction_data),
-              [
-                {
-                  onPress: () => goBack(),
-                },
-              ]
-            );
+            Alert.alert(i18n.wallet.speed_up.unable_to_speed_up(), i18n.wallet.speed_up.problem_while_fetching_transaction_data(), [
+              {
+                onPress: () => goBack(),
+              },
+            ]);
           }
         }
       }
@@ -472,7 +468,7 @@ export default function SpeedUpAndCancelSheet() {
                       <SheetActionButtonRow ignorePaddingBottom ignorePaddingTop={ios}>
                         <SheetActionButton
                           color={colors.red}
-                          label={`􀎽 ${i18n.t(i18n.l.button.attempt_cancellation)}`}
+                          label={`􀎽 ${i18n.button.attempt_cancellation()}`}
                           onPress={handleCancellationWrapperFn}
                           size="big"
                           weight="bold"
@@ -481,7 +477,7 @@ export default function SpeedUpAndCancelSheet() {
                       <SheetActionButtonRow ignorePaddingBottom>
                         <SheetActionButton
                           color={colors.white}
-                          label={i18n.t(i18n.l.button.close)}
+                          label={i18n.button.close()}
                           onPress={goBack}
                           size="big"
                           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -494,7 +490,7 @@ export default function SpeedUpAndCancelSheet() {
                     <SheetActionButtonRow ignorePaddingBottom={ios} ignorePaddingTop={ios}>
                       <SheetActionButton
                         color={colors.white}
-                        label={i18n.t(i18n.l.button.cancel)}
+                        label={i18n.button.cancel()}
                         onPress={goBack}
                         size="big"
                         textColor={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -502,7 +498,7 @@ export default function SpeedUpAndCancelSheet() {
                       />
                       <SheetActionButton
                         color={accentColor || colors.appleBlue}
-                        label={`􀎽 ${i18n.t(i18n.l.button.confirm)}`}
+                        label={`􀎽 ${i18n.button.confirm()}`}
                         onPress={handleSpeedUpWrapperFn}
                         size="big"
                         weight="bold"

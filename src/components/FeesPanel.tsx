@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard, KeyboardAvoidingView } from 'react-native';
@@ -372,7 +372,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
 
       if (!maxBaseFee || isZero(maxBaseFee) || greaterThan(multiply(0.1, maxBaseFeeToValidate), maxBaseFee)) {
         setMaxBaseFeeError({
-          message: i18n.t(i18n.l.gas.max_base_fee_too_low_error),
+          message: i18n.gas.max_base_fee_too_low_error(),
           type: LOW_ALERT,
         });
       } else {
@@ -380,7 +380,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
       }
       if (greaterThan(multiply(MAX_BASE_FEE_RANGE[0], maxBaseFeeToValidate), maxBaseFee)) {
         setMaxBaseFeeWarning({
-          message: i18n.t(i18n.l.gas.lower_than_suggested),
+          message: i18n.gas.lower_than_suggested(),
           type: LOW_ALERT,
         });
       } else {
@@ -394,7 +394,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
     startPriorityFeeTimeout(() => {
       if (!maxPriorityFee || isZero(maxPriorityFee) || greaterThan(isL2 ? 0.0001 : 1, maxPriorityFee)) {
         setMaxPriorityFeeError({
-          message: i18n.t(i18n.l.gas.tip_too_low_error),
+          message: i18n.gas.tip_too_low_error(),
           type: LOW_ALERT,
         });
       } else {
@@ -405,7 +405,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
         greaterThan(multiply(MINER_TIP_RANGE[0], IS_TEST ? 1 : gasFeeParamsBySpeed?.[NORMAL]?.maxPriorityFeePerGas?.gwei), maxPriorityFee)
       ) {
         setMaxPriorityFeeWarning({
-          message: i18n.t(i18n.l.gas.lower_than_suggested),
+          message: i18n.gas.lower_than_suggested(),
           type: LOW_ALERT,
         });
       } else if (
@@ -413,7 +413,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
         greaterThan(maxPriorityFee, multiply(MINER_TIP_RANGE[1], IS_TEST ? 1 : gasFeeParamsBySpeed?.[URGENT]?.maxPriorityFeePerGas?.gwei))
       ) {
         setMaxPriorityFeeWarning({
-          message: i18n.t(i18n.l.gas.higher_than_suggested),
+          message: i18n.gas.higher_than_suggested(),
           type: HIGH_ALERT,
         });
       } else {
@@ -428,16 +428,16 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
         buttons: [
           {
             onPress: () => onAlertProceeded(callback),
-            text: i18n.t(i18n.l.gas.proceed_anyway),
+            text: i18n.gas.proceed_anyway(),
           },
           {
             onPress: () => openCustomOptions(FOCUS_TO_MAX_BASE_FEE),
             style: 'cancel',
-            text: i18n.t(i18n.l.gas.edit_max_bass_fee),
+            text: i18n.gas.edit_max_bass_fee(),
           },
         ],
-        message: i18n.t(i18n.l.gas.alert_message_higher_max_base_fee_needed),
-        title: i18n.t(i18n.l.gas.alert_title_higher_max_base_fee_needed),
+        message: i18n.gas.alert_message_higher_max_base_fee_needed(),
+        title: i18n.gas.alert_title_higher_max_base_fee_needed(),
       });
     },
     [onAlertProceeded, openCustomOptions]
@@ -450,16 +450,16 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
         buttons: [
           {
             onPress: () => onAlertProceeded(callback),
-            text: i18n.t(i18n.l.gas.proceed_anyway),
+            text: i18n.gas.proceed_anyway(),
           },
           {
             onPress: () => openCustomOptions(FOCUS_TO_MINER_TIP),
             style: 'cancel',
-            text: i18n.t(i18n.l.gas.edit_miner_tip),
+            text: i18n.gas.edit_miner_tip(),
           },
         ],
-        message: highAlert ? i18n.t(i18n.l.gas.alert_message_lower) : i18n.t(i18n.l.gas.alert_message_higher_miner_tip_needed),
-        title: highAlert ? i18n.t(i18n.l.gas.alert_title_lower_miner_tip_needed) : i18n.t(i18n.l.gas.alert_title_higher_miner_tip_needed),
+        message: highAlert ? i18n.gas.alert_message_lower() : i18n.gas.alert_message_higher_miner_tip_needed(),
+        title: highAlert ? i18n.gas.alert_title_lower_miner_tip_needed() : i18n.gas.alert_title_higher_miner_tip_needed(),
       });
     },
     [maxPriorityFeeWarning, onAlertProceeded, openCustomOptions]
@@ -552,7 +552,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
         <Row>
           <Box paddingBottom={{ custom: 14 }}>
             <Inline alignVertical="center" alignHorizontal="justify">
-              <Box>{renderRowLabel(i18n.t(i18n.l.gas.current_base_fee), trendType)}</Box>
+              <Box>{renderRowLabel(i18n.gas.current_base_fee(), trendType)}</Box>
               <Box as={ButtonPressAnimation} onPress={() => openGasHelper(trendType)} scaleTo={1}>
                 <Text color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy">
                   {formattedBaseFee}
@@ -566,7 +566,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
           <Box>
             <Inline alignVertical="center" alignHorizontal="justify">
               <Box>
-                {renderRowLabel(i18n.t(i18n.l.gas.max_base_fee), MAX_BASE_FEE_TYPE, maxBaseFeeError, maxBaseFeeWarning)}
+                {renderRowLabel(i18n.gas.max_base_fee(), MAX_BASE_FEE_TYPE, maxBaseFeeError, maxBaseFeeWarning)}
                 {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
               </Box>
               <Box marginRight="-5px (Deprecated)">
@@ -592,7 +592,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
             <Box>
               <Inline alignVertical="center" alignHorizontal="justify">
                 <Box>
-                  {renderRowLabel(i18n.t(i18n.l.gas.miner_tip), MINER_TIP_TYPE, maxPriorityFeeError, maxPriorityFeeWarning)}
+                  {renderRowLabel(i18n.gas.miner_tip(), MINER_TIP_TYPE, maxPriorityFeeError, maxPriorityFeeWarning)}
                   {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
                 </Box>
                 <Box marginRight="-5px (Deprecated)">
@@ -618,7 +618,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
           <Box paddingTop={{ custom: 14 }}>
             <Inline alignVertical="center" alignHorizontal="justify">
               <Text color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy">
-                {i18n.t(i18n.l.gas.max_transaction_fee)}
+                {i18n.gas.max_transaction_fee()}
               </Text>
               <Text color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy">
                 {maxFee}

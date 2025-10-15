@@ -4,7 +4,7 @@ import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 import { CLOUD_BACKUP_ERRORS, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { backupsStore } from '@/state/backups/backups';
 import { setWalletBackedUp, useWallets } from '@/state/wallets/walletsStore';
@@ -17,20 +17,20 @@ import { cloudPlatform } from '../utils/platform';
 export function getUserError(e: Error) {
   switch (e.message) {
     case CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR:
-      return i18n.t(i18n.l.back_up.errors.keychain_access);
+      return i18n.back_up.errors.keychain_access();
     case CLOUD_BACKUP_ERRORS.ERROR_DECRYPTING_DATA:
-      return i18n.t(i18n.l.back_up.errors.decrypting_data);
+      return i18n.back_up.errors.decrypting_data();
     case CLOUD_BACKUP_ERRORS.NO_BACKUPS_FOUND:
     case CLOUD_BACKUP_ERRORS.SPECIFIC_BACKUP_NOT_FOUND:
-      return i18n.t(i18n.l.back_up.errors.no_backups_found);
+      return i18n.back_up.errors.no_backups_found();
     case CLOUD_BACKUP_ERRORS.ERROR_GETTING_ENCRYPTED_DATA:
-      return i18n.t(i18n.l.back_up.errors.cant_get_encrypted_data);
+      return i18n.back_up.errors.cant_get_encrypted_data();
     case CLOUD_BACKUP_ERRORS.MISSING_PIN:
-      return i18n.t(i18n.l.back_up.errors.missing_pin);
+      return i18n.back_up.errors.missing_pin();
     case CLOUD_BACKUP_ERRORS.WRONG_PIN:
-      return i18n.t(i18n.l.back_up.wrong_pin);
+      return i18n.back_up.wrong_pin();
     default:
-      return i18n.t(i18n.l.back_up.errors.generic, {
+      return i18n.back_up.errors.generic({
         errorCodes: values(CLOUD_BACKUP_ERRORS).indexOf(e.message),
       });
   }
@@ -60,14 +60,14 @@ export default function useWalletCloudBackup() {
           await login();
           const userData = await getGoogleAccountUserData();
           if (!userData) {
-            Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+            Alert.alert(i18n.back_up.errors.no_account_found());
             return false;
           }
         } catch (e) {
           logger.error(new RainbowError('[BackupSheetSectionNoProvider]: No account found'), {
             error: e,
           });
-          Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+          Alert.alert(i18n.back_up.errors.no_account_found());
           return false;
         }
       } else {
@@ -76,37 +76,33 @@ export default function useWalletCloudBackup() {
           analytics.track(analytics.event.iCloudNotEnabled, {
             category: 'backup',
           });
-          Alert.alert(
-            i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.label),
-            i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.description),
-            [
-              {
-                onPress: () => {
-                  openInBrowser('https://support.apple.com/en-us/HT204025');
-                  analytics.track(analytics.event.viewHowToEnableICloud, {
-                    category: 'backup',
-                  });
-                },
-                text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.show_me),
+          Alert.alert(i18n.modal.back_up.alerts.cloud_not_enabled.label(), i18n.modal.back_up.alerts.cloud_not_enabled.description(), [
+            {
+              onPress: () => {
+                openInBrowser('https://support.apple.com/en-us/HT204025');
+                analytics.track(analytics.event.viewHowToEnableICloud, {
+                  category: 'backup',
+                });
               },
-              {
-                onPress: () => {
-                  analytics.track(analytics.event.ignoreHowToEnableICloud, {
-                    category: 'backup',
-                  });
-                },
-                style: 'cancel',
-                text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.no_thanks),
+              text: i18n.modal.back_up.alerts.cloud_not_enabled.show_me(),
+            },
+            {
+              onPress: () => {
+                analytics.track(analytics.event.ignoreHowToEnableICloud, {
+                  category: 'backup',
+                });
               },
-            ]
-          );
+              style: 'cancel',
+              text: i18n.modal.back_up.alerts.cloud_not_enabled.no_thanks(),
+            },
+          ]);
           return false;
         }
       }
 
       const wallet = wallets?.[walletId];
       if (wallet?.damaged) {
-        onError?.(i18n.t(i18n.l.back_up.errors.damaged_wallet), true);
+        onError?.(i18n.back_up.errors.damaged_wallet(), true);
         return false;
       }
 
@@ -115,7 +111,7 @@ export default function useWalletCloudBackup() {
       try {
         userPIN = await maybeAuthenticateWithPIN();
       } catch (e) {
-        onError?.(i18n.t(i18n.l.back_up.wrong_pin));
+        onError?.(i18n.back_up.wrong_pin());
         return false;
       }
 

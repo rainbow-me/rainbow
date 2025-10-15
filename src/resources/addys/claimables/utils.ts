@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { NativeCurrencyKey } from '@/entities';
 import { add, convertAmountToNativeDisplayWorklet, convertRawAmountToBalanceWorklet } from '@/helpers/utilities';
 import { parseAsset } from '@/resources/assets/assets';
@@ -102,15 +102,15 @@ export const claimableTypeTransformation = (type: ClaimableType) => type?.replac
 export const getClaimableName = (claimable: Claimable) => {
   const transformedType = claimableTypeTransformation(claimable.type);
   if (transformedType === ClaimableType.RainbowSuperTokenCreatorFees) {
-    return i18n.t(i18n.l.claimables.panel.creator_lp_fees);
+    return i18n.claimables.panel.creator_lp_fees();
   }
 
   if (transformedType === ClaimableType.merklClaimable && claimable.dapp) {
-    return i18n.t(i18n.l.claimables.panel.merkl_claimable, { dappName: claimable.dapp.name });
+    return i18n.claimables.panel.merkl_claimable({ dappName: claimable.dapp.name });
   }
 
   if (isRainbowEthRewards(claimable.uniqueId)) {
-    return i18n.t(i18n.l.claimables.panel.rainbow_eth_rewards);
+    return i18n.claimables.panel.rainbow_eth_rewards();
   }
 
   return claimable.name;

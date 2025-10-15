@@ -2,7 +2,7 @@ import { useTheme } from '@/theme';
 import { useImportingWallet } from '@/hooks';
 import React, { useCallback } from 'react';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { ColumnWithMargins, RowWithMargins } from '@/components/layout';
 import { Bold, Text } from '@/components/text';
@@ -17,31 +17,27 @@ export const DiagnosticsItemRow = ({ data }: any) => {
 
   const handlePressRestore = useCallback(async () => {
     if (busy) return;
-    Alert.alert(
-      i18n.t(i18n.l.wallet.diagnostics.restore.heads_up_title),
-      i18n.t(i18n.l.wallet.diagnostics.restore.this_action_will_completely_replace),
-      [
-        {
-          onPress: async () => {
-            try {
-              handleSetSeedPhrase(data.secret);
-              // @ts-expect-error poorly typed function
-              await handlePressImportButton(null, data.secret);
-            } catch (error) {
-              logger.error(new RainbowError('[DiagnosticsItemRow]: Error restoring from wallet diagnostics'), {
-                message: (error as Error).message,
-                context: 'restore',
-              });
-            }
-          },
-          text: i18n.t(i18n.l.wallet.diagnostics.restore.yes_i_understand),
+    Alert.alert(i18n.wallet.diagnostics.restore.heads_up_title(), i18n.wallet.diagnostics.restore.this_action_will_completely_replace(), [
+      {
+        onPress: async () => {
+          try {
+            handleSetSeedPhrase(data.secret);
+            // @ts-expect-error poorly typed function
+            await handlePressImportButton(null, data.secret);
+          } catch (error) {
+            logger.error(new RainbowError('[DiagnosticsItemRow]: Error restoring from wallet diagnostics'), {
+              message: (error as Error).message,
+              context: 'restore',
+            });
+          }
         },
-        {
-          style: 'cancel',
-          text: i18n.t(i18n.l.button.cancel),
-        },
-      ]
-    );
+        text: i18n.wallet.diagnostics.restore.yes_i_understand(),
+      },
+      {
+        style: 'cancel',
+        text: i18n.button.cancel(),
+      },
+    ]);
   }, [busy, data.secret, handlePressImportButton, handleSetSeedPhrase]);
 
   if (data.pinRequired) {
@@ -49,7 +45,7 @@ export const DiagnosticsItemRow = ({ data }: any) => {
       <ColumnWithMargins key={`key_${data.username}`}>
         <RowWithMargins>
           <Text size="lmedium">
-            <Bold>{i18n.t(i18n.l.wallet.diagnostics.restore.key)}:</Bold> {` `}
+            <Bold>{i18n.wallet.diagnostics.restore.key()}:</Bold> {` `}
             <Text color={colors.blueGreyDark50}>{data.username}</Text>
           </Text>
         </RowWithMargins>
@@ -61,20 +57,20 @@ export const DiagnosticsItemRow = ({ data }: any) => {
     <ColumnWithMargins key={`key_${data.username}`}>
       <RowWithMargins>
         <Text size="lmedium">
-          <Bold>{i18n.t(i18n.l.wallet.diagnostics.restore.type)}:</Bold> {` `}
+          <Bold>{i18n.wallet.diagnostics.restore.type()}:</Bold> {` `}
           <Text color={colors.blueGreyDark50}>{data.type}</Text>
         </Text>
       </RowWithMargins>
       <RowWithMargins>
         <Text size="lmedium">
-          <Bold>{i18n.t(i18n.l.wallet.diagnostics.restore.key)}:</Bold> {` `}
+          <Bold>{i18n.wallet.diagnostics.restore.key()}:</Bold> {` `}
           <Text color={colors.blueGreyDark50}>{data.username}</Text>
         </Text>
       </RowWithMargins>
       {data.createdAt && (
         <RowWithMargins>
           <Text size="lmedium">
-            <Bold>{i18n.t(i18n.l.wallet.diagnostics.restore.created_at)}:</Bold> {` `}
+            <Bold>{i18n.wallet.diagnostics.restore.created_at()}:</Bold> {` `}
             <Text color={colors.blueGreyDark50}>{data.createdAt}</Text>
           </Text>
         </RowWithMargins>
@@ -82,19 +78,19 @@ export const DiagnosticsItemRow = ({ data }: any) => {
       {data.label && (
         <RowWithMargins>
           <Text size="lmedium">
-            <Bold>{i18n.t(i18n.l.wallet.diagnostics.restore.label)}:</Bold> {` `}
+            <Bold>{i18n.wallet.diagnostics.restore.label()}:</Bold> {` `}
             <Text color={colors.blueGreyDark50}>{data.label}</Text>
           </Text>
         </RowWithMargins>
       )}
       <RowWithMargins>
         <Text size="lmedium">
-          <Bold>{i18n.t(i18n.l.wallet.diagnostics.restore.address)}:</Bold> {` `}
+          <Bold>{i18n.wallet.diagnostics.restore.address()}:</Bold> {` `}
           <Text color={colors.blueGreyDark50}>{data.address}</Text>
         </Text>
       </RowWithMargins>
       <Text size="lmedium">
-        <Bold>{i18n.t(i18n.l.wallet.diagnostics.restore.secret)}:</Bold> {` `}
+        <Bold>{i18n.wallet.diagnostics.restore.secret()}:</Bold> {` `}
       </Text>
       <RowWithMargins>
         <DiagnosticsSecretInput color={colors.blueGreyDark} value={data.secret} />
@@ -109,7 +105,7 @@ export const DiagnosticsItemRow = ({ data }: any) => {
           }}
         >
           <Text align="center" color={colors.whiteLabel} weight="bold">
-            {i18n.t(i18n.l.wallet.diagnostics.restore.restore)}
+            {i18n.wallet.diagnostics.restore.restore()}
           </Text>
         </View>
       </ButtonPressAnimation>

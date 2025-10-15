@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { capitalize, groupBy, isEmpty } from 'lodash';
 import { thisMonthTimestamp, thisYearTimestamp, todayTimestamp, yesterdayTimestamp } from './transactions';
 import { NativeCurrencyKey, RainbowTransaction, TransactionStatus } from '@/entities';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { WalletconnectRequestData } from '@/walletConnect/types';
 import { Contact } from '@/redux/contacts';
 import { SectionListData } from 'react-native';
@@ -31,14 +31,14 @@ export type TransactionSectionsResult = {
 // bad news
 const groupTransactionByDate = ({ status, minedAt }: { status: TransactionStatus; minedAt: string }) => {
   if (status === TransactionStatus.pending) {
-    return i18n.t(i18n.l.transactions.pending_title);
+    return i18n.transactions.pending_title();
   }
 
   const ts = parseInt(minedAt, 10) * 1000;
 
-  if (ts > todayTimestamp) return i18n.t(i18n.l.time.today_caps);
-  if (ts > yesterdayTimestamp) return i18n.t(i18n.l.time.yesterday_caps);
-  if (ts > thisMonthTimestamp) return i18n.t(i18n.l.time.this_month_caps);
+  if (ts > todayTimestamp) return i18n.time.today_caps();
+  if (ts > yesterdayTimestamp) return i18n.time.yesterday_caps();
+  if (ts > thisMonthTimestamp) return i18n.time.this_month_caps();
   try {
     return capitalize(
       format(ts, `MMMM${ts > thisYearTimestamp ? '' : ' yyyy'}`, {
@@ -46,7 +46,7 @@ const groupTransactionByDate = ({ status, minedAt }: { status: TransactionStatus
       })
     );
   } catch (e) {
-    return i18n.t(i18n.l.transactions.dropped_title);
+    return i18n.transactions.dropped_title();
   }
 };
 
@@ -123,7 +123,7 @@ export const buildTransactionsSections = ({
   if (!isEmpty(requests)) {
     sectionedTransactions.unshift({
       data: requests,
-      title: i18n.t(i18n.l.walletconnect.requests),
+      title: i18n.walletconnect.requests(),
       type: 'request',
     });
   }

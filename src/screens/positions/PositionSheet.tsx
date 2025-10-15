@@ -9,7 +9,7 @@ import startCase from 'lodash/startCase';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SubPositionListItem } from './SubPositionListItem';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { capitalize } from 'lodash';
 import { RainbowPosition } from '@/resources/defi/types';
 import { LpPositionListItem } from './LpPositionListItem';
@@ -110,7 +110,7 @@ export const PositionSheet: React.FC = () => {
                       padding="12px"
                     >
                       <Text size="17pt" weight="heavy" color={{ custom: positionColor }}>
-                        {i18n.t(i18n.l.positions.open_dapp)}
+                        {i18n.positions.open_dapp()}
                       </Text>
                     </Box>
                   </ButtonPressAnimation>
@@ -120,7 +120,7 @@ export const PositionSheet: React.FC = () => {
               <Stack space={'20px'}>
                 {(deposits.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
-                    {i18n.t(i18n.l.positions.deposits)}
+                    {i18n.positions.deposits()}
                   </Text>
                 )}
                 {deposits.map(deposit => (
@@ -137,7 +137,7 @@ export const PositionSheet: React.FC = () => {
 
                 {(lpDeposits.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
-                    {i18n.t(i18n.l.positions.pools)}
+                    {i18n.positions.pools()}
                   </Text>
                 )}
                 {lpDeposits.map(deposit => (
@@ -152,7 +152,7 @@ export const PositionSheet: React.FC = () => {
 
                 {(position.stakes.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
-                    {i18n.t(i18n.l.positions.stakes)}
+                    {i18n.positions.stakes()}
                   </Text>
                 )}
                 {position.stakes.map(stake =>
@@ -178,7 +178,7 @@ export const PositionSheet: React.FC = () => {
 
                 {(position.borrows.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
-                    {i18n.t(i18n.l.positions.borrows)}
+                    {i18n.positions.borrows()}
                   </Text>
                 )}
                 {position.borrows.map(borrow => (
@@ -194,7 +194,7 @@ export const PositionSheet: React.FC = () => {
 
                 {(position.claimables.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
-                    {i18n.t(i18n.l.positions.rewards)}
+                    {i18n.positions.rewards()}
                   </Text>
                 )}
                 {position.claimables.map(claim => (

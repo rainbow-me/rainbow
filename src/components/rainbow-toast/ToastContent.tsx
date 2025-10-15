@@ -7,7 +7,7 @@ import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Text } from '@/design-system';
 import { AssetType, TransactionStatus } from '@/entities';
 import { useTransactionLaunchToken } from '@/helpers/transactions';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { memo } from 'react';
 import { Text as RNText, StyleSheet, View } from 'react-native';
 
@@ -156,5 +156,5 @@ function BaseToastContent({ toast }: { toast: RainbowToast }) {
 
 export const getToastTitle = (toast: RainbowToast): string => {
   // @ts-expect-error - some of these are dot.notation and some are strings
-  return i18n.t(i18n.l.transactions.type[toast.transaction.title]);
+  return i18n.transactions.type[toast.transaction.title as keyof typeof i18n.transactions.type]();
 };

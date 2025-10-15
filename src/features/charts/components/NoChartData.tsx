@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Box, BoxProps, Text, TextIcon } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 export const NoChartData = memo(function NoChartData({ height }: { height: BoxProps['height'] }) {
   return (
@@ -9,7 +9,7 @@ export const NoChartData = memo(function NoChartData({ height }: { height: BoxPr
         {'􀋪'}
       </TextIcon>
       <Text align="center" color="labelQuaternary" size="17pt" weight="heavy">
-        {i18n.t(i18n.l.expanded_state.chart.no_chart_data)}
+        {i18n.expanded_state.chart.no_chart_data()}
       </Text>
     </Box>
   );

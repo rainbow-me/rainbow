@@ -27,7 +27,7 @@ import { SkiaText } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { useCleanup } from '@/hooks/useCleanup';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useAirdropsStore } from '@/state/claimables/airdropsStore';
@@ -244,9 +244,7 @@ export const AirdropsCard = memo(function AirdropsCard() {
             x={badgeXOffset}
             y={CARD_HEIGHT - 73}
           >
-            {numberOfAirdrops === 1
-              ? i18n.t(i18n.l.token_launcher.cards.airdrops.title_singular)
-              : i18n.t(i18n.l.token_launcher.cards.airdrops.title)}
+            {numberOfAirdrops === 1 ? i18n.token_launcher.cards.airdrops.title_singular() : i18n.token_launcher.cards.airdrops.title()}
           </SkiaText>
 
           <SkiaText
@@ -260,10 +258,10 @@ export const AirdropsCard = memo(function AirdropsCard() {
             y={CARD_HEIGHT - 36}
           >
             {numberOfAirdrops
-              ? i18n.t(i18n.l.token_launcher.cards.airdrops.subtitle_has_airdrops)
+              ? i18n.token_launcher.cards.airdrops.subtitle_has_airdrops()
               : numberOfAirdrops === null
-                ? i18n.t(i18n.l.token_launcher.cards.airdrops.subtitle_loading)
-                : i18n.t(i18n.l.token_launcher.cards.airdrops.subtitle_no_airdrops)}
+                ? i18n.token_launcher.cards.airdrops.subtitle_loading()
+                : i18n.token_launcher.cards.airdrops.subtitle_no_airdrops()}
           </SkiaText>
         </Group>
       }

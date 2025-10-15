@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { Bleed, Box, IconContainer, Stack, Text, TextShadow } from '@/design-system';
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -123,7 +123,7 @@ export const BuyContent = memo(function BuySection() {
               </IconContainer>
               <TextShadow blur={12} shadowOpacity={0.24}>
                 <Text weight="semibold" size="17pt" color="accent">
-                  {i18n.t(i18n.l.expanded_state.sections.buy.pay_with)}
+                  {i18n.expanded_state.sections.buy.pay_with()}
                 </Text>
               </TextShadow>
             </Box>
@@ -151,9 +151,7 @@ export const BuyContent = memo(function BuySection() {
               </Text>
             </IconContainer>
             <Text weight="semibold" size="17pt" color="labelTertiary" style={{ flex: 1 }}>
-              {hasBuyOptions
-                ? i18n.t(i18n.l.expanded_state.sections.buy.available_balance)
-                : i18n.t(i18n.l.expanded_state.sections.buy.low_balance)}
+              {hasBuyOptions ? i18n.expanded_state.sections.buy.available_balance() : i18n.expanded_state.sections.buy.low_balance()}
             </Text>
             <Text align="right" weight="semibold" size="17pt" color="labelTertiary">
               {buyWithAsset.native?.balance?.display}
@@ -226,7 +224,7 @@ export const BuyContent = memo(function BuySection() {
           >
             <TextShadow blur={12} shadowOpacity={0.24}>
               <Text align="center" color={{ custom: accentColors.color }} size="17pt" weight="heavy">
-                {i18n.t(i18n.l.expanded_state.sections.buy.open_swaps)}
+                {i18n.expanded_state.sections.buy.open_swaps()}
               </Text>
             </TextShadow>
           </Box>
@@ -269,7 +267,7 @@ export function BuySection({ placement }: BuySectionProps) {
         content={<BuyContent />}
         icon="􀡓"
         id={SectionId.BUY}
-        primaryText={i18n.t(i18n.l.expanded_state.sections.buy.title)}
+        primaryText={i18n.expanded_state.sections.buy.title()}
         secondaryText={asset.symbol}
       />
       <SheetSeparator />

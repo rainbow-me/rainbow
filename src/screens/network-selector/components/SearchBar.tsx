@@ -7,7 +7,7 @@ import { StyleSheet, TextInput } from 'react-native';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 export const SEARCH_BAR_HEIGHT = 48;
 const SEARCH_BAR_BORDER_RADIUS = SEARCH_BAR_HEIGHT / 2;
@@ -66,7 +66,7 @@ export const SearchBar = memo(function SearchBar({ inputRef, onFocus, onBlur }: 
         onChangeText={handleChangeText}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        placeholder={i18n.t(i18n.l.network_selector.search)}
+        placeholder={i18n.network_selector.search()}
         placeholderTextColor={labelSecondary}
         style={styles.input}
         autoCapitalize="none"

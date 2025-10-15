@@ -8,7 +8,7 @@ import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 
 import WalletTypes from '@/helpers/walletTypes';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
@@ -27,9 +27,7 @@ const SecretWarningPage = () => {
 
   const isSecretPhrase = WalletTypes.mnemonic === wallets?.[walletId]?.type;
   const secretText =
-    isSecretPhrase && !privateKeyAddress
-      ? i18n.t(i18n.l.back_up.secret.secret_phrase_title)
-      : i18n.t(i18n.l.back_up.secret.private_key_title);
+    isSecretPhrase && !privateKeyAddress ? i18n.back_up.secret.secret_phrase_title() : i18n.back_up.secret.private_key_title();
 
   const handleViewSecretPhrase = useCallback(() => {
     navigate(Routes.SHOW_SECRET, {
@@ -54,28 +52,28 @@ const SecretWarningPage = () => {
   }[] = [
     {
       icon: '􀇿',
-      description: i18n.t(i18n.l.back_up.warning.never_share, {
+      description: i18n.back_up.warning.never_share({
         typeName: secretText,
       }),
       color: 'orange',
     },
     {
       icon: '􀎥',
-      description: i18n.t(i18n.l.back_up.warning.access, {
+      description: i18n.back_up.warning.access({
         typeName: secretText,
       }),
       color: 'red',
     },
     {
       icon: '􀋮',
-      description: i18n.t(i18n.l.back_up.warning.hide, {
+      description: i18n.back_up.warning.hide({
         typeName: secretText,
       }),
       color: 'pink',
     },
     {
       icon: '􀡦',
-      description: i18n.t(i18n.l.back_up.warning.support, {
+      description: i18n.back_up.warning.support({
         typeName: secretText,
       }),
       color: 'blue',
@@ -92,8 +90,8 @@ const SecretWarningPage = () => {
             </Text>
             <Text align="center" color="label" size="20pt" weight="bold">
               {isBackingUp
-                ? i18n.t(i18n.l.back_up.warning.before_you_proceed)
-                : i18n.t(i18n.l.back_up.warning.title, {
+                ? i18n.back_up.warning.before_you_proceed()
+                : i18n.back_up.warning.title({
                     typeName: secretText,
                   })}
             </Text>
@@ -129,7 +127,7 @@ const SecretWarningPage = () => {
         style={{ paddingHorizontal: 24 }}
       >
         <SheetActionButton
-          label={i18n.t(i18n.l.back_up.warning.button, {
+          label={i18n.back_up.warning.button({
             typeName: secretText,
           })}
           color="red"

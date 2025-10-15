@@ -1,3 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
-export const TRANSLATIONS = i18n.l.hardware_wallets;
+// Export the hardware_wallets i18n namespace directly
+export const TRANSLATIONS = i18n.hardware_wallets;

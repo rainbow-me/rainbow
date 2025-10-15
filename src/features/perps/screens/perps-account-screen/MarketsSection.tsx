@@ -9,7 +9,7 @@ import { PerpMarket } from '@/features/perps/types';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 const MAX_MARKETS_TO_SHOW = 8;
 
@@ -23,7 +23,7 @@ export const MarketsSection = memo(function MarketsSection() {
         <ButtonPressAnimation onPress={() => PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'search' })}>
           <Box flexDirection="row" alignItems="center" gap={8} paddingLeft="4px">
             <Text size="22pt" weight="heavy" color="label">
-              {i18n.t(i18n.l.perps.markets.title)}
+              {i18n.perps.markets.title()}
             </Text>
             <TextIcon size="icon 17px" weight="bold" color="labelQuaternary">
               􀆊

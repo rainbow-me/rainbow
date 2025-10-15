@@ -8,7 +8,7 @@ import { Placeholder, RecentMintCell } from './RecentMintCell';
 import { View } from 'react-native';
 import { useTheme } from '@/theme';
 import { analytics } from '@/analytics';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -62,18 +62,18 @@ export function Card({ collection }: { collection: MintableCollection }) {
             <Inline alignVertical="center">
               <Text size="13pt" weight="semibold" color="labelTertiary">
                 {timeElapsed
-                  ? `${i18n.t(i18n.l.mints.mints_sheet.card.x_ago, {
+                  ? `${i18n.mints.mints_sheet.card.x_ago({
                       timeElapsed,
                     })} · `
                   : ''}
                 {collection.totalMints
-                  ? `${i18n.t(i18n.l.mints.mints_sheet.card.x_mints, {
+                  ? `${i18n.mints.mints_sheet.card.x_mints({
                       numMints: abbreviateNumber(collection.totalMints),
                     })} · `
                   : ''}
                 {collection.mintsLastHour === 1
-                  ? i18n.t(i18n.l.mints.mints_sheet.card.one_mint_past_hour)
-                  : i18n.t(i18n.l.mints.mints_sheet.card.x_mints_past_hour, {
+                  ? i18n.mints.mints_sheet.card.one_mint_past_hour()
+                  : i18n.mints.mints_sheet.card.x_mints_past_hour({
                       numMints: collection.mintsLastHour,
                     })}
               </Text>
@@ -114,7 +114,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
                 􀫸
               </Text>
               <Text size="15pt" weight="heavy" color="label">
-                {` ${i18n.t(i18n.l.mints.mints_sheet.card.mint)}`}
+                {` ${i18n.mints.mints_sheet.card.mint()}`}
               </Text>
             </Inline>
             <Box
@@ -126,7 +126,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
               style={{ borderWidth: 1, borderColor: separatorTertiary }}
             >
               <Text color="labelTertiary" size="13pt" weight="bold" align="center">
-                {isFree ? i18n.t(i18n.l.mints.mints_sheet.card.free) : `${price} ${currencySymbol}`}
+                {isFree ? i18n.mints.mints_sheet.card.free() : `${price} ${currencySymbol}`}
               </Text>
             </Box>
           </Inline>

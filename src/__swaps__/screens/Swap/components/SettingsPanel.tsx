@@ -3,7 +3,7 @@ import Animated, { useAnimatedStyle, withDelay, withSpring } from 'react-native-
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { NetworkSelectorButton } from '@/components/buttons/NetworkSelectorButton';
 import { Bleed, Border, Box, Column, Columns, Separator, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { THICK_BORDER_WIDTH } from '../constants';
@@ -28,10 +28,10 @@ const PreferredNetworkMenu = () => {
         color: 'labelSecondary',
         icon: '􀒙',
         weight: 'bold',
-        label: i18n.t(i18n.l.expanded_state.swap_details_v2.automatic),
+        label: i18n.expanded_state.swap_details_v2.automatic(),
         onPress: () => useSwapsStore.setState({ preferredNetwork: undefined }),
       }}
-      title={i18n.t(i18n.l.expanded_state.swap_details_v2.preferred_network)}
+      title={i18n.expanded_state.swap_details_v2.preferred_network()}
       allowedNetworks={chainsToDisplay}
       fillPinnedSection
       canEdit={false}
@@ -73,7 +73,7 @@ export function SettingsPanel() {
       zIndex={12}
     >
       <Text align="center" color="label" size="20pt" weight="heavy">
-        {i18n.t(i18n.l.expanded_state.swap_details_v2.settings)}
+        {i18n.expanded_state.swap_details_v2.settings()}
       </Text>
 
       <GestureHandlerButton onPressWorklet={SwapSettings.onToggleDegenMode} scaleTo={0.97} testID="swap-settings-panel-degen-mode-button">
@@ -89,10 +89,10 @@ export function SettingsPanel() {
         >
           <Stack space="12px">
             <Text color="label" size="17pt" weight="heavy">
-              {i18n.t(i18n.l.expanded_state.swap_details_v2.degen_mode)}
+              {i18n.expanded_state.swap_details_v2.degen_mode()}
             </Text>
             <Text color="labelTertiary" size="13pt" weight="bold">
-              {i18n.t(i18n.l.expanded_state.swap_details_v2.degen_mode_description)}
+              {i18n.expanded_state.swap_details_v2.degen_mode_description()}
             </Text>
           </Stack>
 
@@ -122,7 +122,7 @@ export function SettingsPanel() {
                 􀤆
               </TextIcon>
               <Text color="labelTertiary" weight="semibold" size="15pt">
-                {i18n.t(i18n.l.expanded_state.swap_details_v2.preferred_network)}
+                {i18n.expanded_state.swap_details_v2.preferred_network()}
               </Text>
             </Box>
           </Column>

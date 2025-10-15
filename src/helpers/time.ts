@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { findKey, isObjectLike, isString } from 'lodash';
 import parseMilliseconds from 'parse-ms';
 import { convertStringToNumber, omitBy } from './utilities';
@@ -7,7 +7,7 @@ const buildLocalizedTimeUnitString = ({ plural, short, unit }: { plural: boolean
   const length = short ? 'short' : 'long';
   const plurality = plural ? 'plural' : 'singular';
 
-  return i18n.t((i18n.l.time as Record<string, any>)[unit][length][plurality]);
+  return i18n.time[unit as 'days' | 'hours' | 'minutes' | 'seconds'][length as 'short' | 'long'][plurality as 'plural' | 'singular']();
 };
 
 const getHighestResolutionUnit = (timeUnitValues: any) => {

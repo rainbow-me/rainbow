@@ -26,7 +26,7 @@ import { abbreviations, deviceUtils } from '@/utils';
 import profileUtils from '@/utils/profileUtils';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useFocusEffect } from '@react-navigation/native';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Linking, Switch } from 'react-native';
 import { checkNotifications, RESULTS } from 'react-native-permissions';
@@ -56,34 +56,36 @@ const AMOUNT_OF_TOPICS_TO_DISPLAY = DEVICE_WIDTH > 400 ? 3 : 2;
 
 const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
   const composedLabel = useMemo(() => {
-    if (!notifications) return i18n.t(i18n.l.settings.notifications_section.off);
+    if (!notifications) return i18n.settings.notifications_section.off();
     const allTopicsEnabled = Object.values(notifications.topics).every(topic => topic);
     const allTopicsDisabled = groupOff || Object.values(notifications.topics).every(topic => !topic);
     const enabledTopics = Object.keys(notifications.topics).filter(topic => notifications.topics[topic as unknown as number]);
 
     if (allTopicsDisabled) {
-      return i18n.t(i18n.l.settings.notifications_section.off);
+      return i18n.settings.notifications_section.off();
     }
 
     if (notifications.enabled) {
       if (allTopicsEnabled) {
-        return i18n.t(i18n.l.settings.notifications_section.all);
+        return i18n.settings.notifications_section.all();
       }
 
       if (enabledTopics.length > AMOUNT_OF_TOPICS_TO_DISPLAY) {
         const limitedTopics = enabledTopics
           .slice(0, AMOUNT_OF_TOPICS_TO_DISPLAY)
-          .map(topic => i18n.t((i18n.l.settings.notifications_section as any)[topic]))
+          .map(topic => i18n.settings.notifications_section[topic as keyof typeof i18n.settings.notifications_section]())
           .join(', ');
 
-        return `${limitedTopics} ${i18n.t(i18n.l.settings.notifications_section.plus_n_more, {
+        return `${limitedTopics} ${i18n.settings.notifications_section.plus_n_more({
           n: enabledTopics.length - AMOUNT_OF_TOPICS_TO_DISPLAY,
         })}`;
       } else {
-        return enabledTopics.map(topic => i18n.t((i18n.l.settings.notifications_section as any)[topic])).join(', ');
+        return enabledTopics
+          .map(topic => i18n.settings.notifications_section[topic as keyof typeof i18n.settings.notifications_section]())
+          .join(', ');
       }
     } else {
-      return i18n.t(i18n.l.settings.notifications_section.off);
+      return i18n.settings.notifications_section.off();
     }
   }, [groupOff, notifications]);
 
@@ -110,8 +112,8 @@ const WalletRow = ({ ens, groupOff, isTestnet, loading, notificationSettings, wa
         });
       } else {
         Alert.alert(
-          i18n.t(i18n.l.settings.notifications_section.no_settings_for_address_title),
-          i18n.t(i18n.l.settings.notifications_section.no_settings_for_address_content),
+          i18n.settings.notifications_section.no_settings_for_address_title(),
+          i18n.settings.notifications_section.no_settings_for_address_content(),
           [{ text: 'OK' }]
         );
       }
@@ -309,13 +311,13 @@ const NotificationsSection = () => {
         key={permissionStatus}
       >
         {neverGranted && (
-          <Menu description={i18n.t(i18n.l.settings.notifications_section.no_first_time_permissions)}>
+          <Menu description={i18n.settings.notifications_section.no_first_time_permissions()}>
             <MenuItem
               hasSfSymbol
               size={52}
               leftComponent={<MenuItem.TextIcon icon="􀝖" isLink />}
               titleComponent={
-                <MenuItem.Title text={i18n.t(i18n.l.settings.notifications_section.first_time_allow_notifications)} weight="bold" isLink />
+                <MenuItem.Title text={i18n.settings.notifications_section.first_time_allow_notifications()} weight="bold" isLink />
               }
               onPress={requestNotificationPermissions}
             />
@@ -323,32 +325,30 @@ const NotificationsSection = () => {
         )}
 
         {disabledInSystem && (
-          <Menu description={i18n.t(i18n.l.settings.notifications_section.no_permissions)}>
+          <Menu description={i18n.settings.notifications_section.no_permissions()}>
             <MenuItem
               hasSfSymbol
               size={52}
               leftComponent={<MenuItem.TextIcon icon="􀍟" isLink />}
-              titleComponent={
-                <MenuItem.Title text={i18n.t(i18n.l.settings.notifications_section.open_system_settings)} weight="bold" isLink />
-              }
+              titleComponent={<MenuItem.Title text={i18n.settings.notifications_section.open_system_settings()} weight="bold" isLink />}
               onPress={openSystemSettings}
             />
           </Menu>
         )}
 
         {isTestnet ? (
-          <Menu description={i18n.t(i18n.l.settings.notifications_section.unsupported_network)}>
+          <Menu description={i18n.settings.notifications_section.unsupported_network()}>
             <MenuItem
               hasSfSymbol
               size={52}
               leftComponent={<MenuItem.TextIcon icon="􀇂" isLink />}
-              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.notifications_section.change_network)} weight="bold" isLink />}
+              titleComponent={<MenuItem.Title text={i18n.settings.notifications_section.change_network()} weight="bold" isLink />}
               onPress={openNetworkSettings}
             />
           </Menu>
         ) : (
           <>
-            <Menu description={noOwnedWallets ? i18n.t(i18n.l.settings.notifications_section.no_owned_wallets) : ''}>
+            <Menu description={noOwnedWallets ? i18n.settings.notifications_section.no_owned_wallets() : ''}>
               <MenuItem
                 disabled
                 rightComponent={
@@ -362,7 +362,7 @@ const NotificationsSection = () => {
                   </>
                 }
                 size={52}
-                titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.notifications_section.my_wallets)} weight="bold" />}
+                titleComponent={<MenuItem.Title text={i18n.settings.notifications_section.my_wallets()} weight="bold" />}
               />
               {ownedWallets.map(wallet => (
                 <WalletRow
@@ -376,7 +376,7 @@ const NotificationsSection = () => {
                 />
               ))}
             </Menu>
-            <Menu description={noWatchedWallets ? i18n.t(i18n.l.settings.notifications_section.no_watched_wallets) : ''}>
+            <Menu description={noWatchedWallets ? i18n.settings.notifications_section.no_watched_wallets() : ''}>
               <MenuItem
                 disabled
                 rightComponent={
@@ -390,7 +390,7 @@ const NotificationsSection = () => {
                   </>
                 }
                 size={52}
-                titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.notifications_section.watched_wallets)} weight="bold" />}
+                titleComponent={<MenuItem.Title text={i18n.settings.notifications_section.watched_wallets()} weight="bold" />}
               />
               {watchedWallets.map(wallet => (
                 <WalletRow
@@ -421,7 +421,7 @@ const NotificationsSection = () => {
                 </>
               }
               size={52}
-              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.notifications_section.points)} weight="bold" />}
+              titleComponent={<MenuItem.Title text={i18n.settings.notifications_section.points()} weight="bold" />}
             />
           )}
         </Menu>

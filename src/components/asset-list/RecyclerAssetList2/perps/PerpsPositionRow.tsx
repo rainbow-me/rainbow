@@ -15,7 +15,7 @@ import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 
 type PerpsPositionRowProps = {
   position: PerpsPosition;
@@ -31,9 +31,7 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
   const formattedValues = useMemo(() => {
     return {
       equity: formatCurrency(position.equity),
-      liquidationPrice: position.liquidationPrice
-        ? formatPerpAssetPrice(position.liquidationPrice)
-        : i18n.t(i18n.l.perps.common.not_available),
+      liquidationPrice: position.liquidationPrice ? formatPerpAssetPrice(position.liquidationPrice) : i18n.perps.common.not_available(),
       unrealizedPnl: formatCurrency(abs(position.unrealizedPnl)),
     };
   }, [position]);
@@ -79,7 +77,7 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
             <Box flexDirection="row" alignItems="center" justifyContent="space-between">
               <Box flexDirection="row" alignItems="center" gap={4}>
                 <Text color="labelQuaternary" size="11pt" weight="bold">
-                  {i18n.t(i18n.l.perps.common.liq).toUpperCase()}
+                  {i18n.perps.common.liq().toUpperCase()}
                 </Text>
                 <Text color="labelTertiary" size="11pt" weight="heavy">
                   {formattedValues.liquidationPrice}

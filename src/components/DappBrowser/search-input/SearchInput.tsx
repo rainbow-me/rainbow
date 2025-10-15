@@ -21,7 +21,7 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_IOS } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { fontWithWidth } from '@/styles';
 import font from '@/styles/fonts';
 import { useBrowserStore } from '@/state/browser/browserStore';
@@ -42,7 +42,7 @@ import { useSearchContext } from '../search/SearchContext';
 import { TabViewGestureStates } from '../types';
 import { getNameFromFormattedUrl, handleShareUrl } from '../utils';
 
-const SEARCH_PLACEHOLDER_TEXT = i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder);
+const SEARCH_PLACEHOLDER_TEXT = i18n.dapp_browser.address_bar.input_placeholder();
 
 type MenuActionKey = 'closeTab' | 'share' | 'favorite' | 'home' | 'forward' | 'back';
 
@@ -79,7 +79,7 @@ const ThreeDotMenu = function ThreeDotMenu({ formattedUrlValue }: { formattedUrl
     const menuItems = [
       {
         actionKey: 'closeTab',
-        actionTitle: i18n.t(i18n.l.dapp_browser.menus.close_tab),
+        actionTitle: i18n.dapp_browser.menus.close_tab(),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'xmark',
@@ -88,7 +88,7 @@ const ThreeDotMenu = function ThreeDotMenu({ formattedUrlValue }: { formattedUrl
       },
       {
         actionKey: 'share',
-        actionTitle: i18n.t(i18n.l.dapp_browser.menus.share),
+        actionTitle: i18n.dapp_browser.menus.share(),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'square.and.arrow.up',
@@ -100,7 +100,7 @@ const ThreeDotMenu = function ThreeDotMenu({ formattedUrlValue }: { formattedUrl
     if (!isGoogleSearch) {
       menuItems.push({
         actionKey: 'favorite',
-        actionTitle: isFavorite ? i18n.t(i18n.l.dapp_browser.menus.undo_favorite) : i18n.t(i18n.l.dapp_browser.menus.favorite),
+        actionTitle: isFavorite ? i18n.dapp_browser.menus.undo_favorite() : i18n.dapp_browser.menus.favorite(),
         icon: {
           iconType: 'SYSTEM',
           iconValue: isFavorite ? 'star.slash' : 'star',
@@ -110,7 +110,7 @@ const ThreeDotMenu = function ThreeDotMenu({ formattedUrlValue }: { formattedUrl
     if (!isOnHomepage) {
       menuItems.push({
         actionKey: 'home',
-        actionTitle: i18n.t(i18n.l.dapp_browser.menus.home),
+        actionTitle: i18n.dapp_browser.menus.home(),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'house',
@@ -120,7 +120,7 @@ const ThreeDotMenu = function ThreeDotMenu({ formattedUrlValue }: { formattedUrl
     if (navState.canGoForward) {
       menuItems.push({
         actionKey: 'forward',
-        actionTitle: i18n.t(i18n.l.dapp_browser.menus.forward),
+        actionTitle: i18n.dapp_browser.menus.forward(),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'arrowshape.forward',
@@ -130,7 +130,7 @@ const ThreeDotMenu = function ThreeDotMenu({ formattedUrlValue }: { formattedUrl
     if (navState.canGoBack) {
       menuItems.push({
         actionKey: 'back',
-        actionTitle: i18n.t(i18n.l.dapp_browser.menus.back),
+        actionTitle: i18n.dapp_browser.menus.back(),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'arrowshape.backward',
@@ -467,7 +467,7 @@ const AddressBar = memo(function AddressBar({
             const url = e.nativeEvent.text.trim();
             if (url) onSubmitEditing(url);
           }}
-          placeholder={i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder)}
+          placeholder={i18n.dapp_browser.address_bar.input_placeholder()}
           placeholderTextColor={labelQuaternary}
           ref={inputRef}
           returnKeyType="go"

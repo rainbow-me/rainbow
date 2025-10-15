@@ -13,7 +13,7 @@ import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { useTheme } from '@/theme';
 import { CardSize } from '@/components/unique-token/CardSize';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useRecoilValue } from 'recoil';
 import { nftOffersSortAtom } from '@/components/nft-offers/SortMenu';
 import { View } from 'react-native';
@@ -113,7 +113,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
     case SortCriterion.DateCreated:
       if (isExpiring) {
         secondaryTextColor = 'red';
-        secondaryText = timeRemaining ? getFormattedTimeQuantity(timeRemaining) : i18n.t(i18n.l.nft_offers.card.expired);
+        secondaryText = timeRemaining ? getFormattedTimeQuantity(timeRemaining) : i18n.nft_offers.card.expired();
       } else {
         secondaryTextColor = 'labelTertiary';
         secondaryText = convertAmountToNativeDisplay(
@@ -130,7 +130,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
     case SortCriterion.FloorDifferencePercentage:
       if (isExpiring) {
         secondaryTextColor = 'red';
-        secondaryText = timeRemaining ? getFormattedTimeQuantity(timeRemaining) : i18n.t(i18n.l.nft_offers.card.expired);
+        secondaryText = timeRemaining ? getFormattedTimeQuantity(timeRemaining) : i18n.nft_offers.card.expired();
       } else if (isFloorDiffPercentagePositive) {
         secondaryTextColor = 'green';
         secondaryText = `+${offer.floorDifferencePercentage}%`;

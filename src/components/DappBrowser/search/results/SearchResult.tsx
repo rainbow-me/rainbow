@@ -9,7 +9,7 @@ import { ImgixImage } from '@/components/images';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { AnimatedText, Box, Inline, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { useDimensions } from '@/hooks';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useSearchContext } from '../SearchContext';
 
@@ -107,7 +107,7 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
   );
 };
 
-const searchText = i18n.t(i18n.l.dapp_browser.search.search);
+const searchText = i18n.dapp_browser.search.search();
 
 export const GoogleSearchResult = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
   const { searchQuery } = useSearchContext();

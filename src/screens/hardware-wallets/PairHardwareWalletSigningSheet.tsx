@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { Box, Column, Columns, Inset, Stack, Text, useForegroundColor } from '@/design-system';
@@ -86,16 +86,16 @@ export function PairHardwareWalletSigningSheet() {
 
   const items: ItemDetails[] = [
     {
-      title: i18n.t(TRANSLATIONS.blind_signing_instructions.step_1.title),
-      description: i18n.t(TRANSLATIONS.blind_signing_instructions.step_1.description),
+      title: TRANSLATIONS.blind_signing_instructions.step_1.title(),
+      description: TRANSLATIONS.blind_signing_instructions.step_1.description(),
     },
     {
-      title: i18n.t(TRANSLATIONS.blind_signing_instructions.step_2.title),
-      description: i18n.t(TRANSLATIONS.blind_signing_instructions.step_2.description),
+      title: TRANSLATIONS.blind_signing_instructions.step_2.title(),
+      description: TRANSLATIONS.blind_signing_instructions.step_2.description(),
     },
     {
-      title: i18n.t(TRANSLATIONS.blind_signing_instructions.step_3.title),
-      description: i18n.t(TRANSLATIONS.blind_signing_instructions.step_3.description),
+      title: TRANSLATIONS.blind_signing_instructions.step_3.title(),
+      description: TRANSLATIONS.blind_signing_instructions.step_3.description(),
     },
   ];
 
@@ -139,7 +139,7 @@ export function PairHardwareWalletSigningSheet() {
           deviceId,
           successCallback,
           errorCallback: () => {
-            Alert.alert(i18n.t(TRANSLATIONS.pairing_error_alert.title), i18n.t(TRANSLATIONS.pairing_error_alert.body));
+            Alert.alert(TRANSLATIONS.pairing_error_alert.title(), TRANSLATIONS.pairing_error_alert.body());
           },
         });
       }
@@ -163,18 +163,18 @@ export function PairHardwareWalletSigningSheet() {
         <Stack space={isSmallPhone ? '36px' : '80px'}>
           <Stack alignHorizontal="center" space="20px">
             <Text align="center" color="label" weight="bold" size="26pt">
-              {i18n.t(TRANSLATIONS.enable_blind_signing)}
+              {TRANSLATIONS.enable_blind_signing()}
             </Text>
             <Stack space="10px">
               <Text align="center" color="labelTertiary" weight="semibold" size="15pt / 135%">
-                {i18n.t(TRANSLATIONS.blind_signing_description)}
+                {TRANSLATIONS.blind_signing_description()}
               </Text>
               <ButtonPressAnimation
                 onPress={() => openInBrowser('https://www.ledger.com/academy/enable-blind-signing-why-when-and-how-to-stay-safe')}
                 scaleTo={0.9}
               >
                 <Text align="center" color="blue" weight="semibold" size="15pt / 135%">
-                  {i18n.t(TRANSLATIONS.learn_more)}
+                  {TRANSLATIONS.learn_more()}
                 </Text>
               </ButtonPressAnimation>
             </Stack>
@@ -187,7 +187,7 @@ export function PairHardwareWalletSigningSheet() {
         </Stack>
       </Inset>
       <ActionButton
-        label={params?.shouldGoBack ? i18n.t(TRANSLATIONS.blind_signing_enabled) : i18n.t(TRANSLATIONS.finish_importing)}
+        label={params?.shouldGoBack ? TRANSLATIONS.blind_signing_enabled() : TRANSLATIONS.finish_importing()}
         onPress={() => (params?.shouldGoBack ? goBack() : handleButtonPress())}
       />
     </Layout>

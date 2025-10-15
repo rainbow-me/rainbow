@@ -15,7 +15,7 @@ import WalletTypes from '@/helpers/walletTypes';
 import { useWalletsWithBalancesAndNames } from '@/hooks';
 import { useLiveWalletBalance } from '@/hooks/useLiveWalletBalance';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
@@ -143,7 +143,7 @@ export default function ChangeWalletSheet() {
         const isSelectedAddress = account.address === accountAddress;
         const balanceText = account.balancesMinusHiddenBalances
           ? account.balancesMinusHiddenBalances
-          : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
+          : i18n.wallet.change_wallet.loading_balance();
 
         const item: AddressItem = {
           id: account.address,
@@ -330,9 +330,7 @@ export default function ChangeWalletSheet() {
           screen: Routes.WALLET_NOTIFICATIONS_SETTINGS,
         });
       } else {
-        Alert.alert(i18n.t(i18n.l.wallet.action.notifications.alert_title), i18n.t(i18n.l.wallet.action.notifications.alert_message), [
-          { text: 'OK' },
-        ]);
+        Alert.alert(i18n.wallet.action.notifications.alert_title(), i18n.wallet.action.notifications.alert_message(), [{ text: 'OK' }]);
       }
     },
     [navigate]
@@ -359,8 +357,8 @@ export default function ChangeWalletSheet() {
         {
           cancelButtonIndex: 1,
           destructiveButtonIndex: 0,
-          message: i18n.t(i18n.l.wallet.action.remove_confirm),
-          options: [i18n.t(i18n.l.wallet.action.remove), i18n.t(i18n.l.button.cancel)],
+          message: i18n.wallet.action.remove_confirm(),
+          options: [i18n.wallet.action.remove(), i18n.button.cancel()],
         },
         async buttonIndex => {
           if (buttonIndex === 0) {
@@ -458,7 +456,7 @@ export default function ChangeWalletSheet() {
     let menuItems = [
       {
         actionKey: AddressMenuAction.Edit,
-        actionTitle: i18n.t(i18n.l.wallet.change_wallet.address_menu.edit),
+        actionTitle: i18n.wallet.change_wallet.address_menu.edit(),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'pencil',
@@ -466,7 +464,7 @@ export default function ChangeWalletSheet() {
       },
       {
         actionKey: AddressMenuAction.Copy,
-        actionTitle: i18n.t(i18n.l.wallet.change_wallet.address_menu.copy),
+        actionTitle: i18n.wallet.change_wallet.address_menu.copy(),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'doc.fill',
@@ -474,7 +472,7 @@ export default function ChangeWalletSheet() {
       },
       {
         actionKey: AddressMenuAction.Settings,
-        actionTitle: i18n.t(i18n.l.wallet.change_wallet.address_menu.settings),
+        actionTitle: i18n.wallet.change_wallet.address_menu.settings(),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'key.fill',
@@ -482,7 +480,7 @@ export default function ChangeWalletSheet() {
       },
       {
         actionKey: AddressMenuAction.Notifications,
-        actionTitle: i18n.t(i18n.l.wallet.change_wallet.address_menu.notifications),
+        actionTitle: i18n.wallet.change_wallet.address_menu.notifications(),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'bell.fill',
@@ -490,7 +488,7 @@ export default function ChangeWalletSheet() {
       },
       {
         actionKey: AddressMenuAction.Remove,
-        actionTitle: i18n.t(i18n.l.wallet.change_wallet.address_menu.remove),
+        actionTitle: i18n.wallet.change_wallet.address_menu.remove(),
         destructive: true,
         icon: {
           iconType: 'SYSTEM',
@@ -588,7 +586,7 @@ export default function ChangeWalletSheet() {
               alignItems="center"
             >
               <Text align="center" color="label" size="20pt" weight="heavy">
-                {i18n.t(i18n.l.wallet.change_wallet.wallets)}
+                {i18n.wallet.change_wallet.wallets()}
               </Text>
               {/* +3 to account for font size difference */}
               <Box position="absolute" style={{ right: 4, top: 32 + 3 }}>
@@ -601,17 +599,17 @@ export default function ChangeWalletSheet() {
                       align="end"
                       alignOffset={18}
                       sideOffset={12}
-                      title={i18n.t(i18n.l.wallet.change_wallet.edit_hint_tooltip.title)}
+                      title={i18n.wallet.change_wallet.edit_hint_tooltip.title()}
                       SubtitleComponent={
                         <Inline>
                           <Text color={{ custom: globalColors.grey60 }} size="13pt" weight="semibold">
-                            {i18n.t(i18n.l.wallet.change_wallet.edit_hint_tooltip.subtitle.prefix)}
+                            {i18n.wallet.change_wallet.edit_hint_tooltip.subtitle.prefix()}
                           </Text>
                           <Text color="blue" size="13pt" weight="semibold">
-                            {` ${i18n.t(i18n.l.wallet.change_wallet.edit_hint_tooltip.subtitle.action)} `}
+                            {` ${i18n.wallet.change_wallet.edit_hint_tooltip.subtitle.action()} `}
                           </Text>
                           <Text color={{ custom: globalColors.grey60 }} size="13pt" weight="semibold">
-                            {i18n.t(i18n.l.wallet.change_wallet.edit_hint_tooltip.subtitle.suffix)}
+                            {i18n.wallet.change_wallet.edit_hint_tooltip.subtitle.suffix()}
                           </Text>
                         </Inline>
                       }
@@ -623,7 +621,7 @@ export default function ChangeWalletSheet() {
                   <ButtonPressAnimation onPress={onPressEditMode}>
                     <HitSlop horizontal={'32px'} vertical={'12px'}>
                       <Text color="blue" size="17pt" weight="medium">
-                        {editMode ? i18n.t(i18n.l.button.done) : i18n.t(i18n.l.button.edit)}
+                        {editMode ? i18n.button.done() : i18n.button.edit()}
                       </Text>
                     </HitSlop>
                   </ButtonPressAnimation>
@@ -674,7 +672,7 @@ export default function ChangeWalletSheet() {
               {/* {!editMode && ownedWalletsTotalBalance ? (
                 <Stack space="10px">
                   <Text color="labelSecondary" size="13pt" weight="bold">
-                    {i18n.t(i18n.l.wallet.change_wallet.total_balance)}
+                    {i18n.wallet.change_wallet.total_balance()}
                   </Text>
                   <Text color="label" size="17pt" weight="bold">
                     {ownedWalletsTotalBalance}
@@ -696,7 +694,7 @@ export default function ChangeWalletSheet() {
                   borderColor={{ custom: colors.alpha(colors.appleBlue, 0.06) }}
                 >
                   <Text color="label" size="17pt" weight="heavy">
-                    {`􀅼 ${i18n.t(i18n.l.button.add)}`}
+                    {`􀅼 ${i18n.button.add()}`}
                   </Text>
                 </Box>
               </ButtonPressAnimation>

@@ -1,4 +1,4 @@
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import React, { useCallback } from 'react';
 import { Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
@@ -52,21 +52,21 @@ export const PairHardwareWalletAgainSheet = () => {
 
   const getSheetTitle = useCallback(() => {
     if (hardwareTXError) {
-      return i18n.t(TRANSLATIONS.transaction_rejected);
+      return TRANSLATIONS.transaction_rejected();
     } else if (isReady) {
-      return i18n.t(TRANSLATIONS.confirm_on_device);
+      return TRANSLATIONS.confirm_on_device();
     } else {
-      return i18n.t(TRANSLATIONS.looking_for_devices);
+      return TRANSLATIONS.looking_for_devices();
     }
   }, [hardwareTXError, isReady]);
 
   const getSheetSubtitle = useCallback(() => {
     if (hardwareTXError) {
-      return i18n.t(TRANSLATIONS.please_try_again);
+      return TRANSLATIONS.please_try_again();
     } else if (isReady) {
-      return i18n.t(TRANSLATIONS.connected_and_ready);
+      return TRANSLATIONS.connected_and_ready();
     } else {
-      return i18n.t(TRANSLATIONS.make_sure_bluetooth_enabled);
+      return TRANSLATIONS.make_sure_bluetooth_enabled();
     }
   }, [hardwareTXError, isReady]);
 

@@ -15,7 +15,7 @@ import { usePagerPosition } from '@/navigation/ScrollPositionContext';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import * as i18n from '@/languages';
+import i18n from '@/languages';
 import { useIsFocused } from '@react-navigation/native';
 import { useIsForeground } from '@/hooks/useIsForeground';
 import { useCameraPermission, useCodeScanner } from 'react-native-vision-camera';
@@ -156,7 +156,7 @@ export default function QRScannerScreen() {
                   </Navbar.Item>
                 </AccentColorProvider>
               }
-              title={i18n.t(i18n.l.wallet.qr.scan_to_connect)}
+              title={i18n.wallet.qr.scan_to_connect()}
             />
           </Box>
           <ScannerContainer>
