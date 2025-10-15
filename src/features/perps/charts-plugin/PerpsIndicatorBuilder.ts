@@ -151,18 +151,6 @@ function createIndicatorStyle(config: PerpsIndicatorConfig, typeConfig: Indicato
   topShadowPaint.setAlphaf(0.48);
   topShadowPaint.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, -4, 5, 5, backgroundColor, null));
 
-  const yAxisWidth = config.yAxisWidth + Y_AXIS_FADE_WIDTH_OFFSET;
-  const fadeEndX = config.chartWidth - yAxisWidth;
-  const fadeStartX = fadeEndX - LINE_FADE_DISTANCE;
-  const transparentColor = Skia.Color(0x00000000);
-  const lineFadeShader = Skia.Shader.MakeLinearGradient(
-    { x: fadeStartX, y: 0 },
-    { x: fadeEndX, y: 0 },
-    [indicatorColor, transparentColor],
-    null,
-    TileMode.Clamp
-  );
-
   return {
     bottomShadowPaint,
     color: indicatorColor,
@@ -174,7 +162,6 @@ function createIndicatorStyle(config: PerpsIndicatorConfig, typeConfig: Indicato
     label,
     lineAlpha,
     lineCornerRadius,
-    lineFadeShader,
     lineGlowIntensity,
     lineGlowPaint,
     linePaint,
@@ -200,11 +187,6 @@ function disposeIndicatorStyle(style: IndicatorStyle): void {
   }
   style.bottomShadowPaint.dispose();
   style.topShadowPaint.dispose();
-  const fadeShader = style.lineFadeShader;
-  if (fadeShader) {
-    fadeShader.dispose();
-    style.lineFadeShader = null;
-  }
   style.currentCornerRadius = 0;
 }
 
@@ -369,10 +351,21 @@ function drawIndicatorLine(
     canvas.drawPath(path, glowPaint);
   }
 
+  const fadeEndX = chartEndX;
+  const fadeStartX = fadeEndX - LINE_FADE_DISTANCE;
+  const lineFadeShader = Skia.Shader.MakeLinearGradient(
+    { x: fadeStartX, y: 0 },
+    { x: fadeEndX, y: 0 },
+    [style.color, Skia.Color(0x00000000)],
+    null,
+    TileMode.Clamp
+  );
+
   style.linePaint.setPathEffect(cornerEffect);
-  style.linePaint.setShader(style.lineFadeShader);
+  style.linePaint.setShader(lineFadeShader);
   canvas.drawPath(path, style.linePaint);
   style.linePaint.setShader(null);
+  lineFadeShader.dispose();
 }
 
 // ============ Perps Indicator Builder ======================================== //

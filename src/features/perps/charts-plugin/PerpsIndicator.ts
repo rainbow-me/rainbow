@@ -1,4 +1,4 @@
-import { SkCanvas, SkColor, SkPaint, SkParagraph, SkPath, BlendMode, SkShader, SkPathEffect, Skia } from '@shopify/react-native-skia';
+import { SkCanvas, SkColor, SkPaint, SkParagraph, SkPath, BlendMode, SkPathEffect, Skia } from '@shopify/react-native-skia';
 import { TextSegment } from '@/design-system/components/SkiaText/useSkiaText';
 import { DrawParams } from '@/features/charts/candlestick/classes/IndicatorBuilder';
 import { formatCandlestickPrice } from '@/features/charts/candlestick/utils';
@@ -47,7 +47,6 @@ export type IndicatorStyle = {
   label: string;
   lineAlpha: number;
   lineCornerRadius: number;
-  lineFadeShader: SkShader | null;
   lineGlowIntensity: number;
   lineGlowPaint: SkPaint | null;
   linePaint: SkPaint;
