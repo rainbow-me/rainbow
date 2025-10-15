@@ -13,8 +13,9 @@ import th_TH from './th_TH.json';
 import tr_TR from './tr_TR.json';
 import zh_CN from './zh_CN.json';
 
-import { getValueAtPath } from '@/languages/utils';
 import { enUS, es, fr, hi, id, ja, ptBR, ru, tr, zhCN, ar, th, ko } from 'date-fns/locale';
+
+// ============ Internal Language Manager ====================================== //
 
 /**
  * Use English as our "template" for translations. All other translations
@@ -146,30 +147,35 @@ export const updateLanguageLocale = (code: Language) => {
   lang.locale = code;
 };
 
+// ============ Proxy Types ========================================================== //
+
 type TranslationParams = Record<string, string | number>;
 
-interface TranslationLeaf {
-  (params?: TranslationParams): string;
+type TranslationLeaf = ((params?: TranslationParams) => string) & {
   toString(): string;
   __keypath__?: string;
+};
+
+type LanguageProxy<T> = T extends string ? TranslationLeaf : { [K in keyof T]: LanguageProxy<T[K]> };
+
+// ============ Proxy Utilities ====================================================== //
+
+/**
+ * A simple helper that finds a nested value in an object
+ * by drilling down the path array.
+ */
+export function getValueAtPath(obj: unknown, path: string[]): unknown {
+  let current: any = obj;
+  for (const key of path) {
+    if (!current || typeof current !== 'object') {
+      return undefined;
+    }
+    current = current[key];
+  }
+  return current;
 }
 
-type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-type DepthLimitedProxy<T, D extends number> =
-  // If we've hit max depth, give up on being perfectly typed:
-  D extends 0
-    ? any
-    : // If it's a string, treat it as a TranslationLeaf
-      T extends string
-      ? TranslationLeaf
-      : // Otherwise recurse, subtracting 1 from the depth
-        {
-          [K in keyof T]: DepthLimitedProxy<T[K], Prev[D]>;
-        };
-
-type MaxDepth = 10;
-
-type LanguageProxy = DepthLimitedProxy<Translation['translation'], MaxDepth>;
+// ============ Proxy Creation ================================================= //
 
 /**
  * Creates a runtime Proxy that dynamically resolves:
@@ -191,7 +197,7 @@ function createLangProxy(keypath: string[] = []): any {
 
         if (typeof value === 'string') {
           // Return a "callable string" function
-          const fn = (params?: TranslationParams) => lang.t(pathString, params);
+          const fn = ((params?: TranslationParams) => lang.t(pathString, params)) as TranslationLeaf;
           fn.toString = () => lang.t(pathString);
           fn.__keypath__ = pathString;
           return fn;
@@ -203,6 +209,8 @@ function createLangProxy(keypath: string[] = []): any {
   );
 }
 
+// ============ i18n Proxy ===================================================== //
+
 /**
  * Callable i18n proxy
  *
@@ -210,11 +218,7 @@ function createLangProxy(keypath: string[] = []): any {
  *   `i18n.account.hide()`
  *   `i18n.account.hide({ accountName: 'myAccount' })`
  *   `i18n.account.hide.toString()`
- *
- * Proxy behavior:
- *   `typeof i18n.account === 'object'`
- *   `typeof i18n.account.hide === 'function'`
  */
-const i18n: LanguageProxy = createLangProxy();
+const i18n: LanguageProxy<Translation['translation']> = createLangProxy();
 
 export default i18n;
