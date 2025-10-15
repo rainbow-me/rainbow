@@ -1,13 +1,12 @@
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
-import { useDispatch } from 'react-redux';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
 import { Separator, Stack } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
-import { settingsUpdateNetwork } from '@/redux/settings';
+import { settingsStore } from '@/state/settings/settingsStore';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { isL2Chain } from '@/handlers/web3';
@@ -18,17 +17,13 @@ interface NetworkSectionProps {
 
 const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
   const { chainId, testnetsEnabled } = useAccountSettings();
-  const dispatch = useDispatch();
 
-  const onNetworkChange = useCallback(
-    async (chainId: ChainId) => {
-      dispatch(settingsUpdateNetwork(chainId));
-      InteractionManager.runAfterInteractions(async () => {
-        analytics.track(analytics.event.changedNetwork, { chainId });
-      });
-    },
-    [dispatch]
-  );
+  const onNetworkChange = useCallback(async (chainId: ChainId) => {
+    settingsStore.getState().setChainId(chainId);
+    InteractionManager.runAfterInteractions(async () => {
+      analytics.track(analytics.event.changedNetwork, { chainId });
+    });
+  }, []);
 
   const renderNetworkList = useCallback(() => {
     return Object.values(useBackendNetworksStore.getState().getDefaultChains())

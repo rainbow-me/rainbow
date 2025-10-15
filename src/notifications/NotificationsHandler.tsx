@@ -23,9 +23,10 @@ import {
   NotificationTypes,
   TransactionNotificationData,
 } from '@/notifications/types';
-import store, { AppState } from '@/redux/store';
+import { AppState } from '@/redux/store';
 import { fetchCachedTransaction } from '@/resources/transactions/transaction';
 import { switchWallet } from '@/state/wallets/switchWallet';
+import { settingsStore } from '@/state/settings/settingsStore';
 import { getAccountAddress, getWalletReady, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { isLowerCaseMatch } from '@/utils';
 import notifee, { EventType, Event as NotifeeEvent } from '@notifee/react-native';
@@ -117,7 +118,7 @@ export const NotificationsHandler = () => {
       // casting data payload to type that was agreed on with backend
       const data = notification.data as unknown as TransactionNotificationData;
 
-      const { nativeCurrency } = store.getState().settings;
+      const nativeCurrency = settingsStore.getState().nativeCurrency;
       const accountAddress = getAccountAddress();
 
       let walletAddress: string | null | undefined = accountAddress;

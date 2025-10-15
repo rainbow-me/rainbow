@@ -1,10 +1,10 @@
 import type { EthereumAddress, RainbowTransaction } from '@/entities';
 import { queryClient } from '@/react-query/queryClient';
-import store from '@/redux/store';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { PaginatedTransactions } from '@/resources/transactions/transaction';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
+import { settingsStore } from '@/state/settings/settingsStore';
 
 // Rainbow Router
 const RAINBOW_ROUTER_ADDRESS: EthereumAddress = '0x00000000009726632680fb29d3f7a9734e3010e2';
@@ -13,7 +13,7 @@ const isSwapTx = (tx: RainbowTransaction): boolean => tx.to?.toLowerCase() === R
 
 export const hasSwapTxn = async (): Promise<boolean> => {
   const accountAddress = getAccountAddress();
-  const { nativeCurrency } = store.getState().settings;
+  const nativeCurrency = settingsStore.getState().nativeCurrency;
 
   const paginatedTransactionsKey = consolidatedTransactionsQueryKey({
     address: accountAddress,

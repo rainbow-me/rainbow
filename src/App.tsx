@@ -30,7 +30,6 @@ import * as ls from '@/storage';
 import { migrate } from '@/migrations';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
-import { loadSettingsData } from '@/state/settings/loadSettingsData';
 import { IS_DEV, IS_PROD, IS_TEST } from '@/env';
 import Routes from '@/navigation/Routes';
 import { BackupsSync } from '@/state/sync/BackupsSync';
@@ -168,11 +167,7 @@ function onReportPrepared() {
 async function initializeApplication() {
   PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRootComponent);
 
-  await Promise.all([
-    initializeRemoteConfig(),
-    migrate(),
-    loadSettingsData(), // load i18n early for first-render
-  ]);
+  await Promise.all([initializeRemoteConfig(), migrate()]);
 
   const isReturningUser = ls.device.get(['isReturningUser']);
   const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();

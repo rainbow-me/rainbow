@@ -22,6 +22,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { getRemoteConfig } from '@/model/remoteConfig';
+import { settingsStore } from '@/state/settings/settingsStore';
 
 // This action is used to bridge the claimed funds to another chain
 export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps<'claimBridge'>) {
@@ -35,7 +36,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   let maxBridgeableAmount = sellAmount;
   let needsNewQuote = false;
 
-  const currency = store.getState().settings.nativeCurrency;
+  const currency = settingsStore.getState().nativeCurrency;
 
   // 1 - Get a quote to bridge the claimed funds
   const claimBridgeQuote = await getClaimBridgeQuote({

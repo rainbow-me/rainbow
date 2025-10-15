@@ -11,9 +11,8 @@ import { useNavigation } from '@/navigation';
 import { ButtonPressAnimation } from '@/components/animations';
 import Routes from '@/navigation/routesNames';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
 import { analytics } from '@/analytics';
+import { useSettingsStore } from '@/state/settings/settingsStore';
 
 type Props = {
   assetPrice?: number;
@@ -38,7 +37,7 @@ export const RewardsEarnings: React.FC<Props> = ({
 }) => {
   const { navigate } = useNavigation();
   const infoIconColor = useInfoIconColor();
-  const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
+  const nativeCurrency = useSettingsStore(state => state.nativeCurrency);
 
   const { formattedPendingEarnings, formattedTotalEarningsToken, formattedTotalEarningsNative, airdropTitle, airdropTime } = useMemo(() => {
     const formattedPendingEarnings = formatTokenDisplayValue(pendingEarningsToken, tokenSymbol);

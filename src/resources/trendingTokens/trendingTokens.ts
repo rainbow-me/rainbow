@@ -7,6 +7,7 @@ import { TrendingCategory, TrendingSort, TrendingTimeframe } from '@/state/trend
 import { Address } from 'viem';
 import { NativeCurrencyKey } from '@/entities';
 import store from '@/redux/store';
+import { settingsStore } from '@/state/settings/settingsStore';
 import {
   SortDirection,
   TrendingSort as ArcTrendingSort,
@@ -123,7 +124,7 @@ const convertTimeframe = (timeframe: Timeframe) => {
 };
 
 async function fetchRainbowTokens({
-  queryKey: [{ currency = store.getState().settings.nativeCurrency, sortBy, sortDirection, timeframe, walletAddress, chainId, limit }],
+  queryKey: [{ currency = settingsStore.getState().nativeCurrency, sortBy, sortDirection, timeframe, walletAddress, chainId, limit }],
 }: {
   queryKey: TrendingTokensQueryKey;
 }) {
@@ -184,7 +185,7 @@ async function fetchRainbowTokens({
 
 async function fetchTrendingTokens({ queryKey }: { queryKey: TrendingTokensQueryKey }) {
   const [
-    { currency = store.getState().settings.nativeCurrency, category, sortBy, sortDirection, timeframe, walletAddress, chainId, limit },
+    { currency = settingsStore.getState().nativeCurrency, category, sortBy, sortDirection, timeframe, walletAddress, chainId, limit },
   ] = queryKey;
 
   if (category === 'Rainbow') {

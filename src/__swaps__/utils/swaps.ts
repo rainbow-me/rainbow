@@ -16,6 +16,7 @@ import i18n from '@/languages';
 import { DEFAULT_SLIPPAGE_BIPS_CHAINID, RainbowConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
 import { supportedNativeCurrencies } from '@/references';
+import { settingsStore } from '@/state/settings/settingsStore';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { BigNumberish } from '@ethersproject/bignumber';
@@ -654,7 +655,7 @@ export const buildQuoteParams = ({
     slippage: Number(slippage),
     refuel: false,
     toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
-    currency: store.getState().settings.nativeCurrency,
+    currency: settingsStore.getState().nativeCurrency,
   };
 
   return quoteParams;

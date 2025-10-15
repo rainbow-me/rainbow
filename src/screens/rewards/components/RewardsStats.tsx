@@ -6,9 +6,8 @@ import { RewardStatsAction, RewardStatsActionType } from '@/graphql/__generated_
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
 import { analytics } from '@/analytics';
+import { useSettingsStore } from '@/state/settings/settingsStore';
 
 type Props = {
   assetPrice?: number;
@@ -18,7 +17,7 @@ type Props = {
 
 export const RewardsStats: React.FC<Props> = ({ assetPrice, actions, color }) => {
   const { navigate } = useNavigation();
-  const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
+  const nativeCurrency = useSettingsStore(state => state.nativeCurrency);
 
   const swapsData = actions.find(action => action.type === RewardStatsActionType.Swap);
 

@@ -32,6 +32,7 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getWalletReady, getWallets, setSelectedWallet } from '@/state/wallets/walletsStore';
 import { isAddress } from 'viem';
+import { settingsStore } from '@/state/settings/settingsStore';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
   url: string;
@@ -116,7 +117,7 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
         const uniqueId = getUniqueId(address, chainId);
 
         if (address && chainId && uniqueId) {
-          const currency = store.getState().settings.nativeCurrency;
+          const currency = settingsStore.getState().nativeCurrency;
           const asset = await fetchExternalToken({ address, chainId, currency });
 
           // First go back to home to dismiss any open shit

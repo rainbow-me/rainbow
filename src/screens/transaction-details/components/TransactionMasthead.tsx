@@ -23,9 +23,8 @@ import { fetchReverseRecord } from '@/handlers/ens';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { ContactAvatar } from '@/components/contacts';
 import { isLowerCaseMatch } from '@/utils';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
 import { useContacts, useUserAccounts } from '@/hooks';
+import { useSettingsStore } from '@/state/settings/settingsStore';
 import { useTiming } from 'react-native-redash';
 import Animated, { Easing, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
@@ -276,7 +275,7 @@ const DoubleChevron = () => (
 );
 
 export default function TransactionMasthead({ transaction }: { transaction: RainbowTransaction }) {
-  const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
+  const nativeCurrency = useSettingsStore(state => state.nativeCurrency);
 
   const isPendingSwap = checkForPendingSwap(transaction);
 

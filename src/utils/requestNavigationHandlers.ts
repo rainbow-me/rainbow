@@ -11,6 +11,7 @@ import { getActiveRoute } from '@/navigation/Navigation';
 import { getRequestDisplayDetails } from '@/parsers';
 import store from '@/redux/store';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { settingsStore } from '@/state/settings/settingsStore';
 import { ChainId } from '@/state/backendNetworks/types';
 import { removeWalletConnectRequest } from '@/state/walletConnectRequests';
 import { handleSessionRequestResponse } from '@/walletConnect';
@@ -196,7 +197,7 @@ export const handleMobileWalletProtocolRequest = async ({
         return true;
       }
 
-      const nativeCurrency = store.getState().settings.nativeCurrency;
+      const nativeCurrency = settingsStore.getState().nativeCurrency;
 
       // @ts-expect-error - coinbase host protocol types are NOT correct e.g. {"data": [72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100], "type": "Buffer"}
       if ((action as PersonalSignAction).params.message && (action as PersonalSignAction).params.message.type === 'Buffer') {
@@ -357,7 +358,7 @@ const findWalletForAddress = async (address: string) => {
 export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displayDetails'>): Promise<string | Error> => {
   await findWalletForAddress(request.address);
 
-  const nativeCurrency = store.getState().settings.nativeCurrency;
+  const nativeCurrency = settingsStore.getState().nativeCurrency;
   const displayDetails = await getRequestDisplayDetails(request.payload, nativeCurrency, request.chainId);
 
   const requestWithDetails: RequestData = {

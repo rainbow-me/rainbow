@@ -11,13 +11,11 @@ import { isNil } from 'lodash';
 import { Address } from 'viem';
 import runMigrations from '../../model/migrations';
 import { createWallet, InitializeWalletParams, walletInit } from '../../model/wallet';
-import { settingsLoadNetwork } from '../../redux/settings';
 import { loadWallets, setAccountAddress, setWalletReady } from '@/state/wallets/walletsStore';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
-import { loadSettingsData } from '../settings/loadSettingsData';
 import { PerformanceTracking } from '../../performance/tracking';
 import { ensureValidHex } from '../../handlers/web3';
-import store from '@/redux/store';
+import { settingsStore } from '@/state/settings/settingsStore';
 import { setIsSmallBalancesOpen } from '@/state/wallets/smallBalancesStore';
 
 type WalletStatus = 'unknown' | 'new' | 'imported' | 'old';
@@ -77,10 +75,10 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     setIsSmallBalancesOpen(false);
 
     // Load the network first
-    let network = store.getState().settings.network;
+    let network = settingsStore.getState().network;
     if (!network) {
-      await store.dispatch(settingsLoadNetwork());
-      network = store.getState().settings.network;
+      await settingsStore.getState().loadNetwork();
+      network = settingsStore.getState().network;
     }
 
     if (shouldCancel()) return null;
@@ -143,12 +141,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
         setWalletReady();
       }
       return null;
-    }
-
-    if (!(isNew || isImporting)) {
-      await loadSettingsData();
-      if (shouldCancel()) return null;
-      logger.debug('[initializeWallet]: loaded global data...');
     }
 
     setAccountAddress(ensureValidHex(walletAddress));

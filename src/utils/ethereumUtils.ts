@@ -43,6 +43,7 @@ import { InteractionManager } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
 import { openInBrowser } from './openInBrowser';
+import { settingsStore } from '@/state/settings/settingsStore';
 
 /**
  * @deprecated - use `getUniqueId` instead for chainIds
@@ -111,7 +112,7 @@ export const getNativeAssetForNetwork = async ({
 }): Promise<ParsedAddressAsset | undefined> => {
   const networkNativeAsset = getNetworkNativeAsset({ chainId });
   const accountAddress = getAccountAddress();
-  const { nativeCurrency } = store.getState().settings;
+  const nativeCurrency = settingsStore.getState().nativeCurrency;
   const differentWallet = address?.toLowerCase() !== accountAddress?.toLowerCase();
   let nativeAsset = differentWallet ? undefined : networkNativeAsset;
 
@@ -168,7 +169,7 @@ const getAsset = (accountAssets: Record<string, ParsedAddressAsset>, uniqueId: E
   return accountAssets[loweredUniqueId];
 };
 const getExternalAssetFromCache = (uniqueId: string) => {
-  const { nativeCurrency } = store.getState().settings;
+  const nativeCurrency = settingsStore.getState().nativeCurrency;
   const { address, chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
 
   try {
@@ -216,7 +217,7 @@ const getAssetPrice = (
 };
 
 export const useNativeAsset = ({ chainId }: { chainId: ChainId }) => {
-  const { nativeCurrency } = store.getState().settings;
+  const nativeCurrency = settingsStore.getState().nativeCurrency;
   const address = (useBackendNetworksStore.getState().getChainsNativeAsset()[chainId]?.address || ETH_ADDRESS) as AddressOrEth;
 
   const { data: nativeAsset } = useExternalToken({
@@ -421,7 +422,7 @@ async function parseEthereumUrl(data: string) {
   const network = useBackendNetworksStore.getState().getChainsName()[chainId];
   let address: any = null;
   let nativeAmount: any = null;
-  const { nativeCurrency } = store.getState().settings;
+  const nativeCurrency = settingsStore.getState().nativeCurrency;
 
   if (!functionName) {
     // Send native asset
