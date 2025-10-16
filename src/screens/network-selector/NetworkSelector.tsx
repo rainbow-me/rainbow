@@ -1189,6 +1189,7 @@ const sx = StyleSheet.create({
     height: HEADER_HEIGHT,
     paddingTop: 20,
     width: '100%',
+    zIndex: 1,
   },
   headerContent: {
     alignItems: 'center',
