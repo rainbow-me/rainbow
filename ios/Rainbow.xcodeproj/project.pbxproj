@@ -51,6 +51,8 @@
 		AA6228F124272F510078BDAA /* SF-Pro-Rounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228ED24272B200078BDAA /* SF-Pro-Rounded-Medium.otf */; };
 		AA6228F224272F510078BDAA /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EE24272B200078BDAA /* SF-Pro-Rounded-Regular.otf */; };
 		AA6228F324272F510078BDAA /* SF-Pro-Rounded-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EA24272B200078BDAA /* SF-Pro-Rounded-Semibold.otf */; };
+		AA8C459D2EA172B0003F131A /* chonks@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = AA8C459C2EA172B0003F131A /* chonks@3x.png */; };
+		AA8C459E2EA172B0003F131A /* chonks@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AA8C459B2EA172B0003F131A /* chonks@2x.png */; };
 		AAE999CD2E41DD390072AFD5 /* RainbowSplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE999CC2E41DD390072AFD5 /* RainbowSplashScreen.swift */; };
 		AAE999D12E41E4670072AFD5 /* RainbowSplashScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = AAE999D02E41E4670072AFD5 /* RainbowSplashScreen.m */; };
 		B50C9AEB2A9D18DC00EB0019 /* adworld@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B50C9AE92A9D18DC00EB0019 /* adworld@3x.png */; };
@@ -297,6 +299,8 @@
 		AA6228EC24272B200078BDAA /* SF-Pro-Rounded-Heavy.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Heavy.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Heavy.otf"; sourceTree = "<group>"; };
 		AA6228ED24272B200078BDAA /* SF-Pro-Rounded-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Medium.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Medium.otf"; sourceTree = "<group>"; };
 		AA6228EE24272B200078BDAA /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Regular.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; };
+		AA8C459B2EA172B0003F131A /* chonks@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chonks@2x.png"; sourceTree = "<group>"; };
+		AA8C459C2EA172B0003F131A /* chonks@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chonks@3x.png"; sourceTree = "<group>"; };
 		AAA0EF342BF5A4AD00A19A53 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AAE999CC2E41DD390072AFD5 /* RainbowSplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowSplashScreen.swift; sourceTree = "<group>"; };
 		AAE999D02E41E4670072AFD5 /* RainbowSplashScreen.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RainbowSplashScreen.m; sourceTree = "<group>"; };
@@ -521,6 +525,8 @@
 				15C3987D2880EDFF006033AC /* og@3x.png */,
 				AA170DAE2E4FA5AB00DB8A97 /* baggy@2x.png */,
 				AA170DAF2E4FA5AB00DB8A97 /* baggy@3x.png */,
+				AA8C459B2EA172B0003F131A /* chonks@2x.png */,
+				AA8C459C2EA172B0003F131A /* chonks@3x.png */,
 			);
 			path = AppIcons;
 			sourceTree = "<group>";
@@ -1052,6 +1058,8 @@ Upload Debug Symbols to Sentry */,
 				B54C1D172935A54F007560D9 /* zora@2x.png in Resources */,
 				15CF49BC2889AF7C005F92C9 /* optimism@3x.png in Resources */,
 				AA6228F124272F510078BDAA /* SF-Pro-Rounded-Medium.otf in Resources */,
+				AA8C459D2EA172B0003F131A /* chonks@3x.png in Resources */,
+				AA8C459E2EA172B0003F131A /* chonks@2x.png in Resources */,
 				B50C9AEB2A9D18DC00EB0019 /* adworld@3x.png in Resources */,
 				B5C070C62A4A387400D854BA /* zorb@3x.png in Resources */,
 				15C398812880EDFF006033AC /* og@3x.png in Resources */,
