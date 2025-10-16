@@ -16,6 +16,7 @@ export const RAINBOW_BUILDER_SETTINGS = {
   b: '0x60dC8E3dAd2e4E0738e813B9cB09b9c00B5e0Fc9',
   f: 50,
 } as const satisfies HlBuilderSettings;
+export const RAINBOW_REFERRAL_CODE = 'RNBW';
 export const HYPERCORE_PSEUDO_CHAIN_ID = 1337;
 export const HYPERLIQUID_TOKEN_ID_SUFFIX = 'hl';
 export const SPOT_ASSET_ID_OFFSET = 10_000;
