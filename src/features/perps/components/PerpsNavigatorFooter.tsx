@@ -217,7 +217,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
     try {
       const livePrice = useLiveTokensStore.getState().tokens[getHyperliquidTokenId(market.symbol)].midPrice;
       const entryPrice = livePrice ?? market.price;
-      await hyperliquidAccountActions.createIsolatedMarginPosition({
+      const newPosition = await hyperliquidAccountActions.createIsolatedMarginPosition({
         symbol: market.symbol,
         side: positionSide,
         leverage,
@@ -226,6 +226,8 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
         price: entryPrice,
         triggerOrders,
       });
+
+      if (!newPosition) return;
 
       const positionValue = Number(amount) * leverage;
       const positionSize = positionValue / Number(entryPrice);
@@ -256,8 +258,9 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
       });
       Alert.alert(i18n.t(i18n.l.perps.common.error_submitting_order), errorMessage);
       logger.error(new RainbowError('[PerpsNewPositionScreenFooter] Failed to submit new position', e));
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   }, []);
 
   return (
