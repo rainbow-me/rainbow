@@ -15,10 +15,11 @@ import AppIconAdworld from '@/assets/appIconAdworld.png';
 import AppIconFarcaster from '@/assets/appIconFarcaster.png';
 import AppIconRedacted from '@/assets/appIconRedacted.png';
 import AppIconBaggy from '@/assets/appIconBaggy.png';
+import AppIconChonks from '@/assets/appIconChonks.png';
+import { globalColors } from '@/design-system';
 import { TokenGateCheckerNetwork, TokenInfo } from '@/featuresToUnlock/tokenGatedUtils';
 import { Network } from '@/state/backendNetworks/types';
 
-// optimism app icon unlocking NFTs
 const OPTIMISTIC_EXPLORER_NFT_ADDRESS: EthereumAddress = '0x81b30ff521D1fEB67EDE32db726D95714eb00637';
 
 // smol app icon unlocking NFTs
@@ -29,13 +30,8 @@ const SMOL_BRAINS_PETS_NFT_ADDRESS: EthereumAddress = '0xf6cc57c45ce730496b4d3df
 const SMOL_BODIES_PETS_NFT_ADDRESS: EthereumAddress = '0xae0d0c4cc3335fd49402781e406adf3f02d41bca';
 const RAINBOW_SMOL_NFT_ADDRESS: EthereumAddress = '0xa1e417c09211b9ec12ea25f97429d0772749bbf2';
 
-// zora app icon unlocking NFTs
 const ZORA_NFT_ADDRESS: EthereumAddress = '0x7492e30d60d96c58ed0f0dc2fe536098c620c4c0';
-
-// gold doge app icon unlocking NFTs
 const GOLDDOGE_NFT_ADDRESS: EthereumAddress = '0x1cad624e9db9a1c26187e5d49e0077ff9d90cbe2';
-
-// rain doge app icon unlocking NFTs
 const RAINDOGE_NFT_ADDRESS: EthereumAddress = '0x6d60e6c4038b20cbba263ff842fec852f0550041';
 
 // pooly app icon unlocking NFTs
@@ -47,23 +43,13 @@ const FINI_NFT_ADDRESS: EthereumAddress = '0x5a0121a0a21232ec0d024dab90173145090
 const RAINBOW_FINI_NFT_ADDRESS: EthereumAddress = '0xc5f18a7bf825c2b0433102da5bc79c9edfc3fa89';
 const BASE_WARS_FINI_NFT_ADDRESS: EthereumAddress = '0x34e817d631b7fb79a54638c01c03421d124e35a7';
 
-// zorb app icon unlocking NFTs
 const ZORB_NFT_ADDRESS: EthereumAddress = '0x12e4527e2807978a49469f8d757abf5e07b32b8f';
-
-// poolboy app icon unlocking NFTs
 const POOLBOY_NFT_ADDRESS: EthereumAddress = '0xf25298fa62a2eb94fc06626966f6f21399b4c508';
-
-// adworld app icon unlocking NFTs
 const ADWORLD_NFT_ADDRESS: EthereumAddress = '0x87073e9a3f85bb59821bb01acf0e8fde92891e4e';
-
-// farcaster app icon unlocking NFTs
 const FARCASTER_NFT_ADDRESS: EthereumAddress = '0x76843c8f8a369d29c719141a065ff561abe2420b';
-
-// redacted app icon unlocking NFTs
 const REDACTED_NFT_ADDRESS: EthereumAddress = '0x8C3f001A893f3B561dBCaa80f075ecc7A5B92690';
-
-// baggy app icon unlocking NFTs
 const BAGGY_NFT_ADDRESS: EthereumAddress = '0x6FaC772b0d65E475CE22288c066a1B4ea06c4223';
+const CHONKS_NFT_ADDRESS: EthereumAddress = '0xA19d830dA98892343FE650E77ED8a1bABf4DEAcB';
 
 export interface AppIcon {
   accentColor: string;
@@ -90,7 +76,8 @@ export type UnlockableAppIconKey =
   | 'adworld'
   | 'farcaster'
   | 'redacted'
-  | 'baggy';
+  | 'baggy'
+  | 'chonks';
 
 export type AppIconKey = FreeAppIconKey | UnlockableAppIconKey;
 
@@ -194,6 +181,12 @@ export const unlockableAppIcons: Record<UnlockableAppIconKey, UnlockableAppIcon>
     displayName: 'Rainbow Baggy',
     image: AppIconBaggy,
     unlockingNFTs: { [Network.base]: [BAGGY_NFT_ADDRESS] },
+  },
+  chonks: {
+    accentColor: globalColors.blue60,
+    displayName: 'The Chonkiest Icon',
+    image: AppIconChonks,
+    unlockingNFTs: { [Network.base]: [CHONKS_NFT_ADDRESS] },
   },
 
   // This is an example of how to add a new test app icon with an ERC-1155 NFT
