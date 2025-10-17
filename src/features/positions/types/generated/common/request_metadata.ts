@@ -11,7 +11,7 @@ export interface RequestMetadata {
   /** Unique request ID for tracking */
   requestId: string;
   /** Request timestamp */
-  timestamp: Date | undefined;
+  timestamp: string | undefined;
   /** Processing duration in milliseconds */
   processingTimeMs: number;
 }
@@ -24,14 +24,14 @@ export interface ResponseMetadata {
    * Format: RFC3339/ISO 8601
    * Example: "2025-06-11T10:00:00Z"
    */
-  requestTime: Date | undefined;
+  requestTime: string | undefined;
   /**
    * Timestamp when the pricing response was generated.
    *
    * Format: RFC3339/ISO 8601
    * Example: "2025-06-11T10:00:01Z"
    */
-  responseTime: Date | undefined;
+  responseTime: string | undefined;
   /**
    * Unique request ID for tracing
    *

@@ -335,7 +335,7 @@ export interface Detail {
    * Belongs to: locked.
    * - locked: unlock time.
    */
-  unlockTime?: Date | undefined;
+  unlockTime?: string | undefined;
   /**
    * Health rate.
    * Belongs to: lending.
@@ -359,7 +359,7 @@ export interface PortfolioItem {
    *
    * example: "2023-10-01T12:00:00Z"
    */
-  updateTime: Date | undefined;
+  updateTime: string | undefined;
   /**
    * name is primarily a user-facing label displayed in the front-end to indicate the high-level function
    * or type of the portfolio item (e.g., "Lending" or "NFT Staked").

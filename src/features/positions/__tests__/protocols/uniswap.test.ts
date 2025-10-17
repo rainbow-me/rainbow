@@ -87,7 +87,7 @@ describe('Uniswap Position Parsing', () => {
             portfolioItems: [
               {
                 name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date(),
+                updateTime: new Date().toISOString(),
                 detailTypes: [],
                 pool: {
                   id: '0x1234567890abcdef',
@@ -107,7 +107,7 @@ describe('Uniswap Position Parsing', () => {
                         name: 'Wrapped Ether',
                         price: {
                           value: 2000,
-                          changedAt: new Date(),
+                          changedAt: new Date().toISOString(),
                           relativeChange24h: 0,
                         },
                       }),
@@ -121,7 +121,7 @@ describe('Uniswap Position Parsing', () => {
                         decimals: 6,
                         price: {
                           value: 1,
-                          changedAt: new Date(),
+                          changedAt: new Date().toISOString(),
                           relativeChange24h: 0,
                         },
                       }),
@@ -155,7 +155,7 @@ describe('Uniswap Position Parsing', () => {
             portfolioItems: [
               {
                 name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date(),
+                updateTime: new Date().toISOString(),
                 detailTypes: [],
                 pool: {
                   id: '0xabcdef1234567890',
@@ -175,7 +175,7 @@ describe('Uniswap Position Parsing', () => {
                         name: 'Wrapped Ether',
                         price: {
                           value: 2000,
-                          changedAt: new Date(),
+                          changedAt: new Date().toISOString(),
                           relativeChange24h: 0,
                         },
                       }),
@@ -189,7 +189,7 @@ describe('Uniswap Position Parsing', () => {
                         decimals: 18,
                         price: {
                           value: 1,
-                          changedAt: new Date(),
+                          changedAt: new Date().toISOString(),
                           relativeChange24h: 0,
                         },
                       }),
@@ -240,7 +240,7 @@ describe('Uniswap Position Parsing', () => {
             portfolioItems: [
               {
                 name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date(),
+                updateTime: new Date().toISOString(),
                 detailTypes: [],
                 pool: { id: '0x1234', chainId: 1 },
                 assetDict: {},
@@ -250,14 +250,14 @@ describe('Uniswap Position Parsing', () => {
                     {
                       asset: createMockAsset({
                         symbol: 'WETH',
-                        price: { value: 2000, changedAt: new Date(), relativeChange24h: 0 },
+                        price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '0.05',
                     },
                     {
                       asset: createMockAsset({
                         symbol: 'GRT',
-                        price: { value: 0.08, changedAt: new Date(), relativeChange24h: 0 },
+                        price: { value: 0.08, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '500',
                     },
@@ -311,7 +311,7 @@ describe('Uniswap Position Parsing', () => {
             portfolioItems: [
               {
                 name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date(),
+                updateTime: new Date().toISOString(),
                 detailTypes: [],
                 pool: { id: '0x1234', chainId: 1 },
                 assetDict: {},
@@ -319,11 +319,17 @@ describe('Uniswap Position Parsing', () => {
                 detail: {
                   supplyTokenList: [
                     {
-                      asset: createMockAsset({ symbol: 'WETH', price: { value: 2000, changedAt: new Date(), relativeChange24h: 0 } }),
+                      asset: createMockAsset({
+                        symbol: 'WETH',
+                        price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
+                      }),
                       amount: '0.05',
                     },
                     {
-                      asset: createMockAsset({ symbol: 'USDC', price: { value: 1, changedAt: new Date(), relativeChange24h: 0 } }),
+                      asset: createMockAsset({
+                        symbol: 'USDC',
+                        price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
+                      }),
                       amount: '50',
                     },
                   ],
@@ -365,7 +371,7 @@ describe('Uniswap Position Parsing', () => {
             portfolioItems: [
               {
                 name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date(),
+                updateTime: new Date().toISOString(),
                 detailTypes: [],
                 pool: { id: '0x1234', chainId: 1 },
                 assetDict: {},
@@ -373,11 +379,17 @@ describe('Uniswap Position Parsing', () => {
                 detail: {
                   supplyTokenList: [
                     {
-                      asset: createMockAsset({ symbol: 'WETH', price: { value: 2000, changedAt: new Date(), relativeChange24h: 0 } }),
+                      asset: createMockAsset({
+                        symbol: 'WETH',
+                        price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
+                      }),
                       amount: '0.05',
                     },
                     {
-                      asset: createMockAsset({ symbol: 'DAI', price: { value: 1, changedAt: new Date(), relativeChange24h: 0 } }),
+                      asset: createMockAsset({
+                        symbol: 'DAI',
+                        price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
+                      }),
                       amount: '50',
                     },
                   ],
@@ -421,7 +433,7 @@ describe('Uniswap Position Parsing', () => {
             portfolioItems: [
               {
                 name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date(),
+                updateTime: new Date().toISOString(),
                 detailTypes: [],
                 pool: { id: '0x1234', chainId: 1 },
                 assetDict: {},
@@ -429,11 +441,17 @@ describe('Uniswap Position Parsing', () => {
                 detail: {
                   supplyTokenList: [
                     {
-                      asset: createMockAsset({ symbol: 'WETH', price: { value: 2000, changedAt: new Date(), relativeChange24h: 0 } }),
+                      asset: createMockAsset({
+                        symbol: 'WETH',
+                        price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
+                      }),
                       amount: '0.05',
                     },
                     {
-                      asset: createMockAsset({ symbol: 'USDC', price: { value: 1, changedAt: new Date(), relativeChange24h: 0 } }),
+                      asset: createMockAsset({
+                        symbol: 'USDC',
+                        price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
+                      }),
                       amount: '50',
                     },
                   ],
@@ -478,7 +496,7 @@ describe('Uniswap Position Parsing', () => {
             portfolioItems: [
               {
                 name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date(),
+                updateTime: new Date().toISOString(),
                 detailTypes: [],
                 pool: { id: '0x1234', chainId: 1 },
                 assetDict: {},
@@ -486,11 +504,17 @@ describe('Uniswap Position Parsing', () => {
                 detail: {
                   supplyTokenList: [
                     {
-                      asset: createMockAsset({ symbol: 'WETH', price: { value: 2000, changedAt: new Date(), relativeChange24h: 0 } }),
+                      asset: createMockAsset({
+                        symbol: 'WETH',
+                        price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
+                      }),
                       amount: '0.05', // 0.05 WETH = $100
                     },
                     {
-                      asset: createMockAsset({ symbol: 'USDC', price: { value: 1, changedAt: new Date(), relativeChange24h: 0 } }),
+                      asset: createMockAsset({
+                        symbol: 'USDC',
+                        price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
+                      }),
                       amount: '50', // 50 USDC = $50
                     },
                   ],
@@ -544,7 +568,7 @@ describe('Uniswap Position Parsing', () => {
             portfolioItems: [
               {
                 name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date(),
+                updateTime: new Date().toISOString(),
                 detailTypes: [],
                 pool: { id: '0x1234', chainId: 1 },
                 assetDict: {},
@@ -552,13 +576,19 @@ describe('Uniswap Position Parsing', () => {
                 detail: {
                   supplyTokenList: [
                     {
-                      asset: createMockAsset({ symbol: 'WETH', price: { value: 2000, changedAt: new Date(), relativeChange24h: 0 } }),
+                      asset: createMockAsset({
+                        symbol: 'WETH',
+                        price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
+                      }),
                       amount: '0.05',
                     },
                   ],
                   rewardTokenList: [
                     {
-                      asset: createMockAsset({ symbol: 'WETH', price: { value: 2000, changedAt: new Date(), relativeChange24h: 0 } }),
+                      asset: createMockAsset({
+                        symbol: 'WETH',
+                        price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
+                      }),
                       amount: '0.0025', // 0.0025 WETH = $5 in fees
                     },
                   ],
@@ -610,7 +640,7 @@ describe('Uniswap Position Parsing', () => {
             portfolioItems: [
               {
                 name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date(),
+                updateTime: new Date().toISOString(),
                 detailTypes: [],
                 pool: { id: '0x1234567890abcdef', chainId: 1 },
                 assetDict: {},
@@ -618,7 +648,10 @@ describe('Uniswap Position Parsing', () => {
                 detail: {
                   supplyTokenList: [
                     {
-                      asset: createMockAsset({ symbol: 'WETH', price: { value: 2000, changedAt: new Date(), relativeChange24h: 0 } }),
+                      asset: createMockAsset({
+                        symbol: 'WETH',
+                        price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
+                      }),
                       amount: '0.05',
                     },
                   ],
@@ -673,7 +706,7 @@ describe('Uniswap Position Parsing', () => {
             portfolioItems: [
               {
                 name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date(),
+                updateTime: new Date().toISOString(),
                 detailTypes: [],
                 pool: {
                   id: '0xmultiassetpool',
@@ -691,7 +724,7 @@ describe('Uniswap Position Parsing', () => {
                       asset: createMockAsset({
                         address: '0x1',
                         symbol: 'WETH',
-                        price: { value: 4200, changedAt: new Date(), relativeChange24h: 0 },
+                        price: { value: 4200, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '0.119', // ~$500 (50%)
                     },
@@ -699,7 +732,7 @@ describe('Uniswap Position Parsing', () => {
                       asset: createMockAsset({
                         address: '0x2',
                         symbol: 'USDC',
-                        price: { value: 1, changedAt: new Date(), relativeChange24h: 0 },
+                        price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '200', // ~$200 (20%)
                     },
@@ -707,7 +740,7 @@ describe('Uniswap Position Parsing', () => {
                       asset: createMockAsset({
                         address: '0x3',
                         symbol: 'DAI',
-                        price: { value: 1, changedAt: new Date(), relativeChange24h: 0 },
+                        price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '150', // ~$150 (15%)
                     },
@@ -715,7 +748,7 @@ describe('Uniswap Position Parsing', () => {
                       asset: createMockAsset({
                         address: '0x4',
                         symbol: 'USDT',
-                        price: { value: 1, changedAt: new Date(), relativeChange24h: 0 },
+                        price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '100', // ~$100 (10%)
                     },
@@ -723,7 +756,7 @@ describe('Uniswap Position Parsing', () => {
                       asset: createMockAsset({
                         address: '0x5',
                         symbol: 'LINK',
-                        price: { value: 25, changedAt: new Date(), relativeChange24h: 0 },
+                        price: { value: 25, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '2', // ~$50 (5%)
                     },

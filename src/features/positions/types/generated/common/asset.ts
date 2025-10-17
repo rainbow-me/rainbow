@@ -50,7 +50,7 @@ export interface Asset_NetworksEntry {
 /** AssetPrice represents price information for an asset */
 export interface AssetPrice {
   /** Timestamp when price was last changed */
-  changedAt: Date | undefined;
+  changedAt: string | undefined;
   /** Relative change in price over 24 hours as percentage */
   relativeChange24h: number;
   /** Current price value in the requested currency */
