@@ -17,8 +17,8 @@ export type NativeDisplay = {
  * Additional price fields expected by UI layers (legacy snake_case support)
  */
 export type PositionAssetPrice = Omit<AssetPrice, 'changedAt' | 'relativeChange24h'> & {
-  changed_at?: number | undefined; // always undefined currently
-  relative_change_24h?: number | undefined; // always undefined currently
+  changed_at?: number | undefined;
+  relative_change_24h?: number | undefined;
 };
 
 /**
