@@ -319,6 +319,7 @@ export const event = {
 
   // perps
   perpsOpenedPosition: 'perps.opened_position',
+  perpsOpenPositionCanceled: 'perps.open_position.canceled',
   perpsOpenPositionFailed: 'perps.open_position.failed',
   perpsClosedPosition: 'perps.closed_position',
   perpsClosePositionFailed: 'perps.close_position.failed',
@@ -1163,6 +1164,12 @@ export type EventProperties = {
       type: TriggerOrderType;
       price: number;
     }>;
+  };
+  [event.perpsOpenPositionCanceled]: {
+    market: string;
+    side: PerpPositionSide;
+    leverage?: number;
+    perpsBalance: number;
   };
   [event.perpsOpenPositionFailed]: {
     market: string;

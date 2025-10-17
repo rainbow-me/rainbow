@@ -227,7 +227,15 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
         triggerOrders,
       });
 
-      if (!newPosition) return;
+      if (!newPosition) {
+        analytics.track(analytics.event.perpsOpenPositionCanceled, {
+          market: market.symbol,
+          side: positionSide,
+          leverage,
+          perpsBalance: Number(useHyperliquidAccountStore.getState().getValue()),
+        });
+        return;
+      }
 
       const positionValue = Number(amount) * leverage;
       const positionSize = positionValue / Number(entryPrice);
