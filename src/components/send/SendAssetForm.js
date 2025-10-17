@@ -12,7 +12,7 @@ import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { assetIsUniqueAsset } from '@/handlers/web3';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { KeyboardAvoidingView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useTheme } from '@/theme';
 import { IS_IOS } from '@/env';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
@@ -110,29 +110,32 @@ export default function SendAssetForm({
             </AssetRowElement>
           </ShadowStack>
         </ButtonPressAnimation>
-        <FormContainer isUniqueAsset={isUniqueAsset}>
-          {isUniqueAsset ? (
-            <SendAssetFormCollectible asset={selected} buttonRenderer={buttonRenderer} txSpeedRenderer={txSpeedRenderer} />
-          ) : (
-            <SendAssetFormToken
-              {...props}
-              assetAmount={assetAmount}
-              assetInputRef={assetInputRef}
-              buttonRenderer={buttonRenderer}
-              colorForAsset={colorForAsset}
-              nativeAmount={nativeAmount}
-              nativeCurrency={nativeCurrency}
-              nativeCurrencyInputRef={nativeCurrencyInputRef}
-              onChangeAssetAmount={onChangeAssetAmount}
-              onChangeNativeAmount={onChangeNativeAmount}
-              onFocusAssetInput={onFocusAssetInput}
-              onFocusNativeInput={onFocusNativeInput}
-              selected={selected}
-              sendMaxBalance={sendMaxBalance}
-              txSpeedRenderer={txSpeedRenderer}
-            />
-          )}
-        </FormContainer>
+        {/* FIXME: Quick fix for now, plz check if required again when react-native-keyboard-controller update */}
+        <KeyboardAvoidingView>
+          <FormContainer isUniqueAsset={isUniqueAsset}>
+            {isUniqueAsset ? (
+              <SendAssetFormCollectible asset={selected} buttonRenderer={buttonRenderer} txSpeedRenderer={txSpeedRenderer} />
+            ) : (
+              <SendAssetFormToken
+                {...props}
+                assetAmount={assetAmount}
+                assetInputRef={assetInputRef}
+                buttonRenderer={buttonRenderer}
+                colorForAsset={colorForAsset}
+                nativeAmount={nativeAmount}
+                nativeCurrency={nativeCurrency}
+                nativeCurrencyInputRef={nativeCurrencyInputRef}
+                onChangeAssetAmount={onChangeAssetAmount}
+                onChangeNativeAmount={onChangeNativeAmount}
+                onFocusAssetInput={onFocusAssetInput}
+                onFocusNativeInput={onFocusNativeInput}
+                selected={selected}
+                sendMaxBalance={sendMaxBalance}
+                txSpeedRenderer={txSpeedRenderer}
+              />
+            )}
+          </FormContainer>
+        </KeyboardAvoidingView>
       </Container>
     </KeyboardAwareScrollView>
   );
