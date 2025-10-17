@@ -51,7 +51,7 @@ export async function fetchPositions(params: PositionsParams, abortController: A
     }
 
     // Log any partial errors
-    if (response.data.errors?.length > 0) {
+    if (response.data.errors && response.data.errors.length > 0) {
       logger.debug('[Positions] Partial errors in response', {
         errors: response.data.errors,
         address,
