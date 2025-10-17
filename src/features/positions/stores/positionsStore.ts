@@ -1,7 +1,8 @@
+import { time } from '@/utils/time';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import type { RainbowPositions, ListPositionsResponse, RainbowPosition, RainbowDeposit, RainbowPool } from '../types';
-import { fetchPositions, type PositionsParams, CACHE_TIME, STALE_TIME } from './fetcher';
+import { fetchPositions, type PositionsParams } from './fetcher';
 import { transformPositions } from './transform';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
@@ -10,6 +11,11 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 type PositionsState = {
   getPositionTokenAddresses: () => Set<string>;
 };
+
+// ============ Constants ====================================================== //
+
+const CACHE_TIME = time.days(2);
+const STALE_TIME = time.minutes(10);
 
 // ============ Positions Store ================================================ //
 

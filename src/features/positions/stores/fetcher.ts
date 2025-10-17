@@ -1,16 +1,14 @@
-import { getPlatformClient } from '@/resources/platform/client';
+import type { Address } from 'viem';
+import { time } from '@/utils/time';
 import { logger } from '@/logger';
+import { getPlatformClient } from '@/resources/platform/client';
 import type { NativeCurrencyKey } from '@/entities';
 import type { ListPositionsResponse } from '../types';
-import type { Address } from 'viem';
 
 // ============ Constants ====================================================== //
 
 const POSITIONS_ENDPOINT = '/positions/ListPositions';
-
-export const CACHE_TIME = 1000 * 60 * 5; // 5 minutes
-export const STALE_TIME = 1000 * 60 * 1; // 1 minute
-export const DEFAULT_TIMEOUT = 1000 * 30; // 30 seconds
+const DEFAULT_TIMEOUT = time.seconds(30);
 
 // ============ Types ========================================================== //
 
