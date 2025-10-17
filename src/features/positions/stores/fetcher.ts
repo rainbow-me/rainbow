@@ -1,6 +1,6 @@
 import type { Address } from 'viem';
 import { time } from '@/utils/time';
-import { logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 import type { NativeCurrencyKey } from '@/entities';
 import type { ListPositionsResponse } from '../types';
@@ -30,8 +30,7 @@ export async function fetchPositions(params: PositionsParams, abortController: A
   const { address, currency, chainIds = [] } = params;
 
   if (!address) {
-    logger.debug('[Positions] No address provided');
-    throw new Error('Address is required');
+    throw new Error('No address provided');
   }
 
   try {
@@ -46,28 +45,20 @@ export async function fetchPositions(params: PositionsParams, abortController: A
     });
 
     if (!response.data) {
-      logger.warn('[Positions] Invalid response structure', { address });
       throw new Error('Invalid response structure');
     }
 
-    // Log any partial errors
     if (response.data.errors && response.data.errors.length > 0) {
-      logger.debug('[Positions] Partial errors in response', {
+      logger.warn('[Positions] Partial errors in response', {
+        request: response.data.metadata,
         errors: response.data.errors,
-        address,
       });
     }
 
-    logger.debug('[Positions] Successfully fetched positions', {
-      address,
-      positionsCount: response.data.result?.positions?.length ?? 0,
-    });
-
     return response.data;
   } catch (error) {
-    logger.error(new Error('[Positions] Failed to fetch positions'), {
-      error,
-      address,
+    logger.error(new RainbowError('[Positions] Failed to fetch positions', error), {
+      currency,
       chainIds,
     });
 
