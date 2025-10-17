@@ -36,7 +36,7 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
   (_, get) => ({
     getPositionTokenAddresses: () => {
       const positionTokenAddresses = new Set<string>();
-      const data = get().getData() as RainbowPositions;
+      const data = get().getData();
 
       if (data?.positions) {
         Object.values(data.positions).forEach((position: RainbowPosition) => {
