@@ -205,6 +205,7 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
+        stats: undefined,
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -270,6 +271,7 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
+        stats: undefined,
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -334,6 +336,7 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
+        stats: undefined,
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -387,6 +390,7 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
+        stats: undefined,
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -442,6 +446,7 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
+        stats: undefined,
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -498,6 +503,7 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
+        stats: undefined,
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -564,6 +570,7 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
+        stats: undefined,
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -624,6 +631,7 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
+        stats: undefined,
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -729,6 +737,7 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
+        stats: undefined,
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };

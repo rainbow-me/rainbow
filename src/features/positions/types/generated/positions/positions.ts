@@ -6,6 +6,7 @@
 
 /* eslint-disable */
 import { type Asset } from '../common/asset';
+import { type DApp } from '../common/dapp';
 import { type ResponseMetadata } from '../common/request_metadata';
 
 /**
@@ -392,19 +393,6 @@ export interface PortfolioItem_AssetDictEntry {
   value: string;
 }
 
-export interface DApp {
-  name: string;
-  url: string;
-  iconUrl: string;
-  colors: DApp_Colors | undefined;
-}
-
-export interface DApp_Colors {
-  primary: string;
-  fallback: string;
-  shadow: string;
-}
-
 export interface ListPositionsRequest {
   address: string;
   chainIds: string;
@@ -454,6 +442,87 @@ export interface Position {
   dapp: DApp | undefined;
 }
 
+/** ExtendedStats represents comprehensive totals for a position */
+export interface ExtendedStats {
+  /**
+   * Net total: (Deposits + Rewards + Claimables) - Borrows
+   *
+   * example: "1500000.50"
+   */
+  netTotal: string;
+  /**
+   * Aggregated locked/vesting positions
+   *
+   * example: "250000.00"
+   */
+  totalLocked: string;
+  /**
+   * Total deposits across all positions
+   *
+   * example: "2000000.75"
+   */
+  totalDeposits: string;
+  /**
+   * Total borrows across all positions
+   *
+   * example: "500000.25"
+   */
+  totalBorrows: string;
+  /**
+   * Total rewards across all positions
+   *
+   * example: "75000.00"
+   */
+  totalRewards: string;
+  /**
+   * Overall total: NetTotal + TotalLocked
+   *
+   * example: "1750000.50"
+   */
+  overallTotal: string;
+}
+
+/** CanonicalProtocolStats represents aggregated totals for a canonical protocol */
+export interface CanonicalProtocolStats {
+  /**
+   * Canonical name of the protocol
+   *
+   * example: "uniswap"
+   */
+  canonicalProtocolName: string;
+  /**
+   * List of protocol IDs associated with this canonical protocol
+   *
+   * example: ["uniswap-v2", "uniswap-v3"]
+   */
+  protocolIds: string[];
+  /** Aggregated totals for the protocol */
+  totals: ExtendedStats | undefined;
+  /**
+   * Totals broken down by chain
+   * Key: Chain ID (e.g., 1 for Ethereum, 137 for Polygon)
+   * Value: ExtendedStats for that chain
+   */
+  totalsByChain: { [key: string]: ExtendedStats };
+}
+
+export interface CanonicalProtocolStats_TotalsByChainEntry {
+  key: string;
+  value: ExtendedStats | undefined;
+}
+
+export interface EnhancedStats {
+  /** Overall aggregated totals across all positions */
+  totals: ExtendedStats | undefined;
+  /** Aggregated totals broken down by canonical protocol */
+  canonicalProtocol: { [key: string]: CanonicalProtocolStats };
+}
+
+export interface EnhancedStats_CanonicalProtocolEntry {
+  key: string;
+  value: CanonicalProtocolStats | undefined;
+}
+
 export interface ListPositionsResponse {
   /** Metadata about the request. */
   metadata: ResponseMetadata | undefined;
@@ -468,4 +537,6 @@ export interface ListPositionsResponse_Result {
   positions: Position[];
   /** Unique identifier for the positions used for deduplication for balances */
   uniqueTokens: string[];
+  /** Aggregated statistics across all positions */
+  stats: EnhancedStats | undefined;
 }

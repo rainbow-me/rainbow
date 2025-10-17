@@ -86,6 +86,7 @@ describe('Aave Protocol', () => {
         },
       ],
       uniqueTokens: [],
+      stats: undefined,
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -153,6 +154,7 @@ describe('Aave Protocol', () => {
         },
       ],
       uniqueTokens: [],
+      stats: undefined,
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -233,6 +235,7 @@ describe('Aave Protocol', () => {
         },
       ],
       uniqueTokens: [],
+      stats: undefined,
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };

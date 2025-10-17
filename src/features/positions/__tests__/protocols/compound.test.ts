@@ -82,6 +82,7 @@ describe('Compound Protocol', () => {
         },
       ],
       uniqueTokens: [],
+      stats: undefined,
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -140,6 +141,7 @@ describe('Compound Protocol', () => {
         },
       ],
       uniqueTokens: [],
+      stats: undefined,
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -192,6 +194,7 @@ describe('Compound Protocol', () => {
         },
       ],
       uniqueTokens: [],
+      stats: undefined,
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };

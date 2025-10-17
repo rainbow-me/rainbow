@@ -1,6 +1,7 @@
 // Import generated types that are used in internal types
 import type { Asset, AssetPrice } from './generated/common/asset';
-import type { PositionToken, DApp_Colors } from './generated/positions/positions';
+import type { DApp, DApp_Colors } from './generated/common/dapp';
+import type { PositionToken } from './generated/positions/positions';
 
 // ============ Internal Types ================================================= //
 
@@ -125,9 +126,7 @@ export type RainbowReward = {
 /**
  * Dapp metadata with normalized fields for UI consumption
  */
-export type RainbowDapp = {
-  name: string;
-  url: string;
+export type RainbowDapp = Omit<DApp, 'iconUrl' | 'colors'> & {
   icon_url: string;
   colors: DApp_Colors;
 };

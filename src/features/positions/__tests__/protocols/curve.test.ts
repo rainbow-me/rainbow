@@ -87,6 +87,7 @@ describe('Curve Protocol', () => {
         },
       ],
       uniqueTokens: [],
+      stats: undefined,
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -139,6 +140,7 @@ describe('Curve Protocol', () => {
         },
       ],
       uniqueTokens: [],
+      stats: undefined,
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -188,6 +190,7 @@ describe('Curve Protocol', () => {
         },
       ],
       uniqueTokens: [],
+      stats: undefined,
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
