@@ -33,7 +33,7 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
     staleTime: STALE_TIME,
     enabled: $ => $(userAssetsStoreManager, state => !!state.address),
   },
-  (_: unknown, get) => ({
+  (_, get) => ({
     getPositionTokenAddresses: () => {
       const positionTokenAddresses = new Set<string>();
       const data = get().getData() as RainbowPositions;
