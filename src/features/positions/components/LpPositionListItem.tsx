@@ -10,7 +10,6 @@ import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
@@ -70,20 +69,6 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
     }
   }
 
-  // Fetch external data for display assets - mirrors SubPositionListItem pattern
-  const externalAssets = [
-    useExternalToken({
-      address: displayAssets[0]?.asset.address,
-      chainId: displayAssets[0]?.asset.chain_id,
-      currency: nativeCurrency,
-    }).data,
-    useExternalToken({
-      address: displayAssets[1]?.asset.address,
-      chainId: displayAssets[1]?.asset.chain_id,
-      currency: nativeCurrency,
-    }).data,
-  ];
-
   // Add "Other" allocation if there are more than 2 assets
   if (hasOthers) {
     const displayedTotal = allocationPercentages.reduce((sum, val) => sum + val, 0);
@@ -102,23 +87,23 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
             over={{
               ...displayAssets[0].asset,
               chainId: displayAssets[0].asset.chain_id,
-              icon_url: externalAssets[0]?.icon_url || displayAssets[0].asset.icon_url,
-              colors: externalAssets[0]?.colors,
+              icon_url: displayAssets[0].asset.icon_url,
+              colors: displayAssets[0].asset.colors,
             }}
             // @ts-expect-error component uses different Token entity type, but it is compatible
             under={{
               ...displayAssets[1].asset,
               chainId: displayAssets[1].asset.chain_id,
-              icon_url: externalAssets[1]?.icon_url || displayAssets[1].asset.icon_url,
-              colors: externalAssets[1]?.colors,
+              icon_url: displayAssets[1].asset.icon_url,
+              colors: displayAssets[1].asset.colors,
             }}
           />
         )}
         {displayAssets.length === 1 && (
           <RainbowCoinIcon
             chainId={displayAssets[0].asset.chain_id}
-            color={externalAssets[0]?.colors?.primary || externalAssets[0]?.colors?.fallback || undefined}
-            icon={externalAssets[0]?.icon_url || displayAssets[0].asset.icon_url}
+            color={displayAssets[0].asset.colors?.primary || displayAssets[0].asset.colors?.fallback || undefined}
+            icon={displayAssets[0].asset.icon_url}
             symbol={displayAssets[0].asset.symbol}
           />
         )}
@@ -186,7 +171,7 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
                   <LpPositionRangeBadge
                     assets={displayAssets
                       .filter(asset => asset.quantity !== '0')
-                      .map((underlying, idx) => {
+                      .map(underlying => {
                         const percentage =
                           totalAssetsValue === '0'
                             ? underlying.quantity === '0'
@@ -195,7 +180,7 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
                             : Math.round(parseFloat(divide(underlying.native.amount, totalAssetsValue)) * 100);
                         return {
                           id: underlying.asset.address,
-                          color: externalAssets[idx]?.colors?.primary ?? externalAssets[idx]?.colors?.fallback ?? colors.black,
+                          color: underlying.asset.colors?.primary ?? underlying.asset.colors?.fallback ?? colors.black,
                           allocationPercentage: percentage,
                         };
                       })}

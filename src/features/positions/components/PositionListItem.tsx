@@ -7,9 +7,7 @@ import {
   convertAmountToPercentageDisplayWithThreshold,
 } from '@/helpers/utilities';
 import { NativeDisplay, PositionAsset } from '@/features/positions/types';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ButtonPressAnimation } from '@/components/animations';
 
 type Props = {
@@ -24,20 +22,18 @@ type Props = {
 
 export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, native, positionColor, dappVersion, onPress }) => {
   const theme = useTheme();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const { data: externalAsset } = useExternalToken({ address: asset.address, chainId: asset.chain_id, currency: nativeCurrency });
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  const priceChangeColor = (externalAsset?.price?.relativeChange24h || 0) < 0 ? theme.colors.blueGreyDark60 : theme.colors.green;
+  const priceChangeColor = (asset.price?.relative_change_24h || 0) < 0 ? theme.colors.blueGreyDark60 : theme.colors.green;
 
   const renderContent = () => (
     <Columns space={'10px'}>
       <Column width={'content'}>
         <RainbowCoinIcon
           chainId={asset.chain_id}
-          color={externalAsset?.colors?.primary || externalAsset?.colors?.fallback || undefined}
-          icon={externalAsset?.icon_url || asset.icon_url}
+          color={asset.colors?.primary || asset.colors?.fallback || undefined}
+          icon={asset.icon_url}
           symbol={asset.symbol}
         />
       </Column>
@@ -107,7 +103,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
               </Column>
               <Column width="content">
                 <Text size="13pt" weight="medium" color={{ custom: priceChangeColor }} align="right">
-                  {convertAmountToPercentageDisplay(`${externalAsset?.price?.relativeChange24h}`)}
+                  {convertAmountToPercentageDisplay(`${asset.price?.relative_change_24h}`)}
                 </Text>
               </Column>
             </Columns>
