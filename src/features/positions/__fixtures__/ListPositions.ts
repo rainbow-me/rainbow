@@ -42,13 +42,13 @@ export const TEST_PARAMS = {
  * Test wallet: 0x42b9df65b219b3dd36ff330a4dd8f327a6ada990
  * Currency: USD
  */
-export const LIST_POSITIONS_SUCCESS: ListPositionsResponse = successResponse as unknown as ListPositionsResponse;
+export const LIST_POSITIONS_SUCCESS: ListPositionsResponse = successResponse as ListPositionsResponse;
 
 /**
  * Successful response with no positions (empty array)
  * HTTP 200: Returns empty positions array
  */
-export const LIST_POSITIONS_SUCCESS_EMPTY: ListPositionsResponse = emptyResponse as unknown as ListPositionsResponse;
+export const LIST_POSITIONS_SUCCESS_EMPTY: ListPositionsResponse = emptyResponse as ListPositionsResponse;
 
 // ============ Error Responses =============================================== //
 

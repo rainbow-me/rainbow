@@ -49,5 +49,5 @@ export interface DApp_Colors {
    *
    * example: "#4A3B6E"
    */
-  shadow: string;
+  shadow?: string;
 }

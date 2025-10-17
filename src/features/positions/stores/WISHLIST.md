@@ -196,3 +196,68 @@ const changed_at = changedAtStr ? token.asset.price.changedAt.getTime() : undefi
 
 - `src/features/positions/stores/transform/utils/date.ts` (normalizeDate utility)
 - `src/features/positions/stores/transform/index.ts` (transforms timestamps)
+
+---
+
+## Generated Type Modifications
+
+⚠️ **Manual edits to generated files** — These auto-generated protobuf TypeScript files are marked "DO NOT EDIT" but needed manual changes to match the actual API response shape. Changes will be lost if types are regenerated.
+
+**Files modified:**
+
+- `src/features/positions/types/generated/positions/positions.ts`
+- `src/features/positions/types/generated/common/asset.ts`
+- `src/features/positions/types/generated/common/dapp.ts`
+
+### Changes Made
+
+1. **`Position.protocolVersion: string`** → **`protocolVersion?: string`**
+
+   - API omits this field for some protocols in the response
+   - Example: Many positions in fixture have no `protocolVersion` property
+
+2. **`Detail` token lists** → all made optional
+
+   - `supplyTokenList?: PositionToken[]`
+   - `rewardTokenList?: PositionToken[]`
+   - `borrowTokenList?: PositionToken[]`
+   - `tokenList?: PositionToken[]`
+   - API omits arrays when empty/not applicable rather than sending `[]`
+   - Example: Liquidity pool positions only have `supplyTokenList`, omit the others
+
+3. **`PortfolioItem.assetDict`** → **`Partial<Record<string, string>>`**
+
+   - Was: `{ [key: string]: string }`
+   - TypeScript's JSON import creates unions with `undefined` across heterogeneous objects
+   - Example: Position A has `{"0xabc": "10"}`, Position B has `{"0xdef": "20"}` → TS infers both keys as optional on both objects
+
+4. **`ListPositionsResponse.errors: string[]`** → **`errors?: string[]`**
+
+   - Success responses omit this field entirely instead of returning `[]`
+
+5. **`ListPositionsResponse_Result.uniqueTokens: string[]`** → **`uniqueTokens?: string[]`**
+
+   - Empty position responses omit this field
+
+6. **`ListPositionsResponse_Result.stats`** → **`stats?: EnhancedStats`**
+
+   - Empty position responses omit this field
+
+7. **`Asset.mainnetAddress: string`** → **`mainnetAddress?: string`**
+
+   - Backend doesn't populate this field yet for any assets
+   - Likely intended for L2→L1 token mapping
+
+8. **`AssetBridging.bridgeable: boolean`** → **`bridgeable?: boolean`**
+
+   - API sends `bridging: {}` for assets without bridging support
+
+9. **`AssetBridging.networks`** → **`networks?: { [key: string]: AssetBridgeNetworkInfo }`**
+
+   - API sends `bridging: {}` for assets without bridging support
+
+10. **`DApp_Colors.shadow: string`** → **`shadow?: string`**
+    - API only provides `primary` and `fallback` colors
+    - Example: `{"primary": "#808088", "fallback": "#E8EAF5"}` (no `shadow`)
+
+**Fix:** Update proto definitions to match these optionality requirements, then regenerate types.

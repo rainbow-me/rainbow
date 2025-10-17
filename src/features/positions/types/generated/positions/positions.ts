@@ -300,7 +300,7 @@ export interface Detail {
    * - lending: deposit token, *amount - the amount of deposits, with is_collateral optional (e.g., aave2 Lending, compound Lending).
    * - leveraged_farming: deposit token, *amount - amount of deposits (e.g., alpha Farming).
    */
-  supplyTokenList: PositionToken[];
+  supplyTokenList?: PositionToken[];
   /**
    * Reward token list.
    * Belongs to: common, locked, lending.
@@ -308,7 +308,7 @@ export interface Detail {
    * - locked: reward token, *amount.
    * - lending: reward token, *amount - the amount of rewards.
    */
-  rewardTokenList: PositionToken[];
+  rewardTokenList?: PositionToken[];
   /**
    * Borrow token list.
    * Belongs to: common, lending, leveraged_farming.
@@ -316,13 +316,13 @@ export interface Detail {
    * - lending: borrowing token, *amount - number of loans.
    * - leveraged_farming: borrow token, *amount - amount of money borrowed.
    */
-  borrowTokenList: PositionToken[];
+  borrowTokenList?: PositionToken[];
   /**
    * Token list.
    * Belongs to: reward - combined reward
    * - reward: *token_list - reward token
    */
-  tokenList: PositionToken[];
+  tokenList?: PositionToken[];
   /**
    * Description.
    * Belongs to: common, locked.
@@ -385,7 +385,7 @@ export interface PortfolioItem {
    */
   detail: Detail | undefined;
   /** Metadata for the portfolio item, e.g., protocol_id, project_id, etc. */
-  assetDict: { [key: string]: string };
+  assetDict: Partial<Record<string, string>>;
 }
 
 export interface PortfolioItem_AssetDictEntry {
@@ -423,7 +423,7 @@ export interface Position {
    *
    * example: "v3"
    */
-  protocolVersion: string;
+  protocolVersion?: string;
   /**
    * Chain ID where the position exists
    *
@@ -525,18 +525,18 @@ export interface EnhancedStats_CanonicalProtocolEntry {
 
 export interface ListPositionsResponse {
   /** Metadata about the request. */
-  metadata: ResponseMetadata | undefined;
+  metadata?: ResponseMetadata | undefined;
   /** Result of the request containing positions and unique tokens */
   result: ListPositionsResponse_Result | undefined;
   /** List of errors encountered during the request. */
-  errors: string[];
+  errors?: string[];
 }
 
 export interface ListPositionsResponse_Result {
   /** Unique identifier for the position */
   positions: Position[];
   /** Unique identifier for the positions used for deduplication for balances */
-  uniqueTokens: string[];
+  uniqueTokens?: string[];
   /** Aggregated statistics across all positions */
-  stats: EnhancedStats | undefined;
+  stats?: EnhancedStats | undefined;
 }

@@ -25,7 +25,7 @@ export interface Asset {
   /** Primary network name */
   network: string;
   /** Mainnet contract address */
-  mainnetAddress: string;
+  mainnetAddress?: string;
   /** Whether the asset is verified */
   verified: boolean;
   /** Whether the asset is transferable */
@@ -82,9 +82,9 @@ export interface AssetBridgeNetworkInfo {
 /** AssetBridging represents bridging information for an asset */
 export interface AssetBridging {
   /** Whether the asset supports bridging overall */
-  bridgeable: boolean;
+  bridgeable?: boolean;
   /** Map of network chain_id to bridging capability on that network */
-  networks: { [key: string]: AssetBridgeNetworkInfo };
+  networks?: { [key: string]: AssetBridgeNetworkInfo };
 }
 
 export interface AssetBridging_NetworksEntry {
