@@ -41,7 +41,7 @@ describe('fetchPositions', () => {
     expect(Array.isArray(result.result?.positions)).toBe(true);
 
     // Should match our fixture data
-    expect(result.result?.positions?.length).toBe(63);
+    expect(result.result?.positions?.length).toBe(60);
   });
 
   it('should validate LIST_POSITIONS_SUCCESS fixture structure', () => {
@@ -52,7 +52,7 @@ describe('fetchPositions', () => {
     expect(Array.isArray(LIST_POSITIONS_SUCCESS.result?.positions)).toBe(true);
 
     // Validate the fixture has the expected number of positions
-    expect(LIST_POSITIONS_SUCCESS.result?.positions?.length).toBe(63);
+    expect(LIST_POSITIONS_SUCCESS.result?.positions?.length).toBe(60);
 
     // Validate first position structure
     const firstPosition = LIST_POSITIONS_SUCCESS.result?.positions?.[0];

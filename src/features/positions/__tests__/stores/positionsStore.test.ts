@@ -49,7 +49,7 @@ describe('positionsStore Integration Tests', () => {
       const result = await fetchPositions(params, null);
 
       expect(result).toEqual(LIST_POSITIONS_SUCCESS);
-      expect(result.result?.positions).toHaveLength(63);
+      expect(result.result?.positions).toHaveLength(60);
     });
   });
 });
