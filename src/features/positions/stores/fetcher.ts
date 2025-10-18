@@ -13,12 +13,12 @@ const DEFAULT_TIMEOUT = time.seconds(30);
 // ============ Types ========================================================== //
 
 /**
- * Parameters for positions store - chainIds is optional
+ * Parameters for positions store
  */
 export type PositionsParams = {
   address: Address | string | null;
   currency: NativeCurrencyKey;
-  chainIds?: number[];
+  chainIds: number[];
 };
 
 // ============ Fetcher ======================================================== //
@@ -27,7 +27,7 @@ export type PositionsParams = {
  * Fetches positions data from the platform API
  */
 export async function fetchPositions(params: PositionsParams, abortController: AbortController | null): Promise<ListPositionsResponse> {
-  const { address, currency, chainIds = [] } = params;
+  const { address, currency, chainIds } = params;
 
   if (!address) {
     throw new Error('No address provided');
