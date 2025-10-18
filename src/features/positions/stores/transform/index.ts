@@ -23,7 +23,7 @@ import { calculatePositionTotals, calculateGrandTotals, calculateTotalValue, cal
 import { isConcentratedLiquidityProtocol, calculateLiquidityRangeStatus, calculateLiquidityAllocation } from './utils/lp';
 import { normalizeDate, normalizeDateTime } from './utils/date';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities';
 
 // ============ Constants ====================================================== //
 
@@ -49,7 +49,7 @@ function shouldFilterPositionType(positionName: PositionName | string): boolean 
 /**
  * Transform DeBank position tokens into underlying assets with native display values
  */
-function transformUnderlyingAssets(tokens: PositionToken[] | undefined, currency: string): RainbowUnderlyingAsset[] {
+function transformUnderlyingAssets(tokens: PositionToken[] | undefined, currency: NativeCurrencyKey): RainbowUnderlyingAsset[] {
   if (!tokens || tokens.length === 0) {
     return [];
   }
@@ -158,7 +158,12 @@ function mapPortfolioItemsToCategories(item: PortfolioItem): CategoryResult {
 /**
  * Transform DeBank supply tokens into deposit items
  */
-function transformDeposits(tokens: PositionToken[], item: PortfolioItem, position: Position, currency: string): RainbowDeposit[] {
+function transformDeposits(
+  tokens: PositionToken[],
+  item: PortfolioItem,
+  position: Position,
+  currency: NativeCurrencyKey
+): RainbowDeposit[] {
   return transformUnderlyingAssets(tokens, currency).map(token => ({
     asset: token.asset,
     quantity: token.quantity,
@@ -173,7 +178,7 @@ function transformDeposits(tokens: PositionToken[], item: PortfolioItem, positio
 /**
  * Transform DeBank LP supply tokens into pool items with range/allocation data
  */
-function transformPools(tokens: PositionToken[], item: PortfolioItem, position: Position, currency: string): RainbowPool[] {
+function transformPools(tokens: PositionToken[], item: PortfolioItem, position: Position, currency: NativeCurrencyKey): RainbowPool[] {
   const underlying = transformUnderlyingAssets(tokens, currency);
   if (underlying.length === 0) return [];
 
@@ -203,7 +208,7 @@ function transformPools(tokens: PositionToken[], item: PortfolioItem, position: 
 /**
  * Transform DeBank multi-token stakes into LP stake items with range/allocation
  */
-function transformLpStakes(tokens: PositionToken[], item: PortfolioItem, position: Position, currency: string): RainbowStake[] {
+function transformLpStakes(tokens: PositionToken[], item: PortfolioItem, position: Position, currency: NativeCurrencyKey): RainbowStake[] {
   const underlying = transformUnderlyingAssets(tokens, currency);
   if (underlying.length === 0) return [];
 
@@ -238,7 +243,7 @@ function transformLpStakes(tokens: PositionToken[], item: PortfolioItem, positio
 /**
  * Transform DeBank stake tokens into stake items (LP or single token)
  */
-function transformStakes(tokens: PositionToken[], item: PortfolioItem, position: Position, currency: string): RainbowStake[] {
+function transformStakes(tokens: PositionToken[], item: PortfolioItem, position: Position, currency: NativeCurrencyKey): RainbowStake[] {
   // Handle LP stakes (multiple tokens) - all LP stakes need rangeStatus/allocation for proper rendering
   if (tokens.length > 1) {
     return transformLpStakes(tokens, item, position, currency);
@@ -261,7 +266,7 @@ function transformStakes(tokens: PositionToken[], item: PortfolioItem, position:
 /**
  * Transform DeBank borrow tokens into borrow items
  */
-function transformBorrows(tokens: PositionToken[], item: PortfolioItem, position: Position, currency: string): RainbowBorrow[] {
+function transformBorrows(tokens: PositionToken[], item: PortfolioItem, position: Position, currency: NativeCurrencyKey): RainbowBorrow[] {
   return transformUnderlyingAssets(tokens, currency).map(token => ({
     asset: token.asset,
     quantity: token.quantity,
@@ -275,7 +280,7 @@ function transformBorrows(tokens: PositionToken[], item: PortfolioItem, position
 /**
  * Transform DeBank reward tokens into claimable reward items
  */
-function transformRewards(tokens: PositionToken[], item: PortfolioItem, position: Position, currency: string): RainbowReward[] {
+function transformRewards(tokens: PositionToken[], item: PortfolioItem, position: Position, currency: NativeCurrencyKey): RainbowReward[] {
   return transformUnderlyingAssets(tokens, currency).map(token => ({
     asset: token.asset,
     quantity: token.quantity,
@@ -292,7 +297,7 @@ function transformCategories(
   categories: CategoryResult,
   item: PortfolioItem,
   sourcePosition: Position,
-  currency: string
+  currency: NativeCurrencyKey
 ): {
   deposits: RainbowDeposit[];
   pools: RainbowPool[];
@@ -334,9 +339,9 @@ function transformCategories(
 /**
  * Group DeBank positions by canonical protocol name and aggregate cross-chain data
  */
-function groupByProtocol(positions: Position[], currency: string): ProtocolGroup {
+function groupByProtocol(positions: Position[], currency: NativeCurrencyKey): ProtocolGroup {
   const grouped: ProtocolGroup = {};
-  const emptyDisplay = convertAmountToNativeDisplay('0', currency as NativeCurrencyKey);
+  const emptyDisplay = convertAmountToNativeDisplay('0', currency);
 
   positions.forEach(position => {
     const canonicalName = position.canonicalProtocolName;
@@ -429,7 +434,7 @@ function groupByProtocol(positions: Position[], currency: string): ProtocolGroup
  */
 export function transformPositions(response: ListPositionsResponse, params: PositionsParams): RainbowPositions {
   const { currency } = params;
-  const emptyDisplay = convertAmountToNativeDisplay('0', currency as NativeCurrencyKey);
+  const emptyDisplay = convertAmountToNativeDisplay('0', currency);
 
   if (!response?.result?.positions || response.result.positions.length === 0) {
     return {

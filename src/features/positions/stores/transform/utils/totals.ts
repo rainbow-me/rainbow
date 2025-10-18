@@ -5,11 +5,11 @@ import { NativeCurrencyKey } from '@/entities';
 /**
  * Calculate native display value for a position token
  */
-export function calculateTokenNativeDisplay(token: PositionToken, currency: string): NativeDisplay {
+export function calculateTokenNativeDisplay(token: PositionToken, currency: NativeCurrencyKey): NativeDisplay {
   if (!token.asset) {
     return {
       amount: '0',
-      display: convertAmountToNativeDisplay('0', currency as NativeCurrencyKey),
+      display: convertAmountToNativeDisplay('0', currency),
     };
   }
 
@@ -19,14 +19,14 @@ export function calculateTokenNativeDisplay(token: PositionToken, currency: stri
 
   return {
     amount: nativeValue,
-    display: convertAmountToNativeDisplay(nativeValue, currency as NativeCurrencyKey),
+    display: convertAmountToNativeDisplay(nativeValue, currency),
   };
 }
 
 /**
  * Calculate position totals from category data
  */
-export function calculatePositionTotals(position: RainbowPosition, currency: string): void {
+export function calculatePositionTotals(position: RainbowPosition, currency: NativeCurrencyKey): void {
   let deposits = '0';
   let stakes = '0';
   let locked = '0';
@@ -71,19 +71,19 @@ export function calculatePositionTotals(position: RainbowPosition, currency: str
   // Update position totals
   position.totals.totalDeposits = {
     amount: totalDepositsValue,
-    display: convertAmountToNativeDisplay(totalDepositsValue, currency as NativeCurrencyKey),
+    display: convertAmountToNativeDisplay(totalDepositsValue, currency),
   };
   position.totals.totalBorrows = {
     amount: totalBorrowsValue,
-    display: convertAmountToNativeDisplay(totalBorrowsValue, currency as NativeCurrencyKey),
+    display: convertAmountToNativeDisplay(totalBorrowsValue, currency),
   };
   position.totals.totalRewards = {
     amount: totalRewardsValue,
-    display: convertAmountToNativeDisplay(totalRewardsValue, currency as NativeCurrencyKey),
+    display: convertAmountToNativeDisplay(totalRewardsValue, currency),
   };
   position.totals.totalLocked = {
     amount: totalLockedValue,
-    display: convertAmountToNativeDisplay(totalLockedValue, currency as NativeCurrencyKey),
+    display: convertAmountToNativeDisplay(totalLockedValue, currency),
   };
 
   // Calculate net total: (Deposits + Rewards) - Borrows
@@ -92,14 +92,14 @@ export function calculatePositionTotals(position: RainbowPosition, currency: str
 
   position.totals.total = {
     amount: netValue,
-    display: convertAmountToNativeDisplay(netValue, currency as NativeCurrencyKey),
+    display: convertAmountToNativeDisplay(netValue, currency),
   };
 }
 
 /**
  * Calculate grand totals across all positions
  */
-export function calculateGrandTotals(positions: RainbowPosition[], currency: string): PositionsTotals {
+export function calculateGrandTotals(positions: RainbowPosition[], currency: NativeCurrencyKey): PositionsTotals {
   let totalDeposits = '0';
   let totalBorrows = '0';
   let totalRewards = '0';
@@ -117,23 +117,23 @@ export function calculateGrandTotals(positions: RainbowPosition[], currency: str
   return {
     total: {
       amount: total,
-      display: convertAmountToNativeDisplay(total, currency as NativeCurrencyKey),
+      display: convertAmountToNativeDisplay(total, currency),
     },
     totalDeposits: {
       amount: totalDeposits,
-      display: convertAmountToNativeDisplay(totalDeposits, currency as NativeCurrencyKey),
+      display: convertAmountToNativeDisplay(totalDeposits, currency),
     },
     totalBorrows: {
       amount: totalBorrows,
-      display: convertAmountToNativeDisplay(totalBorrows, currency as NativeCurrencyKey),
+      display: convertAmountToNativeDisplay(totalBorrows, currency),
     },
     totalRewards: {
       amount: totalRewards,
-      display: convertAmountToNativeDisplay(totalRewards, currency as NativeCurrencyKey),
+      display: convertAmountToNativeDisplay(totalRewards, currency),
     },
     totalLocked: {
       amount: totalLocked,
-      display: convertAmountToNativeDisplay(totalLocked, currency as NativeCurrencyKey),
+      display: convertAmountToNativeDisplay(totalLocked, currency),
     },
   };
 }
