@@ -8,7 +8,6 @@ import {
   type PositionToken,
   type CategoryResult,
   type RainbowUnderlyingAsset,
-  type PositionAsset,
   type RainbowDeposit,
   type RainbowPool,
   type RainbowStake,
@@ -54,31 +53,33 @@ function transformUnderlyingAssets(tokens: PositionToken[] | undefined, currency
     return [];
   }
 
-  return tokens
-    .map(token => {
-      if (!token.asset) return null;
+  return tokens.reduce<RainbowUnderlyingAsset[]>((acc, token) => {
+    if (!token.asset) return acc;
 
-      return {
-        asset: {
-          ...token.asset,
-          chain_id: token.asset.chainId,
-          icon_url: token.asset.iconUrl,
-          // Normalize Go date format and filter out Go zero time
-          creationDate: normalizeDate(token.asset.creationDate),
-          price: token.asset.price
-            ? {
-                ...token.asset.price,
-                // Filter out Go zero time Date objects and convert to timestamp
-                changed_at: normalizeDateTime(token.asset.price.changedAt),
-                relative_change_24h: token.asset.price.relativeChange24h || 0,
-              }
-            : undefined,
-        } as PositionAsset,
-        quantity: token.amount || '0',
-        native: calculateTokenNativeDisplay(token, currency),
-      };
-    })
-    .filter((asset): asset is RainbowUnderlyingAsset => asset !== null);
+    const { chainId, iconUrl, network, price, creationDate, ...asset } = token.asset;
+
+    acc.push({
+      asset: {
+        ...asset,
+        chain_id: chainId,
+        icon_url: iconUrl,
+        // Normalize Go date format and filter out Go zero time
+        creationDate: normalizeDate(creationDate),
+        price: price
+          ? {
+              value: price.value,
+              // Filter out Go zero time and convert to timestamp
+              changed_at: normalizeDateTime(price.changedAt),
+              relative_change_24h: price.relativeChange24h,
+            }
+          : undefined,
+      },
+      quantity: token.amount,
+      native: calculateTokenNativeDisplay(token, currency),
+    });
+
+    return acc;
+  }, []);
 }
 
 // ============ Category Mapping =============================================== //

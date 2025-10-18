@@ -25,10 +25,11 @@ export type PositionAssetPrice = Omit<AssetPrice, 'changedAt' | 'relativeChange2
 /**
  * Asset metadata aligned with historical PositionAsset expectations
  */
-export type PositionAsset = Omit<Asset, 'iconUrl' | 'chainId' | 'network' | 'price' | 'colors'> & {
+export type PositionAsset = Omit<Asset, 'iconUrl' | 'chainId' | 'network' | 'price' | 'colors' | 'creationDate'> & {
   chain_id: number;
   icon_url: string;
-  price: PositionAssetPrice; // only expect value field currently
+  creationDate: string | undefined;
+  price: PositionAssetPrice | undefined;
   colors: (Asset['colors'] & { shadow?: string }) | undefined;
 };
 
