@@ -46,8 +46,9 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
 
   // For pools with >2 assets, show top 2 + "Other"
   // Assets are already sorted by value in the parser
-  let displayAssets = assets.length > 2 ? assets.slice(0, 2) : assets;
+  const orderedAssets = assets.length > 2 ? assets.slice(0, 2) : assets;
   const hasOthers = assets.length > 2;
+  let displayAssets = orderedAssets;
 
   // Calculate allocation percentages
   let allocationPercentages = displayAssets.map(asset => {
@@ -104,7 +105,8 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
               <Column>
                 <Inline alignVertical="center" space={'6px'}>
                   <Text size="17pt" weight="medium" color="label" numberOfLines={1}>
-                    {displayAssets.map(underlying => underlying.asset.symbol).join(' / ')}
+                    {/* Keep asset symbols in the expected pool order for display */}
+                    {orderedAssets.map(underlying => underlying.asset.symbol).join(' / ')}
                     {hasOthers && ` / ${i18n.t(i18n.l.positions.lp_allocation.other)}`}
                   </Text>
                   {dappVersion && (
