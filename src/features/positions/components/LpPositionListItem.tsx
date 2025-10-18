@@ -60,7 +60,7 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
   // If native/wrapped asset comes first and split is 50/50, flip the order so non-native token is displayed first
   if (displayAssets.length === 2 && allocationPercentages[0] === 50 && allocationPercentages[1] === 50) {
     const firstSymbol = displayAssets[0].asset.symbol.toLowerCase();
-    const nativeAsset = chainsNativeAsset[displayAssets[0].asset.chain_id as ChainId];
+    const nativeAsset = chainsNativeAsset[displayAssets[0].asset.chain_id];
     const nativeSymbol = nativeAsset?.symbol.toLowerCase();
 
     if (nativeSymbol && (firstSymbol === nativeSymbol || firstSymbol === `w${nativeSymbol}`)) {
