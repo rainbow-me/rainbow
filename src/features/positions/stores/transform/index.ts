@@ -4,7 +4,6 @@ import {
   type RainbowPositions,
   type ProtocolGroup,
   type Position,
-  type RainbowDapp,
   type PortfolioItem,
   type PositionToken,
   type CategoryResult,
@@ -160,22 +159,15 @@ function mapPortfolioItemsToCategories(item: PortfolioItem): CategoryResult {
  * Transform DeBank supply tokens into deposit items
  */
 function transformDeposits(tokens: PositionToken[], item: PortfolioItem, position: Position, currency: string): RainbowDeposit[] {
-  return tokens
-    .map(token => {
-      const underlying = transformUnderlyingAssets([token], currency);
-      if (underlying.length === 0) return null;
-
-      return {
-        asset: underlying[0].asset,
-        quantity: token.amount,
-        pool_address: item.pool?.id,
-        isConcentratedLiquidity: false,
-        totalValue: calculateTotalValue(underlying),
-        underlying,
-        dappVersion: position.protocolVersion,
-      } as RainbowDeposit;
-    })
-    .filter((deposit): deposit is RainbowDeposit => deposit !== null);
+  return transformUnderlyingAssets(tokens, currency).map(token => ({
+    asset: token.asset,
+    quantity: token.quantity,
+    pool_address: item.pool?.id,
+    isConcentratedLiquidity: false,
+    totalValue: calculateTotalValue([token]),
+    underlying: [token],
+    dappVersion: position.protocolVersion,
+  }));
 }
 
 /**
@@ -204,7 +196,7 @@ function transformPools(tokens: PositionToken[], item: PortfolioItem, position: 
       totalValue: calculateTotalValue(underlying),
       underlying,
       dappVersion: position.protocolVersion,
-    } as RainbowPool,
+    },
   ];
 }
 
@@ -253,68 +245,44 @@ function transformStakes(tokens: PositionToken[], item: PortfolioItem, position:
   }
 
   // Handle single token stakes (includes farming)
-  return tokens
-    .map(token => {
-      const underlying = transformUnderlyingAssets([token], currency);
-      if (underlying.length === 0) return null;
-
-      return {
-        asset: underlying[0].asset,
-        quantity: token.amount,
-        pool_address: item.pool?.id,
-        isLp: false,
-        isConcentratedLiquidity: false,
-        isLocked: item.name === PositionName.LOCKED,
-        totalValue: calculateTotalValue(underlying),
-        underlying,
-        dappVersion: position.protocolVersion,
-      } as RainbowStake;
-    })
-    .filter((stake): stake is RainbowStake => stake !== null);
+  return transformUnderlyingAssets(tokens, currency).map(token => ({
+    asset: token.asset,
+    quantity: token.quantity,
+    pool_address: item.pool?.id,
+    isLp: false,
+    isConcentratedLiquidity: false,
+    isLocked: item.name === PositionName.LOCKED,
+    totalValue: calculateTotalValue([token]),
+    underlying: [token],
+    dappVersion: position.protocolVersion,
+  }));
 }
 
 /**
  * Transform DeBank borrow tokens into borrow items
  */
 function transformBorrows(tokens: PositionToken[], item: PortfolioItem, position: Position, currency: string): RainbowBorrow[] {
-  return tokens
-    .map(token => {
-      const underlying = transformUnderlyingAssets([token], currency);
-      if (underlying.length === 0) return null;
-
-      return {
-        asset: underlying[0].asset,
-        quantity: token.amount,
-        pool_address: item.pool?.id,
-        totalValue: calculateTotalValue(underlying),
-        underlying,
-        dappVersion: position.protocolVersion,
-      } as RainbowBorrow;
-    })
-    .filter((borrow): borrow is RainbowBorrow => borrow !== null);
+  return transformUnderlyingAssets(tokens, currency).map(token => ({
+    asset: token.asset,
+    quantity: token.quantity,
+    pool_address: item.pool?.id,
+    totalValue: calculateTotalValue([token]),
+    underlying: [token],
+    dappVersion: position.protocolVersion,
+  }));
 }
 
 /**
  * Transform DeBank reward tokens into claimable reward items
  */
 function transformRewards(tokens: PositionToken[], item: PortfolioItem, position: Position, currency: string): RainbowReward[] {
-  return tokens
-    .map(token => {
-      const underlying = transformUnderlyingAssets([token], currency);
-      if (underlying.length === 0) return null;
-
-      const nativeDisplay = calculateTokenNativeDisplay(token, currency);
-      const totalValue = nativeDisplay.amount;
-
-      return {
-        asset: underlying[0].asset,
-        quantity: token.amount,
-        totalValue,
-        native: nativeDisplay,
-        dappVersion: position.protocolVersion,
-      } as RainbowReward;
-    })
-    .filter((reward): reward is RainbowReward => reward !== null);
+  return transformUnderlyingAssets(tokens, currency).map(token => ({
+    asset: token.asset,
+    quantity: token.quantity,
+    totalValue: token.native.amount,
+    native: token.native,
+    dappVersion: position.protocolVersion,
+  }));
 }
 
 /**
@@ -410,7 +378,7 @@ function groupByProtocol(positions: Position[], currency: string): ProtocolGroup
           url: position.dapp?.url || '',
           icon_url: position.dapp?.iconUrl || '',
           colors: position.dapp?.colors || { primary: '#000000', fallback: '#808080', shadow: '#000000' },
-        } as RainbowDapp,
+        },
       };
     }
 
