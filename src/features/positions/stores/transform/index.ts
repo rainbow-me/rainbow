@@ -35,6 +35,8 @@ const UNSUPPORTED_POSITION_TYPES: readonly (PositionName | string)[] = [
   PositionName.INSURANCE_SELLER,
 ];
 
+const EMPTY_POSITION_TOKENS: string[] = [];
+
 // ============ Helpers ======================================================== //
 
 /**
@@ -89,12 +91,7 @@ function transformUnderlyingAssets(tokens: PositionToken[] | undefined, currency
  * Map DeBank portfolio item to category buckets based on position type
  */
 function mapPortfolioItemsToCategories(item: PortfolioItem): CategoryResult {
-  const result: CategoryResult = {
-    supplyTokens: [],
-    stakeTokens: [],
-    borrowTokens: [],
-    rewardTokens: [],
-  };
+  const result: CategoryResult = {};
 
   const detail = item.detail;
   if (!detail) {
@@ -103,49 +100,49 @@ function mapPortfolioItemsToCategories(item: PortfolioItem): CategoryResult {
 
   switch (item.name) {
     case PositionName.DEPOSIT:
-      result.supplyTokens = detail.supplyTokenList || [];
+      result.supplyTokens = detail.supplyTokenList;
       break;
 
     case PositionName.LENDING:
-      result.supplyTokens = detail.supplyTokenList || [];
-      result.borrowTokens = detail.borrowTokenList || [];
-      result.rewardTokens = detail.rewardTokenList || [];
+      result.supplyTokens = detail.supplyTokenList;
+      result.borrowTokens = detail.borrowTokenList;
+      result.rewardTokens = detail.rewardTokenList;
       break;
 
     case PositionName.LIQUIDITY_POOL:
-      result.supplyTokens = detail.supplyTokenList || [];
-      result.rewardTokens = detail.rewardTokenList || [];
+      result.supplyTokens = detail.supplyTokenList;
+      result.rewardTokens = detail.rewardTokenList;
       break;
 
     case PositionName.STAKED:
     case PositionName.LOCKED:
-      result.stakeTokens = detail.supplyTokenList || [];
+      result.stakeTokens = detail.supplyTokenList;
       break;
 
     case PositionName.REWARDS:
     case PositionName.VESTING:
-      result.rewardTokens = detail.rewardTokenList || detail.tokenList || [];
+      result.rewardTokens = detail.rewardTokenList || detail.tokenList;
       break;
 
     case PositionName.FARMING:
-      result.stakeTokens = detail.supplyTokenList || [];
-      result.rewardTokens = detail.rewardTokenList || [];
+      result.stakeTokens = detail.supplyTokenList;
+      result.rewardTokens = detail.rewardTokenList;
       break;
 
     case PositionName.YIELD:
-      result.supplyTokens = detail.supplyTokenList || [];
-      result.borrowTokens = detail.borrowTokenList || [];
-      result.rewardTokens = detail.rewardTokenList || [];
+      result.supplyTokens = detail.supplyTokenList;
+      result.borrowTokens = detail.borrowTokenList;
+      result.rewardTokens = detail.rewardTokenList;
       break;
 
     case PositionName.INVESTMENT:
-      result.supplyTokens = detail.supplyTokenList || [];
+      result.supplyTokens = detail.supplyTokenList;
       break;
 
     case PositionName.LEVERAGED_FARMING:
-      result.supplyTokens = detail.supplyTokenList || [];
-      result.borrowTokens = detail.borrowTokenList || [];
-      result.rewardTokens = detail.rewardTokenList || [];
+      result.supplyTokens = detail.supplyTokenList;
+      result.borrowTokens = detail.borrowTokenList;
+      result.rewardTokens = detail.rewardTokenList;
       break;
 
     default:
@@ -481,7 +478,7 @@ export function transformPositions(response: ListPositionsResponse, params: Posi
 
   return {
     positions: positionsRecord,
-    positionTokens: response.result.uniqueTokens || [],
+    positionTokens: response.result.uniqueTokens ?? EMPTY_POSITION_TOKENS,
     totals: grandTotals,
   };
 }

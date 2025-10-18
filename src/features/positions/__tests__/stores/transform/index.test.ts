@@ -467,7 +467,7 @@ describe('transformPositions', () => {
 
     describe('Position Type Mapping', () => {
       it('should handle all position types from fixture', () => {
-        const rawPositions = LIST_POSITIONS_SUCCESS.result?.positions || [];
+        const rawPositions = LIST_POSITIONS_SUCCESS.result?.positions ?? [];
         const allPortfolioItems = rawPositions.flatMap(p => p.portfolioItems);
 
         const positionTypes = [
