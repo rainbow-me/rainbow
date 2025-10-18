@@ -27,6 +27,7 @@ export type PositionAssetPrice = Omit<AssetPrice, 'changedAt' | 'relativeChange2
  */
 export type PositionAsset = Omit<Asset, 'price' | 'colors' | 'creationDate' | 'iconUrl'> & {
   chainId: number;
+  uniqueId: string;
   icon_url: string;
   creationDate: string | undefined;
   price: PositionAssetPrice | undefined;

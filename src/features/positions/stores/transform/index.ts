@@ -23,6 +23,7 @@ import { isConcentratedLiquidityProtocol, calculateLiquidityRangeStatus, calcula
 import { normalizeDate, normalizeDateTime } from './utils/date';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import type { NativeCurrencyKey } from '@/entities';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 // ============ Constants ====================================================== //
 
@@ -61,7 +62,7 @@ function transformUnderlyingAssets(tokens: PositionToken[] | undefined, currency
     acc.push({
       asset: {
         ...asset,
-        chain_id: chainId,
+        uniqueId: getUniqueId(asset.address, asset.chainId),
         icon_url: iconUrl,
         // Normalize Go date format and filter out Go zero time
         creationDate: normalizeDate(creationDate),

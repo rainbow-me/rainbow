@@ -11,14 +11,13 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { SubPositionListItem } from '../components/PositionListItem';
 import * as i18n from '@/languages';
 import { capitalize } from 'lodash';
-import { RainbowPosition, PositionAsset } from '@/features/positions/types';
+import type { RainbowPosition, PositionAsset } from '@/features/positions/types';
 import { LpPositionListItem } from '../components/LpPositionListItem';
 import { RootStackParamList } from '@/navigation/types';
 import { openInBrowser } from '@/utils/openInBrowser';
 import Routes from '@/navigation/routesNames';
 import { safeAreaInsetValues } from '@/utils';
 import { Navigation } from '@/navigation';
-import type { ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
@@ -64,7 +63,7 @@ export const PositionSheet: React.FC = () => {
 
   const openTokenSheet = useCallback((asset: PositionAsset) => {
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
-      asset: asset as unknown as ExpandedSheetParamAsset,
+      asset: asset,
       address: asset.address,
       chainId: asset.chainId,
     });
