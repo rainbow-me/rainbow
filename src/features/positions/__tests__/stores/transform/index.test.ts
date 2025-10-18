@@ -213,7 +213,7 @@ describe('transformPositions', () => {
 
       it('should have all required position properties', () => {
         expect(firstPosition).toHaveProperty('type');
-        expect(firstPosition).toHaveProperty('protocol_version');
+        expect(firstPosition).toHaveProperty('protocolVersion');
         expect(firstPosition).toHaveProperty('chainIds');
         expect(firstPosition).toHaveProperty('deposits');
         expect(firstPosition).toHaveProperty('pools');
@@ -412,8 +412,8 @@ describe('transformPositions', () => {
         expect(underlying).toHaveProperty('native');
 
         // Check asset structure
-        expect(underlying?.asset).toHaveProperty('chain_id');
         expect(underlying?.asset).toHaveProperty('icon_url');
+        expect(underlying?.asset).toHaveProperty('chainId');
         expect(underlying?.asset).toHaveProperty('symbol');
         expect(underlying?.asset).toHaveProperty('name');
 

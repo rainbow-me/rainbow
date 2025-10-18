@@ -679,7 +679,7 @@ describe('Uniswap Position Parsing', () => {
       expect(pool.allocation).toBeDefined();
       expect(pool.totalValue).toBeDefined();
       expect(pool.underlying).toBeDefined();
-      expect(pool.pool_address).toBe('0x1234567890abcdef');
+      expect(pool.poolAddress).toBe('0x1234567890abcdef');
     });
 
     it('should handle pools with >2 assets by showing top 2 + aggregated other', () => {

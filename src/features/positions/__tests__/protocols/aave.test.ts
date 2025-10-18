@@ -250,7 +250,7 @@ describe('Aave Protocol', () => {
     expect(aavePosition.deposits.length).toBe(2);
 
     // Should have a protocol version (either v2 or v3)
-    expect(aavePosition.protocol_version).toBeDefined();
-    expect(['v2', 'v3']).toContain(aavePosition.protocol_version);
+    expect(aavePosition.protocolVersion).toBeDefined();
+    expect(['v2', 'v3']).toContain(aavePosition.protocolVersion);
   });
 });

@@ -56,7 +56,7 @@ function transformUnderlyingAssets(tokens: PositionToken[] | undefined, currency
   return tokens.reduce<RainbowUnderlyingAsset[]>((acc, token) => {
     if (!token.asset) return acc;
 
-    const { chainId, iconUrl, network, price, creationDate, ...asset } = token.asset;
+    const { price, creationDate, iconUrl, ...asset } = token.asset;
 
     acc.push({
       asset: {
@@ -168,7 +168,7 @@ function transformDeposits(
   return transformUnderlyingAssets(tokens, currency).map(token => ({
     asset: token.asset,
     quantity: token.quantity,
-    pool_address: item.pool?.id,
+    poolAddress: item.pool?.id,
     isConcentratedLiquidity: false,
     totalValue: calculateTotalValue([token]),
     underlying: [token],
@@ -195,7 +195,7 @@ function transformPools(tokens: PositionToken[], item: PortfolioItem, position: 
     {
       asset: underlying[0].asset,
       quantity: tokens[0]?.amount || '0',
-      pool_address: item.pool?.id,
+      poolAddress: item.pool?.id,
       isConcentratedLiquidity: concentrated,
       rangeStatus: calculateLiquidityRangeStatus(underlying, concentrated),
       allocation: calculateLiquidityAllocation(underlying),
@@ -228,7 +228,7 @@ function transformLpStakes(tokens: PositionToken[], item: PortfolioItem, positio
     {
       asset: underlying[0].asset,
       quantity: tokens[0]?.amount || '0',
-      pool_address: item.pool?.id,
+      poolAddress: item.pool?.id,
       isLp: true,
       isConcentratedLiquidity: concentrated,
       rangeStatus,
@@ -254,7 +254,7 @@ function transformStakes(tokens: PositionToken[], item: PortfolioItem, position:
   return transformUnderlyingAssets(tokens, currency).map(token => ({
     asset: token.asset,
     quantity: token.quantity,
-    pool_address: item.pool?.id,
+    poolAddress: item.pool?.id,
     isLp: false,
     isConcentratedLiquidity: false,
     isLocked: item.name === PositionName.LOCKED,
@@ -271,7 +271,7 @@ function transformBorrows(tokens: PositionToken[], item: PortfolioItem, position
   return transformUnderlyingAssets(tokens, currency).map(token => ({
     asset: token.asset,
     quantity: token.quantity,
-    pool_address: item.pool?.id,
+    poolAddress: item.pool?.id,
     totalValue: calculateTotalValue([token]),
     underlying: [token],
     dappVersion: position.protocolVersion,
@@ -350,7 +350,7 @@ function groupByProtocol(positions: Position[], currency: NativeCurrencyKey): Pr
     if (!grouped[canonicalName]) {
       grouped[canonicalName] = {
         type: canonicalName,
-        protocol_version: position.protocolVersion,
+        protocolVersion: position.protocolVersion,
         chainIds: [],
         deposits: [],
         pools: [],
@@ -395,8 +395,8 @@ function groupByProtocol(positions: Position[], currency: NativeCurrencyKey): Pr
       rainbowPosition.chainIds.sort((a, b) => a - b);
     }
 
-    if (position.protocolVersion && !rainbowPosition.protocol_version) {
-      rainbowPosition.protocol_version = position.protocolVersion;
+    if (position.protocolVersion && !rainbowPosition.protocolVersion) {
+      rainbowPosition.protocolVersion = position.protocolVersion;
     }
 
     if (position.dapp && (!rainbowPosition.dapp.icon_url || position.dapp.iconUrl)) {

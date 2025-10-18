@@ -25,8 +25,8 @@ export type PositionAssetPrice = Omit<AssetPrice, 'changedAt' | 'relativeChange2
 /**
  * Asset metadata aligned with historical PositionAsset expectations
  */
-export type PositionAsset = Omit<Asset, 'iconUrl' | 'chainId' | 'network' | 'price' | 'colors' | 'creationDate'> & {
-  chain_id: number;
+export type PositionAsset = Omit<Asset, 'price' | 'colors' | 'creationDate' | 'iconUrl'> & {
+  chainId: number;
   icon_url: string;
   creationDate: string | undefined;
   price: PositionAssetPrice | undefined;
@@ -65,7 +65,7 @@ export type RainbowUnderlyingAsset = {
 export type RainbowDeposit = {
   asset: PositionAsset;
   quantity: string; // e.g., ".75013242445" (not wei)
-  pool_address?: string;
+  poolAddress?: string;
   isConcentratedLiquidity: boolean; // Computed: Uniswap V3 detection
   totalValue: string; // Computed: Total USD value (fiat amount string)
   underlying: RainbowUnderlyingAsset[]; // Enhanced with native values
@@ -80,7 +80,7 @@ export type RainbowDeposit = {
 export type RainbowPool = {
   asset: PositionAsset;
   quantity: string; // e.g., ".75013242445" (not wei)
-  pool_address?: string;
+  poolAddress?: string;
   isConcentratedLiquidity: boolean;
   rangeStatus: RangeStatus;
   allocation: string; // e.g., "50/50" or "100/0"
@@ -105,7 +105,7 @@ export type RainbowStake =
 export type RainbowBorrow = {
   asset: PositionAsset;
   quantity: string; // e.g., ".75013242445" (not wei)
-  pool_address?: string;
+  poolAddress?: string;
   totalValue: string; // e.g., "1500.25"
   underlying: RainbowUnderlyingAsset[];
   dappVersion?: string; // Computed: Protocol version
@@ -137,7 +137,7 @@ export type RainbowDapp = Omit<DApp, 'iconUrl' | 'colors'> & {
  */
 export type RainbowPosition = {
   type: string; // Canonical protocol name (e.g., "Uniswap")
-  protocol_version?: string; // Version display in UI badge (e.g., "V3")
+  protocolVersion?: string; // Version display in UI badge (e.g., "V3")
   chainIds: number[]; // All chains where user has positions
   totals: PositionsTotals; // Pre-calculated for position card display
   deposits: RainbowDeposit[]; // Regular deposits section in expanded sheet

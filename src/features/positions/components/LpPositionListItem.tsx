@@ -60,7 +60,7 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
   // If native/wrapped asset comes first and split is 50/50, flip the order so non-native token is displayed first
   if (displayAssets.length === 2 && allocationPercentages[0] === 50 && allocationPercentages[1] === 50) {
     const firstSymbol = displayAssets[0].asset.symbol.toLowerCase();
-    const nativeAsset = chainsNativeAsset[displayAssets[0].asset.chain_id];
+    const nativeAsset = chainsNativeAsset[displayAssets[0].asset.chainId];
     const nativeSymbol = nativeAsset?.symbol.toLowerCase();
 
     if (nativeSymbol && (firstSymbol === nativeSymbol || firstSymbol === `w${nativeSymbol}`)) {
@@ -82,26 +82,14 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
       <Column width={'content'}>
         {displayAssets.length >= 2 && (
           <TwoCoinsIcon
-            badge={displayAssets[0].asset.chain_id !== ChainId.mainnet}
-            // @ts-expect-error component uses different Token entity type, but it is compatible
-            over={{
-              ...displayAssets[0].asset,
-              chainId: displayAssets[0].asset.chain_id,
-              icon_url: displayAssets[0].asset.icon_url,
-              colors: displayAssets[0].asset.colors,
-            }}
-            // @ts-expect-error component uses different Token entity type, but it is compatible
-            under={{
-              ...displayAssets[1].asset,
-              chainId: displayAssets[1].asset.chain_id,
-              icon_url: displayAssets[1].asset.icon_url,
-              colors: displayAssets[1].asset.colors,
-            }}
+            badge={displayAssets[0].asset.chainId !== ChainId.mainnet}
+            over={displayAssets[0].asset}
+            under={displayAssets[1].asset}
           />
         )}
         {displayAssets.length === 1 && (
           <RainbowCoinIcon
-            chainId={displayAssets[0].asset.chain_id}
+            chainId={displayAssets[0].asset.chainId}
             color={displayAssets[0].asset.colors?.primary || displayAssets[0].asset.colors?.fallback || undefined}
             icon={displayAssets[0].asset.icon_url}
             symbol={displayAssets[0].asset.symbol}

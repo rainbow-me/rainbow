@@ -22,7 +22,7 @@ const CoinIconForStack = memo(function CoinIconForStack({ token }: { token: Posi
     <RainbowCoinIcon
       size={16}
       icon={token.icon_url}
-      chainId={token.chain_id}
+      chainId={token.chainId}
       symbol={token.symbol}
       color={token.colors?.primary ?? token.colors?.fallback ?? undefined}
       showBadge={false}

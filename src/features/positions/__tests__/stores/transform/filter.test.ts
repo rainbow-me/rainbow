@@ -10,7 +10,7 @@ jest.mock('@/config', () => ({
 describe('Position Filters', () => {
   const createMockPosition = (type: string, value: string): RainbowPosition => ({
     type,
-    protocol_version: 'v2',
+    protocolVersion: 'v2',
     chainIds: [1],
     totals: {
       total: { amount: value, display: `$${value}` },

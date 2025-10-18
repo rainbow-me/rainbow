@@ -66,7 +66,7 @@ export const PositionSheet: React.FC = () => {
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
       asset: asset as unknown as ExpandedSheetParamAsset,
       address: asset.address,
-      chainId: asset.chain_id,
+      chainId: asset.chainId,
     });
   }, []);
 

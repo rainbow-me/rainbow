@@ -41,18 +41,18 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
       if (data?.positions) {
         Object.values(data.positions).forEach((position: RainbowPosition) => {
           position.deposits?.forEach((deposit: RainbowDeposit) => {
-            if (deposit.pool_address) {
-              positionTokenAddresses.add(deposit.pool_address.toLowerCase());
+            if (deposit.poolAddress) {
+              positionTokenAddresses.add(deposit.poolAddress.toLowerCase());
             }
           });
           position.pools?.forEach((pool: RainbowPool) => {
-            if (pool.pool_address) {
-              positionTokenAddresses.add(pool.pool_address.toLowerCase());
+            if (pool.poolAddress) {
+              positionTokenAddresses.add(pool.poolAddress.toLowerCase());
             }
           });
           position.stakes?.forEach(stake => {
-            if (stake.pool_address) {
-              positionTokenAddresses.add(stake.pool_address.toLowerCase());
+            if (stake.poolAddress) {
+              positionTokenAddresses.add(stake.poolAddress.toLowerCase());
             }
           });
         });
