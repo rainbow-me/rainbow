@@ -1,5 +1,5 @@
-import { filterPositions } from '../../../stores/transform/filter';
-import type { ProtocolGroup, RainbowPosition, PositionAsset, RainbowDeposit } from '../../../types';
+import { shouldFilterPosition } from '../../../stores/transform/filter';
+import type { RainbowPosition, PositionAsset, RainbowDeposit } from '../../../types';
 
 // Mock config to avoid React Native gesture handler imports
 jest.mock('@/config', () => ({
@@ -11,7 +11,6 @@ describe('Position Filters', () => {
   const createMockPosition = (type: string, value: string): RainbowPosition => ({
     type,
     protocolVersion: 'v2',
-    chainIds: [1],
     totals: {
       total: { amount: value, display: `$${value}` },
       totalDeposits: { amount: '0', display: '$0' },
@@ -23,10 +22,8 @@ describe('Position Filters', () => {
       {
         asset: { symbol: 'MOCK' } as unknown as PositionAsset,
         quantity: '1',
-        totalValue: value,
+        value: { amount: value, display: `$${value}` },
         underlying: [],
-        isLp: false,
-        isConcentratedLiquidity: false,
       } as RainbowDeposit,
     ],
     pools: [],
@@ -45,52 +42,48 @@ describe('Position Filters', () => {
     },
   });
 
-  describe('filterPositions', () => {
+  describe('shouldFilterPosition', () => {
     it('should filter positions below value threshold', () => {
-      const positions: ProtocolGroup = {
-        uniswap: createMockPosition('uniswap', '100'),
-        aave: createMockPosition('aave', '0.5'),
-        compound: createMockPosition('compound', '2'),
-      };
+      const uniswap = createMockPosition('uniswap', '100');
+      const aave = createMockPosition('aave', '0.5');
+      const compound = createMockPosition('compound', '2');
 
-      const filtered = filterPositions(positions);
-
-      expect(Object.keys(filtered)).toHaveLength(2);
-      expect(filtered['uniswap']).toBeDefined();
-      expect(filtered['compound']).toBeDefined();
-      expect(filtered['aave']).toBeUndefined();
+      expect(shouldFilterPosition(uniswap)).toBe(false); // should NOT filter
+      expect(shouldFilterPosition(compound)).toBe(false); // should NOT filter
+      expect(shouldFilterPosition(aave)).toBe(true); // SHOULD filter (below threshold)
     });
 
     it('should filter Hyperliquid protocol', () => {
-      const positions: ProtocolGroup = {
-        'uniswap': createMockPosition('uniswap', '100'),
-        'hyperliquid': createMockPosition('hyperliquid', '100'),
-        'hyperliquid-perps': createMockPosition('hyperliquid-perps', '100'),
-      };
+      const uniswap = createMockPosition('uniswap', '100');
+      const hyperliquid = createMockPosition('hyperliquid', '100');
+      const hyperliquidPerps = createMockPosition('hyperliquid-perps', '100');
 
-      const filtered = filterPositions(positions);
-
-      expect(Object.keys(filtered)).toHaveLength(1);
-      expect(filtered['uniswap']).toBeDefined();
-      expect(filtered['hyperliquid']).toBeUndefined();
-      expect(filtered['hyperliquid-perps']).toBeUndefined();
+      expect(shouldFilterPosition(uniswap)).toBe(false); // should NOT filter
+      expect(shouldFilterPosition(hyperliquid)).toBe(true); // SHOULD filter (unsupported protocol)
+      expect(shouldFilterPosition(hyperliquidPerps)).toBe(false); // should NOT filter (different protocol)
     });
 
     it('should apply both filters together', () => {
-      const positions: ProtocolGroup = {
-        uniswap: createMockPosition('uniswap', '100'),
-        aave: createMockPosition('aave', '0.5'), // below threshold
-        hyperliquid: createMockPosition('hyperliquid', '100'), // filtered protocol
-        compound: createMockPosition('compound', '2'),
-      };
+      const uniswap = createMockPosition('uniswap', '100');
+      const aave = createMockPosition('aave', '0.5'); // below threshold
+      const hyperliquid = createMockPosition('hyperliquid', '100'); // filtered protocol
+      const compound = createMockPosition('compound', '2');
 
-      const filtered = filterPositions(positions);
+      expect(shouldFilterPosition(uniswap)).toBe(false); // should NOT filter
+      expect(shouldFilterPosition(compound)).toBe(false); // should NOT filter
+      expect(shouldFilterPosition(aave)).toBe(true); // SHOULD filter (below threshold)
+      expect(shouldFilterPosition(hyperliquid)).toBe(true); // SHOULD filter (unsupported protocol)
+    });
 
-      expect(Object.keys(filtered)).toHaveLength(2);
-      expect(filtered['uniswap']).toBeDefined();
-      expect(filtered['compound']).toBeDefined();
-      expect(filtered['aave']).toBeUndefined();
-      expect(filtered['hyperliquid']).toBeUndefined();
+    it('should filter positions with no items', () => {
+      const emptyPosition = createMockPosition('uniswap', '100');
+      emptyPosition.deposits = [];
+      emptyPosition.pools = [];
+      emptyPosition.stakes = [];
+      emptyPosition.borrows = [];
+      emptyPosition.rewards = [];
+
+      expect(shouldFilterPosition(emptyPosition)).toBe(true); // SHOULD filter (no items)
     });
   });
 });

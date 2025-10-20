@@ -6,7 +6,7 @@ import {
   convertAmountToPercentageDisplay,
   convertAmountToPercentageDisplayWithThreshold,
 } from '@/helpers/utilities';
-import { NativeDisplay, PositionAsset } from '@/features/positions/types';
+import { PositionAsset } from '@/features/positions/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ButtonPressAnimation } from '@/components/animations';
 
@@ -14,13 +14,13 @@ type Props = {
   asset: PositionAsset;
   quantity: string;
   apy: string | undefined;
-  native: NativeDisplay;
+  value: { amount: string; display: string };
   positionColor: string;
   dappVersion?: string;
   onPress?: () => void;
 };
 
-export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, native, positionColor, dappVersion, onPress }) => {
+export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, value, positionColor, dappVersion, onPress }) => {
   const theme = useTheme();
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
@@ -68,7 +68,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
               </Column>
               <Column width={'content'}>
                 <Text size="17pt" weight="medium" color="label" numberOfLines={1}>
-                  {native.display}
+                  {value.display}
                 </Text>
               </Column>
             </Columns>

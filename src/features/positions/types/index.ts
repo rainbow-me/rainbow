@@ -1,18 +1,8 @@
 // Import generated types that are used in internal types
 import type { Asset, AssetPrice } from './generated/common/asset';
 import type { DApp, DApp_Colors } from './generated/common/dapp';
-import type { PositionToken } from './generated/positions/positions';
 
 // ============ Internal Types ================================================= //
-
-/**
- * Formatted value objects with amount (raw) and display (localized string)
- * Same format as legacy ADDYS Assets API and live pricing responses for consistency
- */
-export type NativeDisplay = {
-  amount: string; // e.g., "1500.25"
-  display: string; // e.g., "$1,500.25" or "€1.234,56" based on locale
-};
 
 /**
  * Additional price fields expected by UI layers (legacy snake_case support)
@@ -39,11 +29,11 @@ export type PositionAsset = Omit<Asset, 'price' | 'colors' | 'creationDate' | 'i
  * the primary field used by UI code.
  */
 export type PositionsTotals = {
-  total: NativeDisplay; // Primary field used by UI
-  totalDeposits: NativeDisplay; // Total deposited value across all protocols
-  totalBorrows: NativeDisplay; // Total borrowed value across all protocols
-  totalRewards: NativeDisplay; // Total rewards value
-  totalLocked: NativeDisplay; // Total locked value (time-locked stakes)
+  total: { amount: string; display: string }; // Primary field used by UI
+  totalDeposits: { amount: string; display: string }; // Total deposited value across all protocols
+  totalBorrows: { amount: string; display: string }; // Total borrowed value across all protocols
+  totalRewards: { amount: string; display: string }; // Total rewards value
+  totalLocked: { amount: string; display: string }; // Total locked value (time-locked stakes)
 };
 
 /**
@@ -57,73 +47,86 @@ export type RangeStatus = 'in_range' | 'out_of_range' | 'full_range';
 export type RainbowUnderlyingAsset = {
   asset: PositionAsset;
   quantity: string; // e.g., ".75013242445" (not wei)
-  native: NativeDisplay; // e.g., { "amount": "1500.25", "display": "$1,500.25" }
+  value: { amount: string; display: string }; // e.g., { "amount": "1500.25", "display": "$1,500.25" }
 };
 
 /**
- * Enhanced deposit type with LP detection and value calculations
+ * Base type for all position items (internal use only)
+ * No metadata fields - those are added via discriminated unions
  */
-export type RainbowDeposit = {
+type RainbowBaseItem = {
   asset: PositionAsset;
-  quantity: string; // e.g., ".75013242445" (not wei)
+  quantity: string;
+  value: { amount: string; display: string };
+  underlying: RainbowUnderlyingAsset[];
+  dappVersion?: string;
   poolAddress?: string;
-  isConcentratedLiquidity: boolean; // Computed: Uniswap V3 detection
-  totalValue: string; // Computed: Total USD value (fiat amount string)
-  underlying: RainbowUnderlyingAsset[]; // Enhanced with native values
-  dappVersion?: string; // Computed: Protocol version
-  apr?: string; // Not yet supported
-  apy?: string; // Not yet supported
 };
+
+/**
+ * Enhanced deposit type - discriminated by detail type metadata
+ */
+export type RainbowDeposit =
+  | (RainbowBaseItem & { apy?: string; name?: string }) // COMMON
+  | (RainbowBaseItem & { apy?: string; healthRate?: number }) // LENDING
+  | (RainbowBaseItem & { apy?: string; name?: string; unlockTime?: string }); // LOCKED
 
 /**
  * LP position with range and allocation information
+ * Only COMMON detail type uses pools
  */
-export type RainbowPool = {
-  asset: PositionAsset;
-  quantity: string; // e.g., ".75013242445" (not wei)
+export type RainbowPool = RainbowBaseItem & {
   poolAddress?: string;
   isConcentratedLiquidity: boolean;
   rangeStatus: RangeStatus;
-  allocation: string; // e.g., "50/50" or "100/0"
-  totalValue: string; // e.g., "1500.25"
-  underlying: RainbowUnderlyingAsset[];
-  dappVersion?: string; // Computed: Protocol version
+  allocation: string;
+  name?: string; // COMMON - display name (from description field, filtered)
 };
 
 /**
- * Staked position - discriminated union by isLp
- * Can be single token or LP, regular or locked
- * Farming is a special case of Staked where reward
- * tokens are different from the deposit token
+ * Borrowed position - discriminated by detail type metadata
  */
-export type RainbowStake =
-  | (RainbowDeposit & { isLp: false; isLocked?: boolean })
-  | (RainbowDeposit & { isLp: true; rangeStatus: RangeStatus; allocation: string; isLocked?: boolean });
+export type RainbowBorrow =
+  | (RainbowBaseItem & { apy?: string; name?: string }) // COMMON
+  | (RainbowBaseItem & { apy?: string; healthRate?: number }) // LENDING
+  | (RainbowBaseItem & { apy?: string; debtRatio?: string }); // LEVERAGED_FARMING
 
 /**
- * Borrowed position
+ * Claimable rewards - discriminated by detail type metadata
  */
-export type RainbowBorrow = {
-  asset: PositionAsset;
-  quantity: string; // e.g., ".75013242445" (not wei)
-  poolAddress?: string;
-  totalValue: string; // e.g., "1500.25"
-  underlying: RainbowUnderlyingAsset[];
-  dappVersion?: string; // Computed: Protocol version
-  apr?: string; // Not yet supported
-  apy?: string; // Not yet supported
-};
+export type RainbowReward = RainbowBaseItem &
+  (
+    | { name?: string } // COMMON
+    | { healthRate?: number } // LENDING
+    | { debtRatio?: string } // LEVERAGED_FARMING
+    | { name?: string; unlockTime?: string } // LOCKED
+    | Record<string, never> // REWARD
+  );
 
 /**
- * Claimable rewards
+ * Staked position - discriminated by LP and locked status, with metadata
  */
-export type RainbowReward = {
-  asset: PositionAsset;
-  quantity: string; // e.g., ".75013242445" (not wei)
-  totalValue: string; // e.g., "1500.25"
-  native: NativeDisplay; // e.g., { "amount": "1500.25", "display": "$1,500.25" }
-  dappVersion?: string; // Computed: Protocol version
-};
+type RainbowStakeRegular = RainbowBaseItem & {
+  apy?: string;
+  isLp: false;
+  isLocked?: boolean;
+} & (
+    | { debtRatio?: string } // LEVERAGED_FARMING
+    | { name?: string; unlockTime?: string } // LOCKED
+    | Record<string, never> // FARMING
+  );
+
+type RainbowStakeLp = RainbowPool & {
+  apy?: string;
+  isLp: true;
+  isLocked?: boolean;
+} & (
+    | { debtRatio?: string } // LEVERAGED_FARMING
+    | { name?: string; unlockTime?: string } // LOCKED
+    | Record<string, never> // FARMING
+  );
+
+export type RainbowStake = RainbowStakeRegular | RainbowStakeLp;
 
 /**
  * Dapp metadata with normalized fields for UI consumption
@@ -139,7 +142,6 @@ export type RainbowDapp = Omit<DApp, 'iconUrl' | 'colors'> & {
 export type RainbowPosition = {
   type: string; // Canonical protocol name (e.g., "Uniswap")
   protocolVersion?: string; // Version display in UI badge (e.g., "V3")
-  chainIds: number[]; // All chains where user has positions
   totals: PositionsTotals; // Pre-calculated for position card display
   deposits: RainbowDeposit[]; // Regular deposits section in expanded sheet
   pools: RainbowPool[]; // LP positions section with special UI treatment
@@ -157,42 +159,3 @@ export type RainbowPositions = {
   positionTokens: string[]; // LP/staked tokens to exclude from wallet assets
   positions: Record<string, RainbowPosition>; // Keyed by canonical protocol
 };
-
-/**
- * Category mapping result from PortfolioItem processing
- */
-export type CategoryResult = {
-  supplyTokens?: PositionToken[];
-  stakeTokens?: PositionToken[];
-  borrowTokens?: PositionToken[];
-  rewardTokens?: PositionToken[];
-};
-
-/**
- * Protocol grouping intermediate structure
- */
-export type ProtocolGroup = {
-  [canonicalName: string]: RainbowPosition;
-};
-
-// ============ API Types ====================================================== //
-
-/**
- * API types are generated from protobuf definitions
- * Source: https://github.com/rainbow-me/protobuf-registry/tree/main/schemas/gateways/gen/v1
- * These types are automatically generated and should not be modified directly
- */
-
-// Re-export generated types from the protobuf-generated directory
-
-// Export enums as values
-export { PositionName, DetailType } from './generated/positions/positions';
-
-export type {
-  // Core DeBank position types/enums
-  PositionToken,
-  PortfolioItem,
-  // Request/Response types
-  Position,
-  ListPositionsResponse,
-} from './generated/positions/positions';

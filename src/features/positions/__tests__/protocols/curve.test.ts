@@ -8,8 +8,12 @@
  */
 
 import { transformPositions } from '../../stores/transform';
-import { PositionName, type ListPositionsResponse } from '../../types';
-import type { ListPositionsResponse_Result } from '../../types/generated/positions/positions';
+import {
+  PositionName,
+  DetailType,
+  type ListPositionsResponse,
+  type ListPositionsResponse_Result,
+} from '../../types/generated/positions/positions';
 import type { Asset } from '../../types/generated/common/asset';
 import { TEST_PARAMS } from '../../__fixtures__/ListPositions';
 
@@ -67,9 +71,13 @@ describe('Curve Protocol', () => {
           portfolioItems: [
             {
               name: PositionName.LIQUIDITY_POOL,
-              stats: undefined,
+              stats: {
+                assetValue: '3000',
+                debtValue: '0',
+                netValue: '3000',
+              },
               updateTime: undefined,
-              detailTypes: [],
+              detailTypes: [DetailType.COMMON],
               pool: undefined,
               assetDict: {},
               detail: {
@@ -87,7 +95,31 @@ describe('Curve Protocol', () => {
         },
       ],
       uniqueTokens: [],
-      stats: undefined,
+      stats: {
+        totals: {
+          netTotal: '3000',
+          totalDeposits: '3000',
+          totalBorrows: '0',
+          totalRewards: '0',
+          totalLocked: '0',
+          overallTotal: '3000',
+        },
+        canonicalProtocol: {
+          curve: {
+            canonicalProtocolName: 'curve',
+            protocolIds: ['curve'],
+            totals: {
+              netTotal: '3000',
+              totalDeposits: '3000',
+              totalBorrows: '0',
+              totalRewards: '0',
+              totalLocked: '0',
+              overallTotal: '3000',
+            },
+            totalsByChain: {},
+          },
+        },
+      },
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -124,9 +156,13 @@ describe('Curve Protocol', () => {
           portfolioItems: [
             {
               name: PositionName.LOCKED,
-              stats: undefined,
+              stats: {
+                assetValue: '2000',
+                debtValue: '0',
+                netValue: '2000',
+              },
               updateTime: undefined,
-              detailTypes: [],
+              detailTypes: [DetailType.LOCKED],
               pool: undefined,
               assetDict: {},
               detail: {
@@ -140,7 +176,31 @@ describe('Curve Protocol', () => {
         },
       ],
       uniqueTokens: [],
-      stats: undefined,
+      stats: {
+        totals: {
+          netTotal: '2000',
+          totalDeposits: '2000',
+          totalBorrows: '0',
+          totalRewards: '0',
+          totalLocked: '2000',
+          overallTotal: '4000',
+        },
+        canonicalProtocol: {
+          curve: {
+            canonicalProtocolName: 'curve',
+            protocolIds: ['curve'],
+            totals: {
+              netTotal: '2000',
+              totalDeposits: '2000',
+              totalBorrows: '0',
+              totalRewards: '0',
+              totalLocked: '2000',
+              overallTotal: '4000',
+            },
+            totalsByChain: {},
+          },
+        },
+      },
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -174,9 +234,13 @@ describe('Curve Protocol', () => {
           portfolioItems: [
             {
               name: PositionName.FARMING,
-              stats: undefined,
+              stats: {
+                assetValue: '550',
+                debtValue: '0',
+                netValue: '550',
+              },
               updateTime: undefined,
-              detailTypes: [],
+              detailTypes: [DetailType.COMMON],
               pool: undefined,
               assetDict: {},
               detail: {
@@ -190,7 +254,31 @@ describe('Curve Protocol', () => {
         },
       ],
       uniqueTokens: [],
-      stats: undefined,
+      stats: {
+        totals: {
+          netTotal: '570',
+          totalDeposits: '550',
+          totalBorrows: '0',
+          totalRewards: '20',
+          totalLocked: '0',
+          overallTotal: '570',
+        },
+        canonicalProtocol: {
+          curve: {
+            canonicalProtocolName: 'curve',
+            protocolIds: ['curve'],
+            totals: {
+              netTotal: '570',
+              totalDeposits: '550',
+              totalBorrows: '0',
+              totalRewards: '20',
+              totalLocked: '0',
+              overallTotal: '570',
+            },
+            totalsByChain: {},
+          },
+        },
+      },
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -198,9 +286,10 @@ describe('Curve Protocol', () => {
 
     const curvePosition = result.positions['curve'];
 
-    // FARMING should create stakes from supply tokens
-    expect(curvePosition.stakes.length).toBeGreaterThan(0);
-    expect(curvePosition.stakes[0].asset.symbol).toBe('3CRV');
+    // FARMING with COMMON detail type and single supply token creates deposits
+    // (If it were multi-token, it would create pools)
+    expect(curvePosition.deposits.length).toBeGreaterThan(0);
+    expect(curvePosition.deposits[0].asset.symbol).toBe('3CRV');
 
     // Should also have rewards
     expect(curvePosition.rewards.length).toBeGreaterThan(0);

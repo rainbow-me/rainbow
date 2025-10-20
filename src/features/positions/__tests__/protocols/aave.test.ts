@@ -8,8 +8,12 @@
  */
 
 import { transformPositions } from '../../stores/transform';
-import { PositionName, type ListPositionsResponse } from '../../types';
-import type { ListPositionsResponse_Result } from '../../types/generated/positions/positions';
+import {
+  PositionName,
+  DetailType,
+  type ListPositionsResponse,
+  type ListPositionsResponse_Result,
+} from '../../types/generated/positions/positions';
 import type { Asset } from '../../types/generated/common/asset';
 import { TEST_PARAMS } from '../../__fixtures__/ListPositions';
 
@@ -67,9 +71,9 @@ describe('Aave Protocol', () => {
           portfolioItems: [
             {
               name: PositionName.LENDING,
-              stats: undefined,
+              stats: { assetValue: '1000', debtValue: '0', netValue: '1000' },
               updateTime: undefined,
-              detailTypes: [],
+              detailTypes: [DetailType.LENDING],
               pool: undefined,
               assetDict: {},
               detail: {
@@ -86,7 +90,31 @@ describe('Aave Protocol', () => {
         },
       ],
       uniqueTokens: [],
-      stats: undefined,
+      stats: {
+        totals: {
+          netTotal: '16000',
+          totalDeposits: '20000',
+          totalBorrows: '5000',
+          totalRewards: '1000',
+          totalLocked: '0',
+          overallTotal: '16000',
+        },
+        canonicalProtocol: {
+          aave: {
+            canonicalProtocolName: 'aave',
+            protocolIds: ['aave'],
+            totals: {
+              netTotal: '16000',
+              totalDeposits: '20000',
+              totalBorrows: '5000',
+              totalRewards: '1000',
+              totalLocked: '0',
+              overallTotal: '16000',
+            },
+            totalsByChain: {},
+          },
+        },
+      },
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -138,9 +166,9 @@ describe('Aave Protocol', () => {
           portfolioItems: [
             {
               name: PositionName.LENDING,
-              stats: undefined,
+              stats: { assetValue: '1000', debtValue: '0', netValue: '1000' },
               updateTime: undefined,
-              detailTypes: [],
+              detailTypes: [DetailType.LENDING],
               pool: undefined,
               assetDict: {},
               detail: {
@@ -154,7 +182,31 @@ describe('Aave Protocol', () => {
         },
       ],
       uniqueTokens: [],
-      stats: undefined,
+      stats: {
+        totals: {
+          netTotal: '5000',
+          totalDeposits: '5000',
+          totalBorrows: '0',
+          totalRewards: '0',
+          totalLocked: '0',
+          overallTotal: '5000',
+        },
+        canonicalProtocol: {
+          aave: {
+            canonicalProtocolName: 'aave',
+            protocolIds: ['aave'],
+            totals: {
+              netTotal: '5000',
+              totalDeposits: '5000',
+              totalBorrows: '0',
+              totalRewards: '0',
+              totalLocked: '0',
+              overallTotal: '5000',
+            },
+            totalsByChain: {},
+          },
+        },
+      },
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -189,9 +241,9 @@ describe('Aave Protocol', () => {
           portfolioItems: [
             {
               name: PositionName.LENDING,
-              stats: undefined,
+              stats: { assetValue: '1000', debtValue: '0', netValue: '1000' },
               updateTime: undefined,
-              detailTypes: [],
+              detailTypes: [DetailType.LENDING],
               pool: undefined,
               assetDict: {},
               detail: {
@@ -219,9 +271,9 @@ describe('Aave Protocol', () => {
           portfolioItems: [
             {
               name: PositionName.LENDING,
-              stats: undefined,
+              stats: { assetValue: '1000', debtValue: '0', netValue: '1000' },
               updateTime: undefined,
-              detailTypes: [],
+              detailTypes: [DetailType.LENDING],
               pool: undefined,
               assetDict: {},
               detail: {
@@ -235,7 +287,31 @@ describe('Aave Protocol', () => {
         },
       ],
       uniqueTokens: [],
-      stats: undefined,
+      stats: {
+        totals: {
+          netTotal: '3000',
+          totalDeposits: '3000',
+          totalBorrows: '0',
+          totalRewards: '0',
+          totalLocked: '0',
+          overallTotal: '3000',
+        },
+        canonicalProtocol: {
+          aave: {
+            canonicalProtocolName: 'aave',
+            protocolIds: ['aave'],
+            totals: {
+              netTotal: '3000',
+              totalDeposits: '3000',
+              totalBorrows: '0',
+              totalRewards: '0',
+              totalLocked: '0',
+              overallTotal: '3000',
+            },
+            totalsByChain: {},
+          },
+        },
+      },
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };

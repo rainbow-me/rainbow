@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
 import { useTheme } from '@/theme';
-import { convertRawAmountToNativeDisplay, divide } from '@/helpers/utilities';
+import { divide } from '@/helpers/utilities';
 import { RainbowUnderlyingAsset } from '@/features/positions/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { LpPositionRangeBadge } from './LpPositionRangeBadge';
@@ -28,19 +28,16 @@ function getRangeStatus(assets: RainbowUnderlyingAsset[], isConcentratedLiquidit
 
 type Props = {
   assets: RainbowUnderlyingAsset[];
-  totalAssetsValue: string;
+  value: { amount: string; display: string };
   isConcentratedLiquidity: boolean;
   dappVersion?: string;
   onPress?: (asset: RainbowUnderlyingAsset['asset']) => void;
 };
 
-export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, isConcentratedLiquidity, dappVersion, onPress }) => {
+export const LpPositionListItem: React.FC<Props> = ({ assets, value, isConcentratedLiquidity, dappVersion, onPress }) => {
   const { colors } = useTheme();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const chainsNativeAsset = useBackendNetworksStore(state => state.getChainsNativeAsset());
-
-  const totalAssetsValueNative = convertRawAmountToNativeDisplay(totalAssetsValue, 0, 1, nativeCurrency);
 
   const rangeStatus = getRangeStatus(assets, isConcentratedLiquidity);
 
@@ -52,10 +49,10 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
 
   // Calculate allocation percentages
   let allocationPercentages = displayAssets.map(asset => {
-    if (totalAssetsValue === '0') {
+    if (value.amount === '0') {
       return asset.quantity === '0' ? 0 : 100;
     }
-    return Math.round(parseFloat(divide(asset.native.amount, totalAssetsValue)) * 100);
+    return Math.round(parseFloat(divide(asset.value.amount, value.amount)) * 100);
   });
 
   // If native/wrapped asset comes first and split is 50/50, flip the order so non-native token is displayed first
@@ -129,7 +126,7 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
               </Column>
               <Column width={'content'}>
                 <Text size="17pt" weight="medium" color="label" numberOfLines={1}>
-                  {`${totalAssetsValueNative.display}`}
+                  {value.display}
                 </Text>
               </Column>
             </Columns>
@@ -163,11 +160,11 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
                       .filter(asset => asset.quantity !== '0')
                       .map(underlying => {
                         const percentage =
-                          totalAssetsValue === '0'
+                          value.amount === '0'
                             ? underlying.quantity === '0'
                               ? 0
                               : 100
-                            : Math.round(parseFloat(divide(underlying.native.amount, totalAssetsValue)) * 100);
+                            : Math.round(parseFloat(divide(underlying.value.amount, value.amount)) * 100);
                         return {
                           id: underlying.asset.address,
                           color: underlying.asset.colors?.primary ?? underlying.asset.colors?.fallback ?? colors.black,

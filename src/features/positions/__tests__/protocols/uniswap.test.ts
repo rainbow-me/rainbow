@@ -13,8 +13,12 @@
  */
 
 import { transformPositions } from '../../stores/transform';
-import { PositionName, type ListPositionsResponse } from '../../types';
-import type { ListPositionsResponse_Result } from '../../types/generated/positions/positions';
+import {
+  PositionName,
+  DetailType,
+  type ListPositionsResponse,
+  type ListPositionsResponse_Result,
+} from '../../types/generated/positions/positions';
 import type { Asset } from '../../types/generated/common/asset';
 import { TEST_PARAMS } from '../../__fixtures__/ListPositions';
 
@@ -88,7 +92,7 @@ describe('Uniswap Position Parsing', () => {
               {
                 name: PositionName.LIQUIDITY_POOL,
                 updateTime: new Date().toISOString(),
-                detailTypes: [],
+                detailTypes: [DetailType.COMMON],
                 pool: {
                   id: '0x1234567890abcdef',
                   chainId: 1,
@@ -156,7 +160,7 @@ describe('Uniswap Position Parsing', () => {
               {
                 name: PositionName.LIQUIDITY_POOL,
                 updateTime: new Date().toISOString(),
-                detailTypes: [],
+                detailTypes: [DetailType.COMMON],
                 pool: {
                   id: '0xabcdef1234567890',
                   chainId: 1,
@@ -205,7 +209,31 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
-        stats: undefined,
+        stats: {
+          totals: {
+            netTotal: '1000',
+            totalDeposits: '1000',
+            totalBorrows: '0',
+            totalRewards: '0',
+            totalLocked: '0',
+            overallTotal: '1000',
+          },
+          canonicalProtocol: {
+            uniswap: {
+              canonicalProtocolName: 'uniswap',
+              protocolIds: ['uniswap'],
+              totals: {
+                netTotal: '1000',
+                totalDeposits: '1000',
+                totalBorrows: '0',
+                totalRewards: '0',
+                totalLocked: '0',
+                overallTotal: '1000',
+              },
+              totalsByChain: {},
+            },
+          },
+        },
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -241,7 +269,7 @@ describe('Uniswap Position Parsing', () => {
               {
                 name: PositionName.LIQUIDITY_POOL,
                 updateTime: new Date().toISOString(),
-                detailTypes: [],
+                detailTypes: [DetailType.COMMON],
                 pool: { id: '0x1234', chainId: 1 },
                 assetDict: {},
                 stats: { assetValue: '100', debtValue: '0', netValue: '100' },
@@ -271,7 +299,31 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
-        stats: undefined,
+        stats: {
+          totals: {
+            netTotal: '1000',
+            totalDeposits: '1000',
+            totalBorrows: '0',
+            totalRewards: '0',
+            totalLocked: '0',
+            overallTotal: '1000',
+          },
+          canonicalProtocol: {
+            uniswap: {
+              canonicalProtocolName: 'uniswap',
+              protocolIds: ['uniswap'],
+              totals: {
+                netTotal: '1000',
+                totalDeposits: '1000',
+                totalBorrows: '0',
+                totalRewards: '0',
+                totalLocked: '0',
+                overallTotal: '1000',
+              },
+              totalsByChain: {},
+            },
+          },
+        },
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -312,7 +364,7 @@ describe('Uniswap Position Parsing', () => {
               {
                 name: PositionName.LIQUIDITY_POOL,
                 updateTime: new Date().toISOString(),
-                detailTypes: [],
+                detailTypes: [DetailType.COMMON],
                 pool: { id: '0x1234', chainId: 1 },
                 assetDict: {},
                 stats: { assetValue: '100', debtValue: '0', netValue: '100' },
@@ -342,7 +394,31 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
-        stats: undefined,
+        stats: {
+          totals: {
+            netTotal: '1000',
+            totalDeposits: '1000',
+            totalBorrows: '0',
+            totalRewards: '0',
+            totalLocked: '0',
+            overallTotal: '1000',
+          },
+          canonicalProtocol: {
+            uniswap: {
+              canonicalProtocolName: 'uniswap',
+              protocolIds: ['uniswap'],
+              totals: {
+                netTotal: '1000',
+                totalDeposits: '1000',
+                totalBorrows: '0',
+                totalRewards: '0',
+                totalLocked: '0',
+                overallTotal: '1000',
+              },
+              totalsByChain: {},
+            },
+          },
+        },
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -372,7 +448,7 @@ describe('Uniswap Position Parsing', () => {
               {
                 name: PositionName.LIQUIDITY_POOL,
                 updateTime: new Date().toISOString(),
-                detailTypes: [],
+                detailTypes: [DetailType.COMMON],
                 pool: { id: '0x1234', chainId: 1 },
                 assetDict: {},
                 stats: { assetValue: '100', debtValue: '0', netValue: '100' },
@@ -402,7 +478,31 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
-        stats: undefined,
+        stats: {
+          totals: {
+            netTotal: '1000',
+            totalDeposits: '1000',
+            totalBorrows: '0',
+            totalRewards: '0',
+            totalLocked: '0',
+            overallTotal: '1000',
+          },
+          canonicalProtocol: {
+            uniswap: {
+              canonicalProtocolName: 'uniswap',
+              protocolIds: ['uniswap'],
+              totals: {
+                netTotal: '1000',
+                totalDeposits: '1000',
+                totalBorrows: '0',
+                totalRewards: '0',
+                totalLocked: '0',
+                overallTotal: '1000',
+              },
+              totalsByChain: {},
+            },
+          },
+        },
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -434,7 +534,7 @@ describe('Uniswap Position Parsing', () => {
               {
                 name: PositionName.LIQUIDITY_POOL,
                 updateTime: new Date().toISOString(),
-                detailTypes: [],
+                detailTypes: [DetailType.COMMON],
                 pool: { id: '0x1234', chainId: 1 },
                 assetDict: {},
                 stats: { assetValue: '100', debtValue: '0', netValue: '100' },
@@ -464,7 +564,31 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
-        stats: undefined,
+        stats: {
+          totals: {
+            netTotal: '1000',
+            totalDeposits: '1000',
+            totalBorrows: '0',
+            totalRewards: '0',
+            totalLocked: '0',
+            overallTotal: '1000',
+          },
+          canonicalProtocol: {
+            uniswap: {
+              canonicalProtocolName: 'uniswap',
+              protocolIds: ['uniswap'],
+              totals: {
+                netTotal: '1000',
+                totalDeposits: '1000',
+                totalBorrows: '0',
+                totalRewards: '0',
+                totalLocked: '0',
+                overallTotal: '1000',
+              },
+              totalsByChain: {},
+            },
+          },
+        },
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -497,7 +621,7 @@ describe('Uniswap Position Parsing', () => {
               {
                 name: PositionName.LIQUIDITY_POOL,
                 updateTime: new Date().toISOString(),
-                detailTypes: [],
+                detailTypes: [DetailType.COMMON],
                 pool: { id: '0x1234', chainId: 1 },
                 assetDict: {},
                 stats: { assetValue: '150', debtValue: '0', netValue: '150' },
@@ -527,7 +651,31 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
-        stats: undefined,
+        stats: {
+          totals: {
+            netTotal: '1000',
+            totalDeposits: '1000',
+            totalBorrows: '0',
+            totalRewards: '0',
+            totalLocked: '0',
+            overallTotal: '1000',
+          },
+          canonicalProtocol: {
+            uniswap: {
+              canonicalProtocolName: 'uniswap',
+              protocolIds: ['uniswap'],
+              totals: {
+                netTotal: '1000',
+                totalDeposits: '1000',
+                totalBorrows: '0',
+                totalRewards: '0',
+                totalLocked: '0',
+                overallTotal: '1000',
+              },
+              totalsByChain: {},
+            },
+          },
+        },
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -569,7 +717,7 @@ describe('Uniswap Position Parsing', () => {
               {
                 name: PositionName.LIQUIDITY_POOL,
                 updateTime: new Date().toISOString(),
-                detailTypes: [],
+                detailTypes: [DetailType.COMMON],
                 pool: { id: '0x1234', chainId: 1 },
                 assetDict: {},
                 stats: { assetValue: '105', debtValue: '0', netValue: '105' },
@@ -600,7 +748,31 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
-        stats: undefined,
+        stats: {
+          totals: {
+            netTotal: '1000',
+            totalDeposits: '1000',
+            totalBorrows: '0',
+            totalRewards: '0',
+            totalLocked: '0',
+            overallTotal: '1000',
+          },
+          canonicalProtocol: {
+            uniswap: {
+              canonicalProtocolName: 'uniswap',
+              protocolIds: ['uniswap'],
+              totals: {
+                netTotal: '1000',
+                totalDeposits: '1000',
+                totalBorrows: '0',
+                totalRewards: '0',
+                totalLocked: '0',
+                overallTotal: '1000',
+              },
+              totalsByChain: {},
+            },
+          },
+        },
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -641,7 +813,7 @@ describe('Uniswap Position Parsing', () => {
               {
                 name: PositionName.LIQUIDITY_POOL,
                 updateTime: new Date().toISOString(),
-                detailTypes: [],
+                detailTypes: [DetailType.COMMON],
                 pool: { id: '0x1234567890abcdef', chainId: 1 },
                 assetDict: {},
                 stats: { assetValue: '100', debtValue: '0', netValue: '100' },
@@ -654,6 +826,13 @@ describe('Uniswap Position Parsing', () => {
                       }),
                       amount: '0.05',
                     },
+                    {
+                      asset: createMockAsset({
+                        symbol: 'USDC',
+                        price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
+                      }),
+                      amount: '100',
+                    },
                   ],
                   rewardTokenList: [],
                   borrowTokenList: [],
@@ -664,7 +843,31 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
-        stats: undefined,
+        stats: {
+          totals: {
+            netTotal: '100',
+            totalDeposits: '100',
+            totalBorrows: '0',
+            totalRewards: '0',
+            totalLocked: '0',
+            overallTotal: '100',
+          },
+          canonicalProtocol: {
+            uniswap: {
+              canonicalProtocolName: 'uniswap',
+              protocolIds: ['uniswap'],
+              totals: {
+                netTotal: '100',
+                totalDeposits: '100',
+                totalBorrows: '0',
+                totalRewards: '0',
+                totalLocked: '0',
+                overallTotal: '100',
+              },
+              totalsByChain: {},
+            },
+          },
+        },
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -677,7 +880,7 @@ describe('Uniswap Position Parsing', () => {
       expect(pool.isConcentratedLiquidity).toBe(true);
       expect(pool.rangeStatus).toBeDefined();
       expect(pool.allocation).toBeDefined();
-      expect(pool.totalValue).toBeDefined();
+      expect(pool.value).toBeDefined();
       expect(pool.underlying).toBeDefined();
       expect(pool.poolAddress).toBe('0x1234567890abcdef');
     });
@@ -707,7 +910,7 @@ describe('Uniswap Position Parsing', () => {
               {
                 name: PositionName.LIQUIDITY_POOL,
                 updateTime: new Date().toISOString(),
-                detailTypes: [],
+                detailTypes: [DetailType.COMMON],
                 pool: {
                   id: '0xmultiassetpool',
                   chainId: 1,
@@ -770,7 +973,31 @@ describe('Uniswap Position Parsing', () => {
           },
         ],
         uniqueTokens: [],
-        stats: undefined,
+        stats: {
+          totals: {
+            netTotal: '1000',
+            totalDeposits: '1000',
+            totalBorrows: '0',
+            totalRewards: '0',
+            totalLocked: '0',
+            overallTotal: '1000',
+          },
+          canonicalProtocol: {
+            uniswap: {
+              canonicalProtocolName: 'uniswap',
+              protocolIds: ['uniswap'],
+              totals: {
+                netTotal: '1000',
+                totalDeposits: '1000',
+                totalBorrows: '0',
+                totalRewards: '0',
+                totalLocked: '0',
+                overallTotal: '1000',
+              },
+              totalsByChain: {},
+            },
+          },
+        },
       };
 
       const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };

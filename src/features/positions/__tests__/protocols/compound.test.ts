@@ -7,8 +7,12 @@
  */
 
 import { transformPositions } from '../../stores/transform';
-import { PositionName, type ListPositionsResponse } from '../../types';
-import type { ListPositionsResponse_Result } from '../../types/generated/positions/positions';
+import {
+  PositionName,
+  DetailType,
+  type ListPositionsResponse,
+  type ListPositionsResponse_Result,
+} from '../../types/generated/positions/positions';
 import type { Asset } from '../../types/generated/common/asset';
 import { TEST_PARAMS } from '../../__fixtures__/ListPositions';
 
@@ -66,9 +70,9 @@ describe('Compound Protocol', () => {
           portfolioItems: [
             {
               name: PositionName.LENDING,
-              stats: undefined,
+              stats: { assetValue: '1000', debtValue: '0', netValue: '1000' },
               updateTime: undefined,
-              detailTypes: [],
+              detailTypes: [DetailType.LENDING],
               pool: undefined,
               assetDict: {},
               detail: {
@@ -82,7 +86,31 @@ describe('Compound Protocol', () => {
         },
       ],
       uniqueTokens: [],
-      stats: undefined,
+      stats: {
+        totals: {
+          netTotal: '30000',
+          totalDeposits: '50000',
+          totalBorrows: '20000',
+          totalRewards: '0',
+          totalLocked: '0',
+          overallTotal: '30000',
+        },
+        canonicalProtocol: {
+          compound: {
+            canonicalProtocolName: 'compound',
+            protocolIds: ['compound'],
+            totals: {
+              netTotal: '30000',
+              totalDeposits: '50000',
+              totalBorrows: '20000',
+              totalRewards: '0',
+              totalLocked: '0',
+              overallTotal: '30000',
+            },
+            totalsByChain: {},
+          },
+        },
+      },
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -125,9 +153,9 @@ describe('Compound Protocol', () => {
           portfolioItems: [
             {
               name: PositionName.REWARDS,
-              stats: undefined,
+              stats: { assetValue: '1000', debtValue: '0', netValue: '1000' },
               updateTime: undefined,
-              detailTypes: [],
+              detailTypes: [DetailType.LENDING],
               pool: undefined,
               assetDict: {},
               detail: {
@@ -141,7 +169,31 @@ describe('Compound Protocol', () => {
         },
       ],
       uniqueTokens: [],
-      stats: undefined,
+      stats: {
+        totals: {
+          netTotal: '250',
+          totalDeposits: '0',
+          totalBorrows: '0',
+          totalRewards: '250',
+          totalLocked: '0',
+          overallTotal: '250',
+        },
+        canonicalProtocol: {
+          compound: {
+            canonicalProtocolName: 'compound',
+            protocolIds: ['compound'],
+            totals: {
+              netTotal: '250',
+              totalDeposits: '0',
+              totalBorrows: '0',
+              totalRewards: '250',
+              totalLocked: '0',
+              overallTotal: '250',
+            },
+            totalsByChain: {},
+          },
+        },
+      },
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
@@ -178,9 +230,9 @@ describe('Compound Protocol', () => {
           portfolioItems: [
             {
               name: PositionName.LENDING,
-              stats: undefined,
+              stats: { assetValue: '1000', debtValue: '0', netValue: '1000' },
               updateTime: undefined,
-              detailTypes: [],
+              detailTypes: [DetailType.LENDING],
               pool: undefined,
               assetDict: {},
               detail: {
@@ -194,7 +246,31 @@ describe('Compound Protocol', () => {
         },
       ],
       uniqueTokens: [],
-      stats: undefined,
+      stats: {
+        totals: {
+          netTotal: '10100',
+          totalDeposits: '10000',
+          totalBorrows: '0',
+          totalRewards: '100',
+          totalLocked: '0',
+          overallTotal: '10100',
+        },
+        canonicalProtocol: {
+          compound: {
+            canonicalProtocolName: 'compound',
+            protocolIds: ['compound'],
+            totals: {
+              netTotal: '10100',
+              totalDeposits: '10000',
+              totalBorrows: '0',
+              totalRewards: '100',
+              totalLocked: '0',
+              overallTotal: '10100',
+            },
+            totalsByChain: {},
+          },
+        },
+      },
     };
 
     const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };

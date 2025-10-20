@@ -4,7 +4,7 @@
  * Contains both successful and error responses from the Platform API
  */
 
-import type { ListPositionsResponse } from '../types';
+import type { ListPositionsResponse } from '../types/generated/positions/positions';
 
 // Import JSON fixtures
 import successResponse from './ListPositions-success.json';

@@ -3,7 +3,7 @@ import { time } from '@/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 import type { NativeCurrencyKey } from '@/entities';
-import type { ListPositionsResponse } from '../types';
+import type { ListPositionsResponse } from '../types/generated/positions/positions';
 
 // ============ Constants ====================================================== //
 

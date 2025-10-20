@@ -1,6 +1,6 @@
 import { transformPositions } from '../../../stores/transform';
 import { LIST_POSITIONS_SUCCESS, LIST_POSITIONS_SUCCESS_EMPTY, TEST_PARAMS } from '../../../__fixtures__/ListPositions';
-import { PositionName, type ListPositionsResponse } from '../../../types';
+import { PositionName, type ListPositionsResponse } from '../../../types/generated/positions/positions';
 
 // Mock config to avoid React Native gesture handler imports
 jest.mock('@/config', () => ({
@@ -51,7 +51,6 @@ describe('transformPositions', () => {
       const firstProtocol = protocolNames[0];
       const firstPosition = result.positions[firstProtocol];
       expect(firstPosition).toHaveProperty('type');
-      expect(firstPosition).toHaveProperty('chainIds');
       expect(firstPosition).toHaveProperty('totals');
       expect(firstPosition).toHaveProperty('deposits');
       expect(firstPosition).toHaveProperty('pools');
@@ -214,7 +213,6 @@ describe('transformPositions', () => {
       it('should have all required position properties', () => {
         expect(firstPosition).toHaveProperty('type');
         expect(firstPosition).toHaveProperty('protocolVersion');
-        expect(firstPosition).toHaveProperty('chainIds');
         expect(firstPosition).toHaveProperty('deposits');
         expect(firstPosition).toHaveProperty('pools');
         expect(firstPosition).toHaveProperty('stakes');
@@ -236,46 +234,21 @@ describe('transformPositions', () => {
         expect(dapp.colors.shadow === undefined || typeof dapp.colors.shadow === 'string').toBe(true);
       });
 
-      it('should have sorted chainIds', () => {
-        const { chainIds } = firstPosition;
-        expect(Array.isArray(chainIds)).toBe(true);
-        expect(chainIds.length).toBeGreaterThan(0);
+      it('should have totals from backend stats', () => {
+        const { totals } = firstPosition;
 
-        // Check if sorted ascending
-        for (let i = 1; i < chainIds.length; i++) {
-          expect(chainIds[i]).toBeGreaterThanOrEqual(chainIds[i - 1]);
-        }
-      });
+        // Verify totals structure (values come from backend stats)
+        expect(totals).toHaveProperty('total');
+        expect(totals).toHaveProperty('totalDeposits');
+        expect(totals).toHaveProperty('totalBorrows');
+        expect(totals).toHaveProperty('totalRewards');
+        expect(totals).toHaveProperty('totalLocked');
 
-      it('should have calculated totals correctly', () => {
-        const { totals, deposits, pools, stakes, borrows, rewards } = firstPosition;
-
-        // Calculate expected deposits total
-        let expectedDepositsTotal = 0;
-        [...deposits, ...pools, ...stakes].forEach(item => {
-          expectedDepositsTotal += parseFloat(item.totalValue || '0');
-        });
-
-        // Calculate expected borrows total
-        let expectedBorrowsTotal = 0;
-        borrows.forEach(item => {
-          expectedBorrowsTotal += parseFloat(item.totalValue || '0');
-        });
-
-        // Calculate expected rewards total
-        let expectedRewardsTotal = 0;
-        rewards.forEach(item => {
-          expectedRewardsTotal += parseFloat(item.totalValue || '0');
-        });
-
-        // Verify totals (with small tolerance for floating point)
-        expect(parseFloat(totals.totalDeposits.amount)).toBeCloseTo(expectedDepositsTotal, 2);
-        expect(parseFloat(totals.totalBorrows.amount)).toBeCloseTo(expectedBorrowsTotal, 2);
-        expect(parseFloat(totals.totalRewards.amount)).toBeCloseTo(expectedRewardsTotal, 2);
-
-        // Verify net total calculation: (deposits + rewards) - borrows
-        const expectedTotal = expectedDepositsTotal + expectedRewardsTotal - expectedBorrowsTotal;
-        expect(parseFloat(totals.total.amount)).toBeCloseTo(expectedTotal, 2);
+        // Verify each total has amount and display
+        expect(totals.total).toHaveProperty('amount');
+        expect(totals.total).toHaveProperty('display');
+        expect(typeof totals.total.amount).toBe('string');
+        expect(typeof totals.total.display).toBe('string');
       });
     });
 
@@ -289,9 +262,8 @@ describe('transformPositions', () => {
         const firstDeposit = positionsWithDeposits[0].deposits[0];
         expect(firstDeposit).toHaveProperty('asset');
         expect(firstDeposit).toHaveProperty('quantity');
-        expect(firstDeposit).toHaveProperty('totalValue');
+        expect(firstDeposit).toHaveProperty('value');
         expect(firstDeposit).toHaveProperty('underlying');
-        expect(firstDeposit).toHaveProperty('isConcentratedLiquidity');
       });
 
       it('should have transformed LP pools correctly', () => {
@@ -301,7 +273,7 @@ describe('transformPositions', () => {
         const firstPool = positionsWithPools[0].pools[0];
         expect(firstPool).toHaveProperty('asset');
         expect(firstPool).toHaveProperty('quantity');
-        expect(firstPool).toHaveProperty('totalValue');
+        expect(firstPool).toHaveProperty('value');
         expect(firstPool).toHaveProperty('underlying');
         expect(firstPool).toHaveProperty('isConcentratedLiquidity');
         expect(firstPool).toHaveProperty('rangeStatus');
@@ -316,10 +288,26 @@ describe('transformPositions', () => {
         const firstStake = positionsWithStakes[0].stakes[0];
         expect(firstStake).toHaveProperty('asset');
         expect(firstStake).toHaveProperty('quantity');
-        expect(firstStake).toHaveProperty('totalValue');
+        expect(firstStake).toHaveProperty('value');
         expect(firstStake).toHaveProperty('underlying');
         expect(firstStake).toHaveProperty('isLp');
-        expect(firstStake).toHaveProperty('isConcentratedLiquidity');
+      });
+
+      it('should have LP-specific fields for LP stakes', () => {
+        const positionsWithStakes = positions.filter(p => p.stakes.length > 0);
+
+        // Skip test if no stakes in test data
+        if (positionsWithStakes.length === 0) return;
+
+        const lpStakes = positionsWithStakes.flatMap(p => p.stakes).filter(s => s.isLp);
+
+        // Skip test if no LP stakes in test data
+        if (lpStakes.length === 0) return;
+
+        const firstLpStake = lpStakes[0];
+        expect(firstLpStake).toHaveProperty('isConcentratedLiquidity');
+        expect(firstLpStake).toHaveProperty('rangeStatus');
+        expect(firstLpStake).toHaveProperty('allocation');
       });
 
       it('should have transformed borrows correctly', () => {
@@ -331,7 +319,7 @@ describe('transformPositions', () => {
         const firstBorrow = positionsWithBorrows[0].borrows[0];
         expect(firstBorrow).toHaveProperty('asset');
         expect(firstBorrow).toHaveProperty('quantity');
-        expect(firstBorrow).toHaveProperty('totalValue');
+        expect(firstBorrow).toHaveProperty('value');
         expect(firstBorrow).toHaveProperty('underlying');
       });
 
@@ -344,46 +332,46 @@ describe('transformPositions', () => {
         const firstReward = positionsWithRewards[0].rewards[0];
         expect(firstReward).toHaveProperty('asset');
         expect(firstReward).toHaveProperty('quantity');
-        expect(firstReward).toHaveProperty('totalValue');
-        expect(firstReward).toHaveProperty('native');
-        expect(firstReward.native).toHaveProperty('amount');
-        expect(firstReward.native).toHaveProperty('display');
+        expect(firstReward).toHaveProperty('value');
+        expect(firstReward).toHaveProperty('value');
+        expect(firstReward.value).toHaveProperty('amount');
+        expect(firstReward.value).toHaveProperty('display');
       });
 
       it('should sort items within positions by value', () => {
         positions.forEach(position => {
           // Check deposits are sorted
           for (let i = 1; i < position.deposits.length; i++) {
-            const prevValue = parseFloat(position.deposits[i - 1].totalValue);
-            const currValue = parseFloat(position.deposits[i].totalValue);
+            const prevValue = parseFloat(position.deposits[i - 1].value.amount);
+            const currValue = parseFloat(position.deposits[i].value.amount);
             expect(prevValue).toBeGreaterThanOrEqual(currValue);
           }
 
           // Check pools are sorted
           for (let i = 1; i < position.pools.length; i++) {
-            const prevValue = parseFloat(position.pools[i - 1].totalValue);
-            const currValue = parseFloat(position.pools[i].totalValue);
+            const prevValue = parseFloat(position.pools[i - 1].value.amount);
+            const currValue = parseFloat(position.pools[i].value.amount);
             expect(prevValue).toBeGreaterThanOrEqual(currValue);
           }
 
           // Check stakes are sorted
           for (let i = 1; i < position.stakes.length; i++) {
-            const prevValue = parseFloat(position.stakes[i - 1].totalValue);
-            const currValue = parseFloat(position.stakes[i].totalValue);
+            const prevValue = parseFloat(position.stakes[i - 1].value.amount);
+            const currValue = parseFloat(position.stakes[i].value.amount);
             expect(prevValue).toBeGreaterThanOrEqual(currValue);
           }
 
           // Check borrows are sorted
           for (let i = 1; i < position.borrows.length; i++) {
-            const prevValue = parseFloat(position.borrows[i - 1].totalValue);
-            const currValue = parseFloat(position.borrows[i].totalValue);
+            const prevValue = parseFloat(position.borrows[i - 1].value.amount);
+            const currValue = parseFloat(position.borrows[i].value.amount);
             expect(prevValue).toBeGreaterThanOrEqual(currValue);
           }
 
           // Check rewards are sorted
           for (let i = 1; i < position.rewards.length; i++) {
-            const prevValue = parseFloat(position.rewards[i - 1].totalValue);
-            const currValue = parseFloat(position.rewards[i].totalValue);
+            const prevValue = parseFloat(position.rewards[i - 1].value.amount);
+            const currValue = parseFloat(position.rewards[i].value.amount);
             expect(prevValue).toBeGreaterThanOrEqual(currValue);
           }
         });
@@ -409,7 +397,7 @@ describe('transformPositions', () => {
         const underlying = itemWithUnderlying?.underlying[0];
         expect(underlying).toHaveProperty('asset');
         expect(underlying).toHaveProperty('quantity');
-        expect(underlying).toHaveProperty('native');
+        expect(underlying).toHaveProperty('value');
 
         // Check asset structure
         expect(underlying?.asset).toHaveProperty('icon_url');
@@ -418,8 +406,8 @@ describe('transformPositions', () => {
         expect(underlying?.asset).toHaveProperty('name');
 
         // Check native display
-        expect(underlying?.native).toHaveProperty('amount');
-        expect(underlying?.native).toHaveProperty('display');
+        expect(underlying?.value).toHaveProperty('amount');
+        expect(underlying?.value).toHaveProperty('display');
       });
 
       it('should calculate LP pool allocations correctly', () => {
@@ -442,26 +430,24 @@ describe('transformPositions', () => {
       });
     });
 
-    describe('Grand Totals Calculation', () => {
-      it('should calculate grand totals correctly from all positions', () => {
-        const positions = Object.values(result.positions);
+    describe('Grand Totals from Backend Stats', () => {
+      it('should have grand totals structure from backend', () => {
+        // Grand totals come from backend stats, not calculated from item sums
+        expect(result.totals).toHaveProperty('total');
+        expect(result.totals).toHaveProperty('totalDeposits');
+        expect(result.totals).toHaveProperty('totalBorrows');
+        expect(result.totals).toHaveProperty('totalRewards');
+        expect(result.totals).toHaveProperty('totalLocked');
 
-        let expectedTotalDeposits = 0;
-        let expectedTotalBorrows = 0;
-        let expectedTotalRewards = 0;
+        // Verify all totals have amount and display
+        expect(result.totals.total).toHaveProperty('amount');
+        expect(result.totals.total).toHaveProperty('display');
+        expect(typeof result.totals.total.amount).toBe('string');
+        expect(typeof result.totals.total.display).toBe('string');
 
-        positions.forEach(position => {
-          expectedTotalDeposits += parseFloat(position.totals.totalDeposits.amount);
-          expectedTotalBorrows += parseFloat(position.totals.totalBorrows.amount);
-          expectedTotalRewards += parseFloat(position.totals.totalRewards.amount);
-        });
-
-        const expectedTotal = expectedTotalDeposits + expectedTotalRewards - expectedTotalBorrows;
-
-        expect(parseFloat(result.totals.totalDeposits.amount)).toBeCloseTo(expectedTotalDeposits, 2);
-        expect(parseFloat(result.totals.totalBorrows.amount)).toBeCloseTo(expectedTotalBorrows, 2);
-        expect(parseFloat(result.totals.totalRewards.amount)).toBeCloseTo(expectedTotalRewards, 2);
-        expect(parseFloat(result.totals.total.amount)).toBeCloseTo(expectedTotal, 2);
+        // Verify totals are reasonable positive numbers
+        const totalValue = parseFloat(result.totals.total.amount);
+        expect(totalValue).toBeGreaterThan(0);
       });
     });
 
@@ -527,78 +513,3 @@ describe('transformPositions', () => {
     });
   });
 });
-
-/*
-describe('createEmptyResponse', () => {
-  it('should return empty RainbowPositions structure for USD', () => {
-    const result = createEmptyResponse('USD');
-
-    expect(result).toBeDefined();
-    expect(result.positions).toEqual({});
-    expect(result.positionTokens).toEqual([]);
-    expect(result.totals).toBeDefined();
-  });
-
-  it('should have zeroed totals', () => {
-    const result = createEmptyResponse('USD');
-    const { totals } = result;
-
-    expect(totals.total.amount).toBe('0');
-    expect(totals.totalDeposits.amount).toBe('0');
-    expect(totals.totalBorrows.amount).toBe('0');
-    expect(totals.totalRewards.amount).toBe('0');
-  });
-
-  it('should format display strings with correct currency', () => {
-    const usdResult = createEmptyResponse('USD');
-    expect(usdResult.totals.total.display).toBe('$0.00');
-    expect(usdResult.totals.totalDeposits.display).toBe('$0.00');
-    expect(usdResult.totals.totalBorrows.display).toBe('$0.00');
-    expect(usdResult.totals.totalRewards.display).toBe('$0.00');
-  });
-
-  it('should work with EUR currency', () => {
-    const eurResult = createEmptyResponse('EUR');
-    expect(eurResult.totals.total.amount).toBe('0');
-    // EUR formatting may vary based on locale
-    expect(eurResult.totals.total.display).toBeDefined();
-    expect(eurResult.totals.total.display).toContain('0');
-  });
-
-  it('should always return the same structure', () => {
-    const result1 = createEmptyResponse('USD');
-    const result2 = createEmptyResponse('USD');
-
-    expect(result1).toEqual(result2);
-    expect(result1).not.toBe(result2); // Different object instances
-  });
-
-  it('should have all required RainbowPositions properties', () => {
-    const result = createEmptyResponse('USD');
-
-    expect(result).toHaveProperty('positions');
-    expect(result).toHaveProperty('positionTokens');
-    expect(result).toHaveProperty('totals');
-    expect(result.totals).toHaveProperty('total');
-    expect(result.totals).toHaveProperty('totalDeposits');
-    expect(result.totals).toHaveProperty('totalBorrows');
-    expect(result.totals).toHaveProperty('totalRewards');
-  });
-
-  it('should have NativeDisplay structure for all totals', () => {
-    const result = createEmptyResponse('USD');
-
-    const checkNativeDisplay = (nativeDisplay: any) => {
-      expect(nativeDisplay).toHaveProperty('amount');
-      expect(nativeDisplay).toHaveProperty('display');
-      expect(typeof nativeDisplay.amount).toBe('string');
-      expect(typeof nativeDisplay.display).toBe('string');
-    };
-
-    checkNativeDisplay(result.totals.total);
-    checkNativeDisplay(result.totals.totalDeposits);
-    checkNativeDisplay(result.totals.totalBorrows);
-    checkNativeDisplay(result.totals.totalRewards);
-  });
-});
-*/

@@ -108,7 +108,7 @@ export function calculateLiquidityAllocation(underlying: RainbowUnderlyingAsset[
 
   // Calculate total value
   const totalValue = underlying.reduce((sum, asset) => {
-    const value = parseFloat(asset.native?.amount || '0');
+    const value = parseFloat(asset.value?.amount || '0');
     return sum + value;
   }, 0);
 
@@ -123,7 +123,7 @@ export function calculateLiquidityAllocation(underlying: RainbowUnderlyingAsset[
   // Sort assets by value (highest first) and calculate percentages
   const assetsWithPercentage = underlying
     .map(asset => {
-      const value = parseFloat(asset.native?.amount || '0');
+      const value = parseFloat(asset.value?.amount || '0');
       const percentage = (value / totalValue) * 100;
       return {
         value,

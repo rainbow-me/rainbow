@@ -60,12 +60,12 @@ describe('LP Position Detection', () => {
           {
             asset: { symbol: 'ETH' } as unknown as PositionAsset,
             quantity: '1',
-            native: { amount: '1000', display: '$1000' },
+            value: { amount: '1000', display: '$1000' },
           },
           {
             asset: { symbol: 'USDC' } as unknown as PositionAsset,
             quantity: '1000',
-            native: { amount: '1000', display: '$1000' },
+            value: { amount: '1000', display: '$1000' },
           },
         ];
 
@@ -78,7 +78,7 @@ describe('LP Position Detection', () => {
           {
             asset: { symbol: 'ETH' } as unknown as PositionAsset,
             quantity: '1',
-            native: { amount: '2000', display: '$2000' },
+            value: { amount: '2000', display: '$2000' },
           },
         ];
 
@@ -91,12 +91,12 @@ describe('LP Position Detection', () => {
           {
             asset: { symbol: 'ETH' } as unknown as PositionAsset,
             quantity: '1',
-            native: { amount: '2000', display: '$2000' },
+            value: { amount: '2000', display: '$2000' },
           },
           {
             asset: { symbol: 'USDC' } as unknown as PositionAsset,
             quantity: '0',
-            native: { amount: '0', display: '$0' },
+            value: { amount: '0', display: '$0' },
           },
         ];
 
@@ -109,12 +109,12 @@ describe('LP Position Detection', () => {
           {
             asset: { symbol: 'ETH' } as unknown as PositionAsset,
             quantity: '1',
-            native: { amount: '1000', display: '$1000' },
+            value: { amount: '1000', display: '$1000' },
           },
           {
             asset: { symbol: 'USDC' } as unknown as PositionAsset,
             quantity: '1000',
-            native: { amount: '1000', display: '$1000' },
+            value: { amount: '1000', display: '$1000' },
           },
         ];
 
@@ -139,12 +139,12 @@ describe('LP Position Detection', () => {
           {
             asset: { symbol: 'ETH' } as unknown as PositionAsset,
             quantity: '1',
-            native: { amount: '1000', display: '$1000' },
+            value: { amount: '1000', display: '$1000' },
           },
           {
             asset: { symbol: 'USDC' } as unknown as PositionAsset,
             quantity: '1000',
-            native: { amount: '1000', display: '$1000' },
+            value: { amount: '1000', display: '$1000' },
           },
         ];
 
@@ -157,12 +157,12 @@ describe('LP Position Detection', () => {
           {
             asset: { symbol: 'ETH' } as unknown as PositionAsset,
             quantity: '1',
-            native: { amount: '2000', display: '$2000' },
+            value: { amount: '2000', display: '$2000' },
           },
           {
             asset: { symbol: 'USDC' } as unknown as PositionAsset,
             quantity: '0',
-            native: { amount: '0', display: '$0' },
+            value: { amount: '0', display: '$0' },
           },
         ];
 
@@ -175,12 +175,12 @@ describe('LP Position Detection', () => {
           {
             asset: { symbol: 'ETH' } as unknown as PositionAsset,
             quantity: '1',
-            native: { amount: '1600', display: '$1600' },
+            value: { amount: '1600', display: '$1600' },
           },
           {
             asset: { symbol: 'USDC' } as unknown as PositionAsset,
             quantity: '400',
-            native: { amount: '400', display: '$400' },
+            value: { amount: '400', display: '$400' },
           },
         ];
 
@@ -193,12 +193,12 @@ describe('LP Position Detection', () => {
           {
             asset: { symbol: 'ETH' } as unknown as PositionAsset,
             quantity: '0',
-            native: { amount: '0', display: '$0' },
+            value: { amount: '0', display: '$0' },
           },
           {
             asset: { symbol: 'USDC' } as unknown as PositionAsset,
             quantity: '0',
-            native: { amount: '0', display: '$0' },
+            value: { amount: '0', display: '$0' },
           },
         ];
 
@@ -221,17 +221,17 @@ describe('LP Position Detection', () => {
           {
             asset: { symbol: 'ETH' } as unknown as PositionAsset,
             quantity: '1',
-            native: { amount: '333.33', display: '$333.33' },
+            value: { amount: '333.33', display: '$333.33' },
           },
           {
             asset: { symbol: 'USDC' } as unknown as PositionAsset,
             quantity: '333.33',
-            native: { amount: '333.33', display: '$333.33' },
+            value: { amount: '333.33', display: '$333.33' },
           },
           {
             asset: { symbol: 'DAI' } as unknown as PositionAsset,
             quantity: '333.34',
-            native: { amount: '333.34', display: '$333.34' },
+            value: { amount: '333.34', display: '$333.34' },
           },
         ];
 
@@ -247,47 +247,47 @@ describe('LP Position Detection', () => {
           {
             asset: { symbol: 'ENA' } as unknown as PositionAsset,
             quantity: '0.111',
-            native: { amount: '0.0624', display: '$0.06' }, // ~6%
+            value: { amount: '0.0624', display: '$0.06' }, // ~6%
           },
           {
             asset: { symbol: 'UNI' } as unknown as PositionAsset,
             quantity: '0.011',
-            native: { amount: '0.0878', display: '$0.09' }, // ~9%
+            value: { amount: '0.0878', display: '$0.09' }, // ~9%
           },
           {
             asset: { symbol: 'AAVE' } as unknown as PositionAsset,
             quantity: '0.0006',
-            native: { amount: '0.1785', display: '$0.18' }, // ~18%
+            value: { amount: '0.1785', display: '$0.18' }, // ~18%
           },
           {
             asset: { symbol: 'MKR' } as unknown as PositionAsset,
             quantity: '0.00003',
-            native: { amount: '0.059', display: '$0.06' }, // ~6%
+            value: { amount: '0.059', display: '$0.06' }, // ~6%
           },
           {
             asset: { symbol: 'WETH' } as unknown as PositionAsset,
             quantity: '0.0001',
-            native: { amount: '0.486', display: '$0.49' }, // ~50%
+            value: { amount: '0.486', display: '$0.49' }, // ~50%
           },
           {
             asset: { symbol: 'LDO' } as unknown as PositionAsset,
             quantity: '0.038',
-            native: { amount: '0.045', display: '$0.05' }, // ~5%
+            value: { amount: '0.045', display: '$0.05' }, // ~5%
           },
           {
             asset: { symbol: 'COMP' } as unknown as PositionAsset,
             quantity: '0.0003',
-            native: { amount: '0.0158', display: '$0.02' }, // ~2%
+            value: { amount: '0.0158', display: '$0.02' }, // ~2%
           },
           {
             asset: { symbol: 'PENDLE' } as unknown as PositionAsset,
             quantity: '0.007',
-            native: { amount: '0.0329', display: '$0.03' }, // ~3%
+            value: { amount: '0.0329', display: '$0.03' }, // ~3%
           },
           {
             asset: { symbol: 'RPL' } as unknown as PositionAsset,
             quantity: '0.0008',
-            native: { amount: '0.004', display: '$0.004' }, // ~0.4%
+            value: { amount: '0.004', display: '$0.004' }, // ~0.4%
           },
         ];
 

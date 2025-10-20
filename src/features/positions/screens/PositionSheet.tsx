@@ -131,7 +131,7 @@ export const PositionSheet: React.FC = () => {
                     key={`deposit-${deposit.asset.address}-${deposit.quantity}-${deposit.apy}`}
                     asset={deposit.underlying[0].asset}
                     quantity={deposit.underlying[0].quantity}
-                    native={deposit.underlying[0].native}
+                    value={deposit.value}
                     dappVersion={deposit.dappVersion}
                     positionColor={positionColor}
                     apy={deposit.apy}
@@ -148,7 +148,7 @@ export const PositionSheet: React.FC = () => {
                   <LpPositionListItem
                     key={`pool-${pool.asset.address}-${pool.quantity}`}
                     assets={pool.underlying}
-                    totalAssetsValue={pool.totalValue}
+                    value={pool.value}
                     isConcentratedLiquidity={pool.isConcentratedLiquidity}
                     dappVersion={pool.dappVersion}
                     onPress={openTokenSheet}
@@ -165,7 +165,7 @@ export const PositionSheet: React.FC = () => {
                     <LpPositionListItem
                       key={`stake-${stake.asset.address}-${stake.quantity}`}
                       assets={stake.underlying}
-                      totalAssetsValue={stake.totalValue}
+                      value={stake.value}
                       isConcentratedLiquidity={stake.isConcentratedLiquidity}
                       dappVersion={stake.dappVersion}
                       onPress={openTokenSheet} // re-arranges assets for display
@@ -175,7 +175,7 @@ export const PositionSheet: React.FC = () => {
                       key={`stake-${stake.asset.address}-${stake.quantity}`}
                       asset={stake.underlying[0].asset}
                       quantity={stake.underlying[0].quantity}
-                      native={stake.underlying[0].native}
+                      value={stake.value}
                       positionColor={positionColor}
                       apy={stake.apy}
                       onPress={() => openTokenSheet(stake.underlying[0].asset)}
@@ -193,7 +193,7 @@ export const PositionSheet: React.FC = () => {
                     key={`borrow-${borrow.underlying[0].asset.address}-${borrow.quantity}-${borrow.apy}`}
                     asset={borrow.underlying[0].asset}
                     quantity={borrow.underlying[0].quantity}
-                    native={borrow.underlying[0].native}
+                    value={borrow.value}
                     positionColor={positionColor}
                     apy={borrow.apy}
                     onPress={() => openTokenSheet(borrow.underlying[0].asset)}
@@ -210,7 +210,7 @@ export const PositionSheet: React.FC = () => {
                     key={`claimable-${reward.asset.address}-${reward.quantity}`}
                     asset={reward.asset}
                     quantity={reward.quantity}
-                    native={reward.native}
+                    value={reward.value}
                     positionColor={positionColor}
                     apy={undefined}
                     onPress={() => openTokenSheet(reward.asset)}
