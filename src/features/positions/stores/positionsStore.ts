@@ -17,6 +17,20 @@ type PositionsState = {
 
 const CACHE_TIME = time.days(2);
 const STALE_TIME = time.minutes(10);
+const RETRY_DELAY = time.minutes(1);
+
+// ============ Retry Tracking ================================================= //
+
+/**
+ * The backend lazy-loads positions data. The first fetch for a new address often
+ * returns empty results, requiring a second fetch ~1 minute later to get hydrated data.
+ *
+ * Tracks retry state per address:
+ * - Not in map: never fetched or has positions
+ * - NodeJS.Timeout: retry scheduled
+ * - null: already retried once
+ */
+const hydrationRetry = new Map<string, NodeJS.Timeout | null>();
 
 // ============ Positions Store ================================================ //
 
@@ -33,6 +47,26 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
     cacheTime: CACHE_TIME,
     staleTime: STALE_TIME,
     enabled: $ => $(userAssetsStoreManager, state => !!state.address),
+    onFetched: ({ data, fetch, params }) => {
+      const address = params.address?.toLowerCase();
+      if (!address) return;
+
+      const retry = hydrationRetry.get(address);
+      if (retry) clearTimeout(retry);
+
+      const hasPositions = data?.positions && Object.keys(data.positions).length > 0;
+
+      if (hasPositions) {
+        hydrationRetry.delete(address);
+      } else if (retry === undefined) {
+        hydrationRetry.set(
+          address,
+          setTimeout(() => fetch(undefined, { force: true }), RETRY_DELAY)
+        );
+      } else {
+        hydrationRetry.set(address, null);
+      }
+    },
   },
   (_, get) => ({
     getPositionTokenAddresses: () => {
