@@ -271,33 +271,15 @@ function transformBorrows(tokens: PositionToken[], item: PortfolioItem, position
  * Transform DeBank reward tokens into claimable reward items
  */
 function transformRewards(tokens: PositionToken[], item: PortfolioItem, position: Position, currency: NativeCurrencyKey): RainbowReward[] {
-  return tokens.reduce<RainbowReward[]>((acc, token) => {
-    if (!token.asset) return acc;
+  const underlyingAssets = transformUnderlyingAssets(tokens, currency);
 
-    const { price, creationDate, iconUrl, ...asset } = token.asset;
-
-    acc.push({
-      asset: {
-        ...asset,
-        uniqueId: `${asset.address}_${asset.chainId}`,
-        icon_url: iconUrl,
-        creationDate: normalizeDate(creationDate),
-        price: price
-          ? {
-              value: price.value,
-              changed_at: normalizeDateTime(price.changedAt),
-              relative_change_24h: price.relativeChange24h,
-            }
-          : undefined,
-      },
-      quantity: token.amount,
-      value: tokenToValue(token, currency),
-      underlying: [],
-      dappVersion: position.protocolVersion,
-    });
-
-    return acc;
-  }, []);
+  return underlyingAssets.map(underlyingAsset => ({
+    asset: underlyingAsset.asset,
+    quantity: underlyingAsset.quantity,
+    value: underlyingAsset.value,
+    underlying: [],
+    dappVersion: position.protocolVersion,
+  }));
 }
 
 // ============ DeBank DetailType Transforms =============================== //
