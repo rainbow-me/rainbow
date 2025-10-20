@@ -135,6 +135,7 @@ export const PositionSheet: React.FC = () => {
                     dappVersion={deposit.dappVersion}
                     positionColor={positionColor}
                     apy={deposit.apy}
+                    name={'name' in deposit ? deposit.name : undefined}
                     onPress={() => openTokenSheet(deposit.underlying[0].asset)}
                   />
                 ))}
@@ -151,6 +152,7 @@ export const PositionSheet: React.FC = () => {
                     value={pool.value}
                     isConcentratedLiquidity={pool.isConcentratedLiquidity}
                     dappVersion={pool.dappVersion}
+                    name={pool.name}
                     onPress={openTokenSheet}
                   />
                 ))}
@@ -168,6 +170,7 @@ export const PositionSheet: React.FC = () => {
                       value={stake.value}
                       isConcentratedLiquidity={stake.isConcentratedLiquidity}
                       dappVersion={stake.dappVersion}
+                      name={stake.name}
                       onPress={openTokenSheet} // re-arranges assets for display
                     />
                   ) : (
@@ -178,6 +181,7 @@ export const PositionSheet: React.FC = () => {
                       value={stake.value}
                       positionColor={positionColor}
                       apy={stake.apy}
+                      name={'name' in stake ? stake.name : undefined}
                       onPress={() => openTokenSheet(stake.underlying[0].asset)}
                     />
                   )
@@ -196,6 +200,7 @@ export const PositionSheet: React.FC = () => {
                     value={borrow.value}
                     positionColor={positionColor}
                     apy={borrow.apy}
+                    name={'name' in borrow ? borrow.name : undefined}
                     onPress={() => openTokenSheet(borrow.underlying[0].asset)}
                   />
                 ))}
@@ -213,6 +218,7 @@ export const PositionSheet: React.FC = () => {
                     value={reward.value}
                     positionColor={positionColor}
                     apy={undefined}
+                    name={'name' in reward ? reward.name : undefined}
                     onPress={() => openTokenSheet(reward.asset)}
                   />
                 ))}

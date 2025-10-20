@@ -44,6 +44,21 @@ function getNativeValue(amount: string, currency: NativeCurrencyKey): { amount: 
 }
 
 /**
+ * Validate and transform description into display name
+ * Returns undefined if description is empty or starts with '#'
+ *
+ * Note: Descriptions starting with '#' are internal token IDs (e.g., '#123456')
+ * used by protocols for tracking purposes. These are not user-friendly and should
+ * not be displayed in the UI. Instead, we fall back to showing token symbols.
+ */
+function getDisplayNameFromDescription(description?: string): string | undefined {
+  if (!description || description === '' || description.startsWith('#')) {
+    return undefined;
+  }
+  return description;
+}
+
+/**
  * Calculate native display value for a position token
  */
 function tokenToValue(token: PositionToken, currency: NativeCurrencyKey): { amount: string; display: string } {
@@ -328,12 +343,12 @@ function transformCommonDetail(
     if (detail.supplyTokenList.length > 1) {
       result.pools = transformPools(detail.supplyTokenList, item, sourcePosition, currency).map(pool => ({
         ...pool,
-        description: detail.description,
+        name: getDisplayNameFromDescription(detail.description),
       }));
     } else {
       result.deposits = transformDeposits(detail.supplyTokenList, item, sourcePosition, currency).map(deposit => ({
         ...deposit,
-        description: detail.description,
+        name: getDisplayNameFromDescription(detail.description),
       }));
     }
   }
@@ -341,14 +356,14 @@ function transformCommonDetail(
   if (detail.borrowTokenList?.length) {
     result.borrows = transformBorrows(detail.borrowTokenList, item, sourcePosition, currency).map(borrow => ({
       ...borrow,
-      description: detail.description,
+      name: getDisplayNameFromDescription(detail.description),
     }));
   }
 
   if (detail.rewardTokenList?.length) {
     result.rewards = transformRewards(detail.rewardTokenList, item, sourcePosition, currency).map(reward => ({
       ...reward,
-      description: detail.description,
+      name: getDisplayNameFromDescription(detail.description),
     }));
   }
 
@@ -521,13 +536,13 @@ function transformLockedDetail(
     if (detail.supplyTokenList.length > 1) {
       result.stakes = transformLpStakes(detail.supplyTokenList, item, sourcePosition, currency, true).map(stake => ({
         ...stake,
-        description: detail.description,
+        name: getDisplayNameFromDescription(detail.description),
         unlockAt: detail.unlockTime,
       }));
     } else {
       result.stakes = transformStakes(detail.supplyTokenList, item, sourcePosition, currency, true).map(stake => ({
         ...stake,
-        description: detail.description,
+        name: getDisplayNameFromDescription(detail.description),
         unlockAt: detail.unlockTime,
       }));
     }
@@ -536,7 +551,7 @@ function transformLockedDetail(
   if (detail.rewardTokenList?.length) {
     result.rewards = transformRewards(detail.rewardTokenList, item, sourcePosition, currency).map(reward => ({
       ...reward,
-      description: detail.description,
+      name: getDisplayNameFromDescription(detail.description),
       unlockAt: detail.unlockTime,
     }));
   }

@@ -17,10 +17,11 @@ type Props = {
   value: { amount: string; display: string };
   positionColor: string;
   dappVersion?: string;
+  name?: string;
   onPress?: () => void;
 };
 
-export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, value, positionColor, dappVersion, onPress }) => {
+export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, value, positionColor, dappVersion, name, onPress }) => {
   const theme = useTheme();
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
@@ -45,7 +46,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, val
                 <Inline alignVertical="center" space={'6px'}>
                   <Box style={{ maxWidth: 200 }}>
                     <Text size="17pt" weight="semibold" color="label" numberOfLines={1}>
-                      {asset.name}
+                      {name || asset.name}
                     </Text>
                   </Box>
                   {dappVersion && (

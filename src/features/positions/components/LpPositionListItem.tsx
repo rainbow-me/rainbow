@@ -30,10 +30,11 @@ type Props = {
   value: { amount: string; display: string };
   isConcentratedLiquidity: boolean;
   dappVersion?: string;
+  name?: string;
   onPress?: (asset: RainbowUnderlyingAsset['asset']) => void;
 };
 
-export const LpPositionListItem: React.FC<Props> = ({ assets, value, isConcentratedLiquidity, dappVersion, onPress }) => {
+export const LpPositionListItem: React.FC<Props> = ({ assets, value, isConcentratedLiquidity, dappVersion, name, onPress }) => {
   const { colors } = useTheme();
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const chainsNativeAsset = useBackendNetworksStore(state => state.getChainsNativeAsset());
@@ -101,9 +102,11 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, value, isConcentra
               <Column>
                 <Inline alignVertical="center" space={'6px'}>
                   <Text size="17pt" weight="medium" color="label" numberOfLines={1}>
-                    {/* Keep asset symbols in the expected pool order for display */}
-                    {orderedAssets.map(underlying => underlying.asset.symbol).join(' / ')}
-                    {hasOthers && ` / ${i18n.t(i18n.l.positions.lp_allocation.other)}`}
+                    {name ||
+                      /* Keep asset symbols in the expected pool order for display */
+                      `${orderedAssets.map(underlying => underlying.asset.symbol).join(' / ')}${
+                        hasOthers ? ` / ${i18n.t(i18n.l.positions.lp_allocation.other)}` : ''
+                      }`}
                   </Text>
                   {dappVersion && (
                     <Box
