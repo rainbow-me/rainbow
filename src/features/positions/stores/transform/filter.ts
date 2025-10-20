@@ -4,60 +4,66 @@ import { getExperimentalFlag, DEFI_POSITIONS_THRESHOLD_FILTER } from '@/config';
 // ============ Constants ====================================================== //
 
 const MIN_POSITION_VALUE_USD = 1;
-const HYPERLIQUID_PROTOCOL = 'hyperliquid';
+const IGNORED_PROTOCOLS = ['hyperliquid'];
 
 // ============ Filters ======================================================== //
 
 /**
- * Filter positions by minimum value threshold
+ * Check if position value meets threshold
+ * @param position - The position to check
+ * @param threshold - The minimum value threshold
  */
-function filterByValueThreshold(positions: ProtocolGroup, threshold: number = MIN_POSITION_VALUE_USD): ProtocolGroup {
-  return Object.fromEntries(
-    Object.entries(positions).filter(([, position]) => {
-      const netValue = parseFloat(position.totals?.total?.amount || '0');
-      return netValue >= threshold;
-    })
-  );
+function meetsValueThreshold(position: RainbowPosition, threshold: number = MIN_POSITION_VALUE_USD): boolean {
+  const netValue = parseFloat(position.totals?.total?.amount || '0');
+  return netValue >= threshold;
 }
 
 /**
- * Filter out specific protocols
+ * Check if protocol is allowed
+ * @param position - The position to check
  */
-function filterProtocols(positions: ProtocolGroup): ProtocolGroup {
-  return Object.fromEntries(
-    Object.entries(positions).filter(([, position]) => {
-      const protocolName = position.type.toLowerCase();
-      return !protocolName.includes(HYPERLIQUID_PROTOCOL);
-    })
-  );
+function isProtocolAllowed(position: RainbowPosition): boolean {
+  const protocolName = position.type.toLowerCase();
+  return !IGNORED_PROTOCOLS.includes(protocolName);
 }
 
 /**
- * Filter out positions with no items
+ * Check if position has items
  */
-function filterEmptyPositions(positions: ProtocolGroup): ProtocolGroup {
-  const hasItems = (position: RainbowPosition) =>
+function hasItems(position: RainbowPosition): boolean {
+  return (
     position.deposits.length > 0 ||
     position.pools.length > 0 ||
     position.stakes.length > 0 ||
     position.borrows.length > 0 ||
-    position.rewards.length > 0;
-
-  return Object.fromEntries(Object.entries(positions).filter(([, position]) => hasItems(position)));
+    position.rewards.length > 0
+  );
 }
 
 /**
- * Apply all filters to positions
+ * Apply all filters to positions in a single loop
  */
 export function filterPositions(positions: ProtocolGroup): ProtocolGroup {
-  let filtered = positions;
+  const shouldApplyThresholdFilter = getExperimentalFlag(DEFI_POSITIONS_THRESHOLD_FILTER);
 
-  // Apply $1 filter only if feature flag is enabled
-  if (getExperimentalFlag(DEFI_POSITIONS_THRESHOLD_FILTER)) {
-    filtered = filterByValueThreshold(filtered);
-  }
+  return Object.fromEntries(
+    Object.entries(positions).filter(([, position]) => {
+      // Apply value threshold filter only if feature flag is enabled
+      if (shouldApplyThresholdFilter && !meetsValueThreshold(position)) {
+        return false;
+      }
 
-  filtered = filterProtocols(filtered);
-  filtered = filterEmptyPositions(filtered);
-  return filtered;
+      // Filter out specific protocols
+      if (!isProtocolAllowed(position)) {
+        return false;
+      }
+
+      // Filter out positions with no items
+      if (!hasItems(position)) {
+        return false;
+      }
+
+      return true;
+    })
+  );
 }
