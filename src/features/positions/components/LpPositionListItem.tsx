@@ -8,7 +8,6 @@ import { LpPositionRangeBadge } from './LpPositionRangeBadge';
 import { TwoCoinsIcon } from '@/components/coin-icon/TwoCoinsIcon';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -57,11 +56,11 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, value, isConcentra
 
   // If native/wrapped asset comes first and split is 50/50, flip the order so non-native token is displayed first
   if (displayAssets.length === 2 && allocationPercentages[0] === 50 && allocationPercentages[1] === 50) {
-    const firstSymbol = displayAssets[0].asset.symbol.toLowerCase();
+    const firstSymbol = displayAssets[0].asset.symbol?.toLowerCase();
     const nativeAsset = chainsNativeAsset[displayAssets[0].asset.chainId];
-    const nativeSymbol = nativeAsset?.symbol.toLowerCase();
+    const nativeSymbol = nativeAsset?.symbol?.toLowerCase();
 
-    if (nativeSymbol && (firstSymbol === nativeSymbol || firstSymbol === `w${nativeSymbol}`)) {
+    if (firstSymbol && nativeSymbol && (firstSymbol === nativeSymbol || firstSymbol === `w${nativeSymbol}`)) {
       displayAssets = [displayAssets[1], displayAssets[0]];
       allocationPercentages = [allocationPercentages[1], allocationPercentages[0]];
     }
