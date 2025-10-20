@@ -6,6 +6,8 @@ import type { ListPositionsResponse } from '../types/generated/positions/positio
 import { fetchPositions, type PositionsParams } from './fetcher';
 import { transformPositions } from './transform';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { throttle } from 'lodash';
+import { analytics } from '@/analytics';
 
 // ============ Core Types ===================================================== //
 
@@ -66,6 +68,8 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
       } else {
         hydrationRetry.set(address, null);
       }
+
+      throttledPositionsAnalytics(data, address);
     },
   },
   (_, get) => ({
@@ -110,4 +114,40 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
     storageKey: 'positions',
     version: 2,
   }
+);
+
+// ============ Analytics ====================================================== //
+
+/**
+ * User properties analytics for positions (throttled once per hour).
+ * Mirrors claimables behavior - tracks all wallet types, throttle is global across addresses.
+ * Wallet will eventually be tracked on the next hour if still selected.
+ */
+const throttledPositionsAnalytics = throttle(
+  (positions: RainbowPositions, address: string) => {
+    const positionsList = Object.values(positions.positions);
+    const { positionsAmount, positionsRewardsAmount } = positionsList.reduce(
+      (acc, position) => ({
+        positionsAmount:
+          acc.positionsAmount +
+          position.deposits.length +
+          position.pools.length +
+          position.stakes.length +
+          position.borrows.length +
+          position.rewards.length,
+        positionsRewardsAmount: acc.positionsRewardsAmount + position.rewards.length,
+      }),
+      { positionsAmount: 0, positionsRewardsAmount: 0 }
+    );
+
+    analytics.identify({
+      positionsAmount,
+      positionsUSDValue: Number(positions.totals.total.amount),
+      positionsRewardsAmount,
+      positionsRewardsUSDValue: Number(positions.totals.totalRewards.amount),
+      positions: positionsList.length,
+    });
+  },
+  time.hours(1),
+  { trailing: false }
 );

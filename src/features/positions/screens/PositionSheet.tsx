@@ -18,6 +18,8 @@ import { openInBrowser } from '@/utils/openInBrowser';
 import Routes from '@/navigation/routesNames';
 import { safeAreaInsetValues } from '@/utils';
 import { Navigation } from '@/navigation';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { NativeCurrencyKeys } from '@/entities';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
@@ -49,6 +51,7 @@ export const PositionSheet: React.FC = () => {
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POSITION_SHEET>>();
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const positionColor =
     position.dapp.colors.primary || position.dapp.colors.fallback || (isDarkMode ? globalColors.white100 : globalColors.white10);
@@ -56,18 +59,39 @@ export const PositionSheet: React.FC = () => {
   const openDapp = useCallback(() => {
     analytics.track(analytics.event.positionsOpenedExternalDapp, {
       dapp: position.type,
+      protocol: position.protocol,
       url: position.dapp.url,
+      positionsValue: position.totals.total.amount,
+      positionsCurrency: nativeCurrency,
+      ...(nativeCurrency !== NativeCurrencyKeys.USD && { positionsUSDValue: position.totals.total.amount }),
     });
     openInBrowser(position.dapp.url);
-  }, [position.dapp.url, position.type]);
+  }, [nativeCurrency, position.dapp.url, position.protocol, position.totals.total.amount, position.type]);
 
-  const openTokenSheet = useCallback((asset: PositionAsset) => {
-    Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
-      asset: asset,
-      address: asset.address,
-      chainId: asset.chainId,
-    });
-  }, []);
+  const openTokenSheet = useCallback(
+    (asset: PositionAsset, type: 'deposit' | 'stake' | 'borrow' | 'reward' | 'pool', assetValueUSD: string, name?: string) => {
+      analytics.track(analytics.event.positionsOpenedAsset, {
+        dapp: position.type,
+        protocol: position.protocol,
+        type,
+        name,
+        assetSymbol: asset.symbol,
+        assetAddress: asset.address,
+        assetValue: assetValueUSD,
+        assetCurrency: nativeCurrency,
+        positionsValue: position.totals.total.amount,
+        positionsCurrency: nativeCurrency,
+        ...(nativeCurrency !== NativeCurrencyKeys.USD && { assetValueUSD, positionsUSDValue: position.totals.total.amount }),
+      });
+
+      Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
+        asset,
+        address: asset.address,
+        chainId: asset.chainId,
+      });
+    },
+    [nativeCurrency, position.protocol, position.totals.total.amount, position.type]
+  );
 
   return (
     <BackgroundProvider color="surfaceSecondary">
@@ -136,7 +160,14 @@ export const PositionSheet: React.FC = () => {
                     positionColor={positionColor}
                     apy={deposit.apy}
                     name={'name' in deposit ? deposit.name : undefined}
-                    onPress={() => openTokenSheet(deposit.underlying[0].asset)}
+                    onPress={() =>
+                      openTokenSheet(
+                        deposit.underlying[0].asset,
+                        'deposit',
+                        deposit.value.amount,
+                        'name' in deposit ? deposit.name : undefined
+                      )
+                    }
                   />
                 ))}
 
@@ -153,7 +184,7 @@ export const PositionSheet: React.FC = () => {
                     isConcentratedLiquidity={pool.isConcentratedLiquidity}
                     dappVersion={pool.dappVersion}
                     name={pool.name}
-                    onPress={openTokenSheet}
+                    onPress={(asset: PositionAsset) => openTokenSheet(asset, 'pool', pool.value.amount, pool.name)}
                   />
                 ))}
 
@@ -171,7 +202,7 @@ export const PositionSheet: React.FC = () => {
                       isConcentratedLiquidity={stake.isConcentratedLiquidity}
                       dappVersion={stake.dappVersion}
                       name={stake.name}
-                      onPress={openTokenSheet} // re-arranges assets for display
+                      onPress={(asset: PositionAsset) => openTokenSheet(asset, 'stake', stake.value.amount, stake.name)}
                     />
                   ) : (
                     <SubPositionListItem
@@ -182,7 +213,9 @@ export const PositionSheet: React.FC = () => {
                       positionColor={positionColor}
                       apy={stake.apy}
                       name={'name' in stake ? stake.name : undefined}
-                      onPress={() => openTokenSheet(stake.underlying[0].asset)}
+                      onPress={() =>
+                        openTokenSheet(stake.underlying[0].asset, 'stake', stake.value.amount, 'name' in stake ? stake.name : undefined)
+                      }
                     />
                   )
                 )}
@@ -201,7 +234,9 @@ export const PositionSheet: React.FC = () => {
                     positionColor={positionColor}
                     apy={borrow.apy}
                     name={'name' in borrow ? borrow.name : undefined}
-                    onPress={() => openTokenSheet(borrow.underlying[0].asset)}
+                    onPress={() =>
+                      openTokenSheet(borrow.underlying[0].asset, 'borrow', borrow.value.amount, 'name' in borrow ? borrow.name : undefined)
+                    }
                   />
                 ))}
 
@@ -219,7 +254,7 @@ export const PositionSheet: React.FC = () => {
                     positionColor={positionColor}
                     apy={undefined}
                     name={'name' in reward ? reward.name : undefined}
-                    onPress={() => openTokenSheet(reward.asset)}
+                    onPress={() => openTokenSheet(reward.asset, 'reward', reward.value.amount, 'name' in reward ? reward.name : undefined)}
                   />
                 ))}
               </Stack>

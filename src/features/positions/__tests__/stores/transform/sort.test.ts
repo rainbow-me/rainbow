@@ -7,6 +7,7 @@ describe('Sorting', () => {
       const positions: Record<string, RainbowPosition> = {
         uniswap: {
           type: 'uniswap',
+          protocol: 'uniswap',
           deposits: [],
           pools: [],
           stakes: [],
@@ -23,6 +24,7 @@ describe('Sorting', () => {
         },
         aave: {
           type: 'aave',
+          protocol: 'aave',
           deposits: [],
           pools: [],
           stakes: [],
@@ -38,6 +40,7 @@ describe('Sorting', () => {
           dapp: { name: 'Aave', url: '', icon_url: '', colors: { primary: '#000', fallback: '#000', shadow: '#000' } },
         },
         curve: {
+          protocol: 'curve',
           type: 'curve',
           deposits: [],
           pools: [],
@@ -68,6 +71,7 @@ describe('Sorting', () => {
       const positions: Record<string, RainbowPosition> = {
         uniswap: {
           type: 'uniswap',
+          protocol: 'uniswap',
           deposits: [],
           pools: [],
           stakes: [],
@@ -84,6 +88,7 @@ describe('Sorting', () => {
         },
         aave: {
           type: 'aave',
+          protocol: 'aave',
           deposits: [],
           pools: [],
           stakes: [],
@@ -115,6 +120,7 @@ describe('Sorting', () => {
       const positions: Record<string, RainbowPosition> = {
         aave: {
           type: 'aave',
+          protocol: 'aave',
           deposits: [
             {
               asset: { symbol: 'USDC' } as unknown as PositionAsset,
@@ -161,6 +167,7 @@ describe('Sorting', () => {
       const positions: Record<string, RainbowPosition> = {
         uniswap: {
           type: 'uniswap',
+          protocol: 'uniswap',
           deposits: [],
           pools: [
             {
@@ -205,6 +212,7 @@ describe('Sorting', () => {
     it('should sort stakes by value descending', () => {
       const positions: Record<string, RainbowPosition> = {
         curve: {
+          protocol: 'curve',
           type: 'curve',
           deposits: [],
           pools: [],
@@ -247,6 +255,7 @@ describe('Sorting', () => {
       const positions: Record<string, RainbowPosition> = {
         aave: {
           type: 'aave',
+          protocol: 'aave',
           deposits: [],
           pools: [],
           stakes: [],

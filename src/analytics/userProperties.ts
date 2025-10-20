@@ -53,6 +53,13 @@ export interface UserProperties {
   claimablesAmount?: number;
   claimablesUSDValue?: string;
 
+  // positions
+  positionsAmount?: number;
+  positionsUSDValue?: number;
+  positionsRewardsAmount?: number;
+  positionsRewardsUSDValue?: number;
+  positions?: number;
+
   // nft offers
   nftOffersAmount?: number;
   nftOffersUSDValue?: number;
@@ -87,20 +94,4 @@ export interface UserProperties {
   branchCampaign?: string;
   branchReferrer?: string;
   branchReferringLink?: string;
-
-  // to be deprecated
-  assets_value?: number;
-  borrowed_value?: number;
-  bsc_assets_value?: number;
-  deposited_value?: number;
-  polygon_assets_value?: number;
-  optimism_assets_value?: number;
-  arbitrum_assets_value?: number;
-  nft_floor_price_value?: number;
-  nft_last_price_value?: number;
-  avalanche_assets_value?: number;
-  xdai_assets_value?: number;
-  locked_value?: number;
-  staked_value?: number;
-  total_value?: number;
 }

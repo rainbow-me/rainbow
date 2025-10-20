@@ -140,7 +140,8 @@ export type RainbowDapp = Omit<DApp, 'iconUrl' | 'colors'> & {
  * Individual protocol position aggregated across chains
  */
 export type RainbowPosition = {
-  type: string; // Canonical protocol name (e.g., "Uniswap")
+  type: string; // Canonical protocol name (e.g., "uniswap")
+  protocol: string; // Protocol with version (e.g., "uniswap-v3")
   protocolVersion?: string; // Version display in UI badge (e.g., "V3")
   totals: PositionsTotals; // Pre-calculated for position card display
   deposits: RainbowDeposit[]; // Regular deposits section in expanded sheet

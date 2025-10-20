@@ -681,8 +681,11 @@ function groupByProtocol(
     const canonicalName = position.canonicalProtocolName;
 
     if (!grouped[canonicalName]) {
+      const protocol = position.protocolVersion ? `${canonicalName}-${position.protocolVersion.toLowerCase()}` : canonicalName;
+
       grouped[canonicalName] = {
         type: canonicalName,
+        protocol,
         protocolVersion: position.protocolVersion,
         deposits: [],
         pools: [],

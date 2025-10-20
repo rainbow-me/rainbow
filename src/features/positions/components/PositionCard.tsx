@@ -12,6 +12,8 @@ import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
 import { PositionAsset, RainbowBorrow, RainbowReward, RainbowDeposit, RainbowPosition, RainbowStake } from '@/features/positions/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { NativeCurrencyKeys } from '@/entities';
 
 type PositionCardProps = {
   position: RainbowPosition;
@@ -57,6 +59,9 @@ const CoinIconStack = memo(function CoinIconStack({ tokens }: { tokens: Position
 
 export const PositionCard = ({ position }: PositionCardProps) => {
   const { colors, isDarkMode } = useTheme();
+  const { navigate } = useNavigation();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+
   const totalPositions =
     (position.borrows.length || 0) +
     (position.deposits.length || 0) +
@@ -64,12 +69,16 @@ export const PositionCard = ({ position }: PositionCardProps) => {
     (position.rewards.length || 0) +
     (position.stakes.length || 0);
 
-  const { navigate } = useNavigation();
-
   const onPressHandler = useCallback(() => {
-    analytics.track(analytics.event.positionsOpenedSheet, { dapp: position.type });
+    analytics.track(analytics.event.positionsOpenedSheet, {
+      dapp: position.type,
+      protocol: position.protocol,
+      positionsValue: position.totals.total.amount,
+      positionsCurrency: nativeCurrency,
+      ...(nativeCurrency !== NativeCurrencyKeys.USD && { positionsUSDValue: position.totals.total.amount }),
+    });
     navigate(Routes.POSITION_SHEET, { position });
-  }, [navigate, position]);
+  }, [nativeCurrency, navigate, position]);
 
   const depositTokens: PositionAsset[] = useMemo(() => {
     const tokens: PositionAsset[] = [];
