@@ -103,6 +103,7 @@ The API returns basic DeBank asset data but lacks the rich Rainbow metadata we u
 - Rainbow CMS override data (token name overrides, verified status, custom icons)
 - `asset.colors` - Currently returns empty `colors: {}` objects
 - Rainbow CDN icon URLs (currently returns DeBank icons)
+- `asset.mainnetAddress` - Field defined in Asset type but never populated by the API (likely intended for L2→L1 token mapping to show mainnet equivalent addresses)
 - Additional metadata fields used by Rainbow's asset system
 
 **Impact:**
