@@ -1,7 +1,7 @@
 import { time } from '@/utils/time';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import type { RainbowPositions, RainbowPosition, RainbowDeposit, RainbowPool } from '../types';
+import type { RainbowPositions, RainbowPosition, RainbowDeposit, RainbowPool, RainbowBorrow, RainbowReward } from '../types';
 import type { ListPositionsResponse } from '../types/generated/positions/positions';
 import { fetchPositions, type PositionsParams } from './fetcher';
 import { transformPositions } from './transform';
@@ -54,6 +54,16 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
           position.stakes?.forEach(stake => {
             if (stake.poolAddress) {
               positionTokenAddresses.add(stake.poolAddress.toLowerCase());
+            }
+          });
+          position.borrows?.forEach(borrow => {
+            if (borrow.poolAddress) {
+              positionTokenAddresses.add(borrow.poolAddress.toLowerCase());
+            }
+          });
+          position.rewards?.forEach(reward => {
+            if (reward.poolAddress) {
+              positionTokenAddresses.add(reward.poolAddress.toLowerCase());
             }
           });
         });
