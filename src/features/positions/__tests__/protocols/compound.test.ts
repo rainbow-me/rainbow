@@ -76,8 +76,8 @@ describe('Compound Protocol', () => {
               pool: undefined,
               assetDict: {},
               detail: {
-                supplyTokenList: [{ amount: '50000', asset: createMockAsset('USDC', 1) }],
-                borrowTokenList: [{ amount: '10', asset: createMockAsset('ETH', 2000) }],
+                supplyTokenList: [{ amount: '50000', asset: createMockAsset('USDC', 1), assetValue: '50000' }],
+                borrowTokenList: [{ amount: '10', asset: createMockAsset('ETH', 2000), assetValue: '20000' }],
                 rewardTokenList: [],
                 tokenList: [],
               },
@@ -161,7 +161,7 @@ describe('Compound Protocol', () => {
               detail: {
                 supplyTokenList: [],
                 borrowTokenList: [],
-                rewardTokenList: [{ amount: '5', asset: createMockAsset('COMP', 50) }],
+                rewardTokenList: [{ amount: '5', asset: createMockAsset('COMP', 50), assetValue: '250' }],
                 tokenList: [],
               },
             },
@@ -236,9 +236,9 @@ describe('Compound Protocol', () => {
               pool: undefined,
               assetDict: {},
               detail: {
-                supplyTokenList: [{ amount: '10000', asset: createMockAsset('DAI', 1) }],
+                supplyTokenList: [{ amount: '10000', asset: createMockAsset('DAI', 1), assetValue: '10000' }],
                 borrowTokenList: [],
-                rewardTokenList: [{ amount: '2', asset: createMockAsset('COMP', 50) }],
+                rewardTokenList: [{ amount: '2', asset: createMockAsset('COMP', 50), assetValue: '100' }],
                 tokenList: [],
               },
             },

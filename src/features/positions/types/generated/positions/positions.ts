@@ -240,6 +240,12 @@ export interface PositionToken {
    */
   amount: string;
   /**
+   * Asset value in specific currency (price * amount * conv_rate).
+   *
+   * example: 0.025
+   */
+  assetValue: string;
+  /**
    * Optional: Whether the token is used as collateral (e.g., in DETAIL_TYPE_LENDING).
    *
    * example: true

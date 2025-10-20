@@ -52,9 +52,7 @@ export function shouldFilterUnderlyingAsset(token: PositionToken): boolean {
     return false; // Keep zero-value assets
   }
 
-  const amount = token.amount || '0';
-  const price = token.asset.price?.value || 0;
-  const valueAmount = parseFloat(amount) * price;
+  const valueAmount = parseFloat(token.assetValue);
 
   // Keep zero-value assets (may have special meaning)
   // Keep assets >= $0.01

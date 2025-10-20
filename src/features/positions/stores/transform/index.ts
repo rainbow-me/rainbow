@@ -58,21 +58,6 @@ function getDisplayNameFromDescription(description?: string): string | undefined
   return description;
 }
 
-/**
- * Calculate native display value for a position token
- */
-function tokenToValue(token: PositionToken, currency: NativeCurrencyKey): { amount: string; display: string } {
-  if (!token.asset) {
-    return getNativeValue('0', currency);
-  }
-
-  const amount = token.amount || '0';
-  const price = token.asset.price?.value || 0;
-  const nativeAmount = (parseFloat(amount) * price).toString();
-
-  return getNativeValue(nativeAmount, currency);
-}
-
 // ============ Stats Transforms ============================================ //
 
 /**
@@ -136,7 +121,7 @@ function transformUnderlyingAssets(tokens: PositionToken[] | undefined, currency
           : undefined,
       },
       quantity: token.amount,
-      value: tokenToValue(token, currency),
+      value: getNativeValue(token.assetValue, currency),
     });
 
     return acc;

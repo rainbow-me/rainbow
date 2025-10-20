@@ -78,11 +78,11 @@ describe('Aave Protocol', () => {
               assetDict: {},
               detail: {
                 supplyTokenList: [
-                  { amount: '10000', asset: createMockAsset('USDC', 1) },
-                  { amount: '5', asset: createMockAsset('ETH', 2000) },
+                  { amount: '10000', asset: createMockAsset('USDC', 1), assetValue: '10000' },
+                  { amount: '5', asset: createMockAsset('ETH', 2000), assetValue: '10000' },
                 ],
-                borrowTokenList: [{ amount: '5000', asset: createMockAsset('DAI', 1) }],
-                rewardTokenList: [{ amount: '10', asset: createMockAsset('AAVE', 100) }],
+                borrowTokenList: [{ amount: '5000', asset: createMockAsset('DAI', 1), assetValue: '5000' }],
+                rewardTokenList: [{ amount: '10', asset: createMockAsset('AAVE', 100), assetValue: '1000' }],
                 tokenList: [],
               },
             },
@@ -172,7 +172,7 @@ describe('Aave Protocol', () => {
               pool: undefined,
               assetDict: {},
               detail: {
-                supplyTokenList: [{ amount: '5000', asset: createMockAsset('USDC', 1) }],
+                supplyTokenList: [{ amount: '5000', asset: createMockAsset('USDC', 1), assetValue: '5000' }],
                 borrowTokenList: [],
                 rewardTokenList: [],
                 tokenList: [],
@@ -247,7 +247,7 @@ describe('Aave Protocol', () => {
               pool: undefined,
               assetDict: {},
               detail: {
-                supplyTokenList: [{ amount: '1000', asset: createMockAsset('USDC', 1) }],
+                supplyTokenList: [{ amount: '1000', asset: createMockAsset('USDC', 1), assetValue: '1000' }],
                 borrowTokenList: [],
                 rewardTokenList: [],
                 tokenList: [],
@@ -277,7 +277,7 @@ describe('Aave Protocol', () => {
               pool: undefined,
               assetDict: {},
               detail: {
-                supplyTokenList: [{ amount: '2000', asset: createMockAsset('DAI', 1) }],
+                supplyTokenList: [{ amount: '2000', asset: createMockAsset('DAI', 1), assetValue: '2000' }],
                 borrowTokenList: [],
                 rewardTokenList: [],
                 tokenList: [],

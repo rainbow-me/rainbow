@@ -82,9 +82,9 @@ describe('Curve Protocol', () => {
               assetDict: {},
               detail: {
                 supplyTokenList: [
-                  { amount: '1000', asset: createMockAsset('DAI', 1) },
-                  { amount: '1000', asset: createMockAsset('USDC', 1) },
-                  { amount: '1000', asset: createMockAsset('USDT', 1) },
+                  { amount: '1000', asset: createMockAsset('DAI', 1), assetValue: '1000' },
+                  { amount: '1000', asset: createMockAsset('USDC', 1), assetValue: '1000' },
+                  { amount: '1000', asset: createMockAsset('USDT', 1), assetValue: '1000' },
                 ],
                 rewardTokenList: [],
                 borrowTokenList: [],
@@ -166,7 +166,7 @@ describe('Curve Protocol', () => {
               pool: undefined,
               assetDict: {},
               detail: {
-                supplyTokenList: [{ amount: '1000', asset: createMockAsset('CRV', 2) }],
+                supplyTokenList: [{ amount: '1000', asset: createMockAsset('CRV', 2), assetValue: '2000' }],
                 rewardTokenList: [],
                 borrowTokenList: [],
                 tokenList: [],
@@ -244,8 +244,8 @@ describe('Curve Protocol', () => {
               pool: undefined,
               assetDict: {},
               detail: {
-                supplyTokenList: [{ amount: '500', asset: createMockAsset('3CRV', 1.1) }],
-                rewardTokenList: [{ amount: '10', asset: createMockAsset('CRV', 2) }],
+                supplyTokenList: [{ amount: '500', asset: createMockAsset('3CRV', 1.1), assetValue: '550' }],
+                rewardTokenList: [{ amount: '10', asset: createMockAsset('CRV', 2), assetValue: '20' }],
                 borrowTokenList: [],
                 tokenList: [],
               },

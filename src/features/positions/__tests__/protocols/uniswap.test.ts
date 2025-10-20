@@ -116,6 +116,7 @@ describe('Uniswap Position Parsing', () => {
                         },
                       }),
                       amount: '0.05', // 0.05 ETH
+                      assetValue: '100',
                     },
                     {
                       asset: createMockAsset({
@@ -130,6 +131,7 @@ describe('Uniswap Position Parsing', () => {
                         },
                       }),
                       amount: '100000', // 0.1 USDC
+                      assetValue: '100000',
                     },
                   ],
                   rewardTokenList: [],
@@ -184,6 +186,7 @@ describe('Uniswap Position Parsing', () => {
                         },
                       }),
                       amount: '0.025', // 0.025 ETH
+                      assetValue: '50',
                     },
                     {
                       asset: createMockAsset({
@@ -198,6 +201,7 @@ describe('Uniswap Position Parsing', () => {
                         },
                       }),
                       amount: '25', // 25 DAI
+                      assetValue: '25',
                     },
                   ],
                   rewardTokenList: [],
@@ -281,6 +285,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '0.05',
+                      assetValue: '100',
                     },
                     {
                       asset: createMockAsset({
@@ -288,6 +293,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 0.08, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '500',
+                      assetValue: '40',
                     },
                   ],
                   rewardTokenList: [],
@@ -376,6 +382,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '0.05',
+                      assetValue: '100',
                     },
                     {
                       asset: createMockAsset({
@@ -383,6 +390,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '50',
+                      assetValue: '50',
                     },
                   ],
                   rewardTokenList: [],
@@ -460,6 +468,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '0.05',
+                      assetValue: '100',
                     },
                     {
                       asset: createMockAsset({
@@ -467,6 +476,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '50',
+                      assetValue: '50',
                     },
                   ],
                   rewardTokenList: [],
@@ -546,6 +556,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '0.05',
+                      assetValue: '100',
                     },
                     {
                       asset: createMockAsset({
@@ -553,6 +564,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '50',
+                      assetValue: '50',
                     },
                   ],
                   rewardTokenList: [],
@@ -633,6 +645,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '0.05', // 0.05 WETH = $100
+                      assetValue: '100',
                     },
                     {
                       asset: createMockAsset({
@@ -640,6 +653,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '50', // 50 USDC = $50
+                      assetValue: '50',
                     },
                   ],
                   rewardTokenList: [],
@@ -729,6 +743,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '0.05',
+                      assetValue: '100',
                     },
                   ],
                   rewardTokenList: [
@@ -738,6 +753,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '0.0025', // 0.0025 WETH = $5 in fees
+                      assetValue: '5',
                     },
                   ],
                   borrowTokenList: [],
@@ -825,6 +841,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '0.05',
+                      assetValue: '100',
                     },
                     {
                       asset: createMockAsset({
@@ -832,6 +849,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '100',
+                      assetValue: '100',
                     },
                   ],
                   rewardTokenList: [],
@@ -930,6 +948,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 4200, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '0.119', // ~$500 (50%)
+                      assetValue: '499.79999999999995',
                     },
                     {
                       asset: createMockAsset({
@@ -938,6 +957,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '200', // ~$200 (20%)
+                      assetValue: '200',
                     },
                     {
                       asset: createMockAsset({
@@ -946,6 +966,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '150', // ~$150 (15%)
+                      assetValue: '150',
                     },
                     {
                       asset: createMockAsset({
@@ -954,6 +975,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '100', // ~$100 (10%)
+                      assetValue: '100',
                     },
                     {
                       asset: createMockAsset({
@@ -962,6 +984,7 @@ describe('Uniswap Position Parsing', () => {
                         price: { value: 25, changedAt: new Date().toISOString(), relativeChange24h: 0 },
                       }),
                       amount: '2', // ~$50 (5%)
+                      assetValue: '50',
                     },
                   ],
                   rewardTokenList: [],

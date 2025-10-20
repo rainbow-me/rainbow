@@ -1,5 +1,14 @@
 {
   "result": {
-    "positions": []
+    "stats": {
+      "totals": {
+        "netTotal": "0",
+        "totalLocked": "0",
+        "totalDeposits": "0",
+        "totalBorrows": "0",
+        "totalRewards": "0",
+        "overallTotal": "0"
+      }
+    }
   }
 }
