@@ -89,6 +89,7 @@ function transformUnderlyingAssets(tokens: PositionToken[] | undefined, currency
 
 /**
  * Map DeBank portfolio item to category buckets based on position type
+ * We skip detailTypes as we don't use the extended metadata; assume common type
  */
 function mapPortfolioItemsToCategories(item: PortfolioItem): CategoryResult {
   const result: CategoryResult = {};
@@ -106,7 +107,7 @@ function mapPortfolioItemsToCategories(item: PortfolioItem): CategoryResult {
     case PositionName.LENDING:
       result.supplyTokens = detail.supplyTokenList;
       result.borrowTokens = detail.borrowTokenList;
-      result.rewardTokens = detail.rewardTokenList;
+      result.rewardTokens = detail.rewardTokenList || detail.tokenList;
       break;
 
     case PositionName.LIQUIDITY_POOL:
@@ -142,7 +143,7 @@ function mapPortfolioItemsToCategories(item: PortfolioItem): CategoryResult {
     case PositionName.LEVERAGED_FARMING:
       result.supplyTokens = detail.supplyTokenList;
       result.borrowTokens = detail.borrowTokenList;
-      result.rewardTokens = detail.rewardTokenList;
+      result.rewardTokens = detail.rewardTokenList || detail.tokenList;
       break;
 
     default:
