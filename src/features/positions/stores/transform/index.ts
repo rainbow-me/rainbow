@@ -19,7 +19,7 @@ import {
   type EnhancedStats,
 } from '../../types/generated/positions/positions';
 import type { PositionsParams } from '../fetcher';
-import { shouldFilterPortfolioItem, shouldFilterPosition } from './filter';
+import { shouldFilterPortfolioItem, shouldFilterPosition, shouldFilterUnderlyingAsset } from './filter';
 import { sortPositions } from './sort';
 import { normalizeDappName } from './utils/dapp';
 import { isConcentratedLiquidityProtocol, calculateLiquidityRangeStatus, calculateLiquidityAllocation } from './utils/lp';
@@ -111,6 +111,10 @@ function transformUnderlyingAssets(tokens: PositionToken[] | undefined, currency
 
   return tokens.reduce<RainbowUnderlyingAsset[]>((acc, token) => {
     if (!token.asset) return acc;
+
+    if (shouldFilterUnderlyingAsset(token)) {
+      return acc;
+    }
 
     const { price, creationDate, iconUrl, ...asset } = token.asset;
 

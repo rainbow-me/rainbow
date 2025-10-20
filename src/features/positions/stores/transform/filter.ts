@@ -1,10 +1,11 @@
 import { type RainbowPosition } from '../../types';
-import { PositionName, DetailType, type PortfolioItem } from '../../types/generated/positions/positions';
+import { PositionName, DetailType, type PortfolioItem, type PositionToken } from '../../types/generated/positions/positions';
 import { getExperimentalFlag, DEFI_POSITIONS_THRESHOLD_FILTER } from '@/config';
 
 // ============ Constants ====================================================== //
 
 const MIN_POSITION_VALUE_USD = 1;
+const MIN_ASSET_VALUE_USD = 0.01;
 
 const UNSUPPORTED_PROTOCOLS = ['hyperliquid'];
 
@@ -31,9 +32,36 @@ const UNSUPPORTED_DETAIL_TYPES: readonly DetailType[] = [DetailType.UNSPECIFIED,
  * @param position - The position to check
  * @param threshold - The minimum value threshold
  */
-function meetsValueThreshold(position: RainbowPosition, threshold: number = MIN_POSITION_VALUE_USD): boolean {
+function meetsValueThreshold(position: RainbowPosition): boolean {
   const netValue = parseFloat(position.totals?.total?.amount || '0');
-  return netValue >= threshold;
+  return netValue >= MIN_POSITION_VALUE_USD;
+}
+
+/**
+ * Check if an underlying asset should be filtered out
+ * Filters out "dust" - assets with value > 0 but < $0.01
+ * @param token - The position token to check
+ */
+export function shouldFilterUnderlyingAsset(token: PositionToken): boolean {
+  const shouldApplyFilter = getExperimentalFlag(DEFI_POSITIONS_THRESHOLD_FILTER);
+  if (!shouldApplyFilter) {
+    return false;
+  }
+
+  if (!token.asset) {
+    return false; // Keep zero-value assets
+  }
+
+  const amount = token.amount || '0';
+  const price = token.asset.price?.value || 0;
+  const valueAmount = parseFloat(amount) * price;
+
+  // Keep zero-value assets (may have special meaning)
+  // Keep assets >= $0.01
+  // Filter out dust: 0 < value < $0.01
+  const meetsThreshold = valueAmount === 0 || valueAmount >= MIN_ASSET_VALUE_USD;
+
+  return !meetsThreshold;
 }
 
 /**
@@ -77,7 +105,7 @@ export function shouldFilterPortfolioItem(item: PortfolioItem): boolean {
 /**
  * Check if a position should be filtered out
  */
-export function shouldFilterPosition(position: RainbowPosition, threshold: number = MIN_POSITION_VALUE_USD): boolean {
+export function shouldFilterPosition(position: RainbowPosition): boolean {
   if (!hasItems(position)) {
     return true;
   }
@@ -87,7 +115,7 @@ export function shouldFilterPosition(position: RainbowPosition, threshold: numbe
   }
 
   const shouldApplyThresholdFilter = getExperimentalFlag(DEFI_POSITIONS_THRESHOLD_FILTER);
-  if (shouldApplyThresholdFilter && !meetsValueThreshold(position, threshold)) {
+  if (shouldApplyThresholdFilter && !meetsValueThreshold(position)) {
     return true;
   }
 
