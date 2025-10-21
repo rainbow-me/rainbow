@@ -15,6 +15,46 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+### Security
+
+### Internal
+
+### Testing
+
+## [2.0.8] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.8)
+
+### Added
+
+- Add Chonks icon (#6899)
+- Rainbow referral code setting (#6895)
+- Perps chart indicators (#6891)
+
+### Changed
+
+- i18n string updates (#6862)
+- Remove the "Next Drop" card from points screen (#6873)
+
+### Fixed
+
+- Fixed keyboard issue with ios 26 in send form (#6903)
+- Fixed incorrect navigation when no new position is created (#6902)
+- Fixed keyboard height on import wallet screen (#6890)
+- Fixed network selector edit button (#6901)
+- Various perps fixes (#6888)
+- Fixed broad internal network filtering (#6877)
+- ENS fixes (#6851)
+- Prevent calling `GetAssetUpdates` with no address (#6887)
+- Prevent KOTH header from hiding when top token has no coin icon (#6883)
+- Time to sign fixes & improvements (#6886)
+
+### Internal
+
+- Use commit hash instead of tags for github actions (#6872)
+- Migrate from `useWorkletCallback` (#6738)
+- Update check-lockfile.sh (#6761)
+- Fixed perf report styling for fps (#6898)
+- Fixed broken link to React Native Reanimated installation docs (#6719)
+
 ## [2.0.7] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.7)
 
 ### Added
