@@ -131,12 +131,6 @@ export const fetchRawTransaction = async ({
     }
   }
   try {
-    console.log({
-      currency: currency.toLowerCase(),
-      hash,
-      address,
-      chainIds: String(chainId),
-    });
     const response = await getPlatformClient().get<GetTransactionByHashResponse>('/transactions/GetTransactionByHash', {
       params: {
         currency: currency.toLowerCase(),
