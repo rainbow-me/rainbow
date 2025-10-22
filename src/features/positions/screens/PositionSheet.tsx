@@ -8,7 +8,7 @@ import { RequestVendorLogoIcon } from '@/components/coin-icon';
 import startCase from 'lodash/startCase';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '@/components/animations';
-import { SubPositionListItem } from '../components/PositionListItem';
+import { PositionListItem } from '../components/PositionListItem';
 import * as i18n from '@/languages';
 import { capitalize } from 'lodash';
 import type { RainbowPosition, PositionAsset } from '@/features/positions/types';
@@ -151,7 +151,7 @@ export const PositionSheet: React.FC = () => {
                   </Text>
                 )}
                 {position.deposits.map(deposit => (
-                  <SubPositionListItem
+                  <PositionListItem
                     key={`deposit-${deposit.asset.address}-${deposit.quantity}-${deposit.apy}`}
                     asset={deposit.underlying[0].asset}
                     quantity={deposit.underlying[0].quantity}
@@ -205,7 +205,7 @@ export const PositionSheet: React.FC = () => {
                       onPress={(asset: PositionAsset) => openTokenSheet(asset, 'stake', stake.value.amount, stake.name)}
                     />
                   ) : (
-                    <SubPositionListItem
+                    <PositionListItem
                       key={`stake-${stake.asset.address}-${stake.quantity}`}
                       asset={stake.underlying[0].asset}
                       quantity={stake.underlying[0].quantity}
@@ -226,7 +226,7 @@ export const PositionSheet: React.FC = () => {
                   </Text>
                 )}
                 {position.borrows.map(borrow => (
-                  <SubPositionListItem
+                  <PositionListItem
                     key={`borrow-${borrow.underlying[0].asset.address}-${borrow.quantity}-${borrow.apy}`}
                     asset={borrow.underlying[0].asset}
                     quantity={borrow.underlying[0].quantity}
@@ -246,7 +246,7 @@ export const PositionSheet: React.FC = () => {
                   </Text>
                 )}
                 {position.rewards.map(reward => (
-                  <SubPositionListItem
+                  <PositionListItem
                     key={`claimable-${reward.asset.address}-${reward.quantity}`}
                     asset={reward.asset}
                     quantity={reward.quantity}

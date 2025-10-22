@@ -21,7 +21,7 @@ type Props = {
   onPress?: () => void;
 };
 
-export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, value, positionColor, dappVersion, name, onPress }) => {
+export const PositionListItem: React.FC<Props> = ({ asset, apy, quantity, value, positionColor, dappVersion, name, onPress }) => {
   const theme = useTheme();
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
