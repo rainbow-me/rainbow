@@ -60,7 +60,6 @@ const CoinIconStack = memo(function CoinIconStack({ tokens }: { tokens: Position
 export const PositionCard = ({ position }: PositionCardProps) => {
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const totalPositions =
     (position.borrows.length || 0) +
@@ -70,6 +69,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
     (position.stakes.length || 0);
 
   const onPressHandler = useCallback(() => {
+    const nativeCurrency = userAssetsStoreManager.getState().currency;
     analytics.track(analytics.event.positionsOpenedSheet, {
       dapp: position.type,
       protocol: position.protocol,
@@ -78,8 +78,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
       ...(nativeCurrency !== NativeCurrencyKeys.USD && { positionsUSDValue: position.totals.total.amount }),
     });
     navigate(Routes.POSITION_SHEET, { position });
-  }, [nativeCurrency, navigate, position]);
-
+  }, [navigate, position]);
   const depositTokens: PositionAsset[] = useMemo(() => {
     const tokens: PositionAsset[] = [];
     position.deposits.forEach((deposit: RainbowDeposit) => {

@@ -51,7 +51,7 @@ export const PositionSheet: React.FC = () => {
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POSITION_SHEET>>();
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = userAssetsStoreManager.getState().currency;
 
   const positionColor =
     position.dapp.colors.primary || position.dapp.colors.fallback || (isDarkMode ? globalColors.white100 : globalColors.white10);
