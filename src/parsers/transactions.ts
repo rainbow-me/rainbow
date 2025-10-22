@@ -3,7 +3,6 @@ import {
   RainbowTransaction,
   TransactionDirection,
   PaginatedTransactionsApiResponse,
-  TransactionApiResponse,
   TransactionChanges,
   TransactionStatus,
   TransactionType,
@@ -20,7 +19,7 @@ import {
 } from '@/helpers/utilities';
 
 import { NewTransaction, RainbowTransactionFee } from '@/entities/transactions/transaction';
-import { parseAddressAsset, parseAsset } from '@/resources/assets/assets';
+import { parseGoldskyAddressAsset, parseGoldskyAsset } from '@/resources/assets/assets';
 import { ParsedAsset } from '@/resources/assets/types';
 
 import { ChainId } from '@/state/backendNetworks/types';
@@ -64,26 +63,29 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
   const minedAtTimestamp = txn.minedAt ? Math.floor(new Date(txn.minedAt).getTime() / 1000) : null;
 
   const changes: TransactionChanges =
-    txn.changes.map(change => {
-      return {
-        asset: parseAddressAsset({
-          assetData: {
-            asset: change.asset,
-            quantity: change.quantity || '0',
-          },
-        }),
-        value: change.value ? parseFloat(change.value) : undefined,
-        address_from: change.addressFrom,
-        address_to: change.addressTo,
-        direction: change.direction as TransactionDirection,
-        price: change.price ? parseFloat(change.price) : 0,
-      };
-    }) || [];
+    txn.changes
+      .map(change => {
+        if (!change.asset) return null;
+        return {
+          asset: parseGoldskyAddressAsset({
+            assetData: {
+              asset: change.asset,
+              quantity: change.quantity || '0',
+            },
+          }),
+          value: change.value ? parseFloat(change.value) : undefined,
+          address_from: change.addressFrom,
+          address_to: change.addressTo,
+          direction: change.direction as TransactionDirection,
+          price: change.price ? parseFloat(change.price) : 0,
+        };
+      })
+      .filter(Boolean) || [];
 
   const type = isValidTransactionType(meta?.type) ? meta.type : 'contract_interaction';
 
   const asset: RainbowTransaction['asset'] = meta?.asset?.assetCode
-    ? parseAsset({ asset: meta.asset, address: meta.asset.assetCode })
+    ? parseGoldskyAsset({ asset: meta.asset, address: meta.asset.assetCode })
     : getAssetFromChanges(changes, type);
 
   const direction = txn.direction || getDirection(type);
@@ -186,9 +188,9 @@ const getTransactionFee = (txn: Transaction, nativeCurrency: NativeCurrencyKey, 
   };
 };
 
-export const getDescription = (asset: ParsedAsset | undefined, type: TransactionType, meta: PaginatedTransactionsApiResponse['meta']) => {
+export const getDescription = (asset: ParsedAsset | undefined, type: TransactionType, meta?: PaginatedTransactionsApiResponse['meta']) => {
   if (asset?.type === 'nft') return asset.symbol || asset.name;
-  return asset?.name || meta.action;
+  return asset?.name || meta?.action;
 };
 
 export const isValidTransactionType = (type: string | undefined): type is TransactionType =>
