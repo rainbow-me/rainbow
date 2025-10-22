@@ -13,7 +13,7 @@
       "show": "보이기",
       "show_all": "모두 보기",
       "show_less": "덜 보기",
-      "tab_balances": "잔고",
+      "tab_tokens": "토큰",
       "tab_balances_empty_state": "균형",
       "tab_balances_tooltip": "이더리움 및 토큰 잔고",
       "tab_claimables": "청구 가능",
@@ -23,6 +23,7 @@
       "tab_investments": "풀",
       "tab_savings": "저축",
       "tab_showcase": "쇼케이스",
+      "tab_perps": "Perps",
       "tab_points": "포인트",
       "tab_positions": "포지션",
       "tab_rewards": "보상",
@@ -707,15 +708,18 @@
           "website": "웹사이트",
           "reddit": "레딧",
           "telegram": "텔레그램",
-          "twitter": "트위터",
-          "warpcast": "워프캐스트",
+          "twitter": "X/트위터)",
           "farcaster": "Farcaster",
           "other": "기타",
-          "search_on_twitter": "트위터에서 검색"
+          "search_on_twitter": "X에서 검색"
         },
         "uniswap_liquidity": "유니스wap 유동성",
         "value": "가치",
         "volume_24_hours": "24시간 거래량",
+        "liquidity_cap_disclaimer": {
+          "value_lower_than": "가치가 다음보다 낮습니다.",
+          "due_to_low_liquidity": "􀇿 유동성이 낮아서"
+        },
         "menu": {
           "view_on": "%{blockExplorerName}에서 보기",
           "share": "공유",
@@ -923,7 +927,7 @@
         "toast_removed_from_showcase": "쇼케이스에서 제거됨",
         "refreshing": "메타데이터 새로 고침 중...",
         "reported": "스팸으로 신고됨",
-        "twitter": "트위터",
+        "twitter": "X/트위터)",
         "view_all_with_property": "속성을 가진 모든 것 보기",
         "view_collection": "컬렉션 보기",
         "view_on_marketplace": "마켓플레이스에서 보기...",
@@ -1577,6 +1581,181 @@
         "address_copied_to_clipboard": "주소가 클립보드에 복사되었습니다"
       }
     },
+    "perps": {
+      "common": {
+        "not_available": "N/A",
+        "current_price": "현재 가격",
+        "title": "Perps",
+        "error_submitting_order": "주문 제출 오류",
+        "submitting": "제출 중...",
+        "more": "더 보기",
+        "error": "오류",
+        "cancel": "취소",
+        "liq_price": "청산 가격",
+        "liq": "청산"
+      },
+      "feature_card": {
+        "title": "Perps",
+        "subtitle": "고위험, 고수익 거래"
+      },
+      "actions": {
+        "fund_wallet": "내 지갑 충전하기",
+        "new_position": "새 포지션",
+        "close_position": "포지션 닫기",
+        "open_position": "포지션 열기"
+      },
+      "account": {
+        "available_balance": "사용 가능한 잔액"
+      },
+      "markets": {
+        "title": "시장",
+        "up_to": "최대",
+        "already_open": "이미 열림"
+      },
+      "deposit": {
+        "title": "예금",
+        "no_balance": "잔액 없음",
+        "receive": "받기",
+        "slider_label": "입금 중",
+        "zero_amount_error": "입금할 금액 입력",
+        "confirm_button_text": "입금을 위해 누르세요",
+        "confirm_button_loading_text": "입금 중...",
+        "confirm_button_zero_text": "금액 입력",
+        "confirm_button_over_balance_text": "자금이 부족합니다",
+        "confirm_button_error_text": "견적 오류",
+        "quote_error": "􀇿 견적이 없음",
+        "insufficient_balance": "􀫲 자금이 부족합니다"
+      },
+      "withdraw": {
+        "title": "철수",
+        "slider_label": "인출 중",
+        "confirm_button_text": "출금 유지",
+        "confirm_button_loading_text": "인출 중...",
+        "available_balance_suffix": " 사용 가능",
+        "confirm_button_zero_text": "금액 입력",
+        "confirm_button_over_balance_text": "자금이 부족합니다",
+        "info_card_title_prefix": "인출 중 ",
+        "info_card_title_suffix": "Arbitrum",
+        "info_card_subtitle": "추가 네트워크가 곧 제공될 예정입니다. 인출 시 $1.00 Hyperliquid 수수료가 부과됩니다."
+      },
+      "position_side": {
+        "long": "롱",
+        "short": "숏"
+      },
+      "positions": {
+        "entry": "진입",
+        "mark_price": "마크 가격",
+        "open_positions": "열린 포지션",
+        "no_open_positions": "열린 포지션 없음",
+        "position_value": "포지션 가치",
+        "mark_price_full": "마크 가격",
+        "entry_price": "진입 가격",
+        "funding": "자금 조달",
+        "liquidation_price": "청산 가격",
+        "total": "총액",
+        "learn_more_about_perps": "영구에 대해 더 알아보기"
+      },
+      "new_position": {
+        "hold_to_long": "롱 보유",
+        "hold_to_short": "숏 보유",
+        "liquidated_at": "다음에서 청산됨",
+        "from_current_price": "현재 가격에서",
+        "details": "세부정보",
+        "funding_rate": "자금 조달율",
+        "max_slippage": "최대 슬리피지",
+        "no_liquidation_risk": "청산 위험 없음",
+        "trading_without_leverage": "레버리지 없이 거래"
+      },
+      "inputs": {
+        "amount": "금액",
+        "available": "사용 가능",
+        "max": "최대",
+        "maximum_amount_is": "최대 금액은",
+        "minimum": "최소",
+        "minimum_amount_is": "최소 금액은",
+        "no_balance": "잔액 없음"
+      },
+      "history": {
+        "title": "기록",
+        "no_trades": "거래 없음",
+        "trade_execution": {
+          "take_profit_executed": "이익 실현 실행",
+          "stop_loss_executed": "손절매 실행",
+          "long_opened": "롱 개시",
+          "short_opened": "숏 개시",
+          "long_closed": "롱 마감",
+          "short_closed": "숏 마감",
+          "long_liquidated": "롱 청산",
+          "short_liquidated": "숏 청산"
+        }
+      },
+      "trigger_orders": {
+        "title": "트리거 주문",
+        "take_profit": "이익 실현",
+        "stop_loss": "손절매",
+        "sell": "판매",
+        "cancel_failed": "주문 취소 실패",
+        "add_stop_loss": "손절매 추가",
+        "add_take_profit": "이익 실현 추가",
+        "price": "가격",
+        "projected_profit": "예상 이익",
+        "projected_loss": "예상 손실",
+        "add": "추가",
+        "adding": "추가 중...",
+        "above": "위의",
+        "below": "아래의",
+        "must_be": "다음이어야 함",
+        "failed_to_create": "트리거 주문 생성 실패"
+      },
+      "search": {
+        "search_markets": "시장 검색",
+        "markets_count": "%{count} 시장",
+        "choose_a_market": "시장 선택"
+      },
+      "close_position": {
+        "estimated_loss": "예상 손실",
+        "estimated_profit": "예상 이익",
+        "minimum_amount_is": "최소 금액은",
+        "closing": "종료 중...",
+        "hold_to_close": "닫기 보유"
+      },
+      "explain_sheet": {
+        "next": "다음",
+        "got_it": "알겠습니다",
+        "title": "Perps",
+        "steps": {
+          "step_1": {
+            "title_parts": [
+              "영구 선물"
+            ],
+            "subtitle_parts": [
+              "가격 변동에 베팅하세요. 만료 기한 없이 원할 때 포지션 개시 및 마감.\nHyperliquid 제공."
+            ]
+          },
+          "step_2": {
+            "title_parts": [
+              "이동",
+              "롱",
+              "또는",
+              "숏"
+            ],
+            "subtitle_parts": [
+              "가격 상승이 예상되면 롱, 하락이 예상되면 숏. 정확한 방향을 잡으면 수익."
+            ]
+          },
+          "step_3": {
+            "title_parts": [
+              "레버리지와 거래"
+            ],
+            "subtitle_parts": [
+              "레버리지는 위험을 증폭시킵니다. 맞다면 큰 수익, 틀리면 빠른 손실 및 청산."
+            ]
+          }
+        }
+      },
+      "leverage": "레버리지",
+      "up_to": "최대"
+    },
     "points": {
       "placeholder": {
         "coming_soon_title": "곧 출시됩니다",
@@ -1653,8 +1832,6 @@
         "claimed_earnings": "클레임된 수익",
         "current_value": "현재 값",
         "rainbow_users_have_earned": "레인보우 사용자가 벌어들인 수익",
-        "earn_eth_rewards": "ETH 리워드 적립",
-        "rewards_explainer": "매주 상위 주간 포인트 적립자는 레인보우의 온체인 수익의 일부를 받습니다. 레인보우에서 스왑하거나 거래를 하고, Dapp을 사용하거나 친구를 추천하여 포인트를 모으세요.",
         "my_points": "나의 포인트",
         "refer_friends": "친구 추천",
         "try_again": "다시 시도하기",
@@ -1801,7 +1978,7 @@
         "skip": "건너뛰기",
         "snapchat": "스냅챗",
         "telegram": "텔레그램",
-        "twitter": "트위터",
+        "twitter": "X/트위터)",
         "upload_photo": "사진 업로드",
         "uploading": "업로드 중",
         "username_placeholder": "사용자 이름",
@@ -2157,7 +2334,7 @@
       "done": "완료",
       "feedback_and_reports": "피드백 및 버그 보고",
       "feedback_and_support": "피드백 및 지원",
-      "follow_us_on_twitter": "트위터에서 팔로우하세요",
+      "follow_us_on_twitter": "X에서 팔로우하기",
       "hey_friend_message": "👋️ 안녕 친구! 이더리움 지갑인 레인보우를 다운로드 받아야 해, 내가 가장 좋아하는 거야 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "설정",
       "language": "언어",
@@ -3330,7 +3507,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "가스 수수료 후 이용 가능한 잔액: %{balance}",
-        "title": "추가 토큰 선구매"
+        "title": "토큰 선구매"
       },
       "review": {
         "token_allocation": "토큰 배분",
@@ -3395,7 +3572,7 @@
       },
       "links": {
         "x": {
-          "name": "X/트위터",
+          "name": "X/트위터)",
           "placeholder": "사용자 이름"
         },
         "telegram": {
@@ -3468,6 +3645,7 @@
     "done": "완료",
     "copy": "복사",
     "paste": "붙여넣기",
+    "new": "새로운",
     "market_data": {
       "vol": "VOL",
       "price": "PRICE",
@@ -3492,9 +3670,9 @@
           "step_1": {
             "title": "경주가 시작되었습니다",
             "subtitle_parts": [
-              "가장 많은",
+              "현재 국왕은 지난 30일 동안 가장 많이 생성된 토큰입니다",
               " 구매량 ",
-              "높은 토큰이 현재 왕입니다."
+              "오늘."
             ]
           },
           "step_2": {

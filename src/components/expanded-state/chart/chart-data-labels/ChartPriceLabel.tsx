@@ -1,7 +1,7 @@
 import React from 'react';
 import { DerivedValue, SharedValue, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
-import { formatCandlestickPrice } from '@/features/charts/candlestick/components/CandlestickChart';
+import { formatCandlestickPrice } from '@/features/charts/candlestick/utils';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';

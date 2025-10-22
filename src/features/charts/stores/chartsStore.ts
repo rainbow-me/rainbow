@@ -11,6 +11,7 @@ import { CandleResolution, ChartType, HyperliquidSymbol, LineChartTimePeriod, To
 export type ChartsState = {
   candleResolution: CandleResolution;
   chartType: ChartType;
+  enablePerpsIndicators: boolean;
   lineChartTimePeriod: LineChartTimePeriod;
   /**
    * A signal that is incremented when the user presses the already-selected
@@ -25,12 +26,14 @@ export type ChartsState = {
   setLineChartTimePeriod: (lineChartTimePeriod: LineChartTimePeriod) => void;
   setToken: <T extends Token>(token: Exact<T, Exclude<Token, HyperliquidSymbol>>) => void;
   toggleChartType: () => ChartType;
+  togglePerpsIndicators: () => boolean;
 };
 
 export const useChartsStore = createRainbowStore<ChartsState>(
   (set, get) => ({
     candleResolution: CandleResolution.H1,
     chartType: ChartType.Candlestick,
+    enablePerpsIndicators: true,
     lineChartTimePeriod: LineChartTimePeriod.D1,
     snapSignal: 0,
     token: null,
@@ -76,6 +79,11 @@ export const useChartsStore = createRainbowStore<ChartsState>(
         chartType: state.chartType === ChartType.Candlestick ? ChartType.Line : ChartType.Candlestick,
       }));
       return get().chartType;
+    },
+
+    togglePerpsIndicators: () => {
+      set(state => ({ enablePerpsIndicators: !state.enablePerpsIndicators }));
+      return get().enablePerpsIndicators;
     },
   }),
 

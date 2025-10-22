@@ -12,9 +12,8 @@ import { safeAreaInsetValues } from '@/utils';
 import { KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { PerpMarket, PerpPositionSide, PerpsPosition, TriggerOrderType, TriggerOrderSource } from '@/features/perps/types';
 import { ButtonPressAnimation } from '@/components/animations';
-import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { RootStackParamList } from '@/navigation/types';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
 import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -191,8 +190,9 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
     const targetPrice = inputValue.value;
 
     if (isExistingPosition) {
-      const priceDifference = isLong ? subWorklet(targetPrice, position.entryPrice) : subWorklet(position.entryPrice, targetPrice);
-      const pnl = mulWorklet(position.size, priceDifference);
+      const absolutePriceDifference = Math.abs(Number(subWorklet(targetPrice, position.entryPrice)));
+      const absolutePositionSize = Math.abs(Number(position.size));
+      const pnl = mulWorklet(mulWorklet(absolutePositionSize, absolutePriceDifference), isStopLoss ? -1 : 1);
       return formatCurrency(pnl);
     }
 
@@ -410,7 +410,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
 export const CreateTriggerOrderBottomSheet = memo(function CreateTriggerOrderBottomSheet() {
   const {
     params: { triggerOrderType, symbol, source },
-  } = useRoute<RouteProp<RootStackParamList, typeof Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET>>();
+  } = useRoute<typeof Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET>();
   const { isDarkMode } = useColorMode();
   const separatorSecondaryColor = useForegroundColor('separatorSecondary');
 

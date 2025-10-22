@@ -95,8 +95,9 @@ export const createUserAssetsStore = (address: Address | string) =>
       },
 
       getNativeAssetForChain: (chainId: ChainId) => {
-        const nativeAssetAddress = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId].address;
-        const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, chainId);
+        const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
+        if (!nativeAsset) return null;
+        const nativeAssetUniqueId = getUniqueId(nativeAsset.address, chainId);
         return get().userAssets.get(nativeAssetUniqueId) || null;
       },
 

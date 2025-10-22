@@ -19,14 +19,14 @@ import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import { useColorForAsset, useContacts, useDimensions, useENSAvatar, useGas, useUserAccounts } from '@/hooks';
 import * as i18n from '@/languages';
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { useInteractionsCount } from '@/resources/addys/interactions';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { startTimeToSignTracking, Screens } from '@/state/performance/performance';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
@@ -353,33 +353,29 @@ export const SendConfirmationSheet = () => {
 
   const insufficientEth = isSufficientGas === false && isValidGas;
 
-  const handleSubmit = useCallback(
-    () =>
-      performanceTracking.getState().executeFn({
-        fn: async () => {
-          if (!canSubmit) return;
-          try {
-            setIsAuthorizing(true);
-            if (isENS) {
-              const clearRecords = checkboxes.some(({ checked, id }) => checked && id === 'clear-records');
-              const setAddress = checkboxes.some(({ checked, id }) => checked && id === 'set-address');
-              const transferControl = checkboxes.some(({ checked, id }) => checked && id === 'transfer-control');
-              await callback({
-                ens: { clearRecords, setAddress, transferControl },
-              });
-            } else {
-              await callback();
-            }
-          } catch (e) {
-            logger.error(new RainbowError(`[SendConfirmationSheet]: error submitting transaction: ${e}`));
-            setIsAuthorizing(false);
-          }
-        },
-        operation: TimeToSignOperation.CallToAction,
-        screen: isENS ? Screens.SEND_ENS : Screens.SEND,
-      })(),
-    [callback, canSubmit, checkboxes, isENS]
-  );
+  const handleSubmit = useCallback(async () => {
+    if (!canSubmit) return;
+
+    startTimeToSignTracking();
+
+    try {
+      setIsAuthorizing(true);
+      if (isENS) {
+        const clearRecords = checkboxes.some(({ checked, id }) => checked && id === 'clear-records');
+        const setAddress = checkboxes.some(({ checked, id }) => checked && id === 'set-address');
+        const transferControl = checkboxes.some(({ checked, id }) => checked && id === 'transfer-control');
+        await callback({
+          ens: { clearRecords, setAddress, transferControl },
+        });
+      } else {
+        await callback();
+      }
+    } catch (e) {
+      const error = ensureError(e);
+      logger.error(new RainbowError(`[SendConfirmationSheet]: error submitting transaction: ${error.message}`, error));
+      setIsAuthorizing(false);
+    }
+  }, [callback, canSubmit, checkboxes, isENS]);
 
   const existingAccount = useMemo(() => {
     let existingAcct = null;

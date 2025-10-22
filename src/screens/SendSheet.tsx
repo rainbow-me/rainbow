@@ -55,7 +55,7 @@ import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getWallets, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
@@ -419,8 +419,7 @@ export default function SendSheet() {
     async ({ ens }: OnSubmitProps = {}) => {
       if (!selected || !currentProvider) return;
 
-      const wallet = await performanceTracking.getState().executeFn({
-        fn: loadWallet,
+      const wallet = await executeFn(loadWallet, {
         operation: TimeToSignOperation.KeychainRead,
         screen: isENS ? Screens.SEND_ENS : Screens.SEND,
       })({
@@ -519,8 +518,7 @@ export default function SendSheet() {
       };
 
       try {
-        const signableTransaction = await performanceTracking.getState().executeFn({
-          fn: createSignableTransaction,
+        const signableTransaction = await executeFn(createSignableTransaction, {
           operation: TimeToSignOperation.CreateSignableTransaction,
           screen: isENS ? Screens.SEND_ENS : Screens.SEND,
         })(txDetails as NewTransactionNonNullable);
@@ -532,8 +530,7 @@ export default function SendSheet() {
           Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.invalid_transaction));
           submitSuccess = false;
         } else {
-          const sendTransactionResult = await performanceTracking.getState().executeFn({
-            fn: sendTransaction,
+          const sendTransactionResult = await executeFn(sendTransaction, {
             screen: isENS ? Screens.SEND_ENS : Screens.SEND,
             operation: TimeToSignOperation.BroadcastTransaction,
           })({
@@ -689,11 +686,10 @@ export default function SendSheet() {
           useNftsStore.getState(accountAddress).fetchNftCollection(collectionId, true);
           useNftsStore.getState(accountAddress).fetch({ limit: PAGE_SIZE }, { staleTime: time.seconds(5) });
         }
-        performanceTracking.getState().executeFn({
-          fn: goBackAndNavigate,
+        executeFn(goBackAndNavigate, {
           screen: isENS ? Screens.SEND_ENS : Screens.SEND,
           operation: TimeToSignOperation.SheetDismissal,
-          endOfOperation: true,
+          isEndOfFlow: true,
         })();
       }
     },
@@ -732,7 +728,7 @@ export default function SendSheet() {
     } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
       label = i18n.t(i18n.l.button.confirm_exchange.insufficient_token, {
-        tokenName: useBackendNetworksStore.getState().getChainsNativeAsset()[currentChainId || ChainId.mainnet].symbol,
+        tokenName: useBackendNetworksStore.getState().getChainsNativeAsset()[currentChainId || ChainId.mainnet]?.symbol,
       });
     } else if (!isValidGas) {
       disabled = true;

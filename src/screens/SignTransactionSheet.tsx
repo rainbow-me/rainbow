@@ -60,7 +60,7 @@ import { RootStackParamList } from '@/navigation/types';
 import { useSimulation } from '@/resources/transactions/transactionSimulation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
+import { TimeToSignOperation, executeFn } from '@/state/performance/performance';
 import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { RequestData } from '@/walletConnect/types';
@@ -259,8 +259,8 @@ export const SignTransactionSheet = () => {
 
   const closeScreen = useCallback(
     (canceled: boolean) =>
-      performanceTracking.getState().executeFn({
-        fn: () => {
+      executeFn(
+        () => {
           // we need to close the hw navigator too
           if (accountInfo.isHardwareWallet) {
             delay(300);
@@ -273,10 +273,12 @@ export const SignTransactionSheet = () => {
 
           onCloseScreenCallback?.(canceled);
         },
-        screen: SCREEN_FOR_REQUEST_SOURCE[source],
-        operation: TimeToSignOperation.SheetDismissal,
-        endOfOperation: true,
-      })(),
+        {
+          screen: SCREEN_FOR_REQUEST_SOURCE[source],
+          operation: TimeToSignOperation.SheetDismissal,
+          isEndOfFlow: true,
+        }
+      )(),
     [accountInfo.isHardwareWallet, goBack, isMessageRequest, onCloseScreenCallback, source, stopPollingGasFees]
   );
 
@@ -321,8 +323,7 @@ export const SignTransactionSheet = () => {
 
     let response = null;
     try {
-      const existingWallet = await performanceTracking.getState().executeFn({
-        fn: loadWallet,
+      const existingWallet = await executeFn(loadWallet, {
         screen: SCREEN_FOR_REQUEST_SOURCE[source],
         operation: TimeToSignOperation.KeychainRead,
       })({
@@ -337,8 +338,7 @@ export const SignTransactionSheet = () => {
         return;
       }
       if (sendInsteadOfSign) {
-        response = await performanceTracking.getState().executeFn({
-          fn: sendTransaction,
+        response = await executeFn(sendTransaction, {
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
           operation: TimeToSignOperation.BroadcastTransaction,
         })({
@@ -347,8 +347,7 @@ export const SignTransactionSheet = () => {
           transaction,
         });
       } else {
-        response = await performanceTracking.getState().executeFn({
-          fn: signTransaction,
+        response = await executeFn(signTransaction, {
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
           operation: TimeToSignOperation.SignTransaction,
         })({
@@ -472,12 +471,11 @@ export const SignTransactionSheet = () => {
     const message = transactionDetails?.payload?.params?.find((p: string) => !isAddress(p));
     let response = null;
 
-    const existingWallet = await performanceTracking.getState().executeFn({
-      fn: loadWallet,
+    const existingWallet = await executeFn(loadWallet, {
       screen: SCREEN_FOR_REQUEST_SOURCE[source],
       operation: TimeToSignOperation.KeychainRead,
     })({
-      address: accountInfo.address,
+      address: toChecksumAddress(accountInfo.address),
       provider,
       timeTracking: {
         screen: SCREEN_FOR_REQUEST_SOURCE[source],
@@ -490,16 +488,14 @@ export const SignTransactionSheet = () => {
     }
     switch (transactionDetails?.payload?.method) {
       case PERSONAL_SIGN:
-        response = await performanceTracking.getState().executeFn({
-          fn: signPersonalMessage,
+        response = await executeFn(signPersonalMessage, {
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
           operation: TimeToSignOperation.SignTransaction,
         })(message, provider, existingWallet);
         break;
       case SIGN_TYPED_DATA_V4:
       case SIGN_TYPED_DATA:
-        response = await performanceTracking.getState().executeFn({
-          fn: signTypedDataMessage,
+        response = await executeFn(signTypedDataMessage, {
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
           operation: TimeToSignOperation.SignTransaction,
         })(message, provider, existingWallet);
