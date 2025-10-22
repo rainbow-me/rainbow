@@ -69,7 +69,7 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
         hydrationRetry.set(address, null);
       }
 
-      throttledPositionsAnalytics(data, address);
+      requestIdleCallback(() => throttledPositionsAnalytics(data, address));
     },
   },
   (_, get) => ({
