@@ -10,6 +10,7 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { ListTransactionsResponse, Transaction } from '@/features/positions/types/generated/transaction/transaction';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
+const CONSOLIDATED_TRANSACTIONS_LIMIT = 30;
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -72,7 +73,7 @@ export async function consolidatedTransactionsQueryFunction({
         address,
         chainIds: chainIdsString,
         currency: currency.toLowerCase(),
-        limit: String(30),
+        limit: String(CONSOLIDATED_TRANSACTIONS_LIMIT),
         ...(cursor ? { cursor } : {}),
       },
     });

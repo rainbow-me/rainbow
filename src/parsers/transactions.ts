@@ -76,7 +76,7 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
         address_from: change.addressFrom,
         address_to: change.addressTo,
         direction: change.direction as TransactionDirection,
-        price: parseFloat(change.price),
+        price: change.price ? parseFloat(change.price) : 0,
       };
     }) || [];
 

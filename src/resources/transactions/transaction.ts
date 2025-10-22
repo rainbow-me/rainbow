@@ -142,7 +142,6 @@ export const fetchRawTransaction = async ({
     });
 
     if (!response.data.result) throw new Error('No transaction data in response');
-    // const transaction = normalizeTransactionResponse(response).data.payload.transaction;
     const parsed = parseTransaction(response.data.result, currency, chainId);
     if (!parsed) throw new Error('Failed to parse transaction');
 
