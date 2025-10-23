@@ -90,7 +90,7 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
 
   const direction = txn.direction || getDirection(type);
 
-  const description = getDescription(asset, type, meta);
+  const description = getDescription(asset, type);
 
   const nativeAsset = changes.find(change => change?.asset.isNativeAsset);
   const nativeAssetPrice = nativeAsset?.price?.toString() || '0';
