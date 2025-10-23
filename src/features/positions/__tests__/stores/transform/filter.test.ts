@@ -1,5 +1,6 @@
-import { shouldFilterPosition } from '../../../stores/transform/filter';
+import { shouldFilterPosition, shouldFilterPortfolioItem } from '../../../stores/transform/filter';
 import type { RainbowPosition, PositionAsset, RainbowDeposit } from '../../../types';
+import { PositionName, type PortfolioItem } from '../../../types/generated/positions/positions';
 
 // Mock config to avoid React Native gesture handler imports
 jest.mock('@/config', () => ({
@@ -85,6 +86,56 @@ describe('Position Filters', () => {
       emptyPosition.rewards = [];
 
       expect(shouldFilterPosition(emptyPosition)).toBe(true); // SHOULD filter (no items)
+    });
+  });
+
+  describe('shouldFilterPortfolioItem', () => {
+    const createMockPortfolioItem = (name: PositionName, description?: string): PortfolioItem => ({
+      name,
+      detailTypes: [],
+      detail: description ? { description } : undefined,
+      stats: undefined,
+      pool: undefined,
+      assetDict: {},
+      updateTime: undefined,
+    });
+
+    it('should filter unsupported position types', () => {
+      const lending = createMockPortfolioItem(PositionName.LENDING);
+      const nftStaked = createMockPortfolioItem(PositionName.NFT_STAKED);
+      const perpetuals = createMockPortfolioItem(PositionName.PERPETUALS);
+
+      expect(shouldFilterPortfolioItem(lending)).toBe(false); // should NOT filter
+      expect(shouldFilterPortfolioItem(nftStaked)).toBe(true); // SHOULD filter
+      expect(shouldFilterPortfolioItem(perpetuals)).toBe(true); // SHOULD filter
+    });
+
+    it('should filter wallet-only positions by description', () => {
+      const wstethStaking = createMockPortfolioItem(PositionName.STAKED, 'wstETH');
+      const stethStaking = createMockPortfolioItem(PositionName.STAKED, 'stETH');
+      const regularStaking = createMockPortfolioItem(PositionName.STAKED, 'GMX');
+      const noDescription = createMockPortfolioItem(PositionName.STAKED);
+
+      expect(shouldFilterPortfolioItem(wstethStaking)).toBe(true); // SHOULD filter (wstETH)
+      expect(shouldFilterPortfolioItem(stethStaking)).toBe(true); // SHOULD filter (stETH)
+      expect(shouldFilterPortfolioItem(regularStaking)).toBe(false); // should NOT filter
+      expect(shouldFilterPortfolioItem(noDescription)).toBe(false); // should NOT filter
+    });
+
+    it('should handle items without detail object', () => {
+      const itemWithoutDetail = createMockPortfolioItem(PositionName.LENDING);
+      delete itemWithoutDetail.detail;
+
+      expect(shouldFilterPortfolioItem(itemWithoutDetail)).toBe(false); // should NOT filter
+    });
+
+    it('should filter Curve steCRV pool by description', () => {
+      const steCRVPool = createMockPortfolioItem(PositionName.LIQUIDITY_POOL, 'steCRV');
+      const regularPool = createMockPortfolioItem(PositionName.LIQUIDITY_POOL, 'DAI-USDC');
+
+      // steCRV is the LP token name, not a wallet-only token
+      expect(shouldFilterPortfolioItem(steCRVPool)).toBe(false); // should NOT filter
+      expect(shouldFilterPortfolioItem(regularPool)).toBe(false); // should NOT filter
     });
   });
 });

@@ -25,6 +25,41 @@ const UNSUPPORTED_POSITION_TYPES: readonly PositionName[] = [
 
 const UNSUPPORTED_DETAIL_TYPES: readonly DetailType[] = [DetailType.UNSPECIFIED, DetailType.UNRECOGNIZED];
 
+/**
+ * Portfolio item descriptions that represent token-preferred positions
+ * These are liquid staking derivatives (LSDs) or similar positions that users think of as wallet assets
+ * rather than DeFi positions. Filtering them here prevents double-counting and UI clutter.
+ *
+ * LSDs are transferable tokens that users receive when staking. They:
+ * - Appear in user's wallet as regular tokens
+ * - Can be traded, transferred, or used in DeFi
+ * - Represent staked assets (e.g., stETH represents staked ETH)
+ * - Should NOT also appear as positions (to avoid double-counting)
+ */
+const TOKEN_PREFERRED_POSITIONS = [
+  // ============================================================================
+  // Confirmed in test fixture data (5 tokens)
+  // ============================================================================
+
+  'wstETH', // Lido - https://lido.fi - Wrapped staked ETH
+  'sAVAX', // BENQI - https://benqi.fi - Liquid staked AVAX
+  'ezETH', // Renzo - https://renzoprotocol.com - Restaked ETH
+  'swETH', // Swell - https://swellnetwork.io - Staked ETH
+  'rETH', // Rocket Pool - https://rocketpool.net - Staked ETH
+
+  // ============================================================================
+  // Proactive additions (major LSDs likely to appear in user wallets)
+  // ============================================================================
+
+  'stETH', // Lido - https://lido.fi - Staked ETH
+  'stMATIC', // Lido - https://lido.fi - Staked MATIC
+  'sfrxETH', // Frax - https://frax.finance - Staked ETH
+  'cbETH', // Coinbase - https://coinbase.com/cbeth - Wrapped staked ETH
+  'sETH2', // StakeWise - https://stakewise.io - Staked ETH
+  'ankrETH', // Ankr - https://ankr.com - Staked ETH
+  'rMATIC', // StaFi - https://stafi.io - Staked MATIC
+];
+
 // ============ Filters ======================================================== //
 
 /**
@@ -86,6 +121,10 @@ function hasItems(position: RainbowPosition): boolean {
 
 /**
  * Check if a portfolio item should be filtered out
+ * Filters:
+ * 1. Unsupported position types (NFTs, perpetuals, options, etc.)
+ * 2. Unsupported detail types (unspecified, unrecognized)
+ * 3. Token-preferred positions (LSDs like wstETH identified by description)
  */
 export function shouldFilterPortfolioItem(item: PortfolioItem): boolean {
   if (UNSUPPORTED_POSITION_TYPES.includes(item.name)) {
@@ -94,6 +133,11 @@ export function shouldFilterPortfolioItem(item: PortfolioItem): boolean {
 
   const detailTypes = item.detailTypes ?? [];
   if (detailTypes.some(type => UNSUPPORTED_DETAIL_TYPES.includes(type))) {
+    return true;
+  }
+
+  // Filter token-preferred positions by description (e.g., wstETH staking)
+  if (item.detail?.description && TOKEN_PREFERRED_POSITIONS.includes(item.detail.description)) {
     return true;
   }
 

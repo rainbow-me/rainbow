@@ -500,5 +500,64 @@ describe('transformPositions', () => {
         expect(firstPosition.totals.total.display).toMatch(/^\$[\d,]+(\.\d{2})?$/);
       });
     });
+
+    describe('Wallet-Only Position Filtering', () => {
+      it('should filter wstETH positions by description', () => {
+        // The fixture contains a Lido wstETH staking position with description "wstETH"
+        // This should be filtered out (treated as wallet-only)
+
+        const lidoPosition = result.positions['lido'];
+
+        // Lido position might be filtered entirely or have filtered items
+        if (lidoPosition) {
+          // Check that no stakes have wstETH in their name/description
+          const wstethStakes = lidoPosition.stakes.filter(stake => 'name' in stake && stake.name === 'wstETH');
+          // eslint-disable-next-line jest/no-conditional-expect
+          expect(wstethStakes.length).toBe(0);
+        }
+
+        // Alternatively, check raw fixture to verify filtering happened
+        const rawLidoPositions = LIST_POSITIONS_SUCCESS.result?.positions?.filter(p => p.protocolName?.toLowerCase() === 'lido');
+
+        if (rawLidoPositions && rawLidoPositions.length > 0) {
+          const rawWstethItems = rawLidoPositions.flatMap(
+            p => p.portfolioItems?.filter(item => item.detail?.description === 'wstETH') || []
+          );
+
+          // Raw fixture should have wstETH items
+          // eslint-disable-next-line jest/no-conditional-expect
+          expect(rawWstethItems.length).toBeGreaterThan(0);
+
+          // But they should be filtered from final result
+          // (Lido position either doesn't exist or doesn't have those items)
+          if (lidoPosition) {
+            const totalLidoItems =
+              lidoPosition.deposits.length +
+              lidoPosition.pools.length +
+              lidoPosition.stakes.length +
+              lidoPosition.borrows.length +
+              lidoPosition.rewards.length;
+
+            const rawLidoItemCount = rawLidoPositions.flatMap(p => p.portfolioItems || []).length;
+
+            // Filtered items should be fewer than raw items
+            // eslint-disable-next-line jest/no-conditional-expect
+            expect(totalLidoItems).toBeLessThan(rawLidoItemCount);
+          }
+        }
+      });
+
+      it('should filter stETH positions by description if present', () => {
+        // This documents the behavior for stETH positions identified by description
+        // (Note: stETH in Curve pools appears as asset.symbol, not description)
+
+        const positions = Object.values(result.positions);
+        const allStakes = positions.flatMap(p => p.stakes);
+
+        // No stakes should have stETH as their name (if it came from description)
+        const stethStakes = allStakes.filter(stake => 'name' in stake && stake.name === 'stETH');
+        expect(stethStakes.length).toBe(0);
+      });
+    });
   });
 });
