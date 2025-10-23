@@ -42,7 +42,6 @@ export const SkiaBadge = memo(function SkiaBadge({
   innerShadows = [],
   fontSize = '15pt',
   fontWeight = 'heavy',
-  lineHeight = 20,
 }: SkiaBadgeProps) {
   const { colorMode } = useColorMode();
   const measuredTextWidth = useSharedValue(0);
@@ -146,7 +145,6 @@ export const SkiaBadge = memo(function SkiaBadge({
             colorMode={colorMode}
             weight={fontWeight}
             width={badgeWidth}
-            lineHeight={lineHeight}
             x={textX}
             y={textY}
             color={textColor}

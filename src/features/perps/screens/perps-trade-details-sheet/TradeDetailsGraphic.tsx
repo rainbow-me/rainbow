@@ -36,7 +36,7 @@ const CONFIG = {
   oval: {
     height: 80,
     opacity: 0.1,
-    blur: 104 / 2,
+    blur: 52,
     rotation: Math.PI / 4,
   },
 };
@@ -201,6 +201,9 @@ const OutcomeInfo = ({ trade }: { trade: HlTrade }) => {
   const { isDarkMode } = useColorMode();
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
+  const longGreen = isDarkMode ? '#1F9E39' : green;
+  const shortRed = isDarkMode ? '#D53F35' : red;
+
   const labelSecondary = useForegroundColor('labelSecondary');
   const displayType = getDisplayType(trade);
   const titleText = getTitleText(trade);
@@ -276,7 +279,7 @@ const OutcomeInfo = ({ trade }: { trade: HlTrade }) => {
           text={i18n.t(trade.isLong ? i18n.l.perps.position_side.long : i18n.l.perps.position_side.short).toUpperCase()}
           height={27}
           horizontalPadding={8}
-          fillColor={trade.isLong ? green : red}
+          fillColor={trade.isLong ? longGreen : shortRed}
           textColor={{ custom: '#FFFFFF' }}
           strokeColor={'rgba(255, 255, 255, 0.12)'}
           strokeWidth={isDarkMode ? 2 : 2 / 3}
