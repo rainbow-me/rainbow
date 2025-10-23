@@ -665,13 +665,15 @@ function transformPortfolioItem(
 
 /**
  * Group DeBank positions by canonical protocol name and aggregate cross-chain data
+ * Adjusts totals to account for filtered items
  */
 function groupByProtocol(
   positions: Position[],
   stats: EnhancedStats | undefined,
   currency: NativeCurrencyKey
-): Record<string, RainbowPosition> {
+): { grouped: Record<string, RainbowPosition>; totalFilteredValue: number } {
   const grouped: Record<string, RainbowPosition> = {};
+  let totalFilteredValue = 0;
 
   positions.forEach(position => {
     const canonicalName = position.canonicalProtocolName;
@@ -704,18 +706,35 @@ function groupByProtocol(
       rainbowPosition.protocolVersion = position.protocolVersion;
     }
 
-    position.portfolioItems.forEach(item => {
-      const transformed = transformPortfolioItem(item, position, currency);
+    let positionFilteredValue = 0;
 
+    position.portfolioItems.forEach(item => {
+      // Track filtered value before transforming
+      if (shouldFilterPortfolioItem(item)) {
+        positionFilteredValue += parseFloat(item.stats?.netValue || '0');
+      }
+
+      const transformed = transformPortfolioItem(item, position, currency);
       rainbowPosition.deposits = rainbowPosition.deposits.concat(transformed.deposits);
       rainbowPosition.pools = rainbowPosition.pools.concat(transformed.pools);
       rainbowPosition.stakes = rainbowPosition.stakes.concat(transformed.stakes);
       rainbowPosition.borrows = rainbowPosition.borrows.concat(transformed.borrows);
       rainbowPosition.rewards = rainbowPosition.rewards.concat(transformed.rewards);
     });
+
+    // Adjust position total for filtered items
+    if (positionFilteredValue > 0) {
+      const currentTotal = parseFloat(rainbowPosition.totals.total.amount);
+      rainbowPosition.totals.total = getNativeValue((currentTotal - positionFilteredValue).toString(), currency);
+    }
+
+    totalFilteredValue += positionFilteredValue;
   });
 
-  return Object.fromEntries(Object.entries(grouped).filter(([, position]) => !shouldFilterPosition(position)));
+  return {
+    grouped: Object.fromEntries(Object.entries(grouped).filter(([, position]) => !shouldFilterPosition(position))),
+    totalFilteredValue,
+  };
 }
 
 // ============ Main Transform ============================================== //
@@ -723,6 +742,7 @@ function groupByProtocol(
 /**
  * Transform DeBank API response into Rainbow positions format
  * Groups by protocol, calculates totals, applies filters, and sorts by value
+ * Adjusts grand totals to account for filtered items
  */
 export function transformPositions(response: ListPositionsResponse, params: PositionsParams): RainbowPositions {
   const { currency } = params;
@@ -741,9 +761,15 @@ export function transformPositions(response: ListPositionsResponse, params: Posi
     };
   }
 
-  const grouped = groupByProtocol(response.result.positions, response.result.stats, currency);
+  const { grouped, totalFilteredValue } = groupByProtocol(response.result.positions, response.result.stats, currency);
   const sorted = sortPositions(grouped);
   const grandTotals = transformExtendedStats(response.result.stats?.totals, currency);
+
+  // Adjust grand total for filtered items
+  if (totalFilteredValue > 0) {
+    const adjusted = parseFloat(grandTotals.total.amount) - totalFilteredValue;
+    grandTotals.total = getNativeValue(adjusted.toString(), currency);
+  }
 
   return {
     positions: sorted,

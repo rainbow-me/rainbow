@@ -1,6 +1,15 @@
 import { transformPositions } from '../../../stores/transform';
 import { LIST_POSITIONS_SUCCESS, LIST_POSITIONS_SUCCESS_EMPTY, TEST_PARAMS } from '../../../__fixtures__/ListPositions';
 import { PositionName, type ListPositionsResponse } from '../../../types/generated/positions/positions';
+import {
+  getFilteredItemsFromPosition,
+  getAllFilteredItems,
+  calculateFilteredValue,
+  getBackendProtocolTotal,
+  getBackendGrandTotal,
+  getPositionsWithFilteredItems,
+  getPositionsWithoutFilteredItems,
+} from '../../../helpers/filters';
 
 // Mock config to avoid React Native gesture handler imports
 jest.mock('@/config', () => ({
@@ -557,6 +566,82 @@ describe('transformPositions', () => {
         // No stakes should have stETH as their name (if it came from description)
         const stethStakes = allStakes.filter(stake => 'name' in stake && stake.name === 'stETH');
         expect(stethStakes.length).toBe(0);
+      });
+    });
+
+    describe('Filtered Values Total Adjustment', () => {
+      it('should subtract filtered item values from position totals', () => {
+        // Find Lido positions that have filtered items (e.g., wstETH)
+        const rawLidoPositions = LIST_POSITIONS_SUCCESS.result?.positions?.filter(p => p.protocolName?.toLowerCase() === 'lido');
+
+        if (rawLidoPositions && rawLidoPositions.length > 0) {
+          const filteredItems = rawLidoPositions.flatMap(getFilteredItemsFromPosition);
+
+          if (filteredItems.length > 0) {
+            const filteredValue = calculateFilteredValue(filteredItems);
+            const backendTotal = getBackendProtocolTotal(LIST_POSITIONS_SUCCESS, 'lido');
+            const expectedTotal = backendTotal - filteredValue;
+
+            const lidoPosition = result.positions['lido'];
+            if (lidoPosition) {
+              const transformedTotal = parseFloat(lidoPosition.totals.total.amount);
+
+              // eslint-disable-next-line jest/no-conditional-expect
+              expect(transformedTotal).toBeCloseTo(expectedTotal, 2);
+              // eslint-disable-next-line jest/no-conditional-expect
+              expect(filteredValue).toBeGreaterThan(0);
+            }
+          }
+        }
+      });
+
+      it('should subtract filtered item values from grand totals', () => {
+        const allFilteredItems = getAllFilteredItems(LIST_POSITIONS_SUCCESS);
+
+        // Verify fixture has filtered items
+        expect(allFilteredItems.length).toBeGreaterThan(0);
+
+        const totalFilteredValue = calculateFilteredValue(allFilteredItems);
+        const backendGrandTotal = getBackendGrandTotal(LIST_POSITIONS_SUCCESS);
+        const expectedGrandTotal = backendGrandTotal - totalFilteredValue;
+
+        const transformedGrandTotal = parseFloat(result.totals.total.amount);
+
+        expect(transformedGrandTotal).toBeCloseTo(expectedGrandTotal, 2);
+        expect(totalFilteredValue).toBeGreaterThan(0);
+      });
+
+      it('should handle multiple filtered items across positions', () => {
+        const positionsWithFilteredItems = getPositionsWithFilteredItems(LIST_POSITIONS_SUCCESS);
+
+        positionsWithFilteredItems.forEach(({ protocol, filteredItems }) => {
+          const filteredValue = calculateFilteredValue(filteredItems);
+          const backendTotal = getBackendProtocolTotal(LIST_POSITIONS_SUCCESS, protocol);
+          const expectedTotal = backendTotal - filteredValue;
+
+          const transformedPosition = result.positions[protocol];
+
+          if (transformedPosition) {
+            const transformedTotal = parseFloat(transformedPosition.totals.total.amount);
+            // eslint-disable-next-line jest/no-conditional-expect
+            expect(transformedTotal).toBeCloseTo(expectedTotal, 2);
+          }
+        });
+      });
+
+      it('should not affect totals when no items are filtered', () => {
+        const positionsWithoutFilteredItems = getPositionsWithoutFilteredItems(LIST_POSITIONS_SUCCESS).slice(0, 1);
+
+        positionsWithoutFilteredItems.forEach(p => {
+          const backendTotal = getBackendProtocolTotal(LIST_POSITIONS_SUCCESS, p.canonicalProtocolName);
+          const transformedPosition = result.positions[p.canonicalProtocolName];
+
+          if (transformedPosition && backendTotal > 0) {
+            const transformedTotal = parseFloat(transformedPosition.totals.total.amount);
+            // eslint-disable-next-line jest/no-conditional-expect
+            expect(transformedTotal).toBeCloseTo(backendTotal, 2);
+          }
+        });
       });
     });
   });
