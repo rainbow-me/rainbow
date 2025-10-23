@@ -10,7 +10,7 @@ import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
-import { PositionAsset, RainbowBorrow, RainbowReward, RainbowDeposit, RainbowPosition, RainbowStake } from '@/features/positions/types';
+import { PositionAsset, RainbowPosition } from '@/features/positions/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { NativeCurrencyKeys } from '@/entities';
@@ -79,30 +79,14 @@ export const PositionCard = ({ position }: PositionCardProps) => {
     });
     navigate(Routes.POSITION_SHEET, { position });
   }, [navigate, position]);
-  const depositTokens: PositionAsset[] = useMemo(() => {
-    const tokens: PositionAsset[] = [];
-    position.deposits.forEach((deposit: RainbowDeposit) => {
-      deposit.underlying.forEach(({ asset }) => {
-        tokens.push(asset);
-      });
-    });
-    position.stakes.forEach((stake: RainbowStake) => {
-      stake.underlying.forEach(({ asset }) => {
-        tokens.push(asset);
-      });
-    });
-    position.rewards.forEach((reward: RainbowReward) => {
-      tokens.push(reward.asset);
-    });
-    position.borrows.forEach((borrow: RainbowBorrow) => {
-      borrow.underlying.forEach(({ asset }) => {
-        tokens.push(asset);
-      });
-    });
 
+  const depositTokens: PositionAsset[] = useMemo(() => {
+    const tokens = (['deposits', 'pools', 'stakes', 'borrows'] as const)
+      .flatMap(category => position[category].flatMap(item => item.underlying.map(({ asset }) => asset)))
+      .concat(position.rewards.map(reward => reward.asset));
     // TODO: if more than 5 unique tokens but duplicates of a token across networks, use different asset
     const dedupedTokens = uniqBy(tokens, 'symbol');
-    return dedupedTokens?.slice(0, 5);
+    return dedupedTokens.slice(0, 5);
   }, [position]);
 
   const positionColor =
