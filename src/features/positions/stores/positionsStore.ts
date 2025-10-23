@@ -69,7 +69,7 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
         hydrationRetry.set(address, null);
       }
 
-      requestIdleCallback(() => throttledPositionsAnalytics(data));
+      requestIdleCallback(() => throttledPositionsAnalytics(address));
     },
   },
   (_, get) => ({
@@ -119,12 +119,15 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
 // ============ Analytics ====================================================== //
 
 /**
- * User properties analytics for positions (throttled once per hour).
- * Mirrors claimables behavior - tracks all wallet types, throttle is global across addresses.
- * Wallet will eventually be tracked on the next hour if still selected.
+ * User properties analytics for positions (throttled once per day).
+ * Mirrors claimables behavior - tracks all wallet types.
+ * Fetches latest positions from store on each execution.
  */
 const throttledPositionsAnalytics = throttle(
-  (positions: RainbowPositions) => {
+  (address: string) => {
+    const positions = usePositionsStore.getState().getData();
+    if (!positions) return;
+
     const { positionsAmount, positionsRewardsAmount, positionsAssetsAmount } = Object.values(positions.positions).reduce(
       (acc, position) => {
         (['deposits', 'pools', 'stakes', 'borrows', 'rewards'] as const).forEach(category => {
@@ -146,6 +149,6 @@ const throttledPositionsAnalytics = throttle(
       positionsRewardsUSDValue: Number(positions.totals.totalRewards.amount),
     });
   },
-  time.hours(1),
+  time.days(1),
   { trailing: false }
 );
