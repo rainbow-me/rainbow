@@ -126,11 +126,10 @@ export const LpPositionListItem: React.FC<Props> = React.memo(({ assets, value, 
               <Column>
                 <Inline alignVertical="center" space={'6px'}>
                   <Text size="17pt" weight="medium" color="label" numberOfLines={1}>
-                    {name ||
-                      /* Keep asset symbols in the expected pool order for display */
-                      `${orderedAssets.map(underlying => underlying.asset.symbol).join(' / ')}${
-                        hasOthers ? ` / ${i18n.t(i18n.l.positions.lp_allocation.other)}` : ''
-                      }`}
+                    {/* Keep asset symbols in the expected pool order for display */}
+                    {`${orderedAssets.map(underlying => underlying.asset.symbol).join(' / ')}${
+                      hasOthers ? ` / ${i18n.t(i18n.l.positions.lp_allocation.other)}` : ''
+                    }${name ? ` for ${name}` : ''}`}
                   </Text>
                   {dappVersion && (
                     <Box

@@ -46,7 +46,7 @@ export const PositionListItem: React.FC<Props> = ({ asset, apy, quantity, value,
                 <Inline alignVertical="center" space={'6px'}>
                   <Box style={{ maxWidth: 200 }}>
                     <Text size="17pt" weight="semibold" color="label" numberOfLines={1}>
-                      {name || asset.name}
+                      {name ? `${asset.symbol} for ${name}` : asset.name}
                     </Text>
                   </Box>
                   {dappVersion && (

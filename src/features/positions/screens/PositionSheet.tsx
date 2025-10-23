@@ -201,8 +201,10 @@ export const PositionSheet: React.FC = () => {
                       value={stake.value}
                       isConcentratedLiquidity={stake.isConcentratedLiquidity}
                       dappVersion={stake.dappVersion}
-                      name={stake.name}
-                      onPress={(asset: PositionAsset) => openTokenSheet(asset, 'stake', stake.value.amount, stake.name)}
+                      name={'name' in stake ? stake.name : undefined}
+                      onPress={(asset: PositionAsset) =>
+                        openTokenSheet(asset, 'stake', stake.value.amount, 'name' in stake ? stake.name : undefined)
+                      }
                     />
                   ) : (
                     <PositionListItem
