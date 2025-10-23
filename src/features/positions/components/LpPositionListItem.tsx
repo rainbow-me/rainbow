@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
 import { useTheme } from '@/theme';
 import { divide } from '@/helpers/utilities';
@@ -34,46 +34,70 @@ type Props = {
   onPress?: (asset: RainbowUnderlyingAsset['asset']) => void;
 };
 
-export const LpPositionListItem: React.FC<Props> = ({ assets, value, isConcentratedLiquidity, dappVersion, name, onPress }) => {
+export const LpPositionListItem: React.FC<Props> = React.memo(({ assets, value, isConcentratedLiquidity, dappVersion, name, onPress }) => {
   const { colors } = useTheme();
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const chainsNativeAsset = useBackendNetworksStore(state => state.getChainsNativeAsset());
 
-  const rangeStatus = getRangeStatus(assets, isConcentratedLiquidity);
+  const rangeStatus = useMemo(() => getRangeStatus(assets, isConcentratedLiquidity), [assets, isConcentratedLiquidity]);
 
-  // For pools with >2 assets, show top 2 + "Other"
-  // Assets are already sorted by value in the parser
-  const orderedAssets = assets.length > 2 ? assets.slice(0, 2) : assets;
-  const hasOthers = assets.length > 2;
-  let displayAssets = orderedAssets;
+  const { displayAssets, allocationPercentages, orderedAssets, hasOthers } = useMemo(() => {
+    // For pools with >2 assets, show top 2 + "Other"
+    // Assets are already sorted by value in the parser
+    const orderedAssets = assets.length > 2 ? assets.slice(0, 2) : assets;
+    const hasOthers = assets.length > 2;
+    let displayAssets = orderedAssets;
 
-  // Calculate allocation percentages
-  let allocationPercentages = displayAssets.map(asset => {
-    if (value.amount === '0') {
-      return asset.quantity === '0' ? 0 : 100;
+    // Calculate allocation percentages
+    let allocationPercentages = displayAssets.map(asset => {
+      if (value.amount === '0') {
+        return asset.quantity === '0' ? 0 : 100;
+      }
+      return Math.round(parseFloat(divide(asset.value.amount, value.amount)) * 100);
+    });
+
+    // If native/wrapped asset comes first and split is 50/50, flip the order so non-native token is displayed first
+    if (displayAssets.length === 2 && allocationPercentages[0] === 50 && allocationPercentages[1] === 50) {
+      const firstSymbol = displayAssets[0].asset.symbol?.toLowerCase();
+      const nativeAsset = chainsNativeAsset[displayAssets[0].asset.chainId];
+      const nativeSymbol = nativeAsset?.symbol?.toLowerCase();
+
+      if (firstSymbol && nativeSymbol && (firstSymbol === nativeSymbol || firstSymbol === `w${nativeSymbol}`)) {
+        displayAssets = [displayAssets[1], displayAssets[0]];
+        allocationPercentages = [allocationPercentages[1], allocationPercentages[0]];
+      }
     }
-    return Math.round(parseFloat(divide(asset.value.amount, value.amount)) * 100);
-  });
 
-  // If native/wrapped asset comes first and split is 50/50, flip the order so non-native token is displayed first
-  if (displayAssets.length === 2 && allocationPercentages[0] === 50 && allocationPercentages[1] === 50) {
-    const firstSymbol = displayAssets[0].asset.symbol?.toLowerCase();
-    const nativeAsset = chainsNativeAsset[displayAssets[0].asset.chainId];
-    const nativeSymbol = nativeAsset?.symbol?.toLowerCase();
-
-    if (firstSymbol && nativeSymbol && (firstSymbol === nativeSymbol || firstSymbol === `w${nativeSymbol}`)) {
-      displayAssets = [displayAssets[1], displayAssets[0]];
-      allocationPercentages = [allocationPercentages[1], allocationPercentages[0]];
+    // Add "Other" allocation if there are more than 2 assets
+    if (hasOthers) {
+      const displayedTotal = allocationPercentages.reduce((sum, val) => sum + val, 0);
+      allocationPercentages.push(100 - displayedTotal);
     }
-  }
 
-  // Add "Other" allocation if there are more than 2 assets
-  if (hasOthers) {
-    const displayedTotal = allocationPercentages.reduce((sum, val) => sum + val, 0);
-    allocationPercentages.push(100 - displayedTotal);
-  }
+    return { displayAssets, allocationPercentages, orderedAssets, hasOthers };
+  }, [assets, value, chainsNativeAsset]);
 
-  const allocationPercentageText = allocationPercentages.map(val => `${val}%`).join(' / ');
+  const allocationPercentageText = useMemo(() => allocationPercentages.map(val => `${val}%`).join(' / '), [allocationPercentages]);
+
+  const rangeBadgeAssets = useMemo(
+    () =>
+      displayAssets
+        .filter(asset => asset.quantity !== '0')
+        .map(underlying => {
+          const percentage =
+            value.amount === '0'
+              ? underlying.quantity === '0'
+                ? 0
+                : 100
+              : Math.round(parseFloat(divide(underlying.value.amount, value.amount)) * 100);
+          return {
+            id: underlying.asset.address,
+            color: underlying.asset.colors?.primary ?? underlying.asset.colors?.fallback ?? colors.black,
+            allocationPercentage: percentage,
+          };
+        }),
+    [displayAssets, value, colors]
+  );
 
   const renderContent = () => (
     <Columns space={'10px'}>
@@ -157,23 +181,7 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, value, isConcentra
                       {i18n.t(i18n.l.positions.lp_range_status[rangeStatus])}
                     </Text>
                   </Box>
-                  <LpPositionRangeBadge
-                    assets={displayAssets
-                      .filter(asset => asset.quantity !== '0')
-                      .map(underlying => {
-                        const percentage =
-                          value.amount === '0'
-                            ? underlying.quantity === '0'
-                              ? 0
-                              : 100
-                            : Math.round(parseFloat(divide(underlying.value.amount, value.amount)) * 100);
-                        return {
-                          id: underlying.asset.address,
-                          color: underlying.asset.colors?.primary ?? underlying.asset.colors?.fallback ?? colors.black,
-                          allocationPercentage: percentage,
-                        };
-                      })}
-                  />
+                  <LpPositionRangeBadge assets={rangeBadgeAssets} />
                 </Inline>
               </Column>
               <Column width="content">
@@ -193,4 +201,4 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, value, isConcentra
   ) : (
     renderContent()
   );
-};
+});

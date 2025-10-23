@@ -57,16 +57,19 @@ const CoinIconStack = memo(function CoinIconStack({ tokens }: { tokens: Position
   );
 });
 
-export const PositionCard = ({ position }: PositionCardProps) => {
+export const PositionCard = memo(({ position }: PositionCardProps) => {
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
 
-  const totalPositions =
-    (position.borrows.length || 0) +
-    (position.deposits.length || 0) +
-    (position.pools.length || 0) +
-    (position.rewards.length || 0) +
-    (position.stakes.length || 0);
+  const totalPositions = useMemo(
+    () =>
+      (position.borrows.length || 0) +
+      (position.deposits.length || 0) +
+      (position.pools.length || 0) +
+      (position.rewards.length || 0) +
+      (position.stakes.length || 0),
+    [position]
+  );
 
   const onPressHandler = useCallback(() => {
     const nativeCurrency = userAssetsStoreManager.getState().currency;
@@ -155,4 +158,4 @@ export const PositionCard = ({ position }: PositionCardProps) => {
       </GenericCard>
     </Box>
   );
-};
+});
