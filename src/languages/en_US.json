@@ -1680,6 +1680,20 @@
           "short_liquidated": "Short Liquidated"
         }
       },
+      "trade_details_sheet": {
+        "market": "Market",
+        "entry_price": "Entry price",
+        "close_price": "Close price",
+        "date": "Date",
+        "profit": "Profit",
+        "loss": "Loss",
+        "outcome": {
+          "liquidated": "Liquidated",
+          "opened": "Opened",
+          "lost": "Lost",
+          "earned": "Earned"
+        }
+      },
       "trigger_orders": {
         "title": "Trigger Orders",
         "take_profit": "Take Profit",
