@@ -1738,6 +1738,11 @@
           }
         }
       },
+      "sort": {
+        "by_volume": "By Volume",
+        "by_change": "By Change",
+        "by_price": "By Price"
+      },
       "leverage": "Leverage",
       "up_to": "Up to"
     },

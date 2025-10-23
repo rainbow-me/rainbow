@@ -66,9 +66,8 @@ export enum PerpPositionSide {
 
 export enum MarketSortOrder {
   VOLUME = 'volume',
-  PRICE = 'price',
   CHANGE = 'change',
-  SYMBOL = 'symbol',
+  PRICE = 'price',
 }
 
 export enum TriggerOrderType {

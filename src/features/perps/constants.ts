@@ -1,5 +1,5 @@
 import { AddressOrEth, ParsedAsset } from '@/__swaps__/types/assets';
-import { HlBuilderSettings } from '@/features/perps/types';
+import { HlBuilderSettings, MarketSortOrder } from '@/features/perps/types';
 import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { Address } from 'viem';
@@ -10,6 +10,7 @@ import { LinearTransition } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { supportedNativeCurrencies } from '@/references';
 import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities';
+import * as i18n from '@/languages';
 
 export const DEFAULT_SLIPPAGE_BIPS = 500;
 export const RAINBOW_BUILDER_SETTINGS = {
@@ -126,3 +127,21 @@ export const LAYOUT_ANIMATION = LinearTransition.springify()
   .mass(ANIMATION_CONFIG.mass as number)
   .damping(ANIMATION_CONFIG.damping as number)
   .stiffness(ANIMATION_CONFIG.stiffness as number);
+
+export const MARKET_SORT_ORDER_LABELS = {
+  [MarketSortOrder.VOLUME]: {
+    label: i18n.t(i18n.l.perps.sort.by_volume),
+    iconName: 'chart.bar.xaxis',
+    icon: '􀣉',
+  },
+  [MarketSortOrder.CHANGE]: {
+    label: i18n.t(i18n.l.perps.sort.by_change),
+    iconName: 'chart.line.uptrend.xyaxis',
+    icon: '􀑁',
+  },
+  [MarketSortOrder.PRICE]: {
+    label: i18n.t(i18n.l.perps.sort.by_price),
+    iconName: 'dollarsign',
+    icon: '􁎢',
+  },
+} as const;
