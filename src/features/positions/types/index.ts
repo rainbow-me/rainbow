@@ -157,6 +157,5 @@ export type RainbowPosition = {
  */
 export type RainbowPositions = {
   totals: PositionsTotals; // Aggregate totals for categories, locked, and grand total
-  positionTokens: string[]; // LP/staked tokens to exclude from wallet assets
   positions: Record<string, RainbowPosition>; // Keyed by canonical protocol
 };

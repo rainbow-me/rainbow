@@ -89,7 +89,6 @@ describe('Aave Protocol', () => {
           ],
         },
       ],
-      uniqueTokens: [],
       stats: {
         totals: {
           netTotal: '16000',
@@ -181,7 +180,6 @@ describe('Aave Protocol', () => {
           ],
         },
       ],
-      uniqueTokens: [],
       stats: {
         totals: {
           netTotal: '5000',
@@ -286,7 +284,6 @@ describe('Aave Protocol', () => {
           ],
         },
       ],
-      uniqueTokens: [],
       stats: {
         totals: {
           netTotal: '3000',

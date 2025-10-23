@@ -39,10 +39,6 @@ describe('transformPositions', () => {
     it('should transform real fixture data correctly', () => {
       const result = transformPositions(LIST_POSITIONS_SUCCESS, defaultParams);
 
-      // Verify the structure matches expected parsed format
-      expect(result.positionTokens).toBeDefined();
-      expect(Array.isArray(result.positionTokens)).toBe(true);
-
       // Check that we have protocol positions
       const protocolNames = Object.keys(result.positions);
       expect(protocolNames.length).toBeGreaterThan(0);
@@ -117,7 +113,6 @@ describe('transformPositions', () => {
       const responseNullPositions = {
         result: {
           positions: null,
-          uniqueTokens: [],
         },
         metadata: undefined,
         errors: [],
@@ -138,7 +133,6 @@ describe('transformPositions', () => {
       it('should return valid RainbowPositions structure', () => {
         expect(result).toBeDefined();
         expect(result).toHaveProperty('positions');
-        expect(result).toHaveProperty('positionTokens');
         expect(result).toHaveProperty('totals');
       });
 
@@ -164,11 +158,6 @@ describe('transformPositions', () => {
         const { totals } = result;
         expect(parseFloat(totals.total.amount)).toBeGreaterThan(0);
         expect(parseFloat(totals.totalDeposits.amount)).toBeGreaterThan(0);
-      });
-
-      it('should have positionTokens array', () => {
-        expect(Array.isArray(result.positionTokens)).toBe(true);
-        expect(result.positionTokens.length).toBeGreaterThanOrEqual(0);
       });
     });
 

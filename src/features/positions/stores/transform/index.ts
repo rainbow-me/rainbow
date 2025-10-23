@@ -27,10 +27,6 @@ import { normalizeDate, normalizeDateTime } from './utils/date';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import type { NativeCurrencyKey } from '@/entities';
 
-// ============ Constants =================================================== //
-
-const EMPTY_POSITION_TOKENS: string[] = [];
-
 // ============ Helpers ===================================================== //
 
 /**
@@ -735,7 +731,6 @@ export function transformPositions(response: ListPositionsResponse, params: Posi
     const zero = getNativeValue('0', currency);
     return {
       positions: {},
-      positionTokens: [],
       totals: {
         total: zero,
         totalDeposits: zero,
@@ -752,7 +747,6 @@ export function transformPositions(response: ListPositionsResponse, params: Posi
 
   return {
     positions: sorted,
-    positionTokens: response.result.uniqueTokens ?? EMPTY_POSITION_TOKENS,
     totals: grandTotals,
   };
 }

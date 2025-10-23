@@ -212,7 +212,6 @@ describe('Uniswap Position Parsing', () => {
             ],
           },
         ],
-        uniqueTokens: [],
         stats: {
           totals: {
             netTotal: '1000',
@@ -304,7 +303,6 @@ describe('Uniswap Position Parsing', () => {
             ],
           },
         ],
-        uniqueTokens: [],
         stats: {
           totals: {
             netTotal: '1000',
@@ -401,7 +399,6 @@ describe('Uniswap Position Parsing', () => {
             ],
           },
         ],
-        uniqueTokens: [],
         stats: {
           totals: {
             netTotal: '1000',
@@ -487,7 +484,6 @@ describe('Uniswap Position Parsing', () => {
             ],
           },
         ],
-        uniqueTokens: [],
         stats: {
           totals: {
             netTotal: '1000',
@@ -575,7 +571,6 @@ describe('Uniswap Position Parsing', () => {
             ],
           },
         ],
-        uniqueTokens: [],
         stats: {
           totals: {
             netTotal: '1000',
@@ -664,7 +659,6 @@ describe('Uniswap Position Parsing', () => {
             ],
           },
         ],
-        uniqueTokens: [],
         stats: {
           totals: {
             netTotal: '1000',
@@ -763,7 +757,6 @@ describe('Uniswap Position Parsing', () => {
             ],
           },
         ],
-        uniqueTokens: [],
         stats: {
           totals: {
             netTotal: '1000',
@@ -860,7 +853,6 @@ describe('Uniswap Position Parsing', () => {
             ],
           },
         ],
-        uniqueTokens: [],
         stats: {
           totals: {
             netTotal: '100',
@@ -995,7 +987,6 @@ describe('Uniswap Position Parsing', () => {
             ],
           },
         ],
-        uniqueTokens: [],
         stats: {
           totals: {
             netTotal: '1000',

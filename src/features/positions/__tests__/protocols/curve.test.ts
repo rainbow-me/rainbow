@@ -94,7 +94,6 @@ describe('Curve Protocol', () => {
           ],
         },
       ],
-      uniqueTokens: [],
       stats: {
         totals: {
           netTotal: '3000',
@@ -175,7 +174,6 @@ describe('Curve Protocol', () => {
           ],
         },
       ],
-      uniqueTokens: [],
       stats: {
         totals: {
           netTotal: '2000',
@@ -253,7 +251,6 @@ describe('Curve Protocol', () => {
           ],
         },
       ],
-      uniqueTokens: [],
       stats: {
         totals: {
           netTotal: '570',

@@ -85,7 +85,6 @@ describe('Compound Protocol', () => {
           ],
         },
       ],
-      uniqueTokens: [],
       stats: {
         totals: {
           netTotal: '30000',
@@ -168,7 +167,6 @@ describe('Compound Protocol', () => {
           ],
         },
       ],
-      uniqueTokens: [],
       stats: {
         totals: {
           netTotal: '250',
@@ -245,7 +243,6 @@ describe('Compound Protocol', () => {
           ],
         },
       ],
-      uniqueTokens: [],
       stats: {
         totals: {
           netTotal: '10100',
