@@ -69,7 +69,7 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
         hydrationRetry.set(address, null);
       }
 
-      requestIdleCallback(() => throttledPositionsAnalytics(data, address));
+      requestIdleCallback(() => throttledPositionsAnalytics(data));
     },
   },
   (_, get) => ({
@@ -124,28 +124,26 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
  * Wallet will eventually be tracked on the next hour if still selected.
  */
 const throttledPositionsAnalytics = throttle(
-  (positions: RainbowPositions, address: string) => {
-    const positionsList = Object.values(positions.positions);
-    const { positionsAmount, positionsRewardsAmount } = positionsList.reduce(
-      (acc, position) => ({
-        positionsAmount:
-          acc.positionsAmount +
-          position.deposits.length +
-          position.pools.length +
-          position.stakes.length +
-          position.borrows.length +
-          position.rewards.length,
-        positionsRewardsAmount: acc.positionsRewardsAmount + position.rewards.length,
-      }),
-      { positionsAmount: 0, positionsRewardsAmount: 0 }
+  (positions: RainbowPositions) => {
+    const { positionsAmount, positionsRewardsAmount, positionsAssetsAmount } = Object.values(positions.positions).reduce(
+      (acc, position) => {
+        (['deposits', 'pools', 'stakes', 'borrows', 'rewards'] as const).forEach(category => {
+          acc.positionsAmount += position[category].length;
+          if (category === 'rewards') acc.positionsRewardsAmount += position[category].length;
+          position[category].forEach(item => (acc.positionsAssetsAmount += item.underlying.length));
+        });
+        return acc;
+      },
+      { positionsAmount: 0, positionsRewardsAmount: 0, positionsAssetsAmount: 0 }
     );
 
     analytics.identify({
       positionsAmount,
       positionsUSDValue: Number(positions.totals.total.amount),
+      positionsAssetsAmount,
+      positionsDappsAmount: Object.keys(positions.positions).length,
       positionsRewardsAmount,
       positionsRewardsUSDValue: Number(positions.totals.totalRewards.amount),
-      positions: positionsList.length,
     });
   },
   time.hours(1),

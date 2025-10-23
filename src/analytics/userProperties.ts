@@ -49,16 +49,23 @@ export interface UserProperties {
   NFTs?: number;
   poaps?: number;
 
-  // claimables
+  // number of unique claimables
   claimablesAmount?: number;
+  // total USD value of claimables
   claimablesUSDValue?: string;
 
-  // positions
+  // number of unique position items
   positionsAmount?: number;
+  // total USD value of positions
   positionsUSDValue?: number;
+  // number of underlying assets across positions (non-deduplicated)
+  positionsAssetsAmount?: number;
+  // number of unique dapps (canonical protocols)
+  positionsDappsAmount?: number;
+  // number of claimable rewards tokens (non-deduplicated)
   positionsRewardsAmount?: number;
+  // total USD value of claimable reward tokens
   positionsRewardsUSDValue?: number;
-  positions?: number;
 
   // nft offers
   nftOffersAmount?: number;
