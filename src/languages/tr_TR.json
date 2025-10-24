@@ -968,8 +968,8 @@
       "redacted_title": "Redacted Rainbow'un kilidini açtınız",
       "baggy_description": "Sokaklardan zincire, bu küçük çanta Rainbow havasının taşınabilir dozunu taşır. Renklerin tadına bak ve farkı hisset.",
       "baggy_title": "Kazandınız\n Rainbow Baggy",
-      "chonks_description": "Imagine the wind in your Rainbow hair, driving down the 101, feeling Chonky.",
-      "chonks_title": "You've unlocked\n The Chonkiest Icon",
+      "chonks_description": "101'de süzülürken, Rainbow saçlarınızda rüzgarı hayal edin, Chonky hissiyle.",
+      "chonks_title": "En Chonky Simgeyi\n Açtınız",
       "button": "Simgeyi Yakala"
     },
     "explain": {
@@ -2216,6 +2216,9 @@
         "full_range": "Tam Aralık",
         "out_of_range": "Aralık Dışında",
         "in_range": "Aralık İçinde"
+      },
+      "lp_allocation": {
+        "other": "Diğer"
       },
       "open_dapp": "Açık 􀮶",
       "deposits": "Mevduatlar",
