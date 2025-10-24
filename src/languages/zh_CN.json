@@ -968,8 +968,8 @@
       "redacted_title": "您已解锁\n Redacted Rainbow",
       "baggy_description": "从街头到链，这个小袋子承载了你的便携彩虹氛围。品尝颜色，感受不同。",
       "baggy_title": "您已解锁\n Rainbow Baggy",
-      "chonks_description": "Imagine the wind in your Rainbow hair, driving down the 101, feeling Chonky.",
-      "chonks_title": "You've unlocked\n The Chonkiest Icon",
+      "chonks_description": "想象一下风在你的Rainbow头发中飘扬，驾驶着101，感受Chonky。",
+      "chonks_title": "您已解锁\n 最巨大的图标",
       "button": "解锁图标"
     },
     "explain": {
@@ -2216,6 +2216,9 @@
         "full_range": "全范围",
         "out_of_range": "超出范围",
         "in_range": "在范围内"
+      },
+      "lp_allocation": {
+        "other": "其他"
       },
       "open_dapp": "打开 􀮶",
       "deposits": "存款",
