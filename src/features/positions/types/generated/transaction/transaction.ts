@@ -6,8 +6,6 @@
 
 import { type ResponseMetadata } from '../common/request_metadata';
 
-export const protobufPackage = 'external.transaction';
-
 export interface ListTransactionsRequest {
   /**
    * Wallet address to fetch transactions for
