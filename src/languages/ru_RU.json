@@ -968,8 +968,8 @@
       "redacted_title": "Вы разблокировали\nСкрытую Rainbow",
       "baggy_description": "От улиц до цепи, эта маленькая сумочка хранит вашу переносную дозу атмосфер Rainbow. Почувствуйте цвета — и разницу.",
       "baggy_title": "Вы разблокировали\nRainbow Baggy",
-      "chonks_description": "Imagine the wind in your Rainbow hair, driving down the 101, feeling Chonky.",
-      "chonks_title": "You've unlocked\n The Chonkiest Icon",
+      "chonks_description": "Представьте ветер в ваших Rainbow волосах, когда вы едете по трассе 101 и чувствуете себя Чонки.",
+      "chonks_title": "Вы разблокировали\n Самую Чонкую Иконку",
       "button": "Разблокировать значок"
     },
     "explain": {
@@ -2216,6 +2216,9 @@
         "full_range": "Полный диапазон",
         "out_of_range": "Вне диапазона",
         "in_range": "В диапазоне"
+      },
+      "lp_allocation": {
+        "other": "Другие"
       },
       "open_dapp": "Открыть",
       "deposits": "Депозиты",
