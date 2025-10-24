@@ -968,8 +968,8 @@
       "redacted_title": "Anda telah membuka\n Rainbow yang Dihilangkan",
       "baggy_description": "Dari jalanan hingga rantai, tas kecil ini memegang dosis portabel suasana Rainbow Anda. Rasakan warnanya, dan rasakan bedanya.",
       "baggy_title": "Anda telah membuka\n Rainbow Baggy",
-      "chonks_description": "Imagine the wind in your Rainbow hair, driving down the 101, feeling Chonky.",
-      "chonks_title": "You've unlocked\n The Chonkiest Icon",
+      "chonks_description": "Bayangkan angin di rambut Rainbow Anda, mengemudi di 101, merasakan Chonky.",
+      "chonks_title": "Anda telah membuka\n Ikon Chonkiest",
       "button": "Ambil ikon"
     },
     "explain": {
@@ -2216,6 +2216,9 @@
         "full_range": "Kisaran Penuh",
         "out_of_range": "Di Luar Jangkauan",
         "in_range": "Dalam Jangkauan"
+      },
+      "lp_allocation": {
+        "other": "Lainnya"
       },
       "open_dapp": "Buka 􀮶",
       "deposits": "Deposit",
