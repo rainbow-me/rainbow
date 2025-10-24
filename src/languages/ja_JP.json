@@ -968,8 +968,8 @@
       "redacted_title": "ロック解除されました\nRedacted Rainbow",
       "baggy_description": "街からチェーンまで、この小さなバッグはあなたのポータブルなRainbowのエッセンスを持ち運びます。色を味わい、違いを感じてください。",
       "baggy_title": "アンロック\n Rainbow Baggy",
-      "chonks_description": "Imagine the wind in your Rainbow hair, driving down the 101, feeling Chonky.",
-      "chonks_title": "You've unlocked\n The Chonkiest Icon",
+      "chonks_description": "レインボーの髪で風を感じながら、101号線を走り、チョンキーを感じるイメージ。",
+      "chonks_title": "チョンキエスト アイコンをアンロックしました。",
       "button": "アイコンをキャッチ"
     },
     "explain": {
@@ -2216,6 +2216,9 @@
         "full_range": "全範囲",
         "out_of_range": "範囲外",
         "in_range": "範囲内"
+      },
+      "lp_allocation": {
+        "other": "その他"
       },
       "open_dapp": "オープン 􀮶",
       "deposits": "預金",
