@@ -11,8 +11,6 @@ import {
   type ListTransactionsResponse,
 } from './transaction';
 
-export const protobufPackage = 'external.transaction';
-
 export interface TransactionService {
   ListTransactions(request: ListTransactionsRequest): Promise<ListTransactionsResponse>;
   GetTransactionByHash(request: GetTransactionByHashRequest): Promise<GetTransactionByHashResponse>;
