@@ -78,7 +78,7 @@ import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import ShowSecretView from '@/screens/SettingsSheet/components/Backups/ShowSecretView';
 import PoapSheet from '@/screens/mints/PoapSheet';
-import { PositionSheet } from '@/screens/positions/PositionSheet';
+import { PositionSheet } from '@/features/positions/screens/PositionSheet';
 import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { SignTransactionSheet } from '@/screens/SignTransactionSheet';

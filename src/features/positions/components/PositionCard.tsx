@@ -2,16 +2,18 @@ import { Box, Column, Columns, Inline, Stack, Text, globalColors } from '@/desig
 import React, { memo, useCallback, useMemo } from 'react';
 import { useTheme } from '@/theme';
 
-import { GenericCard } from '../cards/GenericCard';
+import { GenericCard } from '@/components/cards/GenericCard';
 import startCase from 'lodash/startCase';
-import { RequestVendorLogoIcon } from '../coin-icon';
+import { RequestVendorLogoIcon } from '@/components/coin-icon';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
-import { PositionAsset, RainbowBorrow, RainbowClaimable, RainbowDeposit, RainbowPosition, RainbowStake } from '@/resources/defi/types';
-import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
+import { PositionAsset, RainbowPosition } from '@/features/positions/types';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { NativeCurrencyKeys } from '@/entities';
 
 type PositionCardProps = {
   position: RainbowPosition;
@@ -22,7 +24,7 @@ const CoinIconForStack = memo(function CoinIconForStack({ token }: { token: Posi
     <RainbowCoinIcon
       size={16}
       icon={token.icon_url}
-      chainId={token.chain_id}
+      chainId={token.chainId}
       symbol={token.symbol}
       color={token.colors?.primary ?? token.colors?.fallback ?? undefined}
       showBadge={false}
@@ -36,7 +38,7 @@ const CoinIconStack = memo(function CoinIconStack({ tokens }: { tokens: Position
       {tokens.map((token, index) => {
         return (
           <Box
-            key={`availableNetwork-${token.asset_code}`}
+            key={`token-${token.address}`}
             marginTop={{ custom: -2 }}
             marginLeft={{ custom: index > 0 ? -8 : 0 }}
             style={{
@@ -55,42 +57,39 @@ const CoinIconStack = memo(function CoinIconStack({ tokens }: { tokens: Position
   );
 });
 
-export const PositionCard = ({ position }: PositionCardProps) => {
+export const PositionCard = memo(({ position }: PositionCardProps) => {
   const { colors, isDarkMode } = useTheme();
-  const totalPositions =
-    (position.borrows.length || 0) + (position.deposits.length || 0) + (position.claimables.length || 0) + (position.stakes.length || 0);
-
   const { navigate } = useNavigation();
 
+  const totalPositions = useMemo(
+    () =>
+      (position.borrows.length || 0) +
+      (position.deposits.length || 0) +
+      (position.pools.length || 0) +
+      (position.rewards.length || 0) +
+      (position.stakes.length || 0),
+    [position]
+  );
+
   const onPressHandler = useCallback(() => {
-    analytics.track(analytics.event.positionsOpenedSheet, { dapp: position.type });
+    const nativeCurrency = userAssetsStoreManager.getState().currency;
+    analytics.track(analytics.event.positionsOpenedSheet, {
+      dapp: position.type,
+      protocol: position.protocol,
+      positionsValue: position.totals.total.amount,
+      positionsCurrency: nativeCurrency,
+      ...(nativeCurrency !== NativeCurrencyKeys.USD && { positionsUSDValue: position.totals.total.amount }),
+    });
     navigate(Routes.POSITION_SHEET, { position });
   }, [navigate, position]);
 
   const depositTokens: PositionAsset[] = useMemo(() => {
-    const tokens: PositionAsset[] = [];
-    position.deposits.forEach((deposit: RainbowDeposit) => {
-      deposit.underlying.forEach(({ asset }) => {
-        tokens.push(asset);
-      });
-    });
-    position.stakes.forEach((stake: RainbowStake) => {
-      stake.underlying.forEach(({ asset }) => {
-        tokens.push(asset);
-      });
-    });
-    position.claimables.forEach((claimable: RainbowClaimable) => {
-      tokens.push(claimable.asset);
-    });
-    position.borrows.forEach((borrow: RainbowBorrow) => {
-      borrow.underlying.forEach(({ asset }) => {
-        tokens.push(asset);
-      });
-    });
-
+    const tokens = (['deposits', 'pools', 'stakes', 'borrows'] as const)
+      .flatMap(category => position[category].flatMap(item => item.underlying.map(({ asset }) => asset)))
+      .concat(position.rewards.map(reward => reward.asset));
     // TODO: if more than 5 unique tokens but duplicates of a token across networks, use different asset
     const dedupedTokens = uniqBy(tokens, 'symbol');
-    return dedupedTokens?.slice(0, 5);
+    return dedupedTokens.slice(0, 5);
   }, [position]);
 
   const positionColor =
@@ -110,6 +109,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
           <Box>
             <Columns space="20px" alignHorizontal="justify">
               <Column width="content">
+                {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
                 {/* @ts-ignore js component*/}
                 <RequestVendorLogoIcon
                   backgroundColor={positionColor}
@@ -151,11 +151,11 @@ export const PositionCard = ({ position }: PositionCardProps) => {
               </Inline>
             </Box>
             <Text color={{ custom: colors.black }} size="17pt" weight="semibold" numberOfLines={1}>
-              {position.totals.totals.display}
+              {position.totals.total.display}
             </Text>
           </Stack>
         </Stack>
       </GenericCard>
     </Box>
   );
-};
+});

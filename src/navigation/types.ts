@@ -7,7 +7,7 @@ import { Claimable, RainbowClaimable } from '@/resources/addys/claimables/types'
 import { RequestData, WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/walletConnect/types';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 import { RainbowWallet } from '@/model/wallet';
-import { RainbowPosition } from '@/resources/defi/types';
+import { RainbowPosition } from '@/features/positions/types';
 import { Address } from 'viem';
 import { SharedValue } from 'react-native-reanimated';
 import { ChainId } from '@/state/backendNetworks/types';
