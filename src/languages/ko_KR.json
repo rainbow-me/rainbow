@@ -968,8 +968,8 @@
       "redacted_title": "잠금 해제 완료\nRedacted Rainbow",
       "baggy_description": "스트릿에서 체인으로, 이 작은 가방은 레인보우의 분위기를 휴대할 수 있도록 합니다. 색깔을 맛보고 차이를 느껴보세요.",
       "baggy_title": "잠금 해제\n Rainbow Baggy",
-      "chonks_description": "Imagine the wind in your Rainbow hair, driving down the 101, feeling Chonky.",
-      "chonks_title": "You've unlocked\n The Chonkiest Icon",
+      "chonks_description": "Rainbow 헤어를 휘날리며 101번 도로를 달릴 때, Chonky의 기분을 느껴보세요.",
+      "chonks_title": "당신은 가장 Chonky한 아이콘을 열었습니다",
       "button": "아이콘 잡기"
     },
     "explain": {
@@ -2216,6 +2216,9 @@
         "full_range": "전체 범위",
         "out_of_range": "범위 초과",
         "in_range": "범위 내"
+      },
+      "lp_allocation": {
+        "other": "기타"
       },
       "open_dapp": "오픈 􀮶",
       "deposits": "입금",
