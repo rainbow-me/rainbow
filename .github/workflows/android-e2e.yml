@@ -74,6 +74,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
+      - run: cd rainbow-scripts && git checkout @janic/fix-webview-providers
+
       - name: Install dependencies
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
