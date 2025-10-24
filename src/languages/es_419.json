@@ -968,8 +968,8 @@
       "redacted_title": "Has desbloqueado\n Redacted Rainbow",
       "baggy_description": "Desde las calles hasta la cadena, este pequeño bolso sostiene tu dosis portátil de vibraciones Rainbow. Saborea los colores, y siente la diferencia.",
       "baggy_title": "Has desbloqueado\n Rainbow Baggy",
-      "chonks_description": "Imagine the wind in your Rainbow hair, driving down the 101, feeling Chonky.",
-      "chonks_title": "You've unlocked\n The Chonkiest Icon",
+      "chonks_description": "Imagina el viento en tu cabello Rainbow, conduciendo por la Ruta 101, sintiendo Chonky.",
+      "chonks_title": "Has desbloqueado\n El Icono Más Chonky",
       "button": "Consigue el ícono"
     },
     "explain": {
@@ -2216,6 +2216,9 @@
         "full_range": "Rango Completo",
         "out_of_range": "Fuera de Rango",
         "in_range": "En Rango"
+      },
+      "lp_allocation": {
+        "other": "Otro"
       },
       "open_dapp": "Abrir",
       "deposits": "Depósitos",
