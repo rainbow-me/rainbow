@@ -49,9 +49,23 @@ export interface UserProperties {
   NFTs?: number;
   poaps?: number;
 
-  // claimables
+  // number of unique claimables
   claimablesAmount?: number;
+  // total USD value of claimables
   claimablesUSDValue?: string;
+
+  // number of unique position items
+  positionsAmount?: number;
+  // total USD value of positions
+  positionsUSDValue?: number;
+  // number of underlying assets across positions (non-deduplicated)
+  positionsAssetsAmount?: number;
+  // number of unique dapps (canonical protocols)
+  positionsDappsAmount?: number;
+  // number of claimable rewards tokens (non-deduplicated)
+  positionsRewardsAmount?: number;
+  // total USD value of claimable reward tokens
+  positionsRewardsUSDValue?: number;
 
   // nft offers
   nftOffersAmount?: number;
@@ -87,20 +101,4 @@ export interface UserProperties {
   branchCampaign?: string;
   branchReferrer?: string;
   branchReferringLink?: string;
-
-  // to be deprecated
-  assets_value?: number;
-  borrowed_value?: number;
-  bsc_assets_value?: number;
-  deposited_value?: number;
-  polygon_assets_value?: number;
-  optimism_assets_value?: number;
-  arbitrum_assets_value?: number;
-  nft_floor_price_value?: number;
-  nft_last_price_value?: number;
-  avalanche_assets_value?: number;
-  xdai_assets_value?: number;
-  locked_value?: number;
-  staked_value?: number;
-  total_value?: number;
 }

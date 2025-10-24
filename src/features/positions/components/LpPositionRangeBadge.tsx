@@ -11,7 +11,7 @@ const INNER_BORDER_RADIUS = 2;
 const MIN_ALLOCATION_PERCENTAGE = 0.25;
 const MAX_ALLOCATION_PERCENTAGE = 0.75;
 
-type LpRangeBadgeProps = {
+type LpPositionRangeBadgeProps = {
   assets: {
     id: string;
     color: string;
@@ -19,7 +19,7 @@ type LpRangeBadgeProps = {
   }[];
 };
 
-export const LpRangeBadge = ({ assets }: LpRangeBadgeProps) => {
+export const LpPositionRangeBadge = ({ assets }: LpPositionRangeBadgeProps) => {
   return (
     <Box flexDirection="row" width={{ custom: 32 }} height={{ custom: 10 }} gap={ASSET_SPACE}>
       {assets.map((asset, index) => {
@@ -87,7 +87,7 @@ export const LpRangeBadge = ({ assets }: LpRangeBadgeProps) => {
                 colors={
                   isMiddle
                     ? ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.0)', 'rgba(255, 255, 255, 0.1)']
-                    : ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)']
+                    : ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.15)', 'rgba(255, 255, 255, 0.3)']
                 }
                 start={{ x: isFirst ? 0 : 1, y: 0.5 }}
                 end={{ x: isFirst ? 1 : 0, y: 0.5 }}

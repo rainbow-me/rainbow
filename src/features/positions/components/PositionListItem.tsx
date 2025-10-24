@@ -2,42 +2,39 @@ import React from 'react';
 import { Bleed, Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
 import { useTheme } from '@/theme';
 import {
+  convertAmountToBalanceDisplay,
   convertAmountToPercentageDisplay,
   convertAmountToPercentageDisplayWithThreshold,
-  convertRawAmountToRoundedDecimal,
 } from '@/helpers/utilities';
-import { NativeDisplay, PositionAsset } from '@/resources/defi/types';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { PositionAsset } from '@/features/positions/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { ButtonPressAnimation } from '@/components/animations';
 
 type Props = {
   asset: PositionAsset;
   quantity: string;
   apy: string | undefined;
-  native: NativeDisplay;
+  value: { amount: string; display: string };
   positionColor: string;
   dappVersion?: string;
+  name?: string;
+  onPress?: () => void;
 };
 
-export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, native, positionColor, dappVersion }) => {
+export const PositionListItem: React.FC<Props> = ({ asset, apy, quantity, value, positionColor, dappVersion, name, onPress }) => {
   const theme = useTheme();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const chainId = useBackendNetworksStore.getState().getChainsIdByName()[asset.network];
-  const { data: externalAsset } = useExternalToken({ address: asset.asset_code, chainId, currency: nativeCurrency });
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
   const priceChangeColor = (asset.price?.relative_change_24h || 0) < 0 ? theme.colors.blueGreyDark60 : theme.colors.green;
 
-  return (
+  const renderContent = () => (
     <Columns space={'10px'}>
       <Column width={'content'}>
         <RainbowCoinIcon
-          chainId={chainId}
-          color={externalAsset?.colors?.primary || externalAsset?.colors?.fallback || undefined}
-          icon={externalAsset?.icon_url}
+          chainId={asset.chainId}
+          color={asset.colors?.primary || asset.colors?.fallback || undefined}
+          icon={asset.icon_url}
           symbol={asset.symbol}
         />
       </Column>
@@ -47,9 +44,11 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
             <Columns alignVertical="center">
               <Column>
                 <Inline alignVertical="center" space={'6px'}>
-                  <Text size="17pt" weight="semibold" color="label" numberOfLines={1}>
-                    {asset.name}
-                  </Text>
+                  <Box style={{ maxWidth: 200 }}>
+                    <Text size="17pt" weight="semibold" color="label" numberOfLines={1}>
+                      {name ? `${asset.symbol} for ${name}` : asset.name}
+                    </Text>
+                  </Box>
                   {dappVersion && (
                     <Box
                       borderRadius={7}
@@ -70,7 +69,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
               </Column>
               <Column width={'content'}>
                 <Text size="17pt" weight="medium" color="label" numberOfLines={1}>
-                  {native.display}
+                  {value.display}
                 </Text>
               </Column>
             </Columns>
@@ -81,7 +80,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
                 <Inline alignVertical="center" space={'6px'}>
                   <Box style={{ maxWidth: 150 }}>
                     <Text size="13pt" weight="semibold" color="labelTertiary" numberOfLines={1}>
-                      {`${convertRawAmountToRoundedDecimal(quantity, asset.decimals, 3)} ${asset.symbol}`}
+                      {convertAmountToBalanceDisplay(quantity, asset)}
                     </Text>
                   </Box>
                   {apy && (
@@ -114,4 +113,6 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
       </Box>
     </Columns>
   );
+
+  return onPress ? <ButtonPressAnimation onPress={onPress}>{renderContent()}</ButtonPressAnimation> : renderContent();
 };
