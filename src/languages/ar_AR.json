@@ -2217,6 +2217,9 @@
         "out_of_range": "خارج النطاق",
         "in_range": "ضمن النطاق"
       },
+      "lp_allocation": {
+        "other": "آخر"
+      },
       "open_dapp": "فتح 􀮶",
       "deposits": "الإيداعات",
       "borrows": "القروض",
