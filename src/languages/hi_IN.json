@@ -968,8 +968,8 @@
       "redacted_title": "आपने\nरेडैक्टेड रेनबो को अनलॉक कर दिया",
       "baggy_description": "सड़कों से लेकर चेन तक, यह छोटा बैग आपकी पोर्टेबल रेनबो वाइब्स की खुराक को पकड़े हुए है। रंगों का स्वाद लें, और अंतर महसूस करें।",
       "baggy_title": "आपने अनलॉक कर लिया है\n रेनबो बैगी",
-      "chonks_description": "Imagine the wind in your Rainbow hair, driving down the 101, feeling Chonky.",
-      "chonks_title": "You've unlocked\n The Chonkiest Icon",
+      "chonks_description": "इमेजिन कीजिए कि आपके Rainbow बालों में हवा है, आप 101 पर ड्राइव कर रहे हैं और Chonky महसूस कर रहे हैं।",
+      "chonks_title": "आपने Chonkiest आइकन अनलॉक कर लिया है",
       "button": "आइकन पकड़ें"
     },
     "explain": {
@@ -2216,6 +2216,9 @@
         "full_range": "पूर्ण श्रेणी",
         "out_of_range": "श्रेणी से बाहर",
         "in_range": "श्रेणी के अंदर"
+      },
+      "lp_allocation": {
+        "other": "अन्य"
       },
       "open_dapp": "खोलें 􀮶",
       "deposits": "जमाकर रकम",
