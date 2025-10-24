@@ -2217,6 +2217,9 @@
         "out_of_range": "Hors de Portée",
         "in_range": "Dans la Portée"
       },
+      "lp_allocation": {
+        "other": "Autre"
+      },
       "open_dapp": "Ouvrir 􀮶",
       "deposits": "Dépôts",
       "borrows": "Emprunts",
