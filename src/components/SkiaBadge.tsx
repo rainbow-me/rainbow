@@ -149,6 +149,7 @@ export const SkiaBadge = memo(function SkiaBadge({
             y={textY}
             color={textColor}
             onLayoutWorklet={onTextLayout}
+            halfLeading
           >
             {text}
           </SkiaText>
