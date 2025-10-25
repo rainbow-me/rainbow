@@ -35,6 +35,7 @@ import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { XIcon } from '@/components/icons/svg/XIcon';
+import { useRemoteConfig } from '@/model/remoteConfig';
 
 interface SettingsSectionProps {
   onCloseModal: () => void;
@@ -58,6 +59,7 @@ const SettingsSection = ({
   onPressPrivacy,
   onPressNotifications,
 }: SettingsSectionProps) => {
+  const { dev_section_enabled } = useRemoteConfig();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const { language, nativeCurrency } = useAccountSettings();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
@@ -302,13 +304,15 @@ const SettingsSection = ({
           testID="review-section"
           titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.review)} />}
         />
-        <MenuItem
-          leftComponent={<MenuItem.TextIcon icon={ios ? '🚧' : '🐞'} isEmoji />}
-          onPress={onPressDev}
-          size={52}
-          testID="developer-section"
-          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.developer)} />}
-        />
+        {dev_section_enabled && (
+          <MenuItem
+            leftComponent={<MenuItem.TextIcon icon={ios ? '🚧' : '🐞'} isEmoji />}
+            onPress={onPressDev}
+            size={52}
+            testID="developer-section"
+            titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.developer)} />}
+          />
+        )}
       </Menu>
     </MenuContainer>
   );

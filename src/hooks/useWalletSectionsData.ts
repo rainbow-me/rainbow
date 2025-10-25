@@ -52,7 +52,7 @@ export default function useWalletSectionsData({
   const remoteCardsEnabled = (remoteConfig.remote_cards_enabled || experimentalConfig[REMOTE_CARDS]) && !isReadOnlyWallet;
   const positionsEnabled = experimentalConfig[DEFI_POSITIONS] && !IS_TEST;
   const claimablesEnabled = (remoteConfig.claimables || experimentalConfig[CLAIMABLES]) && !IS_TEST;
-  const perpsEnabled = (experimentalConfig[PERPS] || remoteConfig.perps_enabled) && !IS_TEST;
+  const perpsEnabled = remoteConfig.perps_enabled && !IS_TEST;
 
   const cardIds = remoteCardsStore(state => state.getCardIdsForScreen('WALLET_SCREEN'));
   const remoteCards = useMemo(() => (remoteCardsEnabled ? cardIds : []), [cardIds, remoteCardsEnabled]);
