@@ -225,7 +225,7 @@ export const DEFAULT_CONFIG = {
   candlestick_charts_enabled: IS_DEV || isTestFlight || false,
   rainbow_toasts_enabled: IS_DEV || isTestFlight || false,
   perps_enabled: false,
-  dev_section_enabled: false,
+  dev_section_enabled: IS_DEV || false,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
