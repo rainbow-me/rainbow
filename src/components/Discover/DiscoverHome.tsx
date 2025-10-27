@@ -54,7 +54,7 @@ export default function DiscoverHome() {
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
   const trendingTokensEnabled = (useExperimentalFlag(TRENDING_TOKENS) || trending_tokens_enabled) && !IS_TEST;
-  const perpsEnabled = useExperimentalFlag(PERPS) || perps_enabled;
+  const perpsEnabled = perps_enabled;
 
   const { chainId } = useAccountSettings();
   const testNetwork = isTestnetChain({ chainId });

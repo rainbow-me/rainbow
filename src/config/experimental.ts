@@ -92,7 +92,7 @@ const config = {
   [CANDLESTICK_DATA_MONITOR]: { settings: true, value: false },
   [KING_OF_THE_HILL_TAB]: { settings: true, value: false },
   [RAINBOW_TOASTS]: { settings: true, value: false },
-  [PERPS]: { settings: true, value: true },
+  [PERPS]: { settings: true, value: false },
   [DEFI_POSITIONS_THRESHOLD_FILTER]: { settings: true, value: true },
 } as const;
 
