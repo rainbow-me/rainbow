@@ -13,6 +13,7 @@ type TriggerOrderCardProps = {
   type: TriggerOrderType;
   price: string;
   percentage: string;
+  projectedPnl: string;
   onPressDelete: () => void;
   isCancelling?: boolean;
 };
@@ -21,12 +22,14 @@ export const TriggerOrderCard = memo(function TriggerOrderCard({
   type,
   price,
   percentage,
+  projectedPnl,
   onPressDelete,
   isCancelling,
 }: TriggerOrderCardProps) {
   const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
   const isTakeProfit = type === TriggerOrderType.TAKE_PROFIT;
+  const projectedLabel = isTakeProfit ? i18n.t(i18n.l.perps.trigger_orders.gain) : i18n.t(i18n.l.perps.trigger_orders.loss);
 
   return (
     <Box
@@ -36,9 +39,6 @@ export const TriggerOrderCard = memo(function TriggerOrderCard({
       borderColor={{ custom: isDarkMode ? accentColors.opacity8 : opacityWorklet('#09111F', 0.02) }}
       borderRadius={28}
       padding="20px"
-      alignItems="center"
-      flexDirection="row"
-      justifyContent="space-between"
     >
       <Box flexDirection="row" alignItems="center" justifyContent="space-between">
         <Box gap={12}>
@@ -61,17 +61,25 @@ export const TriggerOrderCard = memo(function TriggerOrderCard({
               </Text>
             </Text>
           </Box>
+          <Box flexDirection="row" alignItems="center" gap={5}>
+            <Text size="13pt" weight="bold" color={'labelTertiary'}>
+              {projectedLabel}
+            </Text>
+            <Text size="13pt" weight="bold" color={isTakeProfit ? 'green' : 'red'}>
+              {projectedPnl}
+            </Text>
+          </Box>
         </Box>
+        {isCancelling ? (
+          <AnimatedSpinner color={accentColors.opacity100} isLoading={isCancelling} scaleInFrom={1} size={24} />
+        ) : (
+          <ButtonPressAnimation onPress={onPressDelete}>
+            <TextIcon color={{ custom: accentColors.opacity100 }} size="icon 17px" weight="heavy" width={22}>
+              􀈒
+            </TextIcon>
+          </ButtonPressAnimation>
+        )}
       </Box>
-      {isCancelling ? (
-        <AnimatedSpinner color={accentColors.opacity100} isLoading={isCancelling} scaleInFrom={1} size={24} />
-      ) : (
-        <ButtonPressAnimation onPress={onPressDelete}>
-          <TextIcon color={{ custom: accentColors.opacity100 }} size="icon 17px" weight="heavy" width={22}>
-            􀈒
-          </TextIcon>
-        </ButtonPressAnimation>
-      )}
     </Box>
   );
 });

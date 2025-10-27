@@ -1698,7 +1698,9 @@
         "above": "above",
         "below": "below",
         "must_be": "Must be",
-        "failed_to_create": "Failed to create trigger order"
+        "failed_to_create": "Failed to create trigger order",
+        "gain": "Gain",
+        "loss": "Loss"
       },
       "search": {
         "search_markets": "Search markets",

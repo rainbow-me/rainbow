@@ -1,7 +1,7 @@
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Box, IconContainer, Inline, Text, TextShadow } from '@/design-system';
 import { HlOpenOrder, useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
-import { TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
+import { PerpPositionSide, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
 import { TriggerOrderCard } from '@/features/perps/components/TriggerOrderCard';
 import { isZero } from '@/helpers/utilities';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -9,13 +9,14 @@ import { logger, RainbowError } from '@/logger';
 import { Alert } from 'react-native';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { toFixedWorklet } from '@/safe-math/SafeMath';
+import { toFixedWorklet, subWorklet, mulWorklet } from '@/safe-math/SafeMath';
 import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrderButton';
 import * as i18n from '@/languages';
 import { LAYOUT_ANIMATION } from '@/features/perps/constants';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { analytics } from '@/analytics';
 import { parseHyperliquidErrorMessage } from '@/features/perps/utils';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 
 type TriggerOrdersSectionProps = {
   symbol: string;
@@ -30,6 +31,17 @@ const ExistingTriggerOrderCard = memo(function ExistingTriggerOrderCard({ order 
     : `${toFixedWorklet((Number(order.size) / (position?.size ? Math.abs(Number(position.size)) : Number(order.originalSize))) * 100, 2)}%`;
   const isTakeProfit = order.orderType === 'Take Profit Market' || order.orderType === 'Take Profit Limit';
   const type = isTakeProfit ? TriggerOrderType.TAKE_PROFIT : TriggerOrderType.STOP_LOSS;
+
+  const projectedPnl = useMemo(() => {
+    if (!position || !order.triggerPrice || !position.entryPrice) return '-';
+
+    const orderSize = isFullOrder ? position.size : order.size;
+    const priceDifference = subWorklet(order.triggerPrice, position.entryPrice);
+    const directionalDifference = position.side === PerpPositionSide.LONG ? priceDifference : mulWorklet('-1', priceDifference);
+    const pnl = mulWorklet(orderSize, directionalDifference);
+
+    return formatCurrency(pnl);
+  }, [isFullOrder, order, position]);
 
   const onPressDelete = useCallback(async () => {
     if (!position) return;
@@ -77,6 +89,7 @@ const ExistingTriggerOrderCard = memo(function ExistingTriggerOrderCard({ order 
         type={type}
         price={order.triggerPrice}
         percentage={percentage}
+        projectedPnl={projectedPnl}
         onPressDelete={onPressDelete}
         isCancelling={isCancelling}
       />
