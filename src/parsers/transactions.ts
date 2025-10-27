@@ -103,10 +103,12 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
 
   const fee = getTransactionFee(txn, nativeCurrency, chainId);
 
-  const contract = meta?.contractName && {
-    name: meta.contractName,
-    iconUrl: meta.contractIconUrl,
-  };
+  const contract = meta?.contractName
+    ? {
+        name: meta.contractName,
+        iconUrl: meta.contractIconUrl,
+      }
+    : undefined;
 
   // NOTE: For send transactions, the to address should be pulled from the outgoing change directly, not the txn.address_to
   let to = txn.addressTo;
@@ -122,14 +124,14 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
     description,
     hash,
     network: txn.network,
-    status,
+    status: status as TransactionStatus,
     nonce,
     type,
-    direction,
+    direction: direction as TransactionDirection,
     value,
     changes,
     asset,
-    approvalAmount: meta?.quantity,
+    approvalAmount: meta?.quantity as 'UNLIMITED' | (string & Record<string, never>),
     minedAt: minedAtTimestamp,
     blockNumber: txn.blockNumber,
     confirmations: txn.blockConfirmations,
@@ -138,7 +140,7 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
     fee,
     explorerUrl: meta?.explorerUrl,
     explorerLabel: meta?.explorerLabel,
-  } as RainbowTransaction;
+  } satisfies RainbowTransaction;
 };
 
 export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): RainbowTransaction => {

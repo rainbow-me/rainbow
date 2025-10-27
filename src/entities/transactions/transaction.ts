@@ -26,6 +26,8 @@ export enum TransactionStatus {
 }
 
 export interface RainbowTransaction {
+  blockNumber?: number;
+  confirmations?: number;
   address?: string;
   amount?: string;
   asset?:
