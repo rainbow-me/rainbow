@@ -88,11 +88,11 @@ export async function consolidatedTransactionsQueryFunction({
 
     const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
 
-    const parsedTransactionPromises = data.result.map((tx: Transaction) => {
+    const parsedTransactions = data.result.map((tx: Transaction) => {
       const chainId = chainsIdByName[tx.network];
       return parseTransaction(tx, currency, chainId);
     });
-    transactionsFromGoldsky = (await Promise.all(parsedTransactionPromises)).flat();
+    transactionsFromGoldsky = parsedTransactions.flat();
     nextPageFromGoldsky = data?.pagination?.cursor;
   } catch (e) {
     logger.error(new RainbowError('[consolidatedTransactions]: Error fetching from Goldsky', e), {
