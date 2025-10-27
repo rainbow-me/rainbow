@@ -90,7 +90,7 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
 
   const direction = txn.direction || getDirection(type);
 
-  const description = getDescription(asset, type);
+  const description = getDescription(asset);
 
   const nativeAsset = changes.find(change => change?.asset.isNativeAsset);
   const nativeAssetPrice = nativeAsset?.price?.toString() || '0';
@@ -188,7 +188,7 @@ const getTransactionFee = (txn: Transaction, nativeCurrency: NativeCurrencyKey, 
   };
 };
 
-export const getDescription = (asset: ParsedAsset | undefined, type: TransactionType, meta?: PaginatedTransactionsApiResponse['meta']) => {
+export const getDescription = (asset: ParsedAsset | undefined, meta?: PaginatedTransactionsApiResponse['meta']) => {
   if (asset?.type === 'nft') return asset.symbol || asset.name;
   return asset?.name || meta?.action;
 };
