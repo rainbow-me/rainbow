@@ -20,6 +20,7 @@ export const RAINBOW_REFERRAL_CODE = 'RNBW';
 export const HYPERCORE_PSEUDO_CHAIN_ID = 1337;
 export const HYPERLIQUID_TOKEN_ID_SUFFIX = 'hl';
 export const SPOT_ASSET_ID_OFFSET = 10_000;
+export const SUPPORTED_DEX = ['', 'xyz'] as const;
 // The minimum total order size (margin * leverage)
 // Add 1% buffer to account for decimal precision in position size calculation
 export const MIN_ORDER_SIZE_USD = 10 * 1.01;

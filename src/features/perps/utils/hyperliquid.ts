@@ -1,17 +1,36 @@
 import { infoClient } from '@/features/perps/services/hyperliquid-account-client';
-import { PerpMarket } from '@/features/perps/types';
+import { PerpMarket, SupportedDex } from '@/features/perps/types';
 import { divide, subtract, multiply } from '@/helpers/utilities';
+import { SUPPORTED_DEX } from '@/features/perps/constants';
+import { MetaAndAssetCtxsResponse } from '@nktkas/hyperliquid';
+import { getSymbolConverter } from '@/features/perps/utils/hyperliquidSymbolConverter';
+import { extractBaseSymbol, normalizeDexSymbol } from '@/features/perps/utils/hyperliquidSymbols';
+import type { SymbolConverter } from '@nktkas/hyperliquid/utils';
 
-export async function getAllMarketsInfo(): Promise<PerpMarket[]> {
-  const [meta, assetCtxs] = await infoClient.metaAndAssetCtxs();
+function processMarketsForDex({
+  metaAndAssetCtxs,
+  dex,
+  converter,
+}: {
+  metaAndAssetCtxs: MetaAndAssetCtxsResponse;
+  dex: SupportedDex;
+  converter: SymbolConverter;
+}): PerpMarket[] {
+  const [meta, assetCtxs] = metaAndAssetCtxs;
   const assetsBasicInfo = meta.universe;
   const assetsPricingInfo = assetCtxs;
 
   return assetsBasicInfo
     .map((asset, index) => {
-      const assetId = index;
       const assetPricingInfo = assetsPricingInfo[index];
       if (!assetPricingInfo || asset.isDelisted) {
+        return null;
+      }
+
+      const symbol = normalizeDexSymbol(asset.name, dex);
+      const assetId = converter.getAssetId(symbol);
+
+      if (!assetId) {
         return null;
       }
 
@@ -34,12 +53,26 @@ export async function getAllMarketsInfo(): Promise<PerpMarket[]> {
         volume: {
           '24h': assetPricingInfo.dayNtlVlm,
         },
-        symbol: asset.name,
+        symbol,
+        baseSymbol: extractBaseSymbol(asset.name),
         maxLeverage: asset.maxLeverage,
         marginTiers: marginTable?.marginTiers,
         decimals: asset.szDecimals,
         fundingRate: assetPricingInfo.funding,
+        dex,
       };
     })
-    .filter(Boolean);
+    .filter(Boolean) as PerpMarket[];
+}
+
+export async function getAllMarketsInfo(): Promise<PerpMarket[]> {
+  const converter = await getSymbolConverter();
+  const dexResponses: MetaAndAssetCtxsResponse[] = await Promise.all(SUPPORTED_DEX.map(dex => infoClient.metaAndAssetCtxs({ dex })));
+
+  const allMarkets = dexResponses.map((metaAndAssetCtxs, index) => {
+    const dex = SUPPORTED_DEX[index];
+    return processMarketsForDex({ metaAndAssetCtxs, dex, converter });
+  });
+
+  return allMarkets.flat();
 }

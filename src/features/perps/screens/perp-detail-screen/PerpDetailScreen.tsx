@@ -22,6 +22,7 @@ import { SHEET_FOOTER_HEIGHT, SheetFooter } from './SheetFooter';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import * as i18n from '@/languages';
+import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 
 export const NameAndPriceSection = memo(function NameAndPriceSection({
   symbol,
@@ -56,10 +57,9 @@ export const NameAndPriceSection = memo(function NameAndPriceSection({
       <Box flexDirection="row" alignItems="center" gap={8}>
         <TextShadow blur={12} shadowOpacity={0.16}>
           <Text color={isDarkMode ? { custom: ETH_COLOR_DARK_ACCENT } : 'labelSecondary'} size="22pt" weight="heavy">
-            {symbol}
+            {extractBaseSymbol(symbol)}
           </Text>
         </TextShadow>
-
         <Bleed vertical="8px">
           <Inline space="6px">
             {leverage && (

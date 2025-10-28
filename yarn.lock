@@ -4543,14 +4543,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nktkas/hyperliquid@npm:0.24.3":
-  version: 0.24.3
-  resolution: "@nktkas/hyperliquid@npm:0.24.3"
+"@nktkas/hyperliquid@npm:0.25.5":
+  version: 0.25.5
+  resolution: "@nktkas/hyperliquid@npm:0.25.5"
   dependencies:
     "@msgpack/msgpack": "npm:^3.1.2"
-    "@noble/hashes": "npm:^1.8.0"
-    "@noble/secp256k1": "npm:^2.3.0"
-  checksum: 10c0/ba77d36e3143c3e538952d063eb71c2837b4e3d41fc2df37ab4af21b0e405401316157707e3e226b08b5449ef77c0eb629da5e31ce3e20b2d9712cfd2cbe1fd6
+    "@noble/hashes": "npm:^2.0.0"
+    "@noble/secp256k1": "npm:^3.0.0"
+    typescript-event-target: "npm:1.1.1"
+    valibot: "npm:1.1.0"
+  bin:
+    hyperliquid: esm/bin/cli.js
+  checksum: 10c0/ae01b071949e67869f2bf6672c86ca2f87f82a5d543a27246306e7811510cb8f03375b8ada3e910cbc869497eb764474b10413211c41f29633760fce03301b9e
   languageName: node
   linkType: hard
 
@@ -4675,6 +4679,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@noble/hashes@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "@noble/hashes@npm:2.0.1"
+  checksum: 10c0/e81769ce21c3b1c80141a3b99bd001f17edea09879aa936692ae39525477386d696101cd573928a304806efb2b9fa751e1dd83241c67d0c84d30091e85c79bdb
+  languageName: node
+  linkType: hard
+
 "@noble/hashes@npm:~1.3.0, @noble/hashes@npm:~1.3.2":
   version: 1.3.3
   resolution: "@noble/hashes@npm:1.3.3"
@@ -4682,10 +4693,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/secp256k1@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "@noble/secp256k1@npm:2.3.0"
-  checksum: 10c0/8f455b57b10ce069e445324ce88603cf2af1b37d741d33ce1ab669b47b464f864b20ec056bbc0c1b18609d27b2e4503bb915052f3d81d357e587b322c5684dbb
+"@noble/secp256k1@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@noble/secp256k1@npm:3.0.0"
+  checksum: 10c0/bf844b9c1d4bd69f24d677eec5e0d2eb93506e6b1c32f30fd62690b539618e2d18d98297a66cde224196f4c73d4395f437eade496f241f867907f3db8cc7a2ee
   languageName: node
   linkType: hard
 
@@ -9115,7 +9126,7 @@ __metadata:
     "@ledgerhq/react-native-hw-transport-ble": "npm:6.33.4"
     "@legendapp/list": "npm:2.0.6"
     "@metamask/eth-sig-util": "npm:7.0.2"
-    "@nktkas/hyperliquid": "npm:0.24.3"
+    "@nktkas/hyperliquid": "npm:0.25.5"
     "@notifee/react-native": "npm:7.8.2"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
@@ -27245,6 +27256,13 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
+"typescript-event-target@npm:1.1.1":
+  version: 1.1.1
+  resolution: "typescript-event-target@npm:1.1.1"
+  checksum: 10c0/022a8b4389056a84c1c33ec35eb18826db20aed826990b3381bf09e3d4c03f5717d0adeb4154dff4fb3340d4a439b05a850271caf538204e18891b1586bb7f4f
+  languageName: node
+  linkType: hard
+
 "typescript@npm:4.1.3":
   version: 4.1.3
   resolution: "typescript@npm:4.1.3"
@@ -27943,6 +27961,18 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
     "@types/istanbul-lib-coverage": "npm:^2.0.1"
     convert-source-map: "npm:^2.0.0"
   checksum: 10c0/968bcf1c7c88c04df1ffb463c179558a2ec17aa49e49376120504958239d9e9dad5281aa05f2a78542b8557f2be0b0b4c325710262f3b838b40d703d5ed30c23
+  languageName: node
+  linkType: hard
+
+"valibot@npm:1.1.0":
+  version: 1.1.0
+  resolution: "valibot@npm:1.1.0"
+  peerDependencies:
+    typescript: ">=5"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10c0/39580b4e4683cc44398fb775e88c03639dbaa7e6f587df416125916cb6307292d45df18f656054e8846093ced13a2d2fdc98659da6dd104d1d20180edcbd99d4
   languageName: node
   linkType: hard
 

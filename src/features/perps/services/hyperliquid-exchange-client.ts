@@ -1,6 +1,6 @@
 import { multiply } from '@/helpers/utilities';
 import * as hl from '@nktkas/hyperliquid';
-import { CancelSuccessResponse } from '@nktkas/hyperliquid/script/src/types/mod';
+import { CancelSuccessResponse } from '@nktkas/hyperliquid';
 import { Address, Hex } from 'viem';
 import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS, RAINBOW_REFERRAL_CODE } from '../constants';
 import { PerpPositionSide, TriggerOrder, TriggerOrderType } from '../types';
@@ -20,6 +20,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { loadWallet } from '@/model/wallet';
 import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { logger, RainbowError } from '@/logger';
+import { isBuilderDexAssetId } from '@/features/perps/utils/hyperliquidSymbols';
 
 type OrderStatusResponse = hl.OrderSuccessResponse['response']['data']['statuses'][number];
 
@@ -27,6 +28,7 @@ export class HyperliquidExchangeClient {
   private accountClient: HyperliquidAccountClient;
   private exchangeClient: Promise<hl.ExchangeClient | undefined> | undefined;
   private userAddress: Address;
+  private dexAbstractionEnabling: Promise<void> | null = null;
 
   constructor(accountClient: HyperliquidAccountClient, userAddress: Address) {
     this.accountClient = accountClient;
@@ -101,7 +103,10 @@ export class HyperliquidExchangeClient {
     const exchangeClient = await this.getExchangeClient();
     if (!exchangeClient) return undefined;
 
+    console.log('assetId', assetId);
+
     await Promise.all([
+      this.ensureDexAbstractionEnabled(assetId),
       // TODO: This step could be skipped if we have already traded this asset in the session
       exchangeClient.updateLeverage({
         asset: assetId,
@@ -172,7 +177,7 @@ export class HyperliquidExchangeClient {
     const exchangeClient = await this.getExchangeClient();
     if (!exchangeClient) return undefined;
 
-    await Promise.all([this.ensureApprovedBuilderFee(), this.ensureReferralCodeSet()]);
+    await Promise.all([this.ensureDexAbstractionEnabled(assetId), this.ensureApprovedBuilderFee(), this.ensureReferralCodeSet()]);
 
     const marketType = getMarketType(assetId);
     const formattedTriggerPrice = formatOrderPrice({ price: triggerPrice, sizeDecimals, marketType });
@@ -224,7 +229,7 @@ export class HyperliquidExchangeClient {
     const exchangeClient = await this.getExchangeClient();
     if (!exchangeClient) return undefined;
 
-    await Promise.all([this.ensureApprovedBuilderFee(), this.ensureReferralCodeSet()]);
+    await Promise.all([this.ensureDexAbstractionEnabled(assetId), this.ensureApprovedBuilderFee(), this.ensureReferralCodeSet()]);
 
     const result = await exchangeClient.order({
       orders: [closeOrder],
@@ -273,6 +278,41 @@ export class HyperliquidExchangeClient {
       builder: RAINBOW_BUILDER_SETTINGS.b,
       maxFeeRate: toMaxFeeRate(RAINBOW_BUILDER_SETTINGS.f),
     });
+  }
+
+  private async ensureDexAbstractionEnabled(assetId: number): Promise<void> {
+    if (!isBuilderDexAssetId(assetId)) return;
+    if (checkIfReadOnlyWallet(this.userAddress)) return;
+
+    const isEnabled = await this.accountClient.isDexAbstractionEnabled();
+    if (isEnabled) return;
+
+    if (this.dexAbstractionEnabling) {
+      await this.dexAbstractionEnabling;
+      return;
+    }
+
+    this.dexAbstractionEnabling = (async () => {
+      const exchangeClient = await this.getExchangeClient();
+      if (!exchangeClient) return;
+
+      try {
+        await exchangeClient.userDexAbstraction({
+          user: this.userAddress,
+          enabled: true,
+        });
+        this.accountClient.setDexAbstractionEnabled(true);
+      } catch (error) {
+        logger.error(new RainbowError('[HyperliquidExchangeClient] Failed to enable HIP-3 DEX abstraction', error));
+        throw error;
+      }
+    })();
+
+    try {
+      await this.dexAbstractionEnabling;
+    } finally {
+      this.dexAbstractionEnabling = null;
+    }
   }
 }
 

@@ -8,6 +8,7 @@ import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPri
 import { getAllMarketsInfo } from '@/features/perps/utils/hyperliquid';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
+import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 
 type PerpMarketsBySymbol = Partial<Record<string, PerpMarketWithMetadata>>;
 
@@ -158,5 +159,5 @@ async function fetchHyperliquidMarkets(): Promise<HyperliquidMarketsFetchData> {
 }
 
 function buildHypercoreTokenId(symbol: string): string {
-  return `${symbol.toLowerCase()}:${HYPERCORE_PSEUDO_CHAIN_ID}`;
+  return `${extractBaseSymbol(symbol).toLowerCase()}:${HYPERCORE_PSEUDO_CHAIN_ID}`;
 }

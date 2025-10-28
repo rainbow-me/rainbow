@@ -16,6 +16,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import * as i18n from '@/languages';
+import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 
 type PerpsPositionRowProps = {
   position: PerpsPosition;
@@ -64,7 +65,7 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
                   <HyperliquidTokenIcon symbol={position.symbol} size={20} />
                 </Bleed>
                 <Text color="label" size="17pt" weight="semibold">
-                  {position.symbol}
+                  {extractBaseSymbol(position.symbol)}
                 </Text>
                 <Box flexDirection="row" alignItems="center" gap={5}>
                   <LeverageBadge leverage={position.leverage} />

@@ -1,11 +1,19 @@
 import * as hl from '@nktkas/hyperliquid';
 import { Hex } from 'viem';
+import { SUPPORTED_DEX } from '@/features/perps/constants';
+
+// Derived types from @nktkas/hyperliquid
+export type UserFill = hl.UserFillsResponse[number];
+export type MarginTier = hl.MarginTableResponse['marginTiers'][number];
+export type HistoricalOrder = hl.HistoricalOrdersResponse[number];
 
 export type OrderSide = 'buy' | 'sell';
+export type SupportedDex = (typeof SUPPORTED_DEX)[number];
 
 export type PerpMarket = {
   id: number;
   symbol: string;
+  baseSymbol: string;
   price: string;
   midPrice: string | null;
   priceChange: {
@@ -16,9 +24,10 @@ export type PerpMarket = {
     '24h': string;
   };
   maxLeverage: number;
-  marginTiers?: hl.MarginTier[];
+  marginTiers?: MarginTier[];
   decimals: number;
   fundingRate: string;
+  dex: SupportedDex;
 };
 
 export type HyperliquidTokenMetadata = {
@@ -51,6 +60,7 @@ export type PerpsPosition = {
   funding: string;
   returnOnEquity: string;
   marginUsed: string;
+  dex: SupportedDex;
 };
 
 export type PerpAccount = {
@@ -93,7 +103,7 @@ export type HlTrade = {
   orderId: number;
   tradeId: number;
   txHash: string;
-  liquidation?: hl.Fill['liquidation'];
+  liquidation?: UserFill['liquidation'];
   executedAt: Date;
   direction: string;
   orderType: string;
