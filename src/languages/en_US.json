@@ -1573,6 +1573,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "Activity",
+        "trades_count": "%{count} TRADES",
+        "no_previous_trades": "No Previous Trades"
+      },
       "common": {
         "not_available": "N/A",
         "current_price": "Current Price",
