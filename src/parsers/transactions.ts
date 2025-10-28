@@ -24,7 +24,7 @@ import { ParsedAsset } from '@/resources/assets/types';
 
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { Transaction } from '@/features/positions/types/generated/transaction/transaction';
+import { Meta, Transaction } from '@/features/positions/types/generated/transaction/transaction';
 
 const TransactionOutTypes = [
   'burn',
@@ -90,7 +90,7 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
 
   const direction = txn.direction || getDirection(type);
 
-  const description = getDescription(asset);
+  const description = getDescription(asset, meta);
 
   const nativeAsset = changes.find(change => change?.asset.isNativeAsset);
   const nativeAssetPrice = nativeAsset?.price?.toString() || '0';
@@ -190,7 +190,7 @@ const getTransactionFee = (txn: Transaction, nativeCurrency: NativeCurrencyKey, 
   };
 };
 
-export const getDescription = (asset: ParsedAsset | undefined, meta?: PaginatedTransactionsApiResponse['meta']) => {
+export const getDescription = (asset: ParsedAsset | undefined, meta?: Meta) => {
   if (asset?.type === 'nft') return asset.symbol || asset.name;
   return asset?.name || meta?.action;
 };
