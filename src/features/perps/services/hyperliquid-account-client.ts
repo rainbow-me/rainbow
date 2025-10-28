@@ -12,8 +12,6 @@ export const infoClient: hl.InfoClient = new hl.InfoClient({
 });
 
 export class HyperliquidAccountClient {
-  private dexAbstractionEnabled: boolean | null = null;
-
   constructor(private userAddress: Address) {}
 
   async getPerpAccountPnl() {
@@ -147,16 +145,6 @@ export class HyperliquidAccountClient {
   }
 
   async isDexAbstractionEnabled(): Promise<boolean> {
-    if (this.dexAbstractionEnabled !== null) {
-      return this.dexAbstractionEnabled;
-    }
-
-    const enabled = (await infoClient.userDexAbstraction({ user: this.userAddress })) ?? false;
-    this.dexAbstractionEnabled = enabled;
-    return enabled;
-  }
-
-  setDexAbstractionEnabled(enabled: boolean): void {
-    this.dexAbstractionEnabled = enabled;
+    return (await infoClient.userDexAbstraction({ user: this.userAddress })) ?? false;
   }
 }

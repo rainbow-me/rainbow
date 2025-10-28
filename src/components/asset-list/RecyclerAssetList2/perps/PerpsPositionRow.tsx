@@ -18,11 +18,7 @@ import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPri
 import * as i18n from '@/languages';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 
-type PerpsPositionRowProps = {
-  position: PerpsPosition;
-};
-
-export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: PerpsPositionRowProps) {
+export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: { position: PerpsPosition }) {
   const isPositivePnl = !position.unrealizedPnl.includes('-');
   const red = useForegroundColor('red');
   const green = useForegroundColor('green');

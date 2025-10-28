@@ -28,7 +28,6 @@ export class HyperliquidExchangeClient {
   private accountClient: HyperliquidAccountClient;
   private exchangeClient: Promise<hl.ExchangeClient | undefined> | undefined;
   private userAddress: Address;
-  private dexAbstractionEnabling: Promise<void> | null = null;
 
   constructor(accountClient: HyperliquidAccountClient, userAddress: Address) {
     this.accountClient = accountClient;
@@ -103,10 +102,10 @@ export class HyperliquidExchangeClient {
     const exchangeClient = await this.getExchangeClient();
     if (!exchangeClient) return undefined;
 
-    console.log('assetId', assetId);
+    // Must be enabled before updating leverage
+    await this.ensureDexAbstractionEnabled(assetId);
 
     await Promise.all([
-      this.ensureDexAbstractionEnabled(assetId),
       // TODO: This step could be skipped if we have already traded this asset in the session
       exchangeClient.updateLeverage({
         asset: assetId,
@@ -280,39 +279,20 @@ export class HyperliquidExchangeClient {
     });
   }
 
-  private async ensureDexAbstractionEnabled(assetId: number): Promise<void> {
+  async ensureDexAbstractionEnabled(assetId: number): Promise<hl.SuccessResponse | undefined> {
     if (!isBuilderDexAssetId(assetId)) return;
     if (checkIfReadOnlyWallet(this.userAddress)) return;
 
     const isEnabled = await this.accountClient.isDexAbstractionEnabled();
     if (isEnabled) return;
 
-    if (this.dexAbstractionEnabling) {
-      await this.dexAbstractionEnabling;
-      return;
-    }
+    const exchangeClient = await this.getExchangeClient();
+    if (!exchangeClient) return;
 
-    this.dexAbstractionEnabling = (async () => {
-      const exchangeClient = await this.getExchangeClient();
-      if (!exchangeClient) return;
-
-      try {
-        await exchangeClient.userDexAbstraction({
-          user: this.userAddress,
-          enabled: true,
-        });
-        this.accountClient.setDexAbstractionEnabled(true);
-      } catch (error) {
-        logger.error(new RainbowError('[HyperliquidExchangeClient] Failed to enable HIP-3 DEX abstraction', error));
-        throw error;
-      }
-    })();
-
-    try {
-      await this.dexAbstractionEnabling;
-    } finally {
-      this.dexAbstractionEnabling = null;
-    }
+    return await exchangeClient.userDexAbstraction({
+      user: this.userAddress,
+      enabled: true,
+    });
   }
 }
 

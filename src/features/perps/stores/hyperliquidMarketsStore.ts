@@ -69,6 +69,7 @@ export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsFet
       sortOrder: state.sortOrder,
     }),
     storageKey: 'hyperliquidMarketsStore',
+    version: 1,
   }
 );
 

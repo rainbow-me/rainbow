@@ -30,7 +30,7 @@ function processMarketsForDex({
       const symbol = normalizeDexSymbol(asset.name, dex);
       const assetId = converter.getAssetId(symbol);
 
-      if (!assetId) {
+      if (assetId === undefined) {
         return null;
       }
 
@@ -60,9 +60,9 @@ function processMarketsForDex({
         decimals: asset.szDecimals,
         fundingRate: assetPricingInfo.funding,
         dex,
-      };
+      } satisfies PerpMarket;
     })
-    .filter(Boolean) as PerpMarket[];
+    .filter(Boolean);
 }
 
 export async function getAllMarketsInfo(): Promise<PerpMarket[]> {
