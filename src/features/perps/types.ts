@@ -1,4 +1,5 @@
 import * as hl from '@nktkas/hyperliquid';
+import { OrderParameters } from '@nktkas/hyperliquid/api/exchange';
 import { Hex } from 'viem';
 import { SUPPORTED_DEX } from '@/features/perps/constants';
 
@@ -6,6 +7,8 @@ import { SUPPORTED_DEX } from '@/features/perps/constants';
 export type UserFill = hl.UserFillsResponse[number];
 export type MarginTier = hl.MarginTableResponse['marginTiers'][number];
 export type HistoricalOrder = hl.HistoricalOrdersResponse[number];
+export type OrderParams = OrderParameters['orders'][number];
+export type TIF = Extract<OrderParams['t'], { limit: unknown }>['limit']['tif'];
 
 export type OrderSide = 'buy' | 'sell';
 export type SupportedDex = (typeof SUPPORTED_DEX)[number];

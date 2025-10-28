@@ -1,10 +1,12 @@
-import { Candle, HttpTransport, InfoClient } from '@nktkas/hyperliquid';
+import { CandleSnapshotResponse, HttpTransport, InfoClient } from '@nktkas/hyperliquid';
 import { INITIAL_BAR_COUNT } from '@/features/charts/constants';
 import { CandleResolution, HyperliquidSymbol } from '@/features/charts/types';
 import { toHyperliquidInterval } from '@/features/charts/utils';
 import { time } from '@/utils';
 import { Bar, CandlestickResponse } from '../types';
 import { getResolutionMinutes } from '../utils';
+
+type Candle = CandleSnapshotResponse[number];
 
 export type HyperliquidChartParams = {
   /**

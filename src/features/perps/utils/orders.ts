@@ -1,9 +1,8 @@
 import { DEFAULT_SLIPPAGE_BIPS, SPOT_ASSET_ID_OFFSET } from '@/features/perps/constants';
-import { PerpPositionSide, TriggerOrderType } from '@/features/perps/types';
+import { OrderParams, PerpPositionSide, TriggerOrderType, TIF } from '@/features/perps/types';
 import { formatOrderPrice } from '@/features/perps/utils/formatOrderPrice';
 import { divide, multiply } from '@/helpers/utilities';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
-import { OrderParams, TIF } from '@nktkas/hyperliquid/script/src/types/mod';
 
 export function getMarketType(assetId: number): 'perp' | 'spot' {
   return assetId < SPOT_ASSET_ID_OFFSET ? 'perp' : 'spot';

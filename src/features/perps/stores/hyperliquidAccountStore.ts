@@ -5,7 +5,7 @@ import { PerpMarketWithMetadata, PerpPositionSide, PerpsPosition, TriggerOrder }
 import { getHyperliquidAccountClient, getHyperliquidExchangeClient, useHyperliquidClients } from '../services';
 import { RainbowError } from '@/logger';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
-import { OrderResponse } from '@nktkas/hyperliquid';
+import { OrderSuccessResponse } from '@nktkas/hyperliquid/api/exchange';
 import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { hlOpenOrdersStoreActions } from '@/features/perps/stores/hlOpenOrdersStore';
 import { refetchHyperliquidStores } from '@/features/perps/utils';
@@ -114,7 +114,7 @@ async function createIsolatedMarginPosition({
   marginAmount: string;
   price: string;
   triggerOrders?: TriggerOrder[];
-}): Promise<OrderResponse | void> {
+}): Promise<OrderSuccessResponse | void> {
   const market = getMarket(symbol);
 
   const result = await getHyperliquidExchangeClient().openIsolatedMarginPosition({
