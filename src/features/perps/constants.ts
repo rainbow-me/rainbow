@@ -127,21 +127,3 @@ export const LAYOUT_ANIMATION = LinearTransition.springify()
   .mass(ANIMATION_CONFIG.mass as number)
   .damping(ANIMATION_CONFIG.damping as number)
   .stiffness(ANIMATION_CONFIG.stiffness as number);
-
-export const MARKET_SORT_ORDER_LABELS = {
-  [MarketSortOrder.VOLUME]: {
-    label: i18n.t(i18n.l.perps.sort.by_volume),
-    iconName: 'chart.bar.xaxis',
-    icon: '􀣉',
-  },
-  [MarketSortOrder.CHANGE]: {
-    label: i18n.t(i18n.l.perps.sort.by_change),
-    iconName: 'chart.line.uptrend.xyaxis',
-    icon: '􀑁',
-  },
-  [MarketSortOrder.PRICE]: {
-    label: i18n.t(i18n.l.perps.sort.by_price),
-    iconName: 'dollarsign',
-    icon: '􁎢',
-  },
-} as const;

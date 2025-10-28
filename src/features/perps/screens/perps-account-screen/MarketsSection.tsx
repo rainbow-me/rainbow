@@ -10,9 +10,9 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import * as i18n from '@/languages';
-import { MARKET_SORT_ORDER_LABELS } from '@/features/perps/constants';
 import { MarketSortOrderDropdown } from '@/features/perps/components/MarketSortOrderDropdown';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { useMarketSortOrderLabels } from '@/features/perps/hooks/useMarketSortOrderLabels';
 
 const MAX_MARKETS_TO_SHOW = 8;
 
@@ -20,6 +20,7 @@ export const MarketsSection = memo(function MarketsSection() {
   const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
   const markets = useSortedHyperliquidMarkets(state => state.slice(0, MAX_MARKETS_TO_SHOW));
+  const marketSortOrderLabels = useMarketSortOrderLabels();
   const selectedSortOrder = useHyperliquidMarketsStore(state => state.sortOrder);
 
   return (
@@ -71,7 +72,7 @@ export const MarketsSection = memo(function MarketsSection() {
               borderRadius={22}
             >
               <Text size="15pt" weight="heavy" color="labelTertiary">
-                {MARKET_SORT_ORDER_LABELS[selectedSortOrder].label}
+                {marketSortOrderLabels[selectedSortOrder].label}
               </Text>
               <TextIcon size="icon 12px" weight="bold" color="labelQuaternary">
                 {'􀆏'}

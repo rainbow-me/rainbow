@@ -3,7 +3,7 @@ import { Keyboard } from 'react-native';
 import { Box, Separator, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
 import { useFilteredHyperliquidMarkets, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { PerpMarketsList } from '@/features/perps/components/PerpMarketsList';
-import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, MARKET_SORT_ORDER_LABELS, FOOTER_HEIGHT } from '@/features/perps/constants';
+import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, FOOTER_HEIGHT } from '@/features/perps/constants';
 import { navigateToNewPositionScreen, navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { PerpMarket } from '@/features/perps/types';
 import { useOnLeaveRoute } from '@/hooks/useOnLeaveRoute';
@@ -16,6 +16,7 @@ import * as i18n from '@/languages';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { MarketSortOrderDropdown } from '@/features/perps/components/MarketSortOrderDropdown';
+import { useMarketSortOrderLabels } from '@/features/perps/hooks/useMarketSortOrderLabels';
 
 export const PerpsSearchScreen = memo(function PerpsSearchScreen() {
   const { isDarkMode } = useColorMode();
@@ -61,7 +62,8 @@ const MarketSortOrderPicker = () => {
   const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
   const selectedSortOrder = useHyperliquidMarketsStore(state => state.sortOrder);
-  const selectedSortOrderConfig = MARKET_SORT_ORDER_LABELS[selectedSortOrder];
+  const marketSortOrderLabels = useMarketSortOrderLabels();
+  const selectedSortOrderConfig = marketSortOrderLabels[selectedSortOrder];
 
   return (
     <Box justifyContent="center" alignItems="center">
