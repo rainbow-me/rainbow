@@ -1704,7 +1704,8 @@
       "search": {
         "search_markets": "Search markets",
         "markets_count": "%{count} MARKETS",
-        "choose_a_market": "CHOOSE A MARKET"
+        "choose_a_market": "CHOOSE A MARKET",
+        "no_markets_found": "No markets found"
       },
       "close_position": {
         "estimated_loss": "Estimated Loss",
