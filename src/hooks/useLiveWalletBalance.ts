@@ -6,8 +6,7 @@ import { useClaimablesStore } from '@/state/claimables/claimables';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { shallowEqual, deepEqual } from '@/worklets/comparisons';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { deepEqual } from '@/worklets/comparisons';
 
 export const useLiveWalletBalance = createDerivedStore(
   $ => {
@@ -15,13 +14,12 @@ export const useLiveWalletBalance = createDerivedStore(
     const initialBalance = $(useUserAssetsStore, state => state.getTotalBalance());
     const userAssets = $(useUserAssetsStore, state => state.userAssets);
     const isFetching = $(useUserAssetsStore, state => state.status === 'loading');
-    const params = $(userAssetsStoreManager, state => ({ address: state.address, currency: state.currency }), shallowEqual);
-    const positionChainIds = $(useBackendNetworksStore, state => state.getSupportedPositionsChainIds());
+    const nativeCurrency = $(userAssetsStoreManager, state => state.currency);
 
     const perpsBalanceNative = $(useHyperliquidBalance);
-    const claimablesBalance = $(useClaimablesStore, state => state.getData(params)?.totalValueAmount || '0');
+    const claimablesBalance = $(useClaimablesStore, state => state.getData()?.totalValueAmount || '0');
     const positionsBalance = $(usePositionsStore, state => {
-      const data = state.getData({ ...params, chainIds: positionChainIds });
+      const data = state.getData();
       if (!data) return '0';
       return subtract(data.totals.total.amount, data.totals.totalLocked.amount);
     });
@@ -51,7 +49,7 @@ export const useLiveWalletBalance = createDerivedStore(
     const totalBalanceAmount = add(liveAssetBalance, otherBalances);
     const isLoading = initialBalance === 0 && isFetching;
 
-    return isLoading ? null : convertAmountToNativeDisplay(totalBalanceAmount, params.currency);
+    return isLoading ? null : convertAmountToNativeDisplay(totalBalanceAmount, nativeCurrency);
   },
 
   { debounce: 250, equalityFn: deepEqual, fastMode: true }
