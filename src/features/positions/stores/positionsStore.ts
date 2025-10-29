@@ -8,7 +8,7 @@ import { transformPositions } from './transform';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { throttle } from 'lodash';
 import { analytics } from '@/analytics';
-import { subtract } from '@/helpers/utilities';
+import { subtract, greaterThan } from '@/helpers/utilities';
 
 // ============ Core Types ===================================================== //
 
@@ -114,7 +114,9 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
     getBalance: () => {
       const data = get().getData();
       if (!data) return '0';
-      return subtract(data.totals.total.amount, data.totals.totalLocked.amount);
+      // Prevent negative positions from reducing total wallet balance
+      const balance = subtract(data.totals.total.amount, data.totals.totalLocked.amount);
+      return greaterThan(balance, '0') ? balance : '0';
     },
   }),
   {
