@@ -5,7 +5,7 @@ import { SUPPORTED_DEX } from '@/features/perps/constants';
 import { MetaAndAssetCtxsResponse } from '@nktkas/hyperliquid';
 import { getSymbolConverter } from '@/features/perps/utils/hyperliquidSymbolConverter';
 import { extractBaseSymbol, normalizeDexSymbol } from '@/features/perps/utils/hyperliquidSymbols';
-import type { SymbolConverter } from '@nktkas/hyperliquid/utils';
+import { SymbolConverter } from '@nktkas/hyperliquid/utils';
 
 function processMarketsForDex({
   metaAndAssetCtxs,
