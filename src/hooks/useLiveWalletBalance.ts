@@ -17,12 +17,8 @@ export const useLiveWalletBalance = createDerivedStore(
     const nativeCurrency = $(userAssetsStoreManager, state => state.currency);
 
     const perpsBalanceNative = $(useHyperliquidBalance);
-    const claimablesBalance = $(useClaimablesStore, state => state.getData()?.totalValueAmount || '0');
-    const positionsBalance = $(usePositionsStore, state => {
-      const data = state.getData();
-      if (!data) return '0';
-      return subtract(data.totals.total.amount, data.totals.totalLocked.amount);
-    });
+    const claimablesBalance = $(useClaimablesStore, state => state.getBalance());
+    const positionsBalance = $(usePositionsStore, state => state.getBalance());
 
     let valueDifference = '0';
     if (liveTokens) {

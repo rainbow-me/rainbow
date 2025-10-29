@@ -8,11 +8,13 @@ import { transformPositions } from './transform';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { throttle } from 'lodash';
 import { analytics } from '@/analytics';
+import { subtract } from '@/helpers/utilities';
 
 // ============ Core Types ===================================================== //
 
 type PositionsState = {
-  getPositionTokenAddresses: () => Set<string>;
+  getTokenAddresses: () => Set<string>;
+  getBalance: () => string;
 };
 
 // ============ Constants ====================================================== //
@@ -73,7 +75,7 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
     },
   },
   (_, get) => ({
-    getPositionTokenAddresses: () => {
+    getTokenAddresses: () => {
       const positionTokenAddresses = new Set<string>();
       const data = get().getData();
 
@@ -108,6 +110,11 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
       }
 
       return positionTokenAddresses;
+    },
+    getBalance: () => {
+      const data = get().getData();
+      if (!data) return '0';
+      return subtract(data.totals.total.amount, data.totals.totalLocked.amount);
     },
   }),
   {
