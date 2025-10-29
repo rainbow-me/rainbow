@@ -1,14 +1,10 @@
-/**
- * Integration tests for positionsStore
- *
- * Tests the integration between fetcher and transform functions
- * Unit tests for individual functions are in fetcher.test.ts and transform.test.ts
- */
-
 import { getPlatformClient } from '@/resources/platform/client';
+import { fetchPositions, type PositionsParams } from '../../stores/fetcher';
+import { usePositionsStore } from '../../stores/positionsStore';
+import type { RainbowPositions } from '../../types';
 import { LIST_POSITIONS_SUCCESS, TEST_PARAMS } from '../../__fixtures__/ListPositions';
+import { createMockPositionsData } from '../mocks/positions';
 
-// Mock dependencies
 jest.mock('@/resources/platform/client');
 jest.mock('@/config/experimentalHooks', () => ({}));
 jest.mock('@/state/backendNetworks/backendNetworks', () => ({
@@ -31,36 +27,9 @@ jest.mock('@/state/assets/userAssetsStoreManager', () => {
   };
 });
 
-// Import the fetch function and store
-import { fetchPositions, type PositionsParams } from '../../stores/fetcher';
-import { usePositionsStore } from '../../stores/positionsStore';
-import type { RainbowPositions, RainbowPosition } from '../../types';
+// ============================= HELPERS ===============================
 
-// ============ Helpers ======================================================== //
-
-const field = (amount: string) => ({ amount, display: `$${amount}` });
-
-const createMockData = (
-  overrides: {
-    total?: string;
-    totalLocked?: string;
-    totalDeposits?: string;
-    totalBorrows?: string;
-    totalRewards?: string;
-    positions?: RainbowPositions['positions'];
-  } = {}
-): RainbowPositions => ({
-  positions: overrides.positions ?? {},
-  totals: {
-    total: field(overrides.total ?? '0'),
-    totalLocked: field(overrides.totalLocked ?? '0'),
-    totalDeposits: field(overrides.totalDeposits ?? '0'),
-    totalBorrows: field(overrides.totalBorrows ?? '0'),
-    totalRewards: field(overrides.totalRewards ?? '0'),
-  },
-});
-
-const setStoreData = (data: ReturnType<typeof createMockData>) => {
+const setStoreData = (data: RainbowPositions) => {
   const store = usePositionsStore.getState();
   store.queryCache[store.queryKey] = {
     data,
@@ -70,7 +39,7 @@ const setStoreData = (data: ReturnType<typeof createMockData>) => {
   };
 };
 
-// ============ Tests ========================================================== //
+// =============================== TESTS ===============================
 
 describe('positionsStore Integration Tests', () => {
   let mockClient: { get: jest.Mock };
@@ -102,17 +71,17 @@ describe('positionsStore Integration Tests', () => {
 
   describe('getBalance', () => {
     it('should return 0 when total minus locked is negative (credit line scenario)', () => {
-      setStoreData(createMockData({ total: '-22881.72' }));
+      setStoreData(createMockPositionsData({ total: '-22881.72' }));
       expect(usePositionsStore.getState().getBalance()).toBe('0');
     });
 
     it('should return correct balance when total minus locked is positive', () => {
-      setStoreData(createMockData({ total: '10000', totalLocked: '5000' }));
+      setStoreData(createMockPositionsData({ total: '10000', totalLocked: '5000' }));
       expect(usePositionsStore.getState().getBalance()).toBe('5000');
     });
 
     it('should return 0 when both total and locked are 0', () => {
-      setStoreData(createMockData());
+      setStoreData(createMockPositionsData());
       expect(usePositionsStore.getState().getBalance()).toBe('0');
     });
 

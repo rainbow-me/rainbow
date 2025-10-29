@@ -1,12 +1,6 @@
 import { transformPositions } from '../../../stores/transform';
 import { LIST_POSITIONS_SUCCESS, LIST_POSITIONS_SUCCESS_EMPTY, TEST_PARAMS } from '../../../__fixtures__/ListPositions';
-import {
-  PositionName,
-  DetailType,
-  type ListPositionsResponse,
-  type ListPositionsResponse_Result,
-} from '../../../types/generated/positions/positions';
-import type { Asset } from '../../../types/generated/common/asset';
+import { PositionName, DetailType, type ListPositionsResponse } from '../../../types/generated/positions/positions';
 import {
   getFilteredItemsFromPosition,
   getAllFilteredItems,
@@ -16,10 +10,11 @@ import {
   getPositionsWithFilteredItems,
   getPositionsWithoutFilteredItems,
 } from '../../../helpers/filters';
+import { createMockAsset } from '../../mocks/assets';
+import { createSimpleDapp } from '../../mocks/positions';
 
-// Mock config to avoid React Native gesture handler imports
 jest.mock('@/config', () => ({
-  getExperimentalFlag: jest.fn(() => true), // Enable threshold filter for tests
+  getExperimentalFlag: jest.fn(() => true),
   DEFI_POSITIONS_THRESHOLD_FILTER: 'defi_positions_threshold_filter',
 }));
 
@@ -384,17 +379,6 @@ describe('transformPositions', () => {
 
     describe('Underlying Assets', () => {
       const positions = Object.values(result.positions);
-      const mkAsset = (symbol: string): Asset =>
-        ({
-          address: `0x${symbol}`,
-          chainId: 1,
-          name: symbol,
-          symbol,
-          decimals: 18,
-          type: 'erc20',
-          network: 'ethereum',
-          colors: { primary: '#000', fallback: '#fff' },
-        }) as Asset;
 
       it('should have transformed underlying assets with correct structure', () => {
         const positionWithUnderlying = positions.find(
@@ -456,19 +440,19 @@ describe('transformPositions', () => {
                   canonicalProtocolName: 't',
                   protocolVersion: 'v1',
                   tvl: '0',
-                  dapp: { name: 'T', url: '', iconUrl: '', colors: { primary: '#000', fallback: '#000', shadow: '#000' } },
+                  dapp: createSimpleDapp('T'),
                   portfolioItems: [
                     {
                       name: PositionName.LENDING,
-                      stats: { assetValue: '2000', debtValue: '0', netValue: '2000' }, // total
+                      stats: { assetValue: '2000', debtValue: '0', netValue: '2000' },
                       updateTime: undefined,
                       detailTypes: [DetailType.LENDING],
                       pool: undefined,
                       assetDict: {},
                       detail: {
                         supplyTokenList: [
-                          { amount: '1', asset: mkAsset('A'), assetValue: '1200' }, // individual
-                          { amount: '800', asset: mkAsset('B'), assetValue: '800' },
+                          { amount: '1', asset: createMockAsset('A', 1), assetValue: '1200' },
+                          { amount: '800', asset: createMockAsset('B', 1), assetValue: '800' },
                         ],
                         borrowTokenList: [],
                         rewardTokenList: [],
@@ -525,20 +509,20 @@ describe('transformPositions', () => {
                   canonicalProtocolName: 't',
                   protocolVersion: 'v1',
                   tvl: '0',
-                  dapp: { name: 'T', url: '', iconUrl: '', colors: { primary: '#000', fallback: '#000', shadow: '#000' } },
+                  dapp: createSimpleDapp('T'),
                   portfolioItems: [
                     {
                       name: PositionName.LENDING,
-                      stats: { assetValue: '5000', debtValue: '1500', netValue: '3500' }, // total debt
+                      stats: { assetValue: '5000', debtValue: '1500', netValue: '3500' },
                       updateTime: undefined,
                       detailTypes: [DetailType.LENDING],
                       pool: undefined,
                       assetDict: {},
                       detail: {
-                        supplyTokenList: [{ amount: '5000', asset: mkAsset('C'), assetValue: '5000' }],
+                        supplyTokenList: [{ amount: '5000', asset: createMockAsset('C', 1), assetValue: '5000' }],
                         borrowTokenList: [
-                          { amount: '900', asset: mkAsset('D'), assetValue: '900' }, // individual
-                          { amount: '600', asset: mkAsset('E'), assetValue: '600' },
+                          { amount: '900', asset: createMockAsset('D', 1), assetValue: '900' },
+                          { amount: '600', asset: createMockAsset('E', 1), assetValue: '600' },
                         ],
                         rewardTokenList: [],
                         tokenList: [],
@@ -594,7 +578,7 @@ describe('transformPositions', () => {
                   canonicalProtocolName: 't',
                   protocolVersion: 'v1',
                   tvl: '0',
-                  dapp: { name: 'T', url: '', iconUrl: '', colors: { primary: '#000', fallback: '#000', shadow: '#000' } },
+                  dapp: createSimpleDapp('T'),
                   portfolioItems: [
                     {
                       name: PositionName.LEVERAGED_FARMING,
@@ -604,7 +588,7 @@ describe('transformPositions', () => {
                       pool: undefined,
                       assetDict: {},
                       detail: {
-                        supplyTokenList: [{ amount: '0.5', asset: mkAsset('F'), assetValue: '1000' }],
+                        supplyTokenList: [{ amount: '0.5', asset: createMockAsset('F', 1), assetValue: '1000' }],
                         borrowTokenList: [],
                         rewardTokenList: [],
                         tokenList: [],
@@ -659,19 +643,19 @@ describe('transformPositions', () => {
                   canonicalProtocolName: 't',
                   protocolVersion: 'v1',
                   tvl: '0',
-                  dapp: { name: 'T', url: '', iconUrl: '', colors: { primary: '#000', fallback: '#000', shadow: '#000' } },
+                  dapp: createSimpleDapp('T'),
                   portfolioItems: [
                     {
                       name: PositionName.LIQUIDITY_POOL,
-                      stats: { assetValue: '3000', debtValue: '0', netValue: '3000' }, // pool total
+                      stats: { assetValue: '3000', debtValue: '0', netValue: '3000' },
                       updateTime: undefined,
                       detailTypes: [DetailType.COMMON],
                       pool: undefined,
                       assetDict: {},
                       detail: {
                         supplyTokenList: [
-                          { amount: '1', asset: mkAsset('G'), assetValue: '1800' }, // underlying individual
-                          { amount: '1200', asset: mkAsset('H'), assetValue: '1200' },
+                          { amount: '1', asset: createMockAsset('G', 1), assetValue: '1800' },
+                          { amount: '1200', asset: createMockAsset('H', 1), assetValue: '1200' },
                         ],
                         borrowTokenList: [],
                         rewardTokenList: [],
@@ -713,8 +697,8 @@ describe('transformPositions', () => {
           TEST_PARAMS
         );
         const pool = res.positions['t'].pools[0];
-        expect(pool.value.amount).toBe('3000'); // pool shows total
-        expect(pool.underlying[0].value.amount).toBe('1800'); // underlying shows individual
+        expect(pool.value.amount).toBe('3000');
+        expect(pool.underlying[0].value.amount).toBe('1800');
         expect(pool.underlying[1].value.amount).toBe('1200');
       });
 
@@ -730,19 +714,19 @@ describe('transformPositions', () => {
                   canonicalProtocolName: 't',
                   protocolVersion: 'v1',
                   tvl: '0',
-                  dapp: { name: 'T', url: '', iconUrl: '', colors: { primary: '#000', fallback: '#000', shadow: '#000' } },
+                  dapp: createSimpleDapp('T'),
                   portfolioItems: [
                     {
                       name: PositionName.LEVERAGED_FARMING,
-                      stats: { assetValue: '4500', debtValue: '0', netValue: '4500' }, // LP stake total
+                      stats: { assetValue: '4500', debtValue: '0', netValue: '4500' },
                       updateTime: undefined,
                       detailTypes: [DetailType.LEVERAGED_FARMING],
                       pool: undefined,
                       assetDict: {},
                       detail: {
                         supplyTokenList: [
-                          { amount: '2', asset: mkAsset('I'), assetValue: '2700' }, // underlying individual
-                          { amount: '1800', asset: mkAsset('J'), assetValue: '1800' },
+                          { amount: '2', asset: createMockAsset('I', 1), assetValue: '2700' },
+                          { amount: '1800', asset: createMockAsset('J', 1), assetValue: '1800' },
                         ],
                         borrowTokenList: [],
                         rewardTokenList: [],
@@ -784,8 +768,8 @@ describe('transformPositions', () => {
           TEST_PARAMS
         );
         const stake = res.positions['t'].stakes[0];
-        expect(stake.value.amount).toBe('4500'); // LP stake shows total
-        expect(stake.underlying[0].value.amount).toBe('2700'); // underlying shows individual
+        expect(stake.value.amount).toBe('4500');
+        expect(stake.underlying[0].value.amount).toBe('2700');
         expect(stake.underlying[1].value.amount).toBe('1800');
       });
     });

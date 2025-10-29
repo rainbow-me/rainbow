@@ -1,21 +1,8 @@
-/**
- * Tests for Aave lending protocol positions
- *
- * Tests LENDING position type with:
- * - Supply tokens (deposits)
- * - Borrow tokens (borrows)
- * - Reward tokens (AAVE incentives)
- */
-
 import { transformPositions } from '../../stores/transform';
-import {
-  PositionName,
-  DetailType,
-  type ListPositionsResponse,
-  type ListPositionsResponse_Result,
-} from '../../types/generated/positions/positions';
-import type { Asset } from '../../types/generated/common/asset';
+import { PositionName, DetailType } from '../../types/generated/positions/positions';
 import { TEST_PARAMS } from '../../__fixtures__/ListPositions';
+import { createMockAsset } from '../mocks/assets';
+import { createMockStats, createMockPosition, createMockResponse } from '../mocks/positions';
 
 // Mock config to avoid React Native gesture handler imports
 jest.mock('@/config', () => ({
@@ -23,192 +10,33 @@ jest.mock('@/config', () => ({
   DEFI_POSITIONS_THRESHOLD_FILTER: 'defi_positions_threshold_filter',
 }));
 
-// ---- helpers ----
-
-function createMockAsset(symbol: string, price = 1): Asset {
-  return {
-    address: `0x${symbol.toLowerCase()}`,
-    chainId: 1,
-    name: symbol,
-    symbol,
-    decimals: 18,
-    type: 'erc20',
-    iconUrl: `https://example.com/${symbol}.png`,
-    network: 'ethereum',
-    mainnetAddress: `0x${symbol.toLowerCase()}`,
-    verified: true,
-    transferable: true,
-    creationDate: '2024-01-01T00:00:00Z',
-    colors: {
-      primary: '#000000',
-      fallback: '#ffffff',
-    },
-    price: {
-      value: price,
-      changedAt: undefined,
-      relativeChange24h: 0,
-    },
-    networks: {},
-    bridging: undefined,
-  } as Asset;
-}
-
-function createMockDapp(name: string) {
-  return {
-    name,
-    url: 'https://aave.com',
-    iconUrl: 'https://example.com/aave.png',
-    colors: { primary: '#B6509E', fallback: '#B6509E', shadow: '#000000' },
-  };
-}
-
-function createMockStats(overrides: { netTotal: string; totalDeposits: string; totalBorrows: string; totalRewards: string }) {
-  return {
-    totals: {
-      netTotal: overrides.netTotal,
-      totalDeposits: overrides.totalDeposits,
-      totalBorrows: overrides.totalBorrows,
-      totalRewards: overrides.totalRewards,
-      totalLocked: '0',
-      overallTotal: overrides.netTotal,
-    },
-    canonicalProtocol: {
-      aave: {
-        canonicalProtocolName: 'aave',
-        protocolIds: ['aave'],
-        totals: {
-          netTotal: overrides.netTotal,
-          totalDeposits: overrides.totalDeposits,
-          totalBorrows: overrides.totalBorrows,
-          totalRewards: overrides.totalRewards,
-          totalLocked: '0',
-          overallTotal: overrides.netTotal,
-        },
-        totalsByChain: {},
-      },
-    },
-  };
-}
-
-interface TokenList {
-  supplyTokenList?: Array<{ amount: string; asset: Asset; assetValue: string }>;
-  borrowTokenList?: Array<{ amount: string; asset: Asset; assetValue: string }>;
-  rewardTokenList?: Array<{ amount: string; asset: Asset; assetValue: string }>;
-}
-
-function createMockPosition(options: {
-  id: string;
-  protocolName: string;
-  protocolVersion: string;
-  assetValue: string;
-  debtValue: string;
-  netValue: string;
-  tokens: TokenList;
-}) {
-  return {
-    id: options.id,
-    chainId: 1,
-    protocolName: options.protocolName,
-    canonicalProtocolName: 'aave',
-    protocolVersion: options.protocolVersion,
-    tvl: '0',
-    dapp: createMockDapp(options.protocolName),
-    portfolioItems: [
-      {
-        name: PositionName.LENDING,
-        stats: { assetValue: options.assetValue, debtValue: options.debtValue, netValue: options.netValue },
-        updateTime: undefined,
-        detailTypes: [DetailType.LENDING],
-        pool: undefined,
-        assetDict: {},
-        detail: {
-          supplyTokenList: options.tokens.supplyTokenList || [],
-          borrowTokenList: options.tokens.borrowTokenList || [],
-          rewardTokenList: options.tokens.rewardTokenList || [],
-          tokenList: [],
-        },
-      },
-    ],
-  };
-}
-
-function createMockResponse(
-  positions: ReturnType<typeof createMockPosition>[],
-  stats: ReturnType<typeof createMockStats>
-): ListPositionsResponse {
-  return {
-    result: { positions, stats },
-    errors: [],
-    metadata: undefined,
-  };
-}
-
 describe('Aave Protocol', () => {
   it('should parse LENDING position with deposits and borrows', () => {
-    const mockResult: ListPositionsResponse_Result = {
-      positions: [
-        {
+    const mockResponse = createMockResponse(
+      [
+        createMockPosition({
           id: 'aave:1',
-          chainId: 1,
           protocolName: 'Aave V3',
           canonicalProtocolName: 'aave',
           protocolVersion: 'v3',
-          tvl: '0',
-          dapp: {
-            name: 'Aave V3',
-            url: 'https://aave.com',
-            iconUrl: 'https://example.com/aave.png',
-            colors: { primary: '#B6509E', fallback: '#B6509E', shadow: '#000000' },
+          positionName: PositionName.LENDING,
+          detailType: DetailType.LENDING,
+          assetValue: '1000',
+          debtValue: '0',
+          netValue: '1000',
+          tokens: {
+            supplyTokenList: [
+              { amount: '10000', asset: createMockAsset('USDC', 1), assetValue: '10000' },
+              { amount: '5', asset: createMockAsset('ETH', 2000), assetValue: '10000' },
+            ],
+            borrowTokenList: [{ amount: '5000', asset: createMockAsset('DAI', 1), assetValue: '5000' }],
+            rewardTokenList: [{ amount: '10', asset: createMockAsset('AAVE', 100), assetValue: '1000' }],
           },
-          portfolioItems: [
-            {
-              name: PositionName.LENDING,
-              stats: { assetValue: '1000', debtValue: '0', netValue: '1000' },
-              updateTime: undefined,
-              detailTypes: [DetailType.LENDING],
-              pool: undefined,
-              assetDict: {},
-              detail: {
-                supplyTokenList: [
-                  { amount: '10000', asset: createMockAsset('USDC', 1), assetValue: '10000' },
-                  { amount: '5', asset: createMockAsset('ETH', 2000), assetValue: '10000' },
-                ],
-                borrowTokenList: [{ amount: '5000', asset: createMockAsset('DAI', 1), assetValue: '5000' }],
-                rewardTokenList: [{ amount: '10', asset: createMockAsset('AAVE', 100), assetValue: '1000' }],
-                tokenList: [],
-              },
-            },
-          ],
-        },
+        }),
       ],
-      stats: {
-        totals: {
-          netTotal: '16000',
-          totalDeposits: '20000',
-          totalBorrows: '5000',
-          totalRewards: '1000',
-          totalLocked: '0',
-          overallTotal: '16000',
-        },
-        canonicalProtocol: {
-          aave: {
-            canonicalProtocolName: 'aave',
-            protocolIds: ['aave'],
-            totals: {
-              netTotal: '16000',
-              totalDeposits: '20000',
-              totalBorrows: '5000',
-              totalRewards: '1000',
-              totalLocked: '0',
-              overallTotal: '16000',
-            },
-            totalsByChain: {},
-          },
-        },
-      },
-    };
+      createMockStats('aave', { netTotal: '16000', totalDeposits: '20000', totalBorrows: '5000', totalRewards: '1000' })
+    );
 
-    const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
     const result = transformPositions(mockResponse, TEST_PARAMS);
 
     expect(result.positions['aave']).toBeDefined();
@@ -239,67 +67,26 @@ describe('Aave Protocol', () => {
   });
 
   it('should handle deposit-only positions (no borrows)', () => {
-    const mockResult: ListPositionsResponse_Result = {
-      positions: [
-        {
+    const mockResponse = createMockResponse(
+      [
+        createMockPosition({
           id: 'aave:1',
-          chainId: 1,
           protocolName: 'Aave V2',
           canonicalProtocolName: 'aave',
           protocolVersion: 'v2',
-          tvl: '0',
-          dapp: {
-            name: 'Aave V2',
-            url: 'https://aave.com',
-            iconUrl: 'https://example.com/aave.png',
-            colors: { primary: '#B6509E', fallback: '#B6509E', shadow: '#000000' },
+          positionName: PositionName.LENDING,
+          detailType: DetailType.LENDING,
+          assetValue: '1000',
+          debtValue: '0',
+          netValue: '1000',
+          tokens: {
+            supplyTokenList: [{ amount: '5000', asset: createMockAsset('USDC', 1), assetValue: '5000' }],
           },
-          portfolioItems: [
-            {
-              name: PositionName.LENDING,
-              stats: { assetValue: '1000', debtValue: '0', netValue: '1000' },
-              updateTime: undefined,
-              detailTypes: [DetailType.LENDING],
-              pool: undefined,
-              assetDict: {},
-              detail: {
-                supplyTokenList: [{ amount: '5000', asset: createMockAsset('USDC', 1), assetValue: '5000' }],
-                borrowTokenList: [],
-                rewardTokenList: [],
-                tokenList: [],
-              },
-            },
-          ],
-        },
+        }),
       ],
-      stats: {
-        totals: {
-          netTotal: '5000',
-          totalDeposits: '5000',
-          totalBorrows: '0',
-          totalRewards: '0',
-          totalLocked: '0',
-          overallTotal: '5000',
-        },
-        canonicalProtocol: {
-          aave: {
-            canonicalProtocolName: 'aave',
-            protocolIds: ['aave'],
-            totals: {
-              netTotal: '5000',
-              totalDeposits: '5000',
-              totalBorrows: '0',
-              totalRewards: '0',
-              totalLocked: '0',
-              overallTotal: '5000',
-            },
-            totalsByChain: {},
-          },
-        },
-      },
-    };
+      createMockStats('aave', { netTotal: '5000', totalDeposits: '5000', totalBorrows: '0', totalRewards: '0' })
+    );
 
-    const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
     const result = transformPositions(mockResponse, TEST_PARAMS);
 
     const aavePosition = result.positions['aave'];
@@ -313,97 +100,40 @@ describe('Aave Protocol', () => {
   });
 
   it('should aggregate V2 and V3 positions under same protocol', () => {
-    const mockResult: ListPositionsResponse_Result = {
-      positions: [
-        {
+    const mockResponse = createMockResponse(
+      [
+        createMockPosition({
           id: 'aave-v2:1',
-          chainId: 1,
           protocolName: 'Aave V2',
           canonicalProtocolName: 'aave',
           protocolVersion: 'v2',
-          tvl: '0',
-          dapp: {
-            name: 'Aave V2',
-            url: 'https://aave.com',
-            iconUrl: 'https://example.com/aave.png',
-            colors: { primary: '#B6509E', fallback: '#B6509E', shadow: '#000000' },
+          positionName: PositionName.LENDING,
+          detailType: DetailType.LENDING,
+          assetValue: '1000',
+          debtValue: '0',
+          netValue: '1000',
+          tokens: {
+            supplyTokenList: [{ amount: '1000', asset: createMockAsset('USDC', 1), assetValue: '1000' }],
           },
-          portfolioItems: [
-            {
-              name: PositionName.LENDING,
-              stats: { assetValue: '1000', debtValue: '0', netValue: '1000' },
-              updateTime: undefined,
-              detailTypes: [DetailType.LENDING],
-              pool: undefined,
-              assetDict: {},
-              detail: {
-                supplyTokenList: [{ amount: '1000', asset: createMockAsset('USDC', 1), assetValue: '1000' }],
-                borrowTokenList: [],
-                rewardTokenList: [],
-                tokenList: [],
-              },
-            },
-          ],
-        },
-        {
+        }),
+        createMockPosition({
           id: 'aave-v3:1',
-          chainId: 1,
           protocolName: 'Aave V3',
           canonicalProtocolName: 'aave',
           protocolVersion: 'v3',
-          tvl: '0',
-          dapp: {
-            name: 'Aave V3',
-            url: 'https://aave.com',
-            iconUrl: 'https://example.com/aave.png',
-            colors: { primary: '#B6509E', fallback: '#B6509E', shadow: '#000000' },
+          positionName: PositionName.LENDING,
+          detailType: DetailType.LENDING,
+          assetValue: '1000',
+          debtValue: '0',
+          netValue: '1000',
+          tokens: {
+            supplyTokenList: [{ amount: '2000', asset: createMockAsset('DAI', 1), assetValue: '2000' }],
           },
-          portfolioItems: [
-            {
-              name: PositionName.LENDING,
-              stats: { assetValue: '1000', debtValue: '0', netValue: '1000' },
-              updateTime: undefined,
-              detailTypes: [DetailType.LENDING],
-              pool: undefined,
-              assetDict: {},
-              detail: {
-                supplyTokenList: [{ amount: '2000', asset: createMockAsset('DAI', 1), assetValue: '2000' }],
-                borrowTokenList: [],
-                rewardTokenList: [],
-                tokenList: [],
-              },
-            },
-          ],
-        },
+        }),
       ],
-      stats: {
-        totals: {
-          netTotal: '3000',
-          totalDeposits: '3000',
-          totalBorrows: '0',
-          totalRewards: '0',
-          totalLocked: '0',
-          overallTotal: '3000',
-        },
-        canonicalProtocol: {
-          aave: {
-            canonicalProtocolName: 'aave',
-            protocolIds: ['aave'],
-            totals: {
-              netTotal: '3000',
-              totalDeposits: '3000',
-              totalBorrows: '0',
-              totalRewards: '0',
-              totalLocked: '0',
-              overallTotal: '3000',
-            },
-            totalsByChain: {},
-          },
-        },
-      },
-    };
+      createMockStats('aave', { netTotal: '3000', totalDeposits: '3000', totalBorrows: '0', totalRewards: '0' })
+    );
 
-    const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
     const result = transformPositions(mockResponse, TEST_PARAMS);
 
     // Should aggregate under single "aave" protocol
