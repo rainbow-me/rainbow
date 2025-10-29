@@ -9264,7 +9264,7 @@ __metadata:
     mipd: "npm:0.0.5"
     mnemonist: "npm:0.38.1"
     moti: "npm:0.28"
-    multiformats: "npm:13.4.1"
+    multiformats: "npm:9.6.2"
     nanoid: "npm:3.2.0"
     node-vibrant: "npm:3.2.1-alpha.1"
     p-wait-for: "npm:4.1.0"
@@ -20745,10 +20745,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"multiformats@npm:13.4.1":
-  version: 13.4.1
-  resolution: "multiformats@npm:13.4.1"
-  checksum: 10c0/ed3be7a421f579a0c36464b6faac7948e84c9985bc5d62d6bdb5a96d0fbfd7979d7e7d5f6735125f7cc17e3afa2778893e3444c98d6e564027862f3f0755eae8
+"multiformats@npm:9.6.2":
+  version: 9.6.2
+  resolution: "multiformats@npm:9.6.2"
+  checksum: 10c0/b7c568fe2d3f92aa271261d61506284d2ccd863a77ad221677eb7e78c8086fe5e3b2f13fe07af14421e4bc1f5528e2bbd556346929b8823b82d6ec06a35ec371
   languageName: node
   linkType: hard
 
