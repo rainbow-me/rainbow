@@ -138,7 +138,7 @@ function transformDeposits(
   return transformUnderlyingAssets(tokens, currency).map(token => ({
     asset: token.asset,
     quantity: token.quantity,
-    value: getNativeValue(item.stats?.assetValue || '0', currency),
+    value: token.value,
     underlying: [token],
     dappVersion: position.protocolVersion,
     poolAddress: item.pool?.id,
@@ -229,7 +229,7 @@ function transformStakes(
   return transformUnderlyingAssets(tokens, currency).map(token => ({
     asset: token.asset,
     quantity: token.quantity,
-    value: getNativeValue(item.stats?.assetValue || '0', currency),
+    value: token.value,
     underlying: [token],
     dappVersion: position.protocolVersion,
     poolAddress: item.pool?.id,
@@ -245,7 +245,7 @@ function transformBorrows(tokens: PositionToken[], item: PortfolioItem, position
   return transformUnderlyingAssets(tokens, currency).map(token => ({
     asset: token.asset,
     quantity: token.quantity,
-    value: getNativeValue(item.stats?.debtValue || '0', currency),
+    value: token.value,
     underlying: [token],
     dappVersion: position.protocolVersion,
     poolAddress: item.pool?.id,

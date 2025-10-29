@@ -23,6 +23,8 @@ jest.mock('@/config', () => ({
   DEFI_POSITIONS_THRESHOLD_FILTER: 'defi_positions_threshold_filter',
 }));
 
+// ---- helpers ----
+
 function createMockAsset(symbol: string, price = 1): Asset {
   return {
     address: `0x${symbol.toLowerCase()}`,
@@ -49,6 +51,96 @@ function createMockAsset(symbol: string, price = 1): Asset {
     networks: {},
     bridging: undefined,
   } as Asset;
+}
+
+function createMockDapp(name: string) {
+  return {
+    name,
+    url: 'https://aave.com',
+    iconUrl: 'https://example.com/aave.png',
+    colors: { primary: '#B6509E', fallback: '#B6509E', shadow: '#000000' },
+  };
+}
+
+function createMockStats(overrides: { netTotal: string; totalDeposits: string; totalBorrows: string; totalRewards: string }) {
+  return {
+    totals: {
+      netTotal: overrides.netTotal,
+      totalDeposits: overrides.totalDeposits,
+      totalBorrows: overrides.totalBorrows,
+      totalRewards: overrides.totalRewards,
+      totalLocked: '0',
+      overallTotal: overrides.netTotal,
+    },
+    canonicalProtocol: {
+      aave: {
+        canonicalProtocolName: 'aave',
+        protocolIds: ['aave'],
+        totals: {
+          netTotal: overrides.netTotal,
+          totalDeposits: overrides.totalDeposits,
+          totalBorrows: overrides.totalBorrows,
+          totalRewards: overrides.totalRewards,
+          totalLocked: '0',
+          overallTotal: overrides.netTotal,
+        },
+        totalsByChain: {},
+      },
+    },
+  };
+}
+
+interface TokenList {
+  supplyTokenList?: Array<{ amount: string; asset: Asset; assetValue: string }>;
+  borrowTokenList?: Array<{ amount: string; asset: Asset; assetValue: string }>;
+  rewardTokenList?: Array<{ amount: string; asset: Asset; assetValue: string }>;
+}
+
+function createMockPosition(options: {
+  id: string;
+  protocolName: string;
+  protocolVersion: string;
+  assetValue: string;
+  debtValue: string;
+  netValue: string;
+  tokens: TokenList;
+}) {
+  return {
+    id: options.id,
+    chainId: 1,
+    protocolName: options.protocolName,
+    canonicalProtocolName: 'aave',
+    protocolVersion: options.protocolVersion,
+    tvl: '0',
+    dapp: createMockDapp(options.protocolName),
+    portfolioItems: [
+      {
+        name: PositionName.LENDING,
+        stats: { assetValue: options.assetValue, debtValue: options.debtValue, netValue: options.netValue },
+        updateTime: undefined,
+        detailTypes: [DetailType.LENDING],
+        pool: undefined,
+        assetDict: {},
+        detail: {
+          supplyTokenList: options.tokens.supplyTokenList || [],
+          borrowTokenList: options.tokens.borrowTokenList || [],
+          rewardTokenList: options.tokens.rewardTokenList || [],
+          tokenList: [],
+        },
+      },
+    ],
+  };
+}
+
+function createMockResponse(
+  positions: ReturnType<typeof createMockPosition>[],
+  stats: ReturnType<typeof createMockStats>
+): ListPositionsResponse {
+  return {
+    result: { positions, stats },
+    errors: [],
+    metadata: undefined,
+  };
 }
 
 describe('Aave Protocol', () => {

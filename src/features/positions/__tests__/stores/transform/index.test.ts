@@ -1,6 +1,12 @@
 import { transformPositions } from '../../../stores/transform';
 import { LIST_POSITIONS_SUCCESS, LIST_POSITIONS_SUCCESS_EMPTY, TEST_PARAMS } from '../../../__fixtures__/ListPositions';
-import { PositionName, type ListPositionsResponse } from '../../../types/generated/positions/positions';
+import {
+  PositionName,
+  DetailType,
+  type ListPositionsResponse,
+  type ListPositionsResponse_Result,
+} from '../../../types/generated/positions/positions';
+import type { Asset } from '../../../types/generated/common/asset';
 import {
   getFilteredItemsFromPosition,
   getAllFilteredItems,
@@ -378,6 +384,17 @@ describe('transformPositions', () => {
 
     describe('Underlying Assets', () => {
       const positions = Object.values(result.positions);
+      const mkAsset = (symbol: string): Asset =>
+        ({
+          address: `0x${symbol}`,
+          chainId: 1,
+          name: symbol,
+          symbol,
+          decimals: 18,
+          type: 'erc20',
+          network: 'ethereum',
+          colors: { primary: '#000', fallback: '#fff' },
+        }) as Asset;
 
       it('should have transformed underlying assets with correct structure', () => {
         const positionWithUnderlying = positions.find(
@@ -425,6 +442,351 @@ describe('transformPositions', () => {
             expect(sum).toBe(100);
           });
         });
+      });
+
+      it('transformDeposits: uses token.value, not stats.assetValue', () => {
+        const res = transformPositions(
+          {
+            result: {
+              positions: [
+                {
+                  id: 't:1',
+                  chainId: 1,
+                  protocolName: 'T',
+                  canonicalProtocolName: 't',
+                  protocolVersion: 'v1',
+                  tvl: '0',
+                  dapp: { name: 'T', url: '', iconUrl: '', colors: { primary: '#000', fallback: '#000', shadow: '#000' } },
+                  portfolioItems: [
+                    {
+                      name: PositionName.LENDING,
+                      stats: { assetValue: '2000', debtValue: '0', netValue: '2000' }, // total
+                      updateTime: undefined,
+                      detailTypes: [DetailType.LENDING],
+                      pool: undefined,
+                      assetDict: {},
+                      detail: {
+                        supplyTokenList: [
+                          { amount: '1', asset: mkAsset('A'), assetValue: '1200' }, // individual
+                          { amount: '800', asset: mkAsset('B'), assetValue: '800' },
+                        ],
+                        borrowTokenList: [],
+                        rewardTokenList: [],
+                        tokenList: [],
+                      },
+                    },
+                  ],
+                },
+              ],
+              stats: {
+                totals: {
+                  netTotal: '2000',
+                  totalDeposits: '2000',
+                  totalBorrows: '0',
+                  totalRewards: '0',
+                  totalLocked: '0',
+                  overallTotal: '2000',
+                },
+                canonicalProtocol: {
+                  t: {
+                    canonicalProtocolName: 't',
+                    protocolIds: ['t'],
+                    totals: {
+                      netTotal: '2000',
+                      totalDeposits: '2000',
+                      totalBorrows: '0',
+                      totalRewards: '0',
+                      totalLocked: '0',
+                      overallTotal: '2000',
+                    },
+                    totalsByChain: {},
+                  },
+                },
+              },
+            },
+            errors: [],
+            metadata: undefined,
+          },
+          TEST_PARAMS
+        );
+        expect(res.positions['t'].deposits[0].value.amount).toBe('1200');
+        expect(res.positions['t'].deposits[1].value.amount).toBe('800');
+      });
+
+      it('transformBorrows: uses token.value, not stats.debtValue', () => {
+        const res = transformPositions(
+          {
+            result: {
+              positions: [
+                {
+                  id: 't:1',
+                  chainId: 1,
+                  protocolName: 'T',
+                  canonicalProtocolName: 't',
+                  protocolVersion: 'v1',
+                  tvl: '0',
+                  dapp: { name: 'T', url: '', iconUrl: '', colors: { primary: '#000', fallback: '#000', shadow: '#000' } },
+                  portfolioItems: [
+                    {
+                      name: PositionName.LENDING,
+                      stats: { assetValue: '5000', debtValue: '1500', netValue: '3500' }, // total debt
+                      updateTime: undefined,
+                      detailTypes: [DetailType.LENDING],
+                      pool: undefined,
+                      assetDict: {},
+                      detail: {
+                        supplyTokenList: [{ amount: '5000', asset: mkAsset('C'), assetValue: '5000' }],
+                        borrowTokenList: [
+                          { amount: '900', asset: mkAsset('D'), assetValue: '900' }, // individual
+                          { amount: '600', asset: mkAsset('E'), assetValue: '600' },
+                        ],
+                        rewardTokenList: [],
+                        tokenList: [],
+                      },
+                    },
+                  ],
+                },
+              ],
+              stats: {
+                totals: {
+                  netTotal: '3500',
+                  totalDeposits: '5000',
+                  totalBorrows: '1500',
+                  totalRewards: '0',
+                  totalLocked: '0',
+                  overallTotal: '3500',
+                },
+                canonicalProtocol: {
+                  t: {
+                    canonicalProtocolName: 't',
+                    protocolIds: ['t'],
+                    totals: {
+                      netTotal: '3500',
+                      totalDeposits: '5000',
+                      totalBorrows: '1500',
+                      totalRewards: '0',
+                      totalLocked: '0',
+                      overallTotal: '3500',
+                    },
+                    totalsByChain: {},
+                  },
+                },
+              },
+            },
+            errors: [],
+            metadata: undefined,
+          },
+          TEST_PARAMS
+        );
+        expect(res.positions['t'].borrows[0].value.amount).toBe('900');
+        expect(res.positions['t'].borrows[1].value.amount).toBe('600');
+      });
+
+      it('transformStakes: uses token.value, not stats.assetValue', () => {
+        const res = transformPositions(
+          {
+            result: {
+              positions: [
+                {
+                  id: 't:1',
+                  chainId: 1,
+                  protocolName: 'T',
+                  canonicalProtocolName: 't',
+                  protocolVersion: 'v1',
+                  tvl: '0',
+                  dapp: { name: 'T', url: '', iconUrl: '', colors: { primary: '#000', fallback: '#000', shadow: '#000' } },
+                  portfolioItems: [
+                    {
+                      name: PositionName.LEVERAGED_FARMING,
+                      stats: { assetValue: '1000', debtValue: '0', netValue: '1000' },
+                      updateTime: undefined,
+                      detailTypes: [DetailType.LEVERAGED_FARMING],
+                      pool: undefined,
+                      assetDict: {},
+                      detail: {
+                        supplyTokenList: [{ amount: '0.5', asset: mkAsset('F'), assetValue: '1000' }],
+                        borrowTokenList: [],
+                        rewardTokenList: [],
+                        tokenList: [],
+                      },
+                    },
+                  ],
+                },
+              ],
+              stats: {
+                totals: {
+                  netTotal: '1000',
+                  totalDeposits: '0',
+                  totalBorrows: '0',
+                  totalRewards: '0',
+                  totalLocked: '1000',
+                  overallTotal: '1000',
+                },
+                canonicalProtocol: {
+                  t: {
+                    canonicalProtocolName: 't',
+                    protocolIds: ['t'],
+                    totals: {
+                      netTotal: '1000',
+                      totalDeposits: '0',
+                      totalBorrows: '0',
+                      totalRewards: '0',
+                      totalLocked: '1000',
+                      overallTotal: '1000',
+                    },
+                    totalsByChain: {},
+                  },
+                },
+              },
+            },
+            errors: [],
+            metadata: undefined,
+          },
+          TEST_PARAMS
+        );
+        expect(res.positions['t'].stakes[0].value.amount).toBe('1000');
+      });
+
+      it('transformPools: uses stats.assetValue for pool, individual values for underlying', () => {
+        const res = transformPositions(
+          {
+            result: {
+              positions: [
+                {
+                  id: 't:1',
+                  chainId: 1,
+                  protocolName: 'T',
+                  canonicalProtocolName: 't',
+                  protocolVersion: 'v1',
+                  tvl: '0',
+                  dapp: { name: 'T', url: '', iconUrl: '', colors: { primary: '#000', fallback: '#000', shadow: '#000' } },
+                  portfolioItems: [
+                    {
+                      name: PositionName.LIQUIDITY_POOL,
+                      stats: { assetValue: '3000', debtValue: '0', netValue: '3000' }, // pool total
+                      updateTime: undefined,
+                      detailTypes: [DetailType.COMMON],
+                      pool: undefined,
+                      assetDict: {},
+                      detail: {
+                        supplyTokenList: [
+                          { amount: '1', asset: mkAsset('G'), assetValue: '1800' }, // underlying individual
+                          { amount: '1200', asset: mkAsset('H'), assetValue: '1200' },
+                        ],
+                        borrowTokenList: [],
+                        rewardTokenList: [],
+                        tokenList: [],
+                      },
+                    },
+                  ],
+                },
+              ],
+              stats: {
+                totals: {
+                  netTotal: '3000',
+                  totalDeposits: '3000',
+                  totalBorrows: '0',
+                  totalRewards: '0',
+                  totalLocked: '0',
+                  overallTotal: '3000',
+                },
+                canonicalProtocol: {
+                  t: {
+                    canonicalProtocolName: 't',
+                    protocolIds: ['t'],
+                    totals: {
+                      netTotal: '3000',
+                      totalDeposits: '3000',
+                      totalBorrows: '0',
+                      totalRewards: '0',
+                      totalLocked: '0',
+                      overallTotal: '3000',
+                    },
+                    totalsByChain: {},
+                  },
+                },
+              },
+            },
+            errors: [],
+            metadata: undefined,
+          },
+          TEST_PARAMS
+        );
+        const pool = res.positions['t'].pools[0];
+        expect(pool.value.amount).toBe('3000'); // pool shows total
+        expect(pool.underlying[0].value.amount).toBe('1800'); // underlying shows individual
+        expect(pool.underlying[1].value.amount).toBe('1200');
+      });
+
+      it('transformLpStakes: uses stats.assetValue for stake, individual values for underlying', () => {
+        const res = transformPositions(
+          {
+            result: {
+              positions: [
+                {
+                  id: 't:1',
+                  chainId: 1,
+                  protocolName: 'T',
+                  canonicalProtocolName: 't',
+                  protocolVersion: 'v1',
+                  tvl: '0',
+                  dapp: { name: 'T', url: '', iconUrl: '', colors: { primary: '#000', fallback: '#000', shadow: '#000' } },
+                  portfolioItems: [
+                    {
+                      name: PositionName.LEVERAGED_FARMING,
+                      stats: { assetValue: '4500', debtValue: '0', netValue: '4500' }, // LP stake total
+                      updateTime: undefined,
+                      detailTypes: [DetailType.LEVERAGED_FARMING],
+                      pool: undefined,
+                      assetDict: {},
+                      detail: {
+                        supplyTokenList: [
+                          { amount: '2', asset: mkAsset('I'), assetValue: '2700' }, // underlying individual
+                          { amount: '1800', asset: mkAsset('J'), assetValue: '1800' },
+                        ],
+                        borrowTokenList: [],
+                        rewardTokenList: [],
+                        tokenList: [],
+                      },
+                    },
+                  ],
+                },
+              ],
+              stats: {
+                totals: {
+                  netTotal: '4500',
+                  totalDeposits: '0',
+                  totalBorrows: '0',
+                  totalRewards: '0',
+                  totalLocked: '4500',
+                  overallTotal: '4500',
+                },
+                canonicalProtocol: {
+                  t: {
+                    canonicalProtocolName: 't',
+                    protocolIds: ['t'],
+                    totals: {
+                      netTotal: '4500',
+                      totalDeposits: '0',
+                      totalBorrows: '0',
+                      totalRewards: '0',
+                      totalLocked: '4500',
+                      overallTotal: '4500',
+                    },
+                    totalsByChain: {},
+                  },
+                },
+              },
+            },
+            errors: [],
+            metadata: undefined,
+          },
+          TEST_PARAMS
+        );
+        const stake = res.positions['t'].stakes[0];
+        expect(stake.value.amount).toBe('4500'); // LP stake shows total
+        expect(stake.underlying[0].value.amount).toBe('2700'); // underlying shows individual
+        expect(stake.underlying[1].value.amount).toBe('1800');
       });
     });
 
