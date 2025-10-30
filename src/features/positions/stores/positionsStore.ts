@@ -1,7 +1,7 @@
 import { time } from '@/utils/time';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import type { RainbowPositions, RainbowPosition, RainbowDeposit, RainbowPool, RainbowBorrow, RainbowReward } from '../types';
+import type { RainbowPositions, RainbowPosition, RainbowDeposit, RainbowPool } from '../types';
 import type { ListPositionsResponse } from '../types/generated/positions/positions';
 import { fetchPositions, type PositionsParams } from './fetcher';
 import { transformPositions } from './transform';
@@ -71,7 +71,7 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
         hydrationRetry.set(address, null);
       }
 
-      requestIdleCallback(() => throttledPositionsAnalytics(address));
+      requestIdleCallback(() => throttledPositionsAnalytics(params));
     },
   },
   (_, get) => ({
@@ -146,8 +146,8 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
  * Fetches latest positions from store on each execution.
  */
 const throttledPositionsAnalytics = throttle(
-  (address: string) => {
-    const positions = usePositionsStore.getState().getData();
+  (params: PositionsParams) => {
+    const positions = usePositionsStore.getState().getData(params);
     if (!positions) return;
 
     const { positionsAmount, positionsRewardsAmount, positionsAssetsAmount } = Object.values(positions.positions).reduce(
