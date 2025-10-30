@@ -54,7 +54,7 @@ export async function fetchHyperliquidChart(
     abortController?.signal
   );
 
-  const bars = convertCandlesToBars(candles, requestedCandles, candleResolution);
+  const bars = convertCandlesToBars(candles, candleResolution, requestedCandles);
 
   return {
     candleResolution,
@@ -67,7 +67,7 @@ export async function fetchHyperliquidChart(
 /**
  * Converts a Hyperliquid `Candle` array to `Bar` format.
  */
-function convertCandlesToBars(candles: Candle[], maxBars: number, candleResolution: CandleResolution): Bar[] {
+function convertCandlesToBars(candles: Candle[],  candleResolution: CandleResolution, maxBars: number): Bar[] {
   const length = candles.length;
   if (!length) return [];
 
