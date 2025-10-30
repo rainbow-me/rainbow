@@ -6,9 +6,9 @@ describe('Sorting', () => {
   describe('sortPositions', () => {
     it('should sort positions by total value descending', () => {
       const positions: Record<string, RainbowPosition> = {
-        uniswap: createMockRainbowPosition('uniswap', '1000'),
-        aave: createMockRainbowPosition('aave', '5000'),
-        curve: createMockRainbowPosition('curve', '500'),
+        uniswap: createMockRainbowPosition('uniswap', { deposits: [createMockDeposit('USDC', '1000', '1000')] }),
+        aave: createMockRainbowPosition('aave', { deposits: [createMockDeposit('USDC', '5000', '5000')] }),
+        curve: createMockRainbowPosition('curve', { deposits: [createMockDeposit('USDC', '500', '500')] }),
       };
 
       const sorted = sortPositions(positions);
@@ -22,8 +22,8 @@ describe('Sorting', () => {
 
     it('should handle positions with same value', () => {
       const positions: Record<string, RainbowPosition> = {
-        uniswap: createMockRainbowPosition('uniswap', '1000'),
-        aave: createMockRainbowPosition('aave', '1000'),
+        uniswap: createMockRainbowPosition('uniswap', { deposits: [createMockDeposit('USDC', '1000', '1000')] }),
+        aave: createMockRainbowPosition('aave', { deposits: [createMockDeposit('USDC', '1000', '1000')] }),
       };
 
       const sorted = sortPositions(positions);
@@ -38,7 +38,7 @@ describe('Sorting', () => {
   describe('sortPositionItems', () => {
     it('should sort deposits by value descending', () => {
       const positions: Record<string, RainbowPosition> = {
-        aave: createMockRainbowPosition('aave', '2600', {
+        aave: createMockRainbowPosition('aave', {
           deposits: [
             createMockDeposit('USDC', '100', '100'),
             createMockDeposit('ETH', '1', '2000'),
@@ -56,7 +56,7 @@ describe('Sorting', () => {
 
     it('should sort pools by value descending', () => {
       const positions: Record<string, RainbowPosition> = {
-        uniswap: createMockRainbowPosition('uniswap', '4200', {
+        uniswap: createMockRainbowPosition('uniswap', {
           pools: [createMockPool('USDC', '10', '200'), createMockPool('ETH', '2', '4000')],
         }),
       };
@@ -69,7 +69,7 @@ describe('Sorting', () => {
 
     it('should sort stakes by value descending', () => {
       const positions: Record<string, RainbowPosition> = {
-        curve: createMockRainbowPosition('curve', '450', {
+        curve: createMockRainbowPosition('curve', {
           stakes: [createMockStake('CRV', '100', '300'), createMockStake('veCRV', '50', '150')],
         }),
       };
@@ -82,7 +82,7 @@ describe('Sorting', () => {
 
     it('should sort borrows by value descending', () => {
       const positions: Record<string, RainbowPosition> = {
-        aave: createMockRainbowPosition('aave', '-1500', {
+        aave: createMockRainbowPosition('aave', {
           borrows: [createMockBorrow('USDC', '1000', '1000'), createMockBorrow('DAI', '500', '500')],
         }),
       };

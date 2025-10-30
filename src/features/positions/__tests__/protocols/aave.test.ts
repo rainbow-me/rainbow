@@ -34,7 +34,7 @@ describe('Aave Protocol', () => {
           },
         }),
       ],
-      createMockStats('aave', { netTotal: '16000', totalDeposits: '20000', totalBorrows: '5000', totalRewards: '1000' })
+      createMockStats('aave', { totalDeposits: '20000', totalBorrows: '5000', totalRewards: '1000', totalLocked: '0' })
     );
 
     const result = transformPositions(mockResponse, FIXTURE_PARAMS);
@@ -84,7 +84,7 @@ describe('Aave Protocol', () => {
           },
         }),
       ],
-      createMockStats('aave', { netTotal: '5000', totalDeposits: '5000', totalBorrows: '0', totalRewards: '0' })
+      createMockStats('aave', { totalDeposits: '5000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
     );
 
     const result = transformPositions(mockResponse, FIXTURE_PARAMS);
@@ -131,7 +131,7 @@ describe('Aave Protocol', () => {
           },
         }),
       ],
-      createMockStats('aave', { netTotal: '3000', totalDeposits: '3000', totalBorrows: '0', totalRewards: '0' })
+      createMockStats('aave', { totalDeposits: '3000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
     );
 
     const result = transformPositions(mockResponse, FIXTURE_PARAMS);

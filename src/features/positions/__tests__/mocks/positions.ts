@@ -4,6 +4,36 @@ import type { RainbowPosition, RainbowPositions, RainbowDeposit, RainbowPool, Ra
 import type { Asset } from '../../types/generated/common/asset';
 import { createMockPositionAsset } from './assets';
 
+// ================================ HELPERS ================================
+
+/**
+ * Calculates netTotal and overallTotal from component values
+ */
+function calculateTotals(components: { totalDeposits: string; totalBorrows: string; totalRewards: string; totalLocked: string }): {
+  netTotal: string;
+  overallTotal: string;
+  totalDeposits: string;
+  totalBorrows: string;
+  totalRewards: string;
+  totalLocked: string;
+} {
+  // Calculate netTotal = deposits - borrows + rewards
+  const depositsFloat = parseFloat(components.totalDeposits);
+  const borrowsFloat = parseFloat(components.totalBorrows);
+  const rewardsFloat = parseFloat(components.totalRewards);
+  const netTotal = (depositsFloat - borrowsFloat + rewardsFloat).toString();
+
+  // Calculate overallTotal = netTotal + locked
+  const lockedFloat = parseFloat(components.totalLocked);
+  const overallTotal = (parseFloat(netTotal) + lockedFloat).toString();
+
+  return {
+    netTotal,
+    overallTotal,
+    ...components,
+  };
+}
+
 // ================================ DAPP MOCKS =================================
 
 export function createMockDapp(
@@ -30,37 +60,22 @@ export function createMockDapp(
 
 export function createMockStats(
   canonicalProtocolName: string,
-  overrides: {
-    netTotal: string;
+  totals: {
     totalDeposits: string;
     totalBorrows: string;
     totalRewards: string;
-    totalLocked?: string;
+    totalLocked: string;
   }
 ) {
-  const { totalLocked = '0', ...totals } = overrides;
+  const calculated = calculateTotals(totals);
 
   return {
-    totals: {
-      netTotal: totals.netTotal,
-      totalDeposits: totals.totalDeposits,
-      totalBorrows: totals.totalBorrows,
-      totalRewards: totals.totalRewards,
-      totalLocked,
-      overallTotal: totals.netTotal,
-    },
+    totals: calculated,
     canonicalProtocol: {
       [canonicalProtocolName]: {
         canonicalProtocolName,
         protocolIds: [canonicalProtocolName],
-        totals: {
-          netTotal: totals.netTotal,
-          totalDeposits: totals.totalDeposits,
-          totalBorrows: totals.totalBorrows,
-          totalRewards: totals.totalRewards,
-          totalLocked,
-          overallTotal: totals.netTotal,
-        },
+        totals: calculated,
         totalsByChain: {},
       },
     },
@@ -151,17 +166,26 @@ export function createMockPortfolioItem(name: PositionName, description?: string
 
 // ================ RAINBOW POSITION MOCKS (Frontend Format) ===================
 
-export function createMockRainbowPosition(type: string, totalValue: string, overrides?: Partial<RainbowPosition>): RainbowPosition {
-  return {
+/**
+ * Type guard to check if a stake is locked
+ * Safely checks for the optional isLocked property without type assertions
+ */
+function isLockedStake(stake: RainbowStake): stake is RainbowStake & { isLocked: true } {
+  return 'isLocked' in stake && stake.isLocked === true;
+}
+
+export function createMockRainbowPosition(type: string, overrides?: Partial<RainbowPosition>): RainbowPosition {
+  // Build base position with defaults
+  const base: RainbowPosition = {
     type,
     protocol: `${type}-v2`,
     protocolVersion: 'v2',
     totals: {
-      total: { amount: totalValue, display: `$${totalValue}` },
-      totalDeposits: { amount: '0', display: '$0' },
-      totalBorrows: { amount: '0', display: '$0' },
-      totalRewards: { amount: '0', display: '$0' },
-      totalLocked: { amount: '0', display: '$0' },
+      total: createValueField('0'),
+      totalDeposits: createValueField('0'),
+      totalBorrows: createValueField('0'),
+      totalRewards: createValueField('0'),
+      totalLocked: createValueField('0'),
     },
     deposits: [],
     pools: [],
@@ -175,6 +199,41 @@ export function createMockRainbowPosition(type: string, totalValue: string, over
       colors: { primary: '#B6509E', fallback: '#B6509E', shadow: '#000000' },
     },
     ...overrides,
+  };
+
+  // Calculate totals from actual items (after overrides applied)
+  // Pools are included in totalDeposits since they represent deposited liquidity
+  const totalDeposits = [...(base.deposits || []), ...(base.pools || [])]
+    .reduce((sum, item) => sum + parseFloat(item.value.amount), 0)
+    .toString();
+
+  const totalBorrows = (base.borrows || []).reduce((sum, item) => sum + parseFloat(item.value.amount), 0).toString();
+
+  const totalRewards = (base.rewards || []).reduce((sum, item) => sum + parseFloat(item.value.amount), 0).toString();
+
+  const totalLocked = (base.stakes || [])
+    .filter(isLockedStake)
+    .reduce((sum, item) => sum + parseFloat(item.value.amount), 0)
+    .toString();
+
+  // Use calculateTotals to get derived values
+  const calculated = calculateTotals({
+    totalDeposits,
+    totalBorrows,
+    totalRewards,
+    totalLocked,
+  });
+
+  // Return position with calculated totals
+  return {
+    ...base,
+    totals: {
+      total: createValueField(calculated.overallTotal),
+      totalDeposits: createValueField(calculated.totalDeposits),
+      totalBorrows: createValueField(calculated.totalBorrows),
+      totalRewards: createValueField(calculated.totalRewards),
+      totalLocked: createValueField(calculated.totalLocked),
+    },
   };
 }
 
@@ -250,7 +309,6 @@ export function createValueField(amount: string, currency = 'USD'): { amount: st
 
 export function createMockPositionsData(
   overrides: {
-    total?: string;
     totalLocked?: string;
     totalDeposits?: string;
     totalBorrows?: string;
@@ -258,14 +316,21 @@ export function createMockPositionsData(
     positions?: Record<string, RainbowPosition>;
   } = {}
 ): RainbowPositions {
+  const calculated = calculateTotals({
+    totalDeposits: overrides.totalDeposits ?? '0',
+    totalBorrows: overrides.totalBorrows ?? '0',
+    totalRewards: overrides.totalRewards ?? '0',
+    totalLocked: overrides.totalLocked ?? '0',
+  });
+
   return {
     positions: overrides.positions ?? {},
     totals: {
-      total: createValueField(overrides.total ?? '0'),
-      totalLocked: createValueField(overrides.totalLocked ?? '0'),
-      totalDeposits: createValueField(overrides.totalDeposits ?? '0'),
-      totalBorrows: createValueField(overrides.totalBorrows ?? '0'),
-      totalRewards: createValueField(overrides.totalRewards ?? '0'),
+      total: createValueField(calculated.overallTotal),
+      totalLocked: createValueField(calculated.totalLocked),
+      totalDeposits: createValueField(calculated.totalDeposits),
+      totalBorrows: createValueField(calculated.totalBorrows),
+      totalRewards: createValueField(calculated.totalRewards),
     },
   };
 }

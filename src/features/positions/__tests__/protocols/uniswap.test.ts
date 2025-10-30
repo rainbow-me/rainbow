@@ -60,7 +60,7 @@ describe('Uniswap Position Parsing', () => {
             },
           }),
         ],
-        createMockStats('uniswap', { netTotal: '1000', totalDeposits: '1000', totalBorrows: '0', totalRewards: '0' })
+        createMockStats('uniswap', { totalDeposits: '1000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
       );
 
       const result = transformPositions(mockResponse, FIXTURE_PARAMS);
@@ -97,7 +97,7 @@ describe('Uniswap Position Parsing', () => {
             },
           }),
         ],
-        createMockStats('uniswap', { netTotal: '1000', totalDeposits: '1000', totalBorrows: '0', totalRewards: '0' })
+        createMockStats('uniswap', { totalDeposits: '1000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
       );
 
       const result = transformPositions(mockResponse, FIXTURE_PARAMS);
@@ -139,7 +139,7 @@ describe('Uniswap Position Parsing', () => {
             },
           }),
         ],
-        createMockStats('uniswap', { netTotal: '1000', totalDeposits: '1000', totalBorrows: '0', totalRewards: '0' })
+        createMockStats('uniswap', { totalDeposits: '1000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
       );
 
       const result = transformPositions(mockResponse, FIXTURE_PARAMS);
@@ -170,7 +170,7 @@ describe('Uniswap Position Parsing', () => {
             },
           }),
         ],
-        createMockStats('uniswap', { netTotal: '1000', totalDeposits: '1000', totalBorrows: '0', totalRewards: '0' })
+        createMockStats('uniswap', { totalDeposits: '1000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
       );
 
       const result = transformPositions(mockResponse, FIXTURE_PARAMS);
@@ -203,7 +203,7 @@ describe('Uniswap Position Parsing', () => {
             },
           }),
         ],
-        createMockStats('uniswap', { netTotal: '1000', totalDeposits: '1000', totalBorrows: '0', totalRewards: '0' })
+        createMockStats('uniswap', { totalDeposits: '1000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
       );
 
       const result = transformPositions(mockResponse, FIXTURE_PARAMS);
@@ -237,7 +237,7 @@ describe('Uniswap Position Parsing', () => {
             },
           }),
         ],
-        createMockStats('uniswap', { netTotal: '1000', totalDeposits: '1000', totalBorrows: '0', totalRewards: '0' })
+        createMockStats('uniswap', { totalDeposits: '1000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
       );
 
       const result = transformPositions(mockResponse, FIXTURE_PARAMS);
@@ -280,7 +280,7 @@ describe('Uniswap Position Parsing', () => {
             },
           }),
         ],
-        createMockStats('uniswap', { netTotal: '1000', totalDeposits: '1000', totalBorrows: '0', totalRewards: '0' })
+        createMockStats('uniswap', { totalDeposits: '1000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
       );
 
       const result = transformPositions(mockResponse, FIXTURE_PARAMS);
@@ -322,7 +322,7 @@ describe('Uniswap Position Parsing', () => {
             },
           }),
         ],
-        createMockStats('uniswap', { netTotal: '100', totalDeposits: '100', totalBorrows: '0', totalRewards: '0' })
+        createMockStats('uniswap', { totalDeposits: '100', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
       );
 
       const result = transformPositions(mockResponse, FIXTURE_PARAMS);
@@ -365,7 +365,7 @@ describe('Uniswap Position Parsing', () => {
             },
           }),
         ],
-        createMockStats('uniswap', { netTotal: '1000', totalDeposits: '1000', totalBorrows: '0', totalRewards: '0' })
+        createMockStats('uniswap', { totalDeposits: '1000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
       );
 
       const result = transformPositions(mockResponse, FIXTURE_PARAMS);

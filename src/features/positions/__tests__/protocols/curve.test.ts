@@ -33,7 +33,7 @@ describe('Curve Protocol', () => {
           },
         }),
       ],
-      createMockStats('curve', { netTotal: '3000', totalDeposits: '3000', totalBorrows: '0', totalRewards: '0' })
+      createMockStats('curve', { totalDeposits: '3000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
     );
 
     const result = transformPositions(mockResponse, FIXTURE_PARAMS);
@@ -68,7 +68,7 @@ describe('Curve Protocol', () => {
           },
         }),
       ],
-      createMockStats('curve', { netTotal: '2000', totalDeposits: '2000', totalBorrows: '0', totalRewards: '0', totalLocked: '2000' })
+      createMockStats('curve', { totalDeposits: '2000', totalBorrows: '0', totalRewards: '0', totalLocked: '2000' })
     );
 
     const result = transformPositions(mockResponse, FIXTURE_PARAMS);
@@ -101,7 +101,7 @@ describe('Curve Protocol', () => {
           },
         }),
       ],
-      createMockStats('curve', { netTotal: '570', totalDeposits: '550', totalBorrows: '0', totalRewards: '20' })
+      createMockStats('curve', { totalDeposits: '550', totalBorrows: '0', totalRewards: '20', totalLocked: '0' })
     );
 
     const result = transformPositions(mockResponse, FIXTURE_PARAMS);

@@ -30,7 +30,7 @@ describe('Compound Protocol', () => {
           },
         }),
       ],
-      createMockStats('compound', { netTotal: '30000', totalDeposits: '50000', totalBorrows: '20000', totalRewards: '0' })
+      createMockStats('compound', { totalDeposits: '50000', totalBorrows: '20000', totalRewards: '0', totalLocked: '0' })
     );
 
     const result = transformPositions(mockResponse, FIXTURE_PARAMS);
@@ -71,7 +71,7 @@ describe('Compound Protocol', () => {
           },
         }),
       ],
-      createMockStats('compound', { netTotal: '250', totalDeposits: '0', totalBorrows: '0', totalRewards: '250' })
+      createMockStats('compound', { totalDeposits: '0', totalBorrows: '0', totalRewards: '250', totalLocked: '0' })
     );
 
     const result = transformPositions(mockResponse, FIXTURE_PARAMS);
@@ -107,7 +107,7 @@ describe('Compound Protocol', () => {
           },
         }),
       ],
-      createMockStats('compound', { netTotal: '10100', totalDeposits: '10000', totalBorrows: '0', totalRewards: '100' })
+      createMockStats('compound', { totalDeposits: '10000', totalBorrows: '0', totalRewards: '100', totalLocked: '0' })
     );
 
     const result = transformPositions(mockResponse, FIXTURE_PARAMS);

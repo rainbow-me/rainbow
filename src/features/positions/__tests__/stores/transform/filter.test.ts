@@ -10,9 +10,9 @@ jest.mock('@/config', () => ({
 describe('Position Filters', () => {
   describe('shouldFilterPosition', () => {
     it('should filter positions below value threshold', () => {
-      const uniswap = createMockRainbowPosition('uniswap', '100', { deposits: [createMockDeposit('MOCK', '1', '100')] });
-      const aave = createMockRainbowPosition('aave', '0.5', { deposits: [createMockDeposit('MOCK', '1', '0.5')] });
-      const compound = createMockRainbowPosition('compound', '2', { deposits: [createMockDeposit('MOCK', '1', '2')] });
+      const uniswap = createMockRainbowPosition('uniswap', { deposits: [createMockDeposit('MOCK', '1', '100')] });
+      const aave = createMockRainbowPosition('aave', { deposits: [createMockDeposit('MOCK', '1', '0.5')] });
+      const compound = createMockRainbowPosition('compound', { deposits: [createMockDeposit('MOCK', '1', '2')] });
 
       expect(shouldFilterPosition(uniswap)).toBe(false);
       expect(shouldFilterPosition(compound)).toBe(false);
@@ -20,9 +20,9 @@ describe('Position Filters', () => {
     });
 
     it('should filter Hyperliquid protocol', () => {
-      const uniswap = createMockRainbowPosition('uniswap', '100', { deposits: [createMockDeposit('MOCK', '1', '100')] });
-      const hyperliquid = createMockRainbowPosition('hyperliquid', '100', { deposits: [createMockDeposit('MOCK', '1', '100')] });
-      const hyperliquidPerps = createMockRainbowPosition('hyperliquid-perps', '100', {
+      const uniswap = createMockRainbowPosition('uniswap', { deposits: [createMockDeposit('MOCK', '1', '100')] });
+      const hyperliquid = createMockRainbowPosition('hyperliquid', { deposits: [createMockDeposit('MOCK', '1', '100')] });
+      const hyperliquidPerps = createMockRainbowPosition('hyperliquid-perps', {
         deposits: [createMockDeposit('MOCK', '1', '100')],
       });
 
@@ -32,10 +32,10 @@ describe('Position Filters', () => {
     });
 
     it('should apply both filters together', () => {
-      const uniswap = createMockRainbowPosition('uniswap', '100', { deposits: [createMockDeposit('MOCK', '1', '100')] });
-      const aave = createMockRainbowPosition('aave', '0.5', { deposits: [createMockDeposit('MOCK', '1', '0.5')] });
-      const hyperliquid = createMockRainbowPosition('hyperliquid', '100', { deposits: [createMockDeposit('MOCK', '1', '100')] });
-      const compound = createMockRainbowPosition('compound', '2', { deposits: [createMockDeposit('MOCK', '1', '2')] });
+      const uniswap = createMockRainbowPosition('uniswap', { deposits: [createMockDeposit('MOCK', '1', '100')] });
+      const aave = createMockRainbowPosition('aave', { deposits: [createMockDeposit('MOCK', '1', '0.5')] });
+      const hyperliquid = createMockRainbowPosition('hyperliquid', { deposits: [createMockDeposit('MOCK', '1', '100')] });
+      const compound = createMockRainbowPosition('compound', { deposits: [createMockDeposit('MOCK', '1', '2')] });
 
       expect(shouldFilterPosition(uniswap)).toBe(false);
       expect(shouldFilterPosition(compound)).toBe(false);
@@ -44,7 +44,7 @@ describe('Position Filters', () => {
     });
 
     it('should filter positions with no items', () => {
-      const emptyPosition = createMockRainbowPosition('uniswap', '100');
+      const emptyPosition = createMockRainbowPosition('uniswap');
 
       expect(shouldFilterPosition(emptyPosition)).toBe(true);
     });
