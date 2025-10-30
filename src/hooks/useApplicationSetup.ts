@@ -7,6 +7,8 @@ import Routes from '@/navigation/routesNames';
 import { saveFCMToken } from '@/notifications/tokens';
 import { PerformanceReports, PerformanceTracking } from '@/performance/tracking';
 import { initListeners as initWalletConnectListeners, initWalletConnectPushNotifications } from '@/walletConnect';
+import { addressKey } from '@/utils/keychainConstants';
+import * as kc from '@/keychain';
 
 export function useApplicationSetup() {
   const [initialRoute, setInitialRoute] = useState<InitialRoute>(null);
@@ -19,6 +21,7 @@ export function useApplicationSetup() {
 }
 
 async function runSetup(setInitialRoute: Dispatch<SetStateAction<InitialRoute>>): Promise<void> {
+  await kc.validateCacheIntegrity(addressKey);
   const address = await loadAddress();
 
   Promise.all([initWalletConnectListeners(), saveFCMToken()]).then(() => {

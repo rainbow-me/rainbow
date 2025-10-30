@@ -60,6 +60,30 @@ const cache = new MMKV({
   id: 'rainbowKeychainLocalStorage',
 });
 
+/**
+ * Validates the integrity of the cache for a specific key.
+ *
+ * The cache is persisted using MMKV, which will be included in iCloud backups,
+ * however the keychain is not. This ensures that if a user restores from an iCloud backup
+ * and the keychain is missing entries that are present in the cache, we clear the cache
+ * to prevent inconsistencies.
+ *
+ * Should be called once at app startup, before any keychain access.
+ */
+export async function validateCacheIntegrity(key: string) {
+  try {
+    const cached = cache.getString(key);
+    const keychainEntry = await getInternetCredentials(key);
+
+    if (cached && !keychainEntry) {
+      logger.warn(`[keychain]: validateCacheIntegrity(): cache has entry but keychain does not, clearing cache`);
+      cache.clearAll();
+    }
+  } catch (e) {
+    logger.error(new RainbowError(`[keychain]: validateCacheIntegrity() failed`, e));
+  }
+}
+
 export const publicAccessControlOptions: SetOptions = {
   accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
 };
