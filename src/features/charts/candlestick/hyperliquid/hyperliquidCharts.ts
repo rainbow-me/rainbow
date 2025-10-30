@@ -54,7 +54,7 @@ export async function fetchHyperliquidChart(
     abortController?.signal
   );
 
-  const bars = convertCandlesToBars(candles, requestedCandles);
+  const bars = convertCandlesToBars(candles, requestedCandles, candleResolution);
 
   return {
     candleResolution,
@@ -67,7 +67,7 @@ export async function fetchHyperliquidChart(
 /**
  * Converts a Hyperliquid `Candle` array to `Bar` format.
  */
-function convertCandlesToBars(candles: Candle[], maxBars: number): Bar[] {
+function convertCandlesToBars(candles: Candle[], maxBars: number, candleResolution: CandleResolution): Bar[] {
   const length = candles.length;
   if (!length) return [];
 
@@ -82,12 +82,28 @@ function convertCandlesToBars(candles: Candle[], maxBars: number): Bar[] {
       h: Number(candle.h),
       l: Number(candle.l),
       o: Number(candle.o),
-      t: msToSeconds(candle.t),
+      t: standardizeTimestamp(candle.t, candleResolution),
       v: Number(candle.v),
     };
   }
 
   return bars;
+}
+
+const WEEKLY_CANDLE_SHIFT = time.days(3);
+
+/**
+ * Standardizes Hyperliquid candle timestamps by:
+ *   1. Converting to seconds
+ *   2. Shifting weekly candles to align with calendar weeks
+ */
+function standardizeTimestamp(timestampMs: number, resolution: CandleResolution): number {
+  switch (resolution) {
+    case CandleResolution.D7:
+      return msToSeconds(timestampMs - WEEKLY_CANDLE_SHIFT);
+    default:
+      return msToSeconds(timestampMs);
+  }
 }
 
 function msToSeconds(ms: number): number {
