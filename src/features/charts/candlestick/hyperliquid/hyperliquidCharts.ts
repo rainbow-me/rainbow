@@ -67,7 +67,7 @@ export async function fetchHyperliquidChart(
 /**
  * Converts a Hyperliquid `Candle` array to `Bar` format.
  */
-function convertCandlesToBars(candles: Candle[],  candleResolution: CandleResolution, maxBars: number): Bar[] {
+function convertCandlesToBars(candles: Candle[], candleResolution: CandleResolution, maxBars: number): Bar[] {
   const length = candles.length;
   if (!length) return [];
 
