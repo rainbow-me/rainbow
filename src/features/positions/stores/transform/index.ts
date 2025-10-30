@@ -152,12 +152,6 @@ function transformPools(tokens: PositionToken[], item: PortfolioItem, position: 
   const underlying = transformUnderlyingAssets(tokens, currency);
   if (underlying.length === 0) return [];
 
-  underlying.sort((a, b) => {
-    const valueA = parseFloat(a.value?.amount || '0');
-    const valueB = parseFloat(b.value?.amount || '0');
-    return valueB - valueA;
-  });
-
   const concentrated = isConcentratedLiquidityProtocol(position.protocolName, position.canonicalProtocolName, position.protocolVersion);
 
   return [
@@ -187,13 +181,6 @@ function transformLpStakes(
 ): RainbowStake[] {
   const underlying = transformUnderlyingAssets(tokens, currency);
   if (underlying.length === 0) return [];
-
-  // Sort by value (highest first) for consistent display
-  underlying.sort((a, b) => {
-    const valueA = parseFloat(a.value?.amount || '0');
-    const valueB = parseFloat(b.value?.amount || '0');
-    return valueB - valueA;
-  });
 
   const concentrated = isConcentratedLiquidityProtocol(position.protocolName, position.canonicalProtocolName, position.protocolVersion);
   const rangeStatus = calculateLiquidityRangeStatus(underlying, concentrated);
