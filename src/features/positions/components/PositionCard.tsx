@@ -159,3 +159,5 @@ export const PositionCard = memo(({ position }: PositionCardProps) => {
     </Box>
   );
 });
+
+PositionCard.displayName = 'PositionCard';

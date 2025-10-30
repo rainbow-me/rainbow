@@ -227,9 +227,7 @@ describe('Locked Position Calculations', () => {
       expect(position.stakes.length).toBe(1);
       const stake = position.stakes[0];
 
-      // @ts-expect-error - checking if isLp exists
       expect(stake.isLp).toBe(true);
-      // @ts-expect-error - checking if isLocked exists
       expect(stake.isLocked).toBe(true);
       expect(stake.underlying.length).toBe(2);
       expect(position.totals.totalLocked.amount).toBe('100');

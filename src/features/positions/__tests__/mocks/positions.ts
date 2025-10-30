@@ -252,9 +252,8 @@ export function createMockPool(symbol: string, quantity: string, value: string, 
     quantity,
     value: { amount: value, display: `$${value}` },
     underlying: [],
-    isConcentratedLiquidity: false,
     rangeStatus: 'in_range',
-    allocation: '50/50',
+    allocation: { display: '50% / 50%', percentages: [50, 50], splits: 2 },
     ...overrides,
   };
 }
@@ -273,9 +272,8 @@ export function createMockStake(symbol: string, quantity: string, value: string,
       ...base,
       ...overrides,
       isLp: true,
-      isConcentratedLiquidity: overrides.isConcentratedLiquidity ?? false,
       rangeStatus: overrides.rangeStatus ?? 'in_range',
-      allocation: overrides.allocation ?? '50/50',
+      allocation: overrides.allocation ?? { display: '50% / 50%', percentages: [50, 50], splits: 2 },
     } as RainbowStake;
   }
 

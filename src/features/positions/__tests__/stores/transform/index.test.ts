@@ -289,9 +289,11 @@ describe('transformPositions', () => {
         expect(firstPool).toHaveProperty('quantity');
         expect(firstPool).toHaveProperty('value');
         expect(firstPool).toHaveProperty('underlying');
-        expect(firstPool).toHaveProperty('isConcentratedLiquidity');
         expect(firstPool).toHaveProperty('rangeStatus');
         expect(firstPool).toHaveProperty('allocation');
+        expect(firstPool.allocation).toHaveProperty('display');
+        expect(firstPool.allocation).toHaveProperty('percentages');
+        expect(firstPool.allocation).toHaveProperty('splits');
         expect(Array.isArray(firstPool.underlying)).toBe(true);
       });
 
@@ -432,13 +434,16 @@ describe('transformPositions', () => {
             // Skip if no allocation
             if (!pool.allocation) return;
 
-            // Allocation should be in format like "50/50" or "100/0"
-            expect(pool.allocation).toMatch(/^\d+(?:\/\d+)*$/);
+            // Allocation should be an object with display string and percentages
+            expect(pool.allocation.display).toMatch(/^\d+% \/ \d+%(?:\s\/\s\d+%)*$/);
 
             // Sum of allocations should equal 100
-            const allocations = pool.allocation.split('/').map(Number);
-            const sum = allocations.reduce((a, b) => a + b, 0);
+            const sum = pool.allocation.percentages.reduce((a, b) => a + b, 0);
             expect(sum).toBe(100);
+
+            // Should have equal and splits properties
+            expect(typeof pool.allocation.splits).toBe('number');
+            expect(pool.allocation.splits).toBe(pool.allocation.percentages.length);
           });
         });
       });

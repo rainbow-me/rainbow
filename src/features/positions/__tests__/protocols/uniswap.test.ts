@@ -145,7 +145,8 @@ describe('Uniswap Position Parsing', () => {
       const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       const pool = result.positions['uniswap'].pools[0];
 
-      expect(pool.isConcentratedLiquidity).toBe(true);
+      // V3 with both assets should be in_range (concentrated liquidity)
+      expect(pool.rangeStatus).toBe('in_range');
     });
 
     it('should not identify Uniswap V2 as concentrated liquidity', () => {
@@ -176,7 +177,8 @@ describe('Uniswap Position Parsing', () => {
       const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       const pool = result.positions['uniswap'].pools[0];
 
-      expect(pool.isConcentratedLiquidity).toBe(false);
+      // V2 should be full_range (traditional AMM, not concentrated liquidity)
+      expect(pool.rangeStatus).toBe('full_range');
     });
   });
 
@@ -243,17 +245,18 @@ describe('Uniswap Position Parsing', () => {
       const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       const pool = result.positions['uniswap'].pools[0];
 
-      // Allocation should be in "X/Y" format
-      expect(pool.allocation).toMatch(/^\d+\/\d+$/);
+      // Allocation should be in "X% / Y%" format
+      expect(pool.allocation.display).toMatch(/^\d+% \/ \d+%$/);
 
       // Should add up to 100
-      const [first, second] = pool.allocation.split('/').map(Number);
-      expect(first + second).toBe(100);
+      const sum = pool.allocation.percentages.reduce((a, b) => a + b, 0);
+      expect(sum).toBe(100);
 
       // With $100 WETH and $50 USDC, allocation should favor WETH
-      // (exact calculation depends on implementation, but should be > 50%)
-      expect(first).toBeGreaterThan(50);
-      expect(first).toBeLessThanOrEqual(100);
+      // (exact calculation: 67% WETH, 33% USDC)
+      expect(pool.allocation.percentages[0]).toBe(67); // WETH
+      expect(pool.allocation.percentages[1]).toBe(33); // USDC
+      expect(pool.allocation.splits).toBe(2);
     });
   });
 
@@ -331,9 +334,12 @@ describe('Uniswap Position Parsing', () => {
       // Verify all required fields
       expect(pool.asset).toBeDefined();
       expect(pool.quantity).toBeDefined();
-      expect(pool.isConcentratedLiquidity).toBe(true);
       expect(pool.rangeStatus).toBeDefined();
+      expect(pool.rangeStatus).toBe('in_range'); // V3 with both assets
       expect(pool.allocation).toBeDefined();
+      expect(pool.allocation.display).toBeDefined();
+      expect(pool.allocation.percentages).toBeDefined();
+      expect(pool.allocation.splits).toBeDefined();
       expect(pool.value).toBeDefined();
       expect(pool.underlying).toBeDefined();
       expect(pool.poolAddress).toBe('0x1234567890abcdef');
@@ -371,20 +377,20 @@ describe('Uniswap Position Parsing', () => {
       const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       const pool = result.positions['uniswap'].pools[0];
 
-      // Allocation should show top 2 + "other" (3 values total)
-      const allocations = pool.allocation.split('/');
-      expect(allocations).toHaveLength(3);
+      // Allocation should show first 2 + "other" (3 values total)
+      expect(pool.allocation.percentages).toHaveLength(3);
+      expect(pool.allocation.splits).toBe(3);
 
       // Should sum to 100%
-      const sum = allocations.reduce((acc, val) => acc + parseInt(val, 10), 0);
+      const sum = pool.allocation.percentages.reduce((acc, val) => acc + val, 0);
       expect(sum).toBe(100);
 
-      // Top 2 should be WETH (50%), USDC (20%)
-      expect(parseInt(allocations[0], 10)).toBeGreaterThanOrEqual(48);
-      expect(parseInt(allocations[1], 10)).toBeGreaterThanOrEqual(18);
+      // First 2 are in input order (WETH 50%, USDC 20%)
+      expect(pool.allocation.percentages[0]).toBeGreaterThanOrEqual(48); // WETH
+      expect(pool.allocation.percentages[1]).toBeGreaterThanOrEqual(18); // USDC
 
       // Other should aggregate DAI (15%) + USDT (10%) + LINK (5%) = 30%
-      expect(parseInt(allocations[2], 10)).toBeGreaterThanOrEqual(28);
+      expect(pool.allocation.percentages[2]).toBeGreaterThanOrEqual(28); // Other
 
       // Should have all 5 underlying assets
       expect(pool.underlying).toHaveLength(5);

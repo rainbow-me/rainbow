@@ -1,4 +1,4 @@
-import { type RainbowUnderlyingAsset, type RangeStatus } from '../../../types';
+import { type RainbowUnderlyingAsset, type RangeStatus, type LpAllocation } from '../../../types';
 
 // ============ Constants ====================================================== //
 
@@ -98,12 +98,18 @@ export function calculateLiquidityRangeStatus(
 }
 
 /**
- * Calculate allocation percentages for LP positions
+ * Calculate allocation percentages as numbers for LP positions
  * For pools with >2 assets, shows top 2 by value + "Other"
+ * Returns array of percentages that always sum to 100
  */
-export function calculateLiquidityAllocation(underlying: RainbowUnderlyingAsset[] | undefined): string {
+function calculateLiquidityAllocationPercentages(underlying: RainbowUnderlyingAsset[] | undefined): number[] {
+  // Default to 100% for empty or single asset
   if (!underlying || underlying.length === 0) {
-    return '0';
+    return [100];
+  }
+
+  if (underlying.length === 1) {
+    return [100];
   }
 
   // Calculate total value
@@ -112,44 +118,63 @@ export function calculateLiquidityAllocation(underlying: RainbowUnderlyingAsset[
     return sum + value;
   }, 0);
 
+  // If total value is zero, distribute equally
   if (totalValue === 0) {
-    // Handle zero value edge case
-    if (underlying.length === 1) {
-      return '100';
+    const count = Math.min(underlying.length, 2); // Show at most 2 assets
+    const equalShare = Math.floor(100 / count);
+    const percentages = new Array(count).fill(equalShare);
+
+    // Adjust first percentage to ensure sum is exactly 100
+    percentages[0] = 100 - equalShare * (count - 1);
+
+    // If more than 2 assets, add "Other" with 0%
+    if (underlying.length > 2) {
+      percentages.push(0);
     }
-    return underlying.map(() => '0').join('/');
+
+    return percentages;
   }
 
-  // Sort assets by value (highest first) and calculate percentages
-  const assetsWithPercentage = underlying
-    .map(asset => {
-      const value = parseFloat(asset.value?.amount || '0');
-      const percentage = (value / totalValue) * 100;
-      return {
-        value,
-        percentage: Math.round(percentage),
-      };
-    })
-    .sort((a, b) => b.value - a.value);
+  // Calculate percentages in the provided order (no sorting)
+  const assetsWithPercentage = underlying.map(asset => {
+    const value = parseFloat(asset.value?.amount || '0');
+    const percentage = (value / totalValue) * 100;
+    return {
+      value,
+      percentage: Math.round(percentage),
+    };
+  });
 
   let percentages: number[];
 
-  // If more than 2 assets, group assets beyond top 2 as "Other"
+  // If more than 2 assets, show first 2 + group the rest as "Other"
   if (assetsWithPercentage.length > 2) {
-    const top2 = assetsWithPercentage.slice(0, 2).map(a => a.percentage);
+    const first2 = assetsWithPercentage.slice(0, 2).map(a => a.percentage);
     const othersSum = assetsWithPercentage.slice(2).reduce((sum, a) => sum + a.percentage, 0);
-    percentages = [...top2, othersSum];
+    percentages = [...first2, othersSum];
   } else {
     percentages = assetsWithPercentage.map(a => a.percentage);
   }
 
-  // Adjust for rounding errors - ensure sum is 100
+  // Adjust for rounding errors - ensure sum is exactly 100
   const sum = percentages.reduce((a, b) => a + b, 0);
   if (sum !== 100 && percentages.length > 0) {
     const diff = 100 - sum;
     percentages[0] += diff;
   }
 
-  // Format as "50/50" or "50/30/20" (top 2 + other)
-  return percentages.join('/');
+  return percentages;
+}
+
+/**
+ * Calculate allocation data for LP positions
+ * For pools with >2 assets, shows top 2 by value + "Other"
+ * Returns object with display string, percentages array, and splits count
+ * Values always sum to 100%, never returns "0%"
+ */
+export function calculateLiquidityAllocation(underlying: RainbowUnderlyingAsset[] | undefined): LpAllocation {
+  const percentages = calculateLiquidityAllocationPercentages(underlying);
+  const display = percentages.map(p => `${p}%`).join(' / ');
+  const splits = percentages.length;
+  return { display, percentages, splits };
 }
