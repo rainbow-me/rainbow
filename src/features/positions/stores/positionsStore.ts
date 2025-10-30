@@ -126,7 +126,8 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
     getBalance: () => {
       const data = get().getData();
       if (!data) return '0';
-      // Prevent negative positions from reducing total wallet balance
+      // Returns available balance (total - locked) with floor of $0
+      // Prevents locked positions and negative net positions from affecting wallet balance
       const balance = subtract(data.totals.total.amount, data.totals.totalLocked.amount);
       return greaterThan(balance, '0') ? balance : '0';
     },

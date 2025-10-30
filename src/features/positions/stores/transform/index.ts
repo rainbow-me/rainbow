@@ -72,7 +72,7 @@ function transformExtendedStats(stats: ExtendedStats | undefined, currency: Nati
   }
 
   return {
-    total: getNativeValue(stats.netTotal, currency),
+    total: getNativeValue(stats.overallTotal, currency),
     totalDeposits: getNativeValue(stats.totalDeposits, currency),
     totalBorrows: getNativeValue(stats.totalBorrows, currency),
     totalRewards: getNativeValue(stats.totalRewards, currency),

@@ -29,7 +29,7 @@ export type PositionAsset = Omit<Asset, 'price' | 'colors' | 'creationDate' | 'i
  * the primary field used by UI code.
  */
 export type PositionsTotals = {
-  total: { amount: string; display: string }; // Primary field used by UI
+  total: { amount: string; display: string }; // Total value (including locked)
   totalDeposits: { amount: string; display: string }; // Total deposited value across all protocols
   totalBorrows: { amount: string; display: string }; // Total borrowed value across all protocols
   totalRewards: { amount: string; display: string }; // Total rewards value

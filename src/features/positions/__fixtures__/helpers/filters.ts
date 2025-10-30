@@ -64,5 +64,5 @@ export function statsForProtocol(response: ListPositionsResponse, protocol: stri
  * Get backend grand total from the stats
  */
 export function grandTotal(response: ListPositionsResponse): number {
-  return parseFloat(response.result?.stats?.totals?.netTotal || '0');
+  return parseFloat(response.result?.stats?.totals?.overallTotal || '0');
 }

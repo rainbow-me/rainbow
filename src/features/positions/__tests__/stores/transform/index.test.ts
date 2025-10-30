@@ -994,7 +994,7 @@ describe('transformPositions', () => {
 
         positions.forEach(p => {
           const backendTotal = parseFloat(
-            statsForProtocol(FIXTURE_LIST_POSITIONS_SUCCESS, p.canonicalProtocolName)?.totals?.netTotal || '0'
+            statsForProtocol(FIXTURE_LIST_POSITIONS_SUCCESS, p.canonicalProtocolName)?.totals?.overallTotal || '0'
           );
           const transformedPosition = result.positions[p.canonicalProtocolName];
 
