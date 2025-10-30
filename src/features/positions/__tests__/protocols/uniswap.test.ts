@@ -1,6 +1,6 @@
 import { transformPositions } from '../../stores/transform';
 import { PositionName, DetailType } from '../../types/generated/positions/positions';
-import { TEST_PARAMS } from '../../__fixtures__/ListPositions';
+import { FIXTURE_PARAMS } from '../../__fixtures__/ListPositions';
 import { createMockAsset } from '../mocks/assets';
 import { createMockStats, createMockPosition, createMockResponse } from '../mocks/positions';
 
@@ -63,7 +63,7 @@ describe('Uniswap Position Parsing', () => {
         createMockStats('uniswap', { netTotal: '1000', totalDeposits: '1000', totalBorrows: '0', totalRewards: '0' })
       );
 
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
 
       // Should aggregate both under "uniswap"
       expect(result.positions['uniswap']).toBeDefined();
@@ -100,7 +100,7 @@ describe('Uniswap Position Parsing', () => {
         createMockStats('uniswap', { netTotal: '1000', totalDeposits: '1000', totalBorrows: '0', totalRewards: '0' })
       );
 
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       expect(result).toBeTruthy();
       const uniswap = result.positions['uniswap'];
 
@@ -142,7 +142,7 @@ describe('Uniswap Position Parsing', () => {
         createMockStats('uniswap', { netTotal: '1000', totalDeposits: '1000', totalBorrows: '0', totalRewards: '0' })
       );
 
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       const pool = result.positions['uniswap'].pools[0];
 
       expect(pool.isConcentratedLiquidity).toBe(true);
@@ -173,7 +173,7 @@ describe('Uniswap Position Parsing', () => {
         createMockStats('uniswap', { netTotal: '1000', totalDeposits: '1000', totalBorrows: '0', totalRewards: '0' })
       );
 
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       const pool = result.positions['uniswap'].pools[0];
 
       expect(pool.isConcentratedLiquidity).toBe(false);
@@ -206,7 +206,7 @@ describe('Uniswap Position Parsing', () => {
         createMockStats('uniswap', { netTotal: '1000', totalDeposits: '1000', totalBorrows: '0', totalRewards: '0' })
       );
 
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       const pool = result.positions['uniswap'].pools[0];
 
       // Range status should be one of the valid values
@@ -240,7 +240,7 @@ describe('Uniswap Position Parsing', () => {
         createMockStats('uniswap', { netTotal: '1000', totalDeposits: '1000', totalBorrows: '0', totalRewards: '0' })
       );
 
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       const pool = result.positions['uniswap'].pools[0];
 
       // Allocation should be in "X/Y" format
@@ -283,7 +283,7 @@ describe('Uniswap Position Parsing', () => {
         createMockStats('uniswap', { netTotal: '1000', totalDeposits: '1000', totalBorrows: '0', totalRewards: '0' })
       );
 
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       expect(result).toBeTruthy();
       const uniswap = result.positions['uniswap'];
 
@@ -325,7 +325,7 @@ describe('Uniswap Position Parsing', () => {
         createMockStats('uniswap', { netTotal: '100', totalDeposits: '100', totalBorrows: '0', totalRewards: '0' })
       );
 
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       const pool = result.positions['uniswap'].pools[0];
 
       // Verify all required fields
@@ -368,7 +368,7 @@ describe('Uniswap Position Parsing', () => {
         createMockStats('uniswap', { netTotal: '1000', totalDeposits: '1000', totalBorrows: '0', totalRewards: '0' })
       );
 
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       const pool = result.positions['uniswap'].pools[0];
 
       // Allocation should show top 2 + "other" (3 values total)

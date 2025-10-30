@@ -1,15 +1,19 @@
 import { transformPositions } from '../../../stores/transform';
-import { LIST_POSITIONS_SUCCESS, LIST_POSITIONS_SUCCESS_EMPTY, TEST_PARAMS } from '../../../__fixtures__/ListPositions';
-import { PositionName, DetailType, type ListPositionsResponse } from '../../../types/generated/positions/positions';
 import {
-  getFilteredItemsFromPosition,
-  getAllFilteredItems,
-  calculateFilteredValue,
-  getBackendProtocolTotal,
-  getBackendGrandTotal,
-  getPositionsWithFilteredItems,
-  getPositionsWithoutFilteredItems,
-} from '../../../helpers/filters';
+  FIXTURE_LIST_POSITIONS_SUCCESS,
+  FIXTURE_LIST_POSITIONS_SUCCESS_EMPTY,
+  FIXTURE_PARAMS,
+  FIXTURE_GRAND_TOTAL,
+} from '../../../__fixtures__/ListPositions';
+import { PositionName, DetailType, type ListPositionsResponse, PortfolioItem } from '../../../types/generated/positions/positions';
+import {
+  positionsWithFilteredItems,
+  positionsWithoutFilteredItems,
+  statsForProtocol,
+  positionsForProtocol,
+  filteredItemsForPosition,
+  filteredItemsForPositions,
+} from '../../../__fixtures__/helpers/filters';
 import { createMockAsset } from '../../mocks/assets';
 import { createSimpleDapp } from '../../mocks/positions';
 
@@ -18,12 +22,23 @@ jest.mock('@/config', () => ({
   DEFI_POSITIONS_THRESHOLD_FILTER: 'defi_positions_threshold_filter',
 }));
 
+// ============ Helpers ===================================================== //
+
+/**
+ * Calculate total filtered value from portfolio items
+ */
+function calculateFilteredValue(items: PortfolioItem[]): number {
+  return items.reduce((sum, item) => sum + parseFloat(item.stats?.netValue || '0'), 0);
+}
+
+// ============ Tests ======================================================== //
+
 describe('transformPositions', () => {
-  const defaultParams = TEST_PARAMS;
+  const defaultParams = FIXTURE_PARAMS;
 
   describe('Basic Functionality', () => {
     it('should transform positions successfully', () => {
-      const result = transformPositions(LIST_POSITIONS_SUCCESS, defaultParams);
+      const result = transformPositions(FIXTURE_LIST_POSITIONS_SUCCESS, defaultParams);
 
       // Check that we have transformed positions
       expect(result).toBeDefined();
@@ -39,7 +54,7 @@ describe('transformPositions', () => {
         currency: 'EUR' as const,
       };
 
-      const result = transformPositions(LIST_POSITIONS_SUCCESS, paramsWithEUR);
+      const result = transformPositions(FIXTURE_LIST_POSITIONS_SUCCESS, paramsWithEUR);
 
       // Should still transform successfully with different currency
       expect(result).toBeDefined();
@@ -47,7 +62,7 @@ describe('transformPositions', () => {
     });
 
     it('should transform real fixture data correctly', () => {
-      const result = transformPositions(LIST_POSITIONS_SUCCESS, defaultParams);
+      const result = transformPositions(FIXTURE_LIST_POSITIONS_SUCCESS, defaultParams);
 
       // Check that we have protocol positions
       const protocolNames = Object.keys(result.positions);
@@ -69,7 +84,7 @@ describe('transformPositions', () => {
 
   describe('Error Handling', () => {
     it('should handle empty response', () => {
-      const result = transformPositions(LIST_POSITIONS_SUCCESS_EMPTY, defaultParams);
+      const result = transformPositions(FIXTURE_LIST_POSITIONS_SUCCESS_EMPTY, defaultParams);
 
       // Should return empty structure for empty response
       expect(result).toBeDefined();
@@ -79,7 +94,7 @@ describe('transformPositions', () => {
 
     it('should handle response with errors', () => {
       const responseWithErrors: ListPositionsResponse = {
-        ...LIST_POSITIONS_SUCCESS,
+        ...FIXTURE_LIST_POSITIONS_SUCCESS,
         errors: ['Chain 10 failed', 'Chain 42161 failed'],
       };
 
@@ -137,7 +152,7 @@ describe('transformPositions', () => {
   });
 
   describe('Full Fixture Test', () => {
-    const result = transformPositions(LIST_POSITIONS_SUCCESS, TEST_PARAMS);
+    const result = transformPositions(FIXTURE_LIST_POSITIONS_SUCCESS, FIXTURE_PARAMS);
 
     describe('Overall Structure', () => {
       it('should return valid RainbowPositions structure', () => {
@@ -491,7 +506,7 @@ describe('transformPositions', () => {
             errors: [],
             metadata: undefined,
           },
-          TEST_PARAMS
+          FIXTURE_PARAMS
         );
         expect(res.positions['t'].deposits[0].value.amount).toBe('1200');
         expect(res.positions['t'].deposits[1].value.amount).toBe('800');
@@ -560,7 +575,7 @@ describe('transformPositions', () => {
             errors: [],
             metadata: undefined,
           },
-          TEST_PARAMS
+          FIXTURE_PARAMS
         );
         expect(res.positions['t'].borrows[0].value.amount).toBe('900');
         expect(res.positions['t'].borrows[1].value.amount).toBe('600');
@@ -626,7 +641,7 @@ describe('transformPositions', () => {
             errors: [],
             metadata: undefined,
           },
-          TEST_PARAMS
+          FIXTURE_PARAMS
         );
         expect(res.positions['t'].stakes[0].value.amount).toBe('1000');
       });
@@ -694,7 +709,7 @@ describe('transformPositions', () => {
             errors: [],
             metadata: undefined,
           },
-          TEST_PARAMS
+          FIXTURE_PARAMS
         );
         const pool = res.positions['t'].pools[0];
         expect(pool.value.amount).toBe('3000');
@@ -765,7 +780,7 @@ describe('transformPositions', () => {
             errors: [],
             metadata: undefined,
           },
-          TEST_PARAMS
+          FIXTURE_PARAMS
         );
         const stake = res.positions['t'].stakes[0];
         expect(stake.value.amount).toBe('4500');
@@ -797,7 +812,7 @@ describe('transformPositions', () => {
 
     describe('Position Type Mapping', () => {
       it('should handle all position types from fixture', () => {
-        const rawPositions = LIST_POSITIONS_SUCCESS.result?.positions ?? [];
+        const rawPositions = FIXTURE_LIST_POSITIONS_SUCCESS.result?.positions ?? [];
         const allPortfolioItems = rawPositions.flatMap(p => p.portfolioItems);
 
         const positionTypes = [
@@ -872,7 +887,7 @@ describe('transformPositions', () => {
         }
 
         // Alternatively, check raw fixture to verify filtering happened
-        const rawLidoPositions = LIST_POSITIONS_SUCCESS.result?.positions?.filter(p => p.protocolName?.toLowerCase() === 'lido');
+        const rawLidoPositions = FIXTURE_LIST_POSITIONS_SUCCESS.result?.positions?.filter(p => p.protocolName?.toLowerCase() === 'lido');
 
         if (rawLidoPositions && rawLidoPositions.length > 0) {
           const rawWstethItems = rawLidoPositions.flatMap(
@@ -918,14 +933,14 @@ describe('transformPositions', () => {
     describe('Filtered Values Total Adjustment', () => {
       it('should subtract filtered item values from position totals', () => {
         // Find Lido positions that have filtered items (e.g., wstETH)
-        const rawLidoPositions = LIST_POSITIONS_SUCCESS.result?.positions?.filter(p => p.protocolName?.toLowerCase() === 'lido');
+        const rawLidoPositions = positionsForProtocol(FIXTURE_LIST_POSITIONS_SUCCESS, 'lido');
 
         if (rawLidoPositions && rawLidoPositions.length > 0) {
-          const filteredItems = rawLidoPositions.flatMap(getFilteredItemsFromPosition);
+          const filteredItems = rawLidoPositions.flatMap(filteredItemsForPosition);
 
           if (filteredItems.length > 0) {
             const filteredValue = calculateFilteredValue(filteredItems);
-            const backendTotal = getBackendProtocolTotal(LIST_POSITIONS_SUCCESS, 'lido');
+            const backendTotal = parseFloat(statsForProtocol(FIXTURE_LIST_POSITIONS_SUCCESS, 'lido')?.totals?.netTotal || '0');
             const expectedTotal = backendTotal - filteredValue;
 
             const lidoPosition = result.positions['lido'];
@@ -942,14 +957,13 @@ describe('transformPositions', () => {
       });
 
       it('should subtract filtered item values from grand totals', () => {
-        const allFilteredItems = getAllFilteredItems(LIST_POSITIONS_SUCCESS);
+        const allFilteredItems = filteredItemsForPositions(FIXTURE_LIST_POSITIONS_SUCCESS);
 
         // Verify fixture has filtered items
         expect(allFilteredItems.length).toBeGreaterThan(0);
 
         const totalFilteredValue = calculateFilteredValue(allFilteredItems);
-        const backendGrandTotal = getBackendGrandTotal(LIST_POSITIONS_SUCCESS);
-        const expectedGrandTotal = backendGrandTotal - totalFilteredValue;
+        const expectedGrandTotal = FIXTURE_GRAND_TOTAL - totalFilteredValue;
 
         const transformedGrandTotal = parseFloat(result.totals.total.amount);
 
@@ -958,11 +972,11 @@ describe('transformPositions', () => {
       });
 
       it('should handle multiple filtered items across positions', () => {
-        const positionsWithFilteredItems = getPositionsWithFilteredItems(LIST_POSITIONS_SUCCESS);
+        const positions = positionsWithFilteredItems(FIXTURE_LIST_POSITIONS_SUCCESS);
 
-        positionsWithFilteredItems.forEach(({ protocol, filteredItems }) => {
+        positions.forEach(({ protocol, filteredItems }) => {
           const filteredValue = calculateFilteredValue(filteredItems);
-          const backendTotal = getBackendProtocolTotal(LIST_POSITIONS_SUCCESS, protocol);
+          const backendTotal = parseFloat(statsForProtocol(FIXTURE_LIST_POSITIONS_SUCCESS, protocol)?.totals?.netTotal || '0');
           const expectedTotal = backendTotal - filteredValue;
 
           const transformedPosition = result.positions[protocol];
@@ -976,10 +990,12 @@ describe('transformPositions', () => {
       });
 
       it('should not affect totals when no items are filtered', () => {
-        const positionsWithoutFilteredItems = getPositionsWithoutFilteredItems(LIST_POSITIONS_SUCCESS).slice(0, 1);
+        const positions = positionsWithoutFilteredItems(FIXTURE_LIST_POSITIONS_SUCCESS).slice(0, 1);
 
-        positionsWithoutFilteredItems.forEach(p => {
-          const backendTotal = getBackendProtocolTotal(LIST_POSITIONS_SUCCESS, p.canonicalProtocolName);
+        positions.forEach(p => {
+          const backendTotal = parseFloat(
+            statsForProtocol(FIXTURE_LIST_POSITIONS_SUCCESS, p.canonicalProtocolName)?.totals?.netTotal || '0'
+          );
           const transformedPosition = result.positions[p.canonicalProtocolName];
 
           if (transformedPosition && backendTotal > 0) {

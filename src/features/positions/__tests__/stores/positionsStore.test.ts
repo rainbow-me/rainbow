@@ -2,7 +2,7 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { fetchPositions, type PositionsParams } from '../../stores/fetcher';
 import { usePositionsStore } from '../../stores/positionsStore';
 import type { RainbowPositions } from '../../types';
-import { LIST_POSITIONS_SUCCESS, TEST_PARAMS } from '../../__fixtures__/ListPositions';
+import { FIXTURE_LIST_POSITIONS_SUCCESS, FIXTURE_PARAMS } from '../../__fixtures__/ListPositions';
 import { createMockPositionsData } from '../mocks/positions';
 
 jest.mock('@/resources/platform/client');
@@ -17,7 +17,7 @@ jest.mock('@/state/backendNetworks/backendNetworks', () => ({
 }));
 jest.mock('@/state/assets/userAssetsStoreManager', () => {
   const { createStore: createZustandStore } = jest.requireActual<typeof import('zustand/vanilla')>('zustand/vanilla');
-  const { TEST_PARAMS: params, TEST_WALLET_ADDRESS: address } =
+  const { FIXTURE_PARAMS: params, FIXTURE_WALLET_ADDRESS: address } =
     jest.requireActual<typeof import('../../__fixtures__/ListPositions')>('../../__fixtures__/ListPositions');
   return {
     userAssetsStoreManager: createZustandStore(() => ({
@@ -57,14 +57,14 @@ describe('positionsStore Integration Tests', () => {
   describe('Integration with Platform API', () => {
     it('should integrate with real fixture response', async () => {
       mockClient.get.mockResolvedValueOnce({
-        data: LIST_POSITIONS_SUCCESS,
+        data: FIXTURE_LIST_POSITIONS_SUCCESS,
       });
 
-      const params: PositionsParams = TEST_PARAMS;
+      const params: PositionsParams = FIXTURE_PARAMS;
 
       const result = await fetchPositions(params, null);
 
-      expect(result).toEqual(LIST_POSITIONS_SUCCESS);
+      expect(result).toEqual(FIXTURE_LIST_POSITIONS_SUCCESS);
       expect(result.result?.positions).toHaveLength(60);
     });
   });

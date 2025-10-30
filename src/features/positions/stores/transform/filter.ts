@@ -36,7 +36,7 @@ const UNSUPPORTED_DETAIL_TYPES: readonly DetailType[] = [DetailType.UNSPECIFIED,
  * - Represent staked assets (e.g., stETH represents staked ETH)
  * - Should NOT also appear as positions (to avoid double-counting)
  */
-const TOKEN_PREFERRED_POSITIONS = [
+export const TOKEN_PREFERRED_POSITIONS = [
   'stETH', // Lido - https://lido.fi - Staked ETH
   'wstETH', // Lido - https://lido.fi - Wrapped staked ETH
 ];

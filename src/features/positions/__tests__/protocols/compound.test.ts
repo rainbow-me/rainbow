@@ -1,6 +1,6 @@
 import { transformPositions } from '../../stores/transform';
 import { PositionName, DetailType } from '../../types/generated/positions/positions';
-import { TEST_PARAMS } from '../../__fixtures__/ListPositions';
+import { FIXTURE_PARAMS } from '../../__fixtures__/ListPositions';
 import { createMockAsset } from '../mocks/assets';
 import { createMockStats, createMockPosition, createMockResponse } from '../mocks/positions';
 
@@ -33,7 +33,7 @@ describe('Compound Protocol', () => {
       createMockStats('compound', { netTotal: '30000', totalDeposits: '50000', totalBorrows: '20000', totalRewards: '0' })
     );
 
-    const result = transformPositions(mockResponse, TEST_PARAMS);
+    const result = transformPositions(mockResponse, FIXTURE_PARAMS);
 
     expect(result.positions['compound']).toBeDefined();
     const compoundPosition = result.positions['compound'];
@@ -74,7 +74,7 @@ describe('Compound Protocol', () => {
       createMockStats('compound', { netTotal: '250', totalDeposits: '0', totalBorrows: '0', totalRewards: '250' })
     );
 
-    const result = transformPositions(mockResponse, TEST_PARAMS);
+    const result = transformPositions(mockResponse, FIXTURE_PARAMS);
 
     const compoundPosition = result.positions['compound'];
 
@@ -110,7 +110,7 @@ describe('Compound Protocol', () => {
       createMockStats('compound', { netTotal: '10100', totalDeposits: '10000', totalBorrows: '0', totalRewards: '100' })
     );
 
-    const result = transformPositions(mockResponse, TEST_PARAMS);
+    const result = transformPositions(mockResponse, FIXTURE_PARAMS);
 
     const compoundPosition = result.positions['compound'];
 

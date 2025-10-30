@@ -1,6 +1,6 @@
 import { transformPositions } from '../../stores/transform';
 import { PositionName, DetailType } from '../../types/generated/positions/positions';
-import { TEST_PARAMS } from '../../__fixtures__/ListPositions';
+import { FIXTURE_PARAMS } from '../../__fixtures__/ListPositions';
 import { createMockAsset } from '../mocks/assets';
 import { createMockStats, createMockPosition, createMockResponse } from '../mocks/positions';
 
@@ -37,7 +37,7 @@ describe('Aave Protocol', () => {
       createMockStats('aave', { netTotal: '16000', totalDeposits: '20000', totalBorrows: '5000', totalRewards: '1000' })
     );
 
-    const result = transformPositions(mockResponse, TEST_PARAMS);
+    const result = transformPositions(mockResponse, FIXTURE_PARAMS);
 
     expect(result.positions['aave']).toBeDefined();
     const aavePosition = result.positions['aave'];
@@ -87,7 +87,7 @@ describe('Aave Protocol', () => {
       createMockStats('aave', { netTotal: '5000', totalDeposits: '5000', totalBorrows: '0', totalRewards: '0' })
     );
 
-    const result = transformPositions(mockResponse, TEST_PARAMS);
+    const result = transformPositions(mockResponse, FIXTURE_PARAMS);
 
     const aavePosition = result.positions['aave'];
     expect(aavePosition.deposits.length).toBeGreaterThan(0);
@@ -134,7 +134,7 @@ describe('Aave Protocol', () => {
       createMockStats('aave', { netTotal: '3000', totalDeposits: '3000', totalBorrows: '0', totalRewards: '0' })
     );
 
-    const result = transformPositions(mockResponse, TEST_PARAMS);
+    const result = transformPositions(mockResponse, FIXTURE_PARAMS);
 
     // Should aggregate under single "aave" protocol
     expect(Object.keys(result.positions)).toHaveLength(1);
