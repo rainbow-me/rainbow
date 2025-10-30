@@ -75,6 +75,15 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
     },
   },
   (_, get) => ({
+    /**
+     * Collects all pool/LP token addresses from positions
+     *
+     * Used to filter out LP tokens from the wallet assets display to prevent double-counting.
+     * When a user has a position in a pool, we show the position in the positions section
+     * but exclude the underlying LP token from the wallet assets list.
+     *
+     * Also triggers asset reprocessing when position token addresses change (via positionsSync).
+     */
     getTokenAddresses: () => {
       const positionTokenAddresses = new Set<string>();
       const data = get().getData();
@@ -111,6 +120,9 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
 
       return positionTokenAddresses;
     },
+    /**
+     * Used to calculate the live wallet balance
+     */
     getBalance: () => {
       const data = get().getData();
       if (!data) return '0';
