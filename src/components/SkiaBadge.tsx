@@ -38,8 +38,8 @@ export const SkiaBadge = memo(function SkiaBadge({
   textColor,
   strokeColor,
   strokeWidth = 2,
-  dropShadows = [],
-  innerShadows = [],
+  dropShadows,
+  innerShadows,
   fontSize = '15pt',
   fontWeight = 'heavy',
 }: SkiaBadgeProps) {
@@ -63,7 +63,7 @@ export const SkiaBadge = memo(function SkiaBadge({
   );
 
   // Calculate maximum shadow extent for canvas overflow
-  const maxShadowExtent = Math.ceil(Math.max(...dropShadows.map(s => s.blur * 2 + Math.max(Math.abs(s.dx), Math.abs(s.dy))), 0));
+  const maxShadowExtent = Math.ceil(Math.max(...(dropShadows?.map(s => s.blur * 2 + Math.max(Math.abs(s.dx), Math.abs(s.dy))) ?? []), 0));
 
   const badgeWidth = useDerivedValue(() => {
     return measuredTextWidth.value + horizontalPadding * 2;
@@ -107,7 +107,7 @@ export const SkiaBadge = memo(function SkiaBadge({
       <Canvas style={styles.canvas}>
         <Group>
           {/* Drop Shadows */}
-          {dropShadows.map((shadow, index) => (
+          {dropShadows?.map((shadow, index) => (
             <RoundedRect key={`drop-${index}`} rect={badgeRect}>
               <Shadow dx={shadow.dx} dy={shadow.dy} blur={shadow.blur} color={shadow.color} shadowOnly />
             </RoundedRect>
@@ -134,7 +134,7 @@ export const SkiaBadge = memo(function SkiaBadge({
           ))}
 
           {/* Inner Shadows */}
-          {innerShadows.map((shadow, index) => (
+          {innerShadows?.map((shadow, index) => (
             <RoundedRect key={`inner-${index}`} rect={badgeRect}>
               <Shadow dx={shadow.dx} dy={shadow.dy} blur={shadow.blur} color={shadow.color} inner shadowOnly />
             </RoundedRect>

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Path, Skia, Group } from '@shopify/react-native-skia';
+import { Path, Skia, Group, PaintStyle } from '@shopify/react-native-skia';
 
 type PerspectiveGridProps = {
   width: number;
@@ -28,9 +28,8 @@ export const PerspectiveGrid = ({
     const p = Skia.Paint();
     p.setColor(Skia.Color(lineColor));
     p.setStrokeWidth(lineWidth);
-    p.setStyle(1);
+    p.setStyle(PaintStyle.Stroke);
     p.setAntiAlias(true);
-    // p.setAlphaf(0.8);
     return p;
   }, [lineWidth, lineColor]);
 

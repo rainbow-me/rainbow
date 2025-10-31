@@ -1,8 +1,7 @@
 import { Blur, Circle, Group, vec } from '@shopify/react-native-skia';
 import { memo, useEffect, useMemo } from 'react';
-import { Easing, makeMutable, useDerivedValue, withTiming } from 'react-native-reanimated';
+import { Easing, makeMutable, useDerivedValue, withTiming, SharedValue } from 'react-native-reanimated';
 import { getRandomInt } from '@/worklets/numbers';
-import { Mutable } from 'react-native-reanimated/lib/typescript/commonTypes';
 import { time } from '@/utils/time';
 
 const SPARKS_DEFAULTS = {
@@ -25,9 +24,9 @@ const SPARKS_DEFAULTS = {
 } as const;
 
 interface SparkRenderState {
-  y: Mutable<number>;
-  scale: Mutable<number>;
-  opacity: Mutable<number>;
+  y: SharedValue<number>;
+  scale: SharedValue<number>;
+  opacity: SharedValue<number>;
   x: number;
   riseDistance: number;
   color: string;
