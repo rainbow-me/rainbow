@@ -47,12 +47,10 @@ export const hyperliquidDexActions = createStoreActions(useHyperliquidDexStore);
 async function fetchHyperliquidDexes(): Promise<HyperliquidDexStoreData> {
   try {
     const response = await infoClient.perpDexs();
-    const dexes = response.filter(Boolean);
-
-    console.log('dexes', dexes);
+    const dexes = mergeWithDefaults(response.filter(Boolean));
 
     return {
-      dexes: mergeWithDefaults(dexes),
+      dexes,
     };
   } catch (error) {
     logger.error(new RainbowError('[HyperliquidDexStore] Failed to fetch perp dex list', ensureError(error)));
