@@ -112,7 +112,7 @@ describe('Wallet Balance Integration', () => {
           protocolName: 'Staking Protocol',
           canonicalProtocolName: 'staking',
           protocolVersion: 'v1',
-          positionName: PositionName.STAKING,
+          positionName: PositionName.STAKED,
           detailType: DetailType.COMMON,
           assetValue: '1500',
           debtValue: '0',
@@ -327,7 +327,7 @@ describe('Wallet Balance Integration', () => {
           protocolName: 'Lido',
           canonicalProtocolName: 'lido',
           protocolVersion: 'v1',
-          positionName: PositionName.STAKING,
+          positionName: PositionName.STAKED,
           detailType: DetailType.COMMON,
           assetValue: '5000',
           debtValue: '0',
@@ -335,7 +335,7 @@ describe('Wallet Balance Integration', () => {
           tokens: {
             supplyTokenList: [{ amount: '5000', asset: createMockAsset('stETH', 1), assetValue: '5000' }],
           },
-          portfolioItemDescription: 'stETH', // This should trigger filtering
+          description: 'stETH', // This should trigger filtering
         }),
         // Regular position
         createMockPosition({
@@ -386,12 +386,12 @@ describe('Wallet Balance Integration', () => {
       ],
       {
         totals: {
-          netTotal: '1500', // 3000 - 1500 (excluding filtered and locked)
-          totalDeposits: '4000', // 3000 + 1000
+          netTotal: '6500', // 5000 (lido, to be filtered) + 3000 - 1500 (excluding locked)
+          totalDeposits: '9000', // 5000 + 3000 + 1000
           totalBorrows: '2500',
           totalRewards: '0',
           totalLocked: '800',
-          overallTotal: '2300', // 1500 + 800
+          overallTotal: '7300', // 6500 + 800
         },
         canonicalProtocol: {
           // lido would be filtered out
@@ -557,5 +557,443 @@ describe('Wallet Balance Integration', () => {
 
     // Verify getBalance() guarantee: never negative despite extreme values
     expect(parseFloat(walletBalance)).toBeGreaterThanOrEqual(0);
+  });
+
+  it('should handle when ALL positions are filtered out', () => {
+    // Edge case: Backend returns only token-preferred positions (all get filtered)
+    const mockResponse = createMockResponse(
+      [
+        createMockPosition({
+          id: 'lido:1',
+          protocolName: 'Lido',
+          canonicalProtocolName: 'lido',
+          protocolVersion: 'v1',
+          positionName: PositionName.STAKED,
+          detailType: DetailType.COMMON,
+          assetValue: '5000',
+          debtValue: '0',
+          netValue: '5000',
+          description: 'stETH', // This triggers filtering
+          tokens: {
+            supplyTokenList: [{ amount: '2.5', asset: createMockAsset('stETH', 2000), assetValue: '5000' }],
+          },
+        }),
+        createMockPosition({
+          id: 'lido:2',
+          protocolName: 'Lido',
+          canonicalProtocolName: 'lido',
+          protocolVersion: 'v1',
+          positionName: PositionName.STAKED,
+          detailType: DetailType.COMMON,
+          assetValue: '3000',
+          debtValue: '0',
+          netValue: '3000',
+          description: 'wstETH', // This also triggers filtering
+          tokens: {
+            supplyTokenList: [{ amount: '1.5', asset: createMockAsset('wstETH', 2000), assetValue: '3000' }],
+          },
+        }),
+      ],
+      {
+        totals: {
+          netTotal: '8000',
+          totalDeposits: '8000',
+          totalBorrows: '0',
+          totalRewards: '0',
+          totalLocked: '0',
+          overallTotal: '8000',
+        },
+        canonicalProtocol: {
+          lido: {
+            canonicalProtocolName: 'lido',
+            protocolIds: ['lido'],
+            totals: {
+              netTotal: '8000',
+              totalDeposits: '8000',
+              totalBorrows: '0',
+              totalRewards: '0',
+              totalLocked: '0',
+              overallTotal: '8000',
+            },
+            totalsByChain: {},
+          },
+        },
+      }
+    );
+
+    const transformedData = transformPositions(mockResponse, FIXTURE_PARAMS);
+
+    // After filtering, grand total should be adjusted
+    // Backend says $8000, but all items are filtered, so adjusted total should be $0
+    expect(transformedData.totals.total.amount).toBe('0');
+
+    // Store and get balance
+    const queryKey = `${FIXTURE_PARAMS.address}-${FIXTURE_PARAMS.currency}`;
+    const store = usePositionsStore.getState();
+    store.queryCache[queryKey] = {
+      data: transformedData,
+      lastFetchedAt: Date.now(),
+      cacheTime: 0,
+      errorInfo: null,
+    };
+    usePositionsStore.setState({ queryKey });
+
+    const walletBalance = usePositionsStore.getState().getBalance();
+
+    // Wallet balance should be 0 since everything was filtered
+    expect(walletBalance).toBe('0');
+  });
+
+  it('should handle multiple protocols with token-preferred positions', () => {
+    // Multiple protocols, some with filtered items, some without
+    const mockResponse = createMockResponse(
+      [
+        // Lido with wstETH (filtered)
+        createMockPosition({
+          id: 'lido:1',
+          protocolName: 'Lido',
+          canonicalProtocolName: 'lido',
+          protocolVersion: 'v1',
+          positionName: PositionName.STAKED,
+          detailType: DetailType.COMMON,
+          assetValue: '5000',
+          debtValue: '0',
+          netValue: '5000',
+          description: 'wstETH',
+          tokens: {
+            supplyTokenList: [{ amount: '2.5', asset: createMockAsset('wstETH', 2000), assetValue: '5000' }],
+          },
+        }),
+        // Aave (not filtered)
+        createMockPosition({
+          id: 'aave:1',
+          protocolName: 'Aave',
+          canonicalProtocolName: 'aave',
+          protocolVersion: 'v3',
+          positionName: PositionName.LENDING,
+          detailType: DetailType.LENDING,
+          assetValue: '3000',
+          debtValue: '0',
+          netValue: '3000',
+          tokens: {
+            supplyTokenList: [{ amount: '3000', asset: createMockAsset('USDC', 1), assetValue: '3000' }],
+          },
+        }),
+        // Compound (not filtered)
+        createMockPosition({
+          id: 'compound:1',
+          protocolName: 'Compound',
+          canonicalProtocolName: 'compound',
+          protocolVersion: 'v3',
+          positionName: PositionName.LENDING,
+          detailType: DetailType.LENDING,
+          assetValue: '2000',
+          debtValue: '0',
+          netValue: '2000',
+          tokens: {
+            supplyTokenList: [{ amount: '2000', asset: createMockAsset('DAI', 1), assetValue: '2000' }],
+          },
+        }),
+      ],
+      {
+        totals: {
+          netTotal: '10000', // Backend total including wstETH
+          totalDeposits: '10000',
+          totalBorrows: '0',
+          totalRewards: '0',
+          totalLocked: '0',
+          overallTotal: '10000',
+        },
+        canonicalProtocol: {
+          lido: {
+            canonicalProtocolName: 'lido',
+            protocolIds: ['lido'],
+            totals: {
+              netTotal: '5000',
+              totalDeposits: '5000',
+              totalBorrows: '0',
+              totalRewards: '0',
+              totalLocked: '0',
+              overallTotal: '5000',
+            },
+            totalsByChain: {},
+          },
+          aave: {
+            canonicalProtocolName: 'aave',
+            protocolIds: ['aave'],
+            totals: {
+              netTotal: '3000',
+              totalDeposits: '3000',
+              totalBorrows: '0',
+              totalRewards: '0',
+              totalLocked: '0',
+              overallTotal: '3000',
+            },
+            totalsByChain: {},
+          },
+          compound: {
+            canonicalProtocolName: 'compound',
+            protocolIds: ['compound'],
+            totals: {
+              netTotal: '2000',
+              totalDeposits: '2000',
+              totalBorrows: '0',
+              totalRewards: '0',
+              totalLocked: '0',
+              overallTotal: '2000',
+            },
+            totalsByChain: {},
+          },
+        },
+      }
+    );
+
+    const transformedData = transformPositions(mockResponse, FIXTURE_PARAMS);
+
+    // Grand total should be adjusted: 10000 - 5000 (filtered wstETH) = 5000
+    expect(transformedData.totals.total.amount).toBe('5000');
+
+    // Lido position should be filtered out entirely (only had wstETH)
+    expect(transformedData.positions['lido']).toBeUndefined();
+
+    // Other positions should remain
+    expect(transformedData.positions['aave'].totals.total.amount).toBe('3000');
+    expect(transformedData.positions['compound'].totals.total.amount).toBe('2000');
+
+    // Store and get balance
+    const queryKey = `${FIXTURE_PARAMS.address}-${FIXTURE_PARAMS.currency}`;
+    const store = usePositionsStore.getState();
+    store.queryCache[queryKey] = {
+      data: transformedData,
+      lastFetchedAt: Date.now(),
+      cacheTime: 0,
+      errorInfo: null,
+    };
+    usePositionsStore.setState({ queryKey });
+
+    const walletBalance = usePositionsStore.getState().getBalance();
+
+    // Wallet balance should be 5000 (excluding filtered wstETH)
+    expect(walletBalance).toBe('5000');
+  });
+
+  it('should handle filtered position combined with locked positions', () => {
+    // Test interaction between filtering and locked positions
+    const mockResponse = createMockResponse(
+      [
+        // Filtered position (wstETH)
+        createMockPosition({
+          id: 'lido:1',
+          protocolName: 'Lido',
+          canonicalProtocolName: 'lido',
+          protocolVersion: 'v1',
+          positionName: PositionName.STAKED,
+          detailType: DetailType.COMMON,
+          assetValue: '3000',
+          debtValue: '0',
+          netValue: '3000',
+          description: 'wstETH',
+          tokens: {
+            supplyTokenList: [{ amount: '1.5', asset: createMockAsset('wstETH', 2000), assetValue: '3000' }],
+          },
+        }),
+        // Regular unlocked position
+        createMockPosition({
+          id: 'aave:1',
+          protocolName: 'Aave',
+          canonicalProtocolName: 'aave',
+          protocolVersion: 'v3',
+          positionName: PositionName.LENDING,
+          detailType: DetailType.LENDING,
+          assetValue: '5000',
+          debtValue: '0',
+          netValue: '5000',
+          tokens: {
+            supplyTokenList: [{ amount: '5000', asset: createMockAsset('USDC', 1), assetValue: '5000' }],
+          },
+        }),
+        // Locked position
+        createMockPosition({
+          id: 'locked:1',
+          protocolName: 'Vesting',
+          canonicalProtocolName: 'vesting',
+          protocolVersion: 'v1',
+          positionName: PositionName.LOCKED,
+          detailType: DetailType.LOCKED,
+          assetValue: '2000',
+          debtValue: '0',
+          netValue: '2000',
+          tokens: {
+            supplyTokenList: [{ amount: '2000', asset: createMockAsset('LOCKED', 1), assetValue: '2000' }],
+          },
+        }),
+      ],
+      {
+        totals: {
+          netTotal: '8000', // Backend: 5000 (aave) + 3000 (wstETH, to be filtered)
+          totalDeposits: '8000',
+          totalBorrows: '0',
+          totalRewards: '0',
+          totalLocked: '2000',
+          overallTotal: '10000', // 8000 + 2000 locked
+        },
+        canonicalProtocol: {
+          lido: {
+            canonicalProtocolName: 'lido',
+            protocolIds: ['lido'],
+            totals: {
+              netTotal: '3000',
+              totalDeposits: '3000',
+              totalBorrows: '0',
+              totalRewards: '0',
+              totalLocked: '0',
+              overallTotal: '3000',
+            },
+            totalsByChain: {},
+          },
+          aave: {
+            canonicalProtocolName: 'aave',
+            protocolIds: ['aave'],
+            totals: {
+              netTotal: '5000',
+              totalDeposits: '5000',
+              totalBorrows: '0',
+              totalRewards: '0',
+              totalLocked: '0',
+              overallTotal: '5000',
+            },
+            totalsByChain: {},
+          },
+          vesting: {
+            canonicalProtocolName: 'vesting',
+            protocolIds: ['vesting'],
+            totals: {
+              netTotal: '0',
+              totalDeposits: '0',
+              totalBorrows: '0',
+              totalRewards: '0',
+              totalLocked: '2000',
+              overallTotal: '2000',
+            },
+            totalsByChain: {},
+          },
+        },
+      }
+    );
+
+    const transformedData = transformPositions(mockResponse, FIXTURE_PARAMS);
+
+    // Grand total should be adjusted: 10000 - 3000 (filtered) = 7000
+    expect(transformedData.totals.total.amount).toBe('7000');
+    expect(transformedData.totals.totalLocked.amount).toBe('2000');
+
+    // Store and get balance
+    const queryKey = `${FIXTURE_PARAMS.address}-${FIXTURE_PARAMS.currency}`;
+    const store = usePositionsStore.getState();
+    store.queryCache[queryKey] = {
+      data: transformedData,
+      lastFetchedAt: Date.now(),
+      cacheTime: 0,
+      errorInfo: null,
+    };
+    usePositionsStore.setState({ queryKey });
+
+    const walletBalance = usePositionsStore.getState().getBalance();
+
+    // Wallet balance: 7000 (adjusted total) - 2000 (locked) = 5000
+    expect(walletBalance).toBe('5000');
+  });
+
+  it('should handle mixed position with both filtered and non-filtered items', () => {
+    // Lido position with both wstETH (filtered) and regular staking (not filtered)
+    // Note: In reality, this would require multiple portfolio items in one position
+    // For this test, we create two separate positions under same protocol
+    const mockResponse = createMockResponse(
+      [
+        // Lido wstETH (filtered)
+        createMockPosition({
+          id: 'lido:1',
+          protocolName: 'Lido',
+          canonicalProtocolName: 'lido',
+          protocolVersion: 'v1',
+          positionName: PositionName.STAKED,
+          detailType: DetailType.COMMON,
+          assetValue: '2000',
+          debtValue: '0',
+          netValue: '2000',
+          description: 'wstETH',
+          tokens: {
+            supplyTokenList: [{ amount: '1', asset: createMockAsset('wstETH', 2000), assetValue: '2000' }],
+          },
+        }),
+        // Lido regular staking (not filtered)
+        createMockPosition({
+          id: 'lido:2',
+          protocolName: 'Lido',
+          canonicalProtocolName: 'lido',
+          protocolVersion: 'v1',
+          positionName: PositionName.STAKED,
+          detailType: DetailType.COMMON,
+          assetValue: '3000',
+          debtValue: '0',
+          netValue: '3000',
+          tokens: {
+            supplyTokenList: [{ amount: '3000', asset: createMockAsset('LDO', 1), assetValue: '3000' }],
+          },
+        }),
+      ],
+      {
+        totals: {
+          netTotal: '5000', // Backend total including both
+          totalDeposits: '5000',
+          totalBorrows: '0',
+          totalRewards: '0',
+          totalLocked: '0',
+          overallTotal: '5000',
+        },
+        canonicalProtocol: {
+          lido: {
+            canonicalProtocolName: 'lido',
+            protocolIds: ['lido'],
+            totals: {
+              netTotal: '5000',
+              totalDeposits: '5000',
+              totalBorrows: '0',
+              totalRewards: '0',
+              totalLocked: '0',
+              overallTotal: '5000',
+            },
+            totalsByChain: {},
+          },
+        },
+      }
+    );
+
+    const transformedData = transformPositions(mockResponse, FIXTURE_PARAMS);
+
+    // Grand total adjusted: 5000 - 2000 (wstETH) = 3000
+    expect(transformedData.totals.total.amount).toBe('3000');
+
+    // Lido position should still exist (has non-filtered item)
+    expect(transformedData.positions['lido']).toBeDefined();
+
+    // Lido position total adjusted: 5000 - 2000 = 3000
+    expect(transformedData.positions['lido'].totals.total.amount).toBe('3000');
+
+    // Store and get balance
+    const queryKey = `${FIXTURE_PARAMS.address}-${FIXTURE_PARAMS.currency}`;
+    const store = usePositionsStore.getState();
+    store.queryCache[queryKey] = {
+      data: transformedData,
+      lastFetchedAt: Date.now(),
+      cacheTime: 0,
+      errorInfo: null,
+    };
+    usePositionsStore.setState({ queryKey });
+
+    const walletBalance = usePositionsStore.getState().getBalance();
+
+    // Wallet balance should be 3000
+    expect(walletBalance).toBe('3000');
   });
 });

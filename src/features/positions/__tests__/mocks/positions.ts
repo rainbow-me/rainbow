@@ -106,6 +106,7 @@ export function createMockPosition(options: {
   dapp?: ReturnType<typeof createMockDapp>;
   chainId?: number;
   pool?: { id: string; chainId: number };
+  description?: string; // For filtering by description (e.g., wstETH, stETH)
 }) {
   const dapp = options.dapp ?? createMockDapp(options.protocolName);
   const canonicalName = options.canonicalProtocolName ?? options.protocolName.toLowerCase().split(' ')[0];
@@ -135,6 +136,7 @@ export function createMockPosition(options: {
           borrowTokenList: options.tokens.borrowTokenList || [],
           rewardTokenList: options.tokens.rewardTokenList || [],
           tokenList: [],
+          ...(options.description && { description: options.description }),
         },
       },
     ],
