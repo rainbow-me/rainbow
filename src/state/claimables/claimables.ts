@@ -15,6 +15,7 @@ export type ClaimablesStore = {
 
 export type ClaimablesActions = {
   markClaimed: (uniqueId: string) => void;
+  getBalance: () => string;
 };
 
 export const useClaimablesStore = createQueryStore<ClaimablesStore, ClaimablesArgs, ClaimablesActions>(
@@ -30,7 +31,7 @@ export const useClaimablesStore = createQueryStore<ClaimablesStore, ClaimablesAr
     enabled: $ => $(userAssetsStoreManager, state => !!state.address),
     staleTime: time.minutes(10),
   },
-  set => ({
+  (set, get) => ({
     markClaimed: (uniqueId: string) => {
       set(state => {
         const { getData, queryCache, queryKey } = state;
@@ -66,6 +67,10 @@ export const useClaimablesStore = createQueryStore<ClaimablesStore, ClaimablesAr
           queryCache: newCacheEntry ? { ...queryCache, [queryKey]: newCacheEntry } : queryCache,
         };
       });
+    },
+    getBalance: () => {
+      const data = get().getData();
+      return data?.totalValueAmount || '0';
     },
   }),
   {

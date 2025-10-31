@@ -1,7 +1,10 @@
 import { fetchPositions } from '../../stores/fetcher';
-import { LIST_POSITIONS_SUCCESS, TEST_PARAMS } from '../../__fixtures__/ListPositions';
+import { FIXTURE_LIST_POSITIONS_SUCCESS, FIXTURE_PARAMS } from '../../__fixtures__/ListPositions';
 
-// Mock the fetcher module
+jest.mock('@/config', () => ({
+  getExperimentalFlag: jest.fn(() => false),
+  DEFI_POSITIONS_THRESHOLD_FILTER: 'defiPositionsThresholdFilter',
+}));
 jest.mock('../../stores/fetcher', () => ({
   fetchPositions: jest.fn(),
 }));
@@ -9,7 +12,7 @@ jest.mock('../../stores/fetcher', () => ({
 const mockFetchPositions = fetchPositions as jest.MockedFunction<typeof fetchPositions>;
 
 describe('fetchPositions', () => {
-  const defaultParams = TEST_PARAMS;
+  const defaultParams = FIXTURE_PARAMS;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -17,7 +20,7 @@ describe('fetchPositions', () => {
 
   it('should throw error when address is missing', async () => {
     const paramsWithoutAddress = {
-      ...TEST_PARAMS,
+      ...FIXTURE_PARAMS,
       address: '',
     };
 
@@ -28,7 +31,7 @@ describe('fetchPositions', () => {
 
   it('should fetch positions successfully', async () => {
     // Mock to return the fixture data
-    mockFetchPositions.mockResolvedValueOnce(LIST_POSITIONS_SUCCESS);
+    mockFetchPositions.mockResolvedValueOnce(FIXTURE_LIST_POSITIONS_SUCCESS);
 
     const result = await fetchPositions(defaultParams, null);
 
@@ -44,18 +47,18 @@ describe('fetchPositions', () => {
     expect(result.result?.positions?.length).toBe(60);
   });
 
-  it('should validate LIST_POSITIONS_SUCCESS fixture structure', () => {
+  it('should validate FIXTURE_LIST_POSITIONS_SUCCESS fixture structure', () => {
     // Validate that our fixture has the expected structure
-    expect(LIST_POSITIONS_SUCCESS).toBeDefined();
-    expect(LIST_POSITIONS_SUCCESS).toHaveProperty('result');
-    expect(LIST_POSITIONS_SUCCESS.result).toHaveProperty('positions');
-    expect(Array.isArray(LIST_POSITIONS_SUCCESS.result?.positions)).toBe(true);
+    expect(FIXTURE_LIST_POSITIONS_SUCCESS).toBeDefined();
+    expect(FIXTURE_LIST_POSITIONS_SUCCESS).toHaveProperty('result');
+    expect(FIXTURE_LIST_POSITIONS_SUCCESS.result).toHaveProperty('positions');
+    expect(Array.isArray(FIXTURE_LIST_POSITIONS_SUCCESS.result?.positions)).toBe(true);
 
     // Validate the fixture has the expected number of positions
-    expect(LIST_POSITIONS_SUCCESS.result?.positions?.length).toBe(60);
+    expect(FIXTURE_LIST_POSITIONS_SUCCESS.result?.positions?.length).toBe(60);
 
     // Validate first position structure
-    const firstPosition = LIST_POSITIONS_SUCCESS.result?.positions?.[0];
+    const firstPosition = FIXTURE_LIST_POSITIONS_SUCCESS.result?.positions?.[0];
     expect(firstPosition).toBeDefined();
     expect(firstPosition).toHaveProperty('id');
     expect(firstPosition).toHaveProperty('protocolName');

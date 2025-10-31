@@ -1,66 +1,10 @@
-/**
- * Tests for Uniswap position parsing
- *
- * Ensures that Uniswap positions from the new API are parsed the same way
- * as they were in the legacy API, maintaining consistency in the UI.
- *
- * Key expectations (based on positions-parsing-differences.md):
- * 1. LP positions go into `pools` category (not `deposits`)
- * 2. Concentrated liquidity (V3) is correctly identified
- * 3. Range status is calculated (in_range/out_of_range/full_range)
- * 4. Allocation percentages are calculated (e.g., "50/50")
- * 5. Rewards go into `rewards` category (formerly `claimables`)
- */
-
 import { transformPositions } from '../../stores/transform';
-import {
-  PositionName,
-  DetailType,
-  type ListPositionsResponse,
-  type ListPositionsResponse_Result,
-} from '../../types/generated/positions/positions';
-import type { Asset } from '../../types/generated/common/asset';
-import { TEST_PARAMS } from '../../__fixtures__/ListPositions';
+import { PositionName, DetailType } from '../../types/generated/positions/positions';
+import { FIXTURE_PARAMS } from '../../__fixtures__/ListPositions';
+import { createMockAsset } from '../mocks/assets';
+import { createMockStats, createMockPosition, createMockResponse } from '../mocks/positions';
 
-// Helper to create a valid Asset object for tests
-function createMockAsset(overrides: Partial<Asset> = {}): Asset {
-  return {
-    address: '0x0000000000000000000000000000000000000000',
-    chainId: 1,
-    name: 'Test Token',
-    symbol: 'TEST',
-    decimals: 18,
-    type: 'erc20',
-    iconUrl: 'https://test.logo',
-    network: 'ethereum',
-    mainnetAddress: '0x0000000000000000000000000000000000000000',
-    verified: true,
-    transferable: true,
-    creationDate: '2024-01-01T00:00:00Z',
-    colors: {
-      primary: '#000000',
-      fallback: '#ffffff',
-    },
-    price: {
-      value: 1,
-      changedAt: undefined,
-      relativeChange24h: 0,
-    },
-    networks: {},
-    bridging: undefined,
-    ...overrides,
-  } as Asset;
-}
-
-// Mock dependencies
-jest.mock('@/logger', () => ({
-  logger: {
-    debug: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn(),
-  },
-}));
-
+// Mock config to avoid React Native gesture handler imports
 jest.mock('@/config', () => ({
   getExperimentalFlag: jest.fn(() => false),
   DEFI_POSITIONS_THRESHOLD_FILTER: 'defi_positions_threshold_filter',
@@ -69,178 +13,57 @@ jest.mock('@/config', () => ({
 describe('Uniswap Position Parsing', () => {
   describe('Protocol Aggregation', () => {
     it('should aggregate Uniswap V2 and V3 positions under canonical name "uniswap"', () => {
-      const mockResult: ListPositionsResponse_Result = {
-        positions: [
-          {
+      const mockResponse = createMockResponse(
+        [
+          createMockPosition({
             id: 'uniswap3:1',
-            chainId: 1,
             protocolName: 'Uniswap V3',
             canonicalProtocolName: 'uniswap',
             protocolVersion: 'v3',
-            tvl: '1000000',
-            dapp: {
-              name: 'Uniswap V3',
-              url: 'https://app.uniswap.org',
-              iconUrl: 'https://uniswap.logo',
-              colors: {
-                primary: '#FF007A',
-                fallback: '#FF007A',
-                shadow: '#FF007A',
-              },
+            positionName: PositionName.LIQUIDITY_POOL,
+            detailType: DetailType.COMMON,
+            assetValue: '100',
+            debtValue: '0',
+            netValue: '100',
+            pool: { id: '0x1234567890abcdef', chainId: 1 },
+            tokens: {
+              supplyTokenList: [
+                { amount: '0.05', asset: createMockAsset('WETH', 2000), assetValue: '100' },
+                {
+                  amount: '100000',
+                  asset: createMockAsset('USDC', 1, { address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', decimals: 6 }),
+                  assetValue: '100000',
+                },
+              ],
             },
-            portfolioItems: [
-              {
-                name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date().toISOString(),
-                detailTypes: [DetailType.COMMON],
-                pool: {
-                  id: '0x1234567890abcdef',
-                  chainId: 1,
-                },
-                assetDict: {},
-                stats: {
-                  assetValue: '100',
-                  debtValue: '0',
-                  netValue: '100',
-                },
-                detail: {
-                  supplyTokenList: [
-                    {
-                      asset: createMockAsset({
-                        symbol: 'WETH',
-                        name: 'Wrapped Ether',
-                        price: {
-                          value: 2000,
-                          changedAt: new Date().toISOString(),
-                          relativeChange24h: 0,
-                        },
-                      }),
-                      amount: '0.05', // 0.05 ETH
-                      assetValue: '100',
-                    },
-                    {
-                      asset: createMockAsset({
-                        address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-                        symbol: 'USDC',
-                        name: 'USD Coin',
-                        decimals: 6,
-                        price: {
-                          value: 1,
-                          changedAt: new Date().toISOString(),
-                          relativeChange24h: 0,
-                        },
-                      }),
-                      amount: '100000', // 0.1 USDC
-                      assetValue: '100000',
-                    },
-                  ],
-                  rewardTokenList: [],
-                  borrowTokenList: [],
-                  tokenList: [],
-                },
-              },
-            ],
-          },
-          {
+          }),
+          createMockPosition({
             id: 'uniswap2:1',
-            chainId: 1,
             protocolName: 'Uniswap V2',
             canonicalProtocolName: 'uniswap',
             protocolVersion: 'v2',
-            tvl: '1000000',
-            dapp: {
-              name: 'Uniswap V2',
-              url: 'https://app.uniswap.org',
-              iconUrl: 'https://uniswap.logo',
-              colors: {
-                primary: '#FF007A',
-                fallback: '#FF007A',
-                shadow: '#FF007A',
-              },
+            positionName: PositionName.LIQUIDITY_POOL,
+            detailType: DetailType.COMMON,
+            assetValue: '50',
+            debtValue: '0',
+            netValue: '50',
+            pool: { id: '0xabcdef1234567890', chainId: 1 },
+            tokens: {
+              supplyTokenList: [
+                { amount: '0.025', asset: createMockAsset('WETH', 2000), assetValue: '50' },
+                {
+                  amount: '25',
+                  asset: createMockAsset('DAI', 1, { address: '0x6b175474e89094c44da98b954eedeac495271d0f' }),
+                  assetValue: '25',
+                },
+              ],
             },
-            portfolioItems: [
-              {
-                name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date().toISOString(),
-                detailTypes: [DetailType.COMMON],
-                pool: {
-                  id: '0xabcdef1234567890',
-                  chainId: 1,
-                },
-                assetDict: {},
-                stats: {
-                  assetValue: '50',
-                  debtValue: '0',
-                  netValue: '50',
-                },
-                detail: {
-                  supplyTokenList: [
-                    {
-                      asset: createMockAsset({
-                        symbol: 'WETH',
-                        name: 'Wrapped Ether',
-                        price: {
-                          value: 2000,
-                          changedAt: new Date().toISOString(),
-                          relativeChange24h: 0,
-                        },
-                      }),
-                      amount: '0.025', // 0.025 ETH
-                      assetValue: '50',
-                    },
-                    {
-                      asset: createMockAsset({
-                        address: '0x6b175474e89094c44da98b954eedeac495271d0f',
-                        symbol: 'DAI',
-                        name: 'Dai Stablecoin',
-                        decimals: 18,
-                        price: {
-                          value: 1,
-                          changedAt: new Date().toISOString(),
-                          relativeChange24h: 0,
-                        },
-                      }),
-                      amount: '25', // 25 DAI
-                      assetValue: '25',
-                    },
-                  ],
-                  rewardTokenList: [],
-                  borrowTokenList: [],
-                  tokenList: [],
-                },
-              },
-            ],
-          },
+          }),
         ],
-        stats: {
-          totals: {
-            netTotal: '1000',
-            totalDeposits: '1000',
-            totalBorrows: '0',
-            totalRewards: '0',
-            totalLocked: '0',
-            overallTotal: '1000',
-          },
-          canonicalProtocol: {
-            uniswap: {
-              canonicalProtocolName: 'uniswap',
-              protocolIds: ['uniswap'],
-              totals: {
-                netTotal: '1000',
-                totalDeposits: '1000',
-                totalBorrows: '0',
-                totalRewards: '0',
-                totalLocked: '0',
-                overallTotal: '1000',
-              },
-              totalsByChain: {},
-            },
-          },
-        },
-      };
+        createMockStats('uniswap', { totalDeposits: '1000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
+      );
 
-      const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
 
       // Should aggregate both under "uniswap"
       expect(result.positions['uniswap']).toBeDefined();
@@ -253,85 +76,31 @@ describe('Uniswap Position Parsing', () => {
 
   describe('LP Position Categorization', () => {
     it('should place LP positions in pools category (not deposits)', () => {
-      const mockResult: ListPositionsResponse_Result = {
-        positions: [
-          {
+      const mockResponse = createMockResponse(
+        [
+          createMockPosition({
             id: 'uniswap3:1',
-            chainId: 1,
             protocolName: 'Uniswap V3',
             canonicalProtocolName: 'uniswap',
             protocolVersion: 'v3',
-            tvl: '1000000',
-            dapp: {
-              name: 'Uniswap V3',
-              url: 'https://app.uniswap.org',
-              iconUrl: 'https://uniswap.logo',
-              colors: { primary: '#FF007A', fallback: '#FF007A', shadow: '#FF007A' },
+            positionName: PositionName.LIQUIDITY_POOL,
+            detailType: DetailType.COMMON,
+            assetValue: '100',
+            debtValue: '0',
+            netValue: '100',
+            pool: { id: '0x1234', chainId: 1 },
+            tokens: {
+              supplyTokenList: [
+                { amount: '0.05', asset: createMockAsset('WETH', 2000), assetValue: '100' },
+                { amount: '500', asset: createMockAsset('GRT', 0.08), assetValue: '40' },
+              ],
             },
-            portfolioItems: [
-              {
-                name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date().toISOString(),
-                detailTypes: [DetailType.COMMON],
-                pool: { id: '0x1234', chainId: 1 },
-                assetDict: {},
-                stats: { assetValue: '100', debtValue: '0', netValue: '100' },
-                detail: {
-                  supplyTokenList: [
-                    {
-                      asset: createMockAsset({
-                        symbol: 'WETH',
-                        price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '0.05',
-                      assetValue: '100',
-                    },
-                    {
-                      asset: createMockAsset({
-                        symbol: 'GRT',
-                        price: { value: 0.08, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '500',
-                      assetValue: '40',
-                    },
-                  ],
-                  rewardTokenList: [],
-                  borrowTokenList: [],
-                  tokenList: [],
-                },
-              },
-            ],
-          },
+          }),
         ],
-        stats: {
-          totals: {
-            netTotal: '1000',
-            totalDeposits: '1000',
-            totalBorrows: '0',
-            totalRewards: '0',
-            totalLocked: '0',
-            overallTotal: '1000',
-          },
-          canonicalProtocol: {
-            uniswap: {
-              canonicalProtocolName: 'uniswap',
-              protocolIds: ['uniswap'],
-              totals: {
-                netTotal: '1000',
-                totalDeposits: '1000',
-                totalBorrows: '0',
-                totalRewards: '0',
-                totalLocked: '0',
-                overallTotal: '1000',
-              },
-              totalsByChain: {},
-            },
-          },
-        },
-      };
+        createMockStats('uniswap', { totalDeposits: '1000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
+      );
 
-      const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       expect(result).toBeTruthy();
       const uniswap = result.positions['uniswap'];
 
@@ -349,257 +118,97 @@ describe('Uniswap Position Parsing', () => {
 
   describe('Concentrated Liquidity Detection', () => {
     it('should identify Uniswap V3 as concentrated liquidity', () => {
-      const mockResult: ListPositionsResponse_Result = {
-        positions: [
-          {
+      const mockResponse = createMockResponse(
+        [
+          createMockPosition({
             id: 'uniswap3:1',
-            chainId: 1,
             protocolName: 'Uniswap V3',
             canonicalProtocolName: 'uniswap',
             protocolVersion: 'v3',
-            tvl: '1000000',
-            dapp: {
-              name: 'Uniswap V3',
-              url: 'https://app.uniswap.org',
-              iconUrl: 'https://uniswap.logo',
-              colors: { primary: '#FF007A', fallback: '#FF007A', shadow: '#FF007A' },
+            positionName: PositionName.LIQUIDITY_POOL,
+            detailType: DetailType.COMMON,
+            assetValue: '100',
+            debtValue: '0',
+            netValue: '100',
+            pool: { id: '0x1234', chainId: 1 },
+            tokens: {
+              supplyTokenList: [
+                { amount: '0.05', asset: createMockAsset('WETH', 2000), assetValue: '100' },
+                { amount: '50', asset: createMockAsset('USDC', 1), assetValue: '50' },
+              ],
             },
-            portfolioItems: [
-              {
-                name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date().toISOString(),
-                detailTypes: [DetailType.COMMON],
-                pool: { id: '0x1234', chainId: 1 },
-                assetDict: {},
-                stats: { assetValue: '100', debtValue: '0', netValue: '100' },
-                detail: {
-                  supplyTokenList: [
-                    {
-                      asset: createMockAsset({
-                        symbol: 'WETH',
-                        price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '0.05',
-                      assetValue: '100',
-                    },
-                    {
-                      asset: createMockAsset({
-                        symbol: 'USDC',
-                        price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '50',
-                      assetValue: '50',
-                    },
-                  ],
-                  rewardTokenList: [],
-                  borrowTokenList: [],
-                  tokenList: [],
-                },
-              },
-            ],
-          },
+          }),
         ],
-        stats: {
-          totals: {
-            netTotal: '1000',
-            totalDeposits: '1000',
-            totalBorrows: '0',
-            totalRewards: '0',
-            totalLocked: '0',
-            overallTotal: '1000',
-          },
-          canonicalProtocol: {
-            uniswap: {
-              canonicalProtocolName: 'uniswap',
-              protocolIds: ['uniswap'],
-              totals: {
-                netTotal: '1000',
-                totalDeposits: '1000',
-                totalBorrows: '0',
-                totalRewards: '0',
-                totalLocked: '0',
-                overallTotal: '1000',
-              },
-              totalsByChain: {},
-            },
-          },
-        },
-      };
+        createMockStats('uniswap', { totalDeposits: '1000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
+      );
 
-      const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       const pool = result.positions['uniswap'].pools[0];
 
-      expect(pool.isConcentratedLiquidity).toBe(true);
+      // V3 with both assets should be in_range (concentrated liquidity)
+      expect(pool.rangeStatus).toBe('in_range');
     });
 
     it('should not identify Uniswap V2 as concentrated liquidity', () => {
-      const mockResult: ListPositionsResponse_Result = {
-        positions: [
-          {
+      const mockResponse = createMockResponse(
+        [
+          createMockPosition({
             id: 'uniswap2:1',
-            chainId: 1,
             protocolName: 'Uniswap V2',
             canonicalProtocolName: 'uniswap',
             protocolVersion: 'v2',
-            tvl: '1000000',
-            dapp: {
-              name: 'Uniswap V2',
-              url: 'https://app.uniswap.org',
-              iconUrl: 'https://uniswap.logo',
-              colors: { primary: '#FF007A', fallback: '#FF007A', shadow: '#FF007A' },
+            positionName: PositionName.LIQUIDITY_POOL,
+            detailType: DetailType.COMMON,
+            assetValue: '100',
+            debtValue: '0',
+            netValue: '100',
+            pool: { id: '0x1234', chainId: 1 },
+            tokens: {
+              supplyTokenList: [
+                { amount: '0.05', asset: createMockAsset('WETH', 2000), assetValue: '100' },
+                { amount: '50', asset: createMockAsset('DAI', 1), assetValue: '50' },
+              ],
             },
-            portfolioItems: [
-              {
-                name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date().toISOString(),
-                detailTypes: [DetailType.COMMON],
-                pool: { id: '0x1234', chainId: 1 },
-                assetDict: {},
-                stats: { assetValue: '100', debtValue: '0', netValue: '100' },
-                detail: {
-                  supplyTokenList: [
-                    {
-                      asset: createMockAsset({
-                        symbol: 'WETH',
-                        price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '0.05',
-                      assetValue: '100',
-                    },
-                    {
-                      asset: createMockAsset({
-                        symbol: 'DAI',
-                        price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '50',
-                      assetValue: '50',
-                    },
-                  ],
-                  rewardTokenList: [],
-                  borrowTokenList: [],
-                  tokenList: [],
-                },
-              },
-            ],
-          },
+          }),
         ],
-        stats: {
-          totals: {
-            netTotal: '1000',
-            totalDeposits: '1000',
-            totalBorrows: '0',
-            totalRewards: '0',
-            totalLocked: '0',
-            overallTotal: '1000',
-          },
-          canonicalProtocol: {
-            uniswap: {
-              canonicalProtocolName: 'uniswap',
-              protocolIds: ['uniswap'],
-              totals: {
-                netTotal: '1000',
-                totalDeposits: '1000',
-                totalBorrows: '0',
-                totalRewards: '0',
-                totalLocked: '0',
-                overallTotal: '1000',
-              },
-              totalsByChain: {},
-            },
-          },
-        },
-      };
+        createMockStats('uniswap', { totalDeposits: '1000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
+      );
 
-      const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       const pool = result.positions['uniswap'].pools[0];
 
-      expect(pool.isConcentratedLiquidity).toBe(false);
+      // V2 should be full_range (traditional AMM, not concentrated liquidity)
+      expect(pool.rangeStatus).toBe('full_range');
     });
   });
 
   describe('Range Status Calculation', () => {
     it('should calculate range status for concentrated liquidity pools', () => {
-      const mockResult: ListPositionsResponse_Result = {
-        positions: [
-          {
+      const mockResponse = createMockResponse(
+        [
+          createMockPosition({
             id: 'uniswap3:1',
-            chainId: 1,
             protocolName: 'Uniswap V3',
             canonicalProtocolName: 'uniswap',
             protocolVersion: 'v3',
-            tvl: '1000000',
-            dapp: {
-              name: 'Uniswap V3',
-              url: 'https://app.uniswap.org',
-              iconUrl: 'https://uniswap.logo',
-              colors: { primary: '#FF007A', fallback: '#FF007A', shadow: '#FF007A' },
+            positionName: PositionName.LIQUIDITY_POOL,
+            detailType: DetailType.COMMON,
+            assetValue: '100',
+            debtValue: '0',
+            netValue: '100',
+            pool: { id: '0x1234', chainId: 1 },
+            tokens: {
+              supplyTokenList: [
+                { amount: '0.05', asset: createMockAsset('WETH', 2000), assetValue: '100' },
+                { amount: '50', asset: createMockAsset('USDC', 1), assetValue: '50' },
+              ],
             },
-            portfolioItems: [
-              {
-                name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date().toISOString(),
-                detailTypes: [DetailType.COMMON],
-                pool: { id: '0x1234', chainId: 1 },
-                assetDict: {},
-                stats: { assetValue: '100', debtValue: '0', netValue: '100' },
-                detail: {
-                  supplyTokenList: [
-                    {
-                      asset: createMockAsset({
-                        symbol: 'WETH',
-                        price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '0.05',
-                      assetValue: '100',
-                    },
-                    {
-                      asset: createMockAsset({
-                        symbol: 'USDC',
-                        price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '50',
-                      assetValue: '50',
-                    },
-                  ],
-                  rewardTokenList: [],
-                  borrowTokenList: [],
-                  tokenList: [],
-                },
-              },
-            ],
-          },
+          }),
         ],
-        stats: {
-          totals: {
-            netTotal: '1000',
-            totalDeposits: '1000',
-            totalBorrows: '0',
-            totalRewards: '0',
-            totalLocked: '0',
-            overallTotal: '1000',
-          },
-          canonicalProtocol: {
-            uniswap: {
-              canonicalProtocolName: 'uniswap',
-              protocolIds: ['uniswap'],
-              totals: {
-                netTotal: '1000',
-                totalDeposits: '1000',
-                totalBorrows: '0',
-                totalRewards: '0',
-                totalLocked: '0',
-                overallTotal: '1000',
-              },
-              totalsByChain: {},
-            },
-          },
-        },
-      };
+        createMockStats('uniswap', { totalDeposits: '1000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
+      );
 
-      const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       const pool = result.positions['uniswap'].pools[0];
 
       // Range status should be one of the valid values
@@ -609,183 +218,75 @@ describe('Uniswap Position Parsing', () => {
 
   describe('Allocation Calculation', () => {
     it('should calculate allocation percentages in format "X/Y"', () => {
-      const mockResult: ListPositionsResponse_Result = {
-        positions: [
-          {
+      const mockResponse = createMockResponse(
+        [
+          createMockPosition({
             id: 'uniswap2:1',
-            chainId: 1,
             protocolName: 'Uniswap V2',
             canonicalProtocolName: 'uniswap',
             protocolVersion: 'v2',
-            tvl: '1000000',
-            dapp: {
-              name: 'Uniswap V2',
-              url: 'https://app.uniswap.org',
-              iconUrl: 'https://uniswap.logo',
-              colors: { primary: '#FF007A', fallback: '#FF007A', shadow: '#FF007A' },
+            positionName: PositionName.LIQUIDITY_POOL,
+            detailType: DetailType.COMMON,
+            assetValue: '150',
+            debtValue: '0',
+            netValue: '150',
+            pool: { id: '0x1234', chainId: 1 },
+            tokens: {
+              supplyTokenList: [
+                { amount: '0.05', asset: createMockAsset('WETH', 2000), assetValue: '100' }, // 0.05 WETH = $100
+                { amount: '50', asset: createMockAsset('USDC', 1), assetValue: '50' }, // 50 USDC = $50
+              ],
             },
-            portfolioItems: [
-              {
-                name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date().toISOString(),
-                detailTypes: [DetailType.COMMON],
-                pool: { id: '0x1234', chainId: 1 },
-                assetDict: {},
-                stats: { assetValue: '150', debtValue: '0', netValue: '150' },
-                detail: {
-                  supplyTokenList: [
-                    {
-                      asset: createMockAsset({
-                        symbol: 'WETH',
-                        price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '0.05', // 0.05 WETH = $100
-                      assetValue: '100',
-                    },
-                    {
-                      asset: createMockAsset({
-                        symbol: 'USDC',
-                        price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '50', // 50 USDC = $50
-                      assetValue: '50',
-                    },
-                  ],
-                  rewardTokenList: [],
-                  borrowTokenList: [],
-                  tokenList: [],
-                },
-              },
-            ],
-          },
+          }),
         ],
-        stats: {
-          totals: {
-            netTotal: '1000',
-            totalDeposits: '1000',
-            totalBorrows: '0',
-            totalRewards: '0',
-            totalLocked: '0',
-            overallTotal: '1000',
-          },
-          canonicalProtocol: {
-            uniswap: {
-              canonicalProtocolName: 'uniswap',
-              protocolIds: ['uniswap'],
-              totals: {
-                netTotal: '1000',
-                totalDeposits: '1000',
-                totalBorrows: '0',
-                totalRewards: '0',
-                totalLocked: '0',
-                overallTotal: '1000',
-              },
-              totalsByChain: {},
-            },
-          },
-        },
-      };
+        createMockStats('uniswap', { totalDeposits: '1000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
+      );
 
-      const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       const pool = result.positions['uniswap'].pools[0];
 
-      // Allocation should be in "X/Y" format
-      expect(pool.allocation).toMatch(/^\d+\/\d+$/);
+      // Allocation should be in "X% / Y%" format
+      expect(pool.allocation.display).toMatch(/^\d+% \/ \d+%$/);
 
       // Should add up to 100
-      const [first, second] = pool.allocation.split('/').map(Number);
-      expect(first + second).toBe(100);
+      const sum = pool.allocation.percentages.reduce((a, b) => a + b, 0);
+      expect(sum).toBe(100);
 
       // With $100 WETH and $50 USDC, allocation should favor WETH
-      // (exact calculation depends on implementation, but should be > 50%)
-      expect(first).toBeGreaterThan(50);
-      expect(first).toBeLessThanOrEqual(100);
+      // (exact calculation: 67% WETH, 33% USDC)
+      expect(pool.allocation.percentages[0]).toBe(67); // WETH
+      expect(pool.allocation.percentages[1]).toBe(33); // USDC
+      expect(pool.allocation.splits).toBe(2);
     });
   });
 
   describe('Rewards Handling', () => {
     it('should place claimable fees in rewards category', () => {
-      const mockResult: ListPositionsResponse_Result = {
-        positions: [
-          {
+      const mockResponse = createMockResponse(
+        [
+          createMockPosition({
             id: 'uniswap3:1',
-            chainId: 1,
             protocolName: 'Uniswap V3',
             canonicalProtocolName: 'uniswap',
             protocolVersion: 'v3',
-            tvl: '1000000',
-            dapp: {
-              name: 'Uniswap V3',
-              url: 'https://app.uniswap.org',
-              iconUrl: 'https://uniswap.logo',
-              colors: { primary: '#FF007A', fallback: '#FF007A', shadow: '#FF007A' },
+            positionName: PositionName.LIQUIDITY_POOL,
+            detailType: DetailType.COMMON,
+            assetValue: '105',
+            debtValue: '0',
+            netValue: '105',
+            pool: { id: '0x1234', chainId: 1 },
+            tokens: {
+              supplyTokenList: [{ amount: '0.05', asset: createMockAsset('WETH', 2000), assetValue: '100' }],
+              rewardTokenList: [
+                { amount: '0.0025', asset: createMockAsset('WETH', 2000), assetValue: '5' }, // 0.0025 WETH = $5 in fees
+              ],
             },
-            portfolioItems: [
-              {
-                name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date().toISOString(),
-                detailTypes: [DetailType.COMMON],
-                pool: { id: '0x1234', chainId: 1 },
-                assetDict: {},
-                stats: { assetValue: '105', debtValue: '0', netValue: '105' },
-                detail: {
-                  supplyTokenList: [
-                    {
-                      asset: createMockAsset({
-                        symbol: 'WETH',
-                        price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '0.05',
-                      assetValue: '100',
-                    },
-                  ],
-                  rewardTokenList: [
-                    {
-                      asset: createMockAsset({
-                        symbol: 'WETH',
-                        price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '0.0025', // 0.0025 WETH = $5 in fees
-                      assetValue: '5',
-                    },
-                  ],
-                  borrowTokenList: [],
-                  tokenList: [],
-                },
-              },
-            ],
-          },
+          }),
         ],
-        stats: {
-          totals: {
-            netTotal: '1000',
-            totalDeposits: '1000',
-            totalBorrows: '0',
-            totalRewards: '0',
-            totalLocked: '0',
-            overallTotal: '1000',
-          },
-          canonicalProtocol: {
-            uniswap: {
-              canonicalProtocolName: 'uniswap',
-              protocolIds: ['uniswap'],
-              totals: {
-                netTotal: '1000',
-                totalDeposits: '1000',
-                totalBorrows: '0',
-                totalRewards: '0',
-                totalLocked: '0',
-                overallTotal: '1000',
-              },
-              totalsByChain: {},
-            },
-          },
-        },
-      };
+        createMockStats('uniswap', { totalDeposits: '1000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
+      );
 
-      const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       expect(result).toBeTruthy();
       const uniswap = result.positions['uniswap'];
 
@@ -803,93 +304,42 @@ describe('Uniswap Position Parsing', () => {
 
   describe('Pool Structure', () => {
     it('should have all required fields for each pool', () => {
-      const mockResult: ListPositionsResponse_Result = {
-        positions: [
-          {
+      const mockResponse = createMockResponse(
+        [
+          createMockPosition({
             id: 'uniswap3:1',
-            chainId: 1,
             protocolName: 'Uniswap V3',
             canonicalProtocolName: 'uniswap',
             protocolVersion: 'v3',
-            tvl: '1000000',
-            dapp: {
-              name: 'Uniswap V3',
-              url: 'https://app.uniswap.org',
-              iconUrl: 'https://uniswap.logo',
-              colors: { primary: '#FF007A', fallback: '#FF007A', shadow: '#FF007A' },
+            positionName: PositionName.LIQUIDITY_POOL,
+            detailType: DetailType.COMMON,
+            assetValue: '100',
+            debtValue: '0',
+            netValue: '100',
+            pool: { id: '0x1234567890abcdef', chainId: 1 },
+            tokens: {
+              supplyTokenList: [
+                { amount: '0.05', asset: createMockAsset('WETH', 2000), assetValue: '100' },
+                { amount: '100', asset: createMockAsset('USDC', 1), assetValue: '100' },
+              ],
             },
-            portfolioItems: [
-              {
-                name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date().toISOString(),
-                detailTypes: [DetailType.COMMON],
-                pool: { id: '0x1234567890abcdef', chainId: 1 },
-                assetDict: {},
-                stats: { assetValue: '100', debtValue: '0', netValue: '100' },
-                detail: {
-                  supplyTokenList: [
-                    {
-                      asset: createMockAsset({
-                        symbol: 'WETH',
-                        price: { value: 2000, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '0.05',
-                      assetValue: '100',
-                    },
-                    {
-                      asset: createMockAsset({
-                        symbol: 'USDC',
-                        price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '100',
-                      assetValue: '100',
-                    },
-                  ],
-                  rewardTokenList: [],
-                  borrowTokenList: [],
-                  tokenList: [],
-                },
-              },
-            ],
-          },
+          }),
         ],
-        stats: {
-          totals: {
-            netTotal: '100',
-            totalDeposits: '100',
-            totalBorrows: '0',
-            totalRewards: '0',
-            totalLocked: '0',
-            overallTotal: '100',
-          },
-          canonicalProtocol: {
-            uniswap: {
-              canonicalProtocolName: 'uniswap',
-              protocolIds: ['uniswap'],
-              totals: {
-                netTotal: '100',
-                totalDeposits: '100',
-                totalBorrows: '0',
-                totalRewards: '0',
-                totalLocked: '0',
-                overallTotal: '100',
-              },
-              totalsByChain: {},
-            },
-          },
-        },
-      };
+        createMockStats('uniswap', { totalDeposits: '100', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
+      );
 
-      const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       const pool = result.positions['uniswap'].pools[0];
 
       // Verify all required fields
       expect(pool.asset).toBeDefined();
       expect(pool.quantity).toBeDefined();
-      expect(pool.isConcentratedLiquidity).toBe(true);
       expect(pool.rangeStatus).toBeDefined();
+      expect(pool.rangeStatus).toBe('in_range'); // V3 with both assets
       expect(pool.allocation).toBeDefined();
+      expect(pool.allocation.display).toBeDefined();
+      expect(pool.allocation.percentages).toBeDefined();
+      expect(pool.allocation.splits).toBeDefined();
       expect(pool.value).toBeDefined();
       expect(pool.underlying).toBeDefined();
       expect(pool.poolAddress).toBe('0x1234567890abcdef');
@@ -897,141 +347,50 @@ describe('Uniswap Position Parsing', () => {
 
     it('should handle pools with >2 assets by showing top 2 + aggregated other', () => {
       // Multi-asset pool edge case (e.g., Balancer-style pools)
-      const mockResult: ListPositionsResponse_Result = {
-        positions: [
-          {
+      const mockResponse = createMockResponse(
+        [
+          createMockPosition({
             id: 'uniswap-v2:1',
-            chainId: 1,
             protocolName: 'Uniswap V2',
             canonicalProtocolName: 'uniswap',
             protocolVersion: 'v2',
-            tvl: '1000000',
-            dapp: {
-              name: 'Uniswap',
-              url: 'https://app.uniswap.org',
-              iconUrl: 'https://logo.url',
-              colors: {
-                primary: '#FF007A',
-                fallback: '#FF007A',
-                shadow: '#FF007A',
-              },
+            positionName: PositionName.LIQUIDITY_POOL,
+            detailType: DetailType.COMMON,
+            assetValue: '1000',
+            debtValue: '0',
+            netValue: '1000',
+            pool: { id: '0xmultiassetpool', chainId: 1 },
+            tokens: {
+              supplyTokenList: [
+                { amount: '0.119', asset: createMockAsset('WETH', 4200, { address: '0x1' }), assetValue: '499.79999999999995' }, // ~$500 (50%)
+                { amount: '200', asset: createMockAsset('USDC', 1, { address: '0x2' }), assetValue: '200' }, // ~$200 (20%)
+                { amount: '150', asset: createMockAsset('DAI', 1, { address: '0x3' }), assetValue: '150' }, // ~$150 (15%)
+                { amount: '100', asset: createMockAsset('USDT', 1, { address: '0x4' }), assetValue: '100' }, // ~$100 (10%)
+                { amount: '2', asset: createMockAsset('LINK', 25, { address: '0x5' }), assetValue: '50' }, // ~$50 (5%)
+              ],
             },
-            portfolioItems: [
-              {
-                name: PositionName.LIQUIDITY_POOL,
-                updateTime: new Date().toISOString(),
-                detailTypes: [DetailType.COMMON],
-                pool: {
-                  id: '0xmultiassetpool',
-                  chainId: 1,
-                },
-                assetDict: {},
-                stats: {
-                  assetValue: '1000',
-                  debtValue: '0',
-                  netValue: '1000',
-                },
-                detail: {
-                  supplyTokenList: [
-                    {
-                      asset: createMockAsset({
-                        address: '0x1',
-                        symbol: 'WETH',
-                        price: { value: 4200, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '0.119', // ~$500 (50%)
-                      assetValue: '499.79999999999995',
-                    },
-                    {
-                      asset: createMockAsset({
-                        address: '0x2',
-                        symbol: 'USDC',
-                        price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '200', // ~$200 (20%)
-                      assetValue: '200',
-                    },
-                    {
-                      asset: createMockAsset({
-                        address: '0x3',
-                        symbol: 'DAI',
-                        price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '150', // ~$150 (15%)
-                      assetValue: '150',
-                    },
-                    {
-                      asset: createMockAsset({
-                        address: '0x4',
-                        symbol: 'USDT',
-                        price: { value: 1, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '100', // ~$100 (10%)
-                      assetValue: '100',
-                    },
-                    {
-                      asset: createMockAsset({
-                        address: '0x5',
-                        symbol: 'LINK',
-                        price: { value: 25, changedAt: new Date().toISOString(), relativeChange24h: 0 },
-                      }),
-                      amount: '2', // ~$50 (5%)
-                      assetValue: '50',
-                    },
-                  ],
-                  rewardTokenList: [],
-                  borrowTokenList: [],
-                  tokenList: [],
-                },
-              },
-            ],
-          },
+          }),
         ],
-        stats: {
-          totals: {
-            netTotal: '1000',
-            totalDeposits: '1000',
-            totalBorrows: '0',
-            totalRewards: '0',
-            totalLocked: '0',
-            overallTotal: '1000',
-          },
-          canonicalProtocol: {
-            uniswap: {
-              canonicalProtocolName: 'uniswap',
-              protocolIds: ['uniswap'],
-              totals: {
-                netTotal: '1000',
-                totalDeposits: '1000',
-                totalBorrows: '0',
-                totalRewards: '0',
-                totalLocked: '0',
-                overallTotal: '1000',
-              },
-              totalsByChain: {},
-            },
-          },
-        },
-      };
+        createMockStats('uniswap', { totalDeposits: '1000', totalBorrows: '0', totalRewards: '0', totalLocked: '0' })
+      );
 
-      const mockResponse: ListPositionsResponse = { result: mockResult, errors: [], metadata: undefined };
-      const result = transformPositions(mockResponse, TEST_PARAMS);
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
       const pool = result.positions['uniswap'].pools[0];
 
-      // Allocation should show top 2 + "other" (3 values total)
-      const allocations = pool.allocation.split('/');
-      expect(allocations).toHaveLength(3);
+      // Allocation should show first 2 + "other" (3 values total)
+      expect(pool.allocation.percentages).toHaveLength(3);
+      expect(pool.allocation.splits).toBe(3);
 
       // Should sum to 100%
-      const sum = allocations.reduce((acc, val) => acc + parseInt(val, 10), 0);
+      const sum = pool.allocation.percentages.reduce((acc, val) => acc + val, 0);
       expect(sum).toBe(100);
 
-      // Top 2 should be WETH (50%), USDC (20%)
-      expect(parseInt(allocations[0], 10)).toBeGreaterThanOrEqual(48);
-      expect(parseInt(allocations[1], 10)).toBeGreaterThanOrEqual(18);
+      // First 2 are in input order (WETH 50%, USDC 20%)
+      expect(pool.allocation.percentages[0]).toBeGreaterThanOrEqual(48); // WETH
+      expect(pool.allocation.percentages[1]).toBeGreaterThanOrEqual(18); // USDC
 
       // Other should aggregate DAI (15%) + USDT (10%) + LINK (5%) = 30%
-      expect(parseInt(allocations[2], 10)).toBeGreaterThanOrEqual(28);
+      expect(pool.allocation.percentages[2]).toBeGreaterThanOrEqual(28); // Other
 
       // Should have all 5 underlying assets
       expect(pool.underlying).toHaveLength(5);
