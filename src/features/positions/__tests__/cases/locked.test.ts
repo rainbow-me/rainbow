@@ -1,4 +1,5 @@
 import { transformPositions } from '../../stores/transform';
+import { usePositionsStore } from '../../stores/positionsStore';
 import { PositionName, DetailType } from '../../types/generated/positions/positions';
 import { FIXTURE_PARAMS } from '../../__fixtures__/ListPositions';
 import { createMockAsset } from '../mocks/assets';
@@ -9,6 +10,27 @@ jest.mock('@/config', () => ({
   getExperimentalFlag: jest.fn(() => false),
   DEFI_POSITIONS_THRESHOLD_FILTER: 'defi_positions_threshold_filter',
 }));
+
+jest.mock('@/config/experimentalHooks', () => ({}));
+jest.mock('@/state/backendNetworks/backendNetworks', () => ({
+  useBackendNetworksStore: {
+    getState: () => ({
+      getSupportedPositionsChainIds: () => [1, 10, 137],
+    }),
+    subscribe: jest.fn(),
+  },
+}));
+jest.mock('@/state/assets/userAssetsStoreManager', () => {
+  const { createStore: createZustandStore } = jest.requireActual<typeof import('zustand/vanilla')>('zustand/vanilla');
+  const { FIXTURE_PARAMS: params, FIXTURE_WALLET_ADDRESS: address } =
+    jest.requireActual<typeof import('../../__fixtures__/ListPositions')>('../../__fixtures__/ListPositions');
+  return {
+    userAssetsStoreManager: createZustandStore(() => ({
+      address,
+      currency: params.currency,
+    })),
+  };
+});
 
 /**
  * Locked Position Test Cases
@@ -22,6 +44,14 @@ jest.mock('@/config', () => ({
  * - Unlocked positions: ~$619
  */
 describe('Locked Position Calculations', () => {
+  beforeEach(() => {
+    // Reset store state before each test
+    usePositionsStore.setState({
+      queryCache: {},
+      queryKey: '',
+    });
+  });
+
   describe('overallTotal calculation', () => {
     it('should include locked value in position totals (overallTotal = netTotal + totalLocked)', () => {
       // Based on real farming position with time-locked rewards
@@ -471,6 +501,231 @@ describe('Locked Position Calculations', () => {
       expect(result.positions['protocol-c'].totals.totalLocked.amount).toBe('30');
       expect(result.positions['protocol-c'].pools.length).toBe(1);
       expect(result.positions['protocol-c'].stakes.length).toBe(1);
+    });
+  });
+
+  describe('virtual tokens staking issue', () => {
+    it('should handle staked virtual tokens without causing negative wallet balance', () => {
+      // Real user scenario from ticket:
+      // - Staked virtual tokens: $1979.14
+      // - Other wallet positions: $1703.90
+      // - Issue: Wallet incorrectly showed -$276.05 (1703.90 - 1979.14)
+      // - Expected: Wallet should show $1703.90 (unlocked only, not negative)
+
+      const mockResponse = createMockResponse(
+        [
+          // Regular unlocked positions (wallet tokens and other DeFi)
+          createMockPosition({
+            id: 'defi:1',
+            protocolName: 'DeFi Protocol',
+            canonicalProtocolName: 'defi',
+            protocolVersion: 'v2',
+            positionName: PositionName.LENDING,
+            detailType: DetailType.LENDING,
+            assetValue: '1703.90',
+            debtValue: '0',
+            netValue: '1703.90',
+            tokens: {
+              supplyTokenList: [
+                { amount: '1000', asset: createMockAsset('USDC', 1), assetValue: '1000' },
+                { amount: '703.90', asset: createMockAsset('DAI', 1), assetValue: '703.90' },
+              ],
+            },
+          }),
+          // Staked virtual tokens (locked)
+          createMockPosition({
+            id: 'virtuals:1',
+            protocolName: 'Virtuals Protocol',
+            canonicalProtocolName: 'virtuals',
+            protocolVersion: 'v1',
+            positionName: PositionName.LOCKED,
+            detailType: DetailType.LOCKED,
+            assetValue: '1979.14',
+            debtValue: '0',
+            netValue: '1979.14',
+            tokens: {
+              supplyTokenList: [{ amount: '1979.14', asset: createMockAsset('VIRTUAL', 1), assetValue: '1979.14' }],
+            },
+          }),
+        ],
+        {
+          totals: {
+            netTotal: '1703.90', // Unlocked positions only
+            totalDeposits: '1703.90',
+            totalBorrows: '0',
+            totalRewards: '0',
+            totalLocked: '1979.14', // Staked virtual tokens
+            overallTotal: '3683.04', // netTotal + totalLocked
+          },
+          canonicalProtocol: {
+            defi: {
+              canonicalProtocolName: 'defi',
+              protocolIds: ['defi'],
+              totals: {
+                netTotal: '1703.90',
+                totalDeposits: '1703.90',
+                totalBorrows: '0',
+                totalRewards: '0',
+                totalLocked: '0',
+                overallTotal: '1703.90',
+              },
+              totalsByChain: {},
+            },
+            virtuals: {
+              canonicalProtocolName: 'virtuals',
+              protocolIds: ['virtuals'],
+              totals: {
+                netTotal: '0',
+                totalDeposits: '0',
+                totalBorrows: '0',
+                totalRewards: '0',
+                totalLocked: '1979.14',
+                overallTotal: '1979.14',
+              },
+              totalsByChain: {},
+            },
+          },
+        }
+      );
+
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
+
+      // Grand totals verification
+      expect(result.totals.total.amount).toBe('3683.04'); // Total including locked
+      expect(result.totals.totalLocked.amount).toBe('1979.14'); // Staked virtual tokens
+
+      // Regular DeFi positions (unlocked)
+      expect(result.positions['defi'].totals.total.amount).toBe('1703.90');
+      expect(result.positions['defi'].totals.totalLocked.amount).toBe('0');
+
+      // Virtual tokens position (locked/staked)
+      expect(result.positions['virtuals'].totals.total.amount).toBe('1979.14');
+      expect(result.positions['virtuals'].totals.totalLocked.amount).toBe('1979.14');
+      expect(result.positions['virtuals'].stakes.length).toBe(1);
+
+      // Most important: Verify wallet balance excludes locked tokens
+      // Store the transformed data in positionsStore
+      const queryKey = `${FIXTURE_PARAMS.address}-${FIXTURE_PARAMS.currency}`;
+      const store = usePositionsStore.getState();
+      store.queryCache[queryKey] = {
+        data: result,
+        lastFetchedAt: Date.now(),
+        cacheTime: 0,
+        errorInfo: null,
+      };
+      usePositionsStore.setState({ queryKey });
+
+      const walletBalance = usePositionsStore.getState().getBalance();
+
+      // Verify expected value from ticket: should show $1703.90, not -$276.05
+      expect(parseFloat(walletBalance)).toBeCloseTo(1703.9, 2);
+
+      // Verify getBalance() guarantee: never negative
+      expect(parseFloat(walletBalance)).toBeGreaterThan(0);
+    });
+
+    it('should handle case where staked virtual tokens exceed other positions', () => {
+      // Edge case: Staked tokens value > unlocked positions value
+      // Should still show 0, not negative
+
+      const mockResponse = createMockResponse(
+        [
+          // Small unlocked position
+          createMockPosition({
+            id: 'small:1',
+            protocolName: 'Small Protocol',
+            canonicalProtocolName: 'small',
+            protocolVersion: 'v1',
+            positionName: PositionName.LENDING,
+            detailType: DetailType.LENDING,
+            assetValue: '500',
+            debtValue: '0',
+            netValue: '500',
+            tokens: {
+              supplyTokenList: [{ amount: '500', asset: createMockAsset('USDC', 1), assetValue: '500' }],
+            },
+          }),
+          // Large staked virtual position
+          createMockPosition({
+            id: 'virtuals:1',
+            protocolName: 'Virtuals Protocol',
+            canonicalProtocolName: 'virtuals',
+            protocolVersion: 'v1',
+            positionName: PositionName.LOCKED,
+            detailType: DetailType.LOCKED,
+            assetValue: '5000',
+            debtValue: '0',
+            netValue: '5000',
+            tokens: {
+              supplyTokenList: [{ amount: '5000', asset: createMockAsset('VIRTUAL', 1), assetValue: '5000' }],
+            },
+          }),
+        ],
+        {
+          totals: {
+            netTotal: '500',
+            totalDeposits: '500',
+            totalBorrows: '0',
+            totalRewards: '0',
+            totalLocked: '5000',
+            overallTotal: '5500',
+          },
+          canonicalProtocol: {
+            small: {
+              canonicalProtocolName: 'small',
+              protocolIds: ['small'],
+              totals: {
+                netTotal: '500',
+                totalDeposits: '500',
+                totalBorrows: '0',
+                totalRewards: '0',
+                totalLocked: '0',
+                overallTotal: '500',
+              },
+              totalsByChain: {},
+            },
+            virtuals: {
+              canonicalProtocolName: 'virtuals',
+              protocolIds: ['virtuals'],
+              totals: {
+                netTotal: '0',
+                totalDeposits: '0',
+                totalBorrows: '0',
+                totalRewards: '0',
+                totalLocked: '5000',
+                overallTotal: '5000',
+              },
+              totalsByChain: {},
+            },
+          },
+        }
+      );
+
+      const result = transformPositions(mockResponse, FIXTURE_PARAMS);
+
+      // Verify totals
+      expect(result.totals.total.amount).toBe('5500');
+      expect(result.totals.totalLocked.amount).toBe('5000');
+
+      // Store the transformed data in positionsStore
+      const queryKey = `${FIXTURE_PARAMS.address}-${FIXTURE_PARAMS.currency}`;
+      const store = usePositionsStore.getState();
+      store.queryCache[queryKey] = {
+        data: result,
+        lastFetchedAt: Date.now(),
+        cacheTime: 0,
+        errorInfo: null,
+      };
+      usePositionsStore.setState({ queryKey });
+
+      // Call ACTUAL store getBalance() method
+      const walletBalance = usePositionsStore.getState().getBalance();
+
+      // Verify expected value: only unlocked positions
+      expect(parseFloat(walletBalance)).toBe(500);
+
+      // Verify getBalance() guarantee: never negative
+      expect(parseFloat(walletBalance)).toBeGreaterThanOrEqual(0);
     });
   });
 });
