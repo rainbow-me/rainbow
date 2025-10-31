@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { Keyboard, ScrollView } from 'react-native';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import { Box, Separator, Stack, useColorMode } from '@/design-system';
-import { AmountInputCard } from './AmountInputCard';
+import { AmountInputCard } from '@/features/perps/components/AmountInputCard';
 import { LeverageInputCard } from './LeverageInputCard';
 import { POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING, PositionSideSelector } from './PositionSideSelector';
 import { DetailsSection } from './DetailsSection';
@@ -17,11 +17,17 @@ import { HeaderFade } from '@/features/perps/components/HeaderFade';
 import { IS_ANDROID } from '@/env';
 import { PerpMarket } from '@/features/perps/types';
 import { useStableValue } from '@/hooks/useStableValue';
+import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
   const { isDarkMode } = useColorMode();
   const market = useHlNewPositionStore(state => state.market);
+  const availableBalance = useHyperliquidAccountStore(state => state.getBalance());
+  const marketResetSignal = useHlNewPositionStore(state => state.marketResetSignal);
+  const accountAddress = useWalletsStore(state => state.accountAddress);
   const screenBackgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
+  const resetKey = `${marketResetSignal}-${accountAddress}`;
 
   useOnLeaveRoute(Keyboard.dismiss);
 
@@ -51,7 +57,11 @@ export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
             >
               <MarketInfoSection market={market} />
               <Box gap={20}>
-                <AmountInputCard />
+                <AmountInputCard
+                  availableBalance={availableBalance}
+                  onAmountChange={hlNewPositionStoreActions.setAmount}
+                  resetKey={resetKey}
+                />
                 <LeverageSection market={market} />
               </Box>
               <Animated.View layout={LAYOUT_ANIMATION}>

@@ -1584,8 +1584,14 @@
         "more": "More",
         "error": "Error",
         "cancel": "Cancel",
+        "close": "Close",
+        "add": "Add",
         "liq_price": "liq. price",
         "liq": "liq"
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "Perps",

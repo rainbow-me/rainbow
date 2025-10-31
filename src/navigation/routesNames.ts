@@ -130,6 +130,7 @@ const Routes = {
   PERPS_DETAIL_SCREEN: 'PerpsDetailScreen',
   CREATE_TRIGGER_ORDER_BOTTOM_SHEET: 'CreateTriggerOrderBottomSheet',
   CLOSE_POSITION_BOTTOM_SHEET: 'ClosePositionBottomSheet',
+  PERPS_ADD_TO_POSITION_SHEET: 'PerpsAddToPositionSheet',
   PERPS_EXPLAIN_SHEET: 'PerpsExplainSheet',
 } as const;
 

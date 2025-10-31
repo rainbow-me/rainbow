@@ -6,20 +6,28 @@ import { AnimatedText, Bleed, Box, useColorMode } from '@/design-system';
 import { AnimatedTextSelectorProps } from '@/design-system/components/Text/AnimatedText';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
-import { LiquidationData, useLiquidationInfo } from '@/features/perps/stores/derived/useLiquidationInfo';
+import { useLiquidationInfo } from '@/features/perps/stores/derived/useLiquidationInfo';
 import { PerpMarket } from '@/features/perps/types';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import * as i18n from '@/languages';
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
+import { LiquidationData } from '@/features/perps/utils/buildLiquidationInfo';
 
-export const LiquidationInfo = memo(function LiquidationInfo({ leverage, market }: { leverage: SharedValue<number>; market: PerpMarket }) {
+export type LiquidationInfoProps = {
+  getInfo?: (leverage: number, midPrice: string) => LiquidationData | null;
+  leverage: SharedValue<number>;
+  market: PerpMarket;
+};
+
+export const LiquidationInfo = memo(function LiquidationInfo({ getInfo: getInfoOverride, leverage, market }: LiquidationInfoProps) {
   const midPrice = useLiveTokenSharedValue({
     tokenId: getHyperliquidTokenId(market.symbol),
     initialValue: market.price,
     selector: selectMidPrice,
   });
 
-  const getInfo = useLiquidationInfo();
+  const storeGetInfo = useLiquidationInfo();
+  const getInfo = getInfoOverride ?? storeGetInfo;
 
   return (
     <LiquidationInfoContent

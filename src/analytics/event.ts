@@ -330,6 +330,8 @@ export const event = {
   perpsTriggerOrderCancelFailed: 'perps.trigger_order_cancel.failed',
   perpsWithdrew: 'perps.withdrew',
   perpsWithdrawFailed: 'perps.withdraw.failed',
+  perpsAddedToPosition: 'perps.added_to_position',
+  perpsAddedToPositionFailed: 'perps.added_to_position.failed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -1254,6 +1256,22 @@ export type EventProperties = {
   };
   [event.perpsWithdrawFailed]: {
     amount: number;
+    errorMessage: string;
+  };
+  [event.perpsAddedToPosition]: {
+    market: string;
+    side: PerpPositionSide;
+    leverage: number;
+    perpsBalance: number;
+    positionSize: number;
+    positionValue: number;
+    entryPrice: number;
+  };
+  [event.perpsAddedToPositionFailed]: {
+    market: string;
+    side: PerpPositionSide;
+    leverage: number;
+    perpsBalance: number;
     errorMessage: string;
   };
 };

@@ -10,6 +10,7 @@ import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import * as i18n from '@/languages';
 import { truncateToDecimals } from '@/safe-math/SafeMath';
 import { ReadOnlySharedValue, useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
 
 const translations = {
   availableSuffix: i18n.t(i18n.l.perps.inputs.available),
@@ -18,9 +19,15 @@ const translations = {
   noBalance: i18n.t(i18n.l.perps.inputs.no_balance),
 };
 
-export const AmountInputCardSubtitle = ({ availableBalanceString }: { availableBalanceString: ReadOnlySharedValue<string> }) => {
+type AmountInputCardSubtitleProps = {
+  availableBalanceString: ReadOnlySharedValue<string>;
+  validation?: ReadOnlySharedValue<OrderAmountValidation>;
+};
+
+export const AmountInputCardSubtitle = ({ availableBalanceString, validation: validationOverride }: AmountInputCardSubtitleProps) => {
   const hasBalance = useStoreSharedValue(useHyperliquidAccountStore, state => state.hasBalance());
-  const validation = useStoreSharedValue(useOrderAmountValidation, state => state);
+  const defaultValidation = useStoreSharedValue(useOrderAmountValidation, state => state);
+  const validation = validationOverride ?? defaultValidation;
   const labelSecondary = useForegroundColor('labelSecondary');
   const red = useForegroundColor('red');
 
