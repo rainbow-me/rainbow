@@ -29,7 +29,7 @@ export type PositionAsset = Omit<Asset, 'price' | 'colors' | 'creationDate' | 'i
  * the primary field used by UI code.
  */
 export type PositionsTotals = {
-  total: { amount: string; display: string }; // Primary field used by UI
+  total: { amount: string; display: string }; // Total value (including locked)
   totalDeposits: { amount: string; display: string }; // Total deposited value across all protocols
   totalBorrows: { amount: string; display: string }; // Total borrowed value across all protocols
   totalRewards: { amount: string; display: string }; // Total rewards value
@@ -38,8 +38,21 @@ export type PositionsTotals = {
 
 /**
  * Range status for LP positions
+ *
+ * - `in_range`: Concentrated liquidity position currently in range
+ * - `out_of_range`: Concentrated liquidity position currently out of range
+ * - `full_range`: Traditional AMM (constant product) without price ranges
  */
 export type RangeStatus = 'in_range' | 'out_of_range' | 'full_range';
+
+/**
+ * LP position allocation data
+ */
+export type LpAllocation = {
+  display: string; // Formatted string like "50% / 50%" or "50% / 30% / 20%"
+  percentages: number[]; // Array of percentage values that sum to 100
+  splits: number; // Count of splits (1 for 100%, 2 for 50/50, 3 for 50/30/20 with "Other")
+};
 
 /**
  * Enhanced underlying asset with native display values
@@ -77,9 +90,8 @@ export type RainbowDeposit =
  */
 export type RainbowPool = RainbowBaseItem & {
   poolAddress?: string;
-  isConcentratedLiquidity: boolean;
-  rangeStatus: RangeStatus;
-  allocation: string;
+  rangeStatus: RangeStatus; // Captures concentrated vs traditional liquidity
+  allocation: LpAllocation; // Allocation data with display string and percentage values
   name?: string; // COMMON - display name (from description field, filtered)
 };
 

@@ -29,7 +29,7 @@ async function refetchOtherAssets({ address }: { address: string }) {
 
 function updateUserAssets({ address, newAssets, chainIds }: { address: string; newAssets: Record<string, UserAsset>; chainIds: number[] }) {
   const userAssets = filterZeroBalanceAssets(Object.values(newAssets)).sort((a, b) => parseFloat(b.value) - parseFloat(a.value));
-  const positionTokenAddresses = usePositionsStore.getState().getPositionTokenAddresses();
+  const positionTokenAddresses = usePositionsStore.getState().getTokenAddresses();
 
   userAssetsStore.setState(state =>
     setUserAssets({

@@ -104,7 +104,7 @@ export const PositionListItem: React.FC<Props> = ({ asset, apy, quantity, value,
               </Column>
               <Column width="content">
                 <Text size="13pt" weight="medium" color={{ custom: priceChangeColor }} align="right">
-                  {convertAmountToPercentageDisplay(`${asset.price?.relative_change_24h}`)}
+                  {convertAmountToPercentageDisplay(`${asset.price?.relative_change_24h ?? 0}`)}
                 </Text>
               </Column>
             </Columns>

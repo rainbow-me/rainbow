@@ -36,28 +36,9 @@ const UNSUPPORTED_DETAIL_TYPES: readonly DetailType[] = [DetailType.UNSPECIFIED,
  * - Represent staked assets (e.g., stETH represents staked ETH)
  * - Should NOT also appear as positions (to avoid double-counting)
  */
-const TOKEN_PREFERRED_POSITIONS = [
-  // ============================================================================
-  // Confirmed in test fixture data (5 tokens)
-  // ============================================================================
-
-  'wstETH', // Lido - https://lido.fi - Wrapped staked ETH
-  'sAVAX', // BENQI - https://benqi.fi - Liquid staked AVAX
-  'ezETH', // Renzo - https://renzoprotocol.com - Restaked ETH
-  'swETH', // Swell - https://swellnetwork.io - Staked ETH
-  'rETH', // Rocket Pool - https://rocketpool.net - Staked ETH
-
-  // ============================================================================
-  // Proactive additions (major LSDs likely to appear in user wallets)
-  // ============================================================================
-
+export const TOKEN_PREFERRED_POSITIONS = [
   'stETH', // Lido - https://lido.fi - Staked ETH
-  'stMATIC', // Lido - https://lido.fi - Staked MATIC
-  'sfrxETH', // Frax - https://frax.finance - Staked ETH
-  'cbETH', // Coinbase - https://coinbase.com/cbeth - Wrapped staked ETH
-  'sETH2', // StakeWise - https://stakewise.io - Staked ETH
-  'ankrETH', // Ankr - https://ankr.com - Staked ETH
-  'rMATIC', // StaFi - https://stafi.io - Staked MATIC
+  'wstETH', // Lido - https://lido.fi - Wrapped staked ETH
 ];
 
 // ============ Filters ======================================================== //

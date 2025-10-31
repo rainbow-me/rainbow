@@ -11,7 +11,7 @@ export function setupPositionsAssetsSync() {
   cleanupPositionsAssetsSync();
 
   unsubscribe = usePositionsStore.subscribe(
-    state => state.getPositionTokenAddresses(),
+    state => state.getTokenAddresses(),
     (currentAddresses, prevAddresses) => {
       // Most common case, skip logic below
       if (currentAddresses.size === 0 && prevAddresses.size === 0) return;
