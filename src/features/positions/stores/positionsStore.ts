@@ -134,7 +134,7 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
   }),
   {
     storageKey: 'positions',
-    version: 2,
+    version: 3,
   }
 );
 
