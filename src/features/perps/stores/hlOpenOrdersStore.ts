@@ -3,7 +3,7 @@ import { time } from '@/utils/time';
 import { Address } from 'viem';
 import { RainbowError } from '@/logger';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { infoClient } from '@/features/perps/services/hyperliquid-account-client';
+import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
 import { OrderSide } from '@/features/perps/types';
 import { FrontendOpenOrdersResponse } from '@nktkas/hyperliquid/api/info';
 import { convertSide } from '@/features/perps/utils';
