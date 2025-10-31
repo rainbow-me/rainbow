@@ -11,7 +11,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
-type Props = {
+type LpPositionListItemProps = {
   assets: RainbowUnderlyingAsset[];
   value: { amount: string; display: string };
   rangeStatus: RangeStatus;
@@ -21,7 +21,15 @@ type Props = {
   onPress?: (asset: RainbowUnderlyingAsset['asset']) => void;
 };
 
-export const LpPositionListItem: React.FC<Props> = React.memo(({ assets, value, rangeStatus, allocation, dappVersion, name, onPress }) => {
+export const LpPositionListItem = React.memo(function LpPositionListItem({
+  assets,
+  value,
+  rangeStatus,
+  allocation,
+  dappVersion,
+  name,
+  onPress,
+}: LpPositionListItemProps) {
   const { colors } = useTheme();
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const chainsNativeAsset = useBackendNetworksStore(state => state.getChainsNativeAsset());
@@ -160,5 +168,3 @@ export const LpPositionListItem: React.FC<Props> = React.memo(({ assets, value, 
     renderContent()
   );
 });
-
-LpPositionListItem.displayName = 'LpPositionListItem';
