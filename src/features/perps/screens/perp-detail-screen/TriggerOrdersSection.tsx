@@ -3,7 +3,7 @@ import { Box, IconContainer, Inline, Text, TextShadow } from '@/design-system';
 import { HlOpenOrder, useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
 import { PerpPositionSide, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
 import { TriggerOrderCard } from '@/features/perps/components/TriggerOrderCard';
-import { isZero } from '@/helpers/utilities';
+import { abs, isZero } from '@/helpers/utilities';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { logger, RainbowError } from '@/logger';
 import { Alert } from 'react-native';
@@ -35,7 +35,11 @@ const ExistingTriggerOrderCard = memo(function ExistingTriggerOrderCard({ order 
   const projectedPnl = useMemo(() => {
     if (!position || !order.triggerPrice || !position.entryPrice) return '-';
 
-    const orderSize = isFullOrder ? position.size : order.size;
+    const orderSize = abs(isFullOrder ? position.size : order.size);
+    // const normalizedOrderSize =
+    //   rawOrderSize == null ? '0' : typeof rawOrderSize === 'string' ? rawOrderSize : rawOrderSize.toString();
+    // directionalDifference already encodes profit/loss sign, so use the absolute order size
+    // const orderSize = normalizedOrderSize.startsWith('-') ? normalizedOrderSize.slice(1) : normalizedOrderSize;
     const priceDifference = subWorklet(order.triggerPrice, position.entryPrice);
     const directionalDifference = position.side === PerpPositionSide.LONG ? priceDifference : mulWorklet('-1', priceDifference);
     const pnl = mulWorklet(orderSize, directionalDifference);
