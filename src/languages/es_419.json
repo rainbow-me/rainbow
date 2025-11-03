@@ -1586,8 +1586,8 @@
     "perps": {
       "activity": {
         "title": "Actividad",
-        "trades_count": "%{count} TRADES",
-        "no_previous_trades": "No Previous Trades"
+        "trades_count": "%{count} TRANSACCIONES",
+        "no_previous_trades": "No Hay Transacciones Anteriores"
       },
       "common": {
         "not_available": "N/D",
@@ -1616,7 +1616,7 @@
       },
       "markets": {
         "title": "Mercados",
-        "view_all": "View All",
+        "view_all": "Ver Todo",
         "up_to": "HASTA",
         "already_open": "Ya Abierto"
       },
@@ -1727,13 +1727,15 @@
         "above": "arriba",
         "below": "abajo",
         "must_be": "Debe ser",
-        "failed_to_create": "No se pudo crear la orden de activación"
+        "failed_to_create": "No se pudo crear la orden de activación",
+        "gain": "Ganar",
+        "loss": "Pérdida"
       },
       "search": {
         "search_markets": "Buscar mercados",
         "markets_count": "%{count} MERCADOS",
         "choose_a_market": "ELIJA UN MERCADO",
-        "no_markets_found": "No markets found"
+        "no_markets_found": "No se encontraron mercados"
       },
       "close_position": {
         "estimated_loss": "Pérdida Estimada",
@@ -1777,9 +1779,9 @@
         }
       },
       "sort": {
-        "by_volume": "By Volume",
-        "by_change": "By Change",
-        "by_price": "By Price"
+        "by_volume": "Por Volumen",
+        "by_change": "Por Cambio",
+        "by_price": "Por Precio"
       },
       "leverage": "Apalancamiento",
       "up_to": "Hasta"
