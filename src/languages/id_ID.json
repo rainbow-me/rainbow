@@ -1584,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "Aktivitas",
+        "trades_count": "%{count} TRADES",
+        "no_previous_trades": "No Previous Trades"
+      },
       "common": {
         "not_available": "N/A",
         "current_price": "Harga Saat Ini",
@@ -1611,6 +1616,7 @@
       },
       "markets": {
         "title": "Pasar",
+        "view_all": "View All",
         "up_to": "HINGGA",
         "already_open": "Sudah Terbuka"
       },
@@ -1692,17 +1698,17 @@
         }
       },
       "trade_details_sheet": {
-        "market": "Market",
-        "entry_price": "Entry price",
-        "close_price": "Close price",
-        "date": "Date",
-        "profit": "Profit",
-        "loss": "Loss",
+        "market": "Pasar",
+        "entry_price": "Harga Masuk",
+        "close_price": "Harga Tutup",
+        "date": "Tanggal",
+        "profit": "Keuntungan",
+        "loss": "Kerugian",
         "outcome": {
-          "liquidated": "Liquidated",
-          "opened": "Opened",
-          "lost": "Lost",
-          "earned": "Earned"
+          "liquidated": "Dilikwidasi",
+          "opened": "Dibuka",
+          "lost": "Kalah",
+          "earned": "Diperoleh"
         }
       },
       "trigger_orders": {
@@ -1726,7 +1732,8 @@
       "search": {
         "search_markets": "Cari pasar",
         "markets_count": "%{count} PASAR",
-        "choose_a_market": "PILIH MARKAS"
+        "choose_a_market": "PILIH MARKAS",
+        "no_markets_found": "No markets found"
       },
       "close_position": {
         "estimated_loss": "Kerugian Estimasi",
@@ -1768,6 +1775,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "By Volume",
+        "by_change": "By Change",
+        "by_price": "By Price"
       },
       "leverage": "Leverage",
       "up_to": "Hingga"
