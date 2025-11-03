@@ -1584,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "Activité",
+        "trades_count": "%{count} ÉCHANGES",
+        "no_previous_trades": "Aucun échange précédent"
+      },
       "common": {
         "not_available": "N/A",
         "current_price": "Prix actuel",
@@ -1611,6 +1616,7 @@
       },
       "markets": {
         "title": "Marchés",
+        "view_all": "Voir Tout",
         "up_to": "Jusqu'à",
         "already_open": "Déjà ouvert"
       },
@@ -1692,17 +1698,17 @@
         }
       },
       "trade_details_sheet": {
-        "market": "Market",
-        "entry_price": "Entry price",
-        "close_price": "Close price",
+        "market": "Marché",
+        "entry_price": "Prix d'entrée",
+        "close_price": "Prix de clôture",
         "date": "Date",
         "profit": "Profit",
-        "loss": "Loss",
+        "loss": "Perte",
         "outcome": {
-          "liquidated": "Liquidated",
-          "opened": "Opened",
-          "lost": "Lost",
-          "earned": "Earned"
+          "liquidated": "Liquidé",
+          "opened": "Ouvert",
+          "lost": "Perdu",
+          "earned": "Gagné"
         }
       },
       "trigger_orders": {
@@ -1726,7 +1732,8 @@
       "search": {
         "search_markets": "Rechercher des marchés",
         "markets_count": "%{count} MARCHÉS",
-        "choose_a_market": "CHOISIR UN MARCHÉ"
+        "choose_a_market": "CHOISIR UN MARCHÉ",
+        "no_markets_found": "Aucun marché trouvé"
       },
       "close_position": {
         "estimated_loss": "Perte estimée",
@@ -1768,6 +1775,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "Par Volume",
+        "by_change": "Par Changement",
+        "by_price": "Par Prix"
       },
       "leverage": "Levier",
       "up_to": "Jusqu'à"
