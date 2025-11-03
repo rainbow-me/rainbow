@@ -1586,8 +1586,8 @@
     "perps": {
       "activity": {
         "title": "النشاط",
-        "trades_count": "%{count} TRADES",
-        "no_previous_trades": "No Previous Trades"
+        "trades_count": "%{count} تداولات",
+        "no_previous_trades": "لا توجد تداولات سابقة"
       },
       "common": {
         "not_available": "غير متاح",
@@ -1616,7 +1616,7 @@
       },
       "markets": {
         "title": "الأسواق",
-        "view_all": "View All",
+        "view_all": "عرض الكل",
         "up_to": "حتى",
         "already_open": "مفتوح مسبقًا"
       },
@@ -1727,13 +1727,15 @@
         "above": "أعلى",
         "below": "أدناه",
         "must_be": "يجب أن تكون",
-        "failed_to_create": "فشل في إنشاء أمر الزناد"
+        "failed_to_create": "فشل في إنشاء أمر الزناد",
+        "gain": "ربح",
+        "loss": "الخسارة"
       },
       "search": {
         "search_markets": "البحث في الأسواق",
         "markets_count": "٪{count} أسواق ",
         "choose_a_market": "اختيار سوق",
-        "no_markets_found": "No markets found"
+        "no_markets_found": "لم يتم العثور على أسواق"
       },
       "close_position": {
         "estimated_loss": "الخسارة المقدرة",
@@ -1777,9 +1779,9 @@
         }
       },
       "sort": {
-        "by_volume": "By Volume",
-        "by_change": "By Change",
-        "by_price": "By Price"
+        "by_volume": "بحسب الحجم",
+        "by_change": "بحسب التغير",
+        "by_price": "بحسب السعر"
       },
       "leverage": "الرافعة المالية",
       "up_to": "حتى"
