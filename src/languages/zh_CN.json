@@ -1691,6 +1691,20 @@
           "short_liquidated": "做空已清算"
         }
       },
+      "trade_details_sheet": {
+        "market": "Market",
+        "entry_price": "Entry price",
+        "close_price": "Close price",
+        "date": "Date",
+        "profit": "Profit",
+        "loss": "Loss",
+        "outcome": {
+          "liquidated": "Liquidated",
+          "opened": "Opened",
+          "lost": "Lost",
+          "earned": "Earned"
+        }
+      },
       "trigger_orders": {
         "title": "触发订单",
         "take_profit": "止盈",
