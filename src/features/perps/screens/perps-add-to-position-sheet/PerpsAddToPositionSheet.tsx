@@ -187,12 +187,7 @@ const AddToPositionSheetContent = memo(function AddToPositionSheetContent({
       <Box paddingHorizontal={'24px'}>
         <Box gap={28}>
           <PerpBottomSheetHeader title={i18n.t(i18n.l.perps.add_to_position.title)} symbol={symbol} />
-          <AmountInputCard
-            availableBalance={availableBalance}
-            initialAmount={defaultAmount}
-            onAmountChange={setAmountToAdd}
-            validation={validation}
-          />
+          <AmountInputCard availableBalance={availableBalance} onAmountChange={setAmountToAdd} validation={validation} />
         </Box>
         <Box gap={20} paddingTop={'20px'}>
           <LiquidationInfo market={market} leverage={leverageSharedValue} getInfo={getLiquidationInfo} />
