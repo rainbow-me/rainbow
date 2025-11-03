@@ -89,8 +89,9 @@ export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: A
  * @returns Cached native asset or undefined if not in store
  */
 const getNetworkNativeAsset = ({ chainId, address }: { chainId: ChainId; address?: EthereumAddress }) => {
-  const nativeAssetAddress = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId].address;
-  const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, chainId);
+  const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
+  if (!nativeAsset) return;
+  const nativeAssetUniqueId = getUniqueId(nativeAsset.address, chainId);
   return getAccountAsset(nativeAssetUniqueId, address);
 };
 

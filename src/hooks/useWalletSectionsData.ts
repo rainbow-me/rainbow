@@ -7,7 +7,7 @@ import { buildBriefWalletSectionsSelector, WalletSectionsState } from '@/helpers
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { usePositionsStore } from '@/state/positions/positions';
+import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { CLAIMABLES, DEFI_POSITIONS, PERPS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
 import { analytics } from '@/analytics';
@@ -51,7 +51,7 @@ export default function useWalletSectionsData({
   const remoteCardsEnabled = (remoteConfig.remote_cards_enabled || experimentalConfig[REMOTE_CARDS]) && !isReadOnlyWallet;
   const positionsEnabled = experimentalConfig[DEFI_POSITIONS] && !IS_TEST;
   const claimablesEnabled = (remoteConfig.claimables || experimentalConfig[CLAIMABLES]) && !IS_TEST;
-  const perpsEnabled = (experimentalConfig[PERPS] || remoteConfig.perps_enabled) && !IS_TEST;
+  const perpsEnabled = remoteConfig.perps_enabled && !IS_TEST;
 
   const cardIds = remoteCardsStore(state => state.getCardIdsForScreen('WALLET_SCREEN'));
   const remoteCards = useMemo(() => (remoteCardsEnabled ? cardIds : []), [cardIds, remoteCardsEnabled]);
@@ -59,25 +59,14 @@ export default function useWalletSectionsData({
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
-  const positionsData = usePositionsStore(state =>
-    state.getData({
-      address: accountAddress,
-      currency: nativeCurrency,
-    })
-  );
 
+  const positionsData = usePositionsStore(state => state.getData());
   const positions = useMemo(() => {
     if (!positionsEnabled) return null;
     return positionsData;
   }, [positionsData, positionsEnabled]);
 
-  const claimablesData = useClaimablesStore(state =>
-    state.getData({
-      address: accountAddress,
-      currency: nativeCurrency,
-    })
-  );
-
+  const claimablesData = useClaimablesStore(state => state.getData());
   const claimables = useMemo(() => {
     if (!claimablesEnabled) return null;
     return claimablesData;

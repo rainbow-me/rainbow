@@ -113,4 +113,11 @@ export class HyperliquidAccountClient {
     });
     return approvedBuilderFee >= RAINBOW_BUILDER_SETTINGS.f;
   }
+
+  async isReferralCodeSet(): Promise<boolean> {
+    const referral = await infoClient.referral({
+      user: this.userAddress,
+    });
+    return referral.referredBy !== null;
+  }
 }

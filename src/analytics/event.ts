@@ -146,6 +146,7 @@ export const event = {
 
   positionsOpenedSheet: 'Opened position Sheet',
   positionsOpenedExternalDapp: 'Viewed external dapp',
+  positionsOpenedAsset: 'Opened asset from position',
 
   mintsPressedFeaturedMintCard: 'Pressed featured mint card',
   mintsPressedCollectionCell: 'Pressed collection cell in mints card',
@@ -319,6 +320,7 @@ export const event = {
 
   // perps
   perpsOpenedPosition: 'perps.opened_position',
+  perpsOpenPositionCanceled: 'perps.open_position.canceled',
   perpsOpenPositionFailed: 'perps.open_position.failed',
   perpsClosedPosition: 'perps.closed_position',
   perpsClosePositionFailed: 'perps.close_position.failed',
@@ -622,12 +624,43 @@ export type EventProperties = {
   [event.poapsViewedOnPoap]: {
     eventId: number;
   };
+  /**
+   * Triggered when user opens external dapp website from position detail sheet.
+   */
   [event.positionsOpenedExternalDapp]: {
-    dapp: string;
+    dapp: string; // Canonical protocol (e.g., "uniswap")
+    protocol: string; // With version (e.g., "uniswap-v3")
     url: string;
+    positionsUSDValue?: string; // Only when currency is not USD
+    positionsValue: string;
+    positionsCurrency: string;
   };
+  /**
+   * Triggered when user opens position detail sheet from position card.
+   */
   [event.positionsOpenedSheet]: {
-    dapp: string;
+    dapp: string; // Canonical protocol (e.g., "uniswap")
+    protocol: string; // With version (e.g., "uniswap-v3")
+    positionsUSDValue?: string; // Only when currency is not USD
+    positionsValue: string;
+    positionsCurrency: string;
+  };
+  /**
+   * Triggered when user opens an asset detail sheet from within a position (deposit, stake, borrow, reward, or pool).
+   */
+  [event.positionsOpenedAsset]: {
+    dapp: string; // Canonical protocol (e.g., "uniswap")
+    protocol: string; // With version (e.g., "uniswap-v3")
+    type: 'deposit' | 'stake' | 'borrow' | 'reward' | 'pool';
+    name?: string; // Optional display name for the position
+    assetSymbol: string;
+    assetAddress: string;
+    assetValueUSD?: string; // Only when currency is not USD
+    assetValue: string;
+    assetCurrency: string;
+    positionsUSDValue?: string; // Only when currency is not USD
+    positionsValue: string;
+    positionsCurrency: string;
   };
   [event.mintsPressedFeaturedMintCard]: {
     contractAddress: string;
@@ -1163,6 +1196,12 @@ export type EventProperties = {
       type: TriggerOrderType;
       price: number;
     }>;
+  };
+  [event.perpsOpenPositionCanceled]: {
+    market: string;
+    side: PerpPositionSide;
+    leverage?: number;
+    perpsBalance: number;
   };
   [event.perpsOpenPositionFailed]: {
     market: string;

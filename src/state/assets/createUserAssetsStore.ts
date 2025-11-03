@@ -21,7 +21,7 @@ import {
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { LiveTokensData } from '@/state/liveTokens/liveTokensStore';
 import { toUnixTime } from '@/worklets/dates';
-import { usePositionsStore } from '@/state/positions/positions';
+import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
@@ -32,7 +32,7 @@ export const createUserAssetsStore = (address: Address | string) =>
       fetcher: fetchUserAssets,
       setData: ({ data, set }) => {
         if (data?.userAssets) {
-          const positionTokenAddresses = usePositionsStore.getState().getPositionTokenAddresses();
+          const positionTokenAddresses = usePositionsStore.getState().getTokenAddresses();
           set(state => setUserAssets({ address, state, userAssets: data.userAssets, positionTokenAddresses }));
         }
       },
@@ -95,8 +95,9 @@ export const createUserAssetsStore = (address: Address | string) =>
       },
 
       getNativeAssetForChain: (chainId: ChainId) => {
-        const nativeAssetAddress = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId].address;
-        const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, chainId);
+        const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
+        if (!nativeAsset) return null;
+        const nativeAssetUniqueId = getUniqueId(nativeAsset.address, chainId);
         return get().userAssets.get(nativeAssetUniqueId) || null;
       },
 
@@ -223,7 +224,7 @@ export const createUserAssetsStore = (address: Address | string) =>
       reprocessAssetsData: () => {
         const lastData = get().getData();
         if (lastData?.userAssets) {
-          const positionTokenAddresses = usePositionsStore.getState().getPositionTokenAddresses();
+          const positionTokenAddresses = usePositionsStore.getState().getTokenAddresses();
           set(state => setUserAssets({ address, state, userAssets: lastData.userAssets, positionTokenAddresses }));
         }
       },

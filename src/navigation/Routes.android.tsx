@@ -78,7 +78,7 @@ import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import ShowSecretView from '@/screens/SettingsSheet/components/Backups/ShowSecretView';
 import PoapSheet from '@/screens/mints/PoapSheet';
-import { PositionSheet } from '@/screens/positions/PositionSheet';
+import { PositionSheet } from '@/features/positions/screens/PositionSheet';
 import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
@@ -108,6 +108,7 @@ import { PerpsTradeHistoryScreen } from '@/features/perps/screens/perps-trade-hi
 import { CreateTriggerOrderBottomSheet } from '@/features/perps/screens/CreateTriggerOrderBottomSheet';
 import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePositionBottomSheet';
 import { PerpsExplainSheet } from '@/features/perps/screens/perps-explain-sheet/PerpsExplainSheet';
+import { PerpsTradeDetailsSheet } from '@/features/perps/screens/perps-trade-details-sheet/PerpsTradeDetailsSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -275,6 +276,7 @@ function BSNavigator() {
       <BSStack.Screen component={ClosePositionBottomSheet} name={Routes.CLOSE_POSITION_BOTTOM_SHEET} />
       <BSStack.Screen component={KingOfTheHillExplainSheet} name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET} />
       <BSStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} />
+      <BSStack.Screen component={PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} />
     </BSStack.Navigator>
   );
 }

@@ -15,3 +15,4 @@ InjectedJSBundle.js
 .claude/settings.local.json
 src/languages/*.json
 !src/languages/en_US.json
+**/__fixtures__/*.json

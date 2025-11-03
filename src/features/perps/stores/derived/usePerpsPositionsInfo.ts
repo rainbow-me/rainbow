@@ -57,8 +57,10 @@ export const usePerpsPositionsInfo = createDerivedStore<PerpsPositionsInfo>(
     const initialMargin = subtract(totalPositionsEquity, totalPositionsPnl);
     const unrealizedPnlPercent = toFixedWorklet(initialMargin === '0' ? '0' : multiply(divide(totalPositionsPnl, initialMargin), 100), 2);
 
+    const balance = truncateToDecimals(accountData.balance, USD_DECIMALS);
+
     return {
-      balance: truncateToDecimals(accountData.balance, USD_DECIMALS),
+      balance,
       equity: formatCurrency(totalPositionsEquity),
       hasBalance: !isZero(accountData.balance),
       hasPositions: positions.length > 0,
@@ -68,7 +70,7 @@ export const usePerpsPositionsInfo = createDerivedStore<PerpsPositionsInfo>(
       textColor: textColor satisfies TextColor,
       unrealizedPnl: formatCurrency(abs(totalPositionsPnl)),
       unrealizedPnlPercent: `${toFixedWorklet(abs(unrealizedPnlPercent), 2)}%`,
-      value: accountData.value,
+      value: add(balance, totalPositionsEquity),
     };
   },
 

@@ -99,7 +99,7 @@ import { ClaimAirdropSheet } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { Portal } from '@/screens/Portal';
 import PoapSheet from '@/screens/mints/PoapSheet';
-import { PositionSheet } from '@/screens/positions/PositionSheet';
+import { PositionSheet } from '@/features/positions/screens/PositionSheet';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import MintSheet from '@/screens/mints/MintSheet';
@@ -130,6 +130,7 @@ import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePosition
 import { PerpsNavigator } from '@/features/perps/screens/PerpsNavigator';
 import { PerpsTradeHistoryScreen } from '@/features/perps/screens/perps-trade-history/PerpsTradeHistoryScreen';
 import { PerpsExplainSheet } from '@/features/perps/screens/perps-explain-sheet/PerpsExplainSheet';
+import { PerpsTradeDetailsSheet } from '@/features/perps/screens/perps-trade-details-sheet/PerpsTradeDetailsSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -316,6 +317,7 @@ function NativeStackNavigator() {
         {...kingOfTheHillExplainSheetConfig}
       />
       <NativeStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} {...perpsExplainSheetConfig} />
+      <NativeStack.Screen component={PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} {...panelConfig} />
     </NativeStack.Navigator>
   );
 }

@@ -74,35 +74,33 @@ if [[ -n "$BASELINE_TTI_JSON" && -f "$BASELINE_TTI_JSON" ]]; then
     local unit="$2"
     local current="$3"
     local baseline="$4"
+    local direction="$5"
+
     local diff=$(awk "BEGIN { print $current - $baseline }")
     local pct=$(awk "BEGIN { print ($current - $baseline) / $baseline * 100 }")
 
-    local arrow color abs_pct
+    local icon abs_pct
     abs_pct=$(awk -v pct="$pct" 'BEGIN { print (pct < 0 ? -pct : pct) }')
 
     if (( $(echo "$abs_pct < 1" | bc -l) )); then
-      arrow="–"
-      color="⚪"
-    elif (( $(echo "$diff > 0" | bc -l) )); then
-      arrow="▲"
-      color="🔴"
-    elif (( $(echo "$diff < 0" | bc -l) )); then
-      arrow="▼"
-      color="🟢"
+      icon="⚪"
     else
-      arrow="–"
-      color="⚪"
+      if [[ "$direction" == "higher" ]]; then
+        if (( $(echo "$diff > 0" | bc -l) )); then icon="🟢"; else icon="🔴"; fi
+      else
+        if (( $(echo "$diff > 0" | bc -l) )); then icon="🔴"; else icon="🟢"; fi
+      fi
     fi
 
     diff=$(printf "%+.1f" "$diff")
     pct=$(printf "%+.1f" "$pct")
 
-    printf "| %s | %s %s | %s %s %s (%s%%) |\n" "$label" "$current" "$unit" "$color" "$diff" "$unit" "$pct"
+    printf "| %s | %s %s | %s %s %s (%s%%) |\n" "$label" "$current" "$unit" "$icon" "$diff" "$unit" "$pct"
   }
 
-  TTI_ROW=$(diff_row "Time to Interactive (TTI)" "ms" "$AVG_TTI" "$BASELINE_TTI")
-  FPS_ROW=$(diff_row "Average FPS" "" "$AVG_FPS" "$BASELINE_FPS")
-  RAM_ROW=$(diff_row "Average RAM" "MB" "$AVG_RAM" "$BASELINE_RAM")
+  TTI_ROW=$(diff_row "Time to Interactive (TTI)" "ms" "$AVG_TTI" "$BASELINE_TTI" "lower")
+  FPS_ROW=$(diff_row "Average FPS" "" "$AVG_FPS" "$BASELINE_FPS" "higher")
+  RAM_ROW=$(diff_row "Average RAM" "MB" "$AVG_RAM" "$BASELINE_RAM" "lower")
 fi
 
 # Compose comment

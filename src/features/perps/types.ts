@@ -76,13 +76,26 @@ export enum TriggerOrderType {
   TAKE_PROFIT = 'tp',
 }
 
+export enum TradeExecutionType {
+  TAKE_PROFIT_EXECUTED = 'takeProfitExecuted',
+  STOP_LOSS_EXECUTED = 'stopLossExecuted',
+  LONG_OPENED = 'longOpened',
+  SHORT_OPENED = 'shortOpened',
+  LONG_CLOSED = 'longClosed',
+  SHORT_CLOSED = 'shortClosed',
+  LONG_LIQUIDATED = 'longLiquidated',
+  SHORT_LIQUIDATED = 'shortLiquidated',
+}
+
 // This type is based on the `hl.Fill` type, but with additional information added from the corresponding `hl.FrontendOrder`
 export type HlTrade = {
   id: number;
   clientId?: string;
   description: string;
+  executionType: TradeExecutionType;
   symbol: string;
   side: OrderSide;
+  entryPrice: string | undefined;
   price: string;
   size: string;
   fillStartSize: string;
@@ -99,6 +112,7 @@ export type HlTrade = {
   orderType: string;
   triggerOrderType?: TriggerOrderType;
   triggerOrderPrice?: string;
+  isLong: boolean;
 };
 
 export type TriggerOrder = {

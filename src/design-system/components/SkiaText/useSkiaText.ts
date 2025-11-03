@@ -39,6 +39,7 @@ export type UseSkiaTextOptions = {
   align?: TextAlign;
   backgroundPaint?: SkPaint;
   color: string;
+  halfLeading?: boolean;
   foregroundPaint?: SkPaint;
   letterSpacing?: number;
   lineHeight?: number;
@@ -58,6 +59,7 @@ export function useSkiaText({
   align = 'left',
   backgroundPaint,
   color,
+  halfLeading = false,
   foregroundPaint,
   letterSpacing,
   lineHeight,
@@ -89,6 +91,7 @@ export function useSkiaText({
           colorOverride: segment.color,
           defaultColor: skiaColor,
           fontInfo,
+          halfLeading,
           letterSpacing,
           lineHeight,
           tabularNumbers,
@@ -118,7 +121,19 @@ export function useSkiaText({
     },
     // Only the weight dependency is omitted on Android (see comment above)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [backgroundPaint, color, foregroundPaint, letterSpacing, lineHeight, manager.paragraphBuilder, shadows, size, tabularNumbers, weightDep]
+    [
+      backgroundPaint,
+      color,
+      foregroundPaint,
+      halfLeading,
+      letterSpacing,
+      lineHeight,
+      manager.paragraphBuilder,
+      shadows,
+      size,
+      tabularNumbers,
+      weightDep,
+    ]
   );
 
   return buildParagraph;
@@ -138,6 +153,7 @@ function getTextStyle({
   colorOverride,
   defaultColor,
   fontInfo,
+  halfLeading,
   letterSpacing,
   lineHeight,
   tabularNumbers,
@@ -148,12 +164,15 @@ function getTextStyle({
   colorOverride?: string | SkColor;
   defaultColor?: SkColor;
   fontInfo: (typeof typeHierarchy.text)[TextSize];
+  halfLeading: boolean;
   letterSpacing: number | undefined;
   lineHeight: number | undefined;
   tabularNumbers: boolean;
   weight: TextWeight;
   weightOverride?: TextWeight;
-}): Required<Pick<SkTextStyle, 'color' | 'fontFamilies' | 'fontSize' | 'fontStyle' | 'heightMultiplier' | 'letterSpacing'>> & {
+}): Required<
+  Pick<SkTextStyle, 'color' | 'fontFamilies' | 'fontSize' | 'fontStyle' | 'halfLeading' | 'heightMultiplier' | 'letterSpacing'>
+> & {
   fontFeatures: SkTextFontFeatures[] | undefined;
   shadows?: SkTextShadow[];
 } {
@@ -168,6 +187,7 @@ function getTextStyle({
     fontSize: fontInfo.fontSize,
     fontStyle: IS_IOS ? { weight: getSkiaFontWeight(weightOverride ?? weight) } : EMPTY_FONT_STYLE,
     fontFeatures: tabularNumbers ? TABULAR_NUMBERS : EMPTY_FONT_FEATURES,
+    halfLeading,
     heightMultiplier: (lineHeight ? lineHeight : fontInfo.lineHeight) / fontInfo.fontSize,
     letterSpacing: letterSpacing ?? fontInfo.letterSpacing,
   };

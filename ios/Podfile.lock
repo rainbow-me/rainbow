@@ -1727,7 +1727,7 @@ PODS:
     - React
   - react-native-ios-context-menu (1.15.3):
     - React-Core
-  - react-native-keyboard-controller (1.18.6):
+  - react-native-keyboard-controller (1.19.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3292,7 +3292,7 @@ SPEC CHECKSUMS:
   react-native-compat: 0d09c4eb4d94ae3af6cc5e34d3d4a8e798c5fb2e
   react-native-get-random-values: 04e59f21c9076958ba50576bdd51878fac5b35ef
   react-native-ios-context-menu: 986da6dcba70094bcc2a8049f68410fe7d25aff1
-  react-native-keyboard-controller: b98641a8031aace36bdd4d62264448071fbe5eef
+  react-native-keyboard-controller: 06bc109064d91d6b18c43b7b36b1a67a1ec4bf69
   react-native-mail: 824fe88e2323c1ce0a93e5f46db4056abf432928
   react-native-menu: 70a2aeaeb0a6da0db4e08d8531cdf1d20b702cbf
   react-native-minimizer: d6db020c36a58447adba28f969f70a7098cfadb8

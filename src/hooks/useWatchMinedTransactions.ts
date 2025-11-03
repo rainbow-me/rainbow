@@ -6,7 +6,7 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { GetAssetsResponse, UserAsset } from '@/state/assets/types';
 import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { usePositionsStore } from '@/state/positions/positions';
+import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
@@ -29,7 +29,7 @@ async function refetchOtherAssets({ address }: { address: string }) {
 
 function updateUserAssets({ address, newAssets, chainIds }: { address: string; newAssets: Record<string, UserAsset>; chainIds: number[] }) {
   const userAssets = filterZeroBalanceAssets(Object.values(newAssets)).sort((a, b) => parseFloat(b.value) - parseFloat(a.value));
-  const positionTokenAddresses = usePositionsStore.getState().getPositionTokenAddresses();
+  const positionTokenAddresses = usePositionsStore.getState().getTokenAddresses();
 
   userAssetsStore.setState(state =>
     setUserAssets({

@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { Platform } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { ButtonPressAnimation } from '../animations';
 import { SendCoinRow } from '../coin-row';
@@ -21,6 +22,12 @@ const AssetRowShadow = colors => [
   [0, 10, 30, colors.shadow, 0.12],
   [0, 5, 15, colors.shadow, 0.06],
 ];
+
+// FIXME: Quick fix for now, plz check if required again when react-native-keyboard-controller update
+// iOS 26 has keyboard behavior changes that require extra space
+// Footer height calculation: button (~56px) + tx speed selector (~90px) + spacing (~104px) = ~250px
+const IOS_26_FOOTER_HEIGHT = 250;
+const isIOS26OrHigher = IS_IOS && parseFloat(String(Platform.Version)) >= 26;
 
 const AssetRowGradient = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: colors.gradients.offWhite,
@@ -89,7 +96,7 @@ export default function SendAssetForm({
     <KeyboardAwareScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       keyboardShouldPersistTaps="always"
-      extraKeyboardSpace={-NAVIGATION_BAR_HEIGHT}
+      extraKeyboardSpace={isIOS26OrHigher ? IOS_26_FOOTER_HEIGHT : IS_IOS ? 0 : -NAVIGATION_BAR_HEIGHT}
     >
       <Container>
         <ButtonPressAnimation onPress={onResetAssetSelection} overflowMargin={30} scaleTo={0.925}>

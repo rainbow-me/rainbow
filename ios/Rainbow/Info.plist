@@ -149,6 +149,15 @@
 				<key>UIPrerenderedIcon</key>
 				<false/>
 			</dict>
+			<key>chonks</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>chonks</string>
+				</array>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+			</dict>
 		</dict>
 		<key>CFBundlePrimaryIcon</key>
 		<dict>

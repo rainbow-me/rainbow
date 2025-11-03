@@ -42,6 +42,7 @@ export const CANDLESTICK_DATA_MONITOR = 'Candlestick Data Monitor';
 export const KING_OF_THE_HILL_TAB = 'King of the Hill Tab';
 export const RAINBOW_TOASTS = 'Rainbow Toasts';
 export const PERPS = 'Perps';
+export const DEFI_POSITIONS_THRESHOLD_FILTER = 'DeFi Minimum Value Filter';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -91,7 +92,8 @@ const config = {
   [CANDLESTICK_DATA_MONITOR]: { settings: true, value: false },
   [KING_OF_THE_HILL_TAB]: { settings: true, value: false },
   [RAINBOW_TOASTS]: { settings: true, value: false },
-  [PERPS]: { settings: true, value: true },
+  [PERPS]: { settings: true, value: false },
+  [DEFI_POSITIONS_THRESHOLD_FILTER]: { settings: true, value: true },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */
