@@ -1584,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "Активность",
+        "trades_count": "%{count} TRADES",
+        "no_previous_trades": "No Previous Trades"
+      },
       "common": {
         "not_available": "Н/Д",
         "current_price": "Текущая цена",
@@ -1611,6 +1616,7 @@
       },
       "markets": {
         "title": "Рынки",
+        "view_all": "View All",
         "up_to": "ДО",
         "already_open": "Уже открыто"
       },
@@ -1692,17 +1698,17 @@
         }
       },
       "trade_details_sheet": {
-        "market": "Market",
-        "entry_price": "Entry price",
-        "close_price": "Close price",
-        "date": "Date",
-        "profit": "Profit",
-        "loss": "Loss",
+        "market": "Рынок",
+        "entry_price": "Начальная цена",
+        "close_price": "Цена закрытия",
+        "date": "Дата",
+        "profit": "Прибыль",
+        "loss": "Убыток",
         "outcome": {
-          "liquidated": "Liquidated",
-          "opened": "Opened",
-          "lost": "Lost",
-          "earned": "Earned"
+          "liquidated": "Ликвидация",
+          "opened": "Открыто",
+          "lost": "Проигранный",
+          "earned": "Заработанный"
         }
       },
       "trigger_orders": {
@@ -1726,7 +1732,8 @@
       "search": {
         "search_markets": "Поиск рынков",
         "markets_count": "%{count} РЫНКОВ",
-        "choose_a_market": "ВЫБЕРИТЕ РЫНОК"
+        "choose_a_market": "ВЫБЕРИТЕ РЫНОК",
+        "no_markets_found": "No markets found"
       },
       "close_position": {
         "estimated_loss": "Ожидаемая потеря",
@@ -1768,6 +1775,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "By Volume",
+        "by_change": "By Change",
+        "by_price": "By Price"
       },
       "leverage": "Рычаг",
       "up_to": "До"
