@@ -74,7 +74,8 @@ async function fetchHlTrades({ address }: HlTradesParams, abortController: Abort
   };
 }
 
-function convertFillAndOrderToTrade({ fill, order }: { fill: hl.Fill; order: hl.FrontendOrder }): HlTrade {
+// function convertFillAndOrderToTrade({ fill, order }: { fill: hl.Fill; order: hl.FrontendOrder }): HlTrade {
+function convertFillAndOrderToTrade({ fill, order }: { fill: UserFill; order: HistoricalOrder['order'] }): HlTrade {
   const isTakeProfit = order.isPositionTpsl && order.orderType.includes('Take Profit');
   const isStopLoss = order.isPositionTpsl && order.orderType.includes('Stop');
   const triggerOrderType = isTakeProfit ? TriggerOrderType.TAKE_PROFIT : isStopLoss ? TriggerOrderType.STOP_LOSS : undefined;
@@ -141,7 +142,7 @@ function buildTradesBySymbol(trades: HlTrade[]): Record<string, HlTrade[]> {
   }, {});
 }
 
-function getEntryPriceFromFill(fill: hl.Fill): string | undefined {
+function getEntryPriceFromFill(fill: UserFill): string | undefined {
   const closedPnl = Number(fill.closedPnl);
   if (closedPnl === 0) return;
 
