@@ -1,13 +1,19 @@
 import { LegendList } from '@legendapp/list';
 import React, { memo, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { PerpMarketDisabledRow } from '@/features/perps/components/PerpMarketDisabledRow';
 import { PerpMarketRow } from '@/features/perps/components/PerpMarketRow';
-import { FOOTER_HEIGHT, FOOTER_HEIGHT_WITH_SAFE_AREA } from '@/features/perps/constants';
+import { FOOTER_HEIGHT, FOOTER_HEIGHT_WITH_SAFE_AREA, HYPERLIQUID_COLORS } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useHasPositionCheck } from '@/features/perps/stores/derived/useHasPositionCheck';
 import { useFilteredHyperliquidMarkets } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { PerpMarket } from '@/features/perps/types';
+import { Box, Text } from '@/design-system';
+import * as i18n from '@/languages';
+import { ButtonPressAnimation } from '@/components/animations';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import infinityIcon from '@/assets/infinity.png';
 
 type PerpMarketsListProps = {
   onPressMarket?: (market: PerpMarket) => void;
@@ -43,6 +49,7 @@ export const PerpMarketsList = memo(function PerpMarketsList({ onPressMarket }: 
       recycleItems
       scrollIndicatorInsets={SCROLL_INSETS}
       style={styles.list}
+      ListEmptyComponent={<ListEmptyComponent />}
     />
   );
 });
@@ -50,6 +57,16 @@ export const PerpMarketsList = memo(function PerpMarketsList({ onPressMarket }: 
 function keyExtractor(item: PerpMarket): string {
   return item.symbol;
 }
+
+const ListEmptyComponent = memo(function ListEmptyComponent() {
+  return (
+    <Box justifyContent="center" alignItems="center" paddingTop="32px">
+      <Text align="center" size="20pt" weight="heavy" color="labelSecondary">
+        {i18n.t(i18n.l.perps.search.no_markets_found)}
+      </Text>
+    </Box>
+  );
+});
 
 const styles = StyleSheet.create({
   contentContainer: {

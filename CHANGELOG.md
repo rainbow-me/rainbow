@@ -21,6 +21,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.9] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.9)
+
+### Added
+
+- Expanded Positions support for Defi protocols (#6885)
+
+### Fixed
+
+- Fixed webview provider injection on old Android versions
+- Fixed keyboard issue with iOS 26 in send form (#6903)
+- Fixed incorrect navigation when new perp creation is dismissed (#6902)
+- Fixed Android keyboard height on import wallet screen (#6890)
+
+### Internal
+
+- Defi positions migration to ListPositions endpoint (#6885)
+
 ## [2.0.8] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.8)
 
 ### Added
@@ -36,9 +53,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
-- Fixed keyboard issue with ios 26 in send form (#6903)
-- Fixed incorrect navigation when no new position is created (#6902)
-- Fixed keyboard height on import wallet screen (#6890)
 - Fixed network selector edit button (#6901)
 - Various perps fixes (#6888)
 - Fixed broad internal network filtering (#6877)

@@ -1575,6 +1575,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "Activity",
+        "trades_count": "%{count} TRADES",
+        "no_previous_trades": "No Previous Trades"
+      },
       "common": {
         "not_available": "N/A",
         "current_price": "Current Price",
@@ -1608,6 +1613,7 @@
       },
       "markets": {
         "title": "Markets",
+        "view_all": "View All",
         "up_to": "UP TO",
         "already_open": "Already Open"
       },
@@ -1688,6 +1694,20 @@
           "short_liquidated": "Short Liquidated"
         }
       },
+      "trade_details_sheet": {
+        "market": "Market",
+        "entry_price": "Entry price",
+        "close_price": "Close price",
+        "date": "Date",
+        "profit": "Profit",
+        "loss": "Loss",
+        "outcome": {
+          "liquidated": "Liquidated",
+          "opened": "Opened",
+          "lost": "Lost",
+          "earned": "Earned"
+        }
+      },
       "trigger_orders": {
         "title": "Trigger Orders",
         "take_profit": "Take Profit",
@@ -1709,7 +1729,8 @@
       "search": {
         "search_markets": "Search markets",
         "markets_count": "%{count} MARKETS",
-        "choose_a_market": "CHOOSE A MARKET"
+        "choose_a_market": "CHOOSE A MARKET",
+        "no_markets_found": "No markets found"
       },
       "close_position": {
         "estimated_loss": "Estimated Loss",
@@ -1742,6 +1763,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "By Volume",
+        "by_change": "By Change",
+        "by_price": "By Price"
       },
       "leverage": "Leverage",
       "up_to": "Up to"

@@ -1,5 +1,5 @@
 import { AddressOrEth, ParsedAsset } from '@/__swaps__/types/assets';
-import { HlBuilderSettings } from '@/features/perps/types';
+import { HlBuilderSettings, MarketSortOrder } from '@/features/perps/types';
 import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { Address } from 'viem';
@@ -10,6 +10,7 @@ import { LinearTransition } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { supportedNativeCurrencies } from '@/references';
 import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities';
+import * as i18n from '@/languages';
 
 export const DEFAULT_SLIPPAGE_BIPS = 500;
 export const RAINBOW_BUILDER_SETTINGS = {
@@ -20,7 +21,12 @@ export const RAINBOW_REFERRAL_CODE = 'RNBW';
 export const HYPERCORE_PSEUDO_CHAIN_ID = 1337;
 export const HYPERLIQUID_TOKEN_ID_SUFFIX = 'hl';
 export const SPOT_ASSET_ID_OFFSET = 10_000;
-export const SUPPORTED_DEX = ['', 'xyz'] as const;
+/**
+ * Fallback list of dex identifiers used until the live registry is fetched.
+ * The empty string represents the primary Hyperliquid dex.
+ */
+export const DEFAULT_PERP_DEX_IDS = ['', 'xyz'] as const;
+export const PRIMARY_PERP_DEX_ID = DEFAULT_PERP_DEX_IDS[0];
 // The minimum total order size (margin * leverage)
 // Add 1% buffer to account for decimal precision in position size calculation
 export const MIN_ORDER_SIZE_USD = 10 * 1.01;

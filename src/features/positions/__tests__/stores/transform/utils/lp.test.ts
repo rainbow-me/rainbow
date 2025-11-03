@@ -149,7 +149,9 @@ describe('LP Position Detection', () => {
         ];
 
         const allocation = calculateLiquidityAllocation(underlying);
-        expect(allocation).toBe('50/50');
+        expect(allocation.display).toBe('50% / 50%');
+        expect(allocation.percentages).toEqual([50, 50]);
+        expect(allocation.splits).toBe(2);
       });
 
       it('should calculate 100/0 allocation for out of range', () => {
@@ -167,7 +169,9 @@ describe('LP Position Detection', () => {
         ];
 
         const allocation = calculateLiquidityAllocation(underlying);
-        expect(allocation).toBe('100/0');
+        expect(allocation.display).toBe('100% / 0%');
+        expect(allocation.percentages).toEqual([100, 0]);
+        expect(allocation.splits).toBe(2);
       });
 
       it('should calculate uneven allocation', () => {
@@ -185,7 +189,9 @@ describe('LP Position Detection', () => {
         ];
 
         const allocation = calculateLiquidityAllocation(underlying);
-        expect(allocation).toBe('80/20');
+        expect(allocation.display).toBe('80% / 20%');
+        expect(allocation.percentages).toEqual([80, 20]);
+        expect(allocation.splits).toBe(2);
       });
 
       it('should handle zero total value', () => {
@@ -203,17 +209,23 @@ describe('LP Position Detection', () => {
         ];
 
         const allocation = calculateLiquidityAllocation(underlying);
-        expect(allocation).toBe('0/0');
+        expect(allocation.display).toBe('50% / 50%');
+        expect(allocation.percentages).toEqual([50, 50]);
+        expect(allocation.splits).toBe(2);
       });
 
       it('should handle undefined underlying', () => {
         const allocation = calculateLiquidityAllocation(undefined);
-        expect(allocation).toBe('0');
+        expect(allocation.display).toBe('100%');
+        expect(allocation.percentages).toEqual([100]);
+        expect(allocation.splits).toBe(1);
       });
 
       it('should handle empty underlying array', () => {
         const allocation = calculateLiquidityAllocation([]);
-        expect(allocation).toBe('0');
+        expect(allocation.display).toBe('100%');
+        expect(allocation.percentages).toEqual([100]);
+        expect(allocation.splits).toBe(1);
       });
 
       it('should adjust for rounding errors', () => {
@@ -236,13 +248,13 @@ describe('LP Position Detection', () => {
         ];
 
         const allocation = calculateLiquidityAllocation(underlying);
-        const percentages = allocation.split('/').map(Number);
-        const sum = percentages.reduce((a, b) => a + b, 0);
+        const sum = allocation.percentages.reduce((a, b) => a + b, 0);
         expect(sum).toBe(100);
+        expect(allocation.splits).toBe(3);
       });
 
-      it('should group assets beyond top 2 as "Other"', () => {
-        // Simulating the edge case with 9 tokens
+      it('should group assets beyond first 2 as "Other"', () => {
+        // Simulating the edge case with 9 tokens in backend order (not sorted)
         const underlying: RainbowUnderlyingAsset[] = [
           {
             asset: { symbol: 'ENA' } as unknown as PositionAsset,
@@ -292,21 +304,78 @@ describe('LP Position Detection', () => {
         ];
 
         const allocation = calculateLiquidityAllocation(underlying);
-        const percentages = allocation.split('/').map(Number);
 
-        // Should have exactly 3 values: top 2 + "Other"
-        expect(percentages).toHaveLength(3);
+        // Should have exactly 3 values: first 2 + "Other"
+        expect(allocation.percentages).toHaveLength(3);
+        expect(allocation.splits).toBe(3);
 
         // Should sum to 100
-        const sum = percentages.reduce((a, b) => a + b, 0);
+        const sum = allocation.percentages.reduce((a, b) => a + b, 0);
         expect(sum).toBe(100);
 
-        // Top 2 should be the highest values (WETH ~50%, AAVE ~18%)
-        expect(percentages[0]).toBeGreaterThanOrEqual(48); // WETH
-        expect(percentages[1]).toBeGreaterThanOrEqual(16); // AAVE
+        // First 2 should be in input order (ENA ~6-7%, UNI ~9%)
+        expect(allocation.percentages[0]).toBeGreaterThanOrEqual(6); // ENA
+        expect(allocation.percentages[0]).toBeLessThanOrEqual(7); // ENA (may be adjusted for rounding)
+        expect(allocation.percentages[1]).toBe(9); // UNI
 
-        // Others should be aggregated (UNI 9% + ENA 6% + MKR 6% + LDO 5% + PENDLE 3% + COMP 2% + RPL 0.4% ≈ 32%)
-        expect(percentages[2]).toBeGreaterThanOrEqual(30); // Other
+        // Others should be aggregated (AAVE + MKR + WETH + LDO + COMP + PENDLE + RPL)
+        expect(allocation.percentages[2]).toBeGreaterThanOrEqual(84); // Other
+        expect(allocation.percentages[2]).toBeLessThanOrEqual(85); // Other
+      });
+
+      it('should calculate WETH/GRT allocation (71/29)', () => {
+        const underlying: RainbowUnderlyingAsset[] = [
+          {
+            asset: { symbol: 'WETH' } as unknown as PositionAsset,
+            quantity: '0.05',
+            value: { amount: '100', display: '$100' },
+          },
+          {
+            asset: { symbol: 'GRT' } as unknown as PositionAsset,
+            quantity: '500',
+            value: { amount: '40', display: '$40' },
+          },
+        ];
+
+        const allocation = calculateLiquidityAllocation(underlying);
+        expect(allocation.display).toBe('71% / 29%');
+        expect(allocation.percentages).toEqual([71, 29]);
+        expect(allocation.splits).toBe(2);
+      });
+
+      it('should preserve input order (not sort by value)', () => {
+        const underlying: RainbowUnderlyingAsset[] = [
+          {
+            asset: { symbol: 'USDC' } as unknown as PositionAsset,
+            quantity: '500',
+            value: { amount: '500', display: '$500' }, // 25%
+          },
+          {
+            asset: { symbol: 'WETH' } as unknown as PositionAsset,
+            quantity: '1',
+            value: { amount: '1500', display: '$1500' }, // 75%
+          },
+        ];
+
+        const allocation = calculateLiquidityAllocation(underlying);
+        // Should preserve input order: USDC first (25%), WETH second (75%)
+        expect(allocation.percentages).toEqual([25, 75]);
+        expect(allocation.display).toBe('25% / 75%');
+      });
+
+      it('should handle single asset', () => {
+        const underlying: RainbowUnderlyingAsset[] = [
+          {
+            asset: { symbol: 'WETH' } as unknown as PositionAsset,
+            quantity: '1',
+            value: { amount: '2000', display: '$2000' },
+          },
+        ];
+
+        const allocation = calculateLiquidityAllocation(underlying);
+        expect(allocation.display).toBe('100%');
+        expect(allocation.percentages).toEqual([100]);
+        expect(allocation.splits).toBe(1);
       });
     });
   });

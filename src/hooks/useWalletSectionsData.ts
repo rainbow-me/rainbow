@@ -6,7 +6,6 @@ import useIsWalletEthZero from './useIsWalletEthZero';
 import { buildBriefWalletSectionsSelector, WalletSectionsState } from '@/helpers/buildWalletSections';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useClaimablesStore } from '@/state/claimables/claimables';
@@ -60,26 +59,14 @@ export default function useWalletSectionsData({
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
-  const positionsData = usePositionsStore(state =>
-    state.getData({
-      address: accountAddress,
-      currency: nativeCurrency,
-      chainIds: useBackendNetworksStore.getState().getSupportedPositionsChainIds(),
-    })
-  );
 
+  const positionsData = usePositionsStore(state => state.getData());
   const positions = useMemo(() => {
     if (!positionsEnabled) return null;
     return positionsData;
   }, [positionsData, positionsEnabled]);
 
-  const claimablesData = useClaimablesStore(state =>
-    state.getData({
-      address: accountAddress,
-      currency: nativeCurrency,
-    })
-  );
-
+  const claimablesData = useClaimablesStore(state => state.getData());
   const claimables = useMemo(() => {
     if (!claimablesEnabled) return null;
     return claimablesData;

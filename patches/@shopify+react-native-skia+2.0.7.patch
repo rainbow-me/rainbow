@@ -1,5 +1,5 @@
 diff --git a/node_modules/@shopify/react-native-skia/cpp/api/JsiSkHostObjects.h b/node_modules/@shopify/react-native-skia/cpp/api/JsiSkHostObjects.h
-index ac0181e..9810137 100644
+index ac0181e..4899db6 100644
 --- a/node_modules/@shopify/react-native-skia/cpp/api/JsiSkHostObjects.h
 +++ b/node_modules/@shopify/react-native-skia/cpp/api/JsiSkHostObjects.h
 @@ -49,8 +49,9 @@ public:
@@ -47,7 +47,7 @@ index ac0181e..9810137 100644
 -                                                    std::move(object)) {}
 +                                                    std::move(object),
 +                                                    throwOnDisposed) {}
-         
+ 
    /**
      Returns the underlying object from a host object of this type
 @@ -141,9 +150,11 @@ template <typename T>
@@ -77,3 +77,16 @@ index d13f79d..24dbfc7 100644
  
    JSI_HOST_FUNCTION(makeShader) {
      auto tmx = (SkTileMode)arguments[0].asNumber();
+diff --git a/node_modules/@shopify/react-native-skia/cpp/api/JsiSkTextStyle.h b/node_modules/@shopify/react-native-skia/cpp/api/JsiSkTextStyle.h
+index 693195b..df33417 100644
+--- a/node_modules/@shopify/react-native-skia/cpp/api/JsiSkTextStyle.h
++++ b/node_modules/@shopify/react-native-skia/cpp/api/JsiSkTextStyle.h
+@@ -137,7 +137,7 @@ public:
+     }
+     if (object.hasProperty(runtime, "halfLeading")) {
+       auto propValue = object.getProperty(runtime, "halfLeading");
+-      retVal.setHalfLeading(propValue.asNumber());
++      retVal.setHalfLeading(propValue.getBool());
+     }
+     if (object.hasProperty(runtime, "letterSpacing")) {
+       auto propValue = object.getProperty(runtime, "letterSpacing");

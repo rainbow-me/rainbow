@@ -57,7 +57,7 @@ const CoinIconStack = memo(function CoinIconStack({ tokens }: { tokens: Position
   );
 });
 
-export const PositionCard = memo(({ position }: PositionCardProps) => {
+export const PositionCard = memo(function PositionCard({ position }: PositionCardProps) {
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
 

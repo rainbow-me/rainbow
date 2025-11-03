@@ -1,15 +1,11 @@
 import { add, greaterThan } from '@/helpers/utilities';
-import * as hl from '@nktkas/hyperliquid';
 import { HistoricalOrdersResponse, UserFillsResponse } from '@nktkas/hyperliquid';
 import { Address } from 'viem';
-import { RAINBOW_BUILDER_SETTINGS, SUPPORTED_DEX } from '@/features/perps/constants';
+import { RAINBOW_BUILDER_SETTINGS } from '@/features/perps/constants';
 import { PerpPositionSide, PerpAccount, PerpsPosition } from '../types';
 import { normalizeDexSymbol } from '@/features/perps/utils/hyperliquidSymbols';
-
-const transport = new hl.HttpTransport();
-export const infoClient: hl.InfoClient = new hl.InfoClient({
-  transport,
-});
+import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
+import { hyperliquidDexActions } from '@/features/perps/stores/hyperliquidDexStore';
 
 export class HyperliquidAccountClient {
   constructor(private userAddress: Address) {}
@@ -38,8 +34,10 @@ export class HyperliquidAccountClient {
   }
 
   async getPerpAccount(abortSignal: AbortSignal | undefined): Promise<PerpAccount> {
+    await hyperliquidDexActions.fetch();
+    const dexIds = hyperliquidDexActions.getDexIds();
     const clearinghouseStates = await Promise.all(
-      SUPPORTED_DEX.map(async dex => {
+      dexIds.map(async dex => {
         const state = await infoClient.clearinghouseState(
           {
             user: this.userAddress,

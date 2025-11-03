@@ -72,7 +72,7 @@ function transformExtendedStats(stats: ExtendedStats | undefined, currency: Nati
   }
 
   return {
-    total: getNativeValue(stats.netTotal, currency),
+    total: getNativeValue(stats.overallTotal, currency),
     totalDeposits: getNativeValue(stats.totalDeposits, currency),
     totalBorrows: getNativeValue(stats.totalBorrows, currency),
     totalRewards: getNativeValue(stats.totalRewards, currency),
@@ -138,7 +138,7 @@ function transformDeposits(
   return transformUnderlyingAssets(tokens, currency).map(token => ({
     asset: token.asset,
     quantity: token.quantity,
-    value: getNativeValue(item.stats?.assetValue || '0', currency),
+    value: token.value,
     underlying: [token],
     dappVersion: position.protocolVersion,
     poolAddress: item.pool?.id,
@@ -152,12 +152,6 @@ function transformPools(tokens: PositionToken[], item: PortfolioItem, position: 
   const underlying = transformUnderlyingAssets(tokens, currency);
   if (underlying.length === 0) return [];
 
-  underlying.sort((a, b) => {
-    const valueA = parseFloat(a.value?.amount || '0');
-    const valueB = parseFloat(b.value?.amount || '0');
-    return valueB - valueA;
-  });
-
   const concentrated = isConcentratedLiquidityProtocol(position.protocolName, position.canonicalProtocolName, position.protocolVersion);
 
   return [
@@ -165,7 +159,6 @@ function transformPools(tokens: PositionToken[], item: PortfolioItem, position: 
       asset: underlying[0].asset,
       quantity: tokens[0]?.amount || '0',
       poolAddress: item.pool?.id,
-      isConcentratedLiquidity: concentrated,
       rangeStatus: calculateLiquidityRangeStatus(underlying, concentrated),
       allocation: calculateLiquidityAllocation(underlying),
       value: getNativeValue(item.stats?.assetValue || '0', currency),
@@ -188,13 +181,6 @@ function transformLpStakes(
   const underlying = transformUnderlyingAssets(tokens, currency);
   if (underlying.length === 0) return [];
 
-  // Sort by value (highest first) for consistent display
-  underlying.sort((a, b) => {
-    const valueA = parseFloat(a.value?.amount || '0');
-    const valueB = parseFloat(b.value?.amount || '0');
-    return valueB - valueA;
-  });
-
   const concentrated = isConcentratedLiquidityProtocol(position.protocolName, position.canonicalProtocolName, position.protocolVersion);
   const rangeStatus = calculateLiquidityRangeStatus(underlying, concentrated);
   const allocation = calculateLiquidityAllocation(underlying);
@@ -205,7 +191,6 @@ function transformLpStakes(
       quantity: tokens[0]?.amount || '0',
       poolAddress: item.pool?.id,
       isLp: true,
-      isConcentratedLiquidity: concentrated,
       rangeStatus,
       allocation,
       isLocked,
@@ -229,7 +214,7 @@ function transformStakes(
   return transformUnderlyingAssets(tokens, currency).map(token => ({
     asset: token.asset,
     quantity: token.quantity,
-    value: getNativeValue(item.stats?.assetValue || '0', currency),
+    value: token.value,
     underlying: [token],
     dappVersion: position.protocolVersion,
     poolAddress: item.pool?.id,
@@ -245,7 +230,7 @@ function transformBorrows(tokens: PositionToken[], item: PortfolioItem, position
   return transformUnderlyingAssets(tokens, currency).map(token => ({
     asset: token.asset,
     quantity: token.quantity,
-    value: getNativeValue(item.stats?.debtValue || '0', currency),
+    value: token.value,
     underlying: [token],
     dappVersion: position.protocolVersion,
     poolAddress: item.pool?.id,

@@ -37,7 +37,8 @@ import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { ChartTime } from '@/hooks/charts/useChartInfo';
 import { AreAllKeysOptional, ExtractOptionalKeys } from '@/types/objects';
 import { ScrollView } from 'react-native';
-import { PerpMarket, PerpsPosition, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
+import { HlTrade, PerpMarket, PerpsPosition, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
+import { HlTrade, PerpMarket, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
 
 export type PortalSheetProps = {
   children: React.FC;
@@ -663,6 +664,8 @@ type RouteParams = {
   [Routes.PERPS_ADD_TO_POSITION_SHEET]: {
     market: PerpMarket;
     position: PerpsPosition;
+  [Routes.PERPS_TRADE_DETAILS_SHEET]: {
+    trade: HlTrade;
   };
 };
 

@@ -132,6 +132,8 @@ const Routes = {
   CLOSE_POSITION_BOTTOM_SHEET: 'ClosePositionBottomSheet',
   PERPS_ADD_TO_POSITION_SHEET: 'PerpsAddToPositionSheet',
   PERPS_EXPLAIN_SHEET: 'PerpsExplainSheet',
+  PERPS_TRADE_HISTORY_SCREEN: 'PerpsTradeHistoryScreen',
+  PERPS_TRADE_DETAILS_SHEET: 'PerpsTradeDetailsSheet',
 } as const;
 
 export const NATIVE_ROUTES = new Set<Route>([
@@ -147,6 +149,7 @@ export const NATIVE_ROUTES = new Set<Route>([
   Routes.PERPS_DEPOSIT_SCREEN,
   Routes.PERPS_DETAIL_SCREEN,
   Routes.PERPS_NAVIGATOR,
+  Routes.PERPS_TRADE_HISTORY_SCREEN,
   Routes.PERPS_WITHDRAWAL_SCREEN,
   Routes.POSITION_SHEET,
   Routes.RECEIVE_MODAL,

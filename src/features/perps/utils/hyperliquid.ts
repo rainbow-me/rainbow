@@ -1,11 +1,11 @@
-import { infoClient } from '@/features/perps/services/hyperliquid-account-client';
-import { PerpMarket, SupportedDex } from '@/features/perps/types';
+import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
+import { PerpMarket } from '@/features/perps/types';
 import { divide, subtract, multiply } from '@/helpers/utilities';
-import { SUPPORTED_DEX } from '@/features/perps/constants';
 import { MetaAndAssetCtxsResponse } from '@nktkas/hyperliquid';
 import { getSymbolConverter } from '@/features/perps/utils/hyperliquidSymbolConverter';
 import { extractBaseSymbol, normalizeDexSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { SymbolConverter } from '@nktkas/hyperliquid/utils';
+import { hyperliquidDexActions } from '@/features/perps/stores/hyperliquidDexStore';
 
 function processMarketsForDex({
   metaAndAssetCtxs,
@@ -13,7 +13,7 @@ function processMarketsForDex({
   converter,
 }: {
   metaAndAssetCtxs: MetaAndAssetCtxsResponse;
-  dex: SupportedDex;
+  dex: string;
   converter: SymbolConverter;
 }): PerpMarket[] {
   const [meta, assetCtxs] = metaAndAssetCtxs;
@@ -66,11 +66,12 @@ function processMarketsForDex({
 }
 
 export async function getAllMarketsInfo(): Promise<PerpMarket[]> {
+  const dexIds = hyperliquidDexActions.getDexIds();
   const converter = await getSymbolConverter();
-  const dexResponses: MetaAndAssetCtxsResponse[] = await Promise.all(SUPPORTED_DEX.map(dex => infoClient.metaAndAssetCtxs({ dex })));
+  const dexResponses: MetaAndAssetCtxsResponse[] = await Promise.all(dexIds.map(dex => infoClient.metaAndAssetCtxs({ dex })));
 
   const allMarkets = dexResponses.map((metaAndAssetCtxs, index) => {
-    const dex = SUPPORTED_DEX[index];
+    const dex = dexIds[index];
     return processMarketsForDex({ metaAndAssetCtxs, dex, converter });
   });
 

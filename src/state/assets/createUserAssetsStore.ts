@@ -32,7 +32,7 @@ export const createUserAssetsStore = (address: Address | string) =>
       fetcher: fetchUserAssets,
       setData: ({ data, set }) => {
         if (data?.userAssets) {
-          const positionTokenAddresses = usePositionsStore.getState().getPositionTokenAddresses();
+          const positionTokenAddresses = usePositionsStore.getState().getTokenAddresses();
           set(state => setUserAssets({ address, state, userAssets: data.userAssets, positionTokenAddresses }));
         }
       },
@@ -224,7 +224,7 @@ export const createUserAssetsStore = (address: Address | string) =>
       reprocessAssetsData: () => {
         const lastData = get().getData();
         if (lastData?.userAssets) {
-          const positionTokenAddresses = usePositionsStore.getState().getPositionTokenAddresses();
+          const positionTokenAddresses = usePositionsStore.getState().getTokenAddresses();
           set(state => setUserAssets({ address, state, userAssets: lastData.userAssets, positionTokenAddresses }));
         }
       },
