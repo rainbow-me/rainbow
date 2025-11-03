@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { Keyboard, ScrollView } from 'react-native';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import { Box, Separator, Stack, useColorMode } from '@/design-system';
-import { AmountInputCard } from '@/features/perps/components/AmountInputCard';
+import { AmountInputCard } from '@/features/perps/components/AmountInputCard/AmountInputCard';
 import { LeverageInputCard } from './LeverageInputCard';
 import { POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING, PositionSideSelector } from './PositionSideSelector';
 import { DetailsSection } from './DetailsSection';

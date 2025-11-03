@@ -10,7 +10,7 @@ import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { PerpMarket, PerpsPosition } from '@/features/perps/types';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { AmountInputCard } from '@/features/perps/components/AmountInputCard';
+import { AmountInputCard } from '@/features/perps/components/AmountInputCard/AmountInputCard';
 import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
