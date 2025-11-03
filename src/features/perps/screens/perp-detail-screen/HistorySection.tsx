@@ -6,6 +6,8 @@ import { Box, Separator, Text, TextShadow } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
 import { TradeListItem } from '../../components/TradeListItem';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 const DEFAULT_VISIBLE_TRADE_COUNT = 10;
 
@@ -36,7 +38,7 @@ export const HistorySection = memo(function HistorySection({ market }: { market:
             {visibleTrades.map((trade, index) => (
               <Fragment key={trade.id}>
                 <ButtonPressAnimation onPress={() => Navigation.handleAction(Routes.PERPS_TRADE_DETAILS_SHEET, { trade })} scaleTo={0.94}>
-                  <TradeListItem paddingTop={index === 0 ? '10px' : '16px'} trade={trade} />
+                  <TradeListItem trade={trade} />
                 </ButtonPressAnimation>
                 {index < visibleTrades.length - 1 && <Separator color={'separatorTertiary'} direction="horizontal" thickness={4 / 3} />}
               </Fragment>
