@@ -1584,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "活动",
+        "trades_count": "%{count} TRADES",
+        "no_previous_trades": "No Previous Trades"
+      },
       "common": {
         "not_available": "N/A",
         "current_price": "当前价格",
@@ -1611,6 +1616,7 @@
       },
       "markets": {
         "title": "市场",
+        "view_all": "View All",
         "up_to": "最多",
         "already_open": "已打开"
       },
@@ -1692,17 +1698,17 @@
         }
       },
       "trade_details_sheet": {
-        "market": "Market",
-        "entry_price": "Entry price",
-        "close_price": "Close price",
-        "date": "Date",
-        "profit": "Profit",
-        "loss": "Loss",
+        "market": "市场",
+        "entry_price": "入场价格",
+        "close_price": "收盘价",
+        "date": "日期",
+        "profit": "利润",
+        "loss": "亏损",
         "outcome": {
-          "liquidated": "Liquidated",
-          "opened": "Opened",
-          "lost": "Lost",
-          "earned": "Earned"
+          "liquidated": "清算",
+          "opened": "已开",
+          "lost": "亏损",
+          "earned": "赚取"
         }
       },
       "trigger_orders": {
@@ -1726,7 +1732,8 @@
       "search": {
         "search_markets": "搜索市场",
         "markets_count": "%{count}个市场",
-        "choose_a_market": "选择一个市场"
+        "choose_a_market": "选择一个市场",
+        "no_markets_found": "No markets found"
       },
       "close_position": {
         "estimated_loss": "预估损失",
@@ -1768,6 +1775,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "By Volume",
+        "by_change": "By Change",
+        "by_price": "By Price"
       },
       "leverage": "杠杆",
       "up_to": "最多"
