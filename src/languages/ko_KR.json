@@ -1691,6 +1691,20 @@
           "short_liquidated": "숏 청산"
         }
       },
+      "trade_details_sheet": {
+        "market": "Market",
+        "entry_price": "Entry price",
+        "close_price": "Close price",
+        "date": "Date",
+        "profit": "Profit",
+        "loss": "Loss",
+        "outcome": {
+          "liquidated": "Liquidated",
+          "opened": "Opened",
+          "lost": "Lost",
+          "earned": "Earned"
+        }
+      },
       "trigger_orders": {
         "title": "트리거 주문",
         "take_profit": "이익 실현",
