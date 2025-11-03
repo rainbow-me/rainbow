@@ -1584,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "Aktivite",
+        "trades_count": "%{count} TRADES",
+        "no_previous_trades": "No Previous Trades"
+      },
       "common": {
         "not_available": "N/A",
         "current_price": "Mevcut Fiyat",
@@ -1611,6 +1616,7 @@
       },
       "markets": {
         "title": "Piyasalar",
+        "view_all": "View All",
         "up_to": "UP TO",
         "already_open": "Zaten Açık"
       },
@@ -1692,17 +1698,17 @@
         }
       },
       "trade_details_sheet": {
-        "market": "Market",
-        "entry_price": "Entry price",
-        "close_price": "Close price",
-        "date": "Date",
-        "profit": "Profit",
-        "loss": "Loss",
+        "market": "Piyasa",
+        "entry_price": "Giriş fiyatı",
+        "close_price": "Kapanış fiyatı",
+        "date": "Tarih",
+        "profit": "Kar",
+        "loss": "Zarar",
         "outcome": {
-          "liquidated": "Liquidated",
-          "opened": "Opened",
-          "lost": "Lost",
-          "earned": "Earned"
+          "liquidated": "Tasfiye edildi",
+          "opened": "Açıldı",
+          "lost": "Kaybedildi",
+          "earned": "Kazanıldı"
         }
       },
       "trigger_orders": {
@@ -1726,7 +1732,8 @@
       "search": {
         "search_markets": "Piyasaları ara",
         "markets_count": "%{count} PİYASA",
-        "choose_a_market": "PİYASA SEÇİN"
+        "choose_a_market": "PİYASA SEÇİN",
+        "no_markets_found": "No markets found"
       },
       "close_position": {
         "estimated_loss": "Tahmini Zarar",
@@ -1768,6 +1775,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "By Volume",
+        "by_change": "By Change",
+        "by_price": "By Price"
       },
       "leverage": "Kaldıraç",
       "up_to": "Kadarcık"
