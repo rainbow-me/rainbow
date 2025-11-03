@@ -13,7 +13,6 @@ type HyperliquidDexStoreData = {
 type HyperliquidDexStore = HyperliquidDexStoreData & {
   getDexIds: () => string[];
   getDex: (dexId: string) => HyperliquidDex | undefined;
-  hasDex: (dexId: string) => boolean;
 };
 
 const DEFAULT_DEXES: HyperliquidDex[] = DEFAULT_PERP_DEX_IDS.map(name => ({ name }));
@@ -22,15 +21,14 @@ export const useHyperliquidDexStore = createQueryStore<HyperliquidDexStoreData, 
   {
     fetcher: fetchHyperliquidDexes,
     setData: ({ data, set }) => set({ dexes: data.dexes }),
-    cacheTime: time.seconds(1),
-    staleTime: time.seconds(30),
+    cacheTime: time.days(1),
+    staleTime: time.hours(1),
   },
 
   (_, get) => ({
     dexes: DEFAULT_DEXES,
     getDexIds: () => get().dexes.map(dex => dex.name),
     getDex: dexId => get().dexes.find(dex => dex.name === dexId),
-    hasDex: dexId => get().getDexIds().includes(dexId),
   }),
 
   {
@@ -68,5 +66,5 @@ function mergeWithDefaults(dexes: HyperliquidDex[]): HyperliquidDex[] {
     if (!hasDex) merged.unshift(defaultDex);
   });
 
-  return merged.length ? merged : DEFAULT_DEXES;
+  return merged;
 }

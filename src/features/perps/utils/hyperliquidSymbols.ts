@@ -1,5 +1,4 @@
 import { PRIMARY_PERP_DEX_ID } from '@/features/perps/constants';
-import { hyperliquidDexActions } from '@/features/perps/stores/hyperliquidDexStore';
 
 const DEX_SYMBOL_SEPARATOR = ':';
 
@@ -14,9 +13,7 @@ export function normalizeDexSymbol(symbol: string, dex: string): string {
 export function extractDexFromSymbol(symbol: string): string {
   const separatorIndex = symbol.indexOf(DEX_SYMBOL_SEPARATOR);
   if (separatorIndex === -1) return PRIMARY_PERP_DEX_ID;
-
-  const dexId = symbol.slice(0, separatorIndex);
-  return hyperliquidDexActions.hasDex(dexId) ? dexId : PRIMARY_PERP_DEX_ID;
+  return symbol.slice(0, separatorIndex);
 }
 
 export function isBuilderDex(dex: string): boolean {

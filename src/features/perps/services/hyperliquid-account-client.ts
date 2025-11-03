@@ -34,7 +34,8 @@ export class HyperliquidAccountClient {
   }
 
   async getPerpAccount(abortSignal: AbortSignal | undefined): Promise<PerpAccount> {
-    const dexIds = await this.ensureDexRegistry();
+    await hyperliquidDexActions.fetch();
+    const dexIds = hyperliquidDexActions.getDexIds();
     const clearinghouseStates = await Promise.all(
       dexIds.map(async dex => {
         const state = await infoClient.clearinghouseState(
@@ -143,12 +144,5 @@ export class HyperliquidAccountClient {
 
   async isDexAbstractionEnabled(): Promise<boolean> {
     return (await infoClient.userDexAbstraction({ user: this.userAddress })) ?? false;
-  }
-
-  private async ensureDexRegistry(): Promise<string[]> {
-    const { fetch, getDexIds } = hyperliquidDexActions;
-    await fetch(undefined, { force: false });
-    const dexIds = getDexIds();
-    return dexIds;
   }
 }
