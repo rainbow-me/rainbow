@@ -1,7 +1,6 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { HlTrade } from '@/features/perps/types';
-import { tradeExecutionDescriptions } from '@/features/perps/stores/hlTradesStore';
+import { HlTrade, TradeExecutionType } from '@/features/perps/types';
 import { Box, Text, TextIcon } from '@/design-system';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { format } from 'date-fns';
@@ -13,14 +12,14 @@ import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTok
 const LARGE_SPACE = ' ';
 
 const descriptionIcons = {
-  [tradeExecutionDescriptions.longLiquidated]: '􀁞',
-  [tradeExecutionDescriptions.shortLiquidated]: '􀁞',
-  [tradeExecutionDescriptions.longOpened]: '􀁌',
-  [tradeExecutionDescriptions.shortOpened]: '􀁌',
-  [tradeExecutionDescriptions.longClosed]: '􀁎',
-  [tradeExecutionDescriptions.shortClosed]: '􀁎',
-  [tradeExecutionDescriptions.takeProfitExecuted]: '􀑁',
-  [tradeExecutionDescriptions.stopLossExecuted]: '􁘳',
+  [TradeExecutionType.LONG_LIQUIDATED]: '􀁞',
+  [TradeExecutionType.SHORT_LIQUIDATED]: '􀁞',
+  [TradeExecutionType.LONG_OPENED]: '􀁌',
+  [TradeExecutionType.SHORT_OPENED]: '􀁌',
+  [TradeExecutionType.LONG_CLOSED]: '􀁎',
+  [TradeExecutionType.SHORT_CLOSED]: '􀁎',
+  [TradeExecutionType.TAKE_PROFIT_EXECUTED]: '􀑁',
+  [TradeExecutionType.STOP_LOSS_EXECUTED]: '􁘳',
 };
 
 type TradeListItemProps = {
@@ -56,9 +55,9 @@ export const TradeListItem = memo(function TradeListItem({ trade, showMarketIcon
   }, [trade.price]);
 
   const isLiquidation =
-    trade.description === tradeExecutionDescriptions.longLiquidated || trade.description === tradeExecutionDescriptions.shortLiquidated;
+    trade.executionType === TradeExecutionType.LONG_LIQUIDATED || trade.executionType === TradeExecutionType.SHORT_LIQUIDATED;
   const descriptionColor = isLiquidation ? 'red' : 'labelTertiary';
-  const descriptionIcon = descriptionIcons[trade.description as keyof typeof descriptionIcons];
+  const descriptionIcon = descriptionIcons[trade.executionType];
 
   return (
     <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={10}>
