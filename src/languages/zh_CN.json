@@ -1586,8 +1586,8 @@
     "perps": {
       "activity": {
         "title": "活动",
-        "trades_count": "%{count} TRADES",
-        "no_previous_trades": "No Previous Trades"
+        "trades_count": "%{count} 笔交易",
+        "no_previous_trades": "无之前的交易记录"
       },
       "common": {
         "not_available": "N/A",
@@ -1616,7 +1616,7 @@
       },
       "markets": {
         "title": "市场",
-        "view_all": "View All",
+        "view_all": "查看所有",
         "up_to": "最多",
         "already_open": "已打开"
       },
@@ -1727,13 +1727,15 @@
         "above": "以上",
         "below": "以下",
         "must_be": "必须是",
-        "failed_to_create": "创建触发订单失败"
+        "failed_to_create": "创建触发订单失败",
+        "gain": "收益",
+        "loss": "亏损"
       },
       "search": {
         "search_markets": "搜索市场",
         "markets_count": "%{count}个市场",
         "choose_a_market": "选择一个市场",
-        "no_markets_found": "No markets found"
+        "no_markets_found": "未找到市场"
       },
       "close_position": {
         "estimated_loss": "预估损失",
@@ -1777,9 +1779,9 @@
         }
       },
       "sort": {
-        "by_volume": "By Volume",
-        "by_change": "By Change",
-        "by_price": "By Price"
+        "by_volume": "按交易量",
+        "by_change": "按变化",
+        "by_price": "按价格"
       },
       "leverage": "杠杆",
       "up_to": "最多"
