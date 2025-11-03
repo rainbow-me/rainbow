@@ -1584,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "النشاط",
+        "trades_count": "%{count} TRADES",
+        "no_previous_trades": "No Previous Trades"
+      },
       "common": {
         "not_available": "غير متاح",
         "current_price": "السعر الحالي",
@@ -1611,6 +1616,7 @@
       },
       "markets": {
         "title": "الأسواق",
+        "view_all": "View All",
         "up_to": "حتى",
         "already_open": "مفتوح مسبقًا"
       },
@@ -1692,17 +1698,17 @@
         }
       },
       "trade_details_sheet": {
-        "market": "Market",
-        "entry_price": "Entry price",
-        "close_price": "Close price",
-        "date": "Date",
-        "profit": "Profit",
-        "loss": "Loss",
+        "market": "السوق",
+        "entry_price": "سعر الدخول",
+        "close_price": "سعر الإغلاق",
+        "date": "التاريخ",
+        "profit": "الربح",
+        "loss": "الخسارة",
         "outcome": {
-          "liquidated": "Liquidated",
-          "opened": "Opened",
-          "lost": "Lost",
-          "earned": "Earned"
+          "liquidated": "تم التصفية",
+          "opened": "تم الفتح",
+          "lost": "خسر",
+          "earned": "كسب"
         }
       },
       "trigger_orders": {
@@ -1726,7 +1732,8 @@
       "search": {
         "search_markets": "البحث في الأسواق",
         "markets_count": "٪{count} أسواق ",
-        "choose_a_market": "اختيار سوق"
+        "choose_a_market": "اختيار سوق",
+        "no_markets_found": "No markets found"
       },
       "close_position": {
         "estimated_loss": "الخسارة المقدرة",
@@ -1768,6 +1775,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "By Volume",
+        "by_change": "By Change",
+        "by_price": "By Price"
       },
       "leverage": "الرافعة المالية",
       "up_to": "حتى"
