@@ -1,6 +1,6 @@
 import { LegendList } from '@legendapp/list';
 import React, { memo, useMemo } from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet } from 'react-native';
 import { Navbar } from '@/components/navbar/Navbar';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { HYPERLIQUID_COLORS, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
@@ -13,14 +13,18 @@ import * as i18n from '@/languages';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import infinityIcon from '@/assets/infinity.png';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { ButtonPressAnimation } from '@/components/animations';
 
 const ESTIMATED_ITEM_HEIGHT = 68;
 const SCROLL_INSETS = { bottom: 48 };
 
 export const PerpsTradeHistoryScreen = memo(function PerpsTradeHistoryScreen() {
-  const { isDarkMode } = useColorMode();
+  const { isDarkMode, foregroundColors } = useColorMode();
   const safeAreaInsets = useSafeAreaInsets();
   const trades = useHlTradesStore(state => state.getTrades() ?? []);
+  const isInitialLoad = useHlTradesStore(state => state.getStatus('isInitialLoad'));
 
   const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
 
@@ -51,33 +55,44 @@ export const PerpsTradeHistoryScreen = memo(function PerpsTradeHistoryScreen() {
         <Box marginTop={{ custom: 8 }} paddingHorizontal="24px">
           <Separator color="separatorTertiary" direction="horizontal" thickness={THICK_BORDER_WIDTH} />
         </Box>
-        <LegendList
-          ItemSeparatorComponent={() => <Separator color="separatorTertiary" direction="horizontal" thickness={THICK_BORDER_WIDTH} />}
-          ListEmptyComponent={
-            <Box alignItems="center" justifyContent="center" paddingVertical={{ custom: 40 }}>
-              <Box height={124} justifyContent="center" alignItems="center" gap={20} paddingBottom="24px">
-                <Image source={infinityIcon} tintColor={HYPERLIQUID_COLORS.green} />
-                <Text align="center" size="20pt" weight="heavy" color="labelSecondary">
-                  {i18n.t(i18n.l.perps.activity.no_previous_trades)}
-                </Text>
+        {isInitialLoad && (
+          <Box alignItems="center" justifyContent="center" paddingVertical={{ custom: 40 }}>
+            <ActivityIndicator color={foregroundColors.label} size="large" />
+          </Box>
+        )}
+        {!isInitialLoad && (
+          <LegendList
+            ItemSeparatorComponent={() => <Separator color="separatorTertiary" direction="horizontal" thickness={THICK_BORDER_WIDTH} />}
+            ListEmptyComponent={
+              <Box alignItems="center" justifyContent="center" paddingVertical={{ custom: 40 }}>
+                <Box height={124} justifyContent="center" alignItems="center" gap={20} paddingBottom="24px">
+                  <Image source={infinityIcon} tintColor={HYPERLIQUID_COLORS.green} />
+                  <Text align="center" size="20pt" weight="heavy" color="labelSecondary">
+                    {i18n.t(i18n.l.perps.activity.no_previous_trades)}
+                  </Text>
+                </Box>
               </Box>
-            </Box>
-          }
-          contentContainerStyle={styles.contentContainer}
-          data={trades}
-          estimatedItemSize={ESTIMATED_ITEM_HEIGHT}
-          keyExtractor={keyExtractor}
-          renderItem={renderTradeItem}
-          scrollIndicatorInsets={SCROLL_INSETS}
-          style={styles.list}
-        />
+            }
+            contentContainerStyle={styles.contentContainer}
+            data={trades}
+            estimatedItemSize={ESTIMATED_ITEM_HEIGHT}
+            keyExtractor={keyExtractor}
+            renderItem={renderTradeItem}
+            scrollIndicatorInsets={SCROLL_INSETS}
+            style={styles.list}
+          />
+        )}
       </Box>
     </PerpsAccentColorContextProvider>
   );
 });
 
 function renderTradeItem({ item }: { item: HlTrade }) {
-  return <TradeListItem trade={item} showMarketIcon />;
+  return (
+    <ButtonPressAnimation onPress={() => Navigation.handleAction(Routes.PERPS_TRADE_DETAILS_SHEET, { trade: item })} scaleTo={0.94}>
+      <TradeListItem trade={item} showMarketIcon />
+    </ButtonPressAnimation>
+  );
 }
 
 function keyExtractor(trade: HlTrade): string {
