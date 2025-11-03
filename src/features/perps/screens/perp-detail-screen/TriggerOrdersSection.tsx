@@ -36,10 +36,6 @@ const ExistingTriggerOrderCard = memo(function ExistingTriggerOrderCard({ order 
     if (!position || !order.triggerPrice || !position.entryPrice) return '-';
 
     const orderSize = abs(isFullOrder ? position.size : order.size);
-    // const normalizedOrderSize =
-    //   rawOrderSize == null ? '0' : typeof rawOrderSize === 'string' ? rawOrderSize : rawOrderSize.toString();
-    // directionalDifference already encodes profit/loss sign, so use the absolute order size
-    // const orderSize = normalizedOrderSize.startsWith('-') ? normalizedOrderSize.slice(1) : normalizedOrderSize;
     const priceDifference = subWorklet(order.triggerPrice, position.entryPrice);
     const directionalDifference = position.side === PerpPositionSide.LONG ? priceDifference : mulWorklet('-1', priceDifference);
     const pnl = mulWorklet(orderSize, directionalDifference);
