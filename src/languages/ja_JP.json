@@ -1584,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "アクティビティ",
+        "trades_count": "%{count} TRADES",
+        "no_previous_trades": "No Previous Trades"
+      },
       "common": {
         "not_available": "N/A",
         "current_price": "現在の価格",
@@ -1611,6 +1616,7 @@
       },
       "markets": {
         "title": "マーケット",
+        "view_all": "View All",
         "up_to": "最大",
         "already_open": "既にオープン済み"
       },
@@ -1692,17 +1698,17 @@
         }
       },
       "trade_details_sheet": {
-        "market": "Market",
-        "entry_price": "Entry price",
-        "close_price": "Close price",
-        "date": "Date",
-        "profit": "Profit",
-        "loss": "Loss",
+        "market": "マーケット",
+        "entry_price": "エントリー価格",
+        "close_price": "クローズ価格",
+        "date": "日付",
+        "profit": "利益",
+        "loss": "損失",
         "outcome": {
-          "liquidated": "Liquidated",
-          "opened": "Opened",
-          "lost": "Lost",
-          "earned": "Earned"
+          "liquidated": "清算済み",
+          "opened": "開始済み",
+          "lost": "失われた",
+          "earned": "稼いだ"
         }
       },
       "trigger_orders": {
@@ -1726,7 +1732,8 @@
       "search": {
         "search_markets": "マーケットを検索",
         "markets_count": "%{count} メーカー",
-        "choose_a_market": "マーケットを選択"
+        "choose_a_market": "マーケットを選択",
+        "no_markets_found": "No markets found"
       },
       "close_position": {
         "estimated_loss": "予測損失",
@@ -1768,6 +1775,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "By Volume",
+        "by_change": "By Change",
+        "by_price": "By Price"
       },
       "leverage": "レバレッジ",
       "up_to": "最大"
