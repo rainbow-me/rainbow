@@ -34,6 +34,8 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { sanitizeAmount } from '@/worklets/strings';
 import { AmountInputCardSubtitle } from './AmountInputCardSubtitle';
 import { LayoutChangeEvent, StyleSheet } from 'react-native';
+import { OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
+import { ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
 type InteractionMode = 'slider' | 'keyboard';
 
@@ -186,9 +188,18 @@ function roundToNearestTenth(value: number): number {
 type AmountInputCardProps = {
   availableBalance: string;
   onAmountChange?: (amount: string) => void;
+  resetKey?: string;
+  title?: string;
+  validation?: ReadOnlySharedValue<OrderAmountValidation>;
 };
 
-export const AmountInputCard = memo(function AmountInputCard({ availableBalance, onAmountChange }: AmountInputCardProps) {
+export const AmountInputCard = memo(function AmountInputCard({
+  availableBalance,
+  onAmountChange,
+  resetKey,
+  title,
+  validation,
+}: AmountInputCardProps) {
   const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
 
@@ -377,7 +388,7 @@ export const AmountInputCard = memo(function AmountInputCard({ availableBalance,
 
   useEffect(() => {
     resetToInitial(availableBalance);
-  }, [availableBalance, resetToInitial]);
+  }, [availableBalance, resetKey, resetToInitial]);
 
   useEffect(() => {
     revalidateAmount(availableBalance);
@@ -405,9 +416,9 @@ export const AmountInputCard = memo(function AmountInputCard({ availableBalance,
       <Box width="full" flexDirection="row" alignItems="center" zIndex={2}>
         <Box gap={12}>
           <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-            {i18n.t(i18n.l.perps.inputs.amount)}
+            {title ?? i18n.t(i18n.l.perps.inputs.amount)}
           </Text>
-          <AmountInputCardSubtitle availableBalanceString={availableBalanceString} />
+          <AmountInputCardSubtitle availableBalanceString={availableBalanceString} validation={validation} />
         </Box>
         <Box flexDirection="row" alignItems="center" justifyContent="flex-end" style={{ flex: 1 }}>
           <CurrencyInput
