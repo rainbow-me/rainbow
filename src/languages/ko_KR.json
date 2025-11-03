@@ -1584,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "활동",
+        "trades_count": "%{count} TRADES",
+        "no_previous_trades": "No Previous Trades"
+      },
       "common": {
         "not_available": "N/A",
         "current_price": "현재 가격",
@@ -1611,6 +1616,7 @@
       },
       "markets": {
         "title": "시장",
+        "view_all": "View All",
         "up_to": "최대",
         "already_open": "이미 열림"
       },
@@ -1692,17 +1698,17 @@
         }
       },
       "trade_details_sheet": {
-        "market": "Market",
-        "entry_price": "Entry price",
-        "close_price": "Close price",
-        "date": "Date",
-        "profit": "Profit",
-        "loss": "Loss",
+        "market": "시장",
+        "entry_price": "진입 가격",
+        "close_price": "종가",
+        "date": "날짜",
+        "profit": "수익",
+        "loss": "손실",
         "outcome": {
-          "liquidated": "Liquidated",
-          "opened": "Opened",
-          "lost": "Lost",
-          "earned": "Earned"
+          "liquidated": "청산됨",
+          "opened": "열림",
+          "lost": "잃어버림",
+          "earned": "얻음"
         }
       },
       "trigger_orders": {
@@ -1726,7 +1732,8 @@
       "search": {
         "search_markets": "시장 검색",
         "markets_count": "%{count} 시장",
-        "choose_a_market": "시장 선택"
+        "choose_a_market": "시장 선택",
+        "no_markets_found": "No markets found"
       },
       "close_position": {
         "estimated_loss": "예상 손실",
@@ -1768,6 +1775,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "By Volume",
+        "by_change": "By Change",
+        "by_price": "By Price"
       },
       "leverage": "레버리지",
       "up_to": "최대"
