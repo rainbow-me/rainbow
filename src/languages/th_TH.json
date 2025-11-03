@@ -1586,8 +1586,8 @@
     "perps": {
       "activity": {
         "title": "กิจกรรม",
-        "trades_count": "%{count} TRADES",
-        "no_previous_trades": "No Previous Trades"
+        "trades_count": "%{count} การซื้อขาย",
+        "no_previous_trades": "ไม่มีการซื้อขายก่อนหน้า"
       },
       "common": {
         "not_available": "ไม่พร้อมใช้งาน",
@@ -1616,7 +1616,7 @@
       },
       "markets": {
         "title": "ตลาด",
-        "view_all": "View All",
+        "view_all": "ดูทั้งหมด",
         "up_to": "สูงสุดถึง",
         "already_open": "เปิดแล้ว"
       },
@@ -1727,13 +1727,15 @@
         "above": "เหนือ",
         "below": "ต่ำกว่า",
         "must_be": "ต้องเป็น",
-        "failed_to_create": "สร้างคำสั่งกระตุ้นไม่สำเร็จ"
+        "failed_to_create": "สร้างคำสั่งกระตุ้นไม่สำเร็จ",
+        "gain": "กำไร",
+        "loss": "ขาดทุน"
       },
       "search": {
         "search_markets": "ค้นหาตลาด",
         "markets_count": "%{count} ตลาด",
         "choose_a_market": "เลือกตลาด",
-        "no_markets_found": "No markets found"
+        "no_markets_found": "ไม่พบตลาด"
       },
       "close_position": {
         "estimated_loss": "ขาดทุนที่คาดการณ์",
@@ -1777,9 +1779,9 @@
         }
       },
       "sort": {
-        "by_volume": "By Volume",
-        "by_change": "By Change",
-        "by_price": "By Price"
+        "by_volume": "ตามปริมาณ",
+        "by_change": "ตามการเปลี่ยนแปลง",
+        "by_price": "ตามราคา"
       },
       "leverage": "เลเวอเรจ",
       "up_to": "สูงสุดถึง"
