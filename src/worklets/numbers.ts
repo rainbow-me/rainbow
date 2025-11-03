@@ -11,3 +11,10 @@ export function clamp(value: number, lowerBound: number, upperBound: number): nu
   'worklet';
   return Math.min(Math.max(lowerBound, value), upperBound);
 }
+
+export function getRandomInt(min: number, max: number): number {
+  'worklet';
+  const minInt = Math.ceil(min);
+  const maxInt = Math.floor(max);
+  return Math.floor(Math.random() * (maxInt - minInt + 1)) + minInt;
+}

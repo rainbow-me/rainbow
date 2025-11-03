@@ -1,5 +1,5 @@
 import { Fragment, memo, useMemo, useState } from 'react';
-import { HlTrade, PerpMarket } from '@/features/perps/types';
+import { HlTrade, PerpMarket, TradeExecutionType } from '@/features/perps/types';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { tradeExecutionDescriptions, useHlTradesStore } from '@/features/perps/stores/hlTradesStore';
 import { Box, BoxProps, Separator, Text, TextIcon, TextShadow } from '@/design-system';
@@ -10,19 +10,21 @@ import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPri
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import * as i18n from '@/languages';
 import { abs } from '@/helpers/utilities';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 const DEFAULT_VISIBLE_TRADE_COUNT = 10;
 const LARGE_SPACE = ' ';
 
 const descriptionIcons = {
-  [tradeExecutionDescriptions.longLiquidated]: '􀁞',
-  [tradeExecutionDescriptions.shortLiquidated]: '􀁞',
-  [tradeExecutionDescriptions.longOpened]: '􀁌',
-  [tradeExecutionDescriptions.shortOpened]: '􀁌',
-  [tradeExecutionDescriptions.longClosed]: '􀁎',
-  [tradeExecutionDescriptions.shortClosed]: '􀁎',
-  [tradeExecutionDescriptions.takeProfitExecuted]: '􀑁',
-  [tradeExecutionDescriptions.stopLossExecuted]: '􁘳',
+  [TradeExecutionType.LONG_LIQUIDATED]: '􀁞',
+  [TradeExecutionType.SHORT_LIQUIDATED]: '􀁞',
+  [TradeExecutionType.LONG_OPENED]: '􀁌',
+  [TradeExecutionType.SHORT_OPENED]: '􀁌',
+  [TradeExecutionType.LONG_CLOSED]: '􀁎',
+  [TradeExecutionType.SHORT_CLOSED]: '􀁎',
+  [TradeExecutionType.TAKE_PROFIT_EXECUTED]: '􀑁',
+  [TradeExecutionType.STOP_LOSS_EXECUTED]: '􁘳',
 };
 
 const TradeListItem = memo(function TradeListItem({ paddingTop = '16px', trade }: { paddingTop?: BoxProps['paddingTop']; trade: HlTrade }) {
@@ -51,7 +53,7 @@ const TradeListItem = memo(function TradeListItem({ paddingTop = '16px', trade }
   const isLiquidation =
     trade.description === tradeExecutionDescriptions.longLiquidated || trade.description === tradeExecutionDescriptions.shortLiquidated;
   const descriptionColor = isLiquidation ? 'red' : 'labelTertiary';
-  const descriptionIcon = descriptionIcons[trade.description as keyof typeof descriptionIcons];
+  const descriptionIcon = descriptionIcons[trade.executionType];
 
   return (
     <Box paddingBottom="16px" paddingTop={paddingTop} gap={12}>
@@ -113,7 +115,9 @@ export const HistorySection = memo(function HistorySection({ market }: { market:
           <Box>
             {visibleTrades.map((trade, index) => (
               <Fragment key={trade.id}>
-                <TradeListItem paddingTop={index === 0 ? '10px' : '16px'} trade={trade} />
+                <ButtonPressAnimation onPress={() => Navigation.handleAction(Routes.PERPS_TRADE_DETAILS_SHEET, { trade })} scaleTo={0.94}>
+                  <TradeListItem paddingTop={index === 0 ? '10px' : '16px'} trade={trade} />
+                </ButtonPressAnimation>
                 {index < visibleTrades.length - 1 && <Separator color={'separatorTertiary'} direction="horizontal" thickness={4 / 3} />}
               </Fragment>
             ))}

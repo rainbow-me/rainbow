@@ -131,6 +131,7 @@ const Routes = {
   CREATE_TRIGGER_ORDER_BOTTOM_SHEET: 'CreateTriggerOrderBottomSheet',
   CLOSE_POSITION_BOTTOM_SHEET: 'ClosePositionBottomSheet',
   PERPS_EXPLAIN_SHEET: 'PerpsExplainSheet',
+  PERPS_TRADE_DETAILS_SHEET: 'PerpsTradeDetailsSheet',
 } as const;
 
 export const NATIVE_ROUTES = new Set<Route>([

@@ -5,9 +5,10 @@ import { RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { time } from '@/utils/time';
-import { TriggerOrderType, HlTrade } from '../types';
+import { TriggerOrderType, HlTrade, TradeExecutionType } from '../types';
 import { convertSide } from '../utils';
 import * as i18n from '@/languages';
+import { subWorklet } from '@/safe-math/SafeMath';
 
 type HlTradesParams = {
   address: Address | string | null;
@@ -18,15 +19,15 @@ type FetchHlTradesResponse = {
   tradesBySymbol: Record<string, HlTrade[]>;
 };
 
-export const tradeExecutionDescriptions = Object.freeze({
-  takeProfitExecuted: i18n.t(i18n.l.perps.history.trade_execution.take_profit_executed),
-  stopLossExecuted: i18n.t(i18n.l.perps.history.trade_execution.stop_loss_executed),
-  longOpened: i18n.t(i18n.l.perps.history.trade_execution.long_opened),
-  shortOpened: i18n.t(i18n.l.perps.history.trade_execution.short_opened),
-  longClosed: i18n.t(i18n.l.perps.history.trade_execution.long_closed),
-  shortClosed: i18n.t(i18n.l.perps.history.trade_execution.short_closed),
-  longLiquidated: i18n.t(i18n.l.perps.history.trade_execution.long_liquidated),
-  shortLiquidated: i18n.t(i18n.l.perps.history.trade_execution.short_liquidated),
+export const tradeExecutionDescriptions: Readonly<Record<TradeExecutionType, string>> = Object.freeze({
+  [TradeExecutionType.TAKE_PROFIT_EXECUTED]: i18n.t(i18n.l.perps.history.trade_execution.take_profit_executed),
+  [TradeExecutionType.STOP_LOSS_EXECUTED]: i18n.t(i18n.l.perps.history.trade_execution.stop_loss_executed),
+  [TradeExecutionType.LONG_OPENED]: i18n.t(i18n.l.perps.history.trade_execution.long_opened),
+  [TradeExecutionType.SHORT_OPENED]: i18n.t(i18n.l.perps.history.trade_execution.short_opened),
+  [TradeExecutionType.LONG_CLOSED]: i18n.t(i18n.l.perps.history.trade_execution.long_closed),
+  [TradeExecutionType.SHORT_CLOSED]: i18n.t(i18n.l.perps.history.trade_execution.short_closed),
+  [TradeExecutionType.LONG_LIQUIDATED]: i18n.t(i18n.l.perps.history.trade_execution.long_liquidated),
+  [TradeExecutionType.SHORT_LIQUIDATED]: i18n.t(i18n.l.perps.history.trade_execution.short_liquidated),
 });
 
 type HlTradesStoreActions = {
@@ -74,42 +75,19 @@ async function fetchHlTrades({ address }: HlTradesParams, abortController: Abort
   };
 }
 
-function getTradeExecutionDescription(trade: Omit<HlTrade, 'description'>): string {
-  const startPos = Number(trade.fillStartSize);
-  const isBuy = trade.side === 'buy';
-
-  const isLong = isBuy ? startPos >= 0 : startPos > 0;
-
-  if (trade.liquidation) {
-    return `${isLong ? tradeExecutionDescriptions.longLiquidated : tradeExecutionDescriptions.shortLiquidated}`;
-  }
-
-  if (trade.triggerOrderType) {
-    return trade.triggerOrderType === TriggerOrderType.TAKE_PROFIT
-      ? tradeExecutionDescriptions.takeProfitExecuted
-      : tradeExecutionDescriptions.stopLossExecuted;
-  }
-
-  const isOpening = (isBuy && startPos >= 0) || (!isBuy && startPos <= 0);
-
-  if (isOpening) {
-    return isBuy ? tradeExecutionDescriptions.longOpened : tradeExecutionDescriptions.shortOpened;
-  } else {
-    return isBuy ? tradeExecutionDescriptions.shortClosed : tradeExecutionDescriptions.longClosed;
-  }
-}
-
 function convertFillAndOrderToTrade({ fill, order }: { fill: hl.Fill; order: hl.FrontendOrder }): HlTrade {
   const isTakeProfit = order.isPositionTpsl && order.orderType.includes('Take Profit');
   const isStopLoss = order.isPositionTpsl && order.orderType.includes('Stop');
   const triggerOrderType = isTakeProfit ? TriggerOrderType.TAKE_PROFIT : isStopLoss ? TriggerOrderType.STOP_LOSS : undefined;
+  const isLong = fill.dir.includes('Long');
+  const entryPrice = getEntryPriceFromFill(fill);
 
-  const trade = {
+  const trade: Omit<HlTrade, 'description' | 'executionType'> = {
     id: fill.tid,
     clientId: fill.cloid || undefined,
-    description: '',
     symbol: fill.coin,
     side: convertSide(order.side),
+    entryPrice,
     price: fill.px,
     size: fill.sz,
     fillStartSize: fill.startPosition,
@@ -125,11 +103,17 @@ function convertFillAndOrderToTrade({ fill, order }: { fill: hl.Fill; order: hl.
     orderType: order.orderType,
     triggerOrderType,
     triggerOrderPrice: order.triggerPx,
-    netPnl: fill.closedPnl,
+    netPnl: subWorklet(fill.closedPnl, fill.fee),
+    isLong,
   };
 
-  trade.description = getTradeExecutionDescription(trade);
-  return trade;
+  const executionType = getTradeExecutionType(trade);
+
+  return {
+    ...trade,
+    executionType,
+    description: tradeExecutionDescriptions[executionType],
+  };
 }
 
 function createTradeHistory({ orders, fills }: { orders: hl.OrderStatus<hl.FrontendOrder>[]; fills: hl.Fill[] }): HlTrade[] {
@@ -156,4 +140,42 @@ function buildTradesBySymbol(trades: HlTrade[]): Record<string, HlTrade[]> {
     acc[trade.symbol] = [...(acc[trade.symbol] || []), trade];
     return acc;
   }, {});
+}
+
+function getEntryPriceFromFill(fill: hl.Fill): string | undefined {
+  const closedPnl = Number(fill.closedPnl);
+  if (closedPnl === 0) return;
+
+  const size = Number(fill.sz);
+  const exitPrice = Number(fill.px);
+
+  const positionSize = fill.side === 'B' ? -size : size;
+
+  const entryPrice = exitPrice - closedPnl / positionSize;
+  return String(entryPrice);
+}
+
+function getTradeExecutionType(trade: Omit<HlTrade, 'description' | 'executionType'>): TradeExecutionType {
+  const startPos = Number(trade.fillStartSize);
+  const isBuy = trade.side === 'buy';
+
+  const isLong = isBuy ? startPos >= 0 : startPos > 0;
+
+  if (trade.liquidation) {
+    return isLong ? TradeExecutionType.LONG_LIQUIDATED : TradeExecutionType.SHORT_LIQUIDATED;
+  }
+
+  if (trade.triggerOrderType) {
+    return trade.triggerOrderType === TriggerOrderType.TAKE_PROFIT
+      ? TradeExecutionType.TAKE_PROFIT_EXECUTED
+      : TradeExecutionType.STOP_LOSS_EXECUTED;
+  }
+
+  const isOpening = (isBuy && startPos >= 0) || (!isBuy && startPos <= 0);
+
+  if (isOpening) {
+    return isBuy ? TradeExecutionType.LONG_OPENED : TradeExecutionType.SHORT_OPENED;
+  } else {
+    return isBuy ? TradeExecutionType.SHORT_CLOSED : TradeExecutionType.LONG_CLOSED;
+  }
 }

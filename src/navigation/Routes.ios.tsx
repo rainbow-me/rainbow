@@ -129,6 +129,7 @@ import { PerpsWithdrawalScreen } from '@/features/perps/screens/perps-deposit-wi
 import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePositionBottomSheet';
 import { PerpsNavigator } from '@/features/perps/screens/PerpsNavigator';
 import { PerpsExplainSheet } from '@/features/perps/screens/perps-explain-sheet/PerpsExplainSheet';
+import { PerpsTradeDetailsSheet } from '@/features/perps/screens/perps-trade-details-sheet/PerpsTradeDetailsSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -314,6 +315,7 @@ function NativeStackNavigator() {
         {...kingOfTheHillExplainSheetConfig}
       />
       <NativeStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} {...perpsExplainSheetConfig} />
+      <NativeStack.Screen component={PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} {...panelConfig} />
     </NativeStack.Navigator>
   );
 }
