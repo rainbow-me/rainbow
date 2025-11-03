@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import Navigation from '@/navigation/Navigation';
 import { Box, Separator, Text, TextIcon, useForegroundColor } from '@/design-system';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
-import { PanelSheet } from '@/components/panel-sheet/PanelSheet';
+import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import Routes from '@/navigation/routesNames';
