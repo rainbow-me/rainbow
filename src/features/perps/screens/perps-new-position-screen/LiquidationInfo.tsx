@@ -13,7 +13,7 @@ import * as i18n from '@/languages';
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
 import { LiquidationData } from '@/features/perps/utils/buildLiquidationInfo';
 
-export type LiquidationInfoProps = {
+type LiquidationInfoProps = {
   getInfo?: (leverage: number, midPrice: string) => LiquidationData | null;
   leverage: SharedValue<number>;
   market: PerpMarket;
