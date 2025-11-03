@@ -1586,8 +1586,8 @@
     "perps": {
       "activity": {
         "title": "Активность",
-        "trades_count": "%{count} TRADES",
-        "no_previous_trades": "No Previous Trades"
+        "trades_count": "%{count} СДЕЛОК",
+        "no_previous_trades": "Ранее сделки отсутствуют"
       },
       "common": {
         "not_available": "Н/Д",
@@ -1616,7 +1616,7 @@
       },
       "markets": {
         "title": "Рынки",
-        "view_all": "View All",
+        "view_all": "Посмотреть все",
         "up_to": "ДО",
         "already_open": "Уже открыто"
       },
@@ -1727,13 +1727,15 @@
         "above": "выше",
         "below": "ниже",
         "must_be": "Должен быть",
-        "failed_to_create": "Не удалось создать триггерный ордер"
+        "failed_to_create": "Не удалось создать триггерный ордер",
+        "gain": "Прибыль",
+        "loss": "Убыток"
       },
       "search": {
         "search_markets": "Поиск рынков",
         "markets_count": "%{count} РЫНКОВ",
         "choose_a_market": "ВЫБЕРИТЕ РЫНОК",
-        "no_markets_found": "No markets found"
+        "no_markets_found": "Рынки не найдены"
       },
       "close_position": {
         "estimated_loss": "Ожидаемая потеря",
@@ -1777,9 +1779,9 @@
         }
       },
       "sort": {
-        "by_volume": "By Volume",
-        "by_change": "By Change",
-        "by_price": "By Price"
+        "by_volume": "По объему",
+        "by_change": "По изменению",
+        "by_price": "По цене"
       },
       "leverage": "Рычаг",
       "up_to": "До"
