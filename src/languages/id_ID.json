@@ -1586,8 +1586,8 @@
     "perps": {
       "activity": {
         "title": "Aktivitas",
-        "trades_count": "%{count} TRADES",
-        "no_previous_trades": "No Previous Trades"
+        "trades_count": "%{count} TRANSAKSI",
+        "no_previous_trades": "Tidak Ada Transaksi Sebelumnya"
       },
       "common": {
         "not_available": "N/A",
@@ -1616,7 +1616,7 @@
       },
       "markets": {
         "title": "Pasar",
-        "view_all": "View All",
+        "view_all": "Lihat Semua",
         "up_to": "HINGGA",
         "already_open": "Sudah Terbuka"
       },
@@ -1727,13 +1727,15 @@
         "above": "atas",
         "below": "di bawah",
         "must_be": "Harus",
-        "failed_to_create": "Gagal membuat pesanan trigger"
+        "failed_to_create": "Gagal membuat pesanan trigger",
+        "gain": "Keuntungan",
+        "loss": "Kerugian"
       },
       "search": {
         "search_markets": "Cari pasar",
         "markets_count": "%{count} PASAR",
         "choose_a_market": "PILIH MARKAS",
-        "no_markets_found": "No markets found"
+        "no_markets_found": "Tidak ada pasar yang ditemukan"
       },
       "close_position": {
         "estimated_loss": "Kerugian Estimasi",
@@ -1777,9 +1779,9 @@
         }
       },
       "sort": {
-        "by_volume": "By Volume",
-        "by_change": "By Change",
-        "by_price": "By Price"
+        "by_volume": "Berdasarkan Volume",
+        "by_change": "Berdasarkan Perubahan",
+        "by_price": "Berdasarkan Harga"
       },
       "leverage": "Leverage",
       "up_to": "Hingga"
