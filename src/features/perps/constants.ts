@@ -1,5 +1,5 @@
 import { AddressOrEth, ParsedAsset } from '@/__swaps__/types/assets';
-import { HlBuilderSettings } from '@/features/perps/types';
+import { HlBuilderSettings, MarketSortOrder } from '@/features/perps/types';
 import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { Address } from 'viem';
@@ -10,6 +10,7 @@ import { LinearTransition } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { supportedNativeCurrencies } from '@/references';
 import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities';
+import * as i18n from '@/languages';
 
 export const DEFAULT_SLIPPAGE_BIPS = 500;
 export const RAINBOW_BUILDER_SETTINGS = {

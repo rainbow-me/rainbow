@@ -1,18 +1,20 @@
 import { time } from '@/utils/time';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import type { RainbowPositions, RainbowPosition, RainbowDeposit, RainbowPool, RainbowBorrow, RainbowReward } from '../types';
+import type { RainbowPositions, RainbowPosition, RainbowDeposit, RainbowPool } from '../types';
 import type { ListPositionsResponse } from '../types/generated/positions/positions';
 import { fetchPositions, type PositionsParams } from './fetcher';
 import { transformPositions } from './transform';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { throttle } from 'lodash';
 import { analytics } from '@/analytics';
+import { subtract, greaterThan } from '@/helpers/utilities';
 
 // ============ Core Types ===================================================== //
 
 type PositionsState = {
-  getPositionTokenAddresses: () => Set<string>;
+  getTokenAddresses: () => Set<string>;
+  getBalance: () => string;
 };
 
 // ============ Constants ====================================================== //
@@ -69,11 +71,20 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
         hydrationRetry.set(address, null);
       }
 
-      requestIdleCallback(() => throttledPositionsAnalytics(address));
+      requestIdleCallback(() => throttledPositionsAnalytics(params));
     },
   },
   (_, get) => ({
-    getPositionTokenAddresses: () => {
+    /**
+     * Collects all pool/LP token addresses from positions
+     *
+     * Used to filter out LP tokens from the wallet assets display to prevent double-counting.
+     * When a user has a position in a pool, we show the position in the positions section
+     * but exclude the underlying LP token from the wallet assets list.
+     *
+     * Also triggers asset reprocessing when position token addresses change (via positionsSync).
+     */
+    getTokenAddresses: () => {
       const positionTokenAddresses = new Set<string>();
       const data = get().getData();
 
@@ -109,10 +120,21 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
 
       return positionTokenAddresses;
     },
+    /**
+     * Used to calculate the live wallet balance
+     */
+    getBalance: () => {
+      const data = get().getData();
+      if (!data) return '0';
+      // Returns available balance (total - locked) with floor of $0
+      // Prevents locked positions and negative net positions from affecting wallet balance
+      const balance = subtract(data.totals.total.amount, data.totals.totalLocked.amount);
+      return greaterThan(balance, '0') ? balance : '0';
+    },
   }),
   {
     storageKey: 'positions',
-    version: 2,
+    version: 3,
   }
 );
 
@@ -124,8 +146,8 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
  * Fetches latest positions from store on each execution.
  */
 const throttledPositionsAnalytics = throttle(
-  (address: string) => {
-    const positions = usePositionsStore.getState().getData();
+  (params: PositionsParams) => {
+    const positions = usePositionsStore.getState().getData(params);
     if (!positions) return;
 
     const { positionsAmount, positionsRewardsAmount, positionsAssetsAmount } = Object.values(positions.positions).reduce(

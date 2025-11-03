@@ -181,7 +181,8 @@ export const PositionSheet: React.FC = () => {
                     key={`pool-${pool.asset.address}-${pool.quantity}`}
                     assets={pool.underlying}
                     value={pool.value}
-                    isConcentratedLiquidity={pool.isConcentratedLiquidity}
+                    rangeStatus={pool.rangeStatus}
+                    allocation={pool.allocation}
                     dappVersion={pool.dappVersion}
                     name={pool.name}
                     onPress={(asset: PositionAsset) => openTokenSheet(asset, 'pool', pool.value.amount, pool.name)}
@@ -199,7 +200,8 @@ export const PositionSheet: React.FC = () => {
                       key={`stake-${stake.asset.address}-${stake.quantity}`}
                       assets={stake.underlying}
                       value={stake.value}
-                      isConcentratedLiquidity={stake.isConcentratedLiquidity}
+                      rangeStatus={stake.rangeStatus}
+                      allocation={stake.allocation}
                       dappVersion={stake.dappVersion}
                       name={'name' in stake ? stake.name : undefined}
                       onPress={(asset: PositionAsset) =>

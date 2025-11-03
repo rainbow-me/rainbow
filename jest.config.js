@@ -1,8 +1,8 @@
 module.exports = {
   preset: 'react-native',
   setupFiles: ['./config/test/jest-setup.js'],
-  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))(?<!\\.disabled)\\.[jt]sx?$',
-  testPathIgnorePatterns: ['node_modules', 'e2e'],
+  testMatch: ['**/*.(spec|test).[tj]s?(x)'],
+  testPathIgnorePatterns: ['node_modules', 'e2e', '\\.disabled\\.[jt]sx?$'],
   transformIgnorePatterns: [
     'node_modules/(?!((jest-)?react-native|imgix-core-js|react-native-payments|@react-native-firebase|@react-native(-community)?|react-native-reanimated|react-native-linear-gradient|react-native-markdown-display)/)',
   ],
