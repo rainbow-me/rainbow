@@ -1727,7 +1727,9 @@
         "above": "au-dessus",
         "below": "en dessous",
         "must_be": "Doit être",
-        "failed_to_create": "Échec de la création de l'ordre déclencheur"
+        "failed_to_create": "Échec de la création de l'ordre déclencheur",
+        "gain": "Gain",
+        "loss": "Perte"
       },
       "search": {
         "search_markets": "Rechercher des marchés",
