@@ -1691,6 +1691,20 @@
           "short_liquidated": "ショート清算"
         }
       },
+      "trade_details_sheet": {
+        "market": "Market",
+        "entry_price": "Entry price",
+        "close_price": "Close price",
+        "date": "Date",
+        "profit": "Profit",
+        "loss": "Loss",
+        "outcome": {
+          "liquidated": "Liquidated",
+          "opened": "Opened",
+          "lost": "Lost",
+          "earned": "Earned"
+        }
+      },
       "trigger_orders": {
         "title": "トリガーオーダー",
         "take_profit": "利食い",
