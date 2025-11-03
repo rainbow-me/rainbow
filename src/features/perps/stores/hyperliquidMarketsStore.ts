@@ -100,8 +100,6 @@ export const useSortedHyperliquidMarkets = createDerivedStore(
             return Number(b.price) - Number(a.price);
           case MarketSortOrder.CHANGE:
             return Number(b.priceChange['24h']) - Number(a.priceChange['24h']);
-          case MarketSortOrder.SYMBOL:
-            return a.symbol.localeCompare(b.symbol);
           default:
             return 0;
         }
