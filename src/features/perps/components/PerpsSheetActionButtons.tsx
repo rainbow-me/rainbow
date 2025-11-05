@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { Box, Text, useColorMode } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
@@ -11,21 +11,32 @@ type PerpsSheetActionButtonsProps = {
   confirmButtonText?: string;
   confirmingButtonText?: string;
   isConfirmDisabled?: boolean;
-  isConfirming?: boolean;
   onCancel: () => void;
-  onConfirm: () => void;
+  onConfirm: () => Promise<void>;
 };
 
 export const PerpsSheetActionButtons = memo(function PerpsSheetActionButtons({
   cancelButtonText = i18n.t(i18n.l.perps.common.cancel),
   confirmButtonText = i18n.t(i18n.l.perps.common.add),
   confirmingButtonText = i18n.t(i18n.l.perps.common.submitting),
-  isConfirmDisabled,
-  isConfirming,
+  isConfirmDisabled: isConfirmDisabledProp,
   onCancel,
   onConfirm,
 }: PerpsSheetActionButtonsProps) {
+  const [isConfirming, setIsConfirming] = useState(false);
   const { isDarkMode } = useColorMode();
+
+  const isConfirmDisabled = useMemo(() => isConfirmDisabledProp || isConfirming, [isConfirmDisabledProp, isConfirming]);
+
+  const handleConfirm = useCallback(async () => {
+    if (isConfirming) return;
+    setIsConfirming(true);
+    try {
+      await onConfirm();
+    } finally {
+      setIsConfirming(false);
+    }
+  }, [isConfirming, onConfirm]);
 
   return (
     <Box paddingHorizontal={{ custom: 18 }} flexDirection="row" alignItems="center" justifyContent="space-between" gap={12}>
@@ -48,7 +59,7 @@ export const PerpsSheetActionButtons = memo(function PerpsSheetActionButtons({
       </View>
       <View style={{ flex: 1 }}>
         <HyperliquidButton
-          onPress={onConfirm}
+          onPress={handleConfirm}
           buttonProps={{ style: { opacity: isConfirmDisabled ? 0.5 : 1 }, disabled: isConfirmDisabled }}
         >
           <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>

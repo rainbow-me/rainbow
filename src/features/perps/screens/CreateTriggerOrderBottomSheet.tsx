@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useRef, useState } from 'react';
+import React, { memo, useCallback, useRef } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { AnimatedText, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -93,7 +93,6 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
   const newPositionAmount = useHlNewPositionStore(state => state.amount);
   const newPositionLeverage = useHlNewPositionStore(state => state.leverage);
   const newPositionSide = useHlNewPositionStore(state => state.positionSide);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isTakeProfit = triggerOrderType === TriggerOrderType.TAKE_PROFIT;
   const isStopLoss = triggerOrderType === TriggerOrderType.STOP_LOSS;
@@ -237,10 +236,10 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
     return `${shouldBeAbove ? translations.above : translations.below} ${translations.currentPrice.toLowerCase()}`;
   });
 
-  const isAddDisabled = !isValidTargetPriceState || isSubmitting;
+  const isAddDisabled = !isValidTargetPriceState;
 
   const addTriggerOrder = useCallback(async () => {
-    if (!isValidTargetPriceState || inputValue.value === '' || isSubmitting) return;
+    if (!isValidTargetPriceState || inputValue.value === '') return;
 
     const triggerOrderPayload = {
       type: triggerOrderType,
@@ -254,7 +253,6 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
 
       const perpsBalance = Number(useHyperliquidAccountStore.getState().getValue());
 
-      setIsSubmitting(true);
       try {
         await hyperliquidAccountActions.createTriggerOrder({
           symbol: market.symbol,
@@ -283,8 +281,6 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
         });
         Alert.alert(i18n.t(i18n.l.perps.common.error), i18n.t(i18n.l.perps.trigger_orders.failed_to_create));
         logger.error(new RainbowError('[CreateTriggerOrderBottomSheet] Failed to create trigger order', error));
-      } finally {
-        setIsSubmitting(false);
       }
     } else {
       hlNewPositionStoreActions.addTriggerOrder({
@@ -293,7 +289,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
       });
       navigation.goBack();
     }
-  }, [isValidTargetPriceState, inputValue, isSubmitting, isExistingPosition, triggerOrderType, market.symbol, navigation, position]);
+  }, [isValidTargetPriceState, inputValue, isExistingPosition, triggerOrderType, market.symbol, navigation, position]);
 
   return (
     <Box paddingTop={'28px'} alignItems="center">
@@ -369,10 +365,9 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
           </Box>
         </Box>
         <PerpsSheetActionButtons
-          onCancel={() => navigation.goBack()}
+          onCancel={navigation.goBack}
           onConfirm={addTriggerOrder}
           isConfirmDisabled={isAddDisabled}
-          isConfirming={isSubmitting}
           confirmButtonText={i18n.t(i18n.l.perps.trigger_orders.add)}
           confirmingButtonText={i18n.t(i18n.l.perps.trigger_orders.adding)}
         />

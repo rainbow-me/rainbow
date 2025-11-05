@@ -36,6 +36,7 @@ import { AmountInputCardSubtitle } from './AmountInputCardSubtitle';
 import { LayoutChangeEvent, StyleSheet } from 'react-native';
 import { OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
 import { ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { useOnChange } from '@/hooks/useOnChange';
 
 type InteractionMode = 'slider' | 'keyboard';
 
@@ -386,11 +387,11 @@ export const AmountInputCard = memo(function AmountInputCard({
     [balanceValue, displayedAmount, inputSource, lastAccountAddress, resetToInitial, sliderProgress]
   );
 
-  useEffect(() => {
+  useOnChange(() => {
     resetToInitial(availableBalance);
   }, [availableBalance, resetKey, resetToInitial]);
 
-  useEffect(() => {
+  useOnChange(() => {
     revalidateAmount(availableBalance);
   }, [availableBalance, revalidateAmount]);
 
@@ -448,7 +449,7 @@ export const AmountInputCard = memo(function AmountInputCard({
           progressValue={sliderProgress}
           silenceEdgeHaptics={isBalanceZero}
           snapPoints={snapPoints}
-          width={sliderWidth} // NEW
+          width={sliderWidth}
         />
       </Box>
     </Box>

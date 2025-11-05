@@ -27,21 +27,19 @@ import { logger, RainbowError } from '@/logger';
 import * as i18n from '@/languages';
 import { divide } from '@/helpers/utilities';
 
-type WeightedEntryPriceParams = {
-  addedMargin: string;
-  existingEntryPrice: string;
-  existingSize: string;
-  leverage: number;
-  midPrice: string;
-};
-
 function calculateWeightedEntryPrice({
   addedMargin,
   existingEntryPrice,
   existingSize,
   leverage,
   midPrice,
-}: WeightedEntryPriceParams): string {
+}: {
+  addedMargin: string;
+  existingEntryPrice: string;
+  existingSize: string;
+  leverage: number;
+  midPrice: string;
+}): string {
   'worklet';
 
   const hasPrice = Number(midPrice) > 0 && leverage > 0;
@@ -67,161 +65,87 @@ const AddToPositionSheetContent = memo(function AddToPositionSheetContent({
   market: PerpMarket;
   position: PerpsPosition;
 }) {
-  const { symbol } = market;
   const availableBalance = useHyperliquidAccountStore(state => state.getBalance());
-  const defaultAmount = useMemo(() => {
+  const [amountToAdd, setAmountToAdd] = useState(() => {
     const halfBalance = divide(availableBalance, 2);
     const initialAmount = greaterThanWorklet(availableBalance, '5') ? halfBalance : availableBalance;
     return toFixedWorklet(initialAmount, 2);
-  }, [availableBalance]);
+  });
 
-  const [amountToAdd, setAmountToAdd] = useState(defaultAmount);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const leverageSharedValue = useDerivedValue(() => position.leverage);
-  const { entryPrice, marginUsed, side, size, leverage } = position;
 
   const validation = useDerivedValue(() => {
     'worklet';
     return buildOrderAmountValidation({
       amount: amountToAdd,
       availableBalance,
-      leverage: leverage,
+      leverage: position.leverage,
       marginTiers: market.marginTiers,
     });
   });
 
-  const newTotal = useMemo(() => sumWorklet(marginUsed, amountToAdd), [marginUsed, amountToAdd]);
+  const newTotal = useMemo(() => sumWorklet(position.marginUsed, amountToAdd), [position.marginUsed, amountToAdd]);
 
-  const getLiquidationInfo = useMemo(() => {
-    return (leverageValue: number, midPrice: string) => {
-      'worklet';
-      const weightedEntryPrice = calculateWeightedEntryPrice({
-        addedMargin: amountToAdd,
-        existingEntryPrice: entryPrice,
-        existingSize: size,
-        leverage: leverageValue,
-        midPrice,
-      });
-
-      return buildLiquidationInfo({
-        amount: newTotal,
-        currentPrice: midPrice,
-        entryPrice: weightedEntryPrice,
-        leverage: leverageValue,
+  const getLiquidationInfo = useMemo(
+    () =>
+      createGetLiquidationInfo({
+        amountToAdd,
         market,
-        positionSide: side,
-      });
-    };
-  }, [entryPrice, market, newTotal, amountToAdd, side, size]);
+        newTotal,
+        position,
+      }),
+    [amountToAdd, market, newTotal, position]
+  );
 
-  const handleCancel = useCallback(() => {
-    if (isSubmitting) return;
-    Navigation.goBack();
-  }, [isSubmitting]);
-
-  const submitOrder = useCallback(async () => {
-    if (isSubmitting) return;
-    if (Number(amountToAdd) <= 0) return;
-
-    setIsSubmitting(true);
-
-    const perpsBalance = Number(useHyperliquidAccountStore.getState().getValue());
-    const tokenId = getHyperliquidTokenId(symbol);
-    const liveToken = useLiveTokensStore.getState().tokens[tokenId];
-    const livePrice = liveToken?.midPrice ?? liveToken?.price;
-    const entryPriceForOrder = livePrice && Number(livePrice) > 0 ? livePrice : market.price;
-
-    try {
-      const result = await hyperliquidAccountActions.createIsolatedMarginPosition({
-        symbol,
-        side,
-        leverage: leverage,
-        marginAmount: amountToAdd,
-        price: entryPriceForOrder,
-      });
-
-      if (!result) {
-        analytics.track(analytics.event.perpsOpenPositionCanceled, {
-          market: symbol,
-          side,
-          leverage: leverage,
-          perpsBalance,
-        });
-        return;
-      }
-
-      const entryPriceNumber = Number(entryPriceForOrder);
-      const amountNumber = Number(amountToAdd);
-      const positionValue = amountNumber * leverage;
-      const positionSize = entryPriceNumber > 0 ? Math.abs(positionValue / entryPriceNumber) : 0;
-
-      analytics.track(analytics.event.perpsAddedToPosition, {
-        market: symbol,
-        side,
-        leverage: leverage,
-        perpsBalance,
-        positionSize,
-        positionValue,
-        entryPrice: entryPriceNumber,
-      });
-
-      Navigation.goBack();
-    } catch (error) {
-      const errorMessage = parseHyperliquidErrorMessage(error);
-      analytics.track(analytics.event.perpsAddedToPositionFailed, {
-        market: symbol,
-        side,
-        leverage: leverage,
-        perpsBalance,
-        errorMessage,
-      });
-      Alert.alert(i18n.t(i18n.l.perps.common.error_submitting_order), errorMessage);
-      logger.error(new RainbowError('[PerpsAddToPositionSheet] Failed to add to position', error));
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [isSubmitting, leverage, market.price, amountToAdd, side, symbol]);
+  const submitOrder = useCallback(() => {
+    return submitAddToPositionOrder({
+      amountToAdd,
+      market,
+      position,
+    });
+  }, [amountToAdd, market, position]);
 
   return (
     <Box paddingBottom={'20px'} paddingTop={{ custom: 40 }} gap={20}>
       <Box paddingHorizontal={'24px'}>
         <Box gap={28}>
-          <PerpBottomSheetHeader title={i18n.t(i18n.l.perps.add_to_position.title)} symbol={symbol} />
+          <PerpBottomSheetHeader title={i18n.t(i18n.l.perps.add_to_position.title)} symbol={market.symbol} />
           <AmountInputCard availableBalance={availableBalance} onAmountChange={setAmountToAdd} validation={validation} />
         </Box>
         <Box gap={20} paddingTop={'20px'}>
           <LiquidationInfo market={market} leverage={leverageSharedValue} getInfo={getLiquidationInfo} />
           <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
-          <Box
-            flexDirection="row"
-            alignItems="center"
-            justifyContent="space-between"
-            backgroundColor={opacityWorklet(ETH_COLOR_DARK, 0.03)}
-            borderWidth={THICK_BORDER_WIDTH}
-            borderColor={'buttonStroke'}
-            borderRadius={14}
-            padding={'12px'}
-          >
-            <Box flexDirection="row" alignItems="center" gap={12}>
-              <TextIcon size="icon 15px" weight="medium" color={'labelSecondary'}>
-                {'􁎢'}
-              </TextIcon>
-              <Text size="17pt" weight="medium" color={'labelSecondary'}>
-                {i18n.t(i18n.l.perps.add_to_position.new_total)}
-              </Text>
-            </Box>
-            <Text size="17pt" weight="semibold" color={'labelSecondary'}>
-              {formatCurrency(newTotal)}
-            </Text>
-          </Box>
+          <NewTotalDisplay newTotal={newTotal} />
         </Box>
       </Box>
-      <PerpsSheetActionButtons
-        onCancel={handleCancel}
-        onConfirm={submitOrder}
-        isConfirmDisabled={Number(amountToAdd) <= 0 || isSubmitting}
-        isConfirming={isSubmitting}
-      />
+      <PerpsSheetActionButtons onCancel={Navigation.goBack} onConfirm={submitOrder} isConfirmDisabled={Number(amountToAdd) <= 0} />
+    </Box>
+  );
+});
+
+const NewTotalDisplay = memo(function NewTotalDisplay({ newTotal }: { newTotal: string }) {
+  return (
+    <Box
+      flexDirection="row"
+      alignItems="center"
+      justifyContent="space-between"
+      backgroundColor={opacityWorklet(ETH_COLOR_DARK, 0.03)}
+      borderWidth={THICK_BORDER_WIDTH}
+      borderColor={'buttonStroke'}
+      borderRadius={14}
+      padding={'12px'}
+    >
+      <Box flexDirection="row" alignItems="center" gap={12}>
+        <TextIcon size="icon 15px" weight="medium" color={'labelSecondary'}>
+          {'􁎢'}
+        </TextIcon>
+        <Text size="17pt" weight="medium" color={'labelSecondary'}>
+          {i18n.t(i18n.l.perps.add_to_position.new_total)}
+        </Text>
+      </Box>
+      <Text size="17pt" weight="semibold" color={'labelSecondary'}>
+        {formatCurrency(newTotal)}
+      </Text>
     </Box>
   );
 });
@@ -240,3 +164,115 @@ export const PerpsAddToPositionSheet = memo(function PerpsAddToPositionSheet() {
     </PerpsAccentColorContextProvider>
   );
 });
+
+function getOrderPrice(market: PerpMarket): string {
+  const { price, symbol } = market;
+  const tokenId = getHyperliquidTokenId(symbol);
+  const liveToken = useLiveTokensStore.getState().tokens[tokenId];
+  const livePrice = liveToken?.midPrice ?? liveToken?.price;
+  return livePrice && Number(livePrice) > 0 ? livePrice : price;
+}
+
+async function submitAddToPositionOrder({
+  amountToAdd,
+  market,
+  position,
+}: {
+  amountToAdd: string;
+  market: PerpMarket;
+  position: PerpsPosition;
+}) {
+  const { symbol } = market;
+  const { leverage, side } = position;
+  const perpsBalance = Number(useHyperliquidAccountStore.getState().getValue());
+  const orderPrice = getOrderPrice(market);
+
+  try {
+    if (Number(amountToAdd) <= 0) {
+      throw new RainbowError('[PerpsAddToPositionSheet] Invalid amount');
+    }
+
+    const result = await hyperliquidAccountActions.createIsolatedMarginPosition({
+      symbol,
+      side,
+      leverage,
+      marginAmount: amountToAdd,
+      price: orderPrice,
+    });
+
+    if (!result) {
+      analytics.track(analytics.event.perpsOpenPositionCanceled, {
+        market: symbol,
+        side,
+        leverage,
+        perpsBalance,
+      });
+      return;
+    }
+
+    const entryPriceNumber = Number(orderPrice);
+    const amountNumber = Number(amountToAdd);
+    const positionValue = amountNumber * leverage;
+    const positionSize = entryPriceNumber > 0 ? Math.abs(positionValue / entryPriceNumber) : 0;
+
+    analytics.track(analytics.event.perpsAddedToPosition, {
+      market: symbol,
+      side,
+      leverage,
+      perpsBalance,
+      positionSize,
+      positionValue,
+      entryPrice: entryPriceNumber,
+    });
+
+    Navigation.goBack();
+  } catch (error) {
+    const errorMessage = parseHyperliquidErrorMessage(error);
+
+    analytics.track(analytics.event.perpsAddedToPositionFailed, {
+      market: symbol,
+      side,
+      leverage,
+      perpsBalance,
+      errorMessage,
+    });
+
+    Alert.alert(i18n.t(i18n.l.perps.common.error_submitting_order), errorMessage);
+    logger.error(new RainbowError('[PerpsAddToPositionSheet] Failed to add to position', error));
+  }
+}
+
+function createGetLiquidationInfo({
+  amountToAdd,
+  market,
+  newTotal,
+  position,
+}: {
+  amountToAdd: string;
+  market: PerpMarket;
+  newTotal: string;
+  position: PerpsPosition;
+}) {
+  const { entryPrice, side, size } = position;
+
+  return (leverage: number, midPrice: string) => {
+    'worklet';
+
+    const weightedEntryPrice = calculateWeightedEntryPrice({
+      addedMargin: amountToAdd,
+      existingEntryPrice: entryPrice,
+      existingSize: size,
+      leverage,
+      midPrice,
+    });
+
+    return buildLiquidationInfo({
+      amount: newTotal,
+      currentPrice: midPrice,
+      entryPrice: weightedEntryPrice,
+      leverage,
+      market,
+      positionSide: side,
+    });
+  };
+}

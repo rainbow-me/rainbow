@@ -26,7 +26,7 @@ type AmountInputCardSubtitleProps = {
 
 export const AmountInputCardSubtitle = ({ availableBalanceString, validation: validationOverride }: AmountInputCardSubtitleProps) => {
   const hasBalance = useStoreSharedValue(useHyperliquidAccountStore, state => state.hasBalance());
-  const defaultValidation = useStoreSharedValue(useOrderAmountValidation, state => state);
+  const defaultValidation = useStoreSharedValue(useOrderAmountValidation, state => state, { enabled: !validationOverride });
   const validation = validationOverride ?? defaultValidation;
   const labelSecondary = useForegroundColor('labelSecondary');
   const red = useForegroundColor('red');
