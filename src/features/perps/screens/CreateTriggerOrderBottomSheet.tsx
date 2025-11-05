@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useRef, useState } from 'react';
+import React, { memo, useCallback, useRef } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { AnimatedText, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -11,7 +11,6 @@ import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { safeAreaInsetValues } from '@/utils';
 import { KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { PerpMarket, PerpPositionSide, PerpsPosition, TriggerOrderType, TriggerOrderSource } from '@/features/perps/types';
-import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigation, useRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
@@ -30,7 +29,6 @@ import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/per
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { SheetHandleFixedToTop } from '@/components/sheet';
-import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { formatTriggerOrderInput } from '@/features/perps/utils/formatTriggerOrderInput';
@@ -44,6 +42,7 @@ import * as i18n from '@/languages';
 import { analytics } from '@/analytics';
 import { sanitizeAmount } from '@/worklets/strings';
 import { useStableValue } from '@/hooks/useStableValue';
+import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
 
 // Translations for worklets
 const translations = {
@@ -94,7 +93,6 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
   const newPositionAmount = useHlNewPositionStore(state => state.amount);
   const newPositionLeverage = useHlNewPositionStore(state => state.leverage);
   const newPositionSide = useHlNewPositionStore(state => state.positionSide);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isTakeProfit = triggerOrderType === TriggerOrderType.TAKE_PROFIT;
   const isStopLoss = triggerOrderType === TriggerOrderType.STOP_LOSS;
@@ -238,10 +236,10 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
     return `${shouldBeAbove ? translations.above : translations.below} ${translations.currentPrice.toLowerCase()}`;
   });
 
-  const isAddDisabled = !isValidTargetPriceState || isSubmitting;
+  const isAddDisabled = !isValidTargetPriceState;
 
   const addTriggerOrder = useCallback(async () => {
-    if (!isValidTargetPriceState || inputValue.value === '' || isSubmitting) return;
+    if (!isValidTargetPriceState || inputValue.value === '') return;
 
     const triggerOrderPayload = {
       type: triggerOrderType,
@@ -255,7 +253,6 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
 
       const perpsBalance = Number(useHyperliquidAccountStore.getState().getValue());
 
-      setIsSubmitting(true);
       try {
         await hyperliquidAccountActions.createTriggerOrder({
           symbol: market.symbol,
@@ -284,8 +281,6 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
         });
         Alert.alert(i18n.t(i18n.l.perps.common.error), i18n.t(i18n.l.perps.trigger_orders.failed_to_create));
         logger.error(new RainbowError('[CreateTriggerOrderBottomSheet] Failed to create trigger order', error));
-      } finally {
-        setIsSubmitting(false);
       }
     } else {
       hlNewPositionStoreActions.addTriggerOrder({
@@ -294,7 +289,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
       });
       navigation.goBack();
     }
-  }, [isValidTargetPriceState, inputValue, isSubmitting, isExistingPosition, triggerOrderType, market.symbol, navigation, position]);
+  }, [isValidTargetPriceState, inputValue, isExistingPosition, triggerOrderType, market.symbol, navigation, position]);
 
   return (
     <Box paddingTop={'28px'} alignItems="center">
@@ -369,39 +364,13 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
             </AnimatedText>
           </Box>
         </Box>
-        <Box paddingHorizontal={{ custom: 18 }} flexDirection="row" alignItems="center" justifyContent="space-between" gap={12}>
-          <View style={{ flex: 1 }}>
-            <ButtonPressAnimation
-              onPress={() => {
-                navigation.goBack();
-              }}
-            >
-              <Box
-                height={48}
-                borderRadius={24}
-                backgroundColor={opacityWorklet('#F5F8FF', 0.06)}
-                borderWidth={2}
-                borderColor={'buttonStroke'}
-                justifyContent="center"
-                alignItems="center"
-              >
-                <Text size="20pt" weight="bold" color={'labelTertiary'}>
-                  {i18n.t(i18n.l.perps.common.cancel)}
-                </Text>
-              </Box>
-            </ButtonPressAnimation>
-          </View>
-          <View style={{ flex: 1 }}>
-            <HyperliquidButton
-              onPress={addTriggerOrder}
-              buttonProps={{ style: { opacity: isAddDisabled ? 0.5 : 1 }, disabled: isAddDisabled }}
-            >
-              <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
-                {isSubmitting ? i18n.t(i18n.l.perps.trigger_orders.adding) : i18n.t(i18n.l.perps.trigger_orders.add)}
-              </Text>
-            </HyperliquidButton>
-          </View>
-        </Box>
+        <PerpsSheetActionButtons
+          onCancel={navigation.goBack}
+          onConfirm={addTriggerOrder}
+          isConfirmDisabled={isAddDisabled}
+          confirmButtonText={i18n.t(i18n.l.perps.trigger_orders.add)}
+          confirmingButtonText={i18n.t(i18n.l.perps.trigger_orders.adding)}
+        />
       </Box>
     </Box>
   );

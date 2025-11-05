@@ -158,5 +158,5 @@ async function fetchHyperliquidMarkets(): Promise<HyperliquidMarketsFetchData> {
 }
 
 function buildHypercoreTokenId(symbol: string): string {
-  return `${symbol.toLowerCase()}:${HYPERCORE_PSEUDO_CHAIN_ID}`;
+  return `${extractBaseSymbol(symbol).toLowerCase()}:${HYPERCORE_PSEUDO_CHAIN_ID}`;
 }

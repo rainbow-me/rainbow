@@ -130,6 +130,7 @@ import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePosition
 import { PerpsNavigator } from '@/features/perps/screens/PerpsNavigator';
 import { PerpsTradeHistoryScreen } from '@/features/perps/screens/perps-trade-history/PerpsTradeHistoryScreen';
 import { PerpsExplainSheet } from '@/features/perps/screens/perps-explain-sheet/PerpsExplainSheet';
+import { PerpsAddToPositionSheet } from '@/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet';
 import { PerpsTradeDetailsSheet } from '@/features/perps/screens/perps-trade-details-sheet/PerpsTradeDetailsSheet';
 
 const Stack = createStackNavigator();
@@ -311,6 +312,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={PerpsTradeHistoryScreen} name={Routes.PERPS_TRADE_HISTORY_SCREEN} {...perpsAccountStackConfig} />
       <NativeStack.Screen component={CreateTriggerOrderBottomSheet} name={Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET} {...panelConfig} />
       <NativeStack.Screen component={ClosePositionBottomSheet} name={Routes.CLOSE_POSITION_BOTTOM_SHEET} {...panelConfig} />
+      <NativeStack.Screen component={PerpsAddToPositionSheet} name={Routes.PERPS_ADD_TO_POSITION_SHEET} {...panelConfig} />
       <NativeStack.Screen
         component={KingOfTheHillExplainSheet}
         name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET}

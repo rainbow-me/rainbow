@@ -9,6 +9,8 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { KeyboardStickyView } from 'react-native-keyboard-controller';
+import ConditionalWrap from 'conditional-wrap';
 
 export const TapToDismiss = memo(function TapToDismiss() {
   const { goBack } = useNavigation();
@@ -92,6 +94,7 @@ type PanelSheetProps = PanelProps & {
   showHandle?: boolean;
   showTapToDismiss?: boolean;
   panelStyle?: StyleProp<ViewStyle> | AnimatedStyle;
+  enableKeyboardAvoidance?: boolean;
 };
 
 const DEFAULT_HANDLE_TOP = 14;
@@ -112,6 +115,7 @@ export const PanelSheet = ({
   showHandle = true,
   showTapToDismiss = true,
   panelStyle,
+  enableKeyboardAvoidance = false,
 }: React.PropsWithChildren<PanelSheetProps>) => {
   const { isDarkMode } = useColorMode();
 
@@ -124,18 +128,22 @@ export const PanelSheet = ({
   return (
     <>
       <Box style={[panelSheetStyles.panelContainer, { bottom: bottomOffset }, containerStyle]}>
-        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        {showHandle && <SheetHandleFixedToTop {...resolvedHandleProps} />}
-        <Panel
-          height={height}
-          innerBorderColor={innerBorderColor}
-          innerBorderWidth={innerBorderWidth}
-          outerBorderColor={outerBorderColor}
-          outerBorderWidth={outerBorderWidth}
-          panelStyle={panelStyle}
-        >
-          {children}
-        </Panel>
+        <ConditionalWrap wrap={children => <KeyboardStickyView>{children}</KeyboardStickyView>} condition={enableKeyboardAvoidance}>
+          <>
+            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+            {showHandle && <SheetHandleFixedToTop {...resolvedHandleProps} />}
+            <Panel
+              height={height}
+              innerBorderColor={innerBorderColor}
+              innerBorderWidth={innerBorderWidth}
+              outerBorderColor={outerBorderColor}
+              outerBorderWidth={outerBorderWidth}
+              panelStyle={panelStyle}
+            >
+              {children}
+            </Panel>
+          </>
+        </ConditionalWrap>
       </Box>
       {showTapToDismiss && <TapToDismiss />}
     </>

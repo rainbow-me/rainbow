@@ -26,27 +26,18 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
   const navigation = useNavigation();
   const safeAreaInsets = useSafeAreaInsets();
 
-  const hasPosition = useHyperliquidAccountStore(state => state.getPosition(market.symbol) !== undefined);
+  const position = useHyperliquidAccountStore(state => state.getPosition(market.symbol));
+  const hasPosition = !!position;
   const hasPerpsBalance = useHyperliquidAccountStore(state => Number(state.getBalance()) !== 0);
   const hasUserAssets = useUserAssetsStore(state => state.getFilteredUserAssetIds().length > 0);
 
-  const { onPress, buttonText } = useMemo(() => {
+  const noPositionButton = useMemo(() => {
     if (!hasUserAssets) {
       return {
         onPress: () => {
           Navigation.handleAction(Routes.ADD_CASH_SHEET);
         },
-        buttonText: i18n.t(i18n.l.perps.actions.fund_wallet),
-      };
-    }
-    if (hasPosition) {
-      return {
-        onPress: () => {
-          Navigation.handleAction(Routes.CLOSE_POSITION_BOTTOM_SHEET, {
-            symbol: market.symbol,
-          });
-        },
-        buttonText: i18n.t(i18n.l.perps.actions.close_position),
+        text: i18n.t(i18n.l.perps.actions.fund_wallet),
       };
     }
     if (!hasPerpsBalance) {
@@ -54,7 +45,7 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
         onPress: () => {
           Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
         },
-        buttonText: i18n.t(i18n.l.perps.deposit.title),
+        text: i18n.t(i18n.l.perps.deposit.title),
       };
     }
     return {
@@ -66,9 +57,9 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
           });
         }, 150);
       },
-      buttonText: i18n.t(i18n.l.perps.actions.open_position),
+      text: i18n.t(i18n.l.perps.actions.open_position),
     };
-  }, [hasPerpsBalance, hasUserAssets, hasPosition, market, navigation]);
+  }, [hasUserAssets, hasPerpsBalance, market, navigation]);
 
   return (
     <Box pointerEvents="box-none" position="absolute" bottom="0px" width="full">
@@ -80,11 +71,42 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
         style={{ height: 32, width: '100%', pointerEvents: 'none' }}
       />
       <Box paddingHorizontal={'24px'} backgroundColor={backgroundColor} width="full" paddingBottom={{ custom: safeAreaInsets.bottom + 12 }}>
-        <HyperliquidButton onPress={onPress}>
-          <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
-            {buttonText}
-          </Text>
-        </HyperliquidButton>
+        {hasPosition && (
+          <Box flexDirection="row" gap={12}>
+            <HyperliquidButton
+              buttonProps={{ style: { flex: 1 } }}
+              onPress={() => {
+                Navigation.handleAction(Routes.CLOSE_POSITION_BOTTOM_SHEET, {
+                  symbol: market.symbol,
+                });
+              }}
+            >
+              <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
+                {i18n.t(i18n.l.perps.common.close)}
+              </Text>
+            </HyperliquidButton>
+            <HyperliquidButton
+              buttonProps={{ style: { flex: 1 } }}
+              onPress={() => {
+                Navigation.handleAction(Routes.PERPS_ADD_TO_POSITION_SHEET, {
+                  market,
+                  position,
+                });
+              }}
+            >
+              <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
+                {i18n.t(i18n.l.perps.common.add)}
+              </Text>
+            </HyperliquidButton>
+          </Box>
+        )}
+        {!hasPosition && (
+          <HyperliquidButton buttonProps={{ style: { flex: 1 } }} onPress={noPositionButton.onPress}>
+            <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
+              {noPositionButton.text}
+            </Text>
+          </HyperliquidButton>
+        )}
       </Box>
     </Box>
   );

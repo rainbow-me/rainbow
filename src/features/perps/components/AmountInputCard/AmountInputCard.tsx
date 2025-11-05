@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Box, Text, useColorMode } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import {
@@ -9,13 +9,11 @@ import {
   USD_CURRENCY,
   USD_DECIMALS,
 } from '@/features/perps/constants';
-import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { runOnJS, runOnUI, SharedValue, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Slider, SliderChangeSource, SliderGestureState } from '@/features/perps/components/Slider';
 import { addCommasToNumber, clamp, trimCurrencyZeros } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
-import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import {
   divWorklet,
   equalWorklet,
@@ -24,18 +22,21 @@ import {
   mulWorklet,
   toFixedWorklet,
 } from '@/safe-math/SafeMath';
-import { useListen } from '@/state/internal/hooks/useListen';
 import * as i18n from '@/languages';
 import { useDebouncedCallback } from 'use-debounce';
 import { time } from '@/utils/time';
 import { useStableValue } from '@/hooks/useStableValue';
 import { SLIDER_DEFAULT_SNAP_POINTS, SLIDER_MAX, SLIDER_MIN } from '@/features/perps/components/Slider/Slider';
 import { useLazyRef } from '@/hooks/useLazyRef';
+
 import { getAccountAddress } from '@/state/wallets/walletsStore';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { sanitizeAmount } from '@/worklets/strings';
-import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { AmountInputCardSubtitle } from '@/features/perps/screens/perps-new-position-screen/AmountInputCardSubtitle';
+import { AmountInputCardSubtitle } from './AmountInputCardSubtitle';
+import { LayoutChangeEvent, StyleSheet } from 'react-native';
+import { OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
+import { ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { useOnChange } from '@/hooks/useOnChange';
 
 type InteractionMode = 'slider' | 'keyboard';
 
@@ -48,6 +49,7 @@ const AmountSlider = ({
   onTouchesUpWorklet,
   silenceEdgeHaptics,
   snapPoints,
+  width = SLIDER_WIDTH,
 }: {
   progressValue: SharedValue<number>;
   gestureState: SharedValue<SliderGestureState>;
@@ -57,6 +59,7 @@ const AmountSlider = ({
   onTouchesUpWorklet?: () => void;
   silenceEdgeHaptics?: SharedValue<boolean>;
   snapPoints?: SharedValue<readonly number[]>;
+  width?: number;
 }) => {
   const { accentColors } = usePerpsAccentColorContext();
 
@@ -73,7 +76,7 @@ const AmountSlider = ({
       progressValue={progressValue}
       silenceEdgeHaptics={silenceEdgeHaptics}
       snapPoints={snapPoints}
-      width={SLIDER_WIDTH}
+      width={width}
     />
   );
 };
@@ -183,14 +186,30 @@ function roundToNearestTenth(value: number): number {
   return Math.round(value * 10) / 10;
 }
 
-export const AmountInputCard = memo(function AmountInputCard() {
+type AmountInputCardProps = {
+  availableBalance: string;
+  onAmountChange?: (amount: string) => void;
+  resetKey?: string;
+  title?: string;
+  validation?: ReadOnlySharedValue<OrderAmountValidation>;
+};
+
+export const AmountInputCard = memo(function AmountInputCard({
+  availableBalance,
+  onAmountChange,
+  resetKey,
+  title,
+  validation,
+}: AmountInputCardProps) {
   const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
 
-  const availableBalanceString = useStoreSharedValue(useHyperliquidAccountStore, state => state.getBalance());
-  const initialValues = useStableValue(() => buildInitialValues());
+  const availableBalanceString = useDerivedValue(() => availableBalance);
+  const initialValues = useStableValue(() => buildInitialValues(availableBalance));
+
   const inputRef = useRef<CurrencyInputRef>(null);
   const lastAccountAddress = useLazyRef(() => getAccountAddress());
+  const [sliderWidth, setSliderWidth] = useState(SLIDER_WIDTH);
 
   const balanceValue = useSharedValue(initialValues.availableBalance);
   const displayedAmount = useSharedValue(initialValues.amount);
@@ -201,8 +220,12 @@ export const AmountInputCard = memo(function AmountInputCard() {
 
   const isBalanceZero = useDerivedValue(() => equalWorklet(balanceValue.value, '0'));
   const snapPoints = useDerivedValue(() => (isBalanceZero.value ? [0] : SLIDER_DEFAULT_SNAP_POINTS)); // ? [0] : undefined);
-
-  const setAmount = hlNewPositionStoreActions.setAmount;
+  const setAmount = useCallback(
+    (amount: string) => {
+      onAmountChange?.(amount);
+    },
+    [onAmountChange]
+  );
 
   const debouncedSetAmount = useDebouncedCallback(
     (amount: string) => {
@@ -364,13 +387,19 @@ export const AmountInputCard = memo(function AmountInputCard() {
     [balanceValue, displayedAmount, inputSource, lastAccountAddress, resetToInitial, sliderProgress]
   );
 
-  useListen(
-    useHlNewPositionStore,
-    state => state.marketResetSignal,
-    () => resetToInitial()
-  );
+  useOnChange(() => {
+    resetToInitial(availableBalance);
+  }, [availableBalance, resetKey, resetToInitial]);
 
-  useListen(useHyperliquidAccountStore, state => state.getBalance(), revalidateAmount);
+  useOnChange(() => {
+    revalidateAmount(availableBalance);
+  }, [availableBalance, revalidateAmount]);
+
+  const handleSliderLayout = useCallback((event: LayoutChangeEvent) => {
+    const { width } = event.nativeEvent.layout;
+    if (!width) return;
+    setSliderWidth(prev => (Math.abs(prev - width) < StyleSheet.hairlineWidth ? prev : width));
+  }, []);
 
   return (
     <Box
@@ -388,9 +417,9 @@ export const AmountInputCard = memo(function AmountInputCard() {
       <Box width="full" flexDirection="row" alignItems="center" zIndex={2}>
         <Box gap={12}>
           <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-            {i18n.t(i18n.l.perps.inputs.amount)}
+            {title ?? i18n.t(i18n.l.perps.inputs.amount)}
           </Text>
-          <AmountInputCardSubtitle availableBalanceString={availableBalanceString} />
+          <AmountInputCardSubtitle availableBalanceString={availableBalanceString} validation={validation} />
         </Box>
         <Box flexDirection="row" alignItems="center" justifyContent="flex-end" style={{ flex: 1 }}>
           <CurrencyInput
@@ -411,25 +440,27 @@ export const AmountInputCard = memo(function AmountInputCard() {
           />
         </Box>
       </Box>
-      <AmountSlider
-        gestureState={sliderGestureState}
-        onGestureBeginWorklet={handleSliderBeginWorklet}
-        onProgressSettleWorklet={handleSliderProgressSettle}
-        onTouchesUpWorklet={handleSliderTouchesUp}
-        progressValue={sliderProgress}
-        silenceEdgeHaptics={isBalanceZero}
-        snapPoints={snapPoints}
-      />
+      <Box width="full" onLayout={handleSliderLayout}>
+        <AmountSlider
+          gestureState={sliderGestureState}
+          onGestureBeginWorklet={handleSliderBeginWorklet}
+          onProgressSettleWorklet={handleSliderProgressSettle}
+          onTouchesUpWorklet={handleSliderTouchesUp}
+          progressValue={sliderProgress}
+          silenceEdgeHaptics={isBalanceZero}
+          snapPoints={snapPoints}
+          width={sliderWidth}
+        />
+      </Box>
     </Box>
   );
 });
 
-function buildInitialValues(): {
+function buildInitialValues(availableBalanceString: string): {
   amount: string;
   availableBalance: string;
   sliderProgress: number;
 } {
-  const availableBalanceString = hyperliquidAccountActions.getBalance();
   const availableBalance = sanitizeAmount(availableBalanceString);
   const sliderProgress = getInitialProgress(availableBalanceString);
   const amount = toAdaptivePrecision(getAmountFromProgress(sliderProgress, availableBalance), availableBalance);
