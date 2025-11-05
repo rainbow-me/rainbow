@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 import { MarketSortOrder } from '@/features/perps/types';
 import { hyperliquidMarketsActions, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
@@ -22,14 +22,13 @@ export const MarketSortOrderDropdown = memo(function MarketSortOrderDropdown({ c
     [marketSortOrderLabels]
   );
 
+  const menuConfig = useMemo(
+    () => ({ menuItems: buildMarketSortOrderMenuItems(selectedSortOrder) }),
+    [selectedSortOrder, buildMarketSortOrderMenuItems]
+  );
+
   return (
-    <DropdownMenu<MarketSortOrder>
-      menuItemType="checkbox"
-      menuConfig={{
-        menuItems: buildMarketSortOrderMenuItems(selectedSortOrder),
-      }}
-      onPressMenuItem={sortOrder => hyperliquidMarketsActions.setSortOrder(sortOrder)}
-    >
+    <DropdownMenu<MarketSortOrder> menuItemType="checkbox" menuConfig={menuConfig} onPressMenuItem={hyperliquidMarketsActions.setSortOrder}>
       {children}
     </DropdownMenu>
   );
