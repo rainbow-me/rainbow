@@ -1,0 +1,15 @@
+diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
+index 6d18765..f2ccfd5 100644
+--- a/node_modules/react-native/React/Views/RCTView.m
++++ b/node_modules/react-native/React/Views/RCTView.m
+@@ -830,6 +830,10 @@ - (void)displayLayer:(CALayer *)layer
+ 
+   UIColor *backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection];
+ 
++  if (@available(iOS 13.0, *)) {
++    layer.cornerCurve = kCACornerCurveContinuous;
++  }
++
+   if (useIOSBorderRendering) {
+     layer.cornerRadius = cornerRadii.topLeftHorizontal;
+     layer.borderColor = borderColors.left.CGColor;
