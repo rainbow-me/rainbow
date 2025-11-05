@@ -1598,8 +1598,14 @@
         "more": "더 보기",
         "error": "오류",
         "cancel": "취소",
+        "close": "닫기",
+        "add": "추가",
         "liq_price": "청산 가격",
         "liq": "청산"
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "Perps",
