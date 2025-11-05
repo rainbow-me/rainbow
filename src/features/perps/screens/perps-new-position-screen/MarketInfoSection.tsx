@@ -20,9 +20,11 @@ export const MarketInfoSection = memo(function MarketInfoSection({ market }: Mar
     <Box flexDirection="row" alignItems="center" gap={12}>
       <HyperliquidTokenIcon size={40} symbol={market.symbol} />
       <Box gap={12}>
-        <Text size="17pt" weight="bold" color="label">
-          {market.symbol}
-        </Text>
+        <Box flexDirection="row" alignItems="center" gap={6}>
+          <Text size="17pt" weight="bold" color="label">
+            {market.baseSymbol}
+          </Text>
+        </Box>
         <Box flexDirection="row" alignItems="center" gap={8}>
           <LiveTokenText
             tokenId={`${market.symbol}:${HYPERLIQUID_TOKEN_ID_SUFFIX}`}

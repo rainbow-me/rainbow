@@ -3,11 +3,13 @@ import { time } from '@/utils/time';
 import { Address } from 'viem';
 import { RainbowError } from '@/logger';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { infoClient } from '@/features/perps/services/hyperliquid-account-client';
+import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
 import { OrderSide } from '@/features/perps/types';
-import * as hl from '@nktkas/hyperliquid';
+import { FrontendOpenOrdersResponse } from '@nktkas/hyperliquid/api/info';
 import { convertSide } from '@/features/perps/utils';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+
+type FrontendOpenOrder = FrontendOpenOrdersResponse[number];
 
 export type HlOpenOrder = {
   id: number;
@@ -18,10 +20,10 @@ export type HlOpenOrder = {
   originalSize: string;
   limitPrice: string;
   isPositionTpsl: boolean;
-  orderType: hl.FrontendOrder['orderType'];
+  orderType: FrontendOpenOrder['orderType'];
   triggerCondition: string;
   reduceOnly: boolean;
-  tif: hl.FrontendOrder['tif'];
+  tif: FrontendOpenOrder['tif'];
 };
 
 type HlOpenOrdersParams = {

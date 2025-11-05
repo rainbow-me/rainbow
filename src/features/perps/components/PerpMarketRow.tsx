@@ -39,9 +39,11 @@ export const PerpMarketRow = function PerpMarketRow({ market, onPress, paddingVe
         <HyperliquidTokenIcon symbol={market.symbol} size={40} />
         <Box style={{ flex: 1 }} gap={12}>
           <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-            <Text size="17pt" weight="bold" color="label">
-              {market.symbol}
-            </Text>
+            <Box flexDirection="row" alignItems="center" gap={6}>
+              <Text size="17pt" weight="bold" color="label">
+                {market.baseSymbol}
+              </Text>
+            </Box>
             <LiveTokenText
               align="right"
               selector={livePriceSelector}

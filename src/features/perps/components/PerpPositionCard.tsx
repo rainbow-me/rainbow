@@ -15,6 +15,7 @@ import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPri
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { ETH_COLOR_DARK, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import * as i18n from '@/languages';
+import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 
 type PerpPositionCardProps = {
   position: PerpsPosition;
@@ -78,7 +79,7 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
             <Box flexDirection="row" alignItems="center" justifyContent="space-between">
               <Box flexDirection="row" alignItems="center" gap={4}>
                 <Text size="17pt" weight="bold" color="label">
-                  {`${position.symbol}`}
+                  {extractBaseSymbol(position.symbol)}
                 </Text>
                 <Text size="13pt" weight="bold" color="labelTertiary">
                   {'􀯻'}

@@ -1,11 +1,26 @@
 import * as hl from '@nktkas/hyperliquid';
+import { OrderParameters } from '@nktkas/hyperliquid/api/exchange';
+import { PerpDexsResponse } from '@nktkas/hyperliquid/api/info';
 import { Hex } from 'viem';
 
+// Derived types from @nktkas/hyperliquid
+export type UserFill = hl.UserFillsResponse[number];
+export type MarginTier = hl.MarginTableResponse['marginTiers'][number];
+export type HistoricalOrder = hl.HistoricalOrdersResponse[number];
+export type OrderParams = OrderParameters['orders'][number];
+export type TIF = Extract<OrderParams['t'], { limit: unknown }>['limit']['tif'];
+export type RawPerpDex = NonNullable<PerpDexsResponse[number]>;
+
 export type OrderSide = 'buy' | 'sell';
+
+export type HyperliquidDex = {
+  name: string;
+} & Partial<Omit<RawPerpDex, 'name'>>;
 
 export type PerpMarket = {
   id: number;
   symbol: string;
+  baseSymbol: string;
   price: string;
   midPrice: string | null;
   priceChange: {
@@ -16,9 +31,10 @@ export type PerpMarket = {
     '24h': string;
   };
   maxLeverage: number;
-  marginTiers?: hl.MarginTier[];
+  marginTiers?: MarginTier[];
   decimals: number;
   fundingRate: string;
+  dex: string;
 };
 
 export type HyperliquidTokenMetadata = {
@@ -51,6 +67,7 @@ export type PerpsPosition = {
   funding: string;
   returnOnEquity: string;
   marginUsed: string;
+  dex: string;
 };
 
 export type PerpAccount = {
@@ -105,7 +122,7 @@ export type HlTrade = {
   orderId: number;
   tradeId: number;
   txHash: string;
-  liquidation?: hl.Fill['liquidation'];
+  liquidation?: UserFill['liquidation'];
   executedAt: Date;
   direction: string;
   orderType: string;

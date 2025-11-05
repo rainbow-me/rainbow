@@ -4,6 +4,7 @@ import { Text, useForegroundColor } from '@/design-system';
 import { hyperliquidMarketsActions, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { ImgixImage } from '@/components/images';
 import { ImgixImageProps } from '@/components/images/ImgixImage';
+import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 
 type HyperliquidTokenIconProps = Omit<ImgixImageProps, 'source'> & {
   size: number;
@@ -14,6 +15,7 @@ export const HyperliquidTokenIcon = memo(function HyperliquidTokenIcon({ size, s
   const fallbackColor = useForegroundColor('accent');
   const iconUrl = useHyperliquidMarketsStore(state => state.getCoinIcon(symbol));
   const color = useMemo(() => (iconUrl ? undefined : hyperliquidMarketsActions.getColor(symbol)), [iconUrl, symbol]);
+  const baseSymbol = useMemo(() => extractBaseSymbol(symbol), [symbol]);
 
   const containerStyle = useMemo(() => {
     return {
@@ -30,7 +32,7 @@ export const HyperliquidTokenIcon = memo(function HyperliquidTokenIcon({ size, s
     return (
       <View style={[containerStyle, { backgroundColor: color || fallbackColor }]}>
         <Text align="center" size="icon 8px" weight="heavy" color="label">
-          {size >= 36 ? symbol : symbol.slice(0, 1)}
+          {size >= 36 ? baseSymbol : baseSymbol.slice(0, 1)}
         </Text>
       </View>
     );

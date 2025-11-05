@@ -1,11 +1,10 @@
-import * as hl from '@nktkas/hyperliquid';
 import { Address } from 'viem';
 import { getHyperliquidAccountClient, useHyperliquidClients } from '@/features/perps/services';
 import { RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { time } from '@/utils/time';
-import { TriggerOrderType, HlTrade, TradeExecutionType } from '../types';
+import { TriggerOrderType, HlTrade, UserFill, HistoricalOrder, TradeExecutionType } from '../types';
 import { convertSide } from '../utils';
 import * as i18n from '@/languages';
 import { subWorklet } from '@/safe-math/SafeMath';
@@ -75,7 +74,7 @@ async function fetchHlTrades({ address }: HlTradesParams, abortController: Abort
   };
 }
 
-function convertFillAndOrderToTrade({ fill, order }: { fill: hl.Fill; order: hl.FrontendOrder }): HlTrade {
+function convertFillAndOrderToTrade({ fill, order }: { fill: UserFill; order: HistoricalOrder['order'] }): HlTrade {
   const isTakeProfit = order.isPositionTpsl && order.orderType.includes('Take Profit');
   const isStopLoss = order.isPositionTpsl && order.orderType.includes('Stop');
   const triggerOrderType = isTakeProfit ? TriggerOrderType.TAKE_PROFIT : isStopLoss ? TriggerOrderType.STOP_LOSS : undefined;
@@ -116,8 +115,8 @@ function convertFillAndOrderToTrade({ fill, order }: { fill: hl.Fill; order: hl.
   };
 }
 
-function createTradeHistory({ orders, fills }: { orders: hl.OrderStatus<hl.FrontendOrder>[]; fills: hl.Fill[] }): HlTrade[] {
-  const ordersMap = new Map<number, hl.FrontendOrder>();
+function createTradeHistory({ orders, fills }: { orders: HistoricalOrder[]; fills: UserFill[] }): HlTrade[] {
+  const ordersMap = new Map<number, HistoricalOrder['order']>();
   const tradeHistory: HlTrade[] = [];
 
   orders.forEach(orderWithStatus => {
@@ -142,7 +141,7 @@ function buildTradesBySymbol(trades: HlTrade[]): Record<string, HlTrade[]> {
   }, {});
 }
 
-function getEntryPriceFromFill(fill: hl.Fill): string | undefined {
+function getEntryPriceFromFill(fill: UserFill): string | undefined {
   const closedPnl = Number(fill.closedPnl);
   if (closedPnl === 0) return;
 

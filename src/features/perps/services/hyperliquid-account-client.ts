@@ -1,13 +1,11 @@
 import { add, greaterThan } from '@/helpers/utilities';
-import * as hl from '@nktkas/hyperliquid';
+import { HistoricalOrdersResponse, UserFillsResponse } from '@nktkas/hyperliquid';
 import { Address } from 'viem';
 import { RAINBOW_BUILDER_SETTINGS } from '@/features/perps/constants';
 import { PerpPositionSide, PerpAccount, PerpsPosition } from '../types';
-
-const transport = new hl.HttpTransport();
-export const infoClient: hl.InfoClient = new hl.InfoClient({
-  transport,
-});
+import { normalizeDexSymbol } from '@/features/perps/utils/hyperliquidSymbols';
+import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
+import { hyperliquidDexActions } from '@/features/perps/stores/hyperliquidDexStore';
 
 export class HyperliquidAccountClient {
   constructor(private userAddress: Address) {}
@@ -36,19 +34,39 @@ export class HyperliquidAccountClient {
   }
 
   async getPerpAccount(abortSignal: AbortSignal | undefined): Promise<PerpAccount> {
-    const perpState = await infoClient.clearinghouseState(
-      {
-        user: this.userAddress,
-      },
-      abortSignal
+    await hyperliquidDexActions.fetch();
+    const dexIds = hyperliquidDexActions.getDexIds();
+    const clearinghouseStates = await Promise.all(
+      dexIds.map(async dex => {
+        const state = await infoClient.clearinghouseState(
+          {
+            user: this.userAddress,
+            dex,
+          },
+          abortSignal
+        );
+
+        return { state, dex };
+      })
     );
 
-    const positions = perpState.assetPositions
-      .map(({ position }) => {
+    let totalAccountValue = '0';
+    let totalWithdrawable = '0';
+    const positions: PerpsPosition[] = [];
+
+    clearinghouseStates.forEach(({ state, dex }) => {
+      const accountValue = state.marginSummary?.accountValue ?? '0';
+      const withdrawable = state.withdrawable ?? '0';
+
+      totalAccountValue = add(totalAccountValue, accountValue);
+      totalWithdrawable = add(totalWithdrawable, withdrawable);
+
+      state.assetPositions.forEach(({ position }) => {
+        const symbol = normalizeDexSymbol(position.coin, dex);
         const equity = position.leverage.type === 'isolated' ? position.marginUsed : add(position.unrealizedPnl, position.marginUsed);
 
-        return {
-          symbol: position.coin,
+        positions.push({
+          symbol,
           side: greaterThan(position.szi, 0) ? PerpPositionSide.LONG : PerpPositionSide.SHORT,
           leverage: position.leverage.value,
           liquidationPrice: position.liquidationPx,
@@ -60,9 +78,12 @@ export class HyperliquidAccountClient {
           size: position.szi,
           equity,
           funding: position.cumFunding.sinceOpen,
-        };
-      })
-      .sort((a, b) => Number(b.equity) - Number(a.equity));
+          dex,
+        });
+      });
+    });
+
+    positions.sort((a, b) => Number(b.equity) - Number(a.equity));
 
     const positionsBySymbol = positions.reduce(
       (acc, position) => {
@@ -73,8 +94,8 @@ export class HyperliquidAccountClient {
     );
 
     return {
-      value: perpState.marginSummary.accountValue,
-      balance: perpState.withdrawable,
+      value: totalAccountValue,
+      balance: totalWithdrawable,
       positions: positionsBySymbol,
     };
   }
@@ -87,7 +108,7 @@ export class HyperliquidAccountClient {
     return check.userExists;
   }
 
-  async getHistoricalOrders(abortSignal: AbortSignal | undefined): Promise<hl.OrderStatus<hl.FrontendOrder>[]> {
+  async getHistoricalOrders(abortSignal: AbortSignal | undefined): Promise<HistoricalOrdersResponse> {
     return await infoClient.historicalOrders(
       {
         user: this.userAddress,
@@ -96,7 +117,7 @@ export class HyperliquidAccountClient {
     );
   }
 
-  async getFilledOrders(abortSignal: AbortSignal | undefined): Promise<hl.Fill[]> {
+  async getFilledOrders(abortSignal: AbortSignal | undefined): Promise<UserFillsResponse> {
     return await infoClient.userFills(
       {
         user: this.userAddress,
@@ -119,5 +140,9 @@ export class HyperliquidAccountClient {
       user: this.userAddress,
     });
     return referral.referredBy !== null;
+  }
+
+  async isDexAbstractionEnabled(): Promise<boolean> {
+    return (await infoClient.userDexAbstraction({ user: this.userAddress })) ?? false;
   }
 }

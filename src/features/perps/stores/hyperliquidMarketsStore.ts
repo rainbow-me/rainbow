@@ -8,6 +8,7 @@ import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPri
 import { getAllMarketsInfo } from '@/features/perps/utils/hyperliquid';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
+import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 
 type PerpMarketsBySymbol = Partial<Record<string, PerpMarketWithMetadata>>;
 
@@ -68,6 +69,7 @@ export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsFet
       sortOrder: state.sortOrder,
     }),
     storageKey: 'hyperliquidMarketsStore',
+    version: 1,
   }
 );
 
