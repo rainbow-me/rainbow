@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const exclusionList = require('metro-config/private/defaults/exclusionList').default;
 const { mergeConfig, getDefaultConfig } = require('@react-native/metro-config');
-// const { withSentryConfig } = require('@sentry/react-native/metro');
+const { withSentryConfig } = require('@sentry/react-native/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
 const path = require('path');
 
@@ -93,12 +93,8 @@ const rainbowConfig = {
 
 const config = mergeConfig(getDefaultConfig(__dirname), rainbowConfig);
 
-// Temporarily disable Sentry config due to RN 0.81.0 compatibility issue
-// const sentryConfig = withSentryConfig(config, {
-//   annotateReactComponents: true,
-// });
+const sentryConfig = withSentryConfig(config, {
+  annotateReactComponents: true,
+});
 
-// Need support for import.meta to enable this.
-// sentryConfig.resolver.unstable_enablePackageExports = false;
-
-module.exports = wrapWithReanimatedMetroConfig(config);
+module.exports = wrapWithReanimatedMetroConfig(sentryConfig);
