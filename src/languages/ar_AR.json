@@ -1598,8 +1598,14 @@
         "more": "أكثر",
         "error": "خطأ",
         "cancel": "إلغاء",
+        "close": "إغلاق",
+        "add": "أضف",
         "liq_price": "سعر التصفية",
         "liq": "تصفية"
+      },
+      "add_to_position": {
+        "title": "أضف إلى المركز",
+        "new_total": "المجموع الجديد"
       },
       "feature_card": {
         "title": "الرافعات المالية",
