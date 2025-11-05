@@ -1598,8 +1598,14 @@
         "more": "Lebih",
         "error": "Kesalahan",
         "cancel": "Batal",
+        "close": "Tutup",
+        "add": "Tambah",
         "liq_price": "harga liq.",
         "liq": "liq"
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "Perps",
