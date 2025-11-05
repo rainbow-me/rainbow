@@ -21,6 +21,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.10] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.10)
+
+### Fixed
+
+- Fixed positions balance/value calculations, LST filtering (#6919)
+
+### Internal
+
+- Version bump swaps sdk to v0.39.0 (#6917)
+- Bump swaps sdk version to v0.38.0 (#6915)
+
 ## [2.0.9] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.9)
 
 ### Added
