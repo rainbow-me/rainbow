@@ -1598,8 +1598,14 @@
         "more": "もっと",
         "error": "エラー",
         "cancel": "キャンセル",
+        "close": "閉じる",
+        "add": "追加",
         "liq_price": "清算価格",
         "liq": "清算"
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "\"Perps\"",
