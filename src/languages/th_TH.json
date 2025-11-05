@@ -1598,8 +1598,14 @@
         "more": "เพิ่มเติม",
         "error": "ข้อผิดพลาด",
         "cancel": "ยกเลิก",
+        "close": "ปิด",
+        "add": "เพิ่ม",
         "liq_price": "ราคา liq.",
         "liq": "liquid."
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "Perps",
