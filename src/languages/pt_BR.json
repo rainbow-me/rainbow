@@ -1598,8 +1598,14 @@
         "more": "Mais",
         "error": "Erro",
         "cancel": "Cancelar",
+        "close": "Fechar",
+        "add": "Adicionar",
         "liq_price": "Preço de liquidação",
         "liq": "liq."
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "Perps",
