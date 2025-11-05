@@ -1598,8 +1598,14 @@
         "more": "Больше",
         "error": "Ошибка",
         "cancel": "Отменить",
+        "close": "Закрыть",
+        "add": "Добавить",
         "liq_price": "Цена ликв.",
         "liq": "ликв."
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "Perps",
