@@ -147,7 +147,6 @@ export function PrebuySection() {
     });
   }, [marketCapChainNativeAsset, chainNativeAssetSymbol]);
 
-  const minPrebuyAmount = prebuyOptions[0].amount;
   const maxPrebuyAmount = prebuyOptions[prebuyOptions.length - 1].amount;
 
   const customInputSubtitle = useDerivedValue(() => {

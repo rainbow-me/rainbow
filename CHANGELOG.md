@@ -15,7 +15,118 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
-## [2.0.1] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.1)
+### Security
+
+### Internal
+
+### Testing
+
+## [2.0.10] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.10)
+
+### Fixed
+
+- Fixed positions balance/value calculations, LST filtering (#6919)
+
+### Internal
+
+- Version bump swaps sdk to v0.39.0 (#6917)
+- Bump swaps sdk version to v0.38.0 (#6915)
+
+## [2.0.9] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.9)
+
+### Added
+
+- Expanded Positions support for Defi protocols (#6885)
+
+### Fixed
+
+- Fixed webview provider injection on old Android versions
+- Fixed keyboard issue with iOS 26 in send form (#6903)
+- Fixed incorrect navigation when new perp creation is dismissed (#6902)
+- Fixed Android keyboard height on import wallet screen (#6890)
+
+### Internal
+
+- Defi positions migration to ListPositions endpoint (#6885)
+
+## [2.0.8] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.8)
+
+### Added
+
+- Add Chonks icon (#6899)
+- Rainbow referral code setting (#6895)
+- Perps chart indicators (#6891)
+
+### Changed
+
+- i18n string updates (#6862)
+- Remove the "Next Drop" card from points screen (#6873)
+
+### Fixed
+
+- Fixed network selector edit button (#6901)
+- Various perps fixes (#6888)
+- Fixed broad internal network filtering (#6877)
+- ENS fixes (#6851)
+- Prevent calling `GetAssetUpdates` with no address (#6887)
+- Prevent KOTH header from hiding when top token has no coin icon (#6883)
+- Time to sign fixes & improvements (#6886)
+
+### Internal
+
+- Use commit hash instead of tags for github actions (#6872)
+- Migrate from `useWorkletCallback` (#6738)
+- Update check-lockfile.sh (#6761)
+- Fixed perf report styling for fps (#6898)
+- Fixed broken link to React Native Reanimated installation docs (#6719)
+
+## [2.0.7] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.7)
+
+### Added
+
+- Visual indicators for token balance liquidity capping (#6874)
+
+### Changed
+
+- Make browser tab preview cleanup more robust (#6878)
+- Bump iOS and Android to v2.0.7 (#6881)
+
+### Fixed
+
+- Fixed social link browser redirects, x/farcaster branding (#6865)
+- Fixed bottom sheet issue for change wallet for Android (#6875)
+- Fixed the close position button not showing when balance is 0 (#6882)
+
+## [2.0.6] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.6)
+
+### Added
+
+- Implement Perps Feature (#6815)
+- Updates to Perps Release #6876
+
+### Changed
+
+- Remove env log (#6870)
+- Bump iOS and Android to v2.0.6 (#6871)
+
+### Fixed
+
+- Fixed sheet and text layout on Android (#6855)
+- Fixed modal flick for contact (#6850)
+
+## [2.0.5] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.5)
+
+### Changed
+
+- TL updates (#6846)
+- Bump iOS and Android to v2.0.4 (#6867)
+- Disable swap carret anim for e2e tests (#6858)
+
+### Fixed
+
+- Fix LiveTokenText color when changing app theme (#6859)
+
+## [2.0.3] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.3)
 
 ### Added
 
@@ -23,22 +134,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
-- Bump iOS and Android to v2.0.1 (#6830)
+- Bump iOS and Android to v2.0.3 (#6856)
 - CI Performance Improvments (#6734)
 - Deprecate ens profile search in discover (#6827)
 - Expanded i18n coverage (#6836)
 - Refactor i18n typed api standardization (#6837)
+- i18n updates (#6843)
+- Derived store improvements (#6669)
 
 ### Fixed
 
 - QR code scanner reliability fixes (#6686)
 - Fixed done button spacing on settings (#6831)
-- Fix issue with e2e (#6838)
+- Fixed issue with e2e (#6838)
 - Fixed missing padding under the wallet address in receive modal (#6832)
 - Fixed locale re-render upon language switching (#6835)
 - Switching wallets doesn’t reset the wallet balance page to the top (#6840)
 - Scroll to top vs reseting the full list on account switching (#6844)
 - Fixed done button truncation (#6841)
+- Fixed navbar padding and color on Android (#6834)
+- Fixed native asset wallet alignment in dapp browser control panel (#6826)
+- Transactions fixes (#6845)
+- Fixed iOS sheet handling, cleaned up Navigation types (#6807)
 
 ## [2.0.0] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.0)
 

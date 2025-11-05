@@ -20,7 +20,6 @@ import { Gesture, GestureDetector, State as GestureState } from 'react-native-ge
 import Animated, {
   Easing,
   SharedValue,
-  executeOnUIRuntimeSync,
   runOnJS,
   runOnUI,
   useAnimatedReaction,
@@ -41,16 +40,17 @@ import { CANDLESTICK_DATA_MONITOR, useExperimentalFlag } from '@/config';
 import { Text, TextIcon, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { TextSegment, useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
-import { NativeCurrencyKey } from '@/entities';
+import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities';
 import { IS_DEV, IS_IOS } from '@/env';
-import { areCandlesEqual } from '@/features/charts/candlestick/utils';
+import { areCandlesEqual, formatCandlestickPrice } from '@/features/charts/candlestick/utils';
 import { candlestickActions, fetchHistoricalCandles, useCandlestickStore } from '@/features/charts/stores/candlestickStore';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
+import { isHyperliquidToken } from '@/features/charts/utils';
 import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';
+import Routes from '@/navigation/routesNames';
 import { supportedNativeCurrencies } from '@/references';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -65,6 +65,8 @@ import { DampingMassStiffnessConfig, normalizeSpringConfig } from '@/worklets/an
 import { createBlankPicture } from '@/worklets/skia';
 import { NoChartData } from '../../components/NoChartData';
 import { HyperliquidSymbol, Token } from '../../types';
+import { IndicatorPosition, PerpsIndicatorData, PerpsIndicatorBuilder } from '@/features/perps/charts-plugin/PerpsIndicatorBuilder';
+import { usePerpsIndicatorData } from '@/features/perps/charts-plugin/usePerpsIndicatorData';
 import { Animator } from '../classes/Animator';
 import { EmaIndicator, IndicatorBuilder, IndicatorKey } from '../classes/IndicatorBuilder';
 import { TimeFormatter } from '../classes/TimeFormatter';
@@ -179,6 +181,7 @@ type CandlestickConfig = {
   };
 
   indicators: {
+    enablePerpsIndicators: boolean;
     strokeWidth: number;
   };
 
@@ -246,6 +249,7 @@ export const DEFAULT_CANDLESTICK_CONFIG = deepFreeze({
   },
 
   indicators: {
+    enablePerpsIndicators: true,
     strokeWidth: 4 / 3,
   },
 
@@ -295,16 +299,6 @@ function findPercentile(array: number[], percentile: number): number {
   return a[Math.min(percentile, a.length - 1)];
 }
 
-function formatPrice(price: number, currency: NativeCurrencyKey): string {
-  'worklet';
-  return formatAssetPrice({
-    currency,
-    decimalPlaces: supportedNativeCurrencies[currency].decimals,
-    prefix: supportedNativeCurrencies[currency].symbol,
-    value: price,
-  });
-}
-
 function getEmaPeriod(type: IndicatorKey): number {
   'worklet';
   switch (type) {
@@ -324,6 +318,7 @@ function getYOffsetForPriceLabel(index: number, textHeight: number): number {
 }
 
 const AVERAGE_CHARACTER_WIDTH = 52 / 6;
+const DECIMAL_WIDTH = AVERAGE_CHARACTER_WIDTH / 3;
 
 function getYAxisLabelWidth(maxCharacters: number): number {
   'worklet';
@@ -350,6 +345,7 @@ class CandlestickChartManager {
   private fetchAdditionalCandles: () => void;
   private hasPreviousCandles: boolean;
   private isDarkMode: boolean;
+  private isHyperliquidToken: boolean;
   private nativeCurrency: { currency: NativeCurrencyKey; decimals: number };
   private volumeBarColor: SkColor;
   private yAxisWidth: number;
@@ -385,6 +381,7 @@ class CandlestickChartManager {
 
   private animator = new Animator(() => this.rebuildChart());
   private indicatorBuilder = new IndicatorBuilder<IndicatorKey>();
+  private perpsIndicatorBuilder: PerpsIndicatorBuilder | null = null;
   private timeFormatter = new TimeFormatter();
 
   private colors = {
@@ -445,6 +442,8 @@ class CandlestickChartManager {
     isLoadingHistoricalCandles,
     maxDisplayedVolume,
     nativeCurrency,
+    perpsIndicatorData,
+    token,
   }: {
     activeCandle: SharedValue<Bar | undefined>;
     buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
@@ -467,6 +466,8 @@ class CandlestickChartManager {
     isLoadingHistoricalCandles: SharedValue<boolean>;
     maxDisplayedVolume: SharedValue<number>;
     nativeCurrency: { currency: NativeCurrencyKey; decimals: number };
+    perpsIndicatorData: PerpsIndicatorData | null;
+    token: Token;
   }) {
     // ========== Core State ==========
     this.backgroundColor = Skia.Color(config.chart.backgroundColor);
@@ -481,6 +482,7 @@ class CandlestickChartManager {
     this.fetchAdditionalCandles = fetchAdditionalCandles;
     this.hasPreviousCandles = hasPreviousCandles;
     this.isDarkMode = isDarkMode;
+    this.isHyperliquidToken = isHyperliquidToken(token);
     this.nativeCurrency = nativeCurrency;
     this.volumeBarColor = Skia.Color(config.volume.color);
 
@@ -614,6 +616,19 @@ class CandlestickChartManager {
     this.yAxisWidth = this.getYAxisWidth(min, max);
     this.offset.value = this.getMinOffset();
 
+    // ========== Perps Indicators ==========
+    if (perpsIndicatorData && this.isHyperliquidToken && this.config.indicators.enablePerpsIndicators) {
+      this.perpsIndicatorBuilder = new PerpsIndicatorBuilder({
+        backgroundColor: this.backgroundColor,
+        buildParagraph,
+        chartWidth,
+        isDarkMode,
+        perpsIndicatorData,
+        yAxisWidth: this.yAxisWidth,
+      });
+      this.perpsIndicatorBuilder.updateData(perpsIndicatorData);
+    }
+
     this.buildBaseCandlesPicture();
   }
 
@@ -652,6 +667,12 @@ class CandlestickChartManager {
     if (indicatorRange) {
       if (indicatorRange.min < min) min = indicatorRange.min;
       if (indicatorRange.max > max) max = indicatorRange.max;
+    }
+
+    const perpsIndicatorRange = this.perpsIndicatorBuilder?.getMinMaxForRange();
+    if (perpsIndicatorRange) {
+      if (perpsIndicatorRange.min < min) min = perpsIndicatorRange.min;
+      if (perpsIndicatorRange.max > max) max = perpsIndicatorRange.max;
     }
 
     if (min === Infinity || max === -Infinity) {
@@ -737,11 +758,14 @@ class CandlestickChartManager {
       }
     }
 
+    const nativeCurrency = this.nativeCurrency.currency;
+    const isHyperliquidToken = this.isHyperliquidToken;
+
     let maxAfterDecimal = 0;
     let maxCharacters = 0;
 
     for (const price of newPrices) {
-      const formatted = formatPrice(price, this.nativeCurrency.currency);
+      const formatted = formatCandlestickPrice(price, nativeCurrency, isHyperliquidToken);
       const numeric = formatted.replace(/[^\d.]/g, '');
       const afterDecimal = numeric.split('.')[1]?.length ?? 0;
       maxAfterDecimal = Math.max(maxAfterDecimal, afterDecimal);
@@ -755,7 +779,10 @@ class CandlestickChartManager {
 
     this.maxYAxisLabelDecimals = maxAfterDecimal;
 
-    return this.config.chart.yAxisPaddingLeft + getYAxisLabelWidth(maxCharacters) + this.config.chart.yAxisPaddingRight;
+    const yAxisWidth = this.config.chart.yAxisPaddingLeft + getYAxisLabelWidth(maxCharacters) + this.config.chart.yAxisPaddingRight;
+    if (maxAfterDecimal === 0) return yAxisWidth + DECIMAL_WIDTH;
+
+    return yAxisWidth;
   }
 
   // ============ Chart Drawing Methods ======================================== //
@@ -839,17 +866,21 @@ class CandlestickChartManager {
     }
 
     const labelX = chartWidth - this.yAxisWidth + this.config.chart.yAxisPaddingLeft;
+    const nativeCurrency = this.nativeCurrency.currency;
+    const isHyperliquidToken = this.isHyperliquidToken;
+
     let labelHeight: number | undefined = undefined;
 
     for (let i = 0; i <= 3; i++) {
       const y = chartHeight * (i / 4) + 0.5;
       canvas.drawLine(0, y, chartWidth, y, this.paints.grid);
       if (!hasCandles) continue;
+
       // -- TODO: Simplify this
-      const formattedPrice = formatPrice(this.getPriceAtYPosition(y), this.nativeCurrency.currency);
-      const [integerPart, decimalPart = ''] = formattedPrice.split('.');
+      let newPrice = formatCandlestickPrice(this.getPriceAtYPosition(y), nativeCurrency, isHyperliquidToken);
+      const [integerPart, decimalPart = ''] = newPrice.split('.');
       const paddedDecimal = decimalPart.padEnd(this.maxYAxisLabelDecimals, '0').slice(0, this.maxYAxisLabelDecimals);
-      const newPrice = `${integerPart}.${paddedDecimal}`;
+      newPrice = paddedDecimal ? `${integerPart}.${paddedDecimal}` : integerPart;
 
       const paragraph = buildParagraph({
         color: this.colors.labelQuinary,
@@ -886,6 +917,21 @@ class CandlestickChartManager {
       this.paints.candleWick.setColor(lastCandleColor);
       this.paints.candleWick.setAlphaf(0.4);
       canvas.drawLine(0, currentPriceY, chartWidth - this.yAxisWidth / 2, currentPriceY, this.paints.candleWick);
+    }
+
+    // ========== Perps Indicator Lines ==========
+    let perpsIndicatorPositions: IndicatorPosition[] = [];
+    if (this.perpsIndicatorBuilder) {
+      perpsIndicatorPositions = this.perpsIndicatorBuilder.drawLines(canvas, {
+        candleRegionHeight,
+        candleWidth,
+        endIndex,
+        maxPrice,
+        minPrice,
+        offsetX: currentOffset,
+        startIndex,
+        stride,
+      });
     }
 
     // ========== Candle Wicks ==========
@@ -954,6 +1000,11 @@ class CandlestickChartManager {
         priceOrLabel: lastCandle.c,
         strokeOpacity: 0.15,
       });
+    }
+
+    // ========== Perps Indicator Bubbles ==========
+    if (this.perpsIndicatorBuilder) {
+      this.perpsIndicatorBuilder.drawBubbles(canvas, perpsIndicatorPositions);
     }
 
     const oldPicture = this.chartPicture.value;
@@ -1152,8 +1203,9 @@ class CandlestickChartManager {
 
     if (didProvideRawPrice) {
       const maxDecimals = this.maxYAxisLabelDecimals;
-      const rawFormatted = formatPrice(priceOrLabel, this.nativeCurrency.currency);
-      const [integerPart, decimalPart = ''] = rawFormatted.split('.');
+      formattedPrice = formatCandlestickPrice(priceOrLabel, this.nativeCurrency.currency, this.isHyperliquidToken);
+
+      const [integerPart, decimalPart = ''] = formattedPrice.split('.');
       const paddedDecimal = decimalPart.padEnd(maxDecimals, '0').slice(0, maxDecimals);
       formattedPrice = maxDecimals > 0 ? `${integerPart}.${paddedDecimal}` : integerPart;
     } else {
@@ -1287,6 +1339,7 @@ class CandlestickChartManager {
 
   public setBuildParagraph(buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null): void {
     this.buildParagraph = buildParagraph;
+    this.perpsIndicatorBuilder?.setBuildParagraph(buildParagraph);
     this.buildBaseCandlesPicture();
   }
 
@@ -1295,18 +1348,22 @@ class CandlestickChartManager {
     { hasPreviousCandles, shouldResetOffset = false }: { hasPreviousCandles: boolean; shouldResetOffset?: boolean }
   ): void {
     const oldCandleCount = this.candles.length;
-    const wasDataPrepended =
-      !shouldResetOffset && !!oldCandleCount && newCandles.length > oldCandleCount && newCandles[0].t < this.candles[0].t;
+    const wasDataAdded = oldCandleCount > 0 && newCandles.length > oldCandleCount;
+    const wasDataAppended = wasDataAdded && newCandles[newCandles.length - 1].t > this.candles[oldCandleCount - 1].t;
+    const wasDataPrepended = wasDataAdded && newCandles[0].t < this.candles[0].t;
+    const shouldRegisterOffsetAdjustment = !shouldResetOffset && wasDataPrepended;
 
     const currentOffset = this.getOffsetX();
     const currentMinOffset = this.getMinOffset();
-    const wasPinnedToRight = shouldResetOffset || !oldCandleCount || Math.abs(currentOffset - currentMinOffset) < 1;
+    const isDecelerating = this.isDecelerating.value;
+    const wasPinnedToRight =
+      shouldResetOffset || !oldCandleCount || (wasDataAppended && Math.abs(currentOffset - currentMinOffset) < 1 && !isDecelerating);
 
     this.candles = newCandles;
     this.hasPreviousCandles = hasPreviousCandles;
     this.indicatorBuilder.computeAll(newCandles);
 
-    if (wasDataPrepended) {
+    if (shouldRegisterOffsetAdjustment) {
       this.registerOffsetAdjustment({ newCandleCount: newCandles.length, oldCandleCount });
       this.getPriceBounds();
       this.animator.runAfterAnimations(() => {
@@ -1327,10 +1384,11 @@ class CandlestickChartManager {
         this.getPriceBounds();
       }
 
-      this.rebuildChart(false, true);
+      const shouldAnimate = !wasPinnedToRight;
+      this.rebuildChart(shouldAnimate, true);
     }
 
-    if (!wasDataPrepended && this.isChartGestureActive.value) {
+    if (!shouldRegisterOffsetAdjustment && this.isChartGestureActive.value) {
       this.buildCrosshairPicture(this.lastCrosshairPosition.x, this.lastCrosshairPosition.y, true);
     }
   }
@@ -1350,25 +1408,23 @@ class CandlestickChartManager {
     this.rebuildChart(false, true);
   }
 
-  public setColorMode(
-    colorMode: 'dark' | 'light',
-    backgroundColor: string | undefined,
-    providedConfig: CandlestickChartProps['config']
-  ): void {
+  public setColorMode(colorMode: 'dark' | 'light', backgroundColor: string, providedConfig: CandlestickChartProps['config']): void {
     const isDarkMode = colorMode === 'dark';
     this.isDarkMode = isDarkMode;
     this.colors.crosshairPriceBubble = Skia.Color(getColorForTheme('fill', colorMode));
     this.colors.labelSecondary = Skia.Color(getColorForTheme('labelSecondary', colorMode));
     this.colors.labelQuinary = Skia.Color(getColorForTheme('labelQuinary', colorMode));
 
-    if (backgroundColor) {
-      this.backgroundColor = Skia.Color(backgroundColor);
-      this.paints.bottomShadow.setColor(this.backgroundColor);
-      this.paints.bottomShadow.setAlphaf(0.48);
-      this.paints.bottomShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 4, 5, 5, this.backgroundColor, null));
-      this.paints.topShadow.setColor(this.backgroundColor);
-      this.paints.topShadow.setAlphaf(0.48);
-      this.paints.topShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, -4, 5, 5, this.backgroundColor, null));
+    this.backgroundColor = Skia.Color(backgroundColor);
+    this.paints.bottomShadow.setColor(this.backgroundColor);
+    this.paints.bottomShadow.setAlphaf(0.48);
+    this.paints.bottomShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 4, 5, 5, this.backgroundColor, null));
+    this.paints.topShadow.setColor(this.backgroundColor);
+    this.paints.topShadow.setAlphaf(0.48);
+    this.paints.topShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, -4, 5, 5, this.backgroundColor, null));
+
+    if (this.perpsIndicatorBuilder) {
+      this.perpsIndicatorBuilder.setColorMode(isDarkMode, this.backgroundColor);
     }
 
     if (providedConfig?.crosshair?.dotColor) {
@@ -1417,8 +1473,18 @@ class CandlestickChartManager {
 
     this.animator.dispose();
     this.indicatorBuilder.dispose();
+    this.perpsIndicatorBuilder?.dispose();
 
     for (const paint of Object.values(this.paints)) paint.dispose();
+  }
+
+  // ============ Perps Indicators ============================================= //
+
+  public updatePerpsIndicatorData(data: PerpsIndicatorData | null): void {
+    if (!this.perpsIndicatorBuilder) return;
+    this.perpsIndicatorBuilder.updateData(data);
+    if (!this.candles.length) return;
+    this.rebuildChart(true, true);
   }
 
   // ============ Indicator Toggles ============================================ //
@@ -1622,15 +1688,16 @@ function useCandlestickChart({
   providedConfig: CandlestickChartProps['config'];
   providedToken: Token;
 }) {
-  const { candles, config, hasPreviousCandles, initialPicture, isFetchingInitialData, nativeCurrency, token } = useStableValue(() =>
-    buildChartConfig({
-      backgroundColor,
-      chartHeight,
-      chartWidth,
-      providedConfig,
-      token: providedToken,
-    })
-  );
+  const { candles, config, hasPreviousCandles, initialPicture, isFetchingInitialData, nativeCurrency, perpsIndicatorData, token } =
+    useStableValue(() =>
+      buildChartConfig({
+        backgroundColor,
+        chartHeight,
+        chartWidth,
+        providedConfig,
+        token: providedToken,
+      })
+    );
 
   const buildParagraph = useSkiaText({
     align: 'left',
@@ -1705,8 +1772,10 @@ function useCandlestickChart({
       isLoadingHistoricalCandles,
       maxDisplayedVolume,
       nativeCurrency,
+      perpsIndicatorData,
+      token,
     });
-  });
+  }, true);
 
   const resetHistoricalFetchState = useCallback(
     (data: CandlestickResponse, previousData: CandlestickResponse) => {
@@ -1754,13 +1823,20 @@ function useCandlestickChart({
     useListen(useCandlestickStore, state => state.getData(), updateCandles, {
       equalityFn: isCandlestickDataEqual,
       fireImmediately: true,
-    })
+    }),
+    { additionalRoutes: Routes.CLOSE_POSITION_BOTTOM_SHEET }
   );
 
   useListen(
     useChartsStore,
     state => state.snapSignal,
     () => runOnUI(() => chartManager.value?.snapToCurrentCandle?.())()
+  );
+
+  useListen(
+    usePerpsIndicatorData,
+    state => state,
+    perpsData => runOnUI(() => chartManager.value?.updatePerpsIndicatorData?.(perpsData))()
   );
 
   const chartTransform = useDerivedValue(() => [{ scale: !_WORKLET ? 1 : chartScale.value }]);
@@ -1800,7 +1876,7 @@ function useCandlestickChart({
   useCleanup(() => {
     chartStatus.value = ChartStatus.Loaded;
     initialPicture.dispose();
-    executeOnUIRuntimeSync(() => {
+    runOnUI(() => {
       chartManager.value?.dispose?.();
       chartManager.value = undefined;
     })();
@@ -2160,6 +2236,7 @@ function buildChartConfig({
   initialPicture: SkPicture;
   isFetchingInitialData: boolean;
   nativeCurrency: { currency: NativeCurrencyKey; decimals: number };
+  perpsIndicatorData: PerpsIndicatorData | null;
   token: Token;
 } {
   const { candles, hasPreviousCandles, isFetchingInitialData, nativeCurrency } = prepareCandlestickData();
@@ -2175,6 +2252,7 @@ function buildChartConfig({
     initialPicture: createBlankPicture(chartWidth, chartHeight),
     isFetchingInitialData,
     nativeCurrency,
+    perpsIndicatorData: usePerpsIndicatorData.getState(),
     token,
   };
 }
@@ -2243,8 +2321,12 @@ function prepareCandlestickData(): {
 }
 
 function getNativeCurrency(): { currency: NativeCurrencyKey; decimals: number } {
-  const currency = userAssetsStoreManager.getState().currency;
-  return { currency, decimals: supportedNativeCurrencies[currency].decimals };
+  const isHyperliquidChart = isHyperliquidToken(useChartsStore.getState().token);
+  const currency = isHyperliquidChart ? NativeCurrencyKeys.USD : userAssetsStoreManager.getState().currency;
+  return {
+    currency,
+    decimals: supportedNativeCurrencies[currency].decimals,
+  };
 }
 
 function getOpacityForStatus(status: ChartStatus): number {

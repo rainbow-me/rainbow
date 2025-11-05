@@ -8,7 +8,7 @@ const Placeholder = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'big',
   weight: 'semibold',
 }))({
-  marginBottom: android ? -48 : -27,
+  marginBottom: -27,
   width: '100%',
 });
 

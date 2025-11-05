@@ -1,8 +1,9 @@
-import { Easing, WithSpringConfig, WithTimingConfig } from 'react-native-reanimated';
-import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
+import { Easing } from 'react-native-reanimated';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { DEVICE_HEIGHT, NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
+import { buildTestSafeConfig } from '@/components/animations/animationConfigs';
 
 // /---- 🔒 Constants 🔒 ----/ //
 //
@@ -35,6 +36,7 @@ export const EXPANDED_INPUT_HEIGHT =
   Math.max(IS_IOS ? safeAreaInsetValues.bottom : NAVIGATION_BAR_HEIGHT, SPACE_BETWEEN_SWAP_BUBBLES);
 export const FOCUSED_INPUT_HEIGHT = deviceUtils.dimensions.height - safeAreaInsetValues.top - 20 - NATIVE_KEYBOARD_HEIGHT;
 export const THICK_BORDER_WIDTH = 4 / 3;
+export const THICKER_BORDER_WIDTH = 5 / 3;
 export const INPUT_PADDING = 20 - THICK_BORDER_WIDTH;
 export const INPUT_INNER_WIDTH = BASE_INPUT_WIDTH - THICK_BORDER_WIDTH * 2;
 
@@ -64,26 +66,15 @@ export const MAXIMUM_SIGNIFICANT_DECIMALS = 6;
 
 // /---- ⏱️ Animation configs ⏱️ ----/ //
 //
-
-type AnyConfig = WithSpringConfig | WithTimingConfig;
-
-export const disableForTestingEnvironment = <T extends AnyConfig>(config: T): T => {
-  if (!IS_TEST) return config;
-  return {
-    ...config,
-    duration: 0,
-  } as T;
-};
-
-export const buttonPressConfig = disableForTestingEnvironment({ duration: 160, easing: Easing.bezier(0.25, 0.46, 0.45, 0.94) });
-export const caretConfig = disableForTestingEnvironment({ duration: 300, easing: Easing.bezier(0.87, 0, 0.13, 1) });
-export const fadeConfig = disableForTestingEnvironment({ duration: 200, easing: Easing.bezier(0.22, 1, 0.36, 1) });
-export const pulsingConfig = disableForTestingEnvironment({ duration: 1000, easing: Easing.bezier(0.37, 0, 0.63, 1) });
-export const sliderConfig = disableForTestingEnvironment({ damping: 40, mass: 1.25, stiffness: 450 });
-export const slowFadeConfig = disableForTestingEnvironment({ duration: 300, easing: Easing.bezier(0.22, 1, 0.36, 1) });
-export const snappySpringConfig = disableForTestingEnvironment({ damping: 100, mass: 0.8, stiffness: 275 });
-export const snappierSpringConfig = disableForTestingEnvironment({ damping: 42, mass: 0.8, stiffness: 800 });
-export const springConfig = disableForTestingEnvironment({ damping: 100, mass: 1.2, stiffness: 750 });
+export const buttonPressConfig = buildTestSafeConfig({ duration: 160, easing: Easing.bezier(0.25, 0.46, 0.45, 0.94) });
+export const caretConfig = buildTestSafeConfig({ duration: 300, easing: Easing.bezier(0.87, 0, 0.13, 1) });
+export const fadeConfig = buildTestSafeConfig({ duration: 200, easing: Easing.bezier(0.22, 1, 0.36, 1) });
+export const pulsingConfig = buildTestSafeConfig({ duration: 1000, easing: Easing.bezier(0.37, 0, 0.63, 1) });
+export const sliderConfig = buildTestSafeConfig({ damping: 40, mass: 1.25, stiffness: 450 });
+export const slowFadeConfig = buildTestSafeConfig({ duration: 300, easing: Easing.bezier(0.22, 1, 0.36, 1) });
+export const snappySpringConfig = buildTestSafeConfig({ damping: 100, mass: 0.8, stiffness: 275 });
+export const snappierSpringConfig = buildTestSafeConfig({ damping: 42, mass: 0.8, stiffness: 800 });
+export const springConfig = buildTestSafeConfig({ damping: 100, mass: 1.2, stiffness: 750 });
 //
 // /---- END animation configs ----/ //
 

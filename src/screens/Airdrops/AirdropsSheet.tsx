@@ -153,6 +153,8 @@ const AirdropsList = () => {
   return (
     <LegendList
       ListEmptyComponent={EmptyState}
+      ListFooterComponent={<View style={styles.listFooter} />}
+      ListHeaderComponent={<View style={styles.listHeader} />}
       contentContainerStyle={styles.scrollContent}
       data={airdrops ?? EMPTY_LIST_DATA}
       drawDistance={PANEL_HEIGHT / 2}
@@ -373,6 +375,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
   },
+  listFooter: {
+    height: 44,
+    width: '100%',
+  },
+  listHeader: {
+    height: 10,
+    width: '100%',
+  },
   rowContainer: {
     alignItems: 'center',
     flex: 1,
@@ -390,8 +400,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     minHeight: PANEL_HEIGHT - HEADER_HEIGHT,
-    paddingBottom: 44,
-    paddingTop: 10,
     width: '100%',
   },
   scrollView: {

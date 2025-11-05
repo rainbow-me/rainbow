@@ -28,7 +28,15 @@ export const BalanceBadge = ({ color, label, weight }: { color?: TextColor; labe
           borderWidth: THICK_BORDER_WIDTH,
         }}
       >
-        <AnimatedText align="center" color={color || 'labelQuaternary'} size="13pt" style={labelTextStyle} weight={weight || 'bold'}>
+        <AnimatedText
+          align="center"
+          color={color || 'labelQuaternary'}
+          size="13pt"
+          style={labelTextStyle}
+          weight={weight || 'bold'}
+          numberOfLines={1}
+          ellipsizeMode="middle"
+        >
           {label}
         </AnimatedText>
       </Box>

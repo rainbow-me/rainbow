@@ -15,6 +15,7 @@ import { ENSRapActionType } from '../raps/common';
 import { AnyPerformanceLog, Screen } from '../state/performance/operations';
 import { PairHardwareWalletNavigatorParams } from '@/navigation/types';
 import { SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { PerpPositionSide, TriggerOrderType } from '@/features/perps/types';
 
 /**
  * All events, used by `analytics.track()`
@@ -145,6 +146,7 @@ export const event = {
 
   positionsOpenedSheet: 'Opened position Sheet',
   positionsOpenedExternalDapp: 'Viewed external dapp',
+  positionsOpenedAsset: 'Opened asset from position',
 
   mintsPressedFeaturedMintCard: 'Pressed featured mint card',
   mintsPressedCollectionCell: 'Pressed collection cell in mints card',
@@ -315,6 +317,21 @@ export const event = {
   // charts
   chartTypeChanged: 'Changed Chart Type',
   candleResolutionChanged: 'Changed Candle Resolution',
+
+  // perps
+  perpsOpenedPosition: 'perps.opened_position',
+  perpsOpenPositionCanceled: 'perps.open_position.canceled',
+  perpsOpenPositionFailed: 'perps.open_position.failed',
+  perpsClosedPosition: 'perps.closed_position',
+  perpsClosePositionFailed: 'perps.close_position.failed',
+  perpsTriggerOrderCreated: 'perps.trigger_order_created',
+  perpsTriggerOrderFailed: 'perps.trigger_order.failed',
+  perpsTriggerOrderCanceled: 'perps.trigger_order_canceled',
+  perpsTriggerOrderCancelFailed: 'perps.trigger_order_cancel.failed',
+  perpsWithdrew: 'perps.withdrew',
+  perpsWithdrawFailed: 'perps.withdraw.failed',
+  perpsAddedToPosition: 'perps.added_to_position',
+  perpsAddedToPositionFailed: 'perps.added_to_position.failed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -609,12 +626,43 @@ export type EventProperties = {
   [event.poapsViewedOnPoap]: {
     eventId: number;
   };
+  /**
+   * Triggered when user opens external dapp website from position detail sheet.
+   */
   [event.positionsOpenedExternalDapp]: {
-    dapp: string;
+    dapp: string; // Canonical protocol (e.g., "uniswap")
+    protocol: string; // With version (e.g., "uniswap-v3")
     url: string;
+    positionsUSDValue?: string; // Only when currency is not USD
+    positionsValue: string;
+    positionsCurrency: string;
   };
+  /**
+   * Triggered when user opens position detail sheet from position card.
+   */
   [event.positionsOpenedSheet]: {
-    dapp: string;
+    dapp: string; // Canonical protocol (e.g., "uniswap")
+    protocol: string; // With version (e.g., "uniswap-v3")
+    positionsUSDValue?: string; // Only when currency is not USD
+    positionsValue: string;
+    positionsCurrency: string;
+  };
+  /**
+   * Triggered when user opens an asset detail sheet from within a position (deposit, stake, borrow, reward, or pool).
+   */
+  [event.positionsOpenedAsset]: {
+    dapp: string; // Canonical protocol (e.g., "uniswap")
+    protocol: string; // With version (e.g., "uniswap-v3")
+    type: 'deposit' | 'stake' | 'borrow' | 'reward' | 'pool';
+    name?: string; // Optional display name for the position
+    assetSymbol: string;
+    assetAddress: string;
+    assetValueUSD?: string; // Only when currency is not USD
+    assetValue: string;
+    assetCurrency: string;
+    positionsUSDValue?: string; // Only when currency is not USD
+    positionsValue: string;
+    positionsCurrency: string;
   };
   [event.mintsPressedFeaturedMintCard]: {
     contractAddress: string;
@@ -768,6 +816,8 @@ export type EventProperties = {
     screen: Screen;
     completedAt: number;
     elapsedTime: number;
+    totalElapsedTime: number;
+    error?: string;
   };
 
   [event.performanceTimeToSignOperation]: AnyPerformanceLog;
@@ -1118,5 +1168,110 @@ export type EventProperties = {
   };
   [event.candleResolutionChanged]: {
     candleResolution: CandleResolution;
+  };
+
+  // perps
+  [event.perpsOpenedPosition]: {
+    market: string;
+    side: PerpPositionSide;
+    leverage: number;
+    perpsBalance: number;
+    positionSize: number;
+    positionValue: number;
+    entryPrice: number;
+    triggerOrders: Array<{
+      type: TriggerOrderType;
+      price: number;
+    }>;
+  };
+  [event.perpsClosedPosition]: {
+    market: string;
+    side: PerpPositionSide;
+    leverage: number;
+    perpsBalance: number;
+    positionSize: number;
+    positionValue: number;
+    exitPrice: number;
+    pnl: number;
+    closePercentage: number;
+    triggerOrders: Array<{
+      type: TriggerOrderType;
+      price: number;
+    }>;
+  };
+  [event.perpsOpenPositionCanceled]: {
+    market: string;
+    side: PerpPositionSide;
+    leverage?: number;
+    perpsBalance: number;
+  };
+  [event.perpsOpenPositionFailed]: {
+    market: string;
+    side: PerpPositionSide;
+    leverage?: number;
+    perpsBalance: number;
+    errorMessage: string;
+  };
+  [event.perpsClosePositionFailed]: {
+    market: string;
+    side: PerpPositionSide;
+    leverage?: number;
+    perpsBalance: number;
+    errorMessage: string;
+  };
+  [event.perpsTriggerOrderCreated]: {
+    market: string;
+    side: PerpPositionSide;
+    triggerOrderType: TriggerOrderType;
+    triggerPrice: number;
+    perpsBalance: number;
+    leverage: number;
+    positionValue: number;
+  };
+  [event.perpsTriggerOrderFailed]: {
+    market: string;
+    side: PerpPositionSide;
+    triggerOrderType: TriggerOrderType;
+    perpsBalance: number;
+    errorMessage: string;
+  };
+  [event.perpsTriggerOrderCanceled]: {
+    market: string;
+    side: PerpPositionSide;
+    triggerOrderType: TriggerOrderType;
+    triggerPrice: number;
+    perpsBalance: number;
+    leverage: number;
+    positionValue: number;
+  };
+  [event.perpsTriggerOrderCancelFailed]: {
+    market: string;
+    side: PerpPositionSide;
+    triggerOrderType: TriggerOrderType;
+    perpsBalance: number;
+    errorMessage: string;
+  };
+  [event.perpsWithdrew]: {
+    amount: number;
+  };
+  [event.perpsWithdrawFailed]: {
+    amount: number;
+    errorMessage: string;
+  };
+  [event.perpsAddedToPosition]: {
+    market: string;
+    side: PerpPositionSide;
+    leverage: number;
+    perpsBalance: number;
+    positionSize: number;
+    positionValue: number;
+    entryPrice: number;
+  };
+  [event.perpsAddedToPositionFailed]: {
+    market: string;
+    side: PerpPositionSide;
+    leverage: number;
+    perpsBalance: number;
+    errorMessage: string;
   };
 };

@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
+import { IS_IOS } from '@/env';
 
 /**
  * #### `🪤 DecoyScrollView 🪤`
@@ -9,7 +10,7 @@ import { ScrollView, StyleSheet } from 'react-native';
  * the decoy is rendered after the real ScrollView. The decoy is invisible.
  */
 export const DecoyScrollView = memo(function DecoyScrollView() {
-  return <ScrollView scrollEnabled={false} style={styles.decoyScrollView} />;
+  return IS_IOS ? <ScrollView scrollEnabled style={styles.decoyScrollView} /> : null;
 });
 
 const styles = StyleSheet.create({

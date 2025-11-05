@@ -12,7 +12,7 @@ const LabelText = styled(Text).attrs(({ shareButton, theme: { colors } }) => ({
   weight: shareButton ? 'heavy' : 'bold',
 }))(({ shareButton }) => ({
   ...(!shareButton ? { position: 'absolute' } : { width: '100%', lineHeight: 22 }),
-  ...(!shareButton ? { top: android ? -15 : -15.5 } : { top: android ? -2 : -2 }),
+  ...(!shareButton ? { top: -15.5 } : { top: -2 }),
 }));
 
 const CoinDividerButtonLabel = ({ align, isVisible, label, shareButton }) => (

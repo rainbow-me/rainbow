@@ -71,7 +71,7 @@ const useSearchCurrencyList = () => {
   const { colors } = useTheme();
 
   const searchResultAssets = useDiscoverSearchStore(state => state.getData());
-  const loading = useDiscoverSearchStore(state => state.getStatus().isFetching);
+  const loading = useDiscoverSearchStore(state => state.getStatus('isLoading'));
 
   const removeFavoritesAndEnforceResultsLimit = useCallback(
     (assets: SearchAsset[] | undefined, maxResults: number) => {

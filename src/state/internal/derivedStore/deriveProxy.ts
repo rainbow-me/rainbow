@@ -216,8 +216,8 @@ export function createPathFinder(): PathFinder {
   return {
     buildProxySubscriptions(createSubscription: SubscriptionBuilder, shouldLog: boolean) {
       const results = new Set<PathEntry>();
-      for (const [store, rootNode] of storeMap) {
-        collectMinimalPaths(rootNode, store, [], true, results);
+      for (const trieNode of storeMap) {
+        collectMinimalPaths(trieNode[1], trieNode[0], [], true, results);
       }
       buildProxySubscriptions(results, createSubscription, shouldLog);
     },

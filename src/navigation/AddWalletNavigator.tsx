@@ -8,6 +8,7 @@ import { ImportOrWatchWalletSheet } from '@/screens/ImportOrWatchWalletSheet';
 import { BackgroundProvider } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { setActiveRoute } from '@/state/navigation/navigationStore';
 import { RootStackParamList } from './types';
 
 const Swipe = createMaterialTopTabNavigator();
@@ -35,6 +36,7 @@ export const AddWalletNavigator = () => {
               name={Routes.ADD_WALLET_SHEET}
               listeners={{
                 focus: () => {
+                  setActiveRoute(Routes.ADD_WALLET_SHEET);
                   setScrollEnabled(true);
                 },
               }}
@@ -45,6 +47,7 @@ export const AddWalletNavigator = () => {
               name={Routes.CHOOSE_WALLET_GROUP}
               listeners={{
                 focus: () => {
+                  setActiveRoute(Routes.CHOOSE_WALLET_GROUP);
                   setScrollEnabled(true);
                 },
               }}
@@ -55,6 +58,7 @@ export const AddWalletNavigator = () => {
               name={Routes.IMPORT_OR_WATCH_WALLET_SHEET}
               listeners={{
                 focus: () => {
+                  setActiveRoute(Routes.IMPORT_OR_WATCH_WALLET_SHEET);
                   setScrollEnabled(false);
                 },
               }}

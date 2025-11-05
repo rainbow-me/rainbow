@@ -20,7 +20,7 @@ export const SwapInput = ({
   otherInputProgress: SharedValue<number>;
   progress: SharedValue<number>;
 }) => {
-  const { containerStyle, inputHeight, inputStyle } = useSwapInputStyles({
+  const { containerStyle, inputStyle } = useSwapInputStyles({
     asset,
     bottomInput,
     otherInputProgress,
@@ -29,7 +29,7 @@ export const SwapInput = ({
 
   return (
     <Box as={Animated.View} style={[styles.staticInputContainerStyles, containerStyle]} width={{ custom: BASE_INPUT_WIDTH }}>
-      <Box as={Animated.View} style={[styles.staticInputStyles, inputStyle, { height: inputHeight }]}>
+      <Box as={Animated.View} style={[styles.staticInputStyles, inputStyle]}>
         {children}
       </Box>
     </Box>

@@ -89,9 +89,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
     return () => clearInterval(interval);
   }, []);
 
-  if (!current || !sizedIconUrl || !currentWinningToken) {
-    return null;
-  }
+  if (!current || !currentWinningToken) return null;
 
   const hours = Math.floor(secondsRemaining / SECONDS_PER_HOUR);
   const minutes = Math.floor((secondsRemaining % SECONDS_PER_HOUR) / 60);
@@ -132,7 +130,14 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
           </View>
 
           <View style={styles.tokenImage}>
-            <ShinyCoinIcon disableShadow imageUrl={sizedIconUrl} size={TOKEN_SIZE} />
+            <ShinyCoinIcon
+              chainId={currentWinningToken.chainId}
+              color={currentWinningToken.colors?.primary || currentWinningToken.colors?.fallback || undefined}
+              disableShadow
+              imageUrl={sizedIconUrl}
+              size={TOKEN_SIZE}
+              symbol={currentWinningToken.symbol}
+            />
           </View>
 
           {/* chain image */}

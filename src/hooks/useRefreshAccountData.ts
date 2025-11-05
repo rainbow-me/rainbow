@@ -4,7 +4,7 @@ import { createQueryKey, queryClient } from '@/react-query';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useClaimablesStore } from '@/state/claimables/claimables';
-import { usePositionsStore } from '@/state/positions/positions';
+import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { refetchWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { getAccountAddress, refreshWalletInfo } from '@/state/wallets/walletsStore';
 import { time } from '@/utils';
@@ -14,6 +14,7 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
 import { hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
 import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
+import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAccountStore';
 
 // minimum duration we want the "Pull to Refresh" animation to last
 const MIN_REFRESH_DURATION = 1_250;
@@ -30,6 +31,7 @@ export const refreshAccountData = async () => {
   await Promise.all([
     delay(MIN_REFRESH_DURATION),
     refreshWalletInfo({ addresses: [accountAddress] }),
+    hyperliquidAccountActions.fetch(undefined, { force: true }),
     userAssetsStore.getState().fetch(undefined, { staleTime: 0 }),
     useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) }),
     usePositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),

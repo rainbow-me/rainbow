@@ -1,4 +1,4 @@
-import { CandleSnapshotRequest } from '@nktkas/hyperliquid/script/src/types/mod';
+import { CandleSnapshotRequest } from '@nktkas/hyperliquid/api/info';
 import { ChainId } from '@/state/backendNetworks/types';
 
 // ============ Types ========================================================== //

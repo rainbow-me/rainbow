@@ -59,9 +59,11 @@ export async function getNextNonce({ address, chainId }: { address: string; chai
   const provider = getBatchedProvider({ chainId });
   const privateMempoolTimeout = useBackendNetworksStore.getState().getChainsPrivateMempoolTimeout()[chainId];
 
-  const pendingTxCountRequest = provider.getTransactionCount(address, 'pending');
-  const latestTxCountRequest = provider.getTransactionCount(address, 'latest');
-  const [pendingTxCountFromPublicRpc, latestTxCountFromPublicRpc] = await Promise.all([pendingTxCountRequest, latestTxCountRequest]);
+  const [pendingTxCountFromPublicRpc, latestTxCountFromPublicRpc] = await Promise.all([
+    provider.getTransactionCount(address, 'pending'),
+    provider.getTransactionCount(address, 'latest'),
+  ]);
+
   const numPendingPublicTx = pendingTxCountFromPublicRpc - latestTxCountFromPublicRpc;
   const numPendingLocalTx = Math.max(localNonce + 1 - latestTxCountFromPublicRpc, 0);
   if (numPendingLocalTx === numPendingPublicTx) return pendingTxCountFromPublicRpc; // nothing in private mempool, proceed normally

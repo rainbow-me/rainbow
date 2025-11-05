@@ -19,7 +19,7 @@ const trustedDomains = [
   'rarible.com',
   'stratosnft.io',
   'trove.treasure.lol',
-  'twitter.com',
+  'x.com',
   'zora.co',
 ];
 

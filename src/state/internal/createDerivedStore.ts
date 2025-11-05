@@ -283,6 +283,16 @@ function derive<DerivedState>(
     derive();
   }
 
+  function handleDestroy(isDerivedWatcher: boolean): void {
+    if (!isDerivedWatcher) {
+      destroy();
+      return;
+    }
+    queueMicrotask(() => {
+      if (!watchers.size) destroy();
+    });
+  }
+
   function invalidate(): void {
     if (!invalidated) {
       invalidated = true;
@@ -325,17 +335,15 @@ function derive<DerivedState>(
 
       return () => {
         watchers.delete(listener);
-
-        if (!watchers.size) {
-          queueMicrotask(() => {
-            if (!watchers.size) destroy();
-          });
-        }
+        if (!watchers.size) handleDestroy(false);
       };
     }
 
     // -- Overload #2: (selector, listener, { equalityFn, fireImmediately })
-    const [selector, listener, options] = args;
+    const selector = args[0];
+    const listener = args[1];
+    const options = args[2];
+
     const equalityFn = options?.equalityFn ?? Object.is;
 
     const watcher: Watcher<DerivedState> = {
@@ -358,12 +366,7 @@ function derive<DerivedState>(
     return () => {
       watchers.delete(watcher);
       if (isDerivedWatcher) derivedWatchers -= 1;
-
-      if (!watchers.size) {
-        queueMicrotask(() => {
-          if (!watchers.size) destroy();
-        });
-      }
+      if (!watchers.size) handleDestroy(isDerivedWatcher);
     };
   }
 

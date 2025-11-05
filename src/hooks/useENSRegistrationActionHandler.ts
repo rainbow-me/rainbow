@@ -23,7 +23,7 @@ import { getNextNonce } from '@/state/nonces';
 import { Hex } from 'viem';
 import { executeENSRap } from '@/raps/actions/ens';
 import store from '@/redux/store';
-import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { noop } from 'lodash';
 import { logger, RainbowError } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -352,8 +352,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
         transferControl,
       };
 
-      const { nonce: newNonce } = await performanceTracking.getState().executeFn({
-        fn: executeENSRap,
+      const { nonce: newNonce } = await executeFn(executeENSRap, {
         screen: Screens.SEND_ENS,
         operation: TimeToSignOperation.BroadcastTransaction,
       })(wallet, ENSRapActionType.transferENS, transferEnsParameters, callback);

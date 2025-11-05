@@ -87,12 +87,11 @@ import { TabDappBrowserInnerFill } from './svg/TabDappBrowserInnerFill';
 import TelegramIcon from './svg/TelegramIcon';
 import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
-import TwitterIcon from './svg/TwitterIcon';
 import WalletConnectIcon from './svg/WalletConnectIcon';
 import WalletSwitcherCaret from './svg/WalletSwitcherCaret';
 import WarningCircledIcon from './svg/WarningCircledIcon';
 import WarningIcon from './svg/WarningIcon';
-import { WarpcastIcon } from './svg/WarpcastIcon';
+import { FarcasterIcon } from './svg/FarcasterIcon';
 import BridgeIcon from './svg/BridgeIcon';
 import { DragHandlerIcon } from './svg/DragHandlerIcon';
 import { TabKingOfTheHill } from './svg/TabKingOfTheHill';
@@ -189,12 +188,11 @@ const IconTypes = {
   telegram: TelegramIcon,
   threeDots: ThreeDotsIcon,
   touchid: TouchIdIcon,
-  twitter: TwitterIcon,
   walletConnect: WalletConnectIcon,
   walletSwitcherCaret: WalletSwitcherCaret,
   warning: WarningIcon,
   warningCircled: WarningCircledIcon,
-  warpcast: WarpcastIcon,
+  farcaster: FarcasterIcon,
   x: XIcon,
 };
 

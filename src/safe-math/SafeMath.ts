@@ -168,7 +168,7 @@ export function mulWorklet(num1: string | number, num2: string | number): string
 }
 
 // Divide function
-export function divWorklet(num1: string | number, num2: string | number): string {
+export function divWorklet(num1: string | number, num2: string | number, divideByZeroFallback?: string): string {
   'worklet';
   const num1Str = toStringWorklet(num1);
   const num2Str = toStringWorklet(num2);
@@ -177,7 +177,8 @@ export function divWorklet(num1: string | number, num2: string | number): string
     throw new Error('Arguments must be a numeric string or number');
   }
   if (isZeroWorklet(num2Str)) {
-    throw new Error('Division by zero');
+    if (divideByZeroFallback === undefined) throw new Error('Division by zero');
+    return divideByZeroFallback;
   }
   if (isZeroWorklet(num1Str)) {
     return '0';
@@ -491,4 +492,56 @@ export function minWorklet(numA: string | number, numB: string | number) {
 export function maxWorklet(numA: string | number, numB: string | number) {
   'worklet';
   return greaterThanOrEqualToWorklet(numA, numB) ? numA : numB;
+}
+
+export function getPercentageDifferenceWorklet(oldValue: string | number, newValue: string | number): string {
+  'worklet';
+  const oldValueStr = toStringWorklet(oldValue);
+  const newValueStr = toStringWorklet(newValue);
+
+  if (!isNumberStringWorklet(oldValueStr) || !isNumberStringWorklet(newValueStr)) {
+    throw new Error('Arguments must be a numeric string or number');
+  }
+
+  if (isZeroWorklet(oldValueStr)) {
+    return '0';
+  }
+
+  const difference = subWorklet(newValueStr, oldValueStr);
+  const ratio = divWorklet(difference, oldValueStr);
+  return mulWorklet(ratio, 100);
+}
+
+export function trimTrailingZeros(value: string): string {
+  'worklet';
+
+  if (!value || value === '0') return value;
+
+  const parts = value.split('.');
+  if (parts.length === 1) {
+    return value;
+  }
+
+  const [integerPart, fractionalPart] = parts;
+  const trimmedFractional = fractionalPart.replace(patterns.trailingZeros, '');
+
+  if (trimmedFractional.length === 0) {
+    return integerPart;
+  }
+
+  return `${integerPart}.${trimmedFractional}`;
+}
+
+export function isPositive(num: string) {
+  'worklet';
+  return greaterThanWorklet(num, '0');
+}
+
+export function truncateToDecimals(value: string, decimals: number): string {
+  'worklet';
+  const multiplier = Math.pow(10, decimals);
+  const multiplied = mulWorklet(value, multiplier.toString());
+  const floored = floorWorklet(multiplied);
+  const truncated = divWorklet(floored, multiplier.toString());
+  return toFixedWorklet(truncated, decimals);
 }

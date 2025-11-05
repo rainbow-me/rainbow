@@ -80,9 +80,11 @@ export function Navbar({
           {leftComponent}
           {rightComponent}
         </Box>
-        <Text align="center" color="label" size="20pt" weight="heavy">
-          {title}
-        </Text>
+        {title ? (
+          <Text align="center" color="label" size="20pt" weight="heavy">
+            {title}
+          </Text>
+        ) : null}
         {titleComponent}
       </Box>
     </>

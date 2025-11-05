@@ -29,6 +29,7 @@ export type SkiaTextProps = {
   children: ReactNode | SharedOrDerivedValueText | string;
   color?: TextColor | CustomColor;
   colorMode?: ColorMode;
+  halfLeading?: boolean;
   /**
    * Useful for applying fills or effects to the text itself. Simply define
    * a SkPaint object and pass it to the `SkiaText` component.
@@ -77,6 +78,7 @@ export const SkiaText = ({
   children,
   color: providedColor = 'label',
   colorMode = 'dark',
+  halfLeading = false,
   foregroundPaint,
   letterSpacing,
   lineHeight,
@@ -109,12 +111,13 @@ export const SkiaText = ({
         color,
         foregroundPaint,
         letterSpacing,
+        halfLeading,
         lineHeight,
         shadows,
         size,
         weight,
       }),
-      [align, backgroundPaint, color, foregroundPaint, letterSpacing, lineHeight, shadows, size, weight]
+      [align, backgroundPaint, color, foregroundPaint, halfLeading, letterSpacing, lineHeight, shadows, size, weight]
     )
   );
 

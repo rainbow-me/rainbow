@@ -16,7 +16,7 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { useAccountAccentColor } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -27,6 +27,7 @@ import { opacity } from '@/__swaps__/utils/swaps';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { TOP_INSET } from '../DappBrowser/Dimensions';
+import { safeAreaInsetValues } from '@/utils';
 
 export const TapToDismiss = memo(function TapToDismiss() {
   const { goBack } = useNavigation();
@@ -41,6 +42,7 @@ const PANEL_INSET = 8;
 export const PANEL_WIDTH = DEVICE_WIDTH - PANEL_INSET * 2;
 export const PANEL_COLOR_DARK = globalColors.white10;
 export const PANEL_COLOR_LIGHT = '#F7F7F9';
+export const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
 
 const PANEL_BORDER_RADIUS = 42;
 const LIST_SCROLL_INDICATOR_BOTTOM_INSET = { bottom: PANEL_BORDER_RADIUS };

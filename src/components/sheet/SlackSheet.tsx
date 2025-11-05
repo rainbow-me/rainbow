@@ -30,11 +30,12 @@ interface ContainerProps {
   contentHeight?: number;
   deferredHeight?: boolean;
   deviceHeight: number;
+  borderRadius?: number;
 }
 
 const Container = styled(Centered).attrs({
   direction: 'column',
-})(({ backgroundColor, additionalTopPadding, contentHeight, deferredHeight, deviceHeight }: ContainerProps) => ({
+})(({ backgroundColor, additionalTopPadding, contentHeight, deferredHeight, deviceHeight, borderRadius }: ContainerProps) => ({
   ...(deferredHeight || IS_IOS
     ? {}
     : {
@@ -45,7 +46,7 @@ const Container = styled(Centered).attrs({
               ? deviceHeight - contentHeight
               : 0,
       }),
-  ...(IS_ANDROID ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
+  ...(IS_ANDROID ? { borderTopLeftRadius: borderRadius ?? 30, borderTopRightRadius: borderRadius ?? 30 } : {}),
   backgroundColor: backgroundColor,
   bottom: 0,
   left: 0,
@@ -206,6 +207,7 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
         deferredHeight={deferredHeight}
         deviceHeight={deviceHeight}
         testID={testID}
+        borderRadius={borderRadius}
         {...props}
       >
         {IS_ANDROID && (

@@ -111,6 +111,10 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
     ];
   }, [kingOfTheHill, kingOfTheHillLeaderBoard]);
 
+  const ListHeaderComponent = useMemo(() => {
+    return <View style={{ height: topInset + 40, width: '100%' }} />;
+  }, [topInset]);
+
   const renderItem = useCallback(
     ({ item }: { item: ListItem }) => {
       if (item.type === 'header') {
@@ -157,6 +161,8 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
   } else {
     content = (
       <LegendList
+        ListHeaderComponent={ListHeaderComponent}
+        ListFooterComponent={ListFooterComponent}
         data={listData}
         ref={listRef}
         renderItem={renderItem}
@@ -167,7 +173,7 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
             scrollY.value = event.nativeEvent.contentOffset.y;
           }
         }}
-        contentContainerStyle={{ paddingTop: topInset + 40, paddingBottom: 180 }}
+        recycleItems
         style={styles.list}
       />
     );
@@ -181,6 +187,10 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
     </View>
   );
 });
+
+const ListFooterComponent = () => {
+  return <View style={styles.listFooter} />;
+};
 
 const HillBackground = memo(function HillBackground({ scrollY }: { scrollY: SharedValue<number> }) {
   const { isDarkMode } = useColorMode();
@@ -256,5 +266,9 @@ const styles = StyleSheet.create({
   },
   list: {
     zIndex: 1,
+  },
+  listFooter: {
+    height: 180,
+    width: '100%',
   },
 });

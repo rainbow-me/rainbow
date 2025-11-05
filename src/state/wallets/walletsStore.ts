@@ -24,7 +24,7 @@ import {
 } from '@/model/wallet';
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
-import { isLowerCaseMatch, time } from '@/utils';
+import { isLowerCaseMatch, time, watchingAlert } from '@/utils';
 import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
 import { shallowEqual } from '@/worklets/comparisons';
@@ -663,7 +663,7 @@ async function refreshAccountInfo(
   useCachedENS = false
 ): Promise<Partial<Pick<RainbowAccount, 'ens' | 'image' | 'label'>> | null> {
   try {
-    if (useCachedENS && account.ens !== undefined) {
+    if (useCachedENS && account.ens !== undefined && account.ens !== null) {
       // If we've already checked for ENS, don't check again
       return null;
     }
@@ -839,6 +839,15 @@ export function formatAccountLabel({
 
 async function saveSelectedWalletInKeychain(wallet: RainbowWallet, accountAddress?: string) {
   await Promise.all([accountAddress ? saveAddress(accountAddress) : null, setSelectedWalletInKeychain(wallet)]);
+}
+
+export function checkIfReadOnlyWallet(address: string) {
+  const wallet = getWalletWithAccount(address);
+  if (wallet?.type === WalletTypes.readOnly) {
+    watchingAlert();
+    return true;
+  }
+  return false;
 }
 
 // export static functions

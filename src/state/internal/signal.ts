@@ -1,5 +1,7 @@
 import { dequal } from 'dequal';
 import { StoreApi } from 'zustand';
+import { BaseRainbowStore } from '@/state/internal/types';
+import { hasGetSnapshot } from '@/state/internal/utils/storeUtils';
 
 const ENABLE_LOGS = false;
 
@@ -56,11 +58,11 @@ const updateValue = <T>(obj: T, path: unknown[], value: unknown): T => {
 };
 
 export const createSignal = <T, S>(
-  store: StoreApi<T>,
+  store: BaseRainbowStore<T> | StoreApi<T>,
   selector: (state: T) => S,
   equalityFn: (a: S, b: S) => boolean
 ): [Subscribe, GetValue, SetValue] => {
-  let selected = selector(store.getState());
+  let selected = selector(hasGetSnapshot(store) ? store.getSnapshot() : store.getState());
   const listeners = new Set<() => void>();
   let unsubscribe: Unsubscribe | undefined;
 
@@ -74,7 +76,9 @@ export const createSignal = <T, S>(
         }
       });
     }
+
     listeners.add(callback);
+
     return () => {
       listeners.delete(callback);
       if (!listeners.size && unsubscribe) {

@@ -2171,7 +2171,7 @@ PODS:
     - React
   - react-native-ios-context-menu (1.15.3):
     - React-Core
-  - react-native-keyboard-controller (1.16.7):
+  - react-native-keyboard-controller (1.19.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -4036,7 +4036,7 @@ SPEC CHECKSUMS:
   react-native-compat: 64b59bf390e866b527e9c436fc7b171633b97011
   react-native-get-random-values: 04e59f21c9076958ba50576bdd51878fac5b35ef
   react-native-ios-context-menu: 986da6dcba70094bcc2a8049f68410fe7d25aff1
-  react-native-keyboard-controller: 25f7aad6c0afe9cd7da2e8495b3291989d5437df
+  react-native-keyboard-controller: 49604ca70919fd77e18b7ff565508b9707810633
   react-native-mail: 824fe88e2323c1ce0a93e5f46db4056abf432928
   react-native-menu: ff00cdf67083e8d2c07c2cf17e9818f425d7d5a6
   react-native-minimizer: d6db020c36a58447adba28f969f70a7098cfadb8

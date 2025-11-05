@@ -13,7 +13,7 @@
       "show": "Göster",
       "show_all": "Hepsini göster",
       "show_less": "Daha az göster",
-      "tab_balances": "Bakiyeler",
+      "tab_tokens": "Tokenler",
       "tab_balances_empty_state": "Bakiye",
       "tab_balances_tooltip": "Ethereum ve Token Bakiyeleri",
       "tab_claimables": "Talep Edilebilirler",
@@ -23,6 +23,7 @@
       "tab_investments": "Havuzlar",
       "tab_savings": "Tasarruflar",
       "tab_showcase": "Vitrin",
+      "tab_perps": "Vadeli İşlemler",
       "tab_points": "Noktalar",
       "tab_positions": "Pozisyonlar",
       "tab_rewards": "Ödüller",
@@ -707,15 +708,18 @@
           "website": "Web sitesi",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter",
-          "warpcast": "Warpcast",
+          "twitter": "X (Twitter)",
           "farcaster": "Farcaster",
           "other": "Diğer",
-          "search_on_twitter": "Twitter'da Ara"
+          "search_on_twitter": "X'te Ara"
         },
         "uniswap_liquidity": "Uniswap likiditesi",
         "value": "Değer",
         "volume_24_hours": "24s hacim",
+        "liquidity_cap_disclaimer": {
+          "value_lower_than": "Değer aşağıda",
+          "due_to_low_liquidity": "düşük likidite nedeniyle"
+        },
         "menu": {
           "view_on": "%{blockExplorerName}'da Görüntüle",
           "share": "Paylaş",
@@ -774,10 +778,10 @@
       "chart": {
         "candlestick": {
           "candle_field_labels": {
-            "c": "Kapat",
+            "c": "KAPAT",
             "h": "H",
             "l": "L",
-            "o": "Aç",
+            "o": "AÇ",
             "t": "",
             "v": "V"
           },
@@ -923,7 +927,7 @@
         "toast_removed_from_showcase": "Vitrinden çıkarıldı",
         "refreshing": "Meta veriler yenileniyor...",
         "reported": "Spam olarak bildirildi",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "view_all_with_property": "Tümünü Özelliği ile Görüntüle",
         "view_collection": "Koleksiyonu Görüntüle",
         "view_on_marketplace": "Marketplace'de Görüntüle...",
@@ -958,7 +962,7 @@
       "poolboy_title": "Kazandınız\nRainbow Poolboy!",
       "adworld_description": "Bir Rainbow Dünya Vatandaşı olarak artık özel bir\nAdWorld x Rainbow Uygulama Simgesi kilidini açabilirsiniz.",
       "adworld_title": "Rainbow Dünyasına Hoş Geldiniz!",
-      "farcaster_description": "Farcaster'ın sade minimalizminden ilham alınarak hazırlanmış en sıkıcı uygulama simgemiz.",
+      "farcaster_description": "Farcaster'ın sade minimalizminden esinlenerek yapılmış en sıkıcı uygulama simgemiz.",
       "farcaster_title": "Kazandınız\nRainbowcast",
       "redacted_description": "Gerçek Gdupi meraklıları için stupi'ye özel bir Rainbow simgesi.",
       "redacted_title": "Redacted Rainbow'un kilidini açtınız",
@@ -1577,6 +1581,181 @@
         "address_copied_to_clipboard": "Adres panoya kopyalandı"
       }
     },
+    "perps": {
+      "common": {
+        "not_available": "N/A",
+        "current_price": "Mevcut Fiyat",
+        "title": "Vadeli İşlemler",
+        "error_submitting_order": "Sipariş gönderilirken hata oluştu",
+        "submitting": "Gönderiliyor...",
+        "more": "Daha fazla",
+        "error": "Hata",
+        "cancel": "İptal",
+        "liq_price": "likit. fiyatı",
+        "liq": "likit"
+      },
+      "feature_card": {
+        "title": "Vadeli İşlemler",
+        "subtitle": "Yüksek risk, yüksek getiri ticareti"
+      },
+      "actions": {
+        "fund_wallet": "Cüzdanı Fonla",
+        "new_position": "Yeni Pozisyon",
+        "close_position": "Pozisyonu Kapat",
+        "open_position": "Pozisyonu Aç"
+      },
+      "account": {
+        "available_balance": "Mevcut Bakiye"
+      },
+      "markets": {
+        "title": "Piyasalar",
+        "up_to": "UP TO",
+        "already_open": "Zaten Açık"
+      },
+      "deposit": {
+        "title": "Depozit",
+        "no_balance": "Bakiye Yok",
+        "receive": "Al",
+        "slider_label": "Yatırılıyor",
+        "zero_amount_error": "Yatırılacak tutarı girin",
+        "confirm_button_text": "Yatırmak için Basılı Tutun",
+        "confirm_button_loading_text": "Yatırılıyor...",
+        "confirm_button_zero_text": "Miktar Girin",
+        "confirm_button_over_balance_text": "Yetersiz Bakiye",
+        "confirm_button_error_text": "Teklif Hatası",
+        "quote_error": "􀇿 Alıntı bulunamadı",
+        "insufficient_balance": "􀫲 Yetersiz Bakiye"
+      },
+      "withdraw": {
+        "title": "Çekme",
+        "slider_label": "Çekiliyor",
+        "confirm_button_text": "Çekmek için Tut",
+        "confirm_button_loading_text": "Çekiliyor...",
+        "available_balance_suffix": " Mevcut",
+        "confirm_button_zero_text": "Miktar Girin",
+        "confirm_button_over_balance_text": "Yetersiz Bakiye",
+        "info_card_title_prefix": "Çekiliyor ",
+        "info_card_title_suffix": "Arbitrum",
+        "info_card_subtitle": "Ek ağlar yakında geliyor. Çekimler şu anda $1.00 Hyperliquid ücreti içermektedir."
+      },
+      "position_side": {
+        "long": "Uzun",
+        "short": "Kısa"
+      },
+      "positions": {
+        "entry": "GİRİŞ",
+        "mark_price": "FİYAT İŞARETİ",
+        "open_positions": "Açık Pozisyonlar",
+        "no_open_positions": "Açık Pozisyon Yok",
+        "position_value": "Pozisyon Değeri",
+        "mark_price_full": "Fiyat İşareti",
+        "entry_price": "Giriş Fiyatı",
+        "funding": "Fonlama",
+        "liquidation_price": "Tasfiye Fiyatı",
+        "total": "Toplam",
+        "learn_more_about_perps": "Perps hakkında daha fazla bilgi edinin"
+      },
+      "new_position": {
+        "hold_to_long": "Uzun Tut",
+        "hold_to_short": "Kısa Tut",
+        "liquidated_at": "Tasfiye edildiği fiyat",
+        "from_current_price": "mevcut fiyattan",
+        "details": "Detaylar",
+        "funding_rate": "Fonlama Oranı",
+        "max_slippage": "Maks Kayma",
+        "no_liquidation_risk": "Tasfiye Riski Yok",
+        "trading_without_leverage": "Kaldıraçsız ticaret"
+      },
+      "inputs": {
+        "amount": "Miktar",
+        "available": "Mevcut",
+        "max": "Maks",
+        "maximum_amount_is": "Maksimum miktar",
+        "minimum": "Asgari",
+        "minimum_amount_is": "Asgari miktar",
+        "no_balance": "Bakiye Yok"
+      },
+      "history": {
+        "title": "Geçmiş",
+        "no_trades": "İşlem Yok",
+        "trade_execution": {
+          "take_profit_executed": "Kar Al Gerçekleştirildi",
+          "stop_loss_executed": "Zararı Durdur Gerçekleştirildi",
+          "long_opened": "Uzun Açıldı",
+          "short_opened": "Kısa Açıldı",
+          "long_closed": "Uzun Kapandı",
+          "short_closed": "Kısa Kapandı",
+          "long_liquidated": "Uzun Tasfiye Edildi",
+          "short_liquidated": "Kısa Tasfiye Edildi"
+        }
+      },
+      "trigger_orders": {
+        "title": "Tetik Emirleri",
+        "take_profit": "Kar Al",
+        "stop_loss": "Zararı Durdur",
+        "sell": "Sat",
+        "cancel_failed": "Emir iptal edilemedi",
+        "add_stop_loss": "Zararı Durdur Ekle",
+        "add_take_profit": "Kar Al Ekle",
+        "price": "Fiyat",
+        "projected_profit": "Tahmini Kar",
+        "projected_loss": "Tahmini Zarar",
+        "add": "Ekle",
+        "adding": "Ekleniyor...",
+        "above": "üzerinde",
+        "below": "altında",
+        "must_be": "Olmalı",
+        "failed_to_create": "Tetik emri oluşturulamadı"
+      },
+      "search": {
+        "search_markets": "Piyasaları ara",
+        "markets_count": "%{count} PİYASA",
+        "choose_a_market": "PİYASA SEÇİN"
+      },
+      "close_position": {
+        "estimated_loss": "Tahmini Zarar",
+        "estimated_profit": "Tahmini Kar",
+        "minimum_amount_is": "Asgari miktar",
+        "closing": "Kapanıyor...",
+        "hold_to_close": "Kapatmak için Basılı Tut"
+      },
+      "explain_sheet": {
+        "next": "Sonraki",
+        "got_it": "Anladım",
+        "title": "Vadeli İşlemler",
+        "steps": {
+          "step_1": {
+            "title_parts": [
+              "Sürekli Vadeli İşlemler"
+            ],
+            "subtitle_parts": [
+              "Fiyat hareketleri üzerine bahis yapın. Pozisyonları istediğiniz zaman açın ve kapatın, son kullanma tarihi olmadan.\nHyperliquid tarafından desteklenmektedir."
+            ]
+          },
+          "step_2": {
+            "title_parts": [
+              "Git",
+              "Uzun",
+              "veya",
+              "Kısa"
+            ],
+            "subtitle_parts": [
+              "Fiyatın yükseleceğini düşündüğünüzde uzun gidin. Düşeceğini düşündüğünüzde kısa gidin. Yönü doğru tahmin ettiğinizde kar edin."
+            ]
+          },
+          "step_3": {
+            "title_parts": [
+              "Kaldıraçlı İşlem"
+            ],
+            "subtitle_parts": [
+              "Kaldıraç riski artırır. Doğru olduğunuzda büyük kazançlar. Yanıldığınızda daha hızlı kayıplar ve tasfiye olur."
+            ]
+          }
+        }
+      },
+      "leverage": "Kaldıraç",
+      "up_to": "Kadarcık"
+    },
     "points": {
       "placeholder": {
         "coming_soon_title": "Yakında",
@@ -1653,8 +1832,6 @@
         "claimed_earnings": "Talep Edilen Kazançlar",
         "current_value": "Güncel Değer",
         "rainbow_users_have_earned": "Rainbow kullanıcıları kazandı",
-        "earn_eth_rewards": "ETH Ödülleri Kazanın",
-        "rewards_explainer": "Her hafta, en çok puan kazanan haftalık kazananlar Rainbow’un zincir üstü gelirinin bir kısmını alacaklar. Puan toplamak için Rainbow'da takas yapın veya işlem yapın, dapp'leri kullanın veya arkadaşlarınızı davet edin.",
         "my_points": "Puanlarım",
         "refer_friends": "Arkadaşları Davet Et",
         "try_again": "Tekrar Deneyin",
@@ -1801,7 +1978,7 @@
         "skip": "Atla",
         "snapchat": "Snapchat",
         "telegram": "Telegram",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "upload_photo": "Bir Fotoğraf Yükleyin",
         "uploading": "Yükleniyor",
         "username_placeholder": "kullanıcı adı",
@@ -2157,7 +2334,7 @@
       "done": "Tamamlandı",
       "feedback_and_reports": "Geri Bildirim & Hata Raporları",
       "feedback_and_support": "Geri Bildirim ve Destek",
-      "follow_us_on_twitter": "Twitter'da bizi takip edin",
+      "follow_us_on_twitter": "Bizi X'te takip edin",
       "hey_friend_message": "👋️ Hey dostum! Rainbow'u indirmelisin, benim en sevdiğim Ethereum cüzdanı 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Ayarlar",
       "language": "Dil",
@@ -3330,7 +3507,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "Mevcut Bakiye: %{balance}",
-        "title": "Daha fazla token ön satın al"
+        "title": "Daha fazla token ön satın al."
       },
       "review": {
         "token_allocation": "Token tahsisi",
@@ -3395,7 +3572,7 @@
       },
       "links": {
         "x": {
-          "name": "X/Twitter",
+          "name": "X (Twitter)",
           "placeholder": "Kullanıcı adı"
         },
         "telegram": {
@@ -3468,6 +3645,7 @@
     "done": "Tamamlandı",
     "copy": "Kopyala",
     "paste": "Yapıştır",
+    "new": "Yeni",
     "market_data": {
       "vol": "HACİM",
       "price": "FİYAT",
@@ -3492,9 +3670,9 @@
           "step_1": {
             "title": "Yarış başladı",
             "subtitle_parts": [
-              "En yüksek",
+              "Mevcut kral, son 30 gün içinde en çok oluşturulan tokendir.",
               " alım hacmine ",
-              "sahip jeton şu anki kraldır."
+              "bugün."
             ]
           },
           "step_2": {

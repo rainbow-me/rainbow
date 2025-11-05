@@ -13,7 +13,7 @@
       "show": "Tampilkan",
       "show_all": "Tampilkan semua",
       "show_less": "Tampilkan lebih sedikit",
-      "tab_balances": "Saldo",
+      "tab_tokens": "Token",
       "tab_balances_empty_state": "Saldo",
       "tab_balances_tooltip": "Saldo Ethereum dan Token",
       "tab_claimables": "Dapat Diklaim",
@@ -23,6 +23,7 @@
       "tab_investments": "Kolam",
       "tab_savings": "Tabungan",
       "tab_showcase": "Pameran",
+      "tab_perps": "Perps",
       "tab_points": "Poin",
       "tab_positions": "Posisi",
       "tab_rewards": "Hadiah",
@@ -707,15 +708,18 @@
           "website": "Situs Web",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter",
-          "warpcast": "Warpcast",
+          "twitter": "X (Twitter)",
           "farcaster": "Farcaster",
           "other": "Lainnya",
-          "search_on_twitter": "Cari di Twitter"
+          "search_on_twitter": "Cari di X"
         },
         "uniswap_liquidity": "Likuiditas Uniswap",
         "value": "Nilai",
         "volume_24_hours": "Volume 24h",
+        "liquidity_cap_disclaimer": {
+          "value_lower_than": "Nilai lebih rendah dari",
+          "due_to_low_liquidity": "karena likuiditas rendah"
+        },
         "menu": {
           "view_on": "Tampilkan di %{blockExplorerName}",
           "share": "Bagikan",
@@ -774,10 +778,10 @@
       "chart": {
         "candlestick": {
           "candle_field_labels": {
-            "c": "Tutup",
+            "c": "TUTUP",
             "h": "H",
             "l": "L",
-            "o": "Buka",
+            "o": "BUKA",
             "t": "",
             "v": "V"
           },
@@ -923,7 +927,7 @@
         "toast_removed_from_showcase": "Dihapus dari pameran",
         "refreshing": "Menyegarkan metadata...",
         "reported": "Dilaporkan sebagai spam",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "view_all_with_property": "Lihat Semua dengan Properti",
         "view_collection": "Lihat Koleksi",
         "view_on_marketplace": "Lihat di Marketplace...",
@@ -958,7 +962,7 @@
       "poolboy_title": "Anda telah membuka\nRainbow Poolboy!",
       "adworld_description": "Sebagai Warga Dunia Rainbow, kini Anda dapat membuka Ikon Aplikasi edisi khusus\nAdWorld x Rainbow.",
       "adworld_title": "Selamat datang di Dunia Rainbow!",
-      "farcaster_description": "Ikon aplikasi kami yang paling membosankan, terinspirasi oleh minimalisme Warpcast yang hambar.",
+      "farcaster_description": "Ikon aplikasi kami yang paling membosankan, terinspirasi oleh minimalisme Farcaster yang hambar.",
       "farcaster_title": "Anda telah membuka\nRainbowcast",
       "redacted_description": "Ikon Rainbow eksklusif untuk para penikmat sejati Gdupi.",
       "redacted_title": "Anda telah membuka\n Rainbow yang Dihilangkan",
@@ -1577,6 +1581,181 @@
         "address_copied_to_clipboard": "Alamat disalin ke papan klip"
       }
     },
+    "perps": {
+      "common": {
+        "not_available": "N/A",
+        "current_price": "Harga Saat Ini",
+        "title": "Perps",
+        "error_submitting_order": "Kesalahan mengirimkan pesanan",
+        "submitting": "Mengajukan...",
+        "more": "Lebih",
+        "error": "Kesalahan",
+        "cancel": "Batal",
+        "liq_price": "harga liq.",
+        "liq": "liq"
+      },
+      "feature_card": {
+        "title": "Perps",
+        "subtitle": "Perdagangan berisiko tinggi, imbalan tinggi"
+      },
+      "actions": {
+        "fund_wallet": "Isi Saldo Dompet Saya",
+        "new_position": "Posisi Baru",
+        "close_position": "Tutup Posisi",
+        "open_position": "Buka Posisi"
+      },
+      "account": {
+        "available_balance": "Saldo Tersedia"
+      },
+      "markets": {
+        "title": "Pasar",
+        "up_to": "HINGGA",
+        "already_open": "Sudah Terbuka"
+      },
+      "deposit": {
+        "title": "Deposit",
+        "no_balance": "Tidak Ada Saldo",
+        "receive": "Terima",
+        "slider_label": "Menyetor",
+        "zero_amount_error": "Masukkan jumlah untuk deposit",
+        "confirm_button_text": "Tahan untuk Deposit",
+        "confirm_button_loading_text": "Menyetor...",
+        "confirm_button_zero_text": "Masukkan Jumlah",
+        "confirm_button_over_balance_text": "Dana Tidak Cukup",
+        "confirm_button_error_text": "Kesalahan Kutipan",
+        "quote_error": "􀇿 Tidak ada penawaran yang tersedia",
+        "insufficient_balance": "􀫲 Dana Tidak Cukup"
+      },
+      "withdraw": {
+        "title": "Tarik",
+        "slider_label": "Menarik",
+        "confirm_button_text": "Tahan untuk Tarik",
+        "confirm_button_loading_text": "Menarik...",
+        "available_balance_suffix": " Tersedia",
+        "confirm_button_zero_text": "Masukkan Jumlah",
+        "confirm_button_over_balance_text": "Dana Tidak Cukup",
+        "info_card_title_prefix": "Menarik ke ",
+        "info_card_title_suffix": "Arbitrum",
+        "info_card_subtitle": "Jaringan tambahan segera hadir. Penarikan saat ini termasuk biaya Hyperliquid sebesar $1.00."
+      },
+      "position_side": {
+        "long": "Panjang",
+        "short": "Pendek"
+      },
+      "positions": {
+        "entry": "ENTRI",
+        "mark_price": "HARGA PASAR",
+        "open_positions": "Posisi Terbuka",
+        "no_open_positions": "Tidak Ada Posisi Terbuka",
+        "position_value": "Nilai Posisi",
+        "mark_price_full": "Harga Pasar",
+        "entry_price": "Harga Entri",
+        "funding": "Pendanaan",
+        "liquidation_price": "Harga Likuidasi",
+        "total": "Total",
+        "learn_more_about_perps": "Pelajari lebih lanjut tentang Perps"
+      },
+      "new_position": {
+        "hold_to_long": "Tahan untuk Panjang",
+        "hold_to_short": "Tahan untuk Pendek",
+        "liquidated_at": "Dilikuidasi pada",
+        "from_current_price": "dari harga saat ini",
+        "details": "Rincian",
+        "funding_rate": "Tingkat Pendanaan",
+        "max_slippage": "Slippage Maksimum",
+        "no_liquidation_risk": "Tidak Ada Risiko Likuidasi",
+        "trading_without_leverage": "Perdagangan tanpa leverage"
+      },
+      "inputs": {
+        "amount": "Jumlah",
+        "available": "Tersedia",
+        "max": "Maks",
+        "maximum_amount_is": "Jumlah maksimum adalah",
+        "minimum": "Minimal",
+        "minimum_amount_is": "Jumlah minimum adalah",
+        "no_balance": "Tidak Ada Saldo"
+      },
+      "history": {
+        "title": "Riwayat",
+        "no_trades": "Tidak ada perdagangan",
+        "trade_execution": {
+          "take_profit_executed": "Ambil Untung Dieksekusi",
+          "stop_loss_executed": "Stop Loss Dieksekusi",
+          "long_opened": "Panjang Dibuka",
+          "short_opened": "Pendek Dibuka",
+          "long_closed": "Panjang Ditutup",
+          "short_closed": "Pendek Ditutup",
+          "long_liquidated": "Panjang Dilikuasikan",
+          "short_liquidated": "Pendek Dilikuasikan"
+        }
+      },
+      "trigger_orders": {
+        "title": "Pesanan Trigger",
+        "take_profit": "Ambil Untung",
+        "stop_loss": "Stop Loss",
+        "sell": "Jual",
+        "cancel_failed": "Gagal membatalkan pesanan",
+        "add_stop_loss": "Tambah Stop Loss",
+        "add_take_profit": "Tambah Ambil Untung",
+        "price": "Harga",
+        "projected_profit": "Keuntungan Proyeksi",
+        "projected_loss": "Kerugian Proyeksi",
+        "add": "Tambah",
+        "adding": "Menambahkan...",
+        "above": "atas",
+        "below": "di bawah",
+        "must_be": "Harus",
+        "failed_to_create": "Gagal membuat pesanan trigger"
+      },
+      "search": {
+        "search_markets": "Cari pasar",
+        "markets_count": "%{count} PASAR",
+        "choose_a_market": "PILIH MARKAS"
+      },
+      "close_position": {
+        "estimated_loss": "Kerugian Estimasi",
+        "estimated_profit": "Keuntungan Estimasi",
+        "minimum_amount_is": "Jumlah minimum adalah",
+        "closing": "Menutup...",
+        "hold_to_close": "Tahan untuk Menutup"
+      },
+      "explain_sheet": {
+        "next": "Selanjutnya",
+        "got_it": "Mengerti",
+        "title": "Perps",
+        "steps": {
+          "step_1": {
+            "title_parts": [
+              "Futures Perpetual"
+            ],
+            "subtitle_parts": [
+              "Bertaruh pada pergerakan harga. Buka dan tutup posisi kapan saja, tanpa kadaluarsa.\nDidukung oleh Hyperliquid."
+            ]
+          },
+          "step_2": {
+            "title_parts": [
+              "Mulai",
+              "Panjang",
+              "atau",
+              "Pendek"
+            ],
+            "subtitle_parts": [
+              "Panjang saat Anda berpikir harga akan naik. Pendek saat Anda berpikir akan turun. Untung jika Anda memanggil arah yang benar."
+            ]
+          },
+          "step_3": {
+            "title_parts": [
+              "Berdagang dengan Leverage"
+            ],
+            "subtitle_parts": [
+              "Leverage memperbesar risiko Anda. Keuntungan lebih besar saat Anda benar. Kerugian lebih cepat, dan likuidasi, saat Anda salah."
+            ]
+          }
+        }
+      },
+      "leverage": "Leverage",
+      "up_to": "Hingga"
+    },
     "points": {
       "placeholder": {
         "coming_soon_title": "Segera Hadir",
@@ -1653,8 +1832,6 @@
         "claimed_earnings": "Pendapatan yang Diklaim",
         "current_value": "Nilai Saat Ini",
         "rainbow_users_have_earned": "Pengguna Rainbow telah mendapatkan",
-        "earn_eth_rewards": "Dapatkan Hadiah ETH",
-        "rewards_explainer": "Setiap minggu, penghasil poin mingguan tertinggi akan menerima sebagian dari pendapatan onchain Rainbow. Kumpulkan poin dengan menukar atau bertransaksi di Rainbow, menggunakan dapps, atau merujuk teman.",
         "my_points": "Poin Saya",
         "refer_friends": "Rujukkan Teman",
         "try_again": "Coba Lagi",
@@ -1801,7 +1978,7 @@
         "skip": "Lewat",
         "snapchat": "Snapchat",
         "telegram": "Telegram",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "upload_photo": "Unggah Foto",
         "uploading": "Mengunggah",
         "username_placeholder": "nama pengguna",
@@ -2157,7 +2334,7 @@
       "done": "Selesai",
       "feedback_and_reports": "Umpan Balik & Laporan Bug",
       "feedback_and_support": "Masukan dan Dukungan",
-      "follow_us_on_twitter": "Ikuti kami di Twitter",
+      "follow_us_on_twitter": "Ikuti kami di X",
       "hey_friend_message": "👋️ Hai teman! Anda harus mengunduh Rainbow, dompet Ethereum favorit saya 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Pengaturan",
       "language": "Bahasa",
@@ -3330,7 +3507,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "Saldo Tersedia: %{balance}",
-        "title": "Pra-beli lebih banyak token"
+        "title": "Pra-beli token"
       },
       "review": {
         "token_allocation": "Pembagian token",
@@ -3395,7 +3572,7 @@
       },
       "links": {
         "x": {
-          "name": "X/Twitter",
+          "name": "X (Twitter)",
           "placeholder": "Nama pengguna"
         },
         "telegram": {
@@ -3468,6 +3645,7 @@
     "done": "Selesai",
     "copy": "Salin",
     "paste": "Tempel",
+    "new": "Baru",
     "market_data": {
       "vol": "VOL",
       "price": "HARGA",
@@ -3492,9 +3670,9 @@
           "step_1": {
             "title": "Perlombaan langsung",
             "subtitle_parts": [
-              "Token dengan terbanyak",
+              "Raja saat ini adalah token yang dibuat dalam 30 hari terakhir dengan yang paling",
               " volume pembelian ",
-              "saat ini adalah raja sekarang."
+              "hari ini."
             ]
           },
           "step_2": {

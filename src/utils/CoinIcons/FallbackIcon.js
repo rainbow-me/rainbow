@@ -35,10 +35,10 @@ function formatSymbol(symbol, width) {
   return _cache[key];
 }
 
-const FallbackIcon = ({ color = '#3A3D51', height, style, symbol = '', textStyles, width, ...props }) => {
+const FallbackIcon = ({ color = '#3A3D51', height = 40, style, symbol = '', textStyles, width, ...props }) => {
   const formattedSymbol = formatSymbol(symbol, width);
 
-  const fontSize = buildFallbackFontSize(formattedSymbol, width);
+  const fontSize = buildFallbackFontSize(formattedSymbol, width) * (height > 80 ? 1.6 : 1);
 
   return (
     <Animated.View

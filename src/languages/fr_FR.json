@@ -13,7 +13,7 @@
       "show": "Montrer",
       "show_all": "Montrer tout",
       "show_less": "Montrer moins",
-      "tab_balances": "Soldes",
+      "tab_tokens": "Jetons",
       "tab_balances_empty_state": "Solde",
       "tab_balances_tooltip": "Soldes d'Ethereum et de Tokens",
       "tab_claimables": "Réclamables",
@@ -23,6 +23,7 @@
       "tab_investments": "Piscines",
       "tab_savings": "Économies",
       "tab_showcase": "Showcase",
+      "tab_perps": "Perps",
       "tab_points": "Points",
       "tab_positions": "Positions",
       "tab_rewards": "Récompenses",
@@ -707,15 +708,18 @@
           "website": "Site Internet",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter",
-          "warpcast": "Warpcast",
+          "twitter": "X (Twitter :)",
           "farcaster": "Farcaster",
           "other": "Autre",
-          "search_on_twitter": "Rechercher sur Twitter"
+          "search_on_twitter": "Rechercher sur X"
         },
         "uniswap_liquidity": "Liquidité Uniswap",
         "value": "Valeur",
         "volume_24_hours": "Volume sur 24 heures",
+        "liquidity_cap_disclaimer": {
+          "value_lower_than": "La valeur est inférieure à",
+          "due_to_low_liquidity": "en raison de la faible liquidité"
+        },
         "menu": {
           "view_on": "Voir sur %{blockExplorerName}",
           "share": "Partager",
@@ -774,10 +778,10 @@
       "chart": {
         "candlestick": {
           "candle_field_labels": {
-            "c": "Fermer",
+            "c": "FERMER",
             "h": "H",
             "l": "L",
-            "o": "Ouvrir",
+            "o": "OUVRIR",
             "t": "",
             "v": "V"
           },
@@ -923,7 +927,7 @@
         "toast_removed_from_showcase": "Retiré de la vitrine",
         "refreshing": "Actualisation des métadonnées...",
         "reported": "Signalé comme spam",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter :)",
         "view_all_with_property": "Voir tout avec propriété",
         "view_collection": "Voir la Collection",
         "view_on_marketplace": "Voir sur le Marketplace...",
@@ -1577,6 +1581,181 @@
         "address_copied_to_clipboard": "Adresse copiée dans le presse-papiers"
       }
     },
+    "perps": {
+      "common": {
+        "not_available": "N/A",
+        "current_price": "Prix actuel",
+        "title": "Perps",
+        "error_submitting_order": "Erreur lors de l'envoi de la commande",
+        "submitting": "En cours de soumission...",
+        "more": "Plus",
+        "error": "Erreur",
+        "cancel": "Annuler",
+        "liq_price": "prix de liquidation",
+        "liq": "liq"
+      },
+      "feature_card": {
+        "title": "Perps",
+        "subtitle": "Trading à haut risque et haute récompense"
+      },
+      "actions": {
+        "fund_wallet": "Financer mon portefeuille",
+        "new_position": "Nouvelle position",
+        "close_position": "Fermer la position",
+        "open_position": "Ouvrir la position"
+      },
+      "account": {
+        "available_balance": "Solde disponible"
+      },
+      "markets": {
+        "title": "Marchés",
+        "up_to": "Jusqu'à",
+        "already_open": "Déjà ouvert"
+      },
+      "deposit": {
+        "title": "Dépôt",
+        "no_balance": "Pas de solde",
+        "receive": "Recevoir",
+        "slider_label": "Dépôt en cours",
+        "zero_amount_error": "Entrez un montant à déposer",
+        "confirm_button_text": "Tenir pour Déposer",
+        "confirm_button_loading_text": "Dépôt en cours...",
+        "confirm_button_zero_text": "Entrez un Montant",
+        "confirm_button_over_balance_text": "Fonds insuffisants",
+        "confirm_button_error_text": "Erreur de Devis",
+        "quote_error": "􀇿 Aucun devis disponible",
+        "insufficient_balance": "􀫲 Fonds insuffisants"
+      },
+      "withdraw": {
+        "title": "Retirer",
+        "slider_label": "Retrait en cours",
+        "confirm_button_text": "Maintenir pour retirer",
+        "confirm_button_loading_text": "Retrait en cours...",
+        "available_balance_suffix": " Disponible",
+        "confirm_button_zero_text": "Entrez un Montant",
+        "confirm_button_over_balance_text": "Fonds insuffisants",
+        "info_card_title_prefix": "Retrait en cours vers ",
+        "info_card_title_suffix": "Arbitrum",
+        "info_card_subtitle": "D'autres réseaux bientôt disponibles. Les retraits incluent actuellement des frais Hyperliquid de 1,00 $."
+      },
+      "position_side": {
+        "long": "Long",
+        "short": "Short"
+      },
+      "positions": {
+        "entry": "ENTRÉE",
+        "mark_price": "PRIX MARCHE",
+        "open_positions": "Positions ouvertes",
+        "no_open_positions": "Aucune position ouverte",
+        "position_value": "Valeur de la position",
+        "mark_price_full": "Prix du marché",
+        "entry_price": "Prix d'entrée",
+        "funding": "Financement",
+        "liquidation_price": "Prix de liquidation",
+        "total": "Total",
+        "learn_more_about_perps": "En savoir plus sur Perps"
+      },
+      "new_position": {
+        "hold_to_long": "Tenir pour Long",
+        "hold_to_short": "Tenir pour Short",
+        "liquidated_at": "Liquidé à",
+        "from_current_price": "à partir du prix actuel",
+        "details": "Détails",
+        "funding_rate": "Taux de financement",
+        "max_slippage": "Glissement maximal",
+        "no_liquidation_risk": "Pas de risque de liquidation",
+        "trading_without_leverage": "Trading sans effet de levier"
+      },
+      "inputs": {
+        "amount": "Montant",
+        "available": "Disponible",
+        "max": "Max",
+        "maximum_amount_is": "Le montant maximum est",
+        "minimum": "Minimum",
+        "minimum_amount_is": "Le montant minimum est",
+        "no_balance": "Pas de solde"
+      },
+      "history": {
+        "title": "Historique",
+        "no_trades": "Aucun échange",
+        "trade_execution": {
+          "take_profit_executed": "Prise de profit exécutée",
+          "stop_loss_executed": "Stop Loss exécuté",
+          "long_opened": "Long ouvert",
+          "short_opened": "Short ouvert",
+          "long_closed": "Long fermé",
+          "short_closed": "Short fermé",
+          "long_liquidated": "Long liquidé",
+          "short_liquidated": "Short liquidé"
+        }
+      },
+      "trigger_orders": {
+        "title": "Ordres déclencheurs",
+        "take_profit": "Prendre profit",
+        "stop_loss": "Stop Loss",
+        "sell": "Vendre",
+        "cancel_failed": "Échec de l'annulation de l'ordre",
+        "add_stop_loss": "Ajouter Stop Loss",
+        "add_take_profit": "Ajouter Prendre Profit",
+        "price": "Prix",
+        "projected_profit": "Profit projeté",
+        "projected_loss": "Perte projetée",
+        "add": "Ajouter",
+        "adding": "Ajout...",
+        "above": "au-dessus",
+        "below": "en dessous",
+        "must_be": "Doit être",
+        "failed_to_create": "Échec de la création de l'ordre déclencheur"
+      },
+      "search": {
+        "search_markets": "Rechercher des marchés",
+        "markets_count": "%{count} MARCHÉS",
+        "choose_a_market": "CHOISIR UN MARCHÉ"
+      },
+      "close_position": {
+        "estimated_loss": "Perte estimée",
+        "estimated_profit": "Profit estimé",
+        "minimum_amount_is": "Le montant minimum est",
+        "closing": "Fermeture en cours...",
+        "hold_to_close": "Tenir pour fermer"
+      },
+      "explain_sheet": {
+        "next": "Suivant",
+        "got_it": "Compris",
+        "title": "Perps",
+        "steps": {
+          "step_1": {
+            "title_parts": [
+              "Futures perpétuels"
+            ],
+            "subtitle_parts": [
+              "Pariez sur les mouvements de prix. Ouvrez et fermez des positions quand vous le souhaitez, sans expiration.\n Alimenté par Hyperliquid."
+            ]
+          },
+          "step_2": {
+            "title_parts": [
+              "Aller",
+              "Long",
+              "ou",
+              "Short"
+            ],
+            "subtitle_parts": [
+              "Long lorsque vous pensez que le prix va augmenter. Short lorsque vous pensez qu'il va baisser. Profitez lorsque vous choisissez la bonne direction."
+            ]
+          },
+          "step_3": {
+            "title_parts": [
+              "Trader avec effet de levier"
+            ],
+            "subtitle_parts": [
+              "L'effet de levier amplifie votre risque. Des gains plus importants lorsque vous avez raison. Des pertes plus rapides, et liquidation, lorsque vous avez tort."
+            ]
+          }
+        }
+      },
+      "leverage": "Levier",
+      "up_to": "Jusqu'à"
+    },
     "points": {
       "placeholder": {
         "coming_soon_title": "Bientôt disponible",
@@ -1653,8 +1832,6 @@
         "claimed_earnings": "Gains Réclamés",
         "current_value": "Valeur actuelle",
         "rainbow_users_have_earned": "Les utilisateurs de Rainbow ont gagné",
-        "earn_eth_rewards": "Gagner des Récompenses en ETH",
-        "rewards_explainer": "Chaque semaine, les meilleurs gagnants de points hebdomadaires recevront une partie des revenus de Rainbow sur la chaîne. Collectez des points en échangeant ou en effectuant des transactions sur Rainbow, en utilisant des dapps ou en parrainant des amis.",
         "my_points": "Mes Points",
         "refer_friends": "Parrainer des Amis",
         "try_again": "Réessayer",
@@ -1801,7 +1978,7 @@
         "skip": "Passer",
         "snapchat": "Snapchat",
         "telegram": "Telegram",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter :)",
         "upload_photo": "Télécharger une photo",
         "uploading": "Téléchargement",
         "username_placeholder": "username :)",
@@ -2157,7 +2334,7 @@
       "done": "Terminé",
       "feedback_and_reports": "Retour & Rapports de bugs :)",
       "feedback_and_support": "Retour d'information et soutien",
-      "follow_us_on_twitter": "Suivez-nous sur Twitter",
+      "follow_us_on_twitter": "Suivez-nous sur X (Twitter :)",
       "hey_friend_message": "👋️ Salut ami! Tu devrais télécharger Rainbow, c'est mon portefeuille Ethereum préféré 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Paramètres",
       "language": "Langue",
@@ -3330,7 +3507,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "Solde Disponible : %{balance}",
-        "title": "Pré-acheter plus de jetons"
+        "title": "Pré-acheter des jetons"
       },
       "review": {
         "token_allocation": "Allocation de jetons",
@@ -3395,7 +3572,7 @@
       },
       "links": {
         "x": {
-          "name": "X/Twitter",
+          "name": "X (Twitter :)",
           "placeholder": "Nom d'utilisateur"
         },
         "telegram": {
@@ -3468,6 +3645,7 @@
     "done": "Terminé",
     "copy": "Copier",
     "paste": "Coller",
+    "new": "Nouveau",
     "market_data": {
       "vol": "VOL",
       "price": "PRIX",
@@ -3492,9 +3670,9 @@
           "step_1": {
             "title": "La course est en direct",
             "subtitle_parts": [
-              "Le jeton avec le plus",
+              "Le roi actuel est le jeton créé au cours des 30 derniers jours avec le plus",
               " de volume d'achat ",
-              "en ce moment est le roi actuel."
+              "aujourd'hui."
             ]
           },
           "step_2": {

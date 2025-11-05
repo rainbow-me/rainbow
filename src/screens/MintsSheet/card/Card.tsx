@@ -26,7 +26,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
   const price = convertRawAmountToRoundedDecimal(collection.mintStatus.price, 18, 6);
-  const currencySymbol = useBackendNetworksStore.getState().getChainsNativeAsset()[collection.chainId].symbol;
+  const currencySymbol = useBackendNetworksStore.getState().getChainsNativeAsset()[collection.chainId]?.symbol;
   const isFree = !price;
 
   // update elapsed time every minute if it's less than an hour

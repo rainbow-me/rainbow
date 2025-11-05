@@ -35,7 +35,7 @@ describe('createQueryStore', () => {
 
       const status = store.getState().getStatus();
       expect(status.isSuccess).toBe(true);
-      expect(status.isFetching).toBe(false);
+      expect(status.isLoading).toBe(false);
       expect(status.isError).toBe(false);
     });
   });
@@ -271,8 +271,8 @@ describe('createQueryStore', () => {
       expect(store.getState().getData({ id: 7 })).toBeNull();
       expect(store.getState().status).toBe(QueryStatuses.Idle);
 
-      // The queryKey should be reset based on the config ('[]' if no params).
-      expect(store.getState().queryKey).toBe('[]');
+      // The queryKey should be reset to an empty string.
+      expect(store.getState().queryKey).toBe('');
 
       // Test useParsableQueryKeys
       const store2 = createQueryStore<TestData, { id?: number }>({

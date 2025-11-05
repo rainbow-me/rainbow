@@ -16,6 +16,6 @@ export default {
   },
   remoteCacheProvider: 'github-actions',
   fingerprint: {
-    extraSources: ['.env'],
+    extraSources: ['is_testing'],
   },
 };

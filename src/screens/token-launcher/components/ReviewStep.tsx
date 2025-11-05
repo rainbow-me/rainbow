@@ -27,6 +27,7 @@ import { TokenLogo } from './TokenLogo';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
+const SHOW_TOKEN_ALLOCATION_CARD = false;
 const TOTAL_COST_PILL_HEIGHT = 52;
 
 function TokenAllocationCard() {
@@ -417,7 +418,7 @@ export function ReviewStep() {
               <>
                 <TotalSupplyCard />
                 <NetworkCard />
-                <TokenAllocationCard />
+                {SHOW_TOKEN_ALLOCATION_CARD && <TokenAllocationCard />}
                 <AboutCard />
               </>
             )}

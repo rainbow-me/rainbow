@@ -8,7 +8,9 @@ import { isLowerCaseMatch } from '@/utils';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 
 export function isNativeAsset(address: AddressOrEth | string, chainId: ChainId) {
-  return isLowerCaseMatch(useBackendNetworksStore.getState().getChainsNativeAsset()[chainId].address, address);
+  const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
+  if (!nativeAsset) return false;
+  return isLowerCaseMatch(nativeAsset.address, address);
 }
 
 export async function getOnchainAssetBalance({ address, decimals, symbol }: any, userAddress: any, chainId: ChainId, provider: any) {

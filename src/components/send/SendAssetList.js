@@ -246,10 +246,10 @@ export default class SendAssetList extends React.Component {
     const { openShitcoins } = this.state;
     return (
       <View>
-        <View marginTop={android ? 0 : 5}>
+        <View marginTop={5}>
           <CoinDividerOpenButton isSmallBalancesOpen={openShitcoins} onPress={this.changeOpenShitcoins} />
         </View>
-        {openShitcoins && <View marginTop={android ? 1 : -4}>{this.mapShitcoins(item.assets)}</View>}
+        {openShitcoins && <View marginTop={-4}>{this.mapShitcoins(item.assets)}</View>}
       </View>
     );
   };

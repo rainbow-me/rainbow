@@ -10,7 +10,7 @@ type SwapEventTypes = typeof analytics.event.swapsSubmitted | typeof analytics.e
 type SwapEventParameters<T extends SwapEventTypes> = {
   isHardwareWallet: boolean;
   parameters: Omit<RapSwapActionParameters<'swap' | 'crosschainSwap'>, 'gasFeeParamsBySpeed' | 'gasParams' | 'selectedGasFee'>;
-  quickBuyMetadata: SwapsParams['quickBuyMetadata'];
+  quickBuyMetadata?: SwapsParams['quickBuyMetadata'];
   type: 'crosschainSwap' | 'swap';
 } & (T extends typeof analytics.event.swapsSubmitted
   ? {

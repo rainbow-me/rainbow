@@ -289,14 +289,14 @@ const MarketStatsCardContent = memo(function MarketStatsCardContent({ marketData
             ]}
           />
           {Object.keys(marketData).map((timeframe, index) => (
-            <>
+            <React.Fragment key={timeframe}>
               {index > 0 && <Box style={{ alignSelf: 'center' }} height={20} width={1} backgroundColor={accentColors.opacity6} />}
               <TimeframeItem
                 timeframe={timeframe}
-                relativeChange={marketData[timeframe as TimeFrames].priceChangePct ?? 0}
+                relativeChange={marketData[timeframe].priceChangePct ?? 0}
                 selectedTimeframe={selectedTimeframe}
               />
-            </>
+            </React.Fragment>
           ))}
         </Box>
         <Box height={1} backgroundColor={accentColors.opacity6} />

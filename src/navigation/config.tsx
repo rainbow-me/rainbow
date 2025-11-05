@@ -8,7 +8,7 @@ import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
-import { getPositionSheetHeight } from '@/screens/positions/PositionSheet';
+import { getPositionSheetHeight } from '@/features/positions/screens/PositionSheet';
 
 import { Icon } from '@/components/icons';
 import { SheetHandleFixedToTopHeight } from '@/components/sheet';
@@ -661,6 +661,48 @@ export const kingOfTheHillExplainSheetConfig = {
       backgroundOpacity: 0.8,
       cornerRadius: 0,
       headerHeight: safeAreaInsetValues.top + 70,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
+export const perpsExplainSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 0.8,
+      cornerRadius: 0,
+      headerHeight: safeAreaInsetValues.top + 70,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
+export const perpsAccountStackConfig: PartialNavigatorConfigOptions = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      cornerRadius: 'device',
+      headerHeight: safeAreaInsetValues.top + 68,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
+export const perpsDepositWithdrawalConfig: PartialNavigatorConfigOptions = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      cornerRadius: 'device',
+      headerHeight: safeAreaInsetValues.top + 68,
       springDamping: 1,
       topOffset: 0,
       transitionDuration: 0.3,

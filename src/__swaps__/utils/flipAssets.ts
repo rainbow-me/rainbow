@@ -14,7 +14,7 @@ export function getInputValuesForSliderPositionWorklet({
   selectedInputAsset,
   sliderXPosition,
 }: {
-  inputNativePrice: number;
+  inputNativePrice?: number;
   percentageToSwap: number;
   selectedInputAsset: ExtendedAnimatedAssetWithColors | null;
   sliderXPosition: number;

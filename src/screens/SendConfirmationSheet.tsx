@@ -19,25 +19,24 @@ import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import { useColorForAsset, useContacts, useDimensions, useENSAvatar, useGas, useUserAccounts } from '@/hooks';
 import * as i18n from '@/languages';
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { useInteractionsCount } from '@/resources/addys/interactions';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { startTimeToSignTracking, Screens } from '@/state/performance/performance';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { promiseUtils } from '@/utils';
+import { promiseUtils, safeAreaInsetValues } from '@/utils';
 import { AddressZero } from '@ethersproject/constants';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
 import L2Disclaimer from '../components/L2Disclaimer';
 import Pill from '../components/Pill';
@@ -52,7 +51,7 @@ import { GasSpeedButton } from '../components/gas';
 import ENSCircleIcon from '../components/icons/svg/ENSCircleIcon';
 import { Centered, Column, Row } from '../components/layout';
 import { SendButton } from '../components/send';
-import { SheetTitle, SlackSheet } from '../components/sheet';
+import { SheetHandleFixedToTopHeight, SheetTitle, SlackSheet } from '../components/sheet';
 import { Text as OldText } from '../components/text';
 import { ENSProfile } from '../entities/ens';
 import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
@@ -66,12 +65,6 @@ const Container = styled(Centered).attrs({
   ...(height && { height: height + deviceHeight }),
   ...position.coverAsObject,
 }));
-
-const SendButtonWrapper = styled(Column).attrs({
-  align: 'center',
-})({
-  height: 56,
-});
 
 export type Checkbox = {
   checked: boolean;
@@ -146,8 +139,14 @@ export function getSheetHeight({
   isENS: boolean;
   checkboxes: Checkbox[];
 }) {
-  let height = android ? 400 : 377;
-  if (isL2) height = height + 35;
+  let height =
+    SheetHandleFixedToTopHeight +
+    safeAreaInsetValues.bottom +
+    // Title height
+    22 +
+    // Base content height
+    314;
+  if (isL2) height = height + 62;
   if (shouldShowChecks) height = height + 80;
   if (isENS) {
     height = height + gasOffset + 20;
@@ -159,7 +158,7 @@ export function getSheetHeight({
 const ChevronDown = () => {
   const { colors } = useTheme();
   return (
-    <Column align="center" height={ios ? 34.5 : 30} marginTop={android ? -14 : 0} position="absolute" width={50}>
+    <Column align="center" height={34.5} position="absolute" width={50}>
       <OldText align="center" color={colors.alpha(colors.blueGreyDark, 0.15)} letterSpacing="zero" size="larger" weight="semibold">
         􀆈
       </OldText>
@@ -183,9 +182,8 @@ export const SendConfirmationSheet = () => {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
   const { goBack, navigate, setParams } = useNavigation<typeof Routes.SEND_SHEET>();
-  const { height: deviceHeight, isSmallPhone, isTinyPhone, width: deviceWidth } = useDimensions();
+  const { height: deviceHeight, isSmallPhone, width: deviceWidth } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const insets = useSafeAreaInsets();
   const { contacts } = useContacts();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const fillSecondary = useBackgroundColor('fillSecondary');
@@ -355,33 +353,29 @@ export const SendConfirmationSheet = () => {
 
   const insufficientEth = isSufficientGas === false && isValidGas;
 
-  const handleSubmit = useCallback(
-    () =>
-      performanceTracking.getState().executeFn({
-        fn: async () => {
-          if (!canSubmit) return;
-          try {
-            setIsAuthorizing(true);
-            if (isENS) {
-              const clearRecords = checkboxes.some(({ checked, id }) => checked && id === 'clear-records');
-              const setAddress = checkboxes.some(({ checked, id }) => checked && id === 'set-address');
-              const transferControl = checkboxes.some(({ checked, id }) => checked && id === 'transfer-control');
-              await callback({
-                ens: { clearRecords, setAddress, transferControl },
-              });
-            } else {
-              await callback();
-            }
-          } catch (e) {
-            logger.error(new RainbowError(`[SendConfirmationSheet]: error submitting transaction: ${e}`));
-            setIsAuthorizing(false);
-          }
-        },
-        operation: TimeToSignOperation.CallToAction,
-        screen: isENS ? Screens.SEND_ENS : Screens.SEND,
-      })(),
-    [callback, canSubmit, checkboxes, isENS]
-  );
+  const handleSubmit = useCallback(async () => {
+    if (!canSubmit) return;
+
+    startTimeToSignTracking();
+
+    try {
+      setIsAuthorizing(true);
+      if (isENS) {
+        const clearRecords = checkboxes.some(({ checked, id }) => checked && id === 'clear-records');
+        const setAddress = checkboxes.some(({ checked, id }) => checked && id === 'set-address');
+        const transferControl = checkboxes.some(({ checked, id }) => checked && id === 'transfer-control');
+        await callback({
+          ens: { clearRecords, setAddress, transferControl },
+        });
+      } else {
+        await callback();
+      }
+    } catch (e) {
+      const error = ensureError(e);
+      logger.error(new RainbowError(`[SendConfirmationSheet]: error submitting transaction: ${error.message}`, error));
+      setIsAuthorizing(false);
+    }
+  }, [callback, canSubmit, checkboxes, isENS]);
 
   const existingAccount = useMemo(() => {
     let existingAcct = null;
@@ -464,12 +458,12 @@ export const SendConfirmationSheet = () => {
   };
 
   return (
-    <Container deviceHeight={deviceHeight} height={contentHeight} insets={insets}>
+    <Container deviceHeight={deviceHeight} height={contentHeight}>
       {IS_IOS && <TouchableBackdrop onPress={goBack} />}
 
       <SlackSheet additionalTopPadding={IS_ANDROID} contentHeight={contentHeight} scrollEnabled={false}>
         <SheetTitle>{i18n.t(i18n.l.wallet.transaction.sending_title)}</SheetTitle>
-        <Column height={contentHeight}>
+        <Column>
           <Column padding={24}>
             <Row>
               <Column justify="center" width={deviceWidth - 117}>
@@ -533,9 +527,9 @@ export const SendConfirmationSheet = () => {
                 <ChevronDown />
               </Column>
             </Row>
-            <Row marginBottom={android ? 15 : 30}>
+            <Row marginBottom={30}>
               <Column flex={1} justify="center">
-                <Row width={android ? '80%' : '90%'}>
+                <Row width="90%">
                   <Heading numberOfLines={1} color="primary (Deprecated)" size="26px / 30px (Deprecated)" weight="heavy">
                     {avatarName}
                   </Heading>
@@ -656,7 +650,7 @@ export const SendConfirmationSheet = () => {
               </Stack>
             </Inset>
           )}
-          <SendButtonWrapper>
+          <Column align="center">
             {/* @ts-expect-error JavaScript component */}
             <SendButton
               androidWidth={deviceWidth - 60}
@@ -666,10 +660,10 @@ export const SendConfirmationSheet = () => {
               isAuthorizing={isAuthorizing}
               onLongPress={handleSubmit}
               requiresChecks={shouldShowChecks}
-              smallButton={!isTinyPhone && (android || isSmallPhone)}
+              smallButton={isSmallPhone}
               testID="send-confirmation-button"
             />
-          </SendButtonWrapper>
+          </Column>
           {isENS && <GasSpeedButton chainId={chainId} theme={theme.isDarkMode ? 'dark' : 'light'} />}
         </Column>
       </SlackSheet>

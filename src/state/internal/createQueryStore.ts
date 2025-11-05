@@ -13,6 +13,7 @@ import {
   FetchOptions,
   InternalStateKeys,
   ParamResolvable,
+  QueryStatusInfo,
   QueryStatuses,
   QueryStoreConfig,
   QueryStoreParams,
@@ -188,8 +189,8 @@ export function createQueryStore<
  */
 export function createQueryStore<
   TQueryFnData,
-  TParams extends Record<string, unknown> = Record<string, never>,
-  U = unknown,
+  TParams extends Record<string, unknown>,
+  U,
   TData = TQueryFnData,
   PersistedState extends Partial<QueryStoreState<TData, TParams, U>> = Partial<QueryStoreState<TData, TParams, U>>,
 >(
@@ -206,6 +207,8 @@ export function createQueryStore<
   const customStateCreator = typeof creatorOrPersistConfig === 'function' ? creatorOrPersistConfig : () => ({}) as U;
   const persistConfig =
     typeof creatorOrPersistConfig === 'object' && 'storageKey' in creatorOrPersistConfig ? creatorOrPersistConfig : maybePersistConfig;
+
+  let staleTime = typeof config.staleTime === 'function' ? time.minutes(2) : config.staleTime ?? time.minutes(2);
 
   const {
     fetcher,
@@ -224,7 +227,6 @@ export function createQueryStore<
     paramChangeThrottle,
     params,
     retryDelay = defaultRetryDelay,
-    staleTime = time.minutes(2),
     suppressStaleTimeWarning = false,
     useParsableQueryKeys = false,
   } = config;
@@ -246,6 +248,7 @@ export function createQueryStore<
 
   let attachVals: { enabled: AttachValue<boolean> | null; params: Partial<Record<keyof TParams, AttachValue<unknown>>> } | null = null;
   let directValues: { enabled: boolean | null; params: Partial<TParams> } | null = null;
+  let staleTimeAttachVal: AttachValue<number> | null = null;
   let paramUnsubscribes: Unsubscribe[] = [];
   let fetchAfterParamCreation = false;
   let isBuildingParams = false;
@@ -333,7 +336,7 @@ export function createQueryStore<
 
     subscriptionManager.init({
       onSubscribe: (enabled, isFirstSubscription, shouldThrottle) => {
-        if (!directValues && !attachVals && (params || typeof config.enabled === 'function')) {
+        if (!directValues && !attachVals && (params || typeof config.enabled === 'function' || typeof config.staleTime === 'function')) {
           fetchAfterParamCreation = true;
           return;
         }
@@ -386,6 +389,48 @@ export function createQueryStore<
         }
       }, timeUntilRefetch);
     };
+
+    function getStatus(statusKey: keyof QueryStatusInfo): QueryStatusInfo[keyof QueryStatusInfo];
+    function getStatus(): QueryStatusInfo;
+    function getStatus(statusKey?: keyof QueryStatusInfo): QueryStatusInfo[keyof QueryStatusInfo] | QueryStatusInfo {
+      switch (statusKey) {
+        case 'isIdle':
+          return get().status === QueryStatuses.Idle;
+        case 'isLoading':
+          return get().status === QueryStatuses.Loading;
+        case 'isSuccess': {
+          const { queryCache, queryKey, status } = get();
+          if (typeof queryCache[queryKey]?.lastFetchedAt === 'number') return true;
+          return status === QueryStatuses.Success;
+        }
+        case 'isError':
+        case 'isInitialLoad':
+        case undefined: {
+          const { lastFetchedAt: storeLastFetchedAt, queryCache, queryKey, status } = get();
+          const cacheEntry = queryCache[queryKey];
+          const lastFetchedAt = (disableCache ? lastFetchKey === queryKey && storeLastFetchedAt : cacheEntry?.lastFetchedAt) || null;
+
+          switch (statusKey) {
+            case 'isError': {
+              const isError = disableCache ? status !== 'error' : typeof cacheEntry?.errorInfo?.lastFailedAt === 'number';
+              return isError;
+            }
+            case 'isInitialLoad': {
+              const isInitialLoad = !lastFetchedAt && status === QueryStatuses.Loading;
+              return isInitialLoad;
+            }
+          }
+
+          return {
+            isError: status === QueryStatuses.Error,
+            isIdle: status === QueryStatuses.Idle,
+            isLoading: status === QueryStatuses.Loading,
+            isInitialLoad: !lastFetchedAt && status === QueryStatuses.Loading,
+            isSuccess: status === QueryStatuses.Success,
+          };
+        }
+      }
+    }
 
     const baseMethods = {
       ...customStateCreator(setWithEnabledHandling, get, api),
@@ -731,19 +776,7 @@ export function createQueryStore<
         return isExpired ? null : cacheEntry?.data ?? null;
       },
 
-      getStatus() {
-        const { queryKey, status } = get();
-        const lastFetchedAt =
-          (disableCache ? lastFetchKey === queryKey && get().lastFetchedAt : get().queryCache[queryKey]?.lastFetchedAt) || null;
-
-        return {
-          isError: status === QueryStatuses.Error,
-          isFetching: status === QueryStatuses.Loading,
-          isIdle: status === QueryStatuses.Idle,
-          isInitialLoading: !lastFetchedAt && status === QueryStatuses.Loading,
-          isSuccess: status === QueryStatuses.Success,
-        };
-      },
+      getStatus,
 
       isDataExpired(cacheTimeOverride?: number) {
         const currentQueryKey = get().queryKey;
@@ -772,14 +805,19 @@ export function createQueryStore<
       reset() {
         for (const unsub of paramUnsubscribes) unsub();
         paramUnsubscribes = [];
+        attachVals = null;
+        directValues = null;
+        staleTimeAttachVal = null;
+
+        abortActiveFetch();
         if (activeRefetchTimeout) {
           clearTimeout(activeRefetchTimeout);
           activeRefetchTimeout = null;
         }
-        if (abortInterruptedFetches) abortActiveFetch();
+
         activeFetch = null;
         lastFetchKey = null;
-        set(state => ({ ...state, ...initialData, queryKey: getQueryKeyFn(getCurrentResolvedParams(attachVals, directValues)) }));
+        set(state => ({ ...state, ...initialData, enabled: false }));
       },
     };
 
@@ -830,6 +868,11 @@ export function createQueryStore<
     directValues = { enabled: resolvedEnabledDirectValue, params: resolvedDirectValues };
   }
 
+  if (typeof config.staleTime === 'function') {
+    staleTimeAttachVal = config.staleTime($, queryStore);
+    staleTime = staleTimeAttachVal.value;
+  }
+
   function onParamChangeBase() {
     const newParams = getCurrentResolvedParams(attachVals, directValues);
     if (!keepPreviousData) {
@@ -840,13 +883,15 @@ export function createQueryStore<
   }
 
   const onParamChange =
-    !IS_TEST && paramChangeThrottle
-      ? debounce(
-          onParamChangeBase,
-          typeof paramChangeThrottle === 'number' ? paramChangeThrottle : paramChangeThrottle.delay,
-          typeof paramChangeThrottle === 'number' ? { leading: false, maxWait: paramChangeThrottle, trailing: true } : paramChangeThrottle
-        )
-      : onParamChangeBase;
+    IS_TEST || !paramChangeThrottle
+      ? onParamChangeBase
+      : paramChangeThrottle === 'microtask'
+        ? createMicrotaskScheduler(onParamChangeBase)
+        : debounce(
+            onParamChangeBase,
+            typeof paramChangeThrottle === 'number' ? paramChangeThrottle : paramChangeThrottle.delay,
+            typeof paramChangeThrottle === 'number' ? { leading: false, maxWait: paramChangeThrottle, trailing: true } : paramChangeThrottle
+          );
 
   if (attachVals?.enabled) {
     const attachVal = attachVals.enabled;
@@ -894,10 +939,44 @@ export function createQueryStore<
     }
   }
 
+  if (staleTimeAttachVal) {
+    const subscribeFn = attachValueSubscriptionMap.get(staleTimeAttachVal);
+    if (subscribeFn) {
+      const attachVal = staleTimeAttachVal;
+      let oldVal = attachVal.value;
+      if (enableLogs) console.log('[🌀 StaleTime Subscription 🌀] Initial value:', oldVal);
+      const unsub = subscribeFn(() => {
+        const newVal = attachVal.value;
+        if (newVal !== oldVal) {
+          if (enableLogs) console.log('[🌀 StaleTime Change 🌀] - [Old]:', `${oldVal},`, '[New]:', newVal);
+          oldVal = newVal;
+          staleTime = newVal;
+          queryStore.getState().fetch();
+        }
+      });
+      paramUnsubscribes.push(unsub);
+    }
+  }
+
   isBuildingParams = false;
   if (fetchAfterParamCreation) queueMicrotask(onParamChange);
 
   return queryStore;
+}
+
+// ============ Utilities ====================================================== //
+
+function createMicrotaskScheduler(onParamChange: () => void): () => void {
+  let isScheduled = false;
+  function schedule() {
+    if (isScheduled) return;
+    isScheduled = true;
+    queueMicrotask(() => {
+      isScheduled = false;
+      onParamChange();
+    });
+  }
+  return schedule;
 }
 
 export function getQueryKey<TParams extends Record<string, unknown>>(params: TParams): string {

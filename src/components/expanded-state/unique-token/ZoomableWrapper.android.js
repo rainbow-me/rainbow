@@ -8,7 +8,6 @@ import Animated, {
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
-  useWorkletCallback,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
@@ -173,156 +172,171 @@ export const ZoomableWrapper = ({
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
 
-  const endGesture = useWorkletCallback((event, ctx) => {
-    'worklet';
-    state.value = 1;
-    const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
-    const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
-    const zooming = fullSizeHeight / containerHeightValue.value;
-    ctx.startVelocityX = undefined;
-    ctx.startVelocityY = undefined;
-    ctx.prevTranslateX = 0;
-    ctx.prevTranslateY = 0;
-    let targetScale = Math.min(scale.value, MAX_IMAGE_SCALE);
+  const endGesture = useCallback(
+    (event, ctx) => {
+      'worklet';
+      state.value = 1;
+      const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
+      const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
+      const zooming = fullSizeHeight / containerHeightValue.value;
+      ctx.startVelocityX = undefined;
+      ctx.startVelocityY = undefined;
+      ctx.prevTranslateX = 0;
+      ctx.prevTranslateY = 0;
+      let targetScale = Math.min(scale.value, MAX_IMAGE_SCALE);
 
-    // determine whether to snap to screen edges
-    const breakingScaleX = deviceWidth / fullSizeWidth;
-    const breakingScaleY = deviceHeight / fullSizeHeight;
+      // determine whether to snap to screen edges
+      const breakingScaleX = deviceWidth / fullSizeWidth;
+      const breakingScaleY = deviceHeight / fullSizeHeight;
 
-    const maxDisplacementX = (deviceWidth * (Math.max(1, targetScale / breakingScaleX) - 1)) / 2 / zooming;
-    const maxDisplacementY = (deviceHeight * (Math.max(1, targetScale / breakingScaleY) - 1)) / 2 / zooming;
+      const maxDisplacementX = (deviceWidth * (Math.max(1, targetScale / breakingScaleX) - 1)) / 2 / zooming;
+      const maxDisplacementY = (deviceHeight * (Math.max(1, targetScale / breakingScaleY) - 1)) / 2 / zooming;
 
-    let targetTranslateX = translateX.value;
-    let targetTranslateY = translateY.value;
+      let targetTranslateX = translateX.value;
+      let targetTranslateY = translateY.value;
 
-    if (scale.value > MAX_IMAGE_SCALE) {
-      scale.value = withTiming(MAX_IMAGE_SCALE, adjustConfig);
-      targetScale = MAX_IMAGE_SCALE;
-      if (ctx.prevScale) {
-        const lastFocalDisplacementX = (ctx.focalDisplacementX * event.scale) / ctx.initEventScale;
-        const readjustX = ctx.maxAllowedFocalDisplacementX - lastFocalDisplacementX;
-        targetTranslateX = translateX.value + readjustX;
-        translateX.value = withTiming(targetTranslateX, adjustConfig);
+      if (scale.value > MAX_IMAGE_SCALE) {
+        scale.value = withTiming(MAX_IMAGE_SCALE, adjustConfig);
+        targetScale = MAX_IMAGE_SCALE;
+        if (ctx.prevScale) {
+          const lastFocalDisplacementX = (ctx.focalDisplacementX * event.scale) / ctx.initEventScale;
+          const readjustX = ctx.maxAllowedFocalDisplacementX - lastFocalDisplacementX;
+          targetTranslateX = translateX.value + readjustX;
+          translateX.value = withTiming(targetTranslateX, adjustConfig);
 
-        const lastFocalDisplacementY = (ctx.focalDisplacementY * event.scale) / ctx.initEventScale;
+          const lastFocalDisplacementY = (ctx.focalDisplacementY * event.scale) / ctx.initEventScale;
 
-        const readjustY = ctx.maxAllowedFocalDisplacementY - lastFocalDisplacementY;
-        targetTranslateY = translateY.value + readjustY;
-        translateY.value = withTiming(targetTranslateY, adjustConfig);
+          const readjustY = ctx.maxAllowedFocalDisplacementY - lastFocalDisplacementY;
+          targetTranslateY = translateY.value + readjustY;
+          translateY.value = withTiming(targetTranslateY, adjustConfig);
+        } else {
+          return;
+        }
+      }
+      ctx.initEventScale = undefined;
+      ctx.startFocalX = undefined;
+      ctx.startFocalY = undefined;
+      ctx.prevScale = undefined;
+
+      if (targetScale > breakingScaleX && isZoomedValue.value) {
+        if (targetTranslateX > maxDisplacementX) {
+          translateX.value = withTiming(maxDisplacementX, adjustConfig);
+        }
+        if (targetTranslateX < -maxDisplacementX) {
+          translateX.value = withTiming(-maxDisplacementX, adjustConfig);
+        }
       } else {
-        return;
+        translateX.value = withTiming(0, adjustConfig);
       }
-    }
-    ctx.initEventScale = undefined;
-    ctx.startFocalX = undefined;
-    ctx.startFocalY = undefined;
-    ctx.prevScale = undefined;
 
-    if (targetScale > breakingScaleX && isZoomedValue.value) {
-      if (targetTranslateX > maxDisplacementX) {
-        translateX.value = withTiming(maxDisplacementX, adjustConfig);
-      }
-      if (targetTranslateX < -maxDisplacementX) {
-        translateX.value = withTiming(-maxDisplacementX, adjustConfig);
-      }
-    } else {
-      translateX.value = withTiming(0, adjustConfig);
-    }
-
-    if (targetScale > breakingScaleY) {
-      if (targetTranslateY > maxDisplacementY) {
+      if (targetScale > breakingScaleY) {
+        if (targetTranslateY > maxDisplacementY) {
+          cancelAnimation(translateY.value);
+          translateY.value = withTiming(maxDisplacementY, adjustConfig);
+        }
+        if (targetTranslateY < -maxDisplacementY) {
+          cancelAnimation(translateY.value);
+          translateY.value = withTiming(-maxDisplacementY, adjustConfig);
+        }
+      } else {
         cancelAnimation(translateY.value);
-        translateY.value = withTiming(maxDisplacementY, adjustConfig);
+        translateY.value = withTiming(0, adjustConfig);
       }
-      if (targetTranslateY < -maxDisplacementY) {
-        cancelAnimation(translateY.value);
-        translateY.value = withTiming(-maxDisplacementY, adjustConfig);
-      }
-    } else {
-      cancelAnimation(translateY.value);
-      translateY.value = withTiming(0, adjustConfig);
-    }
 
-    if (scale.value < 0.8) {
-      if (ctx.startScale <= MIN_IMAGE_SCALE && !ctx.blockExitZoom) {
+      if (scale.value < 0.8) {
+        if (ctx.startScale <= MIN_IMAGE_SCALE && !ctx.blockExitZoom) {
+          isZoomedValue.value = false;
+          runOnJS(setIsZoomed)(false);
+          onZoomOutWorklet?.();
+          animationProgress.value = withSpring(0, exitConfig);
+          scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
+          translateX.value = withSpring(0, exitConfig);
+          translateY.value = withSpring(0, exitConfig);
+        } else {
+          scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
+          translateX.value = withSpring(0, exitConfig);
+          translateY.value = withSpring(0, exitConfig);
+          targetScale = 1;
+        }
+      } else if (scale.value < MIN_IMAGE_SCALE) {
+        scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
+      }
+
+      // handle dismiss gesture
+      if (
+        Math.abs(translateY.value) + (Math.abs(event?.velocityY) ?? 0) - (Math.abs(event?.velocityX / 2) ?? 0) > THRESHOLD * targetScale &&
+        fullSizeHeight * scale.value <= deviceHeight
+      ) {
         isZoomedValue.value = false;
         runOnJS(setIsZoomed)(false);
         onZoomOutWorklet?.();
+
+        scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
         animationProgress.value = withSpring(0, exitConfig);
-        scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
         translateX.value = withSpring(0, exitConfig);
         translateY.value = withSpring(0, exitConfig);
-      } else {
-        scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
-        translateX.value = withSpring(0, exitConfig);
-        translateY.value = withSpring(0, exitConfig);
-        targetScale = 1;
       }
-    } else if (scale.value < MIN_IMAGE_SCALE) {
-      scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
-    }
 
-    // handle dismiss gesture
-    if (
-      Math.abs(translateY.value) + (Math.abs(event?.velocityY) ?? 0) - (Math.abs(event?.velocityX / 2) ?? 0) > THRESHOLD * targetScale &&
-      fullSizeHeight * scale.value <= deviceHeight
-    ) {
-      isZoomedValue.value = false;
-      runOnJS(setIsZoomed)(false);
-      onZoomOutWorklet?.();
-
-      scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
-      animationProgress.value = withSpring(0, exitConfig);
-      translateX.value = withSpring(0, exitConfig);
-      translateY.value = withSpring(0, exitConfig);
-    }
-
-    if (event.velocityY && isZoomedValue.value && targetScale > breakingScaleX) {
-      const projectedYCoordinate = targetTranslateY + event.velocityY / 8;
-      const edgeBounceConfig = {
-        damping: 60,
-        mass: 2,
-        stiffness: 600,
-        velocity: event.velocityY,
-      };
-      const flingConfig = {
-        damping: 120,
-        mass: 2,
-        stiffness: 600,
-        velocity: event.velocityY,
-      };
-      if (projectedYCoordinate > maxDisplacementY) {
-        translateY.value = withSpring(maxDisplacementY, edgeBounceConfig);
-      } else if (projectedYCoordinate < -maxDisplacementY) {
-        translateY.value = withSpring(-maxDisplacementY, edgeBounceConfig);
-      } else {
-        translateY.value = withSpring(projectedYCoordinate, flingConfig);
+      if (event.velocityY && isZoomedValue.value && targetScale > breakingScaleX) {
+        const projectedYCoordinate = targetTranslateY + event.velocityY / 8;
+        const edgeBounceConfig = {
+          damping: 60,
+          mass: 2,
+          stiffness: 600,
+          velocity: event.velocityY,
+        };
+        const flingConfig = {
+          damping: 120,
+          mass: 2,
+          stiffness: 600,
+          velocity: event.velocityY,
+        };
+        if (projectedYCoordinate > maxDisplacementY) {
+          translateY.value = withSpring(maxDisplacementY, edgeBounceConfig);
+        } else if (projectedYCoordinate < -maxDisplacementY) {
+          translateY.value = withSpring(-maxDisplacementY, edgeBounceConfig);
+        } else {
+          translateY.value = withSpring(projectedYCoordinate, flingConfig);
+        }
       }
-    }
 
-    if (event.velocityX && isZoomedValue.value && targetScale > breakingScaleX) {
-      const projectedXCoordinate = targetTranslateX + event.velocityX / 8;
-      const edgeBounceConfig = {
-        damping: 60,
-        mass: 2,
-        stiffness: 600,
-        velocity: event.velocityX,
-      };
-      const flingConfig = {
-        damping: 120,
-        mass: 2,
-        stiffness: 600,
-        velocity: event.velocityX,
-      };
-      if (projectedXCoordinate > maxDisplacementX) {
-        translateX.value = withSpring(maxDisplacementX, edgeBounceConfig);
-      } else if (projectedXCoordinate < -maxDisplacementX) {
-        translateX.value = withSpring(-maxDisplacementX, edgeBounceConfig);
-      } else {
-        translateX.value = withSpring(projectedXCoordinate, flingConfig);
+      if (event.velocityX && isZoomedValue.value && targetScale > breakingScaleX) {
+        const projectedXCoordinate = targetTranslateX + event.velocityX / 8;
+        const edgeBounceConfig = {
+          damping: 60,
+          mass: 2,
+          stiffness: 600,
+          velocity: event.velocityX,
+        };
+        const flingConfig = {
+          damping: 120,
+          mass: 2,
+          stiffness: 600,
+          velocity: event.velocityX,
+        };
+        if (projectedXCoordinate > maxDisplacementX) {
+          translateX.value = withSpring(maxDisplacementX, edgeBounceConfig);
+        } else if (projectedXCoordinate < -maxDisplacementX) {
+          translateX.value = withSpring(-maxDisplacementX, edgeBounceConfig);
+        } else {
+          translateX.value = withSpring(projectedXCoordinate, flingConfig);
+        }
       }
-    }
-  });
+    },
+    [
+      animationProgress,
+      aspectRatio,
+      containerHeightValue,
+      deviceHeight,
+      deviceWidth,
+      isZoomedValue,
+      onZoomOutWorklet,
+      scale,
+      state,
+      translateX,
+      translateY,
+    ]
+  );
 
   const panGestureHandler = useAnimatedGestureHandler({
     onActive: (event, ctx) => {

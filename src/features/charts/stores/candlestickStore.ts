@@ -7,6 +7,7 @@ import {
   fetchHyperliquidChart,
 } from '@/features/charts/candlestick/hyperliquid/hyperliquidCharts';
 import { ChartsState, chartsActions, useChartsStore } from '@/features/charts/stores/chartsStore';
+import { isHyperliquidToken } from '@/features/charts/utils';
 import { ensureError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 import { ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
@@ -46,6 +47,8 @@ const MAX_CANDLES_PER_REQUEST = 1500;
 // ============ Candlestick Store ============================================== //
 
 const CACHE_TIME = time.minutes(2);
+const DEFAULT_STALE_TIME = time.seconds(5);
+const HYPERLIQUID_STALE_TIME = time.seconds(2);
 
 type CandlestickParams = {
   barCount?: number;
@@ -56,8 +59,7 @@ type CandlestickParams = {
 };
 
 type CandlestickState = {
-  prices: Partial<Record<TokenId, Price>>;
-  getPrice: (token?: Token | TokenId) => Price | undefined;
+  prices: Partial<Record<TokenId, Price<true>>>;
 };
 
 export const useCandlestickStore = createQueryStore<CandlestickResponse, CandlestickParams, CandlestickState>(
@@ -65,38 +67,17 @@ export const useCandlestickStore = createQueryStore<CandlestickResponse, Candles
     fetcher: fetchCandlestickData,
     setData: setCandlestickData,
     enabled: $ => $(useChartsStore, shouldEnable),
+    staleTime: $ => $(useChartsStore, getStaleTime),
     params: {
       candleResolution: $ => $(useChartsStore).candleResolution,
       currency: $ => $(userAssetsStoreManager).currency,
       token: $ => $(useChartsStore).token,
     },
     cacheTime: CACHE_TIME,
-    staleTime: time.seconds(5),
   },
 
-  (_, get) => ({
+  () => ({
     prices: {},
-
-    getPrice: providedToken => {
-      const token = providedToken ?? useChartsStore.getState().token;
-      if (!token) return undefined;
-
-      const { getData, prices } = get();
-      const existingData = getData();
-      const tokenId = getTokenId(token);
-      const price = prices[tokenId];
-      if (!price || !existingData) return price;
-
-      const { candleResolution, candles } = existingData;
-
-      return {
-        candleResolution,
-        lastUpdated: price.lastUpdated,
-        percentChange: calculatePercentChange(candles),
-        price: price.price,
-        volume: getMostRecentCandleVolume(candles),
-      };
-    },
   })
 );
 
@@ -148,11 +129,18 @@ async function fetchCandlestickData(params: CandlestickParams, abortController: 
  * @param token - The token to prefetch candlestick data for.
  */
 export function prefetchCandlestickData(asset: Token | ExpandedSheetParamAsset): void {
-  const { candleResolution, chartType } = useChartsStore.getState();
   const token = typeof asset === 'string' ? asset : { address: asset.address, chainId: asset.chainId };
   chartsActions.setToken(token);
+
+  const chartType = chartsActions.getChartType();
   if (chartType === ChartType.Line) return;
-  candlestickActions.fetch(buildBaseParams({ candleResolution, token }));
+
+  candlestickActions.fetch(
+    buildBaseParams({
+      candleResolution: useChartsStore.getState().candleResolution,
+      token,
+    })
+  );
 }
 
 /**
@@ -209,7 +197,7 @@ export async function fetchCandlestickPrice<T extends Token>({
   candleResolution: CandleResolution;
   currency?: NativeCurrencyKey;
   token: Exact<T, Exclude<Token, HyperliquidSymbol>>;
-}): Promise<Price | null> {
+}): Promise<Price<true> | null> {
   const response = await useCandlestickStore
     .getState()
     .fetch({ barCount: 1, candleResolution, currency, token }, { skipStoreUpdates: true });
@@ -445,11 +433,50 @@ function mergeOrReturnCached({
 // ============ Utilities ====================================================== //
 
 /**
+ * Calculates the percent change from the most recent candle's open
+ * price to its close price.
+ */
+export function calculatePercentChange(candles: Bar[]): number {
+  const currentCandleClose = candles[candles.length - 1]?.c ?? 0;
+  const currentCandleOpen = candles[candles.length - 1]?.o ?? 0;
+  return currentCandleOpen ? ((currentCandleClose - currentCandleOpen) / currentCandleOpen) * 100 : 0;
+}
+
+/**
+ * Builds a `Price` object from candles and the associated response time.
+ * @returns A `Price` object, or `undefined` if a response time is not provided.
+ */
+export function extractPriceFromCandles(
+  candles: Bar[],
+  resolution: CandleResolution,
+  responseTime: number | undefined
+): Price<true> | undefined {
+  if (!responseTime) return undefined;
+  const currentCandlePrice = candles[candles.length - 1]?.c ?? 0;
+  const percentChange = calculatePercentChange(candles);
+  const volume = getMostRecentCandleVolume(candles);
+  return {
+    candleResolution: resolution,
+    lastUpdated: responseTime,
+    percentChange,
+    price: currentCandlePrice,
+    volume,
+  };
+}
+
+/**
  * Returns a unique identifier for a token in the format `address:chainId`.
  */
-function getTokenId(token: Token): string {
+export function getTokenId(token: Token): string {
   if (typeof token === 'string') return token;
   return `${token.address}:${token.chainId}`;
+}
+
+/**
+ * Gets the volume of the most recent candle.
+ */
+function getMostRecentCandleVolume(candles: Bar[]): number {
+  return candles[candles.length - 1]?.v ?? 0;
 }
 
 /**
@@ -470,41 +497,6 @@ function buildBaseParams({ candleResolution, currency, token }: BaseParams): Can
  */
 function buildBaseQueryKey(params: BaseParams): string {
   return getQueryKey(buildBaseParams(params));
-}
-
-/**
- * Calculates the percent change from the most recent candle's open
- * price to its close price.
- */
-function calculatePercentChange(candles: Bar[]): number {
-  const currentCandleClose = candles[candles.length - 1]?.c ?? 0;
-  const currentCandleOpen = candles[candles.length - 1]?.o ?? 0;
-  return currentCandleOpen ? ((currentCandleClose - currentCandleOpen) / currentCandleOpen) * 100 : 0;
-}
-
-/**
- * Gets the volume of the most recent candle.
- */
-function getMostRecentCandleVolume(candles: Bar[]): number {
-  return candles[candles.length - 1]?.v ?? 0;
-}
-
-/**
- * Builds a `Price` object from candles and the associated response time.
- * @returns A `Price` object, or `undefined` if a response time is not provided.
- */
-function extractPriceFromCandles(candles: Bar[], resolution: CandleResolution, responseTime: number | undefined): Price | undefined {
-  if (!responseTime) return undefined;
-  const currentCandlePrice = candles[candles.length - 1]?.c ?? 0;
-  const percentChange = calculatePercentChange(candles);
-  const volume = getMostRecentCandleVolume(candles);
-  return {
-    candleResolution: resolution,
-    lastUpdated: responseTime,
-    percentChange,
-    price: currentCandlePrice,
-    volume,
-  };
 }
 
 /**
@@ -544,7 +536,10 @@ function isKnownError(error: unknown): boolean {
  * @returns A new object with stale prices pruned, or the original object if no
  * prices were pruned.
  */
-function prunePrices(originalPrices: Partial<Record<TokenId, Price>>, tokenIdToPreserve?: TokenId): Partial<Record<TokenId, Price>> {
+function prunePrices(
+  originalPrices: Partial<Record<TokenId, Price<true>>>,
+  tokenIdToPreserve?: TokenId
+): Partial<Record<TokenId, Price<true>>> {
   const now = Date.now();
   const expiration = now - CACHE_TIME;
   const prices = { ...originalPrices };
@@ -562,10 +557,14 @@ function prunePrices(originalPrices: Partial<Record<TokenId, Price>>, tokenIdToP
   return didPrune ? prices : originalPrices;
 }
 
+function getStaleTime(state: ChartsState): number {
+  return isHyperliquidToken(state.token) ? HYPERLIQUID_STALE_TIME : DEFAULT_STALE_TIME;
+}
+
 /**
  * Determines whether to enable the candlestick store.
  * @returns `true` if the current chart type is `Candlestick`, `false` otherwise.
  */
 function shouldEnable(state: ChartsState): boolean {
-  return state.chartType === ChartType.Candlestick;
+  return state.getChartType() === ChartType.Candlestick;
 }

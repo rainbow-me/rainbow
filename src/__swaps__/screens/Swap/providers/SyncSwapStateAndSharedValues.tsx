@@ -180,7 +180,7 @@ export function SyncGasStateToSharedValues() {
 
   const nativeCurrencyUniqueId = useBackendNetworksStore(state => getUniqueId(state.getChainsNativeAsset()[chainId]?.address, chainId));
 
-  const isLoadingNativeNetworkAsset = useUserAssetsStore(state => state.getStatus().isInitialLoading);
+  const isLoadingNativeNetworkAsset = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
   const userNativeNetworkAsset = useUserAssetsStore(state => state.getLegacyUserAsset(nativeCurrencyUniqueId));
 
   const estimatedGasLimit = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });

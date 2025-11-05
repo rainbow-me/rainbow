@@ -10,39 +10,18 @@ import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { NetworkField } from './NetworkField';
 import { LinksSection } from './LinksSection';
 import { DescriptionField } from './DescriptionField';
-import { COLLAPSABLE_FIELD_ANIMATION, DEFAULT_TOTAL_SUPPLY } from '../constants';
-import { TokenAllocationSection } from './TokenAllocationSection';
+import { COLLAPSABLE_FIELD_ANIMATION } from '../constants';
 import Animated from 'react-native-reanimated';
-import { validateNameWorklet, validateSymbolWorklet, validateTotalSupplyWorklet } from '../helpers/inputValidators';
+import { validateNameWorklet, validateSymbolWorklet } from '../helpers/inputValidators';
 import { Icon } from '@/components/icons';
 import { IS_ANDROID } from '@/env';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet } from 'react-native';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
+import { PrebuySection } from '@/screens/token-launcher/components/PrebuySection';
 
 const LABEL_QUINARY = { custom: opacity(getColorForTheme('labelQuaternary', 'dark'), 0.3) };
-
-function TotalSupplyInput() {
-  const setTotalSupply = useTokenLauncherStore(state => state.setTotalSupply);
-  const formattedTotalSupply = useTokenLauncherStore(state => state.formattedTotalSupply());
-
-  return (
-    <SingleFieldInput
-      onInputChange={text => {
-        setTotalSupply(parseInt(text.trim()) || 0);
-      }}
-      validationWorklet={text => {
-        'worklet';
-        return validateTotalSupplyWorklet(parseInt(text.trim()) || 0);
-      }}
-      inputMode="numeric"
-      title={i18n.t(i18n.l.token_launcher.titles.total_supply)}
-      subtitle={formattedTotalSupply}
-      defaultValue={DEFAULT_TOTAL_SUPPLY.toString()}
-    />
-  );
-}
 
 function SymbolInput() {
   const setSymbol = useTokenLauncherStore(state => state.setSymbol);
@@ -92,7 +71,6 @@ function RequiredInfoSection() {
       <Box gap={8}>
         <SymbolInput />
         <NameInput />
-        <TotalSupplyInput />
         <NetworkField />
       </Box>
     </Box>
@@ -158,7 +136,9 @@ export function InfoInputStep() {
         </Animated.View>
         <Animated.View style={styles.fullWidth} layout={COLLAPSABLE_FIELD_ANIMATION}>
           <SectionSeparator />
-          <TokenAllocationSection />
+          <Box gap={16} paddingVertical="20px" width="full">
+            <PrebuySection />
+          </Box>
         </Animated.View>
       </Box>
     </KeyboardAwareScrollView>

@@ -16,6 +16,7 @@ import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigatio
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { InputKeys } from '@/__swaps__/types/swap';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { IS_TEST } from '@/env';
 
 export function SwapInputValuesCaret({ inputCaretType, disabled }: { inputCaretType: InputKeys; disabled?: SharedValue<boolean> }) {
   const { isDarkMode } = useColorMode();
@@ -49,18 +50,20 @@ export function SwapInputValuesCaret({ inputCaretType, disabled }: { inputCaretT
 
   const blinkAnimation = useDerivedValue(() => {
     inputValues; // Force animation restart when input values change
-    return shouldShow.value
-      ? withRepeat(
-          withSequence(
-            withTiming(1, { duration: 0 }),
-            withTiming(1, { duration: 400, easing: Easing.bezier(0.87, 0, 0.13, 1) }),
-            withTiming(0, caretConfig),
-            withTiming(1, caretConfig)
-          ),
-          -1,
-          true
-        )
-      : withTiming(0, caretConfig);
+    return IS_TEST
+      ? 1
+      : shouldShow.value
+        ? withRepeat(
+            withSequence(
+              withTiming(1, { duration: 0 }),
+              withTiming(1, { duration: 400, easing: Easing.bezier(0.87, 0, 0.13, 1) }),
+              withTiming(0, caretConfig),
+              withTiming(1, caretConfig)
+            ),
+            -1,
+            true
+          )
+        : withTiming(0, caretConfig);
   });
 
   const isZero = useDerivedValue(() => {

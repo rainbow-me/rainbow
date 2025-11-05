@@ -113,7 +113,7 @@ const LineChartTimeLabel = ({
   );
 
   return (
-    <AnimatedText color="labelQuaternary" tabularNumbers numberOfLines={1} size="20pt" weight="bold">
+    <AnimatedText color="labelQuaternary" tabularNumbers numberOfLines={1} size="20pt" style={{ flex: 1 }} weight="bold">
       {lineChartLabel}
     </AnimatedText>
   );

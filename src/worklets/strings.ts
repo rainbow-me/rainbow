@@ -17,3 +17,22 @@ export function pluralize(word: string, count: number, pluralSuffix = 's'): stri
   'worklet';
   return count === 1 ? word : `${word}${pluralSuffix}`;
 }
+
+/**
+ * Removes all non-numeric and non-decimal characters from a string,
+ * returning the string that remains.
+ * 
+ * Does *not* strip extra decimal points.
+
+ * @param fallback - Fallback value if the string is empty. Defaults to `'0'`.
+ * 
+ * ---
+ * @example
+ * ```ts
+ * sanitizeAmount('$100.00') // '100.00'
+ * ```
+ */
+export function sanitizeAmount(amount: string, fallback = '0'): string {
+  'worklet';
+  return amount.replace(/[^0-9.]/g, '') || fallback;
+}

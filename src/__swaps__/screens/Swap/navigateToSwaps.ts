@@ -155,7 +155,7 @@ function isExtendedAssetWithColors(
   return asset !== null && 'highContrastColor' in asset;
 }
 
-function getInputAsset(
+export function getInputAsset(
   asset: ExtendedAnimatedAssetWithColors | ParsedSearchAsset | null | undefined
 ): ExtendedAnimatedAssetWithColors | null {
   if (!asset) return parseAssetAndExtend({ asset: useUserAssetsStore.getState().getHighestValueNativeAsset() });

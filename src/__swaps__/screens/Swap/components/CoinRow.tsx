@@ -38,6 +38,7 @@ function determineFavoriteAddressAndChain(address: AddressOrEth, mainnetAddress:
 }
 
 interface InputCoinRowProps {
+  height?: number;
   hideFavoriteButton?: never;
   isFavorite?: never;
   isTrending?: boolean;
@@ -56,6 +57,7 @@ type PartialAsset = Pick<
 >;
 
 interface OutputCoinRowProps extends PartialAsset {
+  height?: number;
   hideFavoriteButton?: boolean;
   isFavorite: boolean;
   onPress: () => void;
@@ -70,6 +72,7 @@ interface OutputCoinRowProps extends PartialAsset {
 type CoinRowProps = InputCoinRowProps | OutputCoinRowProps;
 
 export function CoinRow({
+  height = COIN_ROW_WITH_PADDING_HEIGHT,
   hideFavoriteButton,
   isFavorite,
   isSupportedChain,
@@ -132,7 +135,7 @@ export function CoinRow({
   if (!address || !chainId) return null;
 
   return (
-    <Box testID={testID} style={{ height: COIN_ROW_WITH_PADDING_HEIGHT, width: '100%' }}>
+    <Box testID={testID} style={{ height, width: '100%' }}>
       <Columns alignVertical="center">
         <Column>
           <ButtonPressAnimation disallowInterruption onPress={onPressHandler} scaleTo={0.95}>

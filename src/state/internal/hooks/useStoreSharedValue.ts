@@ -1,6 +1,7 @@
-import { RefObject } from 'react';
-import { DerivedValue, useSharedValue } from 'react-native-reanimated';
+import { RefObject, useCallback } from 'react';
+import { DerivedValue, runOnUI, useSharedValue } from 'react-native-reanimated';
 import { useStableValue } from '@/hooks/useStableValue';
+import { hasGetSnapshot } from '@/state/internal/utils/storeUtils';
 import { BaseRainbowStore, Selector } from '../types';
 import { ListenHandle, useListen, UseListenOptions } from './useListen';
 
@@ -90,14 +91,8 @@ export function useStoreSharedValue<S, Selected>(
   const initial = useStableValue(() => buildInitialState(store, selector, optionsOrEqualityFn));
   const sharedValue = useSharedValue<Selected>(initial.selected);
 
-  const listenHandle = useListen(
-    store,
-    selector,
-    current => {
-      sharedValue.value = current;
-    },
-    optionsOrEqualityFn
-  );
+  const listener = useCallback((current: Selected) => runOnUI(() => (sharedValue.value = current))(), [sharedValue]);
+  const listenHandle = useListen(store, selector, listener, optionsOrEqualityFn);
 
   return initial.returnListenHandle ? [sharedValue, listenHandle] : sharedValue;
 }
@@ -116,6 +111,6 @@ function buildInitialState<S, Selected>(
   const returnListenHandle = (hasOptions && optionsOrEqualityFn?.returnListenHandle) || false;
   return {
     returnListenHandle,
-    selected: selector(store.getState()),
+    selected: selector(hasGetSnapshot(store) ? store.getSnapshot() : store.getState()),
   };
 }

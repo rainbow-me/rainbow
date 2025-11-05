@@ -9,7 +9,7 @@ import { REFERRER, gasUnits, ReferrerType } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { NewTransaction, TransactionDirection, TransactionStatus, TxHash } from '@/entities';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { RainbowError, logger } from '@/logger';
+import { RainbowError, ensureError, logger } from '@/logger';
 
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { ActionProps, RapActionResult, RapSwapActionParameters } from '../references';
@@ -24,7 +24,7 @@ import {
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { AddysNetworkDetails, ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
+import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
@@ -213,8 +213,7 @@ export const crosschainSwap = async ({
 
   let swap;
   try {
-    swap = await performanceTracking.getState().executeFn({
-      fn: executeCrosschainSwap,
+    swap = await executeFn(executeCrosschainSwap, {
       screen: Screens.SWAPS,
       operation: TimeToSignOperation.BroadcastTransaction,
       metadata: {
@@ -222,8 +221,9 @@ export const crosschainSwap = async ({
       },
     })(swapParams);
   } catch (e) {
-    logger.error(new RainbowError('[raps/crosschainSwap]: error executeCrosschainSwap'), {
-      message: (e as Error)?.message,
+    const error = ensureError(e);
+    logger.error(new RainbowError('[raps/crosschainSwap]: error executeCrosschainSwap', error), {
+      message: error.message,
     });
     throw e;
   }

@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useMemo } from 'react';
+import React, { RefObject, useMemo } from 'react';
 import { Insets, LayoutChangeEvent, StyleProp, ViewProps, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector, GestureType, LongPressGesture, TapGesture } from 'react-native-gesture-handler';
 import Animated, { AnimatedStyle, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -7,7 +7,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { LONG_PRESS_DURATION_IN_MS } from '@/components/buttons/hold-to-authorize/constants';
 
 export type GestureHandlerButtonProps = {
-  blocksExternalGesture?: MutableRefObject<GestureType>;
+  blocksExternalGesture?: RefObject<GestureType>;
   children: React.ReactNode;
   disableHaptics?: boolean;
   disableScale?: boolean;
@@ -16,7 +16,7 @@ export type GestureHandlerButtonProps = {
   hapticType?: HapticType;
   hitSlop?: number | Insets;
   longPressDuration?: number;
-  longPressRef?: MutableRefObject<LongPressGesture>;
+  longPressRef?: RefObject<LongPressGesture>;
   onLayout?: (e: LayoutChangeEvent) => void;
   onLongPressEndWorklet?: (success?: boolean) => void;
   onLongPressJS?: () => void;
@@ -25,11 +25,11 @@ export type GestureHandlerButtonProps = {
   onPressStartWorklet?: () => void;
   onPressWorklet?: () => void;
   pointerEvents?: ViewProps['pointerEvents'];
-  requireExternalGestureToFail?: MutableRefObject<GestureType>;
+  requireExternalGestureToFail?: RefObject<GestureType>;
   scaleTo?: number;
-  simultaneousWithExternalGesture?: MutableRefObject<GestureType>;
+  simultaneousWithExternalGesture?: RefObject<GestureType>;
   style?: StyleProp<ViewStyle> | AnimatedStyle;
-  tapRef?: MutableRefObject<TapGesture>;
+  tapRef?: RefObject<TapGesture>;
   testID?: string;
 };
 
@@ -101,6 +101,9 @@ export function GestureHandlerButton({
         if (onPressJS) runOnJS(onPressJS)();
       })
       .onFinalize(() => {
+        if (!disableScale) isPressed.value = false;
+      })
+      .onTouchesCancelled(() => {
         if (!disableScale) isPressed.value = false;
       });
 
