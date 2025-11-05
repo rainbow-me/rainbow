@@ -40,6 +40,7 @@ function PerpsTradeDetailsSheetContent({ trade }: { trade: HlTrade }) {
 
   return (
     <Box paddingBottom={'20px'} alignItems="center">
+      <TradeDetailsGraphic trade={trade} />
       <Box position="absolute" top={{ custom: 32 }} left={{ custom: 32 }}>
         {isDarkMode && (
           <Box
@@ -57,7 +58,6 @@ function PerpsTradeDetailsSheetContent({ trade }: { trade: HlTrade }) {
         )}
         {!isDarkMode && <Image source={rainbowOgImage} style={{ width: 40, height: 40, resizeMode: 'contain' }} />}
       </Box>
-      <TradeDetailsGraphic trade={trade} />
       <Box width="full" paddingHorizontal="24px" paddingTop={'8px'}>
         <TradeDetailsSection trade={trade} />
       </Box>
