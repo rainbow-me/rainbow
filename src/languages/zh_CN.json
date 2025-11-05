@@ -1598,8 +1598,14 @@
         "more": "更多",
         "error": "错误",
         "cancel": "取消",
+        "close": "关闭",
+        "add": "添加",
         "liq_price": "清算价",
         "liq": "清算"
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "Perps",
