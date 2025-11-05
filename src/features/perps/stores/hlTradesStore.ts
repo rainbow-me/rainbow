@@ -74,7 +74,6 @@ async function fetchHlTrades({ address }: HlTradesParams, abortController: Abort
   };
 }
 
-// function convertFillAndOrderToTrade({ fill, order }: { fill: hl.Fill; order: hl.FrontendOrder }): HlTrade {
 function convertFillAndOrderToTrade({ fill, order }: { fill: UserFill; order: HistoricalOrder['order'] }): HlTrade {
   const isTakeProfit = order.isPositionTpsl && order.orderType.includes('Take Profit');
   const isStopLoss = order.isPositionTpsl && order.orderType.includes('Stop');
