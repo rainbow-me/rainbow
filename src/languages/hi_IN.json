@@ -1598,8 +1598,14 @@
         "more": "अधिक",
         "error": "त्रुटि",
         "cancel": "रद्द करें",
+        "close": "बंद करें",
+        "add": "जोड़ें",
         "liq_price": "लिक्विडेशन मूल्य",
         "liq": "लिक्विड"
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "परप्स",
