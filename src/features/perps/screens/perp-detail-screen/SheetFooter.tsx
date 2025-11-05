@@ -9,7 +9,7 @@ import Navigation from '@/navigation/Navigation';
 import { navigateToNewPositionScreen } from '@/features/perps/utils';
 import { PerpMarket } from '@/features/perps/types';
 import { useNavigation } from '@react-navigation/native';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, View } from 'react-native';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import * as i18n from '@/languages';
 
@@ -73,31 +73,33 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
       <Box paddingHorizontal={'24px'} backgroundColor={backgroundColor} width="full" paddingBottom={{ custom: safeAreaInsets.bottom + 12 }}>
         {hasPosition && (
           <Box flexDirection="row" gap={12}>
-            <HyperliquidButton
-              buttonProps={{ style: { flex: 1 } }}
-              onPress={() => {
-                Navigation.handleAction(Routes.CLOSE_POSITION_BOTTOM_SHEET, {
-                  symbol: market.symbol,
-                });
-              }}
-            >
-              <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
-                {i18n.t(i18n.l.perps.common.close)}
-              </Text>
-            </HyperliquidButton>
-            <HyperliquidButton
-              buttonProps={{ style: { flex: 1 } }}
-              onPress={() => {
-                Navigation.handleAction(Routes.PERPS_ADD_TO_POSITION_SHEET, {
-                  market,
-                  position,
-                });
-              }}
-            >
-              <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
-                {i18n.t(i18n.l.perps.common.add)}
-              </Text>
-            </HyperliquidButton>
+            <View style={{ flex: 1 }}>
+              <HyperliquidButton
+                onPress={() => {
+                  Navigation.handleAction(Routes.CLOSE_POSITION_BOTTOM_SHEET, {
+                    symbol: market.symbol,
+                  });
+                }}
+              >
+                <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
+                  {i18n.t(i18n.l.perps.common.close)}
+                </Text>
+              </HyperliquidButton>
+            </View>
+            <View style={{ flex: 1 }}>
+              <HyperliquidButton
+                onPress={() => {
+                  Navigation.handleAction(Routes.PERPS_ADD_TO_POSITION_SHEET, {
+                    market,
+                    position,
+                  });
+                }}
+              >
+                <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
+                  {i18n.t(i18n.l.perps.common.add)}
+                </Text>
+              </HyperliquidButton>
+            </View>
           </Box>
         )}
         {!hasPosition && (
