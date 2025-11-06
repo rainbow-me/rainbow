@@ -3,7 +3,6 @@ const exclusionList = require('metro-config/private/defaults/exclusionList').def
 const { mergeConfig, getDefaultConfig } = require('@react-native/metro-config');
 const { withSentryConfig } = require('@sentry/react-native/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
-const path = require('path');
 
 // Deny list is a function that takes an array of regexes and combines
 // them with the default exclusion list to return a single regex.
@@ -47,9 +46,8 @@ const rainbowConfig = {
       }
 
       try {
-        const defaultConfig = getDefaultConfig(__dirname);
         const resolution = require.resolve(moduleName, {
-          paths: [path.dirname(context.originModulePath), ...defaultConfig.resolver.nodeModulesPaths],
+          paths: [path.dirname(context.originModulePath), ...config.resolver.nodeModulesPaths],
         });
 
         if (path.isAbsolute(resolution)) {
@@ -63,10 +61,9 @@ const rainbowConfig = {
       }
 
       try {
-        const defaultConfig = getDefaultConfig(__dirname);
-        return defaultConfig.resolver.resolveRequest(context, moduleName, platform);
+        return defaultModuleResolver(context, moduleName, platform);
       } catch (error) {
-        console.warn('\n3️⃣ default resolver cannot resolve: ', moduleName);
+        console.warn('\n3️⃣ defaultModuleResolver cannot resolve: ', moduleName);
       }
 
       try {
@@ -79,10 +76,10 @@ const rainbowConfig = {
       }
 
       try {
-        const defaultConfig = getDefaultConfig(__dirname);
-        return defaultConfig.resolver.resolveRequest(context, moduleName, platform);
+        const resolution = getDefaultConfig(require.resolve(moduleName)).resolver?.resolveRequest;
+        return resolution(context, moduleName, platform);
       } catch (error) {
-        console.warn('\n5️⃣ default resolver cannot resolve: ', moduleName);
+        console.warn('\n5️⃣ getDefaultConfig cannot resolve: ', moduleName);
       }
 
       throw new Error(`Unable to resolve module: ${moduleName}`);
@@ -92,7 +89,6 @@ const rainbowConfig = {
 };
 
 const config = mergeConfig(getDefaultConfig(__dirname), rainbowConfig);
-
 const sentryConfig = withSentryConfig(config, {
   annotateReactComponents: true,
 });

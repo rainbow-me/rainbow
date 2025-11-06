@@ -8,14 +8,6 @@ pluginManagement {
     "../android/expo-gradle-plugin"
   ).absolutePath
   includeBuild(expoPluginsPath)
-
-  resolutionStrategy {
-    eachPlugin {
-      if (requested.id.id.startsWith("org.jetbrains.kotlin")) {
-        useVersion("2.1.20")
-      }
-    }
-  }
 }
 plugins { id("com.facebook.react.settings")
 id("expo-autolinking-settings")

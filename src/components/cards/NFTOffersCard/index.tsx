@@ -212,14 +212,13 @@ export const NFTOffersCard = () => {
                       height: 36,
                     }}
                   >
-                    <LoadingSpinner color={isDarkMode ? 'white' : 'black'} size={20} />
-                    {/* {isFetching ? (
-
+                    {isFetching ? (
+                      <LoadingSpinner color={isDarkMode ? 'white' : 'black'} size={20} />
                     ) : (
                       <Text align="center" color="label" size="17pt" weight="bold">
                         􀅈
                       </Text>
-                    )} */}
+                    )}
                   </Box>
                 </Column>
               </Columns>

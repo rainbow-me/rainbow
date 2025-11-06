@@ -1,5 +1,5 @@
 diff --git a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuPackage.kt b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuPackage.kt
-index 81b77bf..8d29bad 100644
+index 81b77bf..858a0e6 100644
 --- a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuPackage.kt
 +++ b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuPackage.kt
 @@ -4,17 +4,31 @@ import java.util.Arrays
@@ -38,7 +38,6 @@ index 81b77bf..8d29bad 100644
 +    }
 +  }
 +}
-\ No newline at end of file
 diff --git a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt
 index c45f5cc..637bfcf 100644
 --- a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt

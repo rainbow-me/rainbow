@@ -33,13 +33,6 @@ export const ProfileAvatarRow = React.memo(function ProfileAvatarRow({ size = Pr
   // Context Menu
 
   const ContextMenuButton = onAvatarPressProfile ? React.Fragment : ContextMenu;
-  const contextMenuProps: Partial<React.ComponentProps<typeof ContextMenu>> | null = onAvatarPressProfile
-    ? null
-    : {
-        menuConfig: avatarContextMenuConfig,
-        onPressMenuItem: handlePressMenuItem,
-        testID: 'avatar-button',
-      };
 
   const handlePressMenuItem = useLatestCallback((e: any) => {
     const index = avatarContextMenuConfig?.menuItems?.findIndex(item => item && item.actionKey === e.nativeEvent.actionKey);
@@ -125,8 +118,8 @@ export const ProfileAvatarRow = React.memo(function ProfileAvatarRow({ size = Pr
     <AccentColorProvider color={accentColor}>
       <RNAnimated.View style={[animatedStyle, { zIndex: 500 }]}>
         <Animated.View style={expandStyle}>
-          <ContextMenuButton {...(contextMenuProps ?? {})}>
-            <ButtonPressAnimation onPress={onAvatarPressProfile} scale={0.8} overflowMargin={20} testID="avatar-button">
+          <ContextMenuButton testID="avatar-button" menuConfig={avatarContextMenuConfig} onPressMenuItem={handlePressMenuItem}>
+            <ButtonPressAnimation onPress={onAvatarPressProfile} scale={0.8} overflowMargin={20}>
               <Box
                 alignItems="center"
                 background="accent"

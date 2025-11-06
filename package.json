@@ -44,7 +44,7 @@
     "lint:js:ci": "eslint --quiet",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "postinstall": "./scripts/postinstall.sh",
-    "start": "react-native start",
+    "start": "react-native start --client-logs",
     "start:clean": "yarn clean:packager && yarn start --reset-cache",
     "test": "jest --detectOpenHandles --forceExit",
     "ts-coverage": "typescript-coverage-report",
