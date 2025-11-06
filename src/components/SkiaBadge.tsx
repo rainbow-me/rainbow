@@ -108,7 +108,7 @@ export const SkiaBadge = memo(function SkiaBadge({
         <Group>
           {/* Drop Shadows */}
           {dropShadows?.map((shadow, index) => (
-            <RoundedRect key={`drop-${index}`} rect={badgeRect}>
+            <RoundedRect key={`drop-${index}`} rect={badgeRect} antiAlias dither>
               <Shadow dx={shadow.dx} dy={shadow.dy} blur={shadow.blur} color={shadow.color} shadowOnly />
             </RoundedRect>
           ))}

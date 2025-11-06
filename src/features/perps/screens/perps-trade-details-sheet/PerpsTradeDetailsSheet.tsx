@@ -18,6 +18,7 @@ import rainbowPlainImage from '@/assets/rainbows/plain.png';
 import rainbowOgImage from '@/assets/appIconOg.png';
 import { format } from 'date-fns';
 import { ButtonPressAnimation } from '@/components/animations';
+import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 
 export const PerpsTradeDetailsSheet = memo(function PerpsTradeDetailsSheet() {
   const {
@@ -39,6 +40,7 @@ function PerpsTradeDetailsSheetContent({ trade }: { trade: HlTrade }) {
 
   return (
     <Box paddingBottom={'20px'} alignItems="center">
+      <TradeDetailsGraphic trade={trade} />
       <Box position="absolute" top={{ custom: 32 }} left={{ custom: 32 }}>
         {isDarkMode && (
           <Box
@@ -56,7 +58,6 @@ function PerpsTradeDetailsSheetContent({ trade }: { trade: HlTrade }) {
         )}
         {!isDarkMode && <Image source={rainbowOgImage} style={{ width: 40, height: 40, resizeMode: 'contain' }} />}
       </Box>
-      <TradeDetailsGraphic trade={trade} />
       <Box width="full" paddingHorizontal="24px" paddingTop={'8px'}>
         <TradeDetailsSection trade={trade} />
       </Box>
@@ -77,7 +78,7 @@ const TradeDetailsSection = memo(function TradeDetailsSection({ trade }: { trade
           <Box flexDirection="row" alignItems="center" gap={6}>
             <HyperliquidTokenIcon symbol={trade.symbol} size={18} />
             <Text size="17pt" weight="semibold" color="label">
-              {trade.symbol}
+              {extractBaseSymbol(trade.symbol)}
             </Text>
           </Box>
         }

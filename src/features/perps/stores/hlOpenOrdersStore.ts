@@ -8,6 +8,7 @@ import { OrderSide } from '@/features/perps/types';
 import { FrontendOpenOrdersResponse } from '@nktkas/hyperliquid/api/info';
 import { convertSide } from '@/features/perps/utils';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+import { hyperliquidDexActions } from '@/features/perps/stores/hyperliquidDexStore';
 
 type FrontendOpenOrder = FrontendOpenOrdersResponse[number];
 
@@ -46,8 +47,15 @@ async function fetchHlOpenOrders(
 ): Promise<FetchHlOpenOrdersResponse> {
   if (!address) throw new RainbowError('[HlOpenOrdersStore] Address is required');
 
-  const frontendOrders = await infoClient.frontendOpenOrders({ user: address }, abortController?.signal);
-  const orders: HlOpenOrder[] = frontendOrders.map(order => ({
+  const dexIds = hyperliquidDexActions.getDexIds();
+
+  const frontendOrders = await Promise.all(
+    dexIds.map(dex => {
+      return infoClient.frontendOpenOrders({ user: address, dex }, abortController?.signal);
+    })
+  );
+
+  const orders: HlOpenOrder[] = frontendOrders.flat().map(order => ({
     id: order.oid,
     symbol: order.coin,
     side: convertSide(order.side),
@@ -86,7 +94,11 @@ export const useHlOpenOrdersStore = createQueryStore<FetchHlOpenOrdersResponse, 
   },
   () => ({
     ordersBySymbol: {},
-  })
+  }),
+  {
+    storageKey: 'hlOpenOrdersStore',
+    version: 1,
+  }
 );
 
 export const hlOpenOrdersStoreActions = createStoreActions(useHlOpenOrdersStore);
