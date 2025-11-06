@@ -58,7 +58,7 @@ const getColorFromString = (color: string | undefined | null) => {
 type RemoteCardProps = {
   id: string;
   gutterSize: number;
-  carouselRef: React.RefObject<typeof FlashList<string> | null> | null;
+  carouselRef: React.RefObject<FlashList<string> | null> | null;
 };
 
 export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carouselRef }) => {

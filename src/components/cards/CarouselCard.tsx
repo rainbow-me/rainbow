@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import { Bleed, Box, Column, Columns, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
 import React, { useEffect, useRef, useState } from 'react';
-import { FlashList, FlashListRef, ListRenderItem } from '@shopify/flash-list';
+import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useDimensions } from '@/hooks';
 import ActivityIndicator from '@/components/ActivityIndicator';
@@ -24,7 +24,7 @@ function EmptyComponent({ emptyMessage }: { emptyMessage?: string }) {
 }
 
 export type CarouselItem<T> = {
-  carouselRef?: React.Ref<FlashListRef<T>>;
+  carouselRef?: React.Ref<FlashList<T>>;
   renderItem: ListRenderItem<T>;
   keyExtractor: (item: T, index: number) => string;
   placeholder: React.ReactNode;

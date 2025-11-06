@@ -31,7 +31,7 @@ import { useScreenshotAndScrollTriggers } from './hooks/useScreenshotAndScrollTr
 import { schedulePruneScreenshots } from './screenshots';
 import { Search } from './search/Search';
 import { SearchContextProvider } from './search/SearchContext';
-import { AnimatedTabUrls, TabId, TabViewGestureStates } from './types';
+import { AnimatedTabUrls, TabViewGestureStates } from './types';
 
 export const DappBrowser = () => {
   const { isDarkMode } = useColorMode();
@@ -156,17 +156,6 @@ const TabViewContent = () => {
   const setTabIds = useBrowserStore(state => state.setTabIds);
   const setTitle = useBrowserStore(state => state.setTitle);
 
-  const renderedTabIds = React.useMemo(() => {
-    const seenTabIds = new Set<TabId>();
-    return tabIds.filter(tabId => {
-      if (!tabId || seenTabIds.has(tabId)) {
-        return false;
-      }
-      seenTabIds.add(tabId);
-      return true;
-    });
-  }, [tabIds]);
-
   const shouldPauseSync = useDerivedValue(
     () => currentlyBeingClosedTabIds.value.length > 0 || tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING
   );
@@ -181,7 +170,7 @@ const TabViewContent = () => {
 
   return (
     <>
-      {renderedTabIds.map(tabId => (
+      {tabIds.map(tabId => (
         <BrowserTab addRecent={addRecent} key={tabId} setLogo={setLogo} setTitle={setTitle} tabId={tabId} />
       ))}
     </>
