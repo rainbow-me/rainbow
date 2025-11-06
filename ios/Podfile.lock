@@ -13,7 +13,7 @@ PODS:
   - EXImageLoader (5.1.0):
     - ExpoModulesCore
     - React-Core
-  - Expo (54.0.10):
+  - Expo (54.0.22):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -58,7 +58,7 @@ PODS:
     - ExpoModulesCore
   - ExpoKeepAwake (15.0.7):
     - ExpoModulesCore
-  - ExpoModulesCore (3.0.18):
+  - ExpoModulesCore (3.0.24):
     - boost
     - DoubleConversion
     - fast_float
@@ -2047,7 +2047,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-ble-plx (3.2.1):
+  - react-native-ble-plx (3.5.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3948,14 +3948,14 @@ SPEC CHECKSUMS:
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EXConstants: fd688cef4e401dcf798a021cfb5d87c890c30ba3
   EXImageLoader: 4d3d3284141f1a45006cc4d0844061c182daf7ee
-  Expo: 0147c8e0acb8b9bee9ffad6710d7e9546477a94f
+  Expo: 851b74c1018fb382d1d5d0a9067623bab0b445c1
   ExpoAsset: 9ba6fbd677fb8e241a3899ac00fa735bc911eadf
   ExpoFileSystem: b79eadbda7b7f285f378f95f959cc9313a1c9c61
   ExpoFont: cf9d90ec1d3b97c4f513211905724c8171f82961
   ExpoImageManipulator: 1e06e7a1e56f454e75d01b7032c1e44963bfc865
   ExpoImagePicker: 22173f80af3010361068865d8f6d03e8d1b7f976
   ExpoKeepAwake: 1a2e820692e933c94a565ec3fbbe38ac31658ffe
-  ExpoModulesCore: 5a74c9e92b7486f58dbbe232c2a47ca9622b8dd6
+  ExpoModulesCore: c1ecc2e423802b7d9ca2e411400c2b268e55c731
   ExpoStoreReview: f70e5929ba4a594078dd3285d5151427167f48fa
   ExpoWebBrowser: 06fb5f767f53ad53944b068cdd207984cb998712
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
@@ -4027,7 +4027,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 6c4ee39a36958c39c97b074d28f360246a335e84
   react-native-aes-crypto: 598b531c1dcdec9830e0475459c53e13e01fcbf0
   react-native-animateable-text: 14d1bee8492d81b3cc5ab3b7789aee64c04b0757
-  react-native-ble-plx: f02b5beb6dfd6c7e39ab3b4bbb84a80b138f0914
+  react-native-ble-plx: fe08db41590cb4b015612046972acc44e4551c66
   react-native-blur-view: 86fcc6a9caa695842978afb15553b3b673137e5b
   react-native-branch: 46dc8cb067af50455db675370c3cd63425f85bea
   react-native-cameraroll: 7a16f09371447b3ef8485b7c4367d579b582b405
