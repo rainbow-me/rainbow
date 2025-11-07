@@ -183,6 +183,13 @@ const authenticationPrompt = { title: i18n.t(i18n.l.wallet.authenticate.please) 
 
 export const createdWithBiometricError = 'createdWithBiometricError';
 
+export class WalletAlreadyImportedError extends Error {
+  constructor() {
+    super('Wallet already imported');
+    this.name = 'WalletAlreadyImportedError';
+  }
+}
+
 export function ensureEthereumWallet(wallet: EthereumWallet): asserts wallet is Wallet {
   if ('getPrivateKey' in wallet) {
     throw new Error(`Not expected: LibWallet not Wallet`);
@@ -260,8 +267,13 @@ export const walletInit = async (props: InitializeWalletParams): Promise<WalletI
       silent,
       userPin,
     });
-    ensureEthereumWallet(wallet!);
-    walletAddress = wallet?.address;
+    if (!wallet) {
+      // Wallet creation failed (e.g., duplicate wallet)
+      // Alert was already shown in createWallet, just return
+      return { isNew, walletAddress: undefined };
+    }
+    ensureEthereumWallet(wallet);
+    walletAddress = wallet.address;
     return { isNew, walletAddress };
   }
 
