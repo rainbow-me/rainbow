@@ -1,7 +1,5 @@
 import React, { useCallback } from 'react';
-import { SlackSheet } from '@/components/sheet';
 import { BackgroundProvider, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
 import { RequestVendorLogoIcon } from '@/components/coin-icon';
@@ -20,6 +18,7 @@ import { safeAreaInsetValues } from '@/utils';
 import { Navigation } from '@/navigation';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { NativeCurrencyKeys } from '@/entities';
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
@@ -96,13 +95,7 @@ export const PositionSheet: React.FC = () => {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SlackSheet
-          backgroundColor={backgroundColor}
-          height={IS_IOS ? '100%' : undefined}
-          additionalTopPadding={IS_IOS ? undefined : true}
-          contentHeight={IS_IOS ? undefined : getPositionSheetHeight({ position })}
-          scrollEnabled
-        >
+        <SimpleSheet backgroundColor={backgroundColor} useAdditionalTopPadding scrollEnabled>
           <Box padding="20px" width="full" paddingBottom={{ custom: 50 }}>
             <Stack space="24px" separator={<Separator color="separatorTertiary" thickness={1} />}>
               <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
@@ -264,7 +257,7 @@ export const PositionSheet: React.FC = () => {
               </Stack>
             </Stack>
           </Box>
-        </SlackSheet>
+        </SimpleSheet>
       )}
     </BackgroundProvider>
   );
