@@ -914,7 +914,7 @@ export type EventProperties = {
       image_url: string | null | undefined;
     };
     eventSentAfterMs: number;
-    available_data: { description: boolean; image_url: boolean; floorPrice: boolean };
+    available_data: { description: boolean; image_url: boolean };
   };
 
   [event.tokenList]: {
