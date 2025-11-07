@@ -1,8 +1,9 @@
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient, QueryCache, MutationCache } from '@tanstack/react-query';
 import { PersistedClient, Persister, PersistQueryClientOptions } from '@tanstack/react-query-persist-client';
 import { debounce } from 'lodash';
 import { REACT_QUERY_STORAGE_ID, queryStorage } from '@/storage/legacy';
 import { time } from '@/utils';
+import { ensureError, logger, RainbowError } from '@/logger';
 
 class MMKVPersister implements Persister {
   private static readonly throttleMs = time.seconds(8);
@@ -29,6 +30,22 @@ class MMKVPersister implements Persister {
 }
 
 export const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (e, query) => {
+      /**
+       * The error that bubbles up from failed arc requests is not useful: (Error: There was an error with the request.)
+       * This only works for arc request errors
+       */
+      const queryError = query.state.error as { responseBody?: { errors?: { message: string }[] } };
+      if (queryError?.responseBody?.errors?.length) {
+        const errorMessage = queryError.responseBody.errors[0].message;
+        const error = new RainbowError(`[React Query Error]: ${errorMessage}`, e);
+        logger.error(error, {
+          queryKey: query.queryKey,
+        });
+      }
+    },
+  }),
   defaultOptions: {
     queries: {
       cacheTime: time.minutes(5),
