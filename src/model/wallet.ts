@@ -261,7 +261,7 @@ export const walletInit = async (props: InitializeWalletParams): Promise<WalletI
       userPin,
     });
     if (!wallet) {
-      // Wallet creation failed (e.g., duplicate wallet)
+      // Wallet creation failed example: duplicate wallet
       // Alert was already shown in createWallet, just return
       return { isNew, walletAddress: undefined };
     }
