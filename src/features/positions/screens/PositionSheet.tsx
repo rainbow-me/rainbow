@@ -19,6 +19,9 @@ import { Navigation } from '@/navigation';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { NativeCurrencyKeys } from '@/entities';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { IS_IOS } from '@/env';
+import { useDimensions } from '@/hooks';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
@@ -51,6 +54,8 @@ export const PositionSheet: React.FC = () => {
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
   const nativeCurrency = userAssetsStoreManager.getState().currency;
+  const { height } = useDimensions();
+  const insets = useSafeAreaInsets();
 
   const positionColor =
     position.dapp.colors.primary || position.dapp.colors.fallback || (isDarkMode ? globalColors.white100 : globalColors.white10);
@@ -92,10 +97,12 @@ export const PositionSheet: React.FC = () => {
     [nativeCurrency, position.protocol, position.totals.total.amount, position.type]
   );
 
+  const customHeight = IS_IOS ? undefined : Math.min(getPositionSheetHeight({ position }), height - insets.top);
+
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet backgroundColor={backgroundColor} useAdditionalTopPadding scrollEnabled>
+        <SimpleSheet backgroundColor={backgroundColor} useAdditionalTopPadding customHeight={customHeight}>
           <Box padding="20px" width="full" paddingBottom={{ custom: 50 }}>
             <Stack space="24px" separator={<Separator color="separatorTertiary" thickness={1} />}>
               <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
