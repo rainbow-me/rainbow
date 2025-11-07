@@ -14,7 +14,7 @@ import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
-import { walletInit, WalletAlreadyImportedError } from '@/model/wallet';
+import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { sanitizeSeedPhrase } from '@/utils';
@@ -381,17 +381,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           }, 100);
         }
       } catch (error) {
-        // If it's a duplicate wallet error, the alert was already shown
-        // Just reset without logging an error
-        if (
-          error instanceof WalletAlreadyImportedError ||
-          (error instanceof Error && (error.name === 'WalletAlreadyImportedError' || error.message === 'Wallet already imported'))
-        ) {
-          logger.debug('[useImportingWallet]: Wallet already imported');
-          resetOnFailure();
-          return;
-        }
-
         logger.error(new RainbowError(`[useImportingWallet]: Error importing wallet: ${error}`));
         resetOnFailure();
 

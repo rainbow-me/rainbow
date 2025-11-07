@@ -10,7 +10,7 @@ import * as Sentry from '@sentry/react-native';
 import { isNil } from 'lodash';
 import { Address } from 'viem';
 import runMigrations from '../../model/migrations';
-import { createWallet, InitializeWalletParams, walletInit, WalletAlreadyImportedError } from '../../model/wallet';
+import { createWallet, InitializeWalletParams, walletInit } from '../../model/wallet';
 import { settingsLoadNetwork } from '../../redux/settings';
 import { loadWallets, setAccountAddress, setWalletReady } from '@/state/wallets/walletsStore';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
@@ -168,29 +168,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
   } catch (e) {
     const error = ensureError(e);
     PerformanceTracking.clearMeasure(event.performanceInitializeWallet);
-
-    // If the error is a duplicate wallet, don't show the generic error alert
-    // since the specific "already imported" alert was already shown
-    if (
-      error instanceof WalletAlreadyImportedError ||
-      error.name === 'WalletAlreadyImportedError' ||
-      error.message === 'Wallet already imported'
-    ) {
-      logger.debug('[initializeWallet]: Wallet already imported');
-      if (!switching) {
-        await runKeychainIntegrityChecks();
-      }
-      try {
-        hideSplashScreen();
-      } catch (err) {
-        logger.error(new RainbowError('[initializeWallet]: Error while hiding splash screen'), {
-          error: err,
-        });
-      }
-      setWalletReady();
-      return null;
-    }
-
     logger.error(new RainbowError('[initializeWallet]: Error while initializing wallet', error), {
       walletStatus,
     });

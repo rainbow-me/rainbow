@@ -183,13 +183,6 @@ const authenticationPrompt = { title: i18n.t(i18n.l.wallet.authenticate.please) 
 
 export const createdWithBiometricError = 'createdWithBiometricError';
 
-export class WalletAlreadyImportedError extends Error {
-  constructor() {
-    super('Wallet already imported');
-    this.name = 'WalletAlreadyImportedError';
-  }
-}
-
 export function ensureEthereumWallet(wallet: EthereumWallet): asserts wallet is Wallet {
   if ('getPrivateKey' in wallet) {
     throw new Error(`Not expected: LibWallet not Wallet`);
