@@ -74,6 +74,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
+      - name: Setup sandbox
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
+        run: |
+          git clone git@github.com:rainbow-me/react-native-sandbox.git
+          cd react-native-sandbox
+          git checkout @janic/rn-0.81
+
       - name: Install dependencies
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
