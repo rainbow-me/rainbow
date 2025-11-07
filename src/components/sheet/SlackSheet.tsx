@@ -229,7 +229,6 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
             limitScrollViewContent={limitScrollViewContent}
             onContentSizeChange={onContentSizeChange}
             ref={sheet}
-            nestedScrollEnabled
             removeClippedSubviews={removeClippedSubviews}
             removeTopPadding={removeTopPadding}
             scrollEnabled={scrollEnabled}
