@@ -264,6 +264,7 @@ export const PositionSheet: React.FC = () => {
               </Stack>
             </Stack>
           </Box>
+          <Box height={insets.bottom} />
         </SimpleSheet>
       )}
     </BackgroundProvider>
