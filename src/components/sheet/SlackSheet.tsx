@@ -199,7 +199,6 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
     []
   );
 
-  console.log('isInsideBottomSheet', isInsideBottomSheet);
   return (
     <Fragment>
       {IS_ANDROID ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} /> : null}
