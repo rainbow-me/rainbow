@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { Canvas, Group, Rect, RoundedRect, Shadow, SkParagraph, rect, rrect } from '@shopify/react-native-skia';
-import { memo, useCallback } from 'react';
-import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { memo, useCallback, useMemo } from 'react';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { SkiaText, useColorMode } from '@/design-system';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { TextWeight } from '@/design-system/components/Text/Text';
@@ -30,6 +30,8 @@ type SkiaBadgeProps = {
   lineHeight?: number;
 };
 
+const ZERO_RECT = rrect(rect(0, 0, 0, 0), 0, 0);
+
 export const SkiaBadge = memo(function SkiaBadge({
   text,
   height = 27,
@@ -46,7 +48,17 @@ export const SkiaBadge = memo(function SkiaBadge({
   const { colorMode } = useColorMode();
   const measuredTextWidth = useSharedValue(0);
   const measuredTextHeight = useSharedValue(0);
+  const badgeWidth = useSharedValue(0);
   const isReady = useSharedValue(false);
+  const textX = useSharedValue(0);
+  const textY = useSharedValue(0);
+  const badgeRect = useSharedValue(ZERO_RECT);
+  const innerStrokeRect = useSharedValue(ZERO_RECT);
+
+  // Calculate maximum shadow extent for canvas overflow
+  const maxShadowExtent = useMemo(() => {
+    return Math.ceil(Math.max(...(dropShadows?.map(s => s.blur * 2 + Math.max(Math.abs(s.dx), Math.abs(s.dy))) ?? []), 0));
+  }, [dropShadows]);
 
   const onTextLayout = useCallback(
     (paragraph: SkParagraph) => {
@@ -56,48 +68,54 @@ export const SkiaBadge = memo(function SkiaBadge({
         const { height: textHeight, width: textWidth } = metrics[0];
         measuredTextWidth.value = textWidth;
         measuredTextHeight.value = textHeight;
+        const rectWidth = measuredTextWidth.value + horizontalPadding * 2;
+        badgeWidth.value = rectWidth;
+        textX.value = maxShadowExtent + (rectWidth - textWidth) / 2;
+        textY.value = maxShadowExtent + (height - textHeight) / 2;
+        badgeRect.value = rrect(rect(maxShadowExtent, maxShadowExtent, rectWidth, height), height / 2, height / 2);
+        innerStrokeRect.value = rrect(
+          rect(maxShadowExtent + strokeWidth, maxShadowExtent + strokeWidth, rectWidth - strokeWidth * 2, height - strokeWidth * 2),
+          (height - strokeWidth * 2) / 2,
+          (height - strokeWidth * 2) / 2
+        );
         isReady.value = true;
       }
     },
-    [measuredTextWidth, measuredTextHeight, isReady]
+    [
+      measuredTextWidth,
+      measuredTextHeight,
+      badgeWidth,
+      horizontalPadding,
+      textX,
+      maxShadowExtent,
+      textY,
+      height,
+      badgeRect,
+      innerStrokeRect,
+      strokeWidth,
+      isReady,
+    ]
   );
 
-  // Calculate maximum shadow extent for canvas overflow
-  const maxShadowExtent = Math.ceil(Math.max(...(dropShadows?.map(s => s.blur * 2 + Math.max(Math.abs(s.dx), Math.abs(s.dy))) ?? []), 0));
-
-  const badgeWidth = useDerivedValue(() => {
-    return measuredTextWidth.value + horizontalPadding * 2;
-  }, [measuredTextWidth, horizontalPadding]);
-
-  const textX = useDerivedValue(() => {
-    return maxShadowExtent + (badgeWidth.value - measuredTextWidth.value) / 2;
-  }, [measuredTextWidth, badgeWidth, maxShadowExtent]);
-
-  const textY = useDerivedValue(() => {
-    return maxShadowExtent + (height - measuredTextHeight.value) / 2;
-  }, [measuredTextHeight, height, maxShadowExtent]);
-
-  const badgeRect = useDerivedValue(() => {
-    return rrect(rect(maxShadowExtent, maxShadowExtent, badgeWidth.value, height), height / 2, height / 2);
-  }, [badgeWidth, height, maxShadowExtent]);
-
-  const innerStrokeRect = useDerivedValue(() => {
-    return rrect(
-      rect(maxShadowExtent + strokeWidth, maxShadowExtent + strokeWidth, badgeWidth.value - strokeWidth * 2, height - strokeWidth * 2),
-      (height - strokeWidth * 2) / 2,
-      (height - strokeWidth * 2) / 2
-    );
-  }, [badgeWidth, height, strokeWidth, maxShadowExtent]);
-
   const containerStyle = useAnimatedStyle(() => {
+    const paddedWidth = badgeWidth.value + maxShadowExtent * 2;
+    const paddedHeight = height + maxShadowExtent * 2;
+    /**
+     * `StyleSheet.hairlineWidth` is a hack to ensure the Canvas is not clipped.
+     * There is a layout bug that causes clipping that only occurs when two SkiaBadge components are laid out in a row with a gap.
+     * It only occurs on the rightmost badge in the row, and does not occur every time.
+     * It is not solved by rounding to the next largest integer.
+     */
+    const roundedCanvasWidth = paddedWidth + StyleSheet.hairlineWidth;
+    const roundedCanvasHeight = paddedHeight;
     return {
-      width: badgeWidth.value + maxShadowExtent * 2,
-      height: height + maxShadowExtent * 2,
+      width: roundedCanvasWidth,
+      height: roundedCanvasHeight,
       marginHorizontal: -maxShadowExtent,
       marginVertical: -maxShadowExtent,
       opacity: isReady.value ? 1 : 0,
     };
-  }, [badgeWidth, height, isReady, maxShadowExtent]);
+  }, [badgeWidth, height, maxShadowExtent]);
 
   const fillColors = Array.isArray(fillColor) ? fillColor : [fillColor];
   const strokeColors = strokeColor ? (Array.isArray(strokeColor) ? strokeColor : [strokeColor]) : [];
@@ -115,7 +133,7 @@ export const SkiaBadge = memo(function SkiaBadge({
 
           {/* Fill */}
           {fillColors.map((color, index) => (
-            <RoundedRect key={`fill-${index}`} rect={badgeRect} color={color} antiAlias dither />
+            <RoundedRect key={`fill-${index}`} rect={badgeRect} color={color} />
           ))}
 
           {/* Inner stroke */}
@@ -144,7 +162,8 @@ export const SkiaBadge = memo(function SkiaBadge({
             size={fontSize}
             colorMode={colorMode}
             weight={fontWeight}
-            width={badgeWidth}
+            // Arbitrary width so that the text is not wrapped.
+            width={1000}
             x={textX}
             y={textY}
             color={textColor}
@@ -161,7 +180,6 @@ export const SkiaBadge = memo(function SkiaBadge({
 
 const styles = StyleSheet.create({
   canvas: {
-    width: '100%',
-    height: '100%',
+    flex: 1,
   },
 });
