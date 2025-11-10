@@ -101,12 +101,11 @@ export const SkiaBadge = memo(function SkiaBadge({
     const paddedWidth = badgeWidth.value + maxShadowExtent * 2;
     const paddedHeight = height + maxShadowExtent * 2;
     /**
-     * `StyleSheet.hairlineWidth` is a hack to ensure the Canvas is not clipped.
+     * Math.ceil and `StyleSheet.hairlineWidth` are a hack to ensure the Canvas is not clipped.
      * There is a layout bug that causes clipping that only occurs when two SkiaBadge components are laid out in a row with a gap.
-     * It only occurs on the rightmost badge in the row, and does not occur every time.
-     * It is not solved by rounding to the next largest integer.
+     * It does not occur every time, and is not solved by Math.ceil alone.
      */
-    const roundedCanvasWidth = paddedWidth + StyleSheet.hairlineWidth;
+    const roundedCanvasWidth = Math.ceil(paddedWidth) + StyleSheet.hairlineWidth;
     const roundedCanvasHeight = paddedHeight;
     return {
       width: roundedCanvasWidth,
@@ -126,7 +125,7 @@ export const SkiaBadge = memo(function SkiaBadge({
         <Group>
           {/* Drop Shadows */}
           {dropShadows?.map((shadow, index) => (
-            <RoundedRect key={`drop-${index}`} rect={badgeRect} antiAlias dither>
+            <RoundedRect key={`drop-${index}`} rect={badgeRect}>
               <Shadow dx={shadow.dx} dy={shadow.dy} blur={shadow.blur} color={shadow.color} shadowOnly />
             </RoundedRect>
           ))}
