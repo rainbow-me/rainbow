@@ -122,7 +122,7 @@ export const SkiaBadge = memo(function SkiaBadge({
   return (
     <Animated.View style={containerStyle}>
       <Canvas style={styles.canvas}>
-        <Group>
+        <Group antiAlias dither>
           {/* Drop Shadows */}
           {dropShadows?.map((shadow, index) => (
             <RoundedRect key={`drop-${index}`} rect={badgeRect}>
