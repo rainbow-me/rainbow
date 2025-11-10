@@ -13,7 +13,6 @@
 𝕏 [Follow us on X](https://x.com/rainbowdotme)
 
 ## Setup
-
 ### General
 
 - Install NVM or Node.js 18: https://github.com/creationix/nvm
