@@ -52,7 +52,10 @@ export const useHlTradesStore = createQueryStore<FetchHlTradesResponse, HlTrades
     getTrades: () => get().getData()?.trades,
 
     getTradesBySymbol: () => get().getData()?.tradesBySymbol,
-  })
+  }),
+  {
+    storageKey: 'hlTradesStore',
+  }
 );
 
 export const hlTradesStoreActions = createStoreActions(useHlTradesStore);
