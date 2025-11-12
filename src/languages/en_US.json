@@ -757,6 +757,11 @@
         },
         "about": {
           "title": "About",
+          "created_by": "Creator",
+          "what_is": "What is %{assetName}?"
+        },
+        "details": {
+          "title": "Details",
           "what_is": "What is %{assetName}?"
         },
         "history": {

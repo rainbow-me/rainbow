@@ -30,6 +30,7 @@ export enum SectionId {
   HISTORY = 'history',
   HOLDERS = 'holders',
   ABOUT = 'about',
+  DETAILS = 'details',
 }
 
 const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
@@ -41,6 +42,7 @@ const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
   [SectionId.HISTORY]: true,
   [SectionId.HOLDERS]: true,
   [SectionId.ABOUT]: true,
+  [SectionId.DETAILS]: true,
 };
 
 export interface AssetAccentColors {
