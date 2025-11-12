@@ -142,7 +142,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
       if (!isImporting) {
         Alert.alert(i18n.t(i18n.l.wallet.import_failed_invalid_private_key));
       }
-      setWalletReady();
       return null;
     }
 
