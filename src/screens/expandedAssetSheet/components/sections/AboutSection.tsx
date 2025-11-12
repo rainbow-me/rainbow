@@ -30,7 +30,7 @@ export const AboutContent = memo(function AboutContent() {
     if (launchpad?.name) {
       items.push({
         icon: '􀐞',
-        title: 'Protocol',
+        title: i18n.t(i18n.l.expanded_state.sections.about.protocol),
         value: launchpad.name,
         iconName: launchpad.protocolIconURL,
       });
@@ -39,7 +39,7 @@ export const AboutContent = memo(function AboutContent() {
     if (launchpad?.platform) {
       items.push({
         icon: '􁝸',
-        title: 'Created Via',
+        title: i18n.t(i18n.l.expanded_state.sections.about.created_via),
         value: launchpad.platform,
         iconName: launchpad.platformIconURL,
       });
@@ -62,7 +62,8 @@ export const AboutContent = memo(function AboutContent() {
             value={item.value}
             icon={item.icon}
             valueIconUrl={item.iconName}
-            highlighted={index % 2 !== 0}
+            // +1 due to creator row already highlighting
+            highlighted={(index + 1) % 2 === 0}
           />
         ))}
       </Box>

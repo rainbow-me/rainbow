@@ -758,6 +758,8 @@
         "about": {
           "title": "About",
           "created_by": "Creator",
+          "protocol": "Protocol",
+          "created_via": "Created Via",
           "what_is": "What is %{assetName}?"
         },
         "details": {
