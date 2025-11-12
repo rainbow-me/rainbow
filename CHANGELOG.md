@@ -21,6 +21,26 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.11] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.11)
+
+### Added
+
+- Add perps trade details sheet (https://github.com/rainbow-me/rainbow/pull/6907)
+- Add perps trade history screen (https://github.com/rainbow-me/rainbow/pull/6896)
+- Add perps market sort order and view all (https://github.com/rainbow-me/rainbow/pull/6908)
+- Add estimated PnL to trigger order card (https://github.com/rainbow-me/rainbow/pull/6914)
+- Add support for Hyperliquid HIP-3 markets (https://github.com/rainbow-me/rainbow/pull/6916)
+- Add perps add to position sheet (https://github.com/rainbow-me/rainbow/pull/6921)
+
+### Changed
+
+- Bump iOS and Android to v2.0.11 (https://github.com/rainbow-me/rainbow/pull/6922)
+
+### Fixed
+
+- Fix positions balance/value calculations and LST filtering (https://github.com/rainbow-me/rainbow/pull/6919)
+- Fix perps new features issues (https://github.com/rainbow-me/rainbow/pull/6925)
+
 ## [2.0.10] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.10)
 
 ### Fixed
