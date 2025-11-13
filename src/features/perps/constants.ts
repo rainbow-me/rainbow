@@ -140,4 +140,4 @@ export const LAYOUT_ANIMATION = LinearTransition.springify()
  */
 export const SUPPORTED_COLLATERAL_TOKENS = {
   0: 'USDC',
-};
+} as const;
