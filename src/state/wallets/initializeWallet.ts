@@ -169,7 +169,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     if (error.name === 'WalletAlreadyExistsError') {
       // Specific case: trying to import a wallet that already exists
       Alert.alert(i18n.t(i18n.l.wallet.new.alert.oops), i18n.t(i18n.l.wallet.new.alert.looks_like_already_imported));
-      setWalletReady();
       return null;
     }
 
