@@ -20,10 +20,9 @@ function processMarketsForDex({
   const [meta, assetCtxs] = metaAndAssetCtxs;
   const assetsBasicInfo = meta.universe;
   const assetsPricingInfo = assetCtxs;
-  const collateralToken = meta.collateralToken;
 
   // Collateral token is the same for every market in a dex
-  if (!(collateralToken in SUPPORTED_COLLATERAL_TOKENS)) {
+  if (!(meta.collateralToken in SUPPORTED_COLLATERAL_TOKENS)) {
     return [];
   }
 
