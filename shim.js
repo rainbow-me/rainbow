@@ -14,15 +14,16 @@ if (typeof BigInt === 'undefined') global.BigInt = require('big-integer');
 
 if (typeof btoa === 'undefined') {
   global.btoa = function (str) {
-    return new Buffer(str, 'binary').toString('base64');
+    return Buffer.from(str, 'binary').toString('base64');
   };
 }
 
 if (typeof atob === 'undefined') {
   global.atob = function (b64Encoded) {
-    return new Buffer(b64Encoded, 'base64').toString('binary');
+    return Buffer.from(b64Encoded, 'base64').toString('binary');
   };
 }
+
 
 // https://github.com/facebook/react-native/commit/1049835b504cece42ee43ac5b554687891da1349
 // https://github.com/facebook/react-native/commit/035718ba97bb44c68f2a4ccdd95e537e3d28690
@@ -58,22 +59,27 @@ if (SHORTEN_PROP_TYPES_ERROR) {
   const oldConsoleError = console.error; // eslint-disable-line no-console
   // eslint-disable-next-line no-console
   console.error = function () {
-    if (typeof arguments[0] === 'string' && arguments[0].startsWith('Warning: Failed prop type')) {
-      // eslint-disable-next-line no-console
-      console.log(
-        `PropTypes error in: ${arguments[0]
-          .match(/\w+.js:[0-9]+/g)
-          .slice(0, 6)
-          .join(' in ')}`
-      );
+    const msg = arguments[0];
+
+    if (typeof msg === 'string' && msg.startsWith('Warning: Failed prop type')) {
+      const matches = msg.match(/\w+.js:[0-9]+/g);
+      if (matches && matches.length) {
+        // eslint-disable-next-line no-console
+        console.log(
+          `PropTypes error in: ${matches.slice(0, 6).join(' in ')}`
+        );
+      }
       return;
     }
-    if (typeof arguments[0] === 'string' && arguments[0].startsWith('VirtualizedLists should never be nested inside plain ScrollViews')) {
+
+    if (typeof msg === 'string' && msg.startsWith('VirtualizedLists should never be nested inside plain ScrollViews')) {
       return;
     }
+
     oldConsoleError?.apply(this, arguments);
   };
 }
+
 if (typeof __dirname === 'undefined') global.__dirname = '/';
 if (typeof __filename === 'undefined') global.__filename = '';
 if (typeof process === 'undefined') {
@@ -138,7 +144,7 @@ require('crypto');
 
 const description = Object.getOwnPropertyDescriptor(ReactNative, 'requireNativeComponent');
 
-if (!description.writable) {
+if (description && !description.writable) {
   Object.defineProperty(ReactNative, 'requireNativeComponent', {
     value: (function () {
       const cache = {};
