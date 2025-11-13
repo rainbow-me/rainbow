@@ -1604,8 +1604,8 @@
         "liq": "ликв."
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "Добавить к позиции",
+        "new_total": "Новая сумма"
       },
       "feature_card": {
         "title": "Perps",
