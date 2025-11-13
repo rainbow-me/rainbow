@@ -1604,8 +1604,8 @@
         "liq": "likit"
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "Pozisyona Ekle",
+        "new_total": "Yeni Toplam"
       },
       "feature_card": {
         "title": "Vadeli İşlemler",
