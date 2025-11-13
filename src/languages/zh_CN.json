@@ -1604,8 +1604,8 @@
         "liq": "清算"
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "添加到仓位",
+        "new_total": "新总数"
       },
       "feature_card": {
         "title": "Perps",
