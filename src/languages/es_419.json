@@ -1604,8 +1604,8 @@
         "liq": "liq"
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "Agregar a la Posición",
+        "new_total": "Nuevo Total"
       },
       "feature_card": {
         "title": "Perpetuos",
