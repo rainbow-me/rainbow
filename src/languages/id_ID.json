@@ -968,6 +968,8 @@
       "redacted_title": "Anda telah membuka\n Rainbow yang Dihilangkan",
       "baggy_description": "Dari jalanan hingga rantai, tas kecil ini memegang dosis portabel suasana Rainbow Anda. Rasakan warnanya, dan rasakan bedanya.",
       "baggy_title": "Anda telah membuka\n Rainbow Baggy",
+      "chonks_description": "Bayangkan angin di rambut Rainbow Anda, mengemudi di 101, merasakan Chonky.",
+      "chonks_title": "Anda telah membuka\n Ikon Chonkiest",
       "button": "Ambil ikon"
     },
     "explain": {
@@ -1582,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "Aktivitas",
+        "trades_count": "%{count} TRANSAKSI",
+        "no_previous_trades": "Tidak Ada Transaksi Sebelumnya"
+      },
       "common": {
         "not_available": "N/A",
         "current_price": "Harga Saat Ini",
@@ -1591,8 +1598,14 @@
         "more": "Lebih",
         "error": "Kesalahan",
         "cancel": "Batal",
+        "close": "Tutup",
+        "add": "Tambah",
         "liq_price": "harga liq.",
         "liq": "liq"
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "Perps",
@@ -1609,6 +1622,7 @@
       },
       "markets": {
         "title": "Pasar",
+        "view_all": "Lihat Semua",
         "up_to": "HINGGA",
         "already_open": "Sudah Terbuka"
       },
@@ -1689,6 +1703,20 @@
           "short_liquidated": "Pendek Dilikuasikan"
         }
       },
+      "trade_details_sheet": {
+        "market": "Pasar",
+        "entry_price": "Harga Masuk",
+        "close_price": "Harga Tutup",
+        "date": "Tanggal",
+        "profit": "Keuntungan",
+        "loss": "Kerugian",
+        "outcome": {
+          "liquidated": "Dilikwidasi",
+          "opened": "Dibuka",
+          "lost": "Kalah",
+          "earned": "Diperoleh"
+        }
+      },
       "trigger_orders": {
         "title": "Pesanan Trigger",
         "take_profit": "Ambil Untung",
@@ -1705,12 +1733,15 @@
         "above": "atas",
         "below": "di bawah",
         "must_be": "Harus",
-        "failed_to_create": "Gagal membuat pesanan trigger"
+        "failed_to_create": "Gagal membuat pesanan trigger",
+        "gain": "Keuntungan",
+        "loss": "Kerugian"
       },
       "search": {
         "search_markets": "Cari pasar",
         "markets_count": "%{count} PASAR",
-        "choose_a_market": "PILIH MARKAS"
+        "choose_a_market": "PILIH MARKAS",
+        "no_markets_found": "Tidak ada pasar yang ditemukan"
       },
       "close_position": {
         "estimated_loss": "Kerugian Estimasi",
@@ -1752,6 +1783,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "Berdasarkan Volume",
+        "by_change": "Berdasarkan Perubahan",
+        "by_price": "Berdasarkan Harga"
       },
       "leverage": "Leverage",
       "up_to": "Hingga"
@@ -2214,6 +2250,9 @@
         "full_range": "Kisaran Penuh",
         "out_of_range": "Di Luar Jangkauan",
         "in_range": "Dalam Jangkauan"
+      },
+      "lp_allocation": {
+        "other": "Lainnya"
       },
       "open_dapp": "Buka 􀮶",
       "deposits": "Deposit",

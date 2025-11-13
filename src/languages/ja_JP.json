@@ -968,6 +968,8 @@
       "redacted_title": "ロック解除されました\nRedacted Rainbow",
       "baggy_description": "街からチェーンまで、この小さなバッグはあなたのポータブルなRainbowのエッセンスを持ち運びます。色を味わい、違いを感じてください。",
       "baggy_title": "アンロック\n Rainbow Baggy",
+      "chonks_description": "レインボーの髪で風を感じながら、101号線を走り、チョンキーを感じるイメージ。",
+      "chonks_title": "チョンキエスト アイコンをアンロックしました。",
       "button": "アイコンをキャッチ"
     },
     "explain": {
@@ -1582,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "アクティビティ",
+        "trades_count": "%{count} 取引",
+        "no_previous_trades": "前の取引はありません"
+      },
       "common": {
         "not_available": "N/A",
         "current_price": "現在の価格",
@@ -1591,8 +1598,14 @@
         "more": "もっと",
         "error": "エラー",
         "cancel": "キャンセル",
+        "close": "閉じる",
+        "add": "追加",
         "liq_price": "清算価格",
         "liq": "清算"
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "\"Perps\"",
@@ -1609,6 +1622,7 @@
       },
       "markets": {
         "title": "マーケット",
+        "view_all": "全て見る",
         "up_to": "最大",
         "already_open": "既にオープン済み"
       },
@@ -1689,6 +1703,20 @@
           "short_liquidated": "ショート清算"
         }
       },
+      "trade_details_sheet": {
+        "market": "マーケット",
+        "entry_price": "エントリー価格",
+        "close_price": "クローズ価格",
+        "date": "日付",
+        "profit": "利益",
+        "loss": "損失",
+        "outcome": {
+          "liquidated": "清算済み",
+          "opened": "開始済み",
+          "lost": "失われた",
+          "earned": "稼いだ"
+        }
+      },
       "trigger_orders": {
         "title": "トリガーオーダー",
         "take_profit": "利食い",
@@ -1705,12 +1733,15 @@
         "above": "上で",
         "below": "下で",
         "must_be": "である必要があります",
-        "failed_to_create": "トリガー注文作成に失敗しました"
+        "failed_to_create": "トリガー注文作成に失敗しました",
+        "gain": "増加",
+        "loss": "損失"
       },
       "search": {
         "search_markets": "マーケットを検索",
         "markets_count": "%{count} メーカー",
-        "choose_a_market": "マーケットを選択"
+        "choose_a_market": "マーケットを選択",
+        "no_markets_found": "マーケットが見つかりません"
       },
       "close_position": {
         "estimated_loss": "予測損失",
@@ -1752,6 +1783,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "ボリューム別",
+        "by_change": "変動別",
+        "by_price": "価格別"
       },
       "leverage": "レバレッジ",
       "up_to": "最大"
@@ -2214,6 +2250,9 @@
         "full_range": "全範囲",
         "out_of_range": "範囲外",
         "in_range": "範囲内"
+      },
+      "lp_allocation": {
+        "other": "その他"
       },
       "open_dapp": "オープン 􀮶",
       "deposits": "預金",
