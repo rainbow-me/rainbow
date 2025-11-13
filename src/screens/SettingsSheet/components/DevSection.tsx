@@ -35,6 +35,7 @@ import { nonceActions } from '@/state/nonces';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import FastImage from 'react-native-fast-image';
 import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
+import { getAllInternetCredentials, resetInternetCredentials } from 'react-native-keychain';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -392,6 +393,23 @@ const DevSection = () => {
                 titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.copy_log_lines)} />}
               />
             )}
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="📲" isEmoji />}
+              onPress={async () => {
+                // This simulates the state that the app will be after a device transfer on iOS.
+                // The keychain is not transferred, but all other app data is.
+                const shouldWipeKeychain = await confirmKeychainAlert();
+                if (shouldWipeKeychain) {
+                  const credentials = await getAllInternetCredentials();
+
+                  if (!credentials) return;
+
+                  await Promise.all(credentials.results.map(c => resetInternetCredentials({ server: c.username })));
+                }
+              }}
+              size={52}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.simulate_device_transfer)} />}
+            />
           </Menu>
           <Menu header="Feature Flags">
             {Object.keys(config)

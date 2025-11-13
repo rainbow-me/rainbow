@@ -559,7 +559,8 @@
       "restart_app": "Restart App",
       "reset_experimental_config": "Reset Experimental Config",
       "status": "Status",
-      "sync_codepush": "Sync CodePush"
+      "sync_codepush": "Sync CodePush",
+      "simulate_device_transfer": "Simulate Device Transfer"
     },
     "discover": {
       "pulse": {
