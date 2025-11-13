@@ -31,7 +31,6 @@ import { maybeAuthenticateWithPIN, maybeAuthenticateWithPINAndCreateIfNeeded } f
 import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
 import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
 import { createSignature } from '@/helpers/signingWallet';
-import showWalletErrorAlert from '@/helpers/support';
 import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { ethereumUtils } from '@/utils';
 import { ensureError, logger, RainbowError } from '@/logger';
@@ -49,7 +48,8 @@ import { executeFn, ExecuteFnParams, Screen } from '@/state/performance/performa
 import { Network } from '@/state/backendNetworks/types';
 import { GetOptions, SetOptions } from 'react-native-keychain';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
-import { IS_IOS } from '@/env';
+import Routes from '@/navigation/routesNames';
+import Navigation from '@/navigation/Navigation';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -318,6 +318,7 @@ export const loadWallet = async <S extends Screen>({
   if (privateKey === kc.ErrorType.UserCanceled || privateKey === kc.ErrorType.NotAuthenticated) {
     return null;
   }
+
   if (isHardwareWalletKey(privateKey)) {
     const index = privateKey?.split('/')[1];
     const deviceId = privateKey?.split('/')[0];
@@ -327,8 +328,8 @@ export const loadWallet = async <S extends Screen>({
   } else if (privateKey) {
     return new Wallet(privateKey, provider);
   }
-  if (IS_IOS && showErrorIfNotLoaded) {
-    showWalletErrorAlert();
+  if (showErrorIfNotLoaded) {
+    Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
   }
   return null;
 };
@@ -1031,11 +1032,7 @@ export const getPrivateKey = async (
         // User Cancelled - We want to bubble up this error code. No need to track it.
         return kc.ErrorType.UserCanceled;
       case kc.ErrorType.NotAuthenticated:
-        // Alert the user and bubble up the error code.
-        Alert.alert(
-          i18n.t(i18n.l.wallet.authenticate.alert.error),
-          i18n.t(i18n.l.wallet.authenticate.alert.current_authentication_not_secure_enough)
-        );
+        // Not Authenticated - We want to bubble up this error code. No need to track it.
         return kc.ErrorType.NotAuthenticated;
       case kc.ErrorType.Unavailable: {
         // Retry with checksummed address if needed
@@ -1110,10 +1107,7 @@ export const getSeedPhrase = async (
     });
 
     if (error === kc.ErrorType.NotAuthenticated) {
-      Alert.alert(
-        i18n.t(i18n.l.wallet.authenticate.alert.error),
-        i18n.t(i18n.l.wallet.authenticate.alert.current_authentication_not_secure_enough)
-      );
+      Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
       return null;
     }
 

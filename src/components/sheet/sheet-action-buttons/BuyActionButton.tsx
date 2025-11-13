@@ -3,7 +3,6 @@ import React, { useCallback } from 'react';
 import SheetActionButton, { SheetActionButtonProps } from './SheetActionButton';
 import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
-import showWalletErrorAlert from '@/helpers/support';
 import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
 
 import Routes from '@/navigation/routesNames';
@@ -20,7 +19,7 @@ function BuyActionButton({ color: givenColor, ...props }: BuyActionButtonProps) 
 
   const handlePress = useCallback(() => {
     if (getIsDamagedWallet()) {
-      showWalletErrorAlert();
+      navigate(Routes.WALLET_ERROR_SHEET);
       return;
     }
 

@@ -110,6 +110,7 @@ import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePosition
 import { PerpsExplainSheet } from '@/features/perps/screens/perps-explain-sheet/PerpsExplainSheet';
 import { PerpsAddToPositionSheet } from '@/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet';
 import { PerpsTradeDetailsSheet } from '@/features/perps/screens/perps-trade-details-sheet/PerpsTradeDetailsSheet';
+import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -279,6 +280,7 @@ function BSNavigator() {
       <BSStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} />
       <BSStack.Screen component={PerpsAddToPositionSheet} name={Routes.PERPS_ADD_TO_POSITION_SHEET} />
       <BSStack.Screen component={PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} />
+      <BSStack.Screen component={WalletErrorSheet} name={Routes.WALLET_ERROR_SHEET} />
     </BSStack.Navigator>
   );
 }

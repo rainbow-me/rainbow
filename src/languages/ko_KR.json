@@ -2930,12 +2930,7 @@
         "no_price": "소액 잔액"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "현재의 인증 방법 (얼굴 인식)은 충분히 안전하지 않습니다, \"설정 > 생체인식 및 보안\"으로 가서 지문이나 홍채 같은 다른 생체 인식 방법을 활성화해 주세요.",
-          "error": "오류"
-        },
-        "please": "인증해 주세요",
-        "please_seed_phrase": "비공개 키를 보려면 인증해 주세요"
+        "please": "인증해 주세요"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} 지갑",

@@ -134,6 +134,7 @@ const Routes = {
   PERPS_EXPLAIN_SHEET: 'PerpsExplainSheet',
   PERPS_TRADE_HISTORY_SCREEN: 'PerpsTradeHistoryScreen',
   PERPS_TRADE_DETAILS_SHEET: 'PerpsTradeDetailsSheet',
+  WALLET_ERROR_SHEET: 'WalletErrorSheet',
 } as const;
 
 export const NATIVE_ROUTES = new Set<Route>([

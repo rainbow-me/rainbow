@@ -38,12 +38,13 @@ import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { estimateClaimUnlockSwapGasLimit } from '../estimateGas';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import showWalletErrorAlert from '@/helpers/support';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import Routes from '@/navigation/routesNames';
+import Navigation from '@/navigation/Navigation';
 
 enum ErrorMessages {
   SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
@@ -331,7 +332,7 @@ export function TransactionClaimableContextProvider({
           provider,
         });
       } catch {
-        showWalletErrorAlert();
+        Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
       }
 
       if (!wallet) {
