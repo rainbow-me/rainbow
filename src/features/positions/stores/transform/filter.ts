@@ -39,6 +39,7 @@ const UNSUPPORTED_DETAIL_TYPES: readonly DetailType[] = [DetailType.UNSPECIFIED,
 export const TOKEN_PREFERRED_POSITIONS = [
   'stETH', // Lido - https://lido.fi - Staked ETH
   'wstETH', // Lido - https://lido.fi - Wrapped staked ETH
+  'rETH', // Rocket Pool - https://rocketpool.net - Staked ETH
 ];
 
 // ============ Filters ======================================================== //

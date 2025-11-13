@@ -9,7 +9,7 @@ import { createMockStats, createMockPosition, createMockResponse } from '../mock
  * Comprehensive Filtering Tests
  *
  * This test suite covers:
- * 1. Token-preferred position filtering (stETH, wstETH) - IMPLEMENTED
+ * 1. Token-preferred position filtering (stETH, wstETH, rETH) - IMPLEMENTED
  * 2. Value threshold filtering (< $1) - IMPLEMENTED
  * 3. Integration tests for complete filtering flow - IMPLEMENTED
  *
@@ -55,7 +55,7 @@ describe('Position Filtering Integration', () => {
   });
 
   // ============================================================================
-  // SECTION 1: Token-Preferred Position Filtering (stETH, wstETH)
+  // SECTION 1: Token-Preferred Position Filtering (stETH, wstETH, rETH)
   // ============================================================================
 
   describe('Token-Preferred Position Filtering', () => {
@@ -439,6 +439,160 @@ describe('Position Filtering Integration', () => {
 
         // Balance: 4000 (aave 5000 - compound 1000, after filtering)
         expect(walletBalance).toBe('4000');
+      });
+
+      it('should filter all liquid staking tokens (stETH, wstETH, rETH) together', () => {
+        const mockResponse = createMockResponse(
+          [
+            // All three liquid staking tokens to be filtered
+            createMockPosition({
+              id: 'lido:1',
+              protocolName: 'Lido',
+              canonicalProtocolName: 'lido',
+              protocolVersion: 'v1',
+              positionName: PositionName.STAKED,
+              detailType: DetailType.COMMON,
+              assetValue: '2000',
+              debtValue: '0',
+              netValue: '2000',
+              description: 'stETH',
+              tokens: {
+                supplyTokenList: [{ amount: '1', asset: createMockAsset('stETH', 2000), assetValue: '2000' }],
+              },
+            }),
+            createMockPosition({
+              id: 'lido:2',
+              protocolName: 'Lido',
+              canonicalProtocolName: 'lido',
+              protocolVersion: 'v1',
+              positionName: PositionName.STAKED,
+              detailType: DetailType.COMMON,
+              assetValue: '1500',
+              debtValue: '0',
+              netValue: '1500',
+              description: 'wstETH',
+              tokens: {
+                supplyTokenList: [{ amount: '0.75', asset: createMockAsset('wstETH', 2000), assetValue: '1500' }],
+              },
+            }),
+            createMockPosition({
+              id: 'rocketpool:1',
+              protocolName: 'Rocket Pool',
+              canonicalProtocolName: 'rocketpool',
+              protocolVersion: 'v1',
+              positionName: PositionName.STAKED,
+              detailType: DetailType.COMMON,
+              assetValue: '2500',
+              debtValue: '0',
+              netValue: '2500',
+              description: 'rETH',
+              tokens: {
+                supplyTokenList: [{ amount: '1.428', asset: createMockAsset('rETH', 1750), assetValue: '2500' }],
+              },
+            }),
+            // Regular position that should remain
+            createMockPosition({
+              id: 'compound:1',
+              protocolName: 'Compound',
+              canonicalProtocolName: 'compound',
+              protocolVersion: 'v3',
+              positionName: PositionName.LENDING,
+              detailType: DetailType.LENDING,
+              assetValue: '5000',
+              debtValue: '0',
+              netValue: '5000',
+              tokens: {
+                supplyTokenList: [{ amount: '5000', asset: createMockAsset('USDC', 1), assetValue: '5000' }],
+              },
+            }),
+          ],
+          {
+            totals: {
+              netTotal: '11000', // 5000 (compound) + 6000 (all LSDs to be filtered)
+              totalDeposits: '11000',
+              totalBorrows: '0',
+              totalRewards: '0',
+              totalLocked: '0',
+              overallTotal: '11000',
+            },
+            canonicalProtocol: {
+              lido: {
+                canonicalProtocolName: 'lido',
+                protocolIds: ['lido'],
+                totals: {
+                  netTotal: '3500',
+                  totalDeposits: '3500',
+                  totalBorrows: '0',
+                  totalRewards: '0',
+                  totalLocked: '0',
+                  overallTotal: '3500',
+                },
+                totalsByChain: {},
+              },
+              rocketpool: {
+                canonicalProtocolName: 'rocketpool',
+                protocolIds: ['rocketpool'],
+                totals: {
+                  netTotal: '2500',
+                  totalDeposits: '2500',
+                  totalBorrows: '0',
+                  totalRewards: '0',
+                  totalLocked: '0',
+                  overallTotal: '2500',
+                },
+                totalsByChain: {},
+              },
+              compound: {
+                canonicalProtocolName: 'compound',
+                protocolIds: ['compound'],
+                totals: {
+                  netTotal: '5000',
+                  totalDeposits: '5000',
+                  totalBorrows: '0',
+                  totalRewards: '0',
+                  totalLocked: '0',
+                  overallTotal: '5000',
+                },
+                totalsByChain: {},
+              },
+            },
+          }
+        );
+
+        // Step 2: Transform positions (filtering happens here)
+        const transformedData = transformPositions(mockResponse, FIXTURE_PARAMS);
+
+        // Step 3: Verify filtering applied to grand total - all LSDs filtered: 11000 - 6000 = 5000
+        expect(transformedData.totals.total.amount).toBe('5000');
+
+        // Step 4: Verify both Lido and Rocket Pool positions were filtered out entirely
+        expect(transformedData.positions['lido']).toBeUndefined();
+        expect(transformedData.positions['rocketpool']).toBeUndefined();
+
+        // Step 5: Verify Compound position remains with correct total
+        expect(transformedData.positions['compound']).toBeDefined();
+        expect(transformedData.positions['compound'].totals.total.amount).toBe('5000');
+
+        // Step 6: Verify each individual LSD was filtered correctly
+        // - stETH: $2000 filtered
+        // - wstETH: $1500 filtered
+        // - rETH: $2500 filtered
+        // Total filtered: $6000
+
+        // Step 7: Store the transformed data
+        const queryKey = `${FIXTURE_PARAMS.address}-${FIXTURE_PARAMS.currency}`;
+        const store = usePositionsStore.getState();
+        store.queryCache[queryKey] = {
+          data: transformedData,
+          lastFetchedAt: Date.now(),
+          cacheTime: 0,
+          errorInfo: null,
+        };
+        usePositionsStore.setState({ queryKey });
+
+        // Step 8: Call getBalance() and verify it uses filtered data
+        const walletBalance = usePositionsStore.getState().getBalance();
+        expect(walletBalance).toBe('5000'); // All LSDs excluded from balance
       });
     });
 
