@@ -1604,8 +1604,8 @@
         "liq": "청산"
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "포지션에 추가",
+        "new_total": "새 총계"
       },
       "feature_card": {
         "title": "Perps",
