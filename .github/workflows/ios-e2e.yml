@@ -1,12 +1,11 @@
 name: iOS
 on:
   pull_request:
-    # prevent running on draft PRs
     types: [opened, synchronize, reopened, ready_for_review]
-  workflow_dispatch:
   push:
-    branches:
-      - develop
+    branches: [develop]
+  issue_comment:
+    types: [created]
 env:
   NODE_OPTIONS: "--max-old-space-size=6144"
 
@@ -14,7 +13,13 @@ jobs:
   # iOS build job
   build:
     name: Test Build
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    if: |
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
+      github.event_name == 'push' ||
+      (github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request != null &&
+      startsWith(github.event.comment.body, '/e2e') &&
+      contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: macos-15-xlarge
     concurrency:
       group: e2e-ios-${{ github.workflow }}-${{ github.ref }}
@@ -101,7 +106,6 @@ jobs:
   e2e-tests:
     name: E2E Tests (Shard ${{ matrix.shard-index }})
     needs: build
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: macos-15-xlarge
     strategy:
       fail-fast: false
