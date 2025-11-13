@@ -6,6 +6,7 @@ import { getSymbolConverter } from '@/features/perps/utils/hyperliquidSymbolConv
 import { extractBaseSymbol, normalizeDexSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { SymbolConverter } from '@nktkas/hyperliquid/utils';
 import { hyperliquidDexActions } from '@/features/perps/stores/hyperliquidDexStore';
+import { SUPPORTED_COLLATERAL_TOKENS } from '@/features/perps/constants';
 
 function processMarketsForDex({
   metaAndAssetCtxs,
@@ -19,6 +20,7 @@ function processMarketsForDex({
   const [meta, assetCtxs] = metaAndAssetCtxs;
   const assetsBasicInfo = meta.universe;
   const assetsPricingInfo = assetCtxs;
+  const collateralToken = meta.collateralToken;
 
   return assetsBasicInfo
     .map((asset, index) => {
@@ -30,7 +32,7 @@ function processMarketsForDex({
       const symbol = normalizeDexSymbol(asset.name, dex);
       const assetId = converter.getAssetId(symbol);
 
-      if (assetId === undefined) {
+      if (assetId === undefined || !(collateralToken in SUPPORTED_COLLATERAL_TOKENS)) {
         return null;
       }
 
