@@ -1604,8 +1604,8 @@
         "liq": "清算"
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "ポジションに追加",
+        "new_total": "新しい合計"
       },
       "feature_card": {
         "title": "\"Perps\"",
