@@ -260,13 +260,8 @@ export const walletInit = async (props: InitializeWalletParams): Promise<WalletI
       silent,
       userPin,
     });
-    if (!wallet) {
-      // Wallet creation failed example: duplicate wallet
-      // Alert was already shown in createWallet, just return
-      return { isNew, walletAddress: undefined };
-    }
-    ensureEthereumWallet(wallet);
-    walletAddress = wallet.address;
+    ensureEthereumWallet(wallet!);
+    walletAddress = wallet?.address;
     return { isNew, walletAddress };
   }
 
