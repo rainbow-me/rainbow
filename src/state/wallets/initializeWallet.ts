@@ -138,9 +138,9 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
 
     if (isNil(walletAddress)) {
       logger.debug('[initializeWallet]: walletAddress is nil');
-      // Don't show error alert when importing the specific error was already shown
+      Alert.alert(i18n.t(i18n.l.wallet.import_failed_invalid_private_key));
       if (!isImporting) {
-        Alert.alert(i18n.t(i18n.l.wallet.import_failed_invalid_private_key));
+        setWalletReady();
       }
       return null;
     }
