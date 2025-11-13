@@ -22,6 +22,11 @@ function processMarketsForDex({
   const assetsPricingInfo = assetCtxs;
   const collateralToken = meta.collateralToken;
 
+  // Collateral token is the same for every market in a dex
+  if (!(collateralToken in SUPPORTED_COLLATERAL_TOKENS)) {
+    return [];
+  }
+
   return assetsBasicInfo
     .map((asset, index) => {
       const assetPricingInfo = assetsPricingInfo[index];
@@ -32,7 +37,7 @@ function processMarketsForDex({
       const symbol = normalizeDexSymbol(asset.name, dex);
       const assetId = converter.getAssetId(symbol);
 
-      if (assetId === undefined || !(collateralToken in SUPPORTED_COLLATERAL_TOKENS)) {
+      if (assetId === undefined) {
         return null;
       }
 
