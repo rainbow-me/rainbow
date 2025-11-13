@@ -1604,8 +1604,8 @@
         "liq": "liq"
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "Tambahkan ke Posisi",
+        "new_total": "Total Baru"
       },
       "feature_card": {
         "title": "Perps",
