@@ -92,6 +92,15 @@ const ViewDimensions: Record<CellType, Dim> = {
     height: 65,
     width: deviceUtils.dimensions.width,
   },
+  [CellType.POLYMARKET_HEADER]: { height: AssetListHeaderHeight },
+  [CellType.POLYMARKET_BALANCE]: {
+    height: 48,
+    width: deviceUtils.dimensions.width,
+  },
+  [CellType.POLYMARKET_POSITION]: {
+    height: 65,
+    width: deviceUtils.dimensions.width,
+  },
   [CellType.TOKENS_HEADER]: { height: AssetListHeaderHeight },
   [CellType.REMOTE_CARD_CAROUSEL]: { height: 112 },
   [CellType.EMPTY_REMOTE_CARD_CAROUSEL]: { height: 0 },

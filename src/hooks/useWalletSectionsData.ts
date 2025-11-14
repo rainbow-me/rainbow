@@ -23,6 +23,8 @@ import { PerpsPositionsInfo, usePerpsPositionsInfo } from '@/features/perps/stor
 import { PerpsWalletListData } from '@/features/perps/types';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
 import { shallowEqual } from '@/worklets/comparisons';
+import { PolymarketAccountInfo, usePolymarketAccountInfo } from '@/features/polymarket/stores/derived/usePolymarketAccountInfo';
+import { PolymarketWalletListData } from '@/features/polymarket/types';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -44,7 +46,7 @@ export default function useWalletSectionsData({
   const selectedWallet = useSelectedWallet();
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
-  const remoteConfig = useRemoteConfig('claimables', 'remote_cards_enabled', 'perps_enabled');
+  const remoteConfig = useRemoteConfig('claimables', 'remote_cards_enabled', 'perps_enabled', 'polymarket_enabled');
   const experimentalConfig = useExperimentalConfig();
   const isWalletEthZero = useIsWalletEthZero();
 
@@ -52,6 +54,7 @@ export default function useWalletSectionsData({
   const positionsEnabled = experimentalConfig[DEFI_POSITIONS] && !IS_TEST;
   const claimablesEnabled = (remoteConfig.claimables || experimentalConfig[CLAIMABLES]) && !IS_TEST;
   const perpsEnabled = remoteConfig.perps_enabled && !IS_TEST;
+  const polymarketEnabled = remoteConfig.polymarket_enabled && !IS_TEST;
 
   const cardIds = remoteCardsStore(state => state.getCardIdsForScreen('WALLET_SCREEN'));
   const remoteCards = useMemo(() => (remoteCardsEnabled ? cardIds : []), [cardIds, remoteCardsEnabled]);
@@ -73,6 +76,8 @@ export default function useWalletSectionsData({
   }, [claimablesData, claimablesEnabled]);
 
   const perpsData = usePerpsPositionsInfo(state => selectPerpsData(state, perpsEnabled), shallowEqual);
+  // TESTING:
+  const polymarketData = usePolymarketAccountInfo(state => selectPolymarketData(state, true), shallowEqual);
 
   const isShowcaseDataMigrated = useMemo(() => isDataComplete(showcaseTokens), [showcaseTokens]);
   const isHiddenDataMigrated = useMemo(() => isDataComplete(hiddenTokens), [hiddenTokens]);
@@ -129,6 +134,7 @@ export default function useWalletSectionsData({
       positions,
       claimables,
       perpsData,
+      polymarketData,
       remoteCards,
       hasMoreCollections,
       isShowcaseDataMigrated,
@@ -168,6 +174,7 @@ export default function useWalletSectionsData({
     positions,
     claimables,
     perpsData,
+    polymarketData,
     remoteCards,
     hasMoreCollections,
     isShowcaseDataMigrated,
@@ -184,5 +191,16 @@ function selectPerpsData(state: PerpsPositionsInfo, perpsEnabled: boolean): Perp
     positions: state.positions,
     value: state.value,
     enabled: perpsEnabled,
+  };
+}
+
+function selectPolymarketData(state: PolymarketAccountInfo, polymarketEnabled: boolean): PolymarketWalletListData {
+  return {
+    balance: state.balance,
+    hasBalance: state.hasBalance,
+    hasPositions: state.hasPositions,
+    positions: state.positions,
+    value: state.value,
+    enabled: polymarketEnabled,
   };
 }
