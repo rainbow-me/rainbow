@@ -16,7 +16,7 @@ import { useAccountENSDomains, useDimensions, useENSAvatar, useENSRecords, useEN
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { IS_ANDROID, IS_TEST } from '@/env';
-import ContextMenu from '@/components/context-menu/ContextMenu.android';
+import { ContextMenu } from '@/components/context-menu';
 import { RootStackParamList } from '@/navigation/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

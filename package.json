@@ -368,7 +368,7 @@
     "schedule": "0.5.0",
     "ts-loader": "9.5.1",
     "ts-migrate": "0.1.26",
-    "typescript": "5.8.3",
+    "typescript": "5.9.3",
     "typescript-coverage-report": "0.6.1",
     "webpack": "5.94.0",
     "webpack-cli": "5.1.4",

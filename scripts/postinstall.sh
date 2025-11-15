@@ -95,7 +95,7 @@ fi
 
 if [ -n "$RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK" ]; then
   if [ -n "$CI" ]; then
-    eval $RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK > /dev/null 2>&1;
+    eval $RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK;
   else
     eval $RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK;
     echo "✅ executed android prebuild hook"
