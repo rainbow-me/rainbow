@@ -968,6 +968,8 @@
       "redacted_title": "您已解锁\n Redacted Rainbow",
       "baggy_description": "从街头到链，这个小袋子承载了你的便携彩虹氛围。品尝颜色，感受不同。",
       "baggy_title": "您已解锁\n Rainbow Baggy",
+      "chonks_description": "想象一下风在你的Rainbow头发中飘扬，驾驶着101，感受Chonky。",
+      "chonks_title": "您已解锁\n 最巨大的图标",
       "button": "解锁图标"
     },
     "explain": {
@@ -1582,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "活动",
+        "trades_count": "%{count} 笔交易",
+        "no_previous_trades": "无之前的交易记录"
+      },
       "common": {
         "not_available": "N/A",
         "current_price": "当前价格",
@@ -1591,8 +1598,14 @@
         "more": "更多",
         "error": "错误",
         "cancel": "取消",
+        "close": "关闭",
+        "add": "添加",
         "liq_price": "清算价",
         "liq": "清算"
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "Perps",
@@ -1609,6 +1622,7 @@
       },
       "markets": {
         "title": "市场",
+        "view_all": "查看所有",
         "up_to": "最多",
         "already_open": "已打开"
       },
@@ -1689,6 +1703,20 @@
           "short_liquidated": "做空已清算"
         }
       },
+      "trade_details_sheet": {
+        "market": "市场",
+        "entry_price": "入场价格",
+        "close_price": "收盘价",
+        "date": "日期",
+        "profit": "利润",
+        "loss": "亏损",
+        "outcome": {
+          "liquidated": "清算",
+          "opened": "已开",
+          "lost": "亏损",
+          "earned": "赚取"
+        }
+      },
       "trigger_orders": {
         "title": "触发订单",
         "take_profit": "止盈",
@@ -1705,12 +1733,15 @@
         "above": "以上",
         "below": "以下",
         "must_be": "必须是",
-        "failed_to_create": "创建触发订单失败"
+        "failed_to_create": "创建触发订单失败",
+        "gain": "收益",
+        "loss": "亏损"
       },
       "search": {
         "search_markets": "搜索市场",
         "markets_count": "%{count}个市场",
-        "choose_a_market": "选择一个市场"
+        "choose_a_market": "选择一个市场",
+        "no_markets_found": "未找到市场"
       },
       "close_position": {
         "estimated_loss": "预估损失",
@@ -1752,6 +1783,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "按交易量",
+        "by_change": "按变化",
+        "by_price": "按价格"
       },
       "leverage": "杠杆",
       "up_to": "最多"
@@ -2214,6 +2250,9 @@
         "full_range": "全范围",
         "out_of_range": "超出范围",
         "in_range": "在范围内"
+      },
+      "lp_allocation": {
+        "other": "其他"
       },
       "open_dapp": "打开 􀮶",
       "deposits": "存款",

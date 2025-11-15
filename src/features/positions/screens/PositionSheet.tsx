@@ -1,7 +1,5 @@
 import React, { useCallback } from 'react';
-import { SlackSheet } from '@/components/sheet';
 import { BackgroundProvider, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
 import { RequestVendorLogoIcon } from '@/components/coin-icon';
@@ -20,6 +18,10 @@ import { safeAreaInsetValues } from '@/utils';
 import { Navigation } from '@/navigation';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { NativeCurrencyKeys } from '@/entities';
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { IS_IOS } from '@/env';
+import { useDimensions } from '@/hooks';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
@@ -52,6 +54,8 @@ export const PositionSheet: React.FC = () => {
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
   const nativeCurrency = userAssetsStoreManager.getState().currency;
+  const { height } = useDimensions();
+  const insets = useSafeAreaInsets();
 
   const positionColor =
     position.dapp.colors.primary || position.dapp.colors.fallback || (isDarkMode ? globalColors.white100 : globalColors.white10);
@@ -93,16 +97,12 @@ export const PositionSheet: React.FC = () => {
     [nativeCurrency, position.protocol, position.totals.total.amount, position.type]
   );
 
+  const customHeight = IS_IOS ? undefined : Math.min(getPositionSheetHeight({ position }), height - insets.top);
+
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SlackSheet
-          backgroundColor={backgroundColor}
-          height={IS_IOS ? '100%' : undefined}
-          additionalTopPadding={IS_IOS ? undefined : true}
-          contentHeight={IS_IOS ? undefined : getPositionSheetHeight({ position })}
-          scrollEnabled
-        >
+        <SimpleSheet backgroundColor={backgroundColor} useAdditionalTopPadding customHeight={customHeight}>
           <Box padding="20px" width="full" paddingBottom={{ custom: 50 }}>
             <Stack space="24px" separator={<Separator color="separatorTertiary" thickness={1} />}>
               <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
@@ -264,7 +264,8 @@ export const PositionSheet: React.FC = () => {
               </Stack>
             </Stack>
           </Box>
-        </SlackSheet>
+          <Box height={insets.bottom} />
+        </SimpleSheet>
       )}
     </BackgroundProvider>
   );

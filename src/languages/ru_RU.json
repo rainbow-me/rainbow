@@ -968,6 +968,8 @@
       "redacted_title": "Вы разблокировали\nСкрытую Rainbow",
       "baggy_description": "От улиц до цепи, эта маленькая сумочка хранит вашу переносную дозу атмосфер Rainbow. Почувствуйте цвета — и разницу.",
       "baggy_title": "Вы разблокировали\nRainbow Baggy",
+      "chonks_description": "Представьте ветер в ваших Rainbow волосах, когда вы едете по трассе 101 и чувствуете себя Чонки.",
+      "chonks_title": "Вы разблокировали\n Самую Чонкую Иконку",
       "button": "Разблокировать значок"
     },
     "explain": {
@@ -1582,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "Активность",
+        "trades_count": "%{count} СДЕЛОК",
+        "no_previous_trades": "Ранее сделки отсутствуют"
+      },
       "common": {
         "not_available": "Н/Д",
         "current_price": "Текущая цена",
@@ -1591,8 +1598,14 @@
         "more": "Больше",
         "error": "Ошибка",
         "cancel": "Отменить",
+        "close": "Закрыть",
+        "add": "Добавить",
         "liq_price": "Цена ликв.",
         "liq": "ликв."
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "Perps",
@@ -1609,6 +1622,7 @@
       },
       "markets": {
         "title": "Рынки",
+        "view_all": "Посмотреть все",
         "up_to": "ДО",
         "already_open": "Уже открыто"
       },
@@ -1689,6 +1703,20 @@
           "short_liquidated": "Ликвидирована короткая"
         }
       },
+      "trade_details_sheet": {
+        "market": "Рынок",
+        "entry_price": "Начальная цена",
+        "close_price": "Цена закрытия",
+        "date": "Дата",
+        "profit": "Прибыль",
+        "loss": "Убыток",
+        "outcome": {
+          "liquidated": "Ликвидация",
+          "opened": "Открыто",
+          "lost": "Проигранный",
+          "earned": "Заработанный"
+        }
+      },
       "trigger_orders": {
         "title": "Триггерные ордеры",
         "take_profit": "Взять прибыль",
@@ -1705,12 +1733,15 @@
         "above": "выше",
         "below": "ниже",
         "must_be": "Должен быть",
-        "failed_to_create": "Не удалось создать триггерный ордер"
+        "failed_to_create": "Не удалось создать триггерный ордер",
+        "gain": "Прибыль",
+        "loss": "Убыток"
       },
       "search": {
         "search_markets": "Поиск рынков",
         "markets_count": "%{count} РЫНКОВ",
-        "choose_a_market": "ВЫБЕРИТЕ РЫНОК"
+        "choose_a_market": "ВЫБЕРИТЕ РЫНОК",
+        "no_markets_found": "Рынки не найдены"
       },
       "close_position": {
         "estimated_loss": "Ожидаемая потеря",
@@ -1752,6 +1783,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "По объему",
+        "by_change": "По изменению",
+        "by_price": "По цене"
       },
       "leverage": "Рычаг",
       "up_to": "До"
@@ -2214,6 +2250,9 @@
         "full_range": "Полный диапазон",
         "out_of_range": "Вне диапазона",
         "in_range": "В диапазоне"
+      },
+      "lp_allocation": {
+        "other": "Другие"
       },
       "open_dapp": "Открыть",
       "deposits": "Депозиты",

@@ -66,35 +66,33 @@ const MarketSortOrderPicker = () => {
   const selectedSortOrderConfig = marketSortOrderLabels[selectedSortOrder];
 
   return (
-    <Box justifyContent="center" alignItems="center">
-      <Box position="absolute" bottom={{ custom: FOOTER_HEIGHT + 24 }}>
-        <MarketSortOrderDropdown>
-          <Box
-            height={40}
-            backgroundColor={isDarkMode ? '#25292E' : '#F0F1F1'}
-            flexDirection="row"
-            alignItems="center"
-            gap={6}
-            paddingHorizontal={{ custom: 14 }}
-            borderColor={{ custom: isDarkMode ? opacityWorklet('#9CA4AD', 0.08) : opacityWorklet('#09111F', 0.01) }}
-            borderWidth={THICKER_BORDER_WIDTH}
-            borderRadius={22}
-            shadow={'30px'}
-          >
-            <TextShadow blur={12} shadowOpacity={0.24}>
-              <Text size="icon 15px" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-                {selectedSortOrderConfig.icon}
-              </Text>
-            </TextShadow>
-            <Text size="17pt" weight="heavy" color="label">
-              {selectedSortOrderConfig.label}
+    <Box position="absolute" bottom={{ custom: FOOTER_HEIGHT + 24 }} style={{ alignSelf: 'center' }}>
+      <MarketSortOrderDropdown>
+        <Box
+          height={40}
+          backgroundColor={isDarkMode ? '#25292E' : '#F0F1F1'}
+          flexDirection="row"
+          alignItems="center"
+          gap={6}
+          paddingHorizontal={{ custom: 14 }}
+          borderColor={{ custom: isDarkMode ? opacityWorklet('#9CA4AD', 0.08) : opacityWorklet('#09111F', 0.01) }}
+          borderWidth={THICKER_BORDER_WIDTH}
+          borderRadius={22}
+          shadow={'30px'}
+        >
+          <TextShadow blur={12} shadowOpacity={0.24}>
+            <Text size="icon 15px" weight="heavy" color={{ custom: accentColors.opacity100 }}>
+              {selectedSortOrderConfig.icon}
             </Text>
-            <TextIcon size="icon 13px" weight="heavy" color="labelTertiary">
-              {'􀆏'}
-            </TextIcon>
-          </Box>
-        </MarketSortOrderDropdown>
-      </Box>
+          </TextShadow>
+          <Text size="17pt" weight="heavy" color="label">
+            {selectedSortOrderConfig.label}
+          </Text>
+          <TextIcon size="icon 13px" weight="heavy" color="labelTertiary">
+            {'􀆏'}
+          </TextIcon>
+        </Box>
+      </MarketSortOrderDropdown>
     </Box>
   );
 };

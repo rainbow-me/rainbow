@@ -968,6 +968,8 @@
       "redacted_title": "잠금 해제 완료\nRedacted Rainbow",
       "baggy_description": "스트릿에서 체인으로, 이 작은 가방은 레인보우의 분위기를 휴대할 수 있도록 합니다. 색깔을 맛보고 차이를 느껴보세요.",
       "baggy_title": "잠금 해제\n Rainbow Baggy",
+      "chonks_description": "Rainbow 헤어를 휘날리며 101번 도로를 달릴 때, Chonky의 기분을 느껴보세요.",
+      "chonks_title": "당신은 가장 Chonky한 아이콘을 열었습니다",
       "button": "아이콘 잡기"
     },
     "explain": {
@@ -1582,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "활동",
+        "trades_count": "%{count} 거래",
+        "no_previous_trades": "이전 거래 없음"
+      },
       "common": {
         "not_available": "N/A",
         "current_price": "현재 가격",
@@ -1591,8 +1598,14 @@
         "more": "더 보기",
         "error": "오류",
         "cancel": "취소",
+        "close": "닫기",
+        "add": "추가",
         "liq_price": "청산 가격",
         "liq": "청산"
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "Perps",
@@ -1609,6 +1622,7 @@
       },
       "markets": {
         "title": "시장",
+        "view_all": "모두 보기",
         "up_to": "최대",
         "already_open": "이미 열림"
       },
@@ -1689,6 +1703,20 @@
           "short_liquidated": "숏 청산"
         }
       },
+      "trade_details_sheet": {
+        "market": "시장",
+        "entry_price": "진입 가격",
+        "close_price": "종가",
+        "date": "날짜",
+        "profit": "수익",
+        "loss": "손실",
+        "outcome": {
+          "liquidated": "청산됨",
+          "opened": "열림",
+          "lost": "잃어버림",
+          "earned": "얻음"
+        }
+      },
       "trigger_orders": {
         "title": "트리거 주문",
         "take_profit": "이익 실현",
@@ -1705,12 +1733,15 @@
         "above": "위의",
         "below": "아래의",
         "must_be": "다음이어야 함",
-        "failed_to_create": "트리거 주문 생성 실패"
+        "failed_to_create": "트리거 주문 생성 실패",
+        "gain": "획득",
+        "loss": "손실"
       },
       "search": {
         "search_markets": "시장 검색",
         "markets_count": "%{count} 시장",
-        "choose_a_market": "시장 선택"
+        "choose_a_market": "시장 선택",
+        "no_markets_found": "마켓을 찾을 수 없습니다"
       },
       "close_position": {
         "estimated_loss": "예상 손실",
@@ -1752,6 +1783,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "거래량 순",
+        "by_change": "변화 순",
+        "by_price": "가격 순"
       },
       "leverage": "레버리지",
       "up_to": "최대"
@@ -2214,6 +2250,9 @@
         "full_range": "전체 범위",
         "out_of_range": "범위 초과",
         "in_range": "범위 내"
+      },
+      "lp_allocation": {
+        "other": "기타"
       },
       "open_dapp": "오픈 􀮶",
       "deposits": "입금",

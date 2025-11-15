@@ -4,12 +4,26 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
   push:
-    branches:
-      - develop
+    branches: [develop]
+  issue_comment:
+    types: [created]
+
+env:
+  PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+
 jobs:
   build:
     name: Test Build
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    if: |
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
+      github.event_name == 'push' ||
+      (github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request != null &&
+      (
+        startsWith(github.event.comment.body, '/e2e') ||
+        startsWith(github.event.comment.body, '/perf')
+      ) &&
+      contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: blacksmith-8vcpu-ubuntu-2404
     timeout-minutes: 30
     concurrency:
@@ -121,11 +135,13 @@ jobs:
 
   e2e-tests:
     name: E2E Tests (Shard ${{ matrix.shard-index }})
+    if: |
+      github.event_name != 'issue_comment' ||
+      startsWith(github.event.comment.body, '/e2e')
     strategy:
       fail-fast: false
       matrix:
         shard-index: [1, 2, 3, 4]
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: app-e2e-runner
     needs: build
     timeout-minutes: 30
@@ -212,7 +228,9 @@ jobs:
 
   perf-tests:
     name: Perf Tests
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    if: |
+      github.event_name != 'issue_comment' ||
+      startsWith(github.event.comment.body, '/perf')
     runs-on: blacksmith-2vcpu-ubuntu-2404
     needs: build
     timeout-minutes: 30
@@ -243,7 +261,7 @@ jobs:
           PROJECT_ARN: ${{ secrets.AWS_DEVICE_FARM_PROJECT_ARN }}
           DEVICE_POOL_ARN: ${{ secrets.AWS_DEVICE_FARM_DEVICE_POOL_ARN }}
           ARTIFACT_PATH_FOR_E2E: ${{ env.ARTIFACT_PATH_FOR_E2E }}
-          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_PR_NUMBER: ${{ env.PR_NUMBER }}
 
       - name: Install Flashlight
         if: github.event_name == 'pull_request'
@@ -256,12 +274,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_RUN_ID: ${{ github.run_id }}
-          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_PR_NUMBER: ${{ env.PR_NUMBER }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_COMMIT: ${{ github.sha }}
 
       - name: Upload Current Perf JSON
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: perf-results-${{ github.event.pull_request.number || github.ref_name }}
+          name: perf-results-${{ env.PR_NUMBER || github.ref_name }}
           path: ${{ env.ARTIFACTS_FOLDER }}/perf

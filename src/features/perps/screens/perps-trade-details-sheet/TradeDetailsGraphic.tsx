@@ -33,11 +33,11 @@ const CONFIG = {
     },
     accentOpacity: 0.08,
   },
-  oval: {
-    height: 80,
+  backgroundBlurredOval: {
+    width: 250,
+    height: 150,
     opacity: 0.1,
-    blur: 52,
-    rotation: Math.PI / 4,
+    blur: 24,
   },
 };
 
@@ -53,14 +53,21 @@ export const TradeDetailsGraphic = memo(function TradeDetailsGraphic({ trade }: 
   const gridHeight = CONFIG.layout.gridHeight;
   const gridWidth = sheetWidth + gridOverflow;
   const accentColor = getAccentColor(trade);
-  const ovalHeight = CONFIG.oval.height;
-  const ovalOpacity = CONFIG.oval.opacity;
-  const ovalColor = opacityWorklet(accentColor, ovalOpacity);
+  const backgroundBlurredOvalColor = opacityWorklet(accentColor, CONFIG.backgroundBlurredOval.opacity);
+  const backgroundBlurredOvalWidth = CONFIG.backgroundBlurredOval.width;
+  const backgroundBlurredOvalHeight = CONFIG.backgroundBlurredOval.height;
 
   return (
     <Box width={sheetWidth} height={graphicHeight}>
       <Canvas style={{ width: sheetWidth, height: graphicHeight }}>
-        {isDarkMode && <GradientBackground width={sheetWidth} height={CONFIG.layout.topSectionHeight} color={accentColor} />}
+        {isDarkMode && (
+          <GradientBackground
+            width={sheetWidth}
+            height={CONFIG.layout.topSectionHeight}
+            color={accentColor}
+            backgroundColor={backgroundColor}
+          />
+        )}
         <FloatingSparks
           height={CONFIG.layout.topSectionHeight}
           width={sheetWidth}
@@ -97,27 +104,15 @@ export const TradeDetailsGraphic = memo(function TradeDetailsGraphic({ trade }: 
           )}
         </Group>
         {/* Background accent blur */}
-        <Group dither antiAlias transform={[{ translateY: CONFIG.layout.ovalTranslateY }]}>
-          <Oval x={0} y={0} width={sheetWidth} height={ovalHeight} color={ovalColor} />
+        <Group dither antiAlias>
           <Oval
-            x={0}
-            y={0}
-            origin={vec(sheetWidth / 2, ovalHeight / 2)}
-            transform={[{ rotate: CONFIG.oval.rotation }]}
-            width={sheetWidth}
-            height={ovalHeight}
-            color={ovalColor}
+            x={sheetWidth / 2 - backgroundBlurredOvalWidth / 2}
+            y={CONFIG.layout.outcomeInfoOffset - 24}
+            width={backgroundBlurredOvalWidth}
+            height={backgroundBlurredOvalHeight}
+            color={backgroundBlurredOvalColor}
           />
-          <Oval
-            x={0}
-            y={0}
-            origin={vec(sheetWidth / 2, ovalHeight / 2)}
-            transform={[{ rotate: -CONFIG.oval.rotation }]}
-            width={sheetWidth}
-            height={ovalHeight}
-            color={ovalColor}
-          />
-          <Blur blur={CONFIG.oval.blur} />
+          <Blur blur={CONFIG.backgroundBlurredOval.blur} />
         </Group>
       </Canvas>
       <Box width="full" position="absolute" top={{ custom: CONFIG.layout.outcomeInfoOffset }}>
@@ -163,14 +158,24 @@ function getAccentColor(trade: HlTrade) {
   }
 }
 
-const GradientBackground = ({ width, height, color }: { width: number; height: number; color: string }) => {
+const GradientBackground = ({
+  width,
+  height,
+  color,
+  backgroundColor,
+}: {
+  width: number;
+  height: number;
+  color: string;
+  backgroundColor: string;
+}) => {
   return (
-    <Group>
-      <Rect dither antiAlias x={0} y={0} width={width} height={height}>
-        <LinearGradient colors={[opacityWorklet(color, 0), opacityWorklet(color, 0.2)]} start={vec(0, 32)} end={vec(0, height)} />
+    <Group dither antiAlias>
+      <Rect x={0} y={0} width={width} height={height} opacity={0.2}>
+        <LinearGradient colors={[backgroundColor, color]} start={vec(0, 32)} end={vec(0, height)} />
       </Rect>
-      <Rect dither antiAlias x={0} y={0} width={width} height={height}>
-        <LinearGradient colors={[opacityWorklet(color, 0.03), opacityWorklet(color, 0)]} start={vec(0, 0)} end={vec(0, height - 32)} />
+      <Rect x={0} y={0} width={width} height={height} opacity={0.03}>
+        <LinearGradient colors={[color, backgroundColor]} start={vec(0, 0)} end={vec(0, height - 32)} />
       </Rect>
     </Group>
   );
@@ -270,7 +275,8 @@ const OutcomeInfo = ({ trade }: { trade: HlTrade }) => {
             isDarkMode ? ['rgba(255, 255, 255, 0.08)', 'rgba(0, 0, 0, 0.20)'] : ['rgba(255, 255, 255, 0.07)', 'rgba(0, 0, 0, 0.12)']
           }
           strokeWidth={isDarkMode ? 2 : 5 / 3}
-          dropShadows={isDarkMode ? [{ dx: 0, dy: 4, blur: 6, color: 'rgba(0, 0, 0, 0.06)' }] : []}
+          // TODO: Temporarily disabled. Banding effect from the blur is too noticeable.
+          // dropShadows={isDarkMode ? [{ dx: 0, dy: 4, blur: 6, color: 'rgba(0, 0, 0, 0.06)' }] : undefined}
           innerShadows={[{ dx: 0, dy: 1, blur: 2.5, color: 'rgba(255, 255, 255, 0.28)' }]}
           fontSize="15pt"
           fontWeight="heavy"
@@ -283,10 +289,11 @@ const OutcomeInfo = ({ trade }: { trade: HlTrade }) => {
           textColor={{ custom: '#FFFFFF' }}
           strokeColor={'rgba(255, 255, 255, 0.12)'}
           strokeWidth={isDarkMode ? 2 : 2 / 3}
-          dropShadows={[
-            { dx: 0, dy: 8, blur: 12, color: opacityWorklet(trade.isLong ? '#1F9E39' : '#D53F35', 0.12) },
-            { dx: 0, dy: 4, blur: 6, color: 'rgba(0, 0, 0, 0.06)' },
-          ]}
+          // TODO: Temporarily disabled. Banding effect from the blur is too noticeable.
+          // dropShadows={[
+          //   { dx: 0, dy: 8, blur: 12, color: opacityWorklet(trade.isLong ? '#1F9E39' : '#D53F35', 0.12) },
+          //   { dx: 0, dy: 4, blur: 6, color: 'rgba(0, 0, 0, 0.06)' },
+          // ]}
           innerShadows={[{ dx: 0, dy: 1, blur: 2.5, color: 'rgba(255, 255, 255, 0.28)' }]}
           fontSize="15pt"
           fontWeight="heavy"

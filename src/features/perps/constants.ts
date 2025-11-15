@@ -133,3 +133,11 @@ export const LAYOUT_ANIMATION = LinearTransition.springify()
   .mass(ANIMATION_CONFIG.mass as number)
   .damping(ANIMATION_CONFIG.damping as number)
   .stiffness(ANIMATION_CONFIG.stiffness as number);
+
+/**
+ * Could not find documentation as to how these ids are determined.
+ * 0: USDC, 360: USDH
+ */
+export const SUPPORTED_COLLATERAL_TOKENS = {
+  0: 'USDC',
+} as const;
