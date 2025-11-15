@@ -2019,7 +2019,7 @@ PODS:
     - SocketRocket
   - react-native-aes-crypto (2.0.2):
     - React-Core
-  - react-native-animateable-text (0.16.0):
+  - react-native-animateable-text (0.17.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -4026,7 +4026,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 94f4264de2cb156960cd82b338a403f4653f2fd9
   React-microtasksnativemodule: 6c4ee39a36958c39c97b074d28f360246a335e84
   react-native-aes-crypto: 598b531c1dcdec9830e0475459c53e13e01fcbf0
-  react-native-animateable-text: 14d1bee8492d81b3cc5ab3b7789aee64c04b0757
+  react-native-animateable-text: 2e73290cbec383f54d1ac9e315420051faa600f0
   react-native-ble-plx: fe08db41590cb4b015612046972acc44e4551c66
   react-native-blur-view: 86fcc6a9caa695842978afb15553b3b673137e5b
   react-native-branch: 46dc8cb067af50455db675370c3cd63425f85bea
