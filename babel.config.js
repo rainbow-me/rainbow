@@ -23,7 +23,7 @@ module.exports = function (api) {
   api.cache(true);
 
   const plugins = [
-    ...(data ? [data] : []),
+    ...(data && !isJest ? [data] : []),
     [
       'module-resolver',
       {
