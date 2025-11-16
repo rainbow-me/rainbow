@@ -50,7 +50,7 @@ const Input = (
       ref={ref}
       selectionColor={selectionColor || defaultSelectionColor}
       spellCheck={spellCheck}
-      style={[IS_ANDROID && { padding: 0, includeFontPadding: false }, style]}
+      style={[IS_ANDROID && { padding: 0, includeFontPadding: false, minHeight: 1 }, style]}
       testID={testID}
       textContentType={textContentType}
     />

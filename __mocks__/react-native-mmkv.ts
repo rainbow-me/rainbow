@@ -1,69 +1,81 @@
-import type { NativeMMKV } from 'react-native-mmkv';
-
-type MMKVValue = boolean | string | number | Uint8Array;
-
-const GLOBAL_SHARED_STORAGE: {
-  [key: string]: Map<string, MMKVValue>;
-} = {};
+import type { MMKV } from 'react-native-mmkv';
 
 /**
  * Based on the provided MMKV mock, but with global memory support to match actual MMKV usage.
  *
- * @see https://github.com/mrousavy/react-native-mmkv/blob/77982c1a61a5e6d2683e6569ca92e09390b28c48/src/createMMKV.mock.ts
+ * @see https://github.com/mrousavy/react-native-mmkv/blob/4fc2863b85c8755afcd26317b5eea38a21de38df/packages/react-native-mmkv/src/createMMKV/createMockMMKV.ts
  */
-export class MMKV implements NativeMMKV {
-  id = 'default';
-  storage: Map<string, MMKVValue>;
+export function createMockMMKV(): MMKV {
+  const storage = new Map<string, string | boolean | number | ArrayBuffer>();
+  const listeners = new Set<(key: string) => void>();
 
-  constructor({ id }: { id: string } = { id: 'default' }) {
-    this.id = id;
+  const notifyListeners = (key: string) => {
+    listeners.forEach(listener => {
+      listener(key);
+    });
+  };
 
-    // `this.storage` is just a shorthand to the shared global storage, scoped to this instance
-    // eslint-disable-next-line no-multi-assign
-    this.storage = GLOBAL_SHARED_STORAGE[this.id] = GLOBAL_SHARED_STORAGE[this.id] || new Map<string, string | boolean | number>();
-  }
-
-  clearAll() {
-    this.storage.clear();
-  }
-
-  delete(key: string) {
-    this.storage.delete(key);
-  }
-
-  set(key: string, value: MMKVValue) {
-    this.storage.set(key, value);
-  }
-
-  getString(key: string) {
-    const result = this.storage.get(key);
-    return typeof result === 'string' ? result : undefined;
-  }
-
-  getNumber(key: string) {
-    const result = this.storage.get(key);
-    return typeof result === 'number' ? result : undefined;
-  }
-
-  getBoolean(key: string) {
-    const result = this.storage.get(key);
-    return typeof result === 'boolean' ? result : undefined;
-  }
-
-  getBuffer(key: string) {
-    const result = this.storage.get(key);
-    return result instanceof Uint8Array ? result : undefined;
-  }
-
-  getAllKeys() {
-    return Array.from(this.storage.keys());
-  }
-
-  contains(key: string) {
-    return this.storage.has(key);
-  }
-
-  recrypt() {
-    console.warn('Encryption is not supported in mocked MMKV instances!');
-  }
+  return {
+    get size(): number {
+      return storage.size;
+    },
+    isReadOnly: false,
+    clearAll: () => {
+      const keysBefore = storage.keys();
+      storage.clear();
+      // Notify all listeners for all keys that were cleared
+      for (const key of keysBefore) {
+        notifyListeners(key);
+      }
+    },
+    remove: key => {
+      const deleted = storage.delete(key);
+      if (deleted) {
+        notifyListeners(key);
+      }
+      return deleted;
+    },
+    set: (key, value) => {
+      if (key === '') throw new Error('Cannot set a value for an empty key!');
+      storage.set(key, value);
+      notifyListeners(key);
+    },
+    getString: key => {
+      const result = storage.get(key);
+      return typeof result === 'string' ? result : undefined;
+    },
+    getNumber: key => {
+      const result = storage.get(key);
+      return typeof result === 'number' ? result : undefined;
+    },
+    getBoolean: key => {
+      const result = storage.get(key);
+      return typeof result === 'boolean' ? result : undefined;
+    },
+    getBuffer: key => {
+      const result = storage.get(key);
+      return result instanceof ArrayBuffer ? result : undefined;
+    },
+    getAllKeys: () => Array.from(storage.keys()),
+    contains: key => storage.has(key),
+    recrypt: () => {
+      console.warn('Encryption is not supported in mocked MMKV instances!');
+    },
+    trim: () => {
+      // no-op
+    },
+    name: 'MMKV',
+    dispose: () => {},
+    equals: () => {
+      return false;
+    },
+    addOnValueChangedListener: listener => {
+      listeners.add(listener);
+      return {
+        remove: () => {
+          listeners.delete(listener);
+        },
+      };
+    },
+  };
 }

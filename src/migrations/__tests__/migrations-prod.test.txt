@@ -1,5 +1,5 @@
 import { describe, test, expect } from '@jest/globals';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 
 import { logger, RainbowError } from '@/logger';
 import { runMigrations } from '@/migrations';
@@ -14,7 +14,7 @@ jest.mock('@/env', () => ({
 }));
 
 describe(`@/migrations IS_PROD`, () => {
-  const storage = new MMKV({ id: MIGRATIONS_STORAGE_ID });
+  const storage = createMMKV({ id: MIGRATIONS_STORAGE_ID });
 
   test(`migration in debug mode in prod exits early and logs`, async () => {
     const spy = jest.fn();

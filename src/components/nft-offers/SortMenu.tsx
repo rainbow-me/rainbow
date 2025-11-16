@@ -8,9 +8,9 @@ import * as i18n from '@/languages';
 import ConditionalWrap from 'conditional-wrap';
 import { analytics } from '@/analytics';
 import { atom, useRecoilState } from 'recoil';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 
-const mmkv = new MMKV();
+const mmkv = createMMKV();
 
 export type SortOption = {
   name: string;

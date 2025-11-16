@@ -10,7 +10,7 @@ import { fonts, position } from '@/styles';
 import { useTheme } from '@/theme';
 import React, { ComponentProps, useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { abbreviations, magicMemo, measureText } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';

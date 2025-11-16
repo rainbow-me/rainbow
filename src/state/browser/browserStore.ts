@@ -1,5 +1,5 @@
 import { debounce } from 'lodash';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { PersistStorage, StorageValue, persist, subscribeWithSelector } from 'zustand/middleware';
 import { createWithEqualityFn } from 'zustand/traditional';
 import { RAINBOW_HOME } from '@/components/DappBrowser/constants';
@@ -13,7 +13,7 @@ const BROWSER_STORAGE_ID = 'browserStore';
 const BROWSER_STORAGE_VERSION = 0;
 const PERSIST_RATE_LIMIT_MS = time.seconds(3);
 
-const browserStorage = new MMKV({ id: BROWSER_STORAGE_ID });
+const browserStorage = createMMKV({ id: BROWSER_STORAGE_ID });
 
 const lazyPersist = debounce(
   (key: string, value: StorageValue<PersistedState>) => {
@@ -122,7 +122,7 @@ const persistedBrowserStorage: PersistStorage<PersistedState> = {
     return deserializePersistedState(serializedValue);
   },
   setItem: (key, value) => lazyPersist(key, value),
-  removeItem: key => browserStorage.delete(key),
+  removeItem: key => browserStorage.remove(key),
 };
 
 const INITIAL_ACTIVE_TAB_INDEX = 0;

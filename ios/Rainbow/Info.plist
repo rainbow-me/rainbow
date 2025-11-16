@@ -245,7 +245,7 @@
 	<key>RCTAsyncStorageExcludeFromBackup</key>
 	<false/>
 	<key>RCTNewArchEnabled</key>
-	<false/>
+	<true/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>SF-Mono-Bold.otf</string>

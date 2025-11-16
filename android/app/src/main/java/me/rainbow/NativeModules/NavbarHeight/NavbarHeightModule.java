@@ -31,9 +31,6 @@ public class NavbarHeightModule extends ReactContextBaseJavaModule {
         return NAME;
     }
 
-    // Example method
-    // See https://reactnative.dev/docs/native-modules-android
-    @ReactMethod
     public double getNavigationBarHeightSync() {
         Context context = getReactApplicationContext();
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);

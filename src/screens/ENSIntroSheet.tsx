@@ -3,7 +3,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import { InteractionManager, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import ActivityIndicator from '../components/ActivityIndicator';
 import IntroMarquee from '../components/ens-registration/IntroMarquee/IntroMarquee';
 import { SheetActionButton } from '../components/sheet';

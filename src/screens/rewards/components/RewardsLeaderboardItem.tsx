@@ -5,7 +5,7 @@ import { TOP_RANK_SYMBOLS } from '@/screens/rewards/constants';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { ContactAvatar } from '@/components/contacts';
 import MaskedView from '@react-native-masked-view/masked-view';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet } from 'react-native';
 import { getGradientColorsForRank } from '@/screens/rewards/helpers/getGradientColorsForRank';
 import { useTheme } from '@/theme';

@@ -49,7 +49,7 @@ export default React.memo(function RainbowCoinIcon({
   const shadowColor = theme.isDarkMode || forceDarkMode ? theme.colors.shadow : color || fallbackIconColor;
 
   return (
-    <View style={[sx.container, { height: size }]}>
+    <View style={[sx.container, { height: size, width: size }]} collapsable={false}>
       <FastFallbackCoinIconImage icon={icon} shadowColor={shadowColor} symbol={symbol} theme={theme} size={size}>
         {() => (
           <CoinIconTextFallback
