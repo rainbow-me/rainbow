@@ -21,6 +21,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.12] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.12)
+
+### Added
+
+- APP-2844: Activity goldsky (https://github.com/rainbow-me/rainbow/pull/6897)
+- Allow running e2e or perf tests with issue comment (https://github.com/rainbow-me/rainbow/pull/6937)
+
+### Changed
+
+- Bump iOS and Android to v2.0.12 (https://github.com/rainbow-me/rainbow/pull/6932)
+- Filter rETH from positions and add comprehensive test coverage (https://github.com/rainbow-me/rainbow/commit/b0da9981cf2d0927dfb5f6cde1590cdd7a862bf9)
+- Filter non USDC collateral HIP-3 markets (https://github.com/rainbow-me/rainbow/pull/6939)
+- New Crowdin updates (https://github.com/rainbow-me/rainbow/pull/6900)
+
+### Fixed
+
+- APP-3203: Fix android position overflow (https://github.com/rainbow-me/rainbow/pull/6927)
+- Fix hyperliquid token symbol metadata lookup (https://github.com/rainbow-me/rainbow/pull/6934)
+- Fix sheet dismiss gesture on iOS (https://github.com/rainbow-me/rainbow/pull/6936)
+- APP-3216: Fix double alert on duplicate watch wallet (https://github.com/rainbow-me/rainbow/pull/6928)
+- Fix SkiaBadge clipping issue (https://github.com/rainbow-me/rainbow/pull/6930)
+
 ## [2.0.11] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.11)
 
 ### Added
