@@ -49,7 +49,6 @@ export const getAccountEmptyState = (accountAddress: any, network: any) =>
  * @param  {String}   [network]
  */
 export const saveAccountEmptyState = (val: any, accountAddress: any, network: any) => {
-  console.log(val, accountAddress, network, getKey(ACCOUNT_EMPTY, accountAddress, network));
   return storage.set(getKey(ACCOUNT_EMPTY, accountAddress, network), val);
 };
 

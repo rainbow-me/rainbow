@@ -92,9 +92,9 @@ PODS:
   - ExpoWebBrowser (14.1.6):
     - ExpoModulesCore
   - fast_float (8.0.0)
-  - FasterImage (1.7.2):
-    - FasterImage/Nuke (= 1.7.2)
-    - FasterImage/NukeUI (= 1.7.2)
+  - FasterImage (1.6.2):
+    - FasterImage/Nuke (= 1.6.2)
+    - FasterImage/NukeUI (= 1.6.2)
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -102,7 +102,7 @@ PODS:
     - React-Core
     - React-RCTFabric
     - ReactCommon/turbomodule/core
-  - FasterImage/Nuke (1.7.2):
+  - FasterImage/Nuke (1.6.2):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -110,7 +110,7 @@ PODS:
     - React-Core
     - React-RCTFabric
     - ReactCommon/turbomodule/core
-  - FasterImage/NukeUI (1.7.2):
+  - FasterImage/NukeUI (1.6.2):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -4454,7 +4454,7 @@ SPEC CHECKSUMS:
   ExpoStoreReview: f70e5929ba4a594078dd3285d5151427167f48fa
   ExpoWebBrowser: 06fb5f767f53ad53944b068cdd207984cb998712
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
-  FasterImage: 0543472141d8f64716efdeb3bb886a6fe814f3b9
+  FasterImage: 2ca2b5cbf1935ddabd047287df009956a5895138
   FBLazyVector: 5beb8028d5a2e75dd9634917f23e23d3a061d2aa
   Firebase: 26b040b20866a55f55eb3611b9fcf3ae64816b86
   FirebaseABTesting: d87f56707159bae64e269757a6e963d490f2eebe
