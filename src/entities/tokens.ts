@@ -1,7 +1,7 @@
-import { EthereumAddress } from '.';
-import { Chain } from '@wagmi/chains';
-import { ChainId } from '@/state/backendNetworks/types';
-import { TokenColors } from '@/graphql/__generated__/metadata';
+import type { EthereumAddress } from '.';
+import type { Chain } from 'viem';
+import type { ChainId } from '@/state/backendNetworks/types';
+import type { TokenColors } from '@/graphql/__generated__/metadata';
 
 export interface ZerionAssetPrice {
   value: number;
