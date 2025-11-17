@@ -21,6 +21,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+
+## [2.0.13](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.13)
+### Changed
+* Remove NFT offers section (https://github.com/rainbow-me/rainbow/pull/6929)
+* Bump iOS and Android to v2.0.13 (https://github.com/rainbow-me/rainbow/pull/6944)
+* Fix issue where password manager won't save the password after backup (https://github.com/rainbow-me/rainbow/pull/6923)
+* Fix perps trade executed at formatting (https://github.com/rainbow-me/rainbow/pull/6943)
 ## [2.0.12] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.12)
 
 ### Added
