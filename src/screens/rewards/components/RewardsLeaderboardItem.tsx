@@ -1,11 +1,11 @@
 import React from 'react';
-import { Bleed, Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
+import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { TOP_RANK_SYMBOLS } from '@/screens/rewards/constants';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { ContactAvatar } from '@/components/contacts';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient, LinearGradientProps } from 'expo-linear-gradient';
 import { StyleSheet } from 'react-native';
 import { getGradientColorsForRank } from '@/screens/rewards/helpers/getGradientColorsForRank';
 import { useTheme } from '@/theme';
@@ -17,7 +17,7 @@ import { analytics } from '@/analytics';
 
 const MaskedGradientText: React.FC<{
   text: string;
-  gradientColors: string[];
+  gradientColors: LinearGradientProps['colors'];
 }> = ({ text, gradientColors }) => {
   return (
     <Box>

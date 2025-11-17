@@ -57,13 +57,13 @@ function FilterButton({
   const defaultIconColor = getColorWorklet('labelSecondary', selected ? false : isDarkMode);
 
   const gradientColors = useMemo(() => {
-    if (!selected) return [fillTertiary, fillTertiary];
+    if (!selected) return [fillTertiary, fillTertiary] as const;
     return highlightedBackgroundColor
-      ? [highlightedBackgroundColor, globalColors.white100]
-      : [
+      ? ([highlightedBackgroundColor, globalColors.white100] as const)
+      : ([
           isDarkMode ? opacity(globalColors.white100, 0.72) : opacity(fillTertiary, 0.2),
           isDarkMode ? opacity(globalColors.white100, 0.92) : opacity(fillTertiary, 0),
-        ];
+        ] as const);
   }, [fillTertiary, highlightedBackgroundColor, selected, isDarkMode]);
 
   return (
@@ -204,8 +204,8 @@ function CategoryFilterButton({
   const borderColor = selected && isDarkMode ? globalColors.white80 : separatorSecondary;
 
   const gradientColors = useMemo(() => {
-    if (!selected) return [fillTertiary, fillTertiary];
-    return [highlightedBackgroundColor, globalColors.white100];
+    if (!selected) return [fillTertiary, fillTertiary] as const;
+    return [highlightedBackgroundColor, globalColors.white100] as const;
   }, [fillTertiary, highlightedBackgroundColor, selected]);
 
   const selectCategory = useCallback(() => {
