@@ -8231,18 +8231,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wagmi/chains@npm:1.8.0":
-  version: 1.8.0
-  resolution: "@wagmi/chains@npm:1.8.0"
-  peerDependencies:
-    typescript: ">=5.0.4"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10c0/1e7e8eb26260eb468b9507d326aa4545bc8f0264ad0199dba6b3d85e688c9c8120245db6158c8e6cde90115e4a893daa41fd38303504cd797d484bf8e9bbce12
-  languageName: node
-  linkType: hard
-
 "@walletconnect/browser-utils@npm:^1.8.0":
   version: 1.8.0
   resolution: "@walletconnect/browser-utils@npm:1.8.0"
@@ -9183,7 +9171,6 @@ __metadata:
     "@types/url-join": "npm:4.0.1"
     "@types/url-parse": "npm:1.4.3"
     "@unstoppabledomains/resolution": "npm:7.1.4"
-    "@wagmi/chains": "npm:1.8.0"
     "@walletconnect/client": "npm:1.8.0"
     "@walletconnect/core": "npm:2.17.0"
     "@walletconnect/legacy-utils": "npm:2.0.0"
