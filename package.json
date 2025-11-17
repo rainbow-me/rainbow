@@ -484,7 +484,9 @@
       "viem>ws>utf-8-validate": false,
       "@types/detox>detox": false,
       "react-native-bootsplash>sharp": false,
-      "ethereumjs-util>ethereum-cryptography>keccak": false
+      "ethereumjs-util>ethereum-cryptography>keccak": false,
+      "react-native-mmkv": false,
+      "react-native-nitro-modules": false
     }
   },
   "lint-staged": {
