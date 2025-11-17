@@ -5,7 +5,7 @@ import type { MMKV } from 'react-native-mmkv';
  *
  * @see https://github.com/mrousavy/react-native-mmkv/blob/4fc2863b85c8755afcd26317b5eea38a21de38df/packages/react-native-mmkv/src/createMMKV/createMockMMKV.ts
  */
-export function createMockMMKV(): MMKV {
+export function createMMKV(): MMKV {
   const storage = new Map<string, string | boolean | number | ArrayBuffer>();
   const listeners = new Set<(key: string) => void>();
 
