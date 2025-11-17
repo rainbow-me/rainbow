@@ -95,7 +95,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
         borderWidth: 1,
         borderColor: colors.alpha('#F5F8FF', 0.03),
       } as const,
-      colors: [colors.alpha(colors.blueGreyDark, 0.03), colors.alpha(colors.blueGreyDark, isDarkMode ? 0.02 : 0.06)],
+      colors: [colors.alpha(colors.blueGreyDark, 0.03), colors.alpha(colors.blueGreyDark, isDarkMode ? 0.02 : 0.06)] as const,
       end: { x: 1, y: 1 },
       start: { x: 0, y: 0 },
     }),
