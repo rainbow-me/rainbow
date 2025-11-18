@@ -1,10 +1,8 @@
-import { getAddress } from '@ethersproject/address';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
 import { Block, JsonRpcBatchProvider, StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
-import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
 import { AssetType, NewTransaction, ParsedAddressAsset, UniqueAsset } from '@/entities';
@@ -28,7 +26,7 @@ import { ChainId, chainAnvil } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { NftTokenType } from '@/graphql/__generated__/arc';
-import { Address } from 'viem';
+import { Address, getAddress, parseEther } from 'viem';
 
 export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
 

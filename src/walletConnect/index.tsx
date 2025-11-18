@@ -35,7 +35,7 @@ import {
   WalletconnectRequestData,
   WalletconnectResultType,
 } from '@/walletConnect/types';
-import { getAddress, isAddress } from '@ethersproject/address';
+import { getAddress, isAddress } from 'viem';
 import { isHexString } from '@ethersproject/bytes';
 import { toUtf8String } from '@ethersproject/strings';
 import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';

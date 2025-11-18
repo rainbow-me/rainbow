@@ -11,7 +11,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
-import { isAddress } from '@ethersproject/address';
+import { isAddress } from 'viem';
 
 const MAX_VERIFIED_RESULTS = 24;
 const MAX_HIGH_LIQUIDITY_RESULTS = 6;

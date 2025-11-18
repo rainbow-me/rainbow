@@ -3,7 +3,7 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { promiseUtils } from '@/utils';
-import { isAddress } from '@ethersproject/address';
+import { isAddress } from 'viem';
 import { useCallback, useEffect } from 'react';
 
 function shouldFetchCollections(collectionId: string, openCollections: Record<string, boolean>) {

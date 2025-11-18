@@ -64,11 +64,10 @@ import { TimeToSignOperation, executeFn } from '@/state/performance/performance'
 import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { RequestData } from '@/walletConnect/types';
-import { isAddress } from '@ethersproject/address';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { switchWallet } from '@/state/wallets/switchWallet';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { Address } from 'viem';
+import { Address, isAddress } from 'viem';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;

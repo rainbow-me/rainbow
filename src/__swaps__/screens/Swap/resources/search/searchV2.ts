@@ -1,5 +1,5 @@
 import qs from 'qs';
-import { getAddress, isAddress } from '@ethersproject/address';
+import { getAddress, isAddress } from 'viem';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { groupBy } from 'lodash';
 import { getProvider } from '@/handlers/web3';

@@ -6,7 +6,7 @@ import { convertAmountAndPriceToNativeDisplay, convertHexToString, convertRawAmo
 import { logger } from '@/logger';
 import { ethereumUtils } from '@/utils';
 import { isSignTypedData, SIGN, PERSONAL_SIGN, SEND_TRANSACTION, SIGN_TRANSACTION } from '@/utils/signingMethods';
-import { isAddress } from '@ethersproject/address';
+import { isAddress } from 'viem';
 import { toUtf8String } from '@ethersproject/strings';
 
 export const getRequestDisplayDetails = async (payload, nativeCurrency, chainId) => {

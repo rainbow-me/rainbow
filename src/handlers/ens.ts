@@ -1,5 +1,4 @@
 import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
-import { getAddress } from '@ethersproject/address';
 import { Resolver } from '@ethersproject/providers';
 import { Duration, sub } from 'date-fns';
 import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
@@ -25,7 +24,7 @@ import { MimeType, handleNFTImages } from '@/utils/handleNFTImages';
 import store from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
 import { ChainId, Network } from '@/state/backendNetworks/types';
-import { Address } from 'viem';
+import { Address, getAddress } from 'viem';
 import { NftTokenType } from '@/graphql/__generated__/arc';
 
 const DUMMY_RECORDS = {

@@ -1,8 +1,7 @@
-import { isAddress } from '@ethersproject/address';
 import { rankings } from 'match-sorter';
 import { useEffect, useMemo, useRef } from 'react';
 import { useDeepCompareMemo } from 'use-deep-compare';
-import { Address } from 'viem';
+import { Address, isAddress } from 'viem';
 import { analytics } from '@/analytics';
 import { isNativeAsset } from '@/handlers/assets';
 import { addHexPrefix } from '@/handlers/web3';

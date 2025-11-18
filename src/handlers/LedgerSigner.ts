@@ -12,7 +12,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { logger, RainbowError } from '@/logger';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { getAddress } from '@ethersproject/address';
+import { getAddress } from 'viem';
 import { getEthApp } from '@/utils/ledger';
 
 function waiter(duration: number): Promise<void> {
