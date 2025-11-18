@@ -2527,13 +2527,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/shims@npm:5.7.0":
-  version: 5.7.0
-  resolution: "@ethersproject/shims@npm:5.7.0"
-  checksum: 10c0/d550494c882278131beb72e0a358859f0398edd5535bed0e0355c2c2016aec59596a2603d06f46469a1768408d739247fef02c320dcd994d893ea771b61c762b
-  languageName: node
-  linkType: hard
-
 "@ethersproject/signing-key@npm:5.7.0":
   version: 5.7.0
   resolution: "@ethersproject/signing-key@npm:5.7.0"
@@ -9004,16 +8997,12 @@ __metadata:
     "@ensdomains/address-encoder": "npm:0.2.16"
     "@ensdomains/content-hash": "npm:2.5.7"
     "@ensdomains/eth-ens-namehash": "npm:2.0.15"
-    "@ethersproject/abi": "npm:5.7.0"
     "@ethersproject/abstract-provider": "npm:5.7.0"
     "@ethersproject/abstract-signer": "npm:5.7.0"
     "@ethersproject/bignumber": "npm:5.7.0"
     "@ethersproject/contracts": "npm:5.7.0"
     "@ethersproject/hdnode": "npm:5.7.0"
     "@ethersproject/providers": "npm:5.7.2"
-    "@ethersproject/random": "npm:5.7.0"
-    "@ethersproject/shims": "npm:5.7.0"
-    "@ethersproject/solidity": "npm:5.7.0"
     "@ethersproject/transactions": "npm:5.7.0"
     "@ethersproject/wallet": "npm:5.7.0"
     "@gorhom/bottom-sheet": "npm:4.6.1"
