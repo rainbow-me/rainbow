@@ -366,13 +366,13 @@ import type { TransactionSerializable } from 'viem';
 ```
 
 **Tasks:**
-- [ ] Replace `serialize()` with `serializeTransaction()` in `src/model/wallet.ts`
-- [ ] Replace `Transaction` type with viem transaction types in `src/handlers/LedgerSigner.ts`
-- [ ] Replace `UnsignedTransaction` type in `src/raps/actions/swap.ts`
-- [ ] Update transaction serialization in `src/utils/ethereumUtils.ts`
-- [ ] Update transaction types in `src/__swaps__/utils/gasUtils.ts`
-- [ ] Update transaction handling in `src/screens/SignTransactionSheet.tsx`
-- [ ] Remove `@ethersproject/transactions` from package.json dependencies
+- [x] Replace `serialize()` with `serializeTransaction()` in `src/handlers/LedgerSigner.ts`
+- [x] Replace `UnsignedTransaction` type with `TransactionSerializable` in `src/handlers/LedgerSigner.ts`
+- [x] Update transaction serialization in `src/utils/ethereumUtils.ts`
+- [ ] Replace `Transaction` type usage in `src/model/wallet.ts` (depends on wallet migration)
+- [ ] Replace `Transaction` type usage in `src/raps/actions/swap.ts` (depends on wallet migration)
+- [ ] Replace `Transaction` type usage in `src/screens/SignTransactionSheet.tsx` (depends on wallet migration)
+- [ ] Remove `@ethersproject/transactions` from package.json dependencies (after wallet/signer migrations complete)
 
 ## @ethersproject/abi → viem
 
