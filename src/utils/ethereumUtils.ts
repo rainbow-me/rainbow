@@ -1,7 +1,7 @@
 import { queryClient } from '@/react-query';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
-import { serialize } from '@ethersproject/transactions';
+import { serializeTransaction, type Hex } from 'viem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 import {
@@ -499,8 +499,14 @@ const calculateL1FeeOptimism = async (
     // @ts-expect-error ts-migrate(2551) FIXME: Property 'selectedGasPrice' does not exist on type... Remove this comment to see the full error message
     const currentGasPrice = store.getState().gas.selectedGasPrice?.value?.amount;
     if (currentGasPrice) newTx.gasPrice = toHex(currentGasPrice);
-    // @ts-expect-error ts-migrate(100005) FIXME: Remove this comment to see the full error message
-    const serializedTx = serialize(newTx);
+    const serializedTx = serializeTransaction({
+      to: newTx.to as Hex | undefined,
+      data: newTx.data as Hex | undefined,
+      value: newTx.value ? BigInt(newTx.value.toString()) : undefined,
+      gas: newTx.gasLimit ? BigInt(newTx.gasLimit.toString()) : undefined,
+      gasPrice: newTx.gasPrice ? BigInt(newTx.gasPrice.toString()) : undefined,
+      nonce: typeof newTx.nonce === 'number' ? newTx.nonce : undefined,
+    });
 
     const OVM_GasPriceOracle = new Contract(OVM_GAS_PRICE_ORACLE, optimismGasOracleAbi, provider);
     const l1FeeInWei = await OVM_GasPriceOracle.getL1Fee(serializedTx);

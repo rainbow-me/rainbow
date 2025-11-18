@@ -4,12 +4,11 @@ import AppEth, { ledgerService } from '@ledgerhq/hw-app-eth';
 import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 import { Signer } from '@ethersproject/abstract-signer';
 import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
-import { UnsignedTransaction, serialize } from '@ethersproject/transactions';
 import { BigNumber } from '@ethersproject/bignumber';
+import { getAddress, Hex, serializeTransaction, signatureToHex, stringToBytes, toHex, type TransactionSerializable } from 'viem';
 import { logger, RainbowError } from '@/logger';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { getAddress, Hex, signatureToHex, stringToBytes, toHex } from 'viem';
 import { getEthApp } from '@/utils/ledger';
 
 function waiter(duration: number): Promise<void> {
@@ -148,22 +147,23 @@ export class LedgerSigner extends Signer {
 
   async signTransaction(transaction: TransactionRequest): Promise<string> {
     const tx = await resolveProperties(transaction);
-    const baseTx: UnsignedTransaction = {
-      chainId: tx.chainId || undefined,
-      data: tx.data || undefined,
-      gasLimit: tx.gasLimit || undefined,
-      gasPrice: tx.gasPrice || undefined,
-      // only add these fields if they are defined ( network supports EIP-1559)
-      ...(tx.maxFeePerGas && { maxFeePerGas: tx.maxFeePerGas }),
-      ...(!!tx.maxPriorityFeePerGas && {
-        maxPriorityFeePerGas: tx.maxPriorityFeePerGas,
+    const isEIP1559 = tx.maxFeePerGas || tx.maxPriorityFeePerGas;
+    const baseTx = {
+      ...(tx.chainId && { chainId: Number(tx.chainId) }),
+      ...(tx.data && { data: tx.data as Hex }),
+      ...(tx.gasLimit && { gas: BigInt(tx.gasLimit.toString()) }),
+      // Legacy transactions use gasPrice, EIP-1559 use maxFeePerGas/maxPriorityFeePerGas
+      ...(!isEIP1559 && tx.gasPrice && { gasPrice: BigInt(tx.gasPrice.toString()) }),
+      ...(tx.maxFeePerGas && { maxFeePerGas: BigInt(tx.maxFeePerGas.toString()) }),
+      ...(tx.maxPriorityFeePerGas && {
+        maxPriorityFeePerGas: BigInt(tx.maxPriorityFeePerGas.toString()),
       }),
-      nonce: tx.nonce ? BigNumber.from(tx.nonce).toNumber() : undefined,
-      to: tx.to || undefined,
-      type: tx.type || undefined,
-      value: tx.value || undefined,
-    };
-    const unsignedTx = serialize(baseTx).substring(2);
+      ...(tx.nonce && { nonce: BigNumber.from(tx.nonce).toNumber() }),
+      ...(tx.to && { to: tx.to as Hex }),
+      ...(isEIP1559 && { type: 'eip1559' as const }),
+      ...(tx.value && { value: BigInt(tx.value.toString()) }),
+    } as TransactionSerializable;
+    const unsignedTx = serializeTransaction(baseTx).substring(2);
 
     const resolution = await this._retry(eth =>
       ledgerService.resolveTransaction(unsignedTx, eth.loadConfig, {
@@ -173,10 +173,10 @@ export class LedgerSigner extends Signer {
       })
     );
     const sig = await this._retry(eth => eth.signTransaction(this.path!, unsignedTx, resolution));
-    return serialize(baseTx, {
-      r: '0x' + sig.r,
-      s: '0x' + sig.s,
-      v: BigNumber.from('0x' + sig.v).toNumber(),
+    return serializeTransaction(baseTx, {
+      r: ('0x' + sig.r) as Hex,
+      s: ('0x' + sig.s) as Hex,
+      v: BigInt(BigNumber.from('0x' + sig.v).toNumber()),
     });
   }
 
