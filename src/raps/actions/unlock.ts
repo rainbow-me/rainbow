@@ -1,9 +1,7 @@
 import { Signer } from '@ethersproject/abstract-signer';
-import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
-import { parseUnits } from '@ethersproject/units';
 import { getProvider, toHex } from '@/handlers/web3';
-import { Address, erc20Abi, erc721Abi } from 'viem';
+import { Address, erc20Abi, erc721Abi, maxUint256, parseUnits } from 'viem';
 
 import { ChainId } from '@/state/backendNetworks/types';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
@@ -86,7 +84,7 @@ export const estimateApprove = async ({
   try {
     const provider = getProvider({ chainId });
     const tokenContract = new Contract(tokenAddress, erc20Abi, provider);
-    const gasLimit = await tokenContract.estimateGas.approve(spender, MaxUint256, {
+    const gasLimit = await tokenContract.estimateGas.approve(spender, maxUint256, {
       from: owner,
     });
 
@@ -117,7 +115,7 @@ export const populateApprove = async ({
   try {
     const provider = getProvider({ chainId });
     const tokenContract = new Contract(tokenAddress, erc20Abi, provider);
-    const approveTransaction = await tokenContract.populateTransaction.approve(spender, MaxUint256, {
+    const approveTransaction = await tokenContract.populateTransaction.approve(spender, maxUint256, {
       from: owner,
     });
     return approveTransaction;
@@ -170,7 +168,7 @@ export const populateRevokeApproval = async ({
   const provider = getProvider({ chainId });
   const tokenContract = new Contract(tokenAddress, erc721Abi, provider);
   if (type === 'erc20') {
-    const amountToApprove = parseUnits('0', 'ether');
+    const amountToApprove = 0;
     const txObject = await tokenContract.populateTransaction.approve(spenderAddress, amountToApprove);
     return txObject;
   } else {
@@ -196,7 +194,7 @@ export const executeApprove = async ({
   wallet: Signer;
 }) => {
   const exchange = new Contract(tokenAddress, erc20Abi, wallet);
-  return exchange.approve(spender, MaxUint256, {
+  return exchange.approve(spender, maxUint256, {
     gasLimit: toHex(gasLimit) || undefined,
     // In case it's an L2 with legacy gas price like arbitrum
     gasPrice: gasParams.gasPrice,

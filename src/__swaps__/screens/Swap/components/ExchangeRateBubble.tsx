@@ -6,7 +6,7 @@ import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { AddressZero } from '@ethersproject/constants';
+import { zeroAddress } from 'viem';
 import { ETH_ADDRESS } from '@/references';
 import { GestureHandlerButton } from './GestureHandlerButton';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
@@ -35,9 +35,9 @@ export const ExchangeRateBubble = () => {
     'worklet';
 
     const inputAssetEthTransform =
-      internalSelectedInputAsset.value?.address === ETH_ADDRESS ? AddressZero : internalSelectedInputAsset.value?.address;
+      internalSelectedInputAsset.value?.address === ETH_ADDRESS ? zeroAddress : internalSelectedInputAsset.value?.address;
     const outputAssetEthTransform =
-      internalSelectedOutputAsset.value?.address === ETH_ADDRESS ? AddressZero : internalSelectedOutputAsset.value?.address;
+      internalSelectedOutputAsset.value?.address === ETH_ADDRESS ? zeroAddress : internalSelectedOutputAsset.value?.address;
 
     const isSameAssetOnDifferentChains =
       inputAssetEthTransform === outputAssetEthTransform &&
@@ -86,9 +86,9 @@ export const ExchangeRateBubble = () => {
       const isOutputAssetStablecoin = outputAssetType === 'stablecoin';
 
       const inputAssetEthTransform =
-        internalSelectedInputAsset.value?.address === ETH_ADDRESS ? AddressZero : internalSelectedInputAsset.value?.address;
+        internalSelectedInputAsset.value?.address === ETH_ADDRESS ? zeroAddress : internalSelectedInputAsset.value?.address;
       const outputAssetEthTransform =
-        internalSelectedOutputAsset.value?.address === ETH_ADDRESS ? AddressZero : internalSelectedOutputAsset.value?.address;
+        internalSelectedOutputAsset.value?.address === ETH_ADDRESS ? zeroAddress : internalSelectedOutputAsset.value?.address;
 
       const isSameAssetOnDifferentChains =
         inputAssetEthTransform === outputAssetEthTransform &&

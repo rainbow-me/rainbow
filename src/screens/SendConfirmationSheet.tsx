@@ -31,7 +31,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
 import { promiseUtils, safeAreaInsetValues } from '@/utils';
-import { AddressZero } from '@ethersproject/constants';
+import { zeroAddress } from 'viem';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty } from 'lodash';
@@ -257,7 +257,7 @@ export const SendConfirmationSheet = () => {
         if (sendENSOptions['set-address']) {
           records = { ...records, ETH: toAddress };
         } else {
-          records = { ...records, ETH: AddressZero };
+          records = { ...records, ETH: zeroAddress };
         }
         promises.push(
           estimateENSSetRecordsGasLimit({

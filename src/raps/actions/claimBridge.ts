@@ -13,9 +13,8 @@ import store from '@/redux/store';
 import { REFERRER_CLAIM } from '@/references';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import ethereumUtils from '@/utils/ethereumUtils';
-import { AddressZero } from '@ethersproject/constants';
 import { CrosschainQuote, QuoteError, getClaimBridgeQuote } from '@rainbow-me/swaps';
-import { Address } from 'viem';
+import { Address, zeroAddress } from 'viem';
 import { ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -42,8 +41,8 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     chainId,
     toChainId,
     fromAddress: address,
-    sellTokenAddress: AddressZero,
-    buyTokenAddress: AddressZero,
+    sellTokenAddress: zeroAddress,
+    buyTokenAddress: zeroAddress,
     sellAmount: sellAmount,
     slippage: +getDefaultSlippageWorklet(chainId, getRemoteConfig().default_slippage_bips_chainId),
     currency,
@@ -101,8 +100,8 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
       chainId,
       toChainId,
       fromAddress: address,
-      sellTokenAddress: AddressZero,
-      buyTokenAddress: AddressZero,
+      sellTokenAddress: zeroAddress,
+      buyTokenAddress: zeroAddress,
       sellAmount: maxBridgeableAmount,
       slippage: +getDefaultSlippageWorklet(chainId, getRemoteConfig().default_slippage_bips_chainId),
       currency,

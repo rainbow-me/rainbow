@@ -1,4 +1,4 @@
-import { AddressZero } from '@ethersproject/constants';
+import { zeroAddress } from 'viem';
 import { isEmpty } from 'lodash';
 import { createNewENSAction, createNewENSRap, ENSActionParameters, RapENSAction, ENSRapActionType } from './common';
 import { Records } from '@/entities';
@@ -97,7 +97,7 @@ export const createTransferENSRap = async (ensActionParameters: ENSActionParamet
       (records, recordKey) => ({
         ...records,
         // Use zero address for ETH record as an empty string throws an error
-        [recordKey]: recordKey === ENS_RECORDS.ETH ? AddressZero : '',
+        [recordKey]: recordKey === ENS_RECORDS.ETH ? zeroAddress : '',
       }),
       {}
     );

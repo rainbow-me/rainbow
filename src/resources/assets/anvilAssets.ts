@@ -6,7 +6,7 @@ import { parseAddressAsset } from './assets';
 import { RainbowAddressAssets } from './types';
 import { logger, RainbowError } from '@/logger';
 import { AddressOrEth, UniqueId, ZerionAsset } from '@/__swaps__/types/assets';
-import { AddressZero } from '@ethersproject/constants';
+import { zeroAddress } from 'viem';
 import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
 import { ChainId, ChainName, Network } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -31,7 +31,7 @@ const fetchAnvilBalancesWithBalanceChecker = async (
       } = {};
       tokens.forEach((tokenAddr, tokenIdx) => {
         const balance = values[tokenIdx];
-        const assetCode = tokenAddr === AddressZero ? ETH_ADDRESS : tokenAddr;
+        const assetCode = tokenAddr === zeroAddress ? ETH_ADDRESS : tokenAddr;
         balances[assetCode] = balance.toString();
       });
       return balances;
@@ -44,7 +44,7 @@ const fetchAnvilBalancesWithBalanceChecker = async (
   try {
     const balances: { [tokenAddress: string]: string } = {};
     const balancePromises = tokens.map(tokenAddr => {
-      if (tokenAddr === AddressZero) {
+      if (tokenAddr === zeroAddress) {
         // This is for ETH
         return provider.getBalance(address);
       } else {
@@ -56,7 +56,7 @@ const fetchAnvilBalancesWithBalanceChecker = async (
     const results = await Promise.all(balancePromises);
     tokens.forEach((tokenAddr, tokenIdx) => {
       const balance = results[tokenIdx];
-      const assetCode = tokenAddr === AddressZero ? ETH_ADDRESS : tokenAddr;
+      const assetCode = tokenAddr === zeroAddress ? ETH_ADDRESS : tokenAddr;
       balances[assetCode] = balance.toString();
     });
     return balances;
@@ -80,7 +80,7 @@ export const fetchAnvilBalances = async (accountAddress: string, chainId: ChainI
   );
 
   const tokenAddresses = Object.values(chainAssetsMap).map(({ asset: { asset_code } }) =>
-    asset_code === ETH_ADDRESS ? AddressZero : asset_code.toLowerCase()
+    asset_code === ETH_ADDRESS ? zeroAddress : asset_code.toLowerCase()
   );
   const balances = await fetchAnvilBalancesWithBalanceChecker(tokenAddresses, accountAddress, chainId);
   if (!balances) return {};
@@ -114,7 +114,7 @@ export const fetchAnvilBalancesByChainId = async (
   const chainAssetsMap = chainAssetsByChainId[`${chainId}` as keyof typeof chainAssets] || {};
 
   const tokenAddresses = Object.values(chainAssetsMap).map(({ asset }) =>
-    asset.asset_code === ETH_ADDRESS ? AddressZero : asset.asset_code.toLowerCase()
+    asset.asset_code === ETH_ADDRESS ? zeroAddress : asset.asset_code.toLowerCase()
   );
 
   const balances = await fetchAnvilBalancesWithBalanceChecker(tokenAddresses, accountAddress, chainId);

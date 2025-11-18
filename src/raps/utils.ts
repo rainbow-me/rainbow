@@ -1,10 +1,9 @@
 import { Block, Provider } from '@ethersproject/abstract-provider';
-import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { CrosschainQuote, Quote, getQuoteExecutionDetails, getTargetAddress } from '@rainbow-me/swaps';
 import { mainnet } from 'viem/chains';
-import { Chain, erc20Abi } from 'viem';
+import { Chain, erc20Abi, maxUint256, toHex } from 'viem';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { gasUtils } from '@/utils';
 import { add, greaterThan, multiply } from '@/helpers/utilities';
@@ -60,7 +59,7 @@ const getStateDiff = async (provider: Provider, quote: Quote | CrosschainQuote):
   const { number: blockNumber } = await (provider.getBlock as () => Promise<Block>)();
 
   // Get data
-  const { data } = await tokenContract.populateTransaction.approve(toAddr, MaxUint256.toHexString());
+  const { data } = await tokenContract.populateTransaction.approve(toAddr, toHex(maxUint256));
 
   // trace_call default params
   const callParams = [
@@ -82,7 +81,7 @@ const getStateDiff = async (provider: Provider, quote: Quote | CrosschainQuote):
       const formattedStateDiff = {
         [tokenAddress]: {
           stateDiff: {
-            [slotAddress]: MaxUint256.toHexString(),
+            [slotAddress]: toHex(maxUint256),
           },
         },
       };

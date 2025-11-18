@@ -2,7 +2,7 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
 import { CrosschainQuote, getQuoteExecutionDetails, getTargetAddress, Quote } from '@rainbow-me/swaps';
 import { Contract } from '@ethersproject/contracts';
-import { MaxUint256 } from '@ethersproject/constants';
+import { maxUint256, toHex } from 'viem';
 import { Token } from '../entities/tokens';
 import { estimateGasWithPadding, getProvider, toHexNoLeadingZeros } from './web3';
 import { getRemoteConfig } from '@/model/remoteConfig';
@@ -89,7 +89,7 @@ export const getStateDiff = async (provider: StaticJsonRpcProvider, tradeDetails
   const { number: blockNumber } = await (provider.getBlock as () => Promise<Block>)();
 
   // Get data
-  const { data } = await tokenContract.populateTransaction.approve(toAddr, MaxUint256.toHexString());
+  const { data } = await tokenContract.populateTransaction.approve(toAddr, toHex(maxUint256));
   const { trace_call_block_number_offset } = getRemoteConfig();
   // trace_call default params
   const callParams = [
@@ -111,7 +111,7 @@ export const getStateDiff = async (provider: StaticJsonRpcProvider, tradeDetails
       const formattedStateDiff = {
         [tokenAddress]: {
           stateDiff: {
-            [slotAddress]: MaxUint256.toHexString(),
+            [slotAddress]: toHex(maxUint256),
           },
         },
       };
