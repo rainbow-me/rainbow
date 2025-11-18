@@ -1,12 +1,12 @@
 import { nanoid } from 'nanoid/non-secure';
 import { SECURE_WALLET_HASH_KEY } from 'react-native-dotenv';
 import type { Address } from 'viem';
+import crypto from 'crypto';
 
 import { logger, RainbowError } from '@/logger';
 import * as keychain from '@/model/keychain';
 import * as ls from '@/storage';
 import { analyticsUserIdentifier } from '@/utils/keychainConstants';
-import { computeHmac, SupportedAlgorithm } from '@ethersproject/sha2';
 
 /**
  * Returns the device id in a type-safe manner. It will throw if no device ID
@@ -65,13 +65,12 @@ export function securelyHashWalletAddress(walletAddress: Address): string | unde
   }
 
   try {
-    const hmac = computeHmac(
-      SupportedAlgorithm.sha256,
-      // must be hex `0x<key>` string
-      SECURE_WALLET_HASH_KEY,
-      // must be hex `0x<key>` string
-      walletAddress
-    );
+    // Remove 0x prefix from key and address for crypto module
+    const key = SECURE_WALLET_HASH_KEY.startsWith('0x') ? SECURE_WALLET_HASH_KEY.slice(2) : SECURE_WALLET_HASH_KEY;
+    const address = walletAddress.startsWith('0x') ? walletAddress.slice(2) : walletAddress;
+
+    // Compute HMAC-SHA256
+    const hmac = '0x' + crypto.createHmac('sha256', Buffer.from(key, 'hex')).update(Buffer.from(address, 'hex')).digest('hex');
 
     logger.debug(`[securelyHashWalletAddress]: Wallet address securely hashed`);
 
