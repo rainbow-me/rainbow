@@ -1,5 +1,4 @@
-import { keccak256 } from '@ethersproject/keccak256';
-import { toUtf8Bytes } from '@ethersproject/strings';
+import { keccak256, stringToBytes } from 'viem';
 import { normalizeENS } from './ens';
 
 export function encodeLabelhash(hash: string) {
@@ -46,5 +45,5 @@ export default function labelhash(unnormalisedLabelOrLabelhash: string) {
   }
   return isEncodedLabelhash(unnormalisedLabelOrLabelhash)
     ? '0x' + decodeLabelhash(unnormalisedLabelOrLabelhash)
-    : keccak256(toUtf8Bytes(normalizeENS(unnormalisedLabelOrLabelhash)));
+    : keccak256(stringToBytes(normalizeENS(unnormalisedLabelOrLabelhash)));
 }
