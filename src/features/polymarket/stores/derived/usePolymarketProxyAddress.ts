@@ -1,6 +1,6 @@
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { deriveSafeWalletAddress } from '@/features/polymarket/utils/derive-safe-wallet-address';
+import { deriveSafeWalletAddress } from '@/features/polymarket/utils/deriveSafeWalletAddress';
 
 export const usePolymarketProxyAddress = createDerivedStore(
   $ => {

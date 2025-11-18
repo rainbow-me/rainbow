@@ -667,6 +667,9 @@ type RouteParams = {
   [Routes.PERPS_TRADE_DETAILS_SHEET]: {
     trade: HlTrade;
   };
+  [Routes.POLYMARKET_EVENT_SCREEN]: {
+    eventId: string;
+  };
 };
 
 /**

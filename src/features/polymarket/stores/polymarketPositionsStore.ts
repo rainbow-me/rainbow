@@ -3,10 +3,14 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 import { usePolymarketProxyAddress } from '@/features/polymarket/stores/derived/usePolymarketProxyAddress';
 import { rainbowFetch } from '@/rainbow-fetch';
-import { PolymarketPosition } from '@/features/polymarket/types';
+import { PolymarketPosition, RawPolymarketPosition } from '@/features/polymarket/types';
+import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
+import { POLYMARKET_DATA_API_URL, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
+import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 
 type PolymarketPositionsStoreActions = {
   getPositions: () => PolymarketPosition[] | undefined;
+  getEventPositions: (eventId: string) => PolymarketPosition[] | undefined;
 };
 
 type PolymarketPositionsParams = {
@@ -25,10 +29,17 @@ export const usePolymarketPositionsStore = createQueryStore<
   {
     fetcher: fetchPolymarketPositions,
     params: { address: $ => $(usePolymarketProxyAddress).proxyAddress },
+    // TODO: TESTING
+    staleTime: time.seconds(0),
+    disableAutoRefetching: true,
   },
 
   (_, get) => ({
     getPositions: () => get().getData()?.positions,
+    getEventPositions: (eventId: string) =>
+      get()
+        .getData()
+        ?.positions.filter(position => position.eventId === eventId),
   })
 );
 
@@ -38,7 +49,7 @@ async function fetchPolymarketPositions(
 ): Promise<FetchPolymarketPositionsResponse> {
   if (!address) throw new RainbowError('[PolymarketPositionsStore] Address is required');
 
-  const url = new URL('https://data-api.polymarket.com/positions');
+  const url = new URL(`${POLYMARKET_DATA_API_URL}/positions`);
   url.searchParams.set('sortBy', 'CURRENT');
   url.searchParams.set('sortDirection', 'DESC');
   url.searchParams.set('user', address);
@@ -48,9 +59,45 @@ async function fetchPolymarketPositions(
     timeout: 30000,
   });
 
-  const positions = response.data as PolymarketPosition[];
+  const rawPositions = response.data;
+
+  const markets = await fetchPolymarketMarkets(
+    rawPositions.map((position: RawPolymarketPosition) => position.slug),
+    abortController
+  );
+
+  const positions = rawPositions.map((position: RawPolymarketPosition) => {
+    const market = markets.find(market => market.slug === position.slug);
+    if (!market) throw new RainbowError('[PolymarketPositionsStore] Market not found for position');
+    const event = market.events[0];
+    const marketHasUniqueImage = market.icon !== event.icon;
+
+    return {
+      ...position,
+      nativeCurrency: {
+        currentValue: useCurrencyConversionStore.getState().convertToNativeCurrency(position.currentValue),
+        cashPnl: useCurrencyConversionStore.getState().convertToNativeCurrency(position.cashPnl),
+      },
+      market: markets.find(market => market.slug === position.slug),
+      marketHasUniqueImage,
+    } as PolymarketPosition;
+  });
 
   return {
     positions,
-  };
+  } as FetchPolymarketPositionsResponse;
+}
+
+async function fetchPolymarketMarkets(marketSlugs: string[], abortController: AbortController | null): Promise<PolymarketMarket[]> {
+  const url = new URL(`${POLYMARKET_GAMMA_API_URL}/markets`);
+  marketSlugs.forEach(slug => {
+    url.searchParams.append('slug', slug);
+  });
+
+  const response = await rainbowFetch(url.toString(), {
+    abortController,
+    timeout: 30000,
+  });
+
+  return response.data as PolymarketMarket[];
 }

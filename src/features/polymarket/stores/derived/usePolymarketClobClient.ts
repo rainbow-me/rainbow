@@ -1,18 +1,12 @@
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { ChainId } from '@rainbow-me/swaps';
-import { BuilderConfig } from '@polymarket/builder-signing-sdk';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { loadWallet } from '@/model/wallet';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { Chain, ClobClient } from '@polymarket/clob-client';
-import { deriveSafeWalletAddress } from '@/features/polymarket/utils/derive-safe-wallet-address';
-
-const builderConfig = new BuilderConfig({
-  remoteBuilderConfig: { url: '<http://localhost:3000/sign>' },
-});
-
-const CLOB_URL = 'https://clob.polymarket.com/';
+import { deriveSafeWalletAddress } from '@/features/polymarket/utils/deriveSafeWalletAddress';
+import { BUILDER_CONFIG, POLYMARKET_CLOB_PROXY_URL } from '@/features/polymarket/constants';
 
 export const usePolymarketClobClient = createDerivedStore(
   $ => {
@@ -34,18 +28,18 @@ export const usePolymarketClobClient = createDerivedStore(
         }
 
         if ('_signingKey' in wallet) {
-          const creds = await new ClobClient(CLOB_URL, Chain.POLYGON, wallet).createOrDeriveApiKey();
+          const creds = await new ClobClient(POLYMARKET_CLOB_PROXY_URL, Chain.POLYGON, wallet).createOrDeriveApiKey();
 
           return new ClobClient(
-            CLOB_URL,
+            POLYMARKET_CLOB_PROXY_URL,
             Chain.POLYGON,
             wallet,
             creds,
             2,
-            proxyWalletAddress
-            // undefined,
-            // false,
-            // builderConfig
+            proxyWalletAddress,
+            undefined,
+            false,
+            BUILDER_CONFIG
           );
         } else {
           // TODO: Handle hardware wallets
