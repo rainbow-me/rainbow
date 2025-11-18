@@ -3,7 +3,7 @@ import { getProvider } from '@/handlers/web3';
 import { tokenGateCheckerAbi } from '@/references';
 import { Network } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { Interface } from '@ethersproject/abi';
+import { encodeFunctionData } from 'viem';
 
 export type TokenGateCheckerNetwork =
   | Network.arbitrum
@@ -39,9 +39,12 @@ export const checkIfWalletsOwnNft = async (
 ) => {
   try {
     const p = getProvider({ chainId: useBackendNetworksStore.getState().getChainsIdByName()[network] });
-    const iface = new Interface(tokenGateCheckerAbi);
 
-    const data = iface.encodeFunctionData('areOwners(address[], address[])', [tokenAddresses, walletsToCheck]);
+    const data = encodeFunctionData({
+      abi: tokenGateCheckerAbi,
+      functionName: 'areOwners',
+      args: [tokenAddresses, walletsToCheck],
+    });
     const found = await p.call({ to: TOKEN_GATE_CHECKER_ADDRESS[network], data });
     if (found === '0x0000000000000000000000000000000000000000000000000000000000000000') {
       return false;
@@ -69,8 +72,11 @@ export const checkIfWalletsOwnNft1155 = async (
 ) => {
   try {
     const p = getProvider({ chainId: useBackendNetworksStore.getState().getChainsIdByName()[network] });
-    const iface = new Interface(tokenGateCheckerAbi);
-    const data = iface.encodeFunctionData('areOwners(TokenInfo[], address[])', [tokenInfo, walletsToCheck]);
+    const data = encodeFunctionData({
+      abi: tokenGateCheckerAbi,
+      functionName: 'areOwners',
+      args: [tokenInfo, walletsToCheck],
+    });
     const found = await p.call({ to: TOKEN_GATE_CHECKER_ADDRESS[network], data });
     if (found === '0x0000000000000000000000000000000000000000000000000000000000000000') {
       return false;

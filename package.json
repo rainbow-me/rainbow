@@ -73,7 +73,6 @@
     "@ensdomains/address-encoder": "0.2.16",
     "@ensdomains/content-hash": "2.5.7",
     "@ensdomains/eth-ens-namehash": "2.0.15",
-    "@ethersproject/abi": "5.7.0",
     "@ethersproject/abstract-provider": "5.7.0",
     "@ethersproject/abstract-signer": "5.7.0",
     "@ethersproject/bignumber": "5.7.0",
