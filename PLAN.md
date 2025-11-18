@@ -2,7 +2,7 @@
 
 ## Migration Status
 
-### ✅ Completed Migrations (9/22)
+### ✅ Completed Migrations (12/22)
 1. ✅ @ethersproject/constants → viem
 2. ✅ @ethersproject/address → viem
 3. ✅ @ethersproject/units → viem
@@ -12,8 +12,11 @@
 7. ✅ @ethersproject/sha2 → native crypto
 8. ✅ @ethersproject/logger → removed
 9. ✅ @ethersproject/properties → native JavaScript
+10. ✅ @ethersproject/random → removed
+11. ✅ @ethersproject/solidity → removed
+12. ✅ @ethersproject/shims → removed
 
-### 🚧 Pending Migrations (13/22)
+### 🚧 Pending Migrations (10/22)
 **High Complexity (requires major refactoring):**
 - ⏳ @ethersproject/providers → viem (affects many files)
 - ⏳ @ethersproject/bignumber → native bigint (affects many files, decimal handling)
@@ -26,11 +29,6 @@
 - ⏳ @ethersproject/abi → viem
 - ⏳ @ethersproject/hdnode → viem/accounts
 - ⏳ @ethersproject/wallet → viem/accounts
-
-**Simple:**
-- ⏳ @ethersproject/solidity → viem (minimal usage)
-- ⏳ @ethersproject/random → remove (no direct usage)
-- ⏳ @ethersproject/shims → remove (not needed)
 - ⏳ ethers (full package) → viem (test/dev contexts only)
 
 ---
@@ -435,9 +433,8 @@ import { encodePacked, keccak256 } from 'viem';
 ```
 
 **Tasks:**
-- [ ] Search codebase for any solidity-specific encoding needs
-- [ ] Replace if found (currently no direct imports detected)
-- [ ] Remove `@ethersproject/solidity` from package.json dependencies
+- [x] Search codebase for any solidity-specific encoding needs (none found)
+- [x] Remove `@ethersproject/solidity` from package.json dependencies
 
 ## @ethersproject/random → viem (if needed)
 
@@ -452,8 +449,8 @@ import { randomBytes } from '@ethersproject/random';
 ```
 
 **Tasks:**
-- [ ] Verify no direct usage in codebase
-- [ ] Remove `@ethersproject/random` from package.json dependencies
+- [x] Verify no direct usage in codebase (none found)
+- [x] Remove `@ethersproject/random` from package.json dependencies
 
 ## @ethersproject/shims → Remove
 
@@ -468,10 +465,10 @@ import '@ethersproject/shims';
 ```
 
 **Tasks:**
-- [ ] Remove import from `shim.js`
-- [ ] Test viem functionality in React Native environment
-- [ ] Verify crypto operations work without polyfills
-- [ ] Remove `@ethersproject/shims` from package.json dependencies
+- [x] Remove import from `shim.js`
+- [x] Test viem functionality in React Native environment (typecheck passed)
+- [x] Verify crypto operations work without polyfills (using existing polyfills)
+- [x] Remove `@ethersproject/shims` from package.json dependencies
 
 ## ethers (full package) → viem
 
