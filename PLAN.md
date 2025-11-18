@@ -2,7 +2,7 @@
 
 ## Migration Status
 
-### ✅ Completed Migrations (12/22)
+### ✅ Completed Migrations (13/22)
 1. ✅ @ethersproject/constants → viem
 2. ✅ @ethersproject/address → viem
 3. ✅ @ethersproject/units → viem
@@ -15,8 +15,9 @@
 10. ✅ @ethersproject/random → removed
 11. ✅ @ethersproject/solidity → removed
 12. ✅ @ethersproject/shims → removed
+13. ✅ @ethersproject/abi → viem
 
-### 🚧 Pending Migrations (10/22)
+### 🚧 Pending Migrations (9/22)
 **High Complexity (requires major refactoring):**
 - ⏳ @ethersproject/providers → viem (affects many files)
 - ⏳ @ethersproject/bignumber → native bigint (affects many files, decimal handling)
@@ -26,7 +27,6 @@
 **Medium Complexity:**
 - ⏳ @ethersproject/abstract-provider → viem types
 - ⏳ @ethersproject/transactions → viem
-- ⏳ @ethersproject/abi → viem
 - ⏳ @ethersproject/hdnode → viem/accounts
 - ⏳ @ethersproject/wallet → viem/accounts
 - ⏳ ethers (full package) → viem (test/dev contexts only)
@@ -387,10 +387,9 @@ import { parseAbi, encodeFunctionData, decodeFunctionResult } from 'viem';
 ```
 
 **Tasks:**
-- [ ] Replace `Interface` class with `parseAbi()` in `src/featuresToUnlock/tokenGatedUtils.ts`
-- [ ] Replace `.encodeFunctionData()` with viem's `encodeFunctionData()`
-- [ ] Update ABI encoding for ERC-721 and ERC-1155 contract calls
-- [ ] Remove `@ethersproject/abi` from package.json dependencies
+- [x] Replace `Interface` class with viem's `encodeFunctionData()` in `src/featuresToUnlock/tokenGatedUtils.ts`
+- [x] Update ABI encoding for ERC-721 and ERC-1155 contract calls
+- [x] Remove `@ethersproject/abi` from package.json dependencies
 
 ## @ethersproject/contracts → viem
 
