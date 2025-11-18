@@ -48,7 +48,6 @@ export default function DiscoverHome() {
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
-  const nftOffersEnabled = useExperimentalFlag(NFT_OFFERS);
   const featuredResultsEnabled = (useExperimentalFlag(FEATURED_RESULTS) || featured_results) && !IS_TEST;
   const mintsEnabled = (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
@@ -81,7 +80,8 @@ export default function DiscoverHome() {
             </Stack>
           )}
           {/* FIXME: IS_TEST disables nftOffers this makes some DETOX tests hang forever at exit - investigate */}
-          {!IS_TEST && nftOffersEnabled && <NFTOffersCard />}
+          {/* Requires new offers provider in order to re-enable this */}
+          {/* {!IS_TEST && nftOffersEnabled && <NFTOffersCard />} */}
           {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
           {featuredResultsEnabled && (
             <FeaturedResultStack onNavigate={onNavigate} placementId="discover_big">

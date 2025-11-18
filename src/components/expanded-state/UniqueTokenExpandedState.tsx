@@ -22,13 +22,11 @@ import { AssetType, UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import isHttpUrl from '@/helpers/isHttpUrl';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useBooleanState, useDimensions, useENSProfile, useENSRegistration, useHiddenTokens, useShowcaseTokens } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
@@ -59,7 +57,6 @@ import ConfigurationSection from './ens/ConfigurationSection';
 import ProfileInfoSection from './ens/ProfileInfoSection';
 import { UniqueTokenExpandedStateContent, UniqueTokenExpandedStateHeader } from './unique-token';
 import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
-import NFTBriefTokenInfoRow from './unique-token/NFTBriefTokenInfoRow';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { buildUniqueTokenName } from '@/helpers/assets';
 
@@ -225,29 +222,6 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
   const { colors, isDarkMode } = useTheme();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const { top: topInset } = useSafeAreaInsets();
-
-  const {
-    data: { nftOffers },
-  } = useNFTOffers({
-    walletAddress: accountAddress,
-  });
-
-  const offer = useMemo(() => nftOffers?.find(offer => isLowerCaseMatch(offer.nft.uniqueId, asset.uniqueId)), [asset.uniqueId, nftOffers]);
-  const offerValue = useMemo(
-    () =>
-      offer
-        ? convertAmountToNativeDisplay(
-            offer.netAmount.usd,
-            'USD',
-            undefined,
-            // don't show decimals
-            true,
-            // abbreviate if amount is >= 10,000
-            offer.netAmount.decimal >= 10_000
-          )
-        : undefined,
-    [offer]
-  );
 
   const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.chainId);
 
@@ -421,7 +395,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
       analytics.track(analytics.event.tokenDetailsNFT, {
         eventSentAfterMs: elapsedTime,
         token: { isPoap, isParty: !!isParty, isENS, address, chainId, name, image_url: images.lowResUrl },
-        available_data: { description: !!description, image_url: !!images.lowResUrl, floorPrice: !!offer?.floorPrice },
+        available_data: { description: !!description, image_url: !!images.lowResUrl },
       });
     },
     { timeout: 5 * 1000 }
@@ -554,18 +528,6 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                           {hasSendButton ? <SendActionButton asset={asset} color={imageColor} nftShadows textColor={textColor} /> : null}
                         </Columns>
                       ) : null}
-                      {!!offer && (
-                        <SheetActionButton
-                          color={imageColor}
-                          label={`􀋡 ${i18n.t(i18n.l.expanded_state.unique_expanded.sell_for_x, {
-                            price: offerValue as string,
-                          })}`}
-                          nftShadows
-                          onPress={() => navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer })}
-                          textColor={textColor}
-                          weight="heavy"
-                        />
-                      )}
                     </Stack>
                     {asset.chainId !== ChainId.mainnet ? (
                       // @ts-expect-error JavaScript component
@@ -586,7 +548,6 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                           bottom={IS_ANDROID ? '15px (Deprecated)' : '6px'}
                           top={IS_ANDROID ? '10px' : '4px'}
                         >
-                          {isNFT && <NFTBriefTokenInfoRow asset={asset} />}
                           {isENS && (
                             <ENSBriefTokenInfoRow
                               color={imageColor}

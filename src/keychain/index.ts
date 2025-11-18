@@ -371,7 +371,7 @@ export async function getSharedWebCredentials(): Promise<Result<SharedWebCredent
  */
 export async function setSharedWebCredentials(username: string, password: string) {
   logger.debug(`[keychain]: setSharedWebCredentials`, {}, logger.DebugContext.keychain);
-  await originalSetSharedWebCredentials('rainbow.me', username, password);
+  await originalSetSharedWebCredentials('https://rainbow.me', username, password);
 }
 
 /**
