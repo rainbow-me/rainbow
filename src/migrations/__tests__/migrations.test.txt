@@ -1,6 +1,6 @@
 import { InteractionManager } from 'react-native';
 import { describe, test, expect } from '@jest/globals';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 
 import { runMigrations } from '@/migrations';
 import {
@@ -12,7 +12,7 @@ import {
 InteractionManager.runAfterInteractions = jest.fn();
 
 describe(`@/migrations`, () => {
-  const storage = new MMKV({ id: MIGRATIONS_STORAGE_ID });
+  const storage = createMMKV({ id: MIGRATIONS_STORAGE_ID });
 
   const fooMigrationName = 'migration_foo' as MigrationName;
   const fooMigration: Migration = {

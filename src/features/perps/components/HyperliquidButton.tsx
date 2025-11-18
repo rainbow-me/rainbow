@@ -1,7 +1,7 @@
 import React, { ComponentProps, ReactNode } from 'react';
 import { Box, BoxProps, useColorMode } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, View } from 'react-native';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';

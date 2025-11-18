@@ -28,7 +28,7 @@ export function createPerpsDepositQuoteStore(
   useAmountStore: PerpsDepositAmountStoreType,
   useDepositStore: PerpsDepositStoreType
 ): PerpsDepositQuoteStoreType {
-  return createQueryStore({
+  return createQueryStore<CrosschainQuote | QuoteStatus.InsufficientBalance | null, QuoteStoreParams>({
     fetcher: fetchCrosschainQuote,
     params: {
       accountAddress: $ => $(useWalletsStore).accountAddress,

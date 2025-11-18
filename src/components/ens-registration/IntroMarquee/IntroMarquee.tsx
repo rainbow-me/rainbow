@@ -90,7 +90,14 @@ export default function IntroMarquee({ isSmallPhone }: { isSmallPhone: boolean }
 
   return (
     <Box height={{ custom: isSmallPhone ? 90 : 100 }}>
-      <MarqueeList height={isSmallPhone ? 90 : 100} items={items} renderItem={renderItem} speed={-15} testID="ens-names-marquee" />
+      <MarqueeList
+        height={isSmallPhone ? 90 : 100}
+        // @ts-expect-error items is typed as never[]
+        items={items}
+        renderItem={renderItem}
+        speed={-15}
+        testID="ens-names-marquee"
+      />
     </Box>
   );
 }

@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-const AesEncryption = NativeModules.Aes;
+const AesEncryption = NativeModules.RCTAes;
 
 export default class AesEncryptor {
   generateSalt(byteCount = 32) {

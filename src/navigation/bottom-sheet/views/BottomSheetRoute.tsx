@@ -2,7 +2,7 @@ import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps } from '@gor
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Keyboard, View, ViewStyle } from 'react-native';
 import { isKeyboardOpen } from '../../../helpers';
-import { CONTAINER_HEIGHT, DEFAULT_BACKDROP_COLOR, DEFAULT_BACKDROP_OPACITY, DEFAULT_HEIGHT } from '../constants';
+import { DEFAULT_BACKDROP_COLOR, DEFAULT_BACKDROP_OPACITY, DEFAULT_HEIGHT } from '../constants';
 import { BottomSheetNavigatorContext } from '../contexts/internal';
 import type { BottomSheetDescriptor } from '../types';
 import { IS_ANDROID } from '@/env';
@@ -137,7 +137,6 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
         animateOnMount
         backdropComponent={renderBackdropComponent}
         backgroundComponent={null}
-        containerHeight={CONTAINER_HEIGHT}
         enableContentPanningGesture={enableContentPanningGesture}
         enableHandlePanningGesture={enableHandlePanningGesture}
         enablePanDownToClose={enablePanDownToClose}
@@ -146,6 +145,8 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
         onClose={handleOnClose}
         ref={ref}
         snapPoints={snapPoints}
+        enableDynamicSizing={false}
+        detached
       >
         <View style={screenContainerStyle}>{render()}</View>
       </BottomSheet>

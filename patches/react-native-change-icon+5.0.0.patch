@@ -1,32 +1,34 @@
 diff --git a/node_modules/react-native-change-icon/android/src/main/java/com/reactnativechangeicon/ChangeIconModule.java b/node_modules/react-native-change-icon/android/src/main/java/com/reactnativechangeicon/ChangeIconModule.java
-index 07402bc..5872b4a 100644
+index b303063..292802f 100644
 --- a/node_modules/react-native-change-icon/android/src/main/java/com/reactnativechangeicon/ChangeIconModule.java
 +++ b/node_modules/react-native-change-icon/android/src/main/java/com/reactnativechangeicon/ChangeIconModule.java
-@@ -72,11 +72,17 @@ public class ChangeIconModule extends ReactContextBaseJavaModule implements Appl
+@@ -78,10 +78,16 @@ public class ChangeIconModule extends ReactContextBaseJavaModule implements Appl
              return;
          }
          try {
 -            activity.getPackageManager().setComponentEnabledSetting(
+-                    new ComponentName(this.packageName, activeClass),
+-                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+-                    PackageManager.DONT_KILL_APP);
 +            PackageManager pm = activity.getPackageManager();
 +            pm.setComponentEnabledSetting(
-                 new ComponentName(this.packageName, activeClass),
-                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                 PackageManager.DONT_KILL_APP
-             );
++                new ComponentName(this.packageName, activeClass),
++                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
++                PackageManager.DONT_KILL_APP);
 +            pm.setComponentEnabledSetting(
 +                new ComponentName(this.packageName, this.componentClass),
 +                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
 +                PackageManager.DONT_KILL_APP
 +            );
-             promise.resolve(enableIcon);
+             promise.resolve(newIconName);
          } catch (Exception e) {
-             promise.reject("ICON_INVALID");
-@@ -84,7 +90,7 @@ public class ChangeIconModule extends ReactContextBaseJavaModule implements Appl
+             promise.reject("ANDROID:ICON_INVALID");
+@@ -89,7 +95,7 @@ public class ChangeIconModule extends ReactContextBaseJavaModule implements Appl
          }
          this.classesToKill.add(this.componentClass);
          this.componentClass = activeClass;
 -        activity.getApplication().registerActivityLifecycleCallbacks(this);
 +        //activity.getApplication().registerActivityLifecycleCallbacks(this);
          iconChanged = true;
+         activity.finish();
      }
- 

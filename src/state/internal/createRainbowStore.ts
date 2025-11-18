@@ -103,7 +103,7 @@ function createPersistStorage<S, PersistedState extends Partial<S>>(config: Rain
     },
     removeItem: (name: string) => {
       const key = `${storageKey}:${name}`;
-      rainbowStorage.delete(key);
+      rainbowStorage.remove(key);
     },
   };
 

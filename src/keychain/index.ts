@@ -18,7 +18,7 @@ import {
   GetOptions,
   STORAGE_TYPE,
 } from 'react-native-keychain';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 
 import * as keychainConstants from '@/utils/keychainConstants';
 import AesEncryptor from '@/handlers/aesEncryption';
@@ -56,7 +56,7 @@ type Result<T = any> =
       error: ErrorType;
     };
 
-const cache = new MMKV({
+const cache = createMMKV({
   id: 'rainbowKeychainLocalStorage',
 });
 
@@ -279,7 +279,7 @@ export async function has(key: string): Promise<boolean> {
  */
 export async function remove(key: string) {
   logger.debug(`[keychain]: remove`, { key }, logger.DebugContext.keychain);
-  cache.delete(key);
+  cache.remove(key);
   await resetInternetCredentials({ server: key });
 }
 

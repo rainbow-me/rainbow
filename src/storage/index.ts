@@ -1,4 +1,4 @@
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV, MMKV } from 'react-native-mmkv';
 
 import { Account, Cards, Campaigns, Device, Review, WatchedWalletCohort } from '@/storage/schema';
 import { EthereumAddress, RainbowTransaction } from '@/entities';
@@ -14,7 +14,7 @@ export class Storage<Scopes extends unknown[], Schema> {
   protected store: MMKV;
 
   constructor({ id, encryptionKey }: { id: string; encryptionKey?: string }) {
-    this.store = new MMKV({ id, encryptionKey });
+    this.store = createMMKV({ id, encryptionKey });
   }
 
   /**
@@ -48,7 +48,7 @@ export class Storage<Scopes extends unknown[], Schema> {
    *   `remove([scope, key])`
    */
   remove<Key extends keyof Schema>(scopes: [...Scopes, Key]) {
-    this.store.delete(scopes.join(this.sep));
+    this.store.remove(scopes.join(this.sep));
   }
 
   /**

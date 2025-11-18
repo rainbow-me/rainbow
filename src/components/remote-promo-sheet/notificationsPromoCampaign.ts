@@ -2,11 +2,11 @@ import { logger } from '@/logger';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { getSelectedWallet } from '@/state/wallets/walletsStore';
 import { Campaign, CampaignCheckType, CampaignKey, GenericCampaignCheckResponse } from './localCampaignChecks';
 
-const mmkv = new MMKV();
+const mmkv = createMMKV();
 
 export const notificationsCampaignAction = async () => {
   logger.debug('[notificationsCampaignAction]: showing notifications promo');

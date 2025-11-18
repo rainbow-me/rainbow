@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { ButtonPressAnimation } from '@/components/animations';

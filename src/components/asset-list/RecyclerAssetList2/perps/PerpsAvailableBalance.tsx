@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet } from 'react-native';
 import { Box, Text } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

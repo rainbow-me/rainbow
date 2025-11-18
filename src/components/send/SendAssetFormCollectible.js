@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { OpacityToggler } from '../animations';
 import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
 import { Column } from '../layout';

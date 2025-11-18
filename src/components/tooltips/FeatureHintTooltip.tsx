@@ -3,7 +3,7 @@ import { StyleSheet, View, LayoutChangeEvent, useWindowDimensions } from 'react-
 import { BlurView } from 'react-native-blur-view';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS } from 'react-native-reanimated';
 import { Box, globalColors, HitSlop, Text } from '@/design-system';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import Svg, { Path } from 'react-native-svg';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -29,7 +29,7 @@ const BORDER_RADIUS = 24;
 const ICON_SIZE = 36;
 
 /*
-  This draws the entire tooltip, including the arrow, in one path 
+  This draws the entire tooltip, including the arrow, in one path
   This allows the arrow to blend into the tooltip background nicely
 */
 const calculateTooltipPath = (side: Side, align: Align, width: number): string => {
@@ -257,7 +257,13 @@ export const FeatureHintTooltip = forwardRef<TooltipRef, FeatureHintTooltipProps
                     { marginTop: side === 'top' ? 0 : ARROW_SIZE, marginBottom: side === 'bottom' ? 0 : ARROW_SIZE },
                   ]}
                 >
-                  <LinearGradient colors={['#268FFF1F', '#268FFF14']} angle={135} useAngle style={styles.iconContainer}>
+                  <LinearGradient
+                    colors={['#268FFF1F', '#268FFF14']}
+                    // 135 deg angle
+                    start={{ x: 0, y: 1 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.iconContainer}
+                  >
                     <Text weight="heavy" size="17pt" color={{ custom: '#268FFF' }}>
                       􀍱
                     </Text>

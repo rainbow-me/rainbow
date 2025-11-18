@@ -1,7 +1,7 @@
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '../../model/mmkv';
 
-const mmkvLocalStorage = new MMKV({
+const mmkvLocalStorage = createMMKV({
   id: STORAGE_IDS.LOCAL_STORAGE_ADAPTER,
 });
 
@@ -18,7 +18,7 @@ export const mmkvStorageBackend = {
   },
   removeItem(key: string) {
     return new Promise(res => {
-      res(mmkvLocalStorage.delete(key));
+      res(mmkvLocalStorage.remove(key));
     });
   },
   setItem(key: string, value: string | number | boolean) {

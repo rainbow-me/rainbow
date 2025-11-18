@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { keyBy } from 'lodash';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { ETH_ADDRESS } from '../index';
 import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
 import { RainbowToken } from '@/entities';
@@ -8,7 +8,7 @@ import { STORAGE_IDS } from '@/model/mmkv';
 import { logger, RainbowError } from '@/logger';
 import { Network, ChainId } from '@/state/backendNetworks/types';
 
-export const rainbowListStorage = new MMKV({
+export const rainbowListStorage = createMMKV({
   id: STORAGE_IDS.RAINBOW_TOKEN_LIST,
 });
 

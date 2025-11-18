@@ -1,4 +1,4 @@
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 
 import { Migration, MigrationName } from '@/migrations/types';
 
@@ -8,7 +8,7 @@ export function deleteImgixMMKVCache(): Migration {
   return {
     name: MigrationName.deleteImgixMMKVCache,
     async defer() {
-      const storage = new MMKV({ id: IMGIX_STORAGE_ID });
+      const storage = createMMKV({ id: IMGIX_STORAGE_ID });
       storage.clearAll();
     },
   };

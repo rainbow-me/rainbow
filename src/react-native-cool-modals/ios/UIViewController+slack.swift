@@ -67,7 +67,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
       panModalTransition(to: .shortForm);
     }
   }
-  
+
   @objc func rejump() {
     self.panModalSetNeedsLayoutUpdate()
     self.panModalTransition(to: self.state!)
@@ -76,9 +76,9 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   @objc func panModalSetNeedsLayoutUpdateWrapper() {
     panModalSetNeedsLayoutUpdate()
   }
-  
+
   var forceDisableShortForm = false
-  
+
   func willTransition(to state: PanModalPresentationController.PresentationState) {
     if state == .longForm && config?.disableShortFormAfterTransitionToLongForm ?? false {
       forceDisableShortForm = true
@@ -111,8 +111,9 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   var hacked = false
   var originalMethod: Method? = nil
   func hackParent() {
+    guard let ppview = config?.superview?.superview else { return }
     hacked = true
-    self.ppview = config!.superview!.superview!
+    self.ppview = ppview
     let poldClass: AnyClass = type(of: self.ppview!)
     if !PanModalViewController.swizzled {
       self.originalMethod = class_getInstanceMethod(poldClass, #selector(UIView.hitTest(_:with:)))
@@ -200,7 +201,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   var anchorModalToLongForm: Bool {
     return self.config?.anchorModalToLongForm ?? false
   }
-  
+
   var relevantScrollViewDepth: Int {
     return self.config?.relevantScrollViewDepth.intValue ?? 1
   }
@@ -302,9 +303,9 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
       config?.removeController()
     }
     config = nil
-    
+
     let isSlack = self.presentingViewController?.responds(to: NSSelectorFromString("unhackParent")) ?? false
-    
+
     if isSlack {
       let parentConfig: RNCMScreenView? = self.presentingViewController?.value(forKey: "config") as? RNCMScreenView
       let isHidden: Bool = parentConfig?.value(forKey: "_hidden") as? Bool ?? false
@@ -324,7 +325,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
       didHandleWillDismiss = true
       callWillDismiss()
     }
-    
+
     if !self.config!.customStack {
       config?.removeController()
     }
@@ -365,7 +366,7 @@ extension UIViewController {
     if self is PanModalViewController {
       (self as! PanModalViewController).unhackParent()
     }
-    
+
     controller.transitioningDelegate = slackStack ? viewControllerToPresent.transitioningDelegate : nil
     controller.modalPresentationStyle = slackStack ? viewControllerToPresent.modalPresentationStyle : .pageSheet
     self.present(controller, animated: flag, completion: completion)

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -43,7 +43,7 @@ export default function ShimmerAnimation({
 
   const { colors } = useTheme();
   const gradientColors = useMemo(
-    () => [colors.alpha(color, 0), gradientColor || colors.alpha(colors.whiteLabel, 0.2), colors.alpha(color, 0)],
+    () => [colors.alpha(color, 0), gradientColor || colors.alpha(colors.whiteLabel, 0.2), colors.alpha(color, 0)] as const,
     [gradientColor, color, colors]
   );
 

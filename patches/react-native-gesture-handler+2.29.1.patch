@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
-index d515011..813c69c 100644
+index 32cb973..a4d26c0 100644
 --- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
 +++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
 @@ -140,7 +140,7 @@ class RNGestureHandlerButtonViewManager :
@@ -56,4 +56,4 @@ index 708172f..7f1d550 100644
 +
  - (void)bindManualActivationToView:(RNGHUIView *)view
  {
-   if (_manualActivationRecognizer != nil) {      
+   if (_manualActivationRecognizer != nil) {
