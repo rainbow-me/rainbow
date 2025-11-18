@@ -59,6 +59,8 @@ export const usePolymarketAccountInfo = createDerivedStore<PolymarketAccountInfo
 
     // const unrealizedPnlPercent = toFixedWorklet(multiply(divide(totalPositionsPnl, totalPositionsInitialValue), 100), 2);
 
+    console.log('total account value', add(balance, totalPositionsEquity));
+
     return {
       balance,
       equity: formatCurrency(totalPositionsEquity),

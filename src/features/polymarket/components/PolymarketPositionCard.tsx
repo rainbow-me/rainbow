@@ -1,20 +1,70 @@
 import { StyleSheet } from 'react-native';
 import { Bleed, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { PolymarketPosition } from '@/features/polymarket/types';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import ImgixImage from '@/components/images/ImgixImage';
 import { truncateToDecimals } from '@/safe-math/SafeMath';
 import { SkiaBadge } from '@/components/SkiaBadge';
+import { ButtonPressAnimation } from '@/components/animations';
 
-export const PolymarketPositionCard = memo(function PolymarketPositionCard({ position }: { position: PolymarketPosition }) {
+const ActionButtonType = {
+  CLAIM: 'claim',
+  BURN: 'burn',
+  CASH_OUT: 'cash_out',
+};
+
+export const PolymarketPositionCard = memo(function PolymarketPositionCard({
+  position,
+  showActionButton = true,
+}: {
+  position: PolymarketPosition;
+  showActionButton?: boolean;
+}) {
   const { isDarkMode } = useColorMode();
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
   const wonGreen = isDarkMode ? '#1F9E39' : green;
   const lostRed = isDarkMode ? '#D53F35' : red;
+  const redeemable = position.redeemable;
 
-  const isWin = position.redeemable && position.size === position.currentValue;
+  const isWin = redeemable && position.size === position.currentValue;
+
+  const actionButtonType = useMemo(() => {
+    if (redeemable) {
+      if (isWin) return ActionButtonType.CLAIM;
+      return ActionButtonType.BURN;
+    }
+    return ActionButtonType.CASH_OUT;
+  }, [redeemable, isWin]);
+
+  const actionButtonLabel = useMemo(() => {
+    switch (actionButtonType) {
+      case ActionButtonType.CLAIM:
+        return 'Claim';
+      case ActionButtonType.BURN:
+        return 'Burn';
+      case ActionButtonType.CASH_OUT:
+        return 'Cash Out';
+    }
+  }, [actionButtonType]);
+
+  const actionButtonOnPress = useMemo(() => {
+    switch (actionButtonType) {
+      case ActionButtonType.CLAIM:
+        return () => {
+          console.log('claim');
+        };
+      case ActionButtonType.BURN:
+        return () => {
+          console.log('burn');
+        };
+      case ActionButtonType.CASH_OUT:
+        return () => {
+          console.log('cash out');
+        };
+    }
+  }, [actionButtonType]);
 
   return (
     <Box padding={'12px'} background="surfaceSecondaryElevated" borderRadius={24}>
@@ -29,7 +79,12 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({ pos
           paddingLeft={'8px'}
           paddingVertical={'6px'}
         >
-          <ImgixImage resizeMode="cover" size={16} source={{ uri: position.icon }} style={{ height: 16, width: 16, borderRadius: 4 }} />
+          <ImgixImage
+            resizeMode="cover"
+            size={16}
+            source={{ uri: position.market.events[0].icon }}
+            style={{ height: 16, width: 16, borderRadius: 4 }}
+          />
           <Text size="15pt" weight="bold" color="labelSecondary" numberOfLines={1} style={styles.flex}>
             {position.market.events[0].title}
           </Text>
@@ -44,7 +99,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({ pos
                 <OutcomeBadge outcome={position.outcome} />
               </Bleed>
             </Box>
-            {position.redeemable ? (
+            {redeemable ? (
               <Bleed bottom="16px">
                 <SkiaBadge
                   height={26}
@@ -82,7 +137,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({ pos
                   </Text>
                 )}
               </Box>
-              {!position.redeemable && (
+              {!redeemable && (
                 <Text size="15pt" weight="bold" color="label">
                   {truncateToDecimals(String(position.cashPnl), 2)}
                 </Text>
@@ -117,6 +172,15 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({ pos
             </Text>
           </Box>
         </Box>
+        {showActionButton && (
+          <ButtonPressAnimation onPress={actionButtonOnPress}>
+            <Box width="full" height={40} justifyContent="center" alignItems="center" background="accent" borderRadius={20}>
+              <Text size="17pt" weight="heavy" color="label">
+                {actionButtonLabel}
+              </Text>
+            </Box>
+          </ButtonPressAnimation>
+        )}
       </Box>
     </Box>
   );
