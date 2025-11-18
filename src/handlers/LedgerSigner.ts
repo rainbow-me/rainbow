@@ -3,7 +3,6 @@
 import AppEth, { ledgerService } from '@ledgerhq/hw-app-eth';
 import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 import { Signer } from '@ethersproject/abstract-signer';
-import { defineReadOnly, resolveProperties } from '@ethersproject/properties';
 import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
 import { UnsignedTransaction, serialize } from '@ethersproject/transactions';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -19,6 +18,20 @@ function waiter(duration: number): Promise<void> {
   });
 }
 
+// Helper to resolve all promise properties in an object
+async function resolveProperties<T>(object: T): Promise<T> {
+  const promises = Object.keys(object as any).map(async key => {
+    const value = (object as any)[key];
+    return { key, value: await value };
+  });
+  const resolved = await Promise.all(promises);
+  const result = { ...object };
+  resolved.forEach(({ key, value }) => {
+    (result as any)[key] = value;
+  });
+  return result;
+}
+
 export class LedgerSigner extends Signer {
   readonly path: string | undefined;
   readonly privateKey: null | undefined;
@@ -30,23 +43,22 @@ export class LedgerSigner extends Signer {
   constructor(provider: Provider, path: string, deviceId: string) {
     super();
 
-    defineReadOnly(this, 'isLedger', true);
-    defineReadOnly(this, 'privateKey', null);
-    defineReadOnly(this, 'path', path);
-    defineReadOnly(this, 'deviceId', deviceId);
-    defineReadOnly(this, 'provider', provider || null);
-    defineReadOnly(
-      this,
-      '_eth',
-      getEthApp(deviceId).then(
+    Object.defineProperty(this, 'isLedger', { value: true, writable: false });
+    Object.defineProperty(this, 'privateKey', { value: null, writable: false });
+    Object.defineProperty(this, 'path', { value: path, writable: false });
+    Object.defineProperty(this, 'deviceId', { value: deviceId, writable: false });
+    Object.defineProperty(this, 'provider', { value: provider || null, writable: false });
+    Object.defineProperty(this, '_eth', {
+      value: getEthApp(deviceId).then(
         ethApp => {
           return ethApp;
         },
         error => {
           return Promise.reject(error);
         }
-      )
-    );
+      ),
+      writable: false,
+    });
   }
 
   // @skylarbarrera - may end up removing/tweaking retry logic but for now it works and lets us move forward

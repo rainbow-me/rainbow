@@ -79,7 +79,6 @@
     "@ethersproject/bignumber": "5.7.0",
     "@ethersproject/contracts": "5.7.0",
     "@ethersproject/hdnode": "5.7.0",
-    "@ethersproject/properties": "5.7.0",
     "@ethersproject/providers": "5.7.2",
     "@ethersproject/random": "5.7.0",
     "@ethersproject/shims": "5.7.0",
