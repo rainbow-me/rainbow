@@ -19,7 +19,8 @@ import {
 } from '../helpers/inputValidators';
 import * as i18n from '@/languages';
 import { Wallet } from '@ethersproject/wallet';
-import { parseUnits } from '@ethersproject/units';
+import { parseUnits } from 'viem';
+import { BigNumber } from '@ethersproject/bignumber';
 import { TransactionOptions } from '@rainbow-me/swaps';
 import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
 import { LaunchTokenResponse, TokenLauncherSDKError } from '@rainbow-me/token-launcher';
@@ -582,7 +583,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     const linksByType = get().linkUrlsByType();
 
     try {
-      const initialTick = TokenLauncherSDK.getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
+      const initialTick = TokenLauncherSDK.getInitialTick(BigNumber.from(parseUnits(targetEth?.toFixed(18) ?? '0', 18)));
       // @ts-ignore - TODO: fix this Swap SDK types isn't supporting legacy gasPrice
       const gasParams = transactionOptions.gasPrice
         ? {

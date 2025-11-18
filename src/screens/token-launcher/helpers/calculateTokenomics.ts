@@ -1,6 +1,7 @@
 import { CREATOR_BPS, TARGET_MARKET_CAP_IN_ETH } from '../constants';
 import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
-import { parseUnits } from '@ethersproject/units';
+import { parseUnits } from 'viem';
+import { BigNumber } from '@ethersproject/bignumber';
 
 // 1% fee
 const POOL_FEE = 10000;
@@ -32,7 +33,7 @@ export function calculateTokenomics({
   const targetPriceUsd = targetPriceEth * ethPriceUsd;
   const targetMarketCapUsd = totalSupply * targetPriceUsd;
 
-  const tick = TokenLauncherSDK.getInitialTick(parseUnits(targetPriceEth?.toFixed(18) ?? '0', 18));
+  const tick = TokenLauncherSDK.getInitialTick(BigNumber.from(parseUnits(targetPriceEth?.toFixed(18) ?? '0', 18)));
 
   // Calculate actual starting values with rounded tick
   let actualPriceEth = Math.pow(1.0001, tick);

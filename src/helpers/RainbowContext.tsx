@@ -1,5 +1,5 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
-import { parseEther } from '@ethersproject/units';
+import { parseEther } from 'viem';
 import { Wallet } from '@ethersproject/wallet';
 import React, { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { MMKV } from 'react-native-mmkv';
