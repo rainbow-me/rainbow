@@ -135,6 +135,7 @@ const Routes = {
   PERPS_TRADE_HISTORY_SCREEN: 'PerpsTradeHistoryScreen',
   PERPS_TRADE_DETAILS_SHEET: 'PerpsTradeDetailsSheet',
   POLYMARKET_EVENT_SCREEN: 'PolymarketEventScreen',
+  POLYMARKET_MANAGE_POSITION_SHEET: 'PolymarketManagePositionSheet',
 } as const;
 
 export const NATIVE_ROUTES = new Set<Route>([

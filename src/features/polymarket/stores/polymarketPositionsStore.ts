@@ -11,6 +11,7 @@ import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 type PolymarketPositionsStoreActions = {
   getPositions: () => PolymarketPosition[] | undefined;
   getEventPositions: (eventId: string) => PolymarketPosition[] | undefined;
+  getPosition: (conditionId: string) => PolymarketPosition | undefined;
 };
 
 type PolymarketPositionsParams = {
@@ -40,6 +41,10 @@ export const usePolymarketPositionsStore = createQueryStore<
       get()
         .getData()
         ?.positions.filter(position => position.eventId === eventId),
+    getPosition: (conditionId: string) =>
+      get()
+        .getData()
+        ?.positions.find(position => position.conditionId === conditionId),
   })
 );
 

@@ -7,6 +7,11 @@ import ImgixImage from '@/components/images/ImgixImage';
 import { truncateToDecimals } from '@/safe-math/SafeMath';
 import { SkiaBadge } from '@/components/SkiaBadge';
 import { ButtonPressAnimation } from '@/components/animations';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import LinearGradient from 'react-native-linear-gradient';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
 const ActionButtonType = {
   CLAIM: 'claim',
@@ -61,128 +66,143 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
         };
       case ActionButtonType.CASH_OUT:
         return () => {
-          console.log('cash out');
+          Navigation.handleAction(Routes.POLYMARKET_MANAGE_POSITION_SHEET, { position });
         };
     }
-  }, [actionButtonType]);
+  }, [actionButtonType, position]);
 
   return (
-    <Box padding={'12px'} background="surfaceSecondaryElevated" borderRadius={24}>
-      <Box gap={14}>
-        <Box
-          borderWidth={1}
-          borderColor="separatorTertiary"
-          borderRadius={12}
-          flexDirection="row"
-          alignItems="center"
-          gap={7}
-          paddingLeft={'8px'}
-          paddingVertical={'6px'}
-        >
-          <ImgixImage
-            resizeMode="cover"
-            size={16}
-            source={{ uri: position.market.events[0].icon }}
-            style={{ height: 16, width: 16, borderRadius: 4 }}
-          />
-          <Text size="15pt" weight="bold" color="labelSecondary" numberOfLines={1} style={styles.flex}>
-            {position.market.events[0].title}
-          </Text>
-        </Box>
-        <Box gap={12}>
-          <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-            <Box flexDirection="row" gap={4}>
-              <Text size="15pt" weight="semibold" color="labelQuaternary">
-                {'Outcome'}
-              </Text>
-              <Bleed vertical="4px">
-                <OutcomeBadge outcome={position.outcome} />
-              </Bleed>
-            </Box>
-            {redeemable ? (
-              <Bleed bottom="16px">
-                <SkiaBadge
-                  height={26}
-                  text={isWin ? 'WON' : 'LOST'}
-                  fillColor={isWin ? wonGreen : lostRed}
-                  textColor="label"
-                  fontSize="15pt"
-                  fontWeight="heavy"
-                  strokeColor={'rgba(255, 255, 255, 0.12)'}
-                  strokeWidth={2}
-                />
-              </Bleed>
-            ) : (
-              <Text size="17pt" weight="bold" color="label">
-                {truncateToDecimals(String(position.currentValue), 2)}
-              </Text>
-            )}
+    <GradientBorderView
+      borderGradientColors={[opacityWorklet('#DC5CEA', 0.06), opacityWorklet('#DC5CEA', 0)]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      borderRadius={24}
+      style={{ overflow: 'hidden' }}
+    >
+      <LinearGradient
+        colors={[opacityWorklet('#DC5CEA', 0.14), opacityWorklet('#DC5CEA', 0)]}
+        style={StyleSheet.absoluteFillObject}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        pointerEvents="none"
+      />
+      <Box padding={'12px'}>
+        <Box gap={14}>
+          <Box
+            borderWidth={1}
+            borderColor="separatorTertiary"
+            borderRadius={12}
+            flexDirection="row"
+            alignItems="center"
+            gap={7}
+            paddingLeft={'8px'}
+            paddingVertical={'6px'}
+          >
+            <ImgixImage
+              resizeMode="cover"
+              size={16}
+              source={{ uri: position.market.events[0].icon }}
+              style={{ height: 16, width: 16, borderRadius: 4 }}
+            />
+            <Text size="15pt" weight="bold" color="labelSecondary" numberOfLines={1} style={styles.flex}>
+              {position.market.events[0].title}
+            </Text>
           </Box>
-          <Box>
+          <Box gap={12}>
             <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-              <Box flexDirection="row" alignItems="center" gap={6}>
-                {position.marketHasUniqueImage && (
-                  <Bleed vertical="4px">
-                    <ImgixImage
-                      resizeMode="cover"
-                      size={16}
-                      source={{ uri: position.icon }}
-                      style={{ height: 16, width: 16, borderRadius: 4 }}
-                    />
-                  </Bleed>
-                )}
-                {position.market.groupItemTitle && (
-                  <Text size="17pt" weight="bold" color="label">
-                    {position.market.groupItemTitle}
-                  </Text>
-                )}
+              <Box flexDirection="row" gap={4}>
+                <Text size="15pt" weight="semibold" color="labelQuaternary">
+                  {'Outcome'}
+                </Text>
+                <Bleed vertical="4px">
+                  <OutcomeBadge outcome={position.outcome} />
+                </Bleed>
               </Box>
-              {!redeemable && (
-                <Text size="15pt" weight="bold" color="label">
-                  {truncateToDecimals(String(position.cashPnl), 2)}
+              {redeemable ? (
+                <Bleed bottom="16px">
+                  <SkiaBadge
+                    height={26}
+                    text={isWin ? 'WON' : 'LOST'}
+                    fillColor={isWin ? wonGreen : lostRed}
+                    textColor="label"
+                    fontSize="15pt"
+                    fontWeight="heavy"
+                    strokeColor={'rgba(255, 255, 255, 0.12)'}
+                    strokeWidth={2}
+                  />
+                </Bleed>
+              ) : (
+                <Text size="17pt" weight="bold" color="label">
+                  {truncateToDecimals(String(position.currentValue), 2)}
                 </Text>
               )}
             </Box>
+            <Box>
+              <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+                <Box flexDirection="row" alignItems="center" gap={6}>
+                  {position.marketHasUniqueImage && (
+                    <Bleed vertical="4px">
+                      <ImgixImage
+                        resizeMode="cover"
+                        size={16}
+                        source={{ uri: position.icon }}
+                        style={{ height: 16, width: 16, borderRadius: 4 }}
+                      />
+                    </Bleed>
+                  )}
+                  {position.market.groupItemTitle && (
+                    <Text size="17pt" weight="bold" color="label">
+                      {position.market.groupItemTitle}
+                    </Text>
+                  )}
+                </Box>
+                {!redeemable && (
+                  <Text size="15pt" weight="bold" color="label">
+                    {truncateToDecimals(String(position.cashPnl), 2)}
+                  </Text>
+                )}
+              </Box>
+            </Box>
           </Box>
-        </Box>
-        <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
-        <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-          <Box flexDirection="row" alignItems="center" gap={3}>
-            <Text size="15pt" weight="bold" color="labelQuaternary">
-              {'Odds'}
-            </Text>
-            <Text size="15pt" weight="bold" color="labelSecondary">
-              {`${position.curPrice * 100}%`}
-            </Text>
-          </Box>
-          <Box flexDirection="row" alignItems="center" gap={3}>
-            <Text size="15pt" weight="bold" color="labelQuaternary">
-              {'Bet'}
-            </Text>
-            <Text size="15pt" weight="bold" color="labelSecondary">
-              {truncateToDecimals(String(position.initialValue), 2)}
-            </Text>
-          </Box>
-          <Box flexDirection="row" alignItems="center" gap={3}>
-            <Text size="15pt" weight="bold" color="labelQuaternary">
-              {isWin ? 'Won' : 'To Win'}
-            </Text>
-            <Text size="15pt" weight="bold" color="labelSecondary">
-              {truncateToDecimals(String(position.size), 2)}
-            </Text>
-          </Box>
-        </Box>
-        {showActionButton && (
-          <ButtonPressAnimation onPress={actionButtonOnPress}>
-            <Box width="full" height={40} justifyContent="center" alignItems="center" background="accent" borderRadius={20}>
-              <Text size="17pt" weight="heavy" color="label">
-                {actionButtonLabel}
+          <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
+          <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+            <Box flexDirection="row" alignItems="center" gap={3}>
+              <Text size="15pt" weight="bold" color="labelQuaternary">
+                {'Odds'}
+              </Text>
+              <Text size="15pt" weight="bold" color="labelSecondary">
+                {`${position.curPrice * 100}%`}
               </Text>
             </Box>
-          </ButtonPressAnimation>
-        )}
+            <Box flexDirection="row" alignItems="center" gap={3}>
+              <Text size="15pt" weight="bold" color="labelQuaternary">
+                {'Bet'}
+              </Text>
+              <Text size="15pt" weight="bold" color="labelSecondary">
+                {truncateToDecimals(String(position.initialValue), 2)}
+              </Text>
+            </Box>
+            <Box flexDirection="row" alignItems="center" gap={3}>
+              <Text size="15pt" weight="bold" color="labelQuaternary">
+                {isWin ? 'Won' : 'To Win'}
+              </Text>
+              <Text size="15pt" weight="bold" color="labelSecondary">
+                {truncateToDecimals(String(position.size), 2)}
+              </Text>
+            </Box>
+          </Box>
+          {showActionButton && (
+            <ButtonPressAnimation onPress={actionButtonOnPress} style={{ zIndex: 1000 }}>
+              <Box width="full" height={40} justifyContent="center" alignItems="center" background="accent" borderRadius={20}>
+                <Text size="17pt" weight="heavy" color="label">
+                  {actionButtonLabel}
+                </Text>
+              </Box>
+            </ButtonPressAnimation>
+          )}
+        </Box>
       </Box>
-    </Box>
+    </GradientBorderView>
   );
 });
 

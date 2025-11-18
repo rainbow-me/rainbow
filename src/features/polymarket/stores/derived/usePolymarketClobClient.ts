@@ -52,6 +52,8 @@ export const usePolymarketClobClient = createDerivedStore(
   { fastMode: true }
 );
 
-export async function getPolymarketClobClient(): Promise<ClobClient | undefined> {
-  return await usePolymarketClobClient.getState().client;
+export async function getPolymarketClobClient(): Promise<ClobClient> {
+  const client = await usePolymarketClobClient.getState().client;
+  if (!client) throw new RainbowError('[Polymarket] Failed to get clob client');
+  return client;
 }

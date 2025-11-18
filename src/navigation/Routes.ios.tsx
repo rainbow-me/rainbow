@@ -133,6 +133,7 @@ import { PerpsExplainSheet } from '@/features/perps/screens/perps-explain-sheet/
 import { PerpsAddToPositionSheet } from '@/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet';
 import { PerpsTradeDetailsSheet } from '@/features/perps/screens/perps-trade-details-sheet/PerpsTradeDetailsSheet';
 import { PolymarketEventScreen } from '@/features/polymarket/screens/polymarket-event-screen/PolymarketEventScreen';
+import { PolymarketManagePositionSheet } from '@/features/polymarket/screens/polymarket-manage-position-sheet.tsx/PolymarketManagePositionSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -322,6 +323,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} {...perpsExplainSheetConfig} />
       <NativeStack.Screen component={PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} {...panelConfig} />
       <NativeStack.Screen component={PolymarketEventScreen} name={Routes.POLYMARKET_EVENT_SCREEN} {...expandedAssetSheetV2Config} />
+      <NativeStack.Screen component={PolymarketManagePositionSheet} name={Routes.POLYMARKET_MANAGE_POSITION_SHEET} {...panelConfig} />
     </NativeStack.Navigator>
   );
 }
