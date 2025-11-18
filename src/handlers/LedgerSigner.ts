@@ -3,16 +3,14 @@
 import AppEth, { ledgerService } from '@ledgerhq/hw-app-eth';
 import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 import { Signer } from '@ethersproject/abstract-signer';
-import { Bytes, hexlify, joinSignature } from '@ethersproject/bytes';
 import { defineReadOnly, resolveProperties } from '@ethersproject/properties';
 import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
-import { toUtf8Bytes } from '@ethersproject/strings';
 import { UnsignedTransaction, serialize } from '@ethersproject/transactions';
 import { BigNumber } from '@ethersproject/bignumber';
 import { logger, RainbowError } from '@/logger';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { getAddress } from 'viem';
+import { getAddress, Hex, signatureToHex, stringToBytes, toHex } from 'viem';
 import { getEthApp } from '@/utils/ledger';
 
 function waiter(duration: number): Promise<void> {
@@ -99,17 +97,17 @@ export class LedgerSigner extends Signer {
     return getAddress(account.address);
   }
 
-  async signMessage(message: Bytes | string): Promise<string> {
+  async signMessage(message: Hex | string): Promise<string> {
     if (typeof message === 'string') {
-      message = toUtf8Bytes(message);
+      message = toHex(stringToBytes(message));
     }
 
-    const messageHex = hexlify(message).substring(2);
+    const messageHex = message.substring(2);
 
     const sig = await this._retry(eth => eth.signPersonalMessage(this.path!, messageHex));
     sig.r = '0x' + sig.r;
     sig.s = '0x' + sig.s;
-    return joinSignature(sig);
+    return signatureToHex(sig);
   }
 
   async signTypedDataMessage(data: any, legacy: boolean): Promise<string> {
@@ -129,7 +127,7 @@ export class LedgerSigner extends Signer {
     const sig = await this._retry(eth => eth.signEIP712HashedMessage(this.path!, domainSeparatorHex, hashStructMessageHex));
     sig.r = '0x' + sig.r;
     sig.s = '0x' + sig.s;
-    return joinSignature(sig);
+    return signatureToHex(sig);
   }
 
   async signTransaction(transaction: TransactionRequest): Promise<string> {

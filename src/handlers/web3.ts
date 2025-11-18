@@ -1,5 +1,4 @@
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
-import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
 import { Block, JsonRpcBatchProvider, StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
@@ -26,7 +25,7 @@ import { ChainId, chainAnvil } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { NftTokenType } from '@/graphql/__generated__/arc';
-import { Address, getAddress, parseEther } from 'viem';
+import { Address, getAddress, isHex, parseEther } from 'viem';
 
 export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
 
@@ -151,7 +150,7 @@ export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number })
  * @param value The string to check
  * @return Whether or not the string was a hex string.
  */
-export const isHexString = (value: string): boolean => isEthersHexString(value);
+export const isHexString = (value: string): boolean => isHex(value);
 
 /**
  * Converts a number to a hex string.

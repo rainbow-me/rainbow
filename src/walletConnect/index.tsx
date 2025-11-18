@@ -35,9 +35,7 @@ import {
   WalletconnectRequestData,
   WalletconnectResultType,
 } from '@/walletConnect/types';
-import { getAddress, isAddress } from 'viem';
-import { isHexString } from '@ethersproject/bytes';
-import { toUtf8String } from '@ethersproject/strings';
+import { bytesToString, getAddress, isAddress, isHex } from 'viem';
 import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
 import messaging from '@react-native-firebase/messaging';
 import { IWalletKit, WalletKit, WalletKitTypes } from '@reown/walletkit';
@@ -152,12 +150,12 @@ export function parseRPCParams({ method, params }: RPCPayload): {
   switch (method) {
     case RPCMethod.PersonalSign: {
       const [address, message] = params.sort(a => (isAddress(a) ? -1 : 1));
-      const isHex = isHexString(message);
+      const messageIsHex = isHex(message);
 
       let decodedMessage = message;
       try {
-        if (isHex) {
-          decodedMessage = toUtf8String(message);
+        if (messageIsHex) {
+          decodedMessage = bytesToString(message as `0x${string}`);
         }
       } catch (err) {
         logger.debug(

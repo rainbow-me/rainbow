@@ -1,4 +1,4 @@
-import { isHexString } from '@ethersproject/bytes';
+import { isHex } from 'viem';
 import * as i18n from '@/languages';
 import isEmpty from 'lodash/isEmpty';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
@@ -142,7 +142,7 @@ export default function SendHeader({
 
   const handleNavigateToContact = useCallback(() => {
     let color = 0;
-    const nickname = !isHexString(name) ? name : '';
+    const nickname = !isHex(name) ? name : '';
     if (!profilesEnabled) {
       color = contact?.color;
       if (color !== 0 && !color) {

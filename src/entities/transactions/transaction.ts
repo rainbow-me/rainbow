@@ -9,8 +9,7 @@ import { UniqueAsset } from '../uniqueAssets';
 import { ParsedAsset, AddysAsset } from '@/resources/assets/types';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { TransactionResponse } from '@ethersproject/providers';
-
-import { BytesLike } from '@ethersproject/bytes';
+import type { Hex } from 'viem';
 import { Transaction } from '@/features/positions/types/generated/transaction/transaction';
 
 export enum TransactionDirection {
@@ -65,7 +64,7 @@ export interface RainbowTransaction {
   };
   direction?: TransactionDirection;
   description?: string;
-  data?: string | BytesLike; // for pending tx
+  data?: string | Hex; // for pending tx
   from: EthereumAddress | null;
   gasLimit?: BigNumberish;
   gasPrice?: BigNumberish;

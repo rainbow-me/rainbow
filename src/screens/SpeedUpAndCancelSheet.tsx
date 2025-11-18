@@ -1,6 +1,7 @@
 import Divider from '@/components/Divider';
 import { GasFeeType, GasFeeTypes, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts, TransactionStatus } from '@/entities';
 import { getProvider, isL2Chain, toHex } from '@/handlers/web3';
+import type { Hex } from 'viem';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { greaterThan } from '@/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas } from '@/hooks';
@@ -22,7 +23,6 @@ import { position } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { gasUtils, safeAreaInsetValues } from '@/utils';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { BytesLike } from '@ethersproject/bytes';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { BigNumber } from 'bignumber.js';
@@ -135,7 +135,7 @@ export default function SpeedUpAndCancelSheet() {
   const fetchedTx = useRef(false);
   const [currentChainId, setCurrentChainId] = useState<ChainId>(ChainId.mainnet);
   const [currentProvider, setCurrentProvider] = useState<StaticJsonRpcProvider>(getProvider({ chainId: ChainId.mainnet }));
-  const [data, setData] = useState<BytesLike>();
+  const [data, setData] = useState<Hex>();
   const [gasLimit, setGasLimit] = useState<BigNumberish>();
   const [nonce, setNonce] = useState<BigNumberish>();
   const [to, setTo] = useState<string | undefined>(tx?.to ?? undefined);

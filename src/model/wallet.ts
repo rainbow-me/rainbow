@@ -1,6 +1,6 @@
 import { TransactionRequest } from '@ethersproject/abstract-provider';
-import { arrayify } from '@ethersproject/bytes';
 import { HDNode } from '@ethersproject/hdnode';
+import { hexToBytes } from 'viem';
 import { Provider, StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
@@ -450,7 +450,7 @@ export const signPersonalMessage = async (
     try {
       if (!wallet) return null;
       const result = await wallet.signMessage(
-        typeof message === 'string' && isHexString(addHexPrefix(message)) ? arrayify(addHexPrefix(message)) : message
+        typeof message === 'string' && isHexString(addHexPrefix(message)) ? hexToBytes(addHexPrefix(message) as `0x${string}`) : message
       );
       return { result };
     } catch (error) {
