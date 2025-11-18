@@ -14,7 +14,6 @@ import { ChainId, Network } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { Signer } from '@ethersproject/abstract-signer';
-import { Logger } from '@ethersproject/logger';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
 import {
   createCommitENSRap,
@@ -652,9 +651,9 @@ interface EthersError extends Error {
 const parseError = (error: EthersError): string => {
   const errorCode = error?.code;
   switch (errorCode) {
-    case Logger.errors.UNPREDICTABLE_GAS_LIMIT:
+    case 'UNPREDICTABLE_GAS_LIMIT':
       return i18n.t(i18n.l.wallet.transaction.errors.unpredictable_gas);
-    case Logger.errors.INSUFFICIENT_FUNDS:
+    case 'INSUFFICIENT_FUNDS':
       return i18n.t(i18n.l.wallet.transaction.errors.insufficient_funds);
     default:
       return i18n.t(i18n.l.wallet.transaction.errors.generic);
