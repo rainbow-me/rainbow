@@ -30,10 +30,9 @@ import {
   useMobileWalletProtocolHost,
 } from '@coinbase/mobile-wallet-protocol-host';
 import { BigNumber } from '@ethersproject/bignumber';
-import { toUtf8String } from '@ethersproject/strings';
 import { noop } from 'lodash';
 import { InteractionManager } from 'react-native';
-import { Address } from 'viem';
+import { Address, bytesToString } from 'viem';
 import { getAccountAddress, getIsReadOnlyWallet, getWalletWithAccount } from '@/state/wallets/walletsStore';
 import { SEND_TRANSACTION } from './signingMethods';
 import watchingAlert from './watchingAlert';
@@ -201,7 +200,7 @@ export const handleMobileWalletProtocolRequest = async ({
       // @ts-expect-error - coinbase host protocol types are NOT correct e.g. {"data": [72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100], "type": "Buffer"}
       if ((action as PersonalSignAction).params.message && (action as PersonalSignAction).params.message.type === 'Buffer') {
         // @ts-expect-error - coinbase host protocol types are NOT correct e.g. {"data": [72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100], "type": "Buffer"}
-        const messageFromBuffer = toUtf8String(Buffer.from((action as PersonalSignAction).params.message.data, 'hex'));
+        const messageFromBuffer = bytesToString(Buffer.from((action as PersonalSignAction).params.message.data, 'hex'));
         (action as PersonalSignAction).params.message = messageFromBuffer;
       }
 

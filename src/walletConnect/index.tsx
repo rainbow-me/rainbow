@@ -35,7 +35,7 @@ import {
   WalletconnectRequestData,
   WalletconnectResultType,
 } from '@/walletConnect/types';
-import { bytesToString, getAddress, isAddress, isHex } from 'viem';
+import { getAddress, hexToString, isAddress, isHex } from 'viem';
 import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
 import messaging from '@react-native-firebase/messaging';
 import { IWalletKit, WalletKit, WalletKitTypes } from '@reown/walletkit';
@@ -155,7 +155,7 @@ export function parseRPCParams({ method, params }: RPCPayload): {
       let decodedMessage = message;
       try {
         if (messageIsHex) {
-          decodedMessage = bytesToString(message as `0x${string}`);
+          decodedMessage = hexToString(message as `0x${string}`);
         }
       } catch (err) {
         logger.debug(

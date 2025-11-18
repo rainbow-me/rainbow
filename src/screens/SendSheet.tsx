@@ -574,7 +574,7 @@ export default function SendSheet() {
             }
 
             if (data) {
-              txDetails.data = data;
+              txDetails.data = data as string;
             }
 
             if (value) {

@@ -105,9 +105,11 @@ export class LedgerSigner extends Signer {
     const messageHex = message.substring(2);
 
     const sig = await this._retry(eth => eth.signPersonalMessage(this.path!, messageHex));
-    sig.r = '0x' + sig.r;
-    sig.s = '0x' + sig.s;
-    return signatureToHex(sig);
+    return signatureToHex({
+      r: ('0x' + sig.r) as Hex,
+      s: ('0x' + sig.s) as Hex,
+      v: BigInt(sig.v),
+    });
   }
 
   async signTypedDataMessage(data: any, legacy: boolean): Promise<string> {
@@ -125,9 +127,11 @@ export class LedgerSigner extends Signer {
     ).toString('hex');
 
     const sig = await this._retry(eth => eth.signEIP712HashedMessage(this.path!, domainSeparatorHex, hashStructMessageHex));
-    sig.r = '0x' + sig.r;
-    sig.s = '0x' + sig.s;
-    return signatureToHex(sig);
+    return signatureToHex({
+      r: ('0x' + sig.r) as Hex,
+      s: ('0x' + sig.s) as Hex,
+      v: BigInt(sig.v),
+    });
   }
 
   async signTransaction(transaction: TransactionRequest): Promise<string> {

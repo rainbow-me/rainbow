@@ -6,8 +6,7 @@ import { convertAmountAndPriceToNativeDisplay, convertHexToString, convertRawAmo
 import { logger } from '@/logger';
 import { ethereumUtils } from '@/utils';
 import { isSignTypedData, SIGN, PERSONAL_SIGN, SEND_TRANSACTION, SIGN_TRANSACTION } from '@/utils/signingMethods';
-import { isAddress } from 'viem';
-import { toUtf8String } from '@ethersproject/strings';
+import { hexToString, isAddress } from 'viem';
 
 export const getRequestDisplayDetails = async (payload, nativeCurrency, chainId) => {
   const timestampInMs = Date.now();
@@ -40,7 +39,7 @@ export const getRequestDisplayDetails = async (payload, nativeCurrency, chainId)
     let message = payload?.params?.find(p => !isAddress(p));
     try {
       if (isHexString(message)) {
-        message = toUtf8String(message);
+        message = hexToString(message);
       }
     } catch (error) {
       logger.warn(
