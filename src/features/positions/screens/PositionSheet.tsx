@@ -102,7 +102,7 @@ export const PositionSheet: React.FC = () => {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet backgroundColor={backgroundColor} useAdditionalTopPadding customHeight={customHeight}>
+        <SimpleSheet backgroundColor={backgroundColor} useAdditionalTopPadding customHeight={customHeight} testID="position-sheet">
           <Box padding="20px" width="full" paddingBottom={{ custom: 50 }}>
             <Stack space="24px" separator={<Separator color="separatorTertiary" thickness={1} />}>
               <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
@@ -116,10 +116,16 @@ export const PositionSheet: React.FC = () => {
                       imageUrl={position.dapp.icon_url}
                     />
                     <Stack space={'10px'}>
-                      <Text size="15pt" weight="heavy" color={{ custom: positionColor }} numberOfLines={1}>
+                      <Text
+                        size="15pt"
+                        weight="heavy"
+                        color={{ custom: positionColor }}
+                        numberOfLines={1}
+                        testID={`position-sheet-dapp-${position.dapp.name}`}
+                      >
                         {capitalize(position.dapp.name.replaceAll('-', ' '))}
                       </Text>
-                      <Text size="26pt" weight="heavy" color="label" numberOfLines={1}>
+                      <Text size="26pt" weight="heavy" color="label" numberOfLines={1} testID="position-sheet-total-value">
                         {position.totals.total.display}
                       </Text>
                     </Stack>
@@ -135,6 +141,7 @@ export const PositionSheet: React.FC = () => {
                       }}
                       justifyContent="center"
                       padding="12px"
+                      testID="position-sheet-open-dapp-button"
                     >
                       <Text size="17pt" weight="heavy" color={{ custom: positionColor }}>
                         {i18n.t(i18n.l.positions.open_dapp)}

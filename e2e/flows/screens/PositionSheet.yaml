@@ -1,0 +1,109 @@
+appId: ${APP_ID}
+tags:
+  - positions
+  - parallel
+---
+# This test verifies the PositionSheet behavior, specifically testing that
+# scrolling works correctly on Android with long position lists. This covers
+# a bug where the sheet would scroll off screen and dismiss unreliably when
+# scrolling down on Android (not present on iOS).
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+
+# Import a watched wallet with positions (test.zerion.eth)
+- tapOn: '.*I already have one'
+- tapOn:
+    id: watch-address-button
+- tapOn: 'Enter an Ethereum address or ENS name'
+- inputText: 'test.zerion.eth'
+- tapOn: 'Continue'
+- tapOn: 'Import Wallet'
+- runFlow: ../../utils/MaybeSetupPin.yaml
+
+# Wait for wallet to load
+- assertVisible:
+    id: wallet-screen
+
+# Scroll down to Positions section
+- retry:
+    maxRetries: 5
+    commands:
+      - assertVisible:
+          id: positions-list-header
+
+# Tap on a position (looking for wrapped-position with any type)
+# The first position should be visible
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible:
+          id: wrapped-position-.*
+- tapOn:
+    id: wrapped-position-.*
+
+# Assert position sheet opened
+- assertVisible:
+    id: position-sheet
+- assertVisible:
+    id: position-sheet-total-value
+
+# Test scrolling behavior - scroll down multiple times
+# This tests the Android bug where sheet scrolls off screen
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      # Scroll down in the sheet content
+      - swipe:
+          direction: UP
+          duration: 300
+      - swipe:
+          direction: UP
+          duration: 300
+      - swipe:
+          direction: UP
+          duration: 300
+
+      # Wait for scroll to settle
+      - waitForAnimationToEnd:
+          timeout: 1000
+
+      # Verify sheet is still visible and hasn't scrolled off screen
+      - assertVisible:
+          id: position-sheet
+
+      # Scroll back up
+      - swipe:
+          direction: DOWN
+          duration: 300
+      - swipe:
+          direction: DOWN
+          duration: 300
+
+# iOS doesn't have the bug, but we'll test basic scrolling
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - swipe:
+          direction: UP
+          duration: 300
+      - swipe:
+          direction: DOWN
+          duration: 300
+
+# Wait for animations to settle
+- waitForAnimationToEnd:
+    timeout: 1000
+
+# Dismiss sheet with swipe down gesture
+- swipe:
+    direction: DOWN
+
+# Verify we're back on the home screen
+- assertVisible:
+    id: wallet-screen

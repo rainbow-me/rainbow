@@ -1,0 +1,67 @@
+appId: ${APP_ID}
+tags:
+  - expanded-asset
+  - parallel
+---
+# This test verifies the ExpandedAssetSheet (token detail view) behavior,
+# specifically testing that the sheet dismiss gesture works correctly after
+# scrolling content up and down. This covers a bug where the sheet would not
+# dismiss properly after user interaction with scrollable content.
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- runFlow: ../../utils/ImportWalletWithKey.yaml
+
+# Wait for wallet to load
+- assertVisible:
+    id: avatar-button
+
+# Tap on a token to open expanded state
+# Using Ethereum as it should be present in most test wallets
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible:
+          id: 'balance-coin-row-Ethereum'
+- tapOn:
+    id: 'balance-coin-row-Ethereum'
+
+# Assert expanded state opened
+- assertVisible:
+    id: expanded-state-header
+- assertVisible:
+    id: 'chart-header-Ethereum'
+
+# Scroll down in the sheet to test scrolling behavior
+- swipe:
+    direction: UP
+    duration: 300
+- swipe:
+    direction: UP
+    duration: 300
+
+# Scroll back up to top
+- swipe:
+    direction: DOWN
+    duration: 300
+- swipe:
+    direction: DOWN
+    duration: 300
+
+# Wait for scroll to settle
+- waitForAnimationToEnd:
+    timeout: 1000
+
+# Dismiss sheet with swipe down gesture
+# This tests the bug fix for sheet dismiss gesture after scrolling
+- swipe:
+    direction: DOWN
+
+# Verify we're back on the home screen
+- assertVisible:
+    id: avatar-button
+- assertVisible:
+    id: swap-button
