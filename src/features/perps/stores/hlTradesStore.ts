@@ -52,7 +52,11 @@ export const useHlTradesStore = createQueryStore<FetchHlTradesResponse, HlTrades
     getTrades: () => get().getData()?.trades,
 
     getTradesBySymbol: () => get().getData()?.tradesBySymbol,
-  })
+  }),
+  {
+    storageKey: 'hlTradesStore',
+    version: 1,
+  }
 );
 
 export const hlTradesStoreActions = createStoreActions(useHlTradesStore);
@@ -97,7 +101,7 @@ function convertFillAndOrderToTrade({ fill, order }: { fill: UserFill; order: Hi
     tradeId: fill.tid,
     txHash: fill.hash,
     liquidation: fill.liquidation,
-    executedAt: new Date(fill.time),
+    executedAt: fill.time,
     direction: fill.dir,
     orderType: order.orderType,
     triggerOrderType,

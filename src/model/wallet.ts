@@ -34,7 +34,7 @@ import { createSignature } from '@/helpers/signingWallet';
 import showWalletErrorAlert from '@/helpers/support';
 import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { ethereumUtils } from '@/utils';
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { deriveAccountFromBluetoothHardwareWallet, deriveAccountFromMnemonic, deriveAccountFromWalletInput } from '@/utils/wallet';
 import {
   AddressWithRelationship,
@@ -696,12 +696,11 @@ export const createWallet = async ({
         (alreadyExistingWallet?.type === EthereumWalletType.seed || alreadyExistingWallet?.type === EthereumWalletType.mnemonic);
       if (!overwrite && alreadyExistingWallet && (isReadOnlyType || isPrivateKeyOverwritingSeedMnemonic)) {
         if (!isRestoring) {
-          setTimeout(
-            () => Alert.alert(i18n.t(i18n.l.wallet.new.alert.oops), i18n.t(i18n.l.wallet.new.alert.looks_like_already_imported)),
-            1
-          );
+          logger.debug('[wallet]: already imported this wallet', {}, DebugContext.wallet);
+          const error = new Error(i18n.t(i18n.l.wallet.new.alert.looks_like_already_imported));
+          error.name = 'WalletAlreadyExistsError';
+          throw error;
         }
-        logger.debug('[wallet]: already imported this wallet', {}, DebugContext.wallet);
         return null;
       }
     }
@@ -913,7 +912,11 @@ export const createWallet = async ({
       return walletRes;
     }
     return null;
-  } catch (error) {
+  } catch (e) {
+    const error = ensureError(e);
+    if (error.name === 'WalletAlreadyExistsError') {
+      throw error;
+    }
     logger.error(new RainbowError('[wallet]: Error in createWallet'), { error });
     return null;
   }

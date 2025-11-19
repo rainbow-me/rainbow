@@ -968,6 +968,8 @@
       "redacted_title": "Has desbloqueado\n Redacted Rainbow",
       "baggy_description": "Desde las calles hasta la cadena, este pequeño bolso sostiene tu dosis portátil de vibraciones Rainbow. Saborea los colores, y siente la diferencia.",
       "baggy_title": "Has desbloqueado\n Rainbow Baggy",
+      "chonks_description": "Imagina el viento en tu cabello Rainbow, conduciendo por la Ruta 101, sintiendo Chonky.",
+      "chonks_title": "Has desbloqueado\n El Icono Más Chonky",
       "button": "Consigue el ícono"
     },
     "explain": {
@@ -1582,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "Actividad",
+        "trades_count": "%{count} TRANSACCIONES",
+        "no_previous_trades": "No Hay Transacciones Anteriores"
+      },
       "common": {
         "not_available": "N/D",
         "current_price": "Precio Actual",
@@ -1591,8 +1598,14 @@
         "more": "Más",
         "error": "Error",
         "cancel": "Cancelar",
+        "close": "Cerrar",
+        "add": "Agregar",
         "liq_price": "precio de liquidación",
         "liq": "liq"
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "Perpetuos",
@@ -1609,6 +1622,7 @@
       },
       "markets": {
         "title": "Mercados",
+        "view_all": "Ver Todo",
         "up_to": "HASTA",
         "already_open": "Ya Abierto"
       },
@@ -1689,6 +1703,20 @@
           "short_liquidated": "Corto Liquidado"
         }
       },
+      "trade_details_sheet": {
+        "market": "Mercado",
+        "entry_price": "Precio de entrada",
+        "close_price": "Precio de cierre",
+        "date": "Fecha",
+        "profit": "Ganancia",
+        "loss": "Pérdida",
+        "outcome": {
+          "liquidated": "Liquidado",
+          "opened": "Abierto",
+          "lost": "Perdido",
+          "earned": "Ganado"
+        }
+      },
       "trigger_orders": {
         "title": "Órdenes de Activación",
         "take_profit": "Toma de Ganancias",
@@ -1705,12 +1733,15 @@
         "above": "arriba",
         "below": "abajo",
         "must_be": "Debe ser",
-        "failed_to_create": "No se pudo crear la orden de activación"
+        "failed_to_create": "No se pudo crear la orden de activación",
+        "gain": "Ganar",
+        "loss": "Pérdida"
       },
       "search": {
         "search_markets": "Buscar mercados",
         "markets_count": "%{count} MERCADOS",
-        "choose_a_market": "ELIJA UN MERCADO"
+        "choose_a_market": "ELIJA UN MERCADO",
+        "no_markets_found": "No se encontraron mercados"
       },
       "close_position": {
         "estimated_loss": "Pérdida Estimada",
@@ -1752,6 +1783,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "Por Volumen",
+        "by_change": "Por Cambio",
+        "by_price": "Por Precio"
       },
       "leverage": "Apalancamiento",
       "up_to": "Hasta"
@@ -2214,6 +2250,9 @@
         "full_range": "Rango Completo",
         "out_of_range": "Fuera de Rango",
         "in_range": "En Rango"
+      },
+      "lp_allocation": {
+        "other": "Otro"
       },
       "open_dapp": "Abrir",
       "deposits": "Depósitos",

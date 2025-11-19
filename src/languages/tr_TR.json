@@ -968,6 +968,8 @@
       "redacted_title": "Redacted Rainbow'un kilidini açtınız",
       "baggy_description": "Sokaklardan zincire, bu küçük çanta Rainbow havasının taşınabilir dozunu taşır. Renklerin tadına bak ve farkı hisset.",
       "baggy_title": "Kazandınız\n Rainbow Baggy",
+      "chonks_description": "101'de süzülürken, Rainbow saçlarınızda rüzgarı hayal edin, Chonky hissiyle.",
+      "chonks_title": "En Chonky Simgeyi\n Açtınız",
       "button": "Simgeyi Yakala"
     },
     "explain": {
@@ -1582,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "Aktivite",
+        "trades_count": "%{count} İŞLEM",
+        "no_previous_trades": "Önceki İşlem Yok"
+      },
       "common": {
         "not_available": "N/A",
         "current_price": "Mevcut Fiyat",
@@ -1591,8 +1598,14 @@
         "more": "Daha fazla",
         "error": "Hata",
         "cancel": "İptal",
+        "close": "Kapat",
+        "add": "Ekle",
         "liq_price": "likit. fiyatı",
         "liq": "likit"
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "Vadeli İşlemler",
@@ -1609,6 +1622,7 @@
       },
       "markets": {
         "title": "Piyasalar",
+        "view_all": "Hepsini Gör",
         "up_to": "UP TO",
         "already_open": "Zaten Açık"
       },
@@ -1689,6 +1703,20 @@
           "short_liquidated": "Kısa Tasfiye Edildi"
         }
       },
+      "trade_details_sheet": {
+        "market": "Piyasa",
+        "entry_price": "Giriş fiyatı",
+        "close_price": "Kapanış fiyatı",
+        "date": "Tarih",
+        "profit": "Kar",
+        "loss": "Zarar",
+        "outcome": {
+          "liquidated": "Tasfiye edildi",
+          "opened": "Açıldı",
+          "lost": "Kaybedildi",
+          "earned": "Kazanıldı"
+        }
+      },
       "trigger_orders": {
         "title": "Tetik Emirleri",
         "take_profit": "Kar Al",
@@ -1705,12 +1733,15 @@
         "above": "üzerinde",
         "below": "altında",
         "must_be": "Olmalı",
-        "failed_to_create": "Tetik emri oluşturulamadı"
+        "failed_to_create": "Tetik emri oluşturulamadı",
+        "gain": "Kazanç",
+        "loss": "Zarar"
       },
       "search": {
         "search_markets": "Piyasaları ara",
         "markets_count": "%{count} PİYASA",
-        "choose_a_market": "PİYASA SEÇİN"
+        "choose_a_market": "PİYASA SEÇİN",
+        "no_markets_found": "Pazar bulunamadı"
       },
       "close_position": {
         "estimated_loss": "Tahmini Zarar",
@@ -1752,6 +1783,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "Hacme Göre",
+        "by_change": "Değişime Göre",
+        "by_price": "Fiyata Göre"
       },
       "leverage": "Kaldıraç",
       "up_to": "Kadarcık"
@@ -2214,6 +2250,9 @@
         "full_range": "Tam Aralık",
         "out_of_range": "Aralık Dışında",
         "in_range": "Aralık İçinde"
+      },
+      "lp_allocation": {
+        "other": "Diğer"
       },
       "open_dapp": "Açık 􀮶",
       "deposits": "Mevduatlar",

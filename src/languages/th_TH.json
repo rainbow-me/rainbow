@@ -968,6 +968,8 @@
       "redacted_title": "คุณได้ปลดล็อก\nRedacted Rainbow",
       "baggy_description": "จากท้องถนนสู่บล็อกเชน กระเป๋าใบนี้เก็บความรู้สึกแบบ Rainbow พกพาไว้ได้ สัมผัสกับสีสันแล้วรู้สึกถึงความต่าง",
       "baggy_title": "คุณได้ปลดล็อก \n กระเป๋า Rainbow",
+      "chonks_description": "ลองนึกภาพลมพัดผ่านเส้นผม Rainbow ของคุณ ขณะที่คุณขับรถมาตามถนน 101 รู้สึกถึง Chonky",
+      "chonks_title": "คุณได้ปลดล็อก\nไอคอนที่ Chonky ที่สุด",
       "button": "ปลดล็อคไอคอน"
     },
     "explain": {
@@ -1582,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "กิจกรรม",
+        "trades_count": "%{count} การซื้อขาย",
+        "no_previous_trades": "ไม่มีการซื้อขายก่อนหน้า"
+      },
       "common": {
         "not_available": "ไม่พร้อมใช้งาน",
         "current_price": "ราคาปัจจุบัน",
@@ -1591,8 +1598,14 @@
         "more": "เพิ่มเติม",
         "error": "ข้อผิดพลาด",
         "cancel": "ยกเลิก",
+        "close": "ปิด",
+        "add": "เพิ่ม",
         "liq_price": "ราคา liq.",
         "liq": "liquid."
+      },
+      "add_to_position": {
+        "title": "Add to Position",
+        "new_total": "New Total"
       },
       "feature_card": {
         "title": "Perps",
@@ -1609,6 +1622,7 @@
       },
       "markets": {
         "title": "ตลาด",
+        "view_all": "ดูทั้งหมด",
         "up_to": "สูงสุดถึง",
         "already_open": "เปิดแล้ว"
       },
@@ -1689,6 +1703,20 @@
           "short_liquidated": "สั้นถูกชำระ"
         }
       },
+      "trade_details_sheet": {
+        "market": "ตลาด",
+        "entry_price": "ราคาเริ่มต้น",
+        "close_price": "ราคาปิด",
+        "date": "วันที่",
+        "profit": "กำไร",
+        "loss": "ขาดทุน",
+        "outcome": {
+          "liquidated": "ถูกชำระ",
+          "opened": "เปิด",
+          "lost": "เสีย",
+          "earned": "ได้รับ"
+        }
+      },
       "trigger_orders": {
         "title": "คำสั่งกระตุ้น",
         "take_profit": "เรียกผลกำไร",
@@ -1705,12 +1733,15 @@
         "above": "เหนือ",
         "below": "ต่ำกว่า",
         "must_be": "ต้องเป็น",
-        "failed_to_create": "สร้างคำสั่งกระตุ้นไม่สำเร็จ"
+        "failed_to_create": "สร้างคำสั่งกระตุ้นไม่สำเร็จ",
+        "gain": "กำไร",
+        "loss": "ขาดทุน"
       },
       "search": {
         "search_markets": "ค้นหาตลาด",
         "markets_count": "%{count} ตลาด",
-        "choose_a_market": "เลือกตลาด"
+        "choose_a_market": "เลือกตลาด",
+        "no_markets_found": "ไม่พบตลาด"
       },
       "close_position": {
         "estimated_loss": "ขาดทุนที่คาดการณ์",
@@ -1752,6 +1783,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "ตามปริมาณ",
+        "by_change": "ตามการเปลี่ยนแปลง",
+        "by_price": "ตามราคา"
       },
       "leverage": "เลเวอเรจ",
       "up_to": "สูงสุดถึง"
@@ -2214,6 +2250,9 @@
         "full_range": "ช่วงเต็ม",
         "out_of_range": "นอกช่วง",
         "in_range": "ในช่วง"
+      },
+      "lp_allocation": {
+        "other": "อื่น ๆ"
       },
       "open_dapp": "เปิด 􀮶",
       "deposits": "การฝาก",
