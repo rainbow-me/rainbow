@@ -3,25 +3,29 @@ import { time } from '@/utils/time';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { RainbowError } from '@/logger';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
-
-export const usePolymarketEventIdStore = createRainbowStore<{ eventId: string | null }>(() => ({
-  eventId: null,
-}));
 
 type FetchParams = { eventId: string | null };
 
-export const usePolymarketEventStore = createQueryStore<PolymarketEvent, FetchParams>({
-  fetcher: fetchPolymarketEvent,
-  params: { eventId: $ => $(usePolymarketEventIdStore).eventId },
-  keepPreviousData: true,
-  staleTime: time.minutes(2),
-  cacheTime: time.minutes(10),
-});
+type PolymarketEventStoreState = {
+  eventId: string | null;
+};
+
+export const usePolymarketEventStore = createQueryStore<PolymarketEvent, FetchParams, PolymarketEventStoreState>(
+  {
+    fetcher: fetchPolymarketEvent,
+    params: { eventId: ($, store) => $(store).eventId },
+    keepPreviousData: true,
+    staleTime: time.minutes(2),
+    cacheTime: time.minutes(10),
+  },
+  () => ({
+    eventId: null,
+  })
+);
 
 export function prefetchPolymarketEvent(eventId: string) {
-  usePolymarketEventIdStore.setState({ eventId });
+  usePolymarketEventStore.setState({ eventId });
   usePolymarketEventStore.getState().fetch({ eventId });
 }
 

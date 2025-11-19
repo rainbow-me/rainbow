@@ -7,7 +7,7 @@ const RAINBOW_POLYMARKET_PROXY_URL = 'http://51.20.106.209';
 export const POLYMARKET_CLOB_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/clob`;
 export const POLYMARKET_RELAYER_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/relayer`;
 export const POLYMARKET_SIGNING_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/sign`;
-export const POLYMARKET_CLOB_URL = 'https://clob.polymarket.com/';
+export const POLYMARKET_CLOB_URL = 'https://clob.polymarket.com';
 
 export const BUILDER_CONFIG = new BuilderConfig({
   remoteBuilderConfig: { url: POLYMARKET_SIGNING_PROXY_URL },

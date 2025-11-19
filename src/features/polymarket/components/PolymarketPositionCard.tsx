@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { Bleed, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { PolymarketPosition } from '@/features/polymarket/types';
-import { memo, useMemo } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import ImgixImage from '@/components/images/ImgixImage';
 import { truncateToDecimals } from '@/safe-math/SafeMath';
@@ -11,13 +11,13 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import LinearGradient from 'react-native-linear-gradient';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 
 const ActionButtonType = {
   CLAIM: 'claim',
   BURN: 'burn',
   CASH_OUT: 'cash_out',
-};
+} as const;
 
 export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   position,
