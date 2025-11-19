@@ -84,7 +84,7 @@ export const AboutSection = memo(function AboutSection() {
     <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={28}>
       <CollapsibleSection
         content={<AboutContent />}
-        icon="􁜾"
+        icon="􀅴"
         id={SectionId.ABOUT}
         primaryText={i18n.t(i18n.l.expanded_state.sections.about.title)}
       />
