@@ -1,12 +1,12 @@
 import { useDimensions } from '@/hooks';
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { ColorValue, ScrollView } from 'react-native';
 import SlackSheet from './SlackSheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type SimpleSheetProps = {
   children: React.ReactNode;
-  backgroundColor: string;
+  backgroundColor?: string | ColorValue;
   customHeight?: number;
   onDismiss?: () => void;
   scrollEnabled?: boolean;

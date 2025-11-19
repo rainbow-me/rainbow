@@ -73,7 +73,7 @@ export const usePendingTransactionsStore = createRainbowStore<PendingTransaction
       }),
   }),
 
-  { storageKey: 'pendingTransactions' }
+  { storageKey: 'pendingTransactions', version: 1 }
 );
 
 export const pendingTransactionsActions = createStoreActions(usePendingTransactionsStore);

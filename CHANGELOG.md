@@ -21,6 +21,60 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.13](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.13)
+
+### Changed
+
+- Remove NFT offers section (https://github.com/rainbow-me/rainbow/pull/6929)
+- Bump iOS and Android to v2.0.13 (https://github.com/rainbow-me/rainbow/pull/6944)
+
+### Fixed
+
+- Fix issue where password manager won't save the password after backup (https://github.com/rainbow-me/rainbow/pull/6923)
+- Fix perps trade executed at formatting (https://github.com/rainbow-me/rainbow/pull/6943)
+
+## [2.0.12] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.12)
+
+### Added
+
+- APP-2844: Activity goldsky (https://github.com/rainbow-me/rainbow/pull/6897)
+- Allow running e2e or perf tests with issue comment (https://github.com/rainbow-me/rainbow/pull/6937)
+
+### Changed
+
+- Bump iOS and Android to v2.0.12 (https://github.com/rainbow-me/rainbow/pull/6932)
+- Filter rETH from positions and add comprehensive test coverage (https://github.com/rainbow-me/rainbow/commit/b0da9981cf2d0927dfb5f6cde1590cdd7a862bf9)
+- Filter non USDC collateral HIP-3 markets (https://github.com/rainbow-me/rainbow/pull/6939)
+- New Crowdin updates (https://github.com/rainbow-me/rainbow/pull/6900)
+
+### Fixed
+
+- APP-3203: Fix android position overflow (https://github.com/rainbow-me/rainbow/pull/6927)
+- Fix hyperliquid token symbol metadata lookup (https://github.com/rainbow-me/rainbow/pull/6934)
+- Fix sheet dismiss gesture on iOS (https://github.com/rainbow-me/rainbow/pull/6936)
+- APP-3216: Fix double alert on duplicate watch wallet (https://github.com/rainbow-me/rainbow/pull/6928)
+- Fix SkiaBadge clipping issue (https://github.com/rainbow-me/rainbow/pull/6930)
+
+## [2.0.11] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.11)
+
+### Added
+
+- Add perps trade details sheet (https://github.com/rainbow-me/rainbow/pull/6907)
+- Add perps trade history screen (https://github.com/rainbow-me/rainbow/pull/6896)
+- Add perps market sort order and view all (https://github.com/rainbow-me/rainbow/pull/6908)
+- Add estimated PnL to trigger order card (https://github.com/rainbow-me/rainbow/pull/6914)
+- Add support for Hyperliquid HIP-3 markets (https://github.com/rainbow-me/rainbow/pull/6916)
+- Add perps add to position sheet (https://github.com/rainbow-me/rainbow/pull/6921)
+
+### Changed
+
+- Bump iOS and Android to v2.0.11 (https://github.com/rainbow-me/rainbow/pull/6922)
+
+### Fixed
+
+- Fix positions balance/value calculations and LST filtering (https://github.com/rainbow-me/rainbow/pull/6919)
+- Fix perps new features issues (https://github.com/rainbow-me/rainbow/pull/6925)
+
 ## [2.0.10] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.10)
 
 ### Fixed

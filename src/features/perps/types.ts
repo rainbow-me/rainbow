@@ -123,7 +123,7 @@ export type HlTrade = {
   tradeId: number;
   txHash: string;
   liquidation?: UserFill['liquidation'];
-  executedAt: Date;
+  executedAt: number;
   direction: string;
   orderType: string;
   triggerOrderType?: TriggerOrderType;

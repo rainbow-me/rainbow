@@ -107,22 +107,26 @@ describe('Position Filters', () => {
       expect(shouldFilterPortfolioItem(noDescription)).toBe(false);
     });
 
-    it('should filter both stETH and wstETH', () => {
+    it('should filter stETH, wstETH, and rETH', () => {
       const stethItem = createMockPortfolioItem(PositionName.STAKED, 'stETH');
       const wstethItem = createMockPortfolioItem(PositionName.STAKED, 'wstETH');
+      const rethItem = createMockPortfolioItem(PositionName.STAKED, 'rETH');
 
-      // Both should be filtered as token-preferred positions
+      // All should be filtered as token-preferred positions
       expect(shouldFilterPortfolioItem(stethItem)).toBe(true);
       expect(shouldFilterPortfolioItem(wstethItem)).toBe(true);
+      expect(shouldFilterPortfolioItem(rethItem)).toBe(true);
     });
 
     it('should filter only token-preferred items in mixed position', () => {
       const wstethItem = createMockPortfolioItem(PositionName.STAKED, 'wstETH');
+      const rethItem = createMockPortfolioItem(PositionName.STAKED, 'rETH');
       const regularStake = createMockPortfolioItem(PositionName.STAKED, 'GMX');
       const lendingItem = createMockPortfolioItem(PositionName.LENDING);
 
-      // Only wstETH should be filtered
+      // Only wstETH and rETH should be filtered
       expect(shouldFilterPortfolioItem(wstethItem)).toBe(true);
+      expect(shouldFilterPortfolioItem(rethItem)).toBe(true);
       expect(shouldFilterPortfolioItem(regularStake)).toBe(false);
       expect(shouldFilterPortfolioItem(lendingItem)).toBe(false);
     });
@@ -134,15 +138,31 @@ describe('Position Filters', () => {
       expect(shouldFilterPortfolioItem(zeroValueSteth)).toBe(true);
     });
 
+    it('should filter rETH positions correctly', () => {
+      const rethItem = createMockPortfolioItem(PositionName.STAKED, 'rETH');
+      const regularStake = createMockPortfolioItem(PositionName.STAKED, 'RPL');
+
+      // rETH should be filtered as token-preferred position
+      expect(shouldFilterPortfolioItem(rethItem)).toBe(true);
+      // Other Rocket Pool tokens should not be filtered
+      expect(shouldFilterPortfolioItem(regularStake)).toBe(false);
+    });
+
     it('should handle case-sensitive description matching', () => {
       const upperCaseWsteth = createMockPortfolioItem(PositionName.STAKED, 'WSTETH');
       const lowerCaseWsteth = createMockPortfolioItem(PositionName.STAKED, 'wsteth');
       const correctCaseWsteth = createMockPortfolioItem(PositionName.STAKED, 'wstETH');
+      const upperCaseReth = createMockPortfolioItem(PositionName.STAKED, 'RETH');
+      const lowerCaseReth = createMockPortfolioItem(PositionName.STAKED, 'reth');
+      const correctCaseReth = createMockPortfolioItem(PositionName.STAKED, 'rETH');
 
       // Only exact case match should be filtered
       expect(shouldFilterPortfolioItem(upperCaseWsteth)).toBe(false);
       expect(shouldFilterPortfolioItem(lowerCaseWsteth)).toBe(false);
       expect(shouldFilterPortfolioItem(correctCaseWsteth)).toBe(true);
+      expect(shouldFilterPortfolioItem(upperCaseReth)).toBe(false);
+      expect(shouldFilterPortfolioItem(lowerCaseReth)).toBe(false);
+      expect(shouldFilterPortfolioItem(correctCaseReth)).toBe(true);
     });
 
     it('should handle items without detail object', () => {

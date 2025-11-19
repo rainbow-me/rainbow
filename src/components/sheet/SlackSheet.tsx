@@ -15,6 +15,8 @@ import { position } from '@/styles';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ScrollView } from 'react-native-gesture-handler';
 
+const AnimatedRNGHScrollView = Animated.createAnimatedComponent(ScrollView);
+
 interface AndroidBackgroundProps {
   backgroundColor: string;
 }
@@ -219,7 +221,14 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
         <ContentWrapper backgroundColor={bg}>
           {renderHeader?.(yPosition)}
           <Content
-            as={isInsideBottomSheet ? BottomSheetScrollView : Animated.ScrollView}
+            as={
+              isInsideBottomSheet
+                ? BottomSheetScrollView
+                : // Android requires RNGH ScrollView while iOS requires the RN one for the dismiss gesture to work.
+                  IS_ANDROID
+                  ? AnimatedRNGHScrollView
+                  : Animated.ScrollView
+            }
             backgroundColor={bg}
             contentContainerStyle={scrollEnabled && contentContainerStyle}
             contentHeight={contentHeight}

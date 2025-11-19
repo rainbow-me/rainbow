@@ -968,6 +968,8 @@
       "redacted_title": "لقد فتحت\nقوس قزح المكمم",
       "baggy_description": "من الشوارع إلى السلسلة، هذه الحقيبة الصغيرة تحمل جرعة قوس قزح المحمولة الخاصة بك. تذوق الألوان، واشعر بالفرق.",
       "baggy_title": "لقد قمت بفتح\nRainbow Baggy",
+      "chonks_description": "تخيل الرياح في شعرك الRainbow، واقود على الطريق 101، تشعر بالChonky.",
+      "chonks_title": "لقد قمت بإلغاء القفل\n أيقونة الChonkiest",
       "button": "Snag the icon"
     },
     "explain": {
@@ -1582,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "النشاط",
+        "trades_count": "%{count} تداولات",
+        "no_previous_trades": "لا توجد تداولات سابقة"
+      },
       "common": {
         "not_available": "غير متاح",
         "current_price": "السعر الحالي",
@@ -1591,8 +1598,14 @@
         "more": "أكثر",
         "error": "خطأ",
         "cancel": "إلغاء",
+        "close": "إغلاق",
+        "add": "أضف",
         "liq_price": "سعر التصفية",
         "liq": "تصفية"
+      },
+      "add_to_position": {
+        "title": "أضف إلى المركز",
+        "new_total": "المجموع الجديد"
       },
       "feature_card": {
         "title": "الرافعات المالية",
@@ -1609,6 +1622,7 @@
       },
       "markets": {
         "title": "الأسواق",
+        "view_all": "عرض الكل",
         "up_to": "حتى",
         "already_open": "مفتوح مسبقًا"
       },
@@ -1689,6 +1703,20 @@
           "short_liquidated": "تصفية قصيرة"
         }
       },
+      "trade_details_sheet": {
+        "market": "السوق",
+        "entry_price": "سعر الدخول",
+        "close_price": "سعر الإغلاق",
+        "date": "التاريخ",
+        "profit": "الربح",
+        "loss": "الخسارة",
+        "outcome": {
+          "liquidated": "تم التصفية",
+          "opened": "تم الفتح",
+          "lost": "خسر",
+          "earned": "كسب"
+        }
+      },
       "trigger_orders": {
         "title": "أوامر الزناد",
         "take_profit": "جني الأرباح",
@@ -1705,12 +1733,15 @@
         "above": "أعلى",
         "below": "أدناه",
         "must_be": "يجب أن تكون",
-        "failed_to_create": "فشل في إنشاء أمر الزناد"
+        "failed_to_create": "فشل في إنشاء أمر الزناد",
+        "gain": "ربح",
+        "loss": "الخسارة"
       },
       "search": {
         "search_markets": "البحث في الأسواق",
         "markets_count": "٪{count} أسواق ",
-        "choose_a_market": "اختيار سوق"
+        "choose_a_market": "اختيار سوق",
+        "no_markets_found": "لم يتم العثور على أسواق"
       },
       "close_position": {
         "estimated_loss": "الخسارة المقدرة",
@@ -1752,6 +1783,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "بحسب الحجم",
+        "by_change": "بحسب التغير",
+        "by_price": "بحسب السعر"
       },
       "leverage": "الرافعة المالية",
       "up_to": "حتى"
@@ -2214,6 +2250,9 @@
         "full_range": "النطاق الكامل",
         "out_of_range": "خارج النطاق",
         "in_range": "ضمن النطاق"
+      },
+      "lp_allocation": {
+        "other": "آخر"
       },
       "open_dapp": "فتح 􀮶",
       "deposits": "الإيداعات",

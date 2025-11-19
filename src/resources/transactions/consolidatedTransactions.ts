@@ -1,14 +1,16 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { InfiniteQueryConfig, QueryConfig, QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
-import { NativeCurrencyKey, RainbowTransaction, TransactionApiResponse, TransactionsReceivedMessage } from '@/entities';
+import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
 import { RainbowError, logger } from '@/logger';
 import { parseTransaction } from '@/parsers/transactions';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { getAddysHttpClient } from '@/resources/addys/client';
 import { IS_TEST } from '@/env';
 import { anvilChain, e2eAnvilConfirmedTransactions } from './transaction';
+import { getPlatformClient } from '@/resources/platform/client';
+import { ListTransactionsResponse, Transaction } from '@/features/positions/types/generated/transaction/transaction';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
+const CONSOLIDATED_TRANSACTIONS_LIMIT = 30;
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -58,29 +60,47 @@ export async function consolidatedTransactionsQueryFunction({
   queryKey: [{ address, currency, chainIds }],
   pageParam,
 }: QueryFunctionArgs<typeof consolidatedTransactionsQueryKey>): Promise<_QueryResult> {
-  let transactionsFromAddys: RainbowTransaction[] = [];
-  let nextPageFromAddys: string | undefined = pageParam;
-  let cutoffFromAddys: number | undefined;
+  let transactionsFromGoldsky: RainbowTransaction[] = [];
+  let nextPageFromGoldsky: string | undefined = pageParam;
+  let cutoffFromGoldsky: number | undefined;
   try {
     const chainIdsString = chainIds.join(',');
-    const response = await getAddysHttpClient().get(`/${chainIdsString}/${address}/transactions`, {
+    const cursor = typeof pageParam === 'string' ? pageParam : undefined;
+
+    const { data } = await getPlatformClient().get<ListTransactionsResponse>('/transactions/ListTransactions', {
       method: 'get',
       params: {
+        address,
+        chainIds: chainIdsString,
         currency: currency.toLowerCase(),
-        ...(pageParam ? { pageCursor: pageParam } : {}),
+        limit: String(CONSOLIDATED_TRANSACTIONS_LIMIT),
+        ...(cursor ? { cursor } : {}),
       },
     });
 
-    transactionsFromAddys = await parseConsolidatedTransactions(response?.data, currency);
-    nextPageFromAddys = response?.data?.meta?.next_page_cursor;
-    cutoffFromAddys = response?.data?.meta?.cut_off;
+    if (!data.result || !Array.isArray(data.result)) {
+      return {
+        transactions: [],
+        nextPage: undefined,
+        cutoff: undefined,
+      };
+    }
+
+    const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
+
+    const parsedTransactions = data.result.map((tx: Transaction) => {
+      const chainId = chainsIdByName[tx.network];
+      return parseTransaction(tx, currency, chainId);
+    });
+    transactionsFromGoldsky = parsedTransactions.flat();
+    nextPageFromGoldsky = data?.pagination?.cursor;
   } catch (e) {
-    logger.error(new RainbowError('[consolidatedTransactions]: Error fetching from Addys', e), {
+    logger.error(new RainbowError('[consolidatedTransactions]: Error fetching from Goldsky', e), {
       message: e,
     });
   }
 
-  let finalTransactions: RainbowTransaction[] = [...transactionsFromAddys];
+  let finalTransactions: RainbowTransaction[] = [...transactionsFromGoldsky];
   if (IS_TEST && chainIds && chainIds.includes(anvilChain.id)) {
     const userAnvilTransactions = e2eAnvilConfirmedTransactions.filter(tx => {
       const fromMatch = tx.from && tx.from.toLowerCase() === address.toLowerCase();
@@ -107,8 +127,8 @@ export async function consolidatedTransactionsQueryFunction({
 
   return {
     transactions: finalTransactions,
-    nextPage: nextPageFromAddys,
-    cutoff: cutoffFromAddys,
+    nextPage: nextPageFromGoldsky,
+    cutoff: cutoffFromGoldsky,
   };
 }
 
@@ -117,28 +137,6 @@ type ConsolidatedTransactionsResult = {
   nextPage?: string;
   transactions: RainbowTransaction[];
 };
-/**
- * 
- * should we? 
- *   queryClient.invalidateQueries({
-        queryKey: nftsQueryKey({ address: accountAddress }),
-      });
- */
-async function parseConsolidatedTransactions(
-  message: TransactionsReceivedMessage,
-  currency: NativeCurrencyKey
-): Promise<RainbowTransaction[]> {
-  const data = message?.payload?.transactions || [];
-
-  const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
-
-  const parsedTransactionPromises = data.map((tx: TransactionApiResponse) => parseTransaction(tx, currency, chainsIdByName[tx.network]));
-  // Filter out undefined values immediately
-
-  const parsedConsolidatedTransactions = (await Promise.all(parsedTransactionPromises)).flat(); // Filter out any remaining undefined values
-
-  return parsedConsolidatedTransactions;
-}
 
 // ///////////////////////////////////////////////
 // Query Hook

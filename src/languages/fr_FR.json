@@ -968,6 +968,8 @@
       "redacted_title": "Vous avez débloqué\nRedacted Rainbow",
       "baggy_description": "De la rue à la chaîne, ce petit sac contient votre dose portable de vibrations Rainbow. Goûtez les couleurs et ressentez la différence.",
       "baggy_title": "Vous avez débloqué\nRainbow Baggy",
+      "chonks_description": "Imagine le vent dans vos cheveux Rainbow, conduisant sur la 101, ressentant le Chonky.",
+      "chonks_title": "Vous avez débloqué\nL'icône la plus Chonky",
       "button": "Snag the icon :)"
     },
     "explain": {
@@ -1582,6 +1584,11 @@
       }
     },
     "perps": {
+      "activity": {
+        "title": "Activité",
+        "trades_count": "%{count} ÉCHANGES",
+        "no_previous_trades": "Aucun échange précédent"
+      },
       "common": {
         "not_available": "N/A",
         "current_price": "Prix actuel",
@@ -1591,8 +1598,14 @@
         "more": "Plus",
         "error": "Erreur",
         "cancel": "Annuler",
+        "close": "Fermer",
+        "add": "Ajouter",
         "liq_price": "prix de liquidation",
         "liq": "liq"
+      },
+      "add_to_position": {
+        "title": "Ajouter à la position",
+        "new_total": "Nouveau total"
       },
       "feature_card": {
         "title": "Perps",
@@ -1609,6 +1622,7 @@
       },
       "markets": {
         "title": "Marchés",
+        "view_all": "Voir Tout",
         "up_to": "Jusqu'à",
         "already_open": "Déjà ouvert"
       },
@@ -1689,6 +1703,20 @@
           "short_liquidated": "Short liquidé"
         }
       },
+      "trade_details_sheet": {
+        "market": "Marché",
+        "entry_price": "Prix d'entrée",
+        "close_price": "Prix de clôture",
+        "date": "Date",
+        "profit": "Profit",
+        "loss": "Perte",
+        "outcome": {
+          "liquidated": "Liquidé",
+          "opened": "Ouvert",
+          "lost": "Perdu",
+          "earned": "Gagné"
+        }
+      },
       "trigger_orders": {
         "title": "Ordres déclencheurs",
         "take_profit": "Prendre profit",
@@ -1705,12 +1733,15 @@
         "above": "au-dessus",
         "below": "en dessous",
         "must_be": "Doit être",
-        "failed_to_create": "Échec de la création de l'ordre déclencheur"
+        "failed_to_create": "Échec de la création de l'ordre déclencheur",
+        "gain": "Gain",
+        "loss": "Perte"
       },
       "search": {
         "search_markets": "Rechercher des marchés",
         "markets_count": "%{count} MARCHÉS",
-        "choose_a_market": "CHOISIR UN MARCHÉ"
+        "choose_a_market": "CHOISIR UN MARCHÉ",
+        "no_markets_found": "Aucun marché trouvé"
       },
       "close_position": {
         "estimated_loss": "Perte estimée",
@@ -1752,6 +1783,11 @@
             ]
           }
         }
+      },
+      "sort": {
+        "by_volume": "Par Volume",
+        "by_change": "Par Changement",
+        "by_price": "Par Prix"
       },
       "leverage": "Levier",
       "up_to": "Jusqu'à"
@@ -2214,6 +2250,9 @@
         "full_range": "Gamme Complète",
         "out_of_range": "Hors de Portée",
         "in_range": "Dans la Portée"
+      },
+      "lp_allocation": {
+        "other": "Autre"
       },
       "open_dapp": "Ouvrir 􀮶",
       "deposits": "Dépôts",
