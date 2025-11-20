@@ -1,6 +1,7 @@
-import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { PolymarketOutcome } from '@/features/polymarket/constants';
 
-export type Outcome = 'Yes' | 'No';
+export type PolymarketOutcome = (typeof PolymarketOutcome)[keyof typeof PolymarketOutcome];
 
 export type RawPolymarketPosition = {
   proxyWallet: string;
@@ -23,20 +24,24 @@ export type RawPolymarketPosition = {
   icon: string;
   eventId: string;
   eventSlug: string;
-  outcome: Outcome;
+  outcome: PolymarketOutcome;
   outcomeIndex: number;
-  oppositeOutcome: Outcome;
+  oppositeOutcome: PolymarketOutcome;
   oppositeAsset: string;
   endDate: string;
   negativeRisk: boolean;
 };
 
 export type PolymarketPosition = RawPolymarketPosition & {
+  // These are returned in the response as stringified JSON arrays
+  clobTokenIds: string[];
+  outcomes: PolymarketOutcome[];
+  outcomePrices: string[];
   nativeCurrency: {
     currentValue: number;
     cashPnl: number;
   };
-  market: PolymarketMarket;
+  market: RawPolymarketMarket;
   /**
    * Some events have a unique image for each market, such as "Who will win the 2028 presidential election?"
    * Others use the same image for all markets, such as "Fed decision in December 2025?"

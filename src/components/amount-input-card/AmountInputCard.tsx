@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Box, Text, useColorMode } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import {
@@ -11,7 +11,7 @@ import {
 } from '@/features/perps/constants';
 import { runOnJS, runOnUI, SharedValue, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Slider, SliderChangeSource, SliderGestureState } from '@/features/perps/components/Slider';
-import { addCommasToNumber, clamp, trimCurrencyZeros } from '@/__swaps__/utils/swaps';
+import { addCommasToNumber, clamp, opacityWorklet, trimCurrencyZeros } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
 import {
@@ -41,6 +41,7 @@ import { useOnChange } from '@/hooks/useOnChange';
 type InteractionMode = 'slider' | 'keyboard';
 
 const AmountSlider = ({
+  accentColor,
   progressValue,
   gestureState,
   isEnabled,
@@ -51,6 +52,7 @@ const AmountSlider = ({
   snapPoints,
   width = SLIDER_WIDTH,
 }: {
+  accentColor: string;
   progressValue: SharedValue<number>;
   gestureState: SharedValue<SliderGestureState>;
   isEnabled?: SharedValue<boolean>;
@@ -61,11 +63,21 @@ const AmountSlider = ({
   snapPoints?: SharedValue<readonly number[]>;
   width?: number;
 }) => {
-  const { accentColors } = usePerpsAccentColorContext();
+  const { isDarkMode } = useColorMode();
+
+  const sliderColors = useMemo(
+    () => ({
+      activeLeft: accentColor,
+      inactiveLeft: accentColor,
+      activeRight: isDarkMode ? opacityWorklet('#F5F8FF', 0.06) : opacityWorklet(accentColor, 0.12),
+      inactiveRight: isDarkMode ? opacityWorklet('#F5F8FF', 0.06) : opacityWorklet(accentColor, 0.12),
+    }),
+    [accentColor, isDarkMode]
+  );
 
   return (
     <Slider
-      colors={accentColors.slider}
+      colors={sliderColors}
       expandedHeight={SLIDER_EXPANDED_HEIGHT}
       height={SLIDER_HEIGHT}
       isEnabled={isEnabled}
@@ -188,6 +200,8 @@ function roundToNearestTenth(value: number): number {
 
 type AmountInputCardProps = {
   availableBalance: string;
+  accentColor: string;
+  backgroundColor: string;
   onAmountChange?: (amount: string) => void;
   resetKey?: string;
   title?: string;
@@ -196,13 +210,15 @@ type AmountInputCardProps = {
 
 export const AmountInputCard = memo(function AmountInputCard({
   availableBalance,
+  accentColor,
+  backgroundColor,
   onAmountChange,
   resetKey,
   title,
   validation,
 }: AmountInputCardProps) {
   const { isDarkMode } = useColorMode();
-  const { accentColors } = usePerpsAccentColorContext();
+  // const { accentColors } = usePerpsAccentColorContext();
 
   const availableBalanceString = useDerivedValue(() => availableBalance);
   const initialValues = useStableValue(() => buildInitialValues(availableBalance));
@@ -404,9 +420,9 @@ export const AmountInputCard = memo(function AmountInputCard({
   return (
     <Box
       width="full"
+      backgroundColor={backgroundColor}
       borderWidth={isDarkMode ? 2 : 0}
-      backgroundColor={accentColors.surfacePrimary}
-      borderColor={{ custom: accentColors.opacity6 }}
+      borderColor={{ custom: opacityWorklet(accentColor, 0.06) }}
       borderRadius={28}
       padding={'20px'}
       alignItems="center"
@@ -416,7 +432,7 @@ export const AmountInputCard = memo(function AmountInputCard({
     >
       <Box width="full" flexDirection="row" alignItems="center" zIndex={2}>
         <Box gap={12}>
-          <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
+          <Text size="20pt" weight="heavy" color={{ custom: accentColor }}>
             {title ?? i18n.t(i18n.l.perps.inputs.amount)}
           </Text>
           <AmountInputCardSubtitle availableBalanceString={availableBalanceString} validation={validation} />
@@ -425,8 +441,8 @@ export const AmountInputCard = memo(function AmountInputCard({
           <CurrencyInput
             ref={inputRef}
             value={displayedAmount}
-            textColor={accentColors.opacity100}
-            placeholderTextColor={accentColors.opacity24}
+            textColor={accentColor}
+            placeholderTextColor={opacityWorklet(accentColor, 0.24)}
             formatInput={formatInputForEditing}
             formatDisplay={formatAmountForDisplay}
             initialValue={initialValues.amount}
@@ -442,6 +458,7 @@ export const AmountInputCard = memo(function AmountInputCard({
       </Box>
       <Box width="full" onLayout={handleSliderLayout}>
         <AmountSlider
+          accentColor={accentColor}
           gestureState={sliderGestureState}
           onGestureBeginWorklet={handleSliderBeginWorklet}
           onProgressSettleWorklet={handleSliderProgressSettle}

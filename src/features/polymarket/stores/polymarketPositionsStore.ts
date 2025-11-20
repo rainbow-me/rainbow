@@ -3,10 +3,10 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 import { usePolymarketProxyAddress } from '@/features/polymarket/stores/derived/usePolymarketProxyAddress';
 import { rainbowFetch } from '@/rainbow-fetch';
-import { PolymarketPosition, RawPolymarketPosition } from '@/features/polymarket/types';
+import { PolymarketOutcome, PolymarketPosition, RawPolymarketPosition } from '@/features/polymarket/types';
 import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
 import { POLYMARKET_DATA_API_URL, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
-import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 
 type PolymarketPositionsStoreActions = {
   getPositions: () => PolymarketPosition[] | undefined;
@@ -79,6 +79,9 @@ async function fetchPolymarketPositions(
 
     return {
       ...position,
+      clobTokenIds: JSON.parse(market.clobTokenIds) as string[],
+      outcomes: JSON.parse(market.outcomes) as PolymarketOutcome[],
+      outcomePrices: JSON.parse(market.outcomePrices) as string[],
       nativeCurrency: {
         currentValue: useCurrencyConversionStore.getState().convertToNativeCurrency(position.currentValue),
         cashPnl: useCurrencyConversionStore.getState().convertToNativeCurrency(position.cashPnl),
@@ -93,7 +96,7 @@ async function fetchPolymarketPositions(
   } as FetchPolymarketPositionsResponse;
 }
 
-async function fetchPolymarketMarkets(marketSlugs: string[], abortController: AbortController | null): Promise<PolymarketMarket[]> {
+async function fetchPolymarketMarkets(marketSlugs: string[], abortController: AbortController | null): Promise<RawPolymarketMarket[]> {
   const url = new URL(`${POLYMARKET_GAMMA_API_URL}/markets`);
   marketSlugs.forEach(slug => {
     url.searchParams.append('slug', slug);
@@ -104,5 +107,5 @@ async function fetchPolymarketMarkets(marketSlugs: string[], abortController: Ab
     timeout: 30000,
   });
 
-  return response.data as PolymarketMarket[];
+  return response.data as RawPolymarketMarket[];
 }

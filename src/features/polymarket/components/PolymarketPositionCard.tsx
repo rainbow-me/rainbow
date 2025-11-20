@@ -1,17 +1,18 @@
 import { StyleSheet } from 'react-native';
 import { Bleed, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { PolymarketPosition } from '@/features/polymarket/types';
-import { memo, useEffect, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import ImgixImage from '@/components/images/ImgixImage';
-import { truncateToDecimals } from '@/safe-math/SafeMath';
+import { toPercentageWorklet, truncateToDecimals } from '@/safe-math/SafeMath';
 import { SkiaBadge } from '@/components/SkiaBadge';
 import { ButtonPressAnimation } from '@/components/animations';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import LinearGradient from 'react-native-linear-gradient';
-import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { formatNumber } from '@/helpers/strings';
 
 const ActionButtonType = {
   CLAIM: 'claim',
@@ -171,7 +172,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                 {'Odds'}
               </Text>
               <Text size="15pt" weight="bold" color="labelSecondary">
-                {`${position.curPrice * 100}%`}
+                {`${toPercentageWorklet(position.curPrice)}%`}
               </Text>
             </Box>
             <Box flexDirection="row" alignItems="center" gap={3}>
@@ -179,7 +180,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                 {'Bet'}
               </Text>
               <Text size="15pt" weight="bold" color="labelSecondary">
-                {truncateToDecimals(String(position.initialValue), 2)}
+                {formatNumber(position.initialValue, { useOrderSuffix: true, decimals: 2, style: '$' })}
               </Text>
             </Box>
             <Box flexDirection="row" alignItems="center" gap={3}>
@@ -187,7 +188,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                 {isWin ? 'Won' : 'To Win'}
               </Text>
               <Text size="15pt" weight="bold" color="labelSecondary">
-                {truncateToDecimals(String(position.size), 2)}
+                {formatNumber(position.size, { useOrderSuffix: true, decimals: 2, style: '$' })}
               </Text>
             </Box>
           </Box>

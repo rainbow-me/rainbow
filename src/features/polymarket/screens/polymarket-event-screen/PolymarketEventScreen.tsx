@@ -34,7 +34,21 @@ export const EventHeaderSection = memo(function EventHeaderSection({ eventId }: 
 });
 
 export const ChartSection = memo(function ChartSection() {
-  return null;
+  return (
+    <Box
+      height={350}
+      justifyContent="center"
+      alignItems="center"
+      backgroundColor="backgroundSecondary"
+      borderRadius={12}
+      borderWidth={1}
+      borderColor="separator"
+    >
+      <Text color="label" size="15pt" weight="bold">
+        Chart
+      </Text>
+    </Box>
+  );
 });
 
 const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
@@ -65,7 +79,7 @@ const PolymarketEventScreenContent = memo(function PolymarketEventScreenContent(
           <EventHeaderSection eventId={eventId} />
           <ChartSection />
           <OpenPositionsSection eventId={eventId} />
-          <MarketsSection eventId={eventId} />
+          <MarketsSection />
         </Box>
       </SlackSheet>
       <Box position="absolute" top="0px" left="0px" right="0px" width="full" pointerEvents="none">

@@ -1,3 +1,5 @@
+import { PolymarketOutcome } from '@/features/polymarket/types';
+
 type ImageOptimized = {
   id: string;
   imageUrlSource: string;
@@ -72,7 +74,7 @@ type Template = {
   outcomes: string;
 };
 
-export type PolymarketMarket = {
+export type RawPolymarketMarket = {
   id: string;
   question: string;
   conditionId: string;
@@ -169,7 +171,7 @@ export type PolymarketMarket = {
   score: number;
   imageOptimized: ImageOptimized;
   iconOptimized: ImageOptimized;
-  events: PolymarketEvent[];
+  events: RawPolymarketEvent[];
   categories: Category[];
   tags: Tag[];
   creator: string;
@@ -211,6 +213,13 @@ export type PolymarketMarket = {
   scheduledDeploymentTimestamp: string;
   rfqEnabled: boolean;
   eventStartTime: string;
+};
+
+export type PolymarketMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'outcomes' | 'outcomePrices'> & {
+  // These are returned in the response as stringified JSON arrays
+  clobTokenIds: string[];
+  outcomes: PolymarketOutcome[];
+  outcomePrices: string[];
 };
 
 type Collection = {
@@ -287,7 +296,7 @@ type Series = {
   chats: Chat[];
 };
 
-export type PolymarketEvent = {
+export type RawPolymarketEvent = {
   id: string;
   ticker: string;
   slug: string;
@@ -339,7 +348,7 @@ export type PolymarketEvent = {
   iconOptimized: ImageOptimized;
   featuredImageOptimized: ImageOptimized;
   subEvents: string[];
-  markets: PolymarketMarket[];
+  markets: RawPolymarketMarket[];
   series: Series[];
   categories: Category[];
   collections: Collection[];
@@ -378,4 +387,9 @@ export type PolymarketEvent = {
   deployingTimestamp: string;
   scheduledDeploymentTimestamp: string;
   gameStatus: string;
+};
+
+export type PolymarketEvent = Omit<RawPolymarketEvent, 'markets'> & {
+  // These are returned in the response as stringified JSON arrays
+  markets: PolymarketMarket[];
 };

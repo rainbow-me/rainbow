@@ -268,7 +268,7 @@ const OutcomeInfo = ({ trade }: { trade: HlTrade }) => {
         <SkiaBadge
           text={`${assumedLeverage}x`}
           height={27}
-          horizontalPadding={8}
+          paddingHorizontal={8}
           fillColor={['rgba(255, 255, 255, 0.16)', 'rgba(0, 0, 0, 0.1)']}
           textColor={isDarkMode ? 'label' : { custom: opacityWorklet(labelSecondary, 0.8) }}
           strokeColor={
@@ -284,7 +284,7 @@ const OutcomeInfo = ({ trade }: { trade: HlTrade }) => {
         <SkiaBadge
           text={i18n.t(trade.isLong ? i18n.l.perps.position_side.long : i18n.l.perps.position_side.short).toUpperCase()}
           height={27}
-          horizontalPadding={8}
+          paddingHorizontal={8}
           fillColor={trade.isLong ? longGreen : shortRed}
           textColor={{ custom: '#FFFFFF' }}
           strokeColor={'rgba(255, 255, 255, 0.12)'}

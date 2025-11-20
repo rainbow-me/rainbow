@@ -10,7 +10,8 @@ import { truncateToDecimals } from '@/safe-math/SafeMath';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/usePolymarketClobClient';
 import { Side, OrderType, TickSize } from '@polymarket/clob-client';
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
+import { PolymarketPosition } from '@/features/polymarket/types';
 
 export const PolymarketManagePositionSheet = memo(function PolymarketManagePositionSheet() {
   const {
@@ -23,33 +24,17 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
   const red = useForegroundColor('red');
   const green = useForegroundColor('green');
 
-  const marketSellTotalPosition = useCallback(async () => {
+  const handleMarketSellTotalPosition = useCallback(async () => {
     try {
-      const client = await getPolymarketClobClient();
-      const order = await client.createMarketOrder(
-        {
-          side: Side.SELL,
-          tokenID: position.asset,
-          amount: position.size,
-          price: position.curPrice,
-        },
-        {
-          /**
-           * TODO: Docs imply these options are required, but the types are optional
-           */
-          tickSize: String(position.market.orderPriceMinTickSize) as TickSize,
-          negRisk: position.negativeRisk,
-        }
-      );
-
-      console.log('Created Order', JSON.stringify(order, null, 2));
-
-      const result = await client.postOrder(order, OrderType.FOK);
-      console.log('Cash out result', JSON.stringify(result, null, 2));
-    } catch (error) {
+      // TODO: replace position.curPrice with latest price from live pricing store
+      const result = await marketSellTotalPosition({ position, latestPrice: position.curPrice });
+      console.log('Order result', JSON.stringify(result, null, 2));
+    } catch (e) {
+      const error = ensureError(e);
       logger.error(new RainbowError('[PolymarketManagePositionSheet] Error selling position', error), {
-        message: (error as Error)?.message,
+        message: error.message,
       });
+      // TODO: Show error to user
     }
   }, [position]);
 
@@ -79,7 +64,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
             label="Hold to Cash Out"
             processingLabel="Cashing Out..."
             isProcessing={false}
-            onLongPress={marketSellTotalPosition}
+            onLongPress={handleMarketSellTotalPosition}
             showBiometryIcon={false}
           />
         </Box>
@@ -87,3 +72,24 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
     </PanelSheet>
   );
 });
+
+async function marketSellTotalPosition({ position, latestPrice }: { position: PolymarketPosition; latestPrice: number }): Promise<unknown> {
+  const client = await getPolymarketClobClient();
+  const order = await client.createMarketOrder(
+    {
+      side: Side.SELL,
+      tokenID: position.asset,
+      amount: position.size,
+      price: latestPrice,
+    },
+    {
+      /**
+       * TODO: Docs imply these options are required, but the types are optional
+       */
+      tickSize: String(position.market.orderPriceMinTickSize) as TickSize,
+      negRisk: position.negativeRisk,
+    }
+  );
+
+  return await client.postOrder(order, OrderType.FOK);
+}

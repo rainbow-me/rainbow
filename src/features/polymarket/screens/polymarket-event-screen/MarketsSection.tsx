@@ -8,17 +8,21 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import { LinearGradient } from 'react-native-linear-gradient';
 import { StyleSheet } from 'react-native';
 import { SkiaBadge } from '@/components/SkiaBadge';
-import { truncateToDecimals } from '@/safe-math/SafeMath';
+import { lessThanWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
+import { formatNumber } from '@/helpers/strings';
+import { ButtonPressAnimation } from '@/components/animations';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
-export const MarketsSection = memo(function MarketsSection({ eventId }: { eventId: string }) {
-  const event = usePolymarketEventStore(state => state.getData());
+export const MarketsSection = memo(function MarketsSection() {
+  const markets = usePolymarketEventStore(state => state.getMarkets());
 
   return (
     <Box gap={12}>
       <Text size="15pt" weight="bold" color="label">
         {'Outcomes'}
       </Text>
-      <Box gap={8}>{event?.markets?.map(market => <MarketRow key={market.id} market={market} />)}</Box>
+      <Box gap={8}>{markets?.map(market => <MarketRow key={market.id} market={market} />)}</Box>
     </Box>
   );
 });
@@ -44,23 +48,51 @@ const MarketRow = memo(function MarketRow({ market }: { market: PolymarketMarket
       <Box height={66} flexDirection="row" alignItems="center" gap={12} paddingRight={'10px'}>
         <ImgixImage resizeMode="cover" size={40} source={{ uri: market.icon }} style={{ height: 40, width: 40, borderRadius: 9 }} />
         <Box gap={12} style={{ flex: 1 }}>
-          <Text size="17pt" weight="bold" color="label">
-            {market.groupItemTitle}
-          </Text>
+          <Box flexDirection="row" alignItems="center" gap={8}>
+            <Text size="17pt" weight="bold" color="label">
+              {market.groupItemTitle}
+            </Text>
+            {market.oneDayPriceChange && (
+              <Box flexDirection="row" alignItems="center" gap={3}>
+                <Text
+                  size="icon 8px"
+                  weight="heavy"
+                  color={lessThanWorklet(market.oneDayPriceChange, 0) ? 'red' : 'green'}
+                  style={{ transform: lessThanWorklet(market.oneDayPriceChange, 0) ? [{ rotate: '180deg' }] : [] }}
+                >
+                  {'􀛤'}
+                </Text>
+                <Text size="15pt" weight="heavy" color={lessThanWorklet(market.oneDayPriceChange, 0) ? 'red' : 'green'}>
+                  {`${toPercentageWorklet(market.oneDayPriceChange)}%`}
+                </Text>
+              </Box>
+            )}
+          </Box>
           <Text size="15pt" weight="bold" color="labelSecondary">
-            {market.volume}
+            {formatNumber(market.volume, { useOrderSuffix: true, decimals: 1, style: '$' })}
           </Text>
         </Box>
-        <SkiaBadge
-          text={truncateToDecimals(String(market.lastTradePrice * 100), 1)}
-          textColor={{ custom: accentColor }}
-          fillColor={opacityWorklet(accentColor, 0.16)}
-          strokeColor={opacityWorklet(accentColor, 0.06)}
-          strokeWidth={2.5}
-          fontSize="26pt"
-          fontWeight="heavy"
-          height={46}
-        />
+        <ButtonPressAnimation onPress={() => Navigation.handleAction(Routes.POLYMARKET_MARKET_SHEET, { market })}>
+          <SkiaBadge
+            text={`${toPercentageWorklet(market.lastTradePrice, 0.001)}%`}
+            textColor={{ custom: accentColor }}
+            gradientFill={[
+              {
+                colors: [opacityWorklet(accentColor, 0.16), opacityWorklet(accentColor, 0.08)],
+                start: { x: 0, y: 0 },
+                end: { x: 0, y: 1 },
+              },
+            ]}
+            innerShadows={[{ dx: 0, dy: 1, blur: 2.5, color: opacityWorklet(accentColor, 0.24) }]}
+            strokeColor={opacityWorklet(accentColor, 0.06)}
+            strokeWidth={2.5}
+            fontSize="26pt"
+            fontWeight="heavy"
+            height={46}
+            paddingHorizontal={12}
+            borderRadius={16}
+          />
+        </ButtonPressAnimation>
       </Box>
     </GradientBorderView>
   );
