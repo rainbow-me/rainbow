@@ -21,6 +21,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+
+## [2.0.14](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.14)
+### Added
+
+- Add Mog app icon (https://github.com/rainbow-me/rainbow/pull/6947)
+
+### Changed
+
+- Bump iOS and Android to v2.0.14 (https://github.com/rainbow-me/rainbow/pull/6945)
+
 ## [2.0.13](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.13)
 
 ### Changed
