@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
@@ -28,7 +28,6 @@ import { useRecoilValue } from 'recoil';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useRoute } from '@/navigation/Navigation';
-import { useNavigation } from '@react-navigation/native';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
@@ -68,7 +67,6 @@ function WalletScreen() {
   const accountAddress = useAccountAddress();
   const insets = useSafeAreaInsets();
   const route = useRoute();
-  const navigation = useNavigation();
 
   const {
     isWalletEthZero,
@@ -130,12 +128,6 @@ function WalletScreen() {
     },
     [route.name, debouncedAddSubscribedTokens]
   );
-
-  useEffect(() => {
-    setTimeout(() => {
-      navigation.navigate(Routes.WALLET_ERROR_SHEET);
-    }, 2000);
-  }, []);
 
   return (
     <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
