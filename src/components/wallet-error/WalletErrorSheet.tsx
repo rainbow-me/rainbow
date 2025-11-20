@@ -40,7 +40,7 @@ export default function WalletErrorSheet() {
           useAdditionalTopPadding
           scrollEnabled={false}
         >
-          <Box alignItems="center" paddingTop="36px" paddingHorizontal="10px" gap={16} marginBottom={{ custom: 40 }}>
+          <Box alignItems="center" paddingTop="36px" paddingHorizontal={{ custom: 40 }} gap={16} marginBottom={{ custom: 40 }}>
             <FastImage source={restoreWalletIcon} style={{ width: 40, height: 48 }} />
             <Text size="26pt" weight="bold" color="label" align="center">
               {i18n.t(i18n.l.wallet_error_sheet.title)}
@@ -56,7 +56,7 @@ export default function WalletErrorSheet() {
           </Box>
           {resolution === 'reimport' && (
             <>
-              <Separator color="separator" />
+              <Separator thickness={1} color="separator" />
               <ButtonPressAnimation
                 style={{ padding: 21 }}
                 onPress={() => {
@@ -74,7 +74,7 @@ export default function WalletErrorSheet() {
               </ButtonPressAnimation>
             </>
           )}
-          <Separator color="separator" />
+          <Separator thickness={1} color="separator" />
           <ButtonPressAnimation
             style={{ padding: 21 }}
             onPress={() => {
@@ -85,7 +85,7 @@ export default function WalletErrorSheet() {
               {i18n.t(i18n.l.wallet_error_sheet.dismiss)}
             </Text>
           </ButtonPressAnimation>
-          <Separator color="separator" />
+          <Separator thickness={1} color="separator" />
         </SimpleSheet>
       )}
     </BackgroundProvider>
