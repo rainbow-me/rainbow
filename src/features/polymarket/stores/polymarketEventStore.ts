@@ -10,10 +10,10 @@ type FetchParams = { eventId: string | null };
 
 type PolymarketEventStoreState = {
   eventId: string | null;
-  getMarkets: () => PolymarketMarket[] | undefined;
+  getMarkets: (sortOrder?: MarketSortOrder) => PolymarketMarket[] | undefined;
 };
 
-const MarketSortOrder = {
+export const MarketSortOrder = {
   VOLUME: 'volume',
   LAST_TRADE_PRICE: 'lastTradePrice',
   VOLUME_24HR: 'volume24hr',
