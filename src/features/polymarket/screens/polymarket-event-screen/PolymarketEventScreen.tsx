@@ -17,8 +17,8 @@ import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-
 import { PriceHistoryInterval } from '@polymarket/clob-client';
 import { time } from '@/utils/time';
 
-export const EventHeaderSection = memo(function EventHeaderSection({ eventId }: { eventId: string }) {
-  const event = usePolymarketEventStore(state => state.getData({ eventId }));
+export const EventHeaderSection = memo(function EventHeaderSection() {
+  const event = usePolymarketEventStore(state => state.getData());
   return (
     <Box>
       <Box flexDirection="row" alignItems="flex-start" gap={16}>
@@ -103,7 +103,7 @@ const PolymarketEventScreenContent = memo(function PolymarketEventScreenContent(
         }}
       >
         <Box gap={28} paddingTop={{ custom: 96 }} paddingBottom={{ custom: safeAreaInsets.bottom }} paddingHorizontal="24px">
-          <EventHeaderSection eventId={eventId} />
+          <EventHeaderSection />
           <ChartSection />
           <OpenPositionsSection eventId={eventId} />
           <MarketsSection />

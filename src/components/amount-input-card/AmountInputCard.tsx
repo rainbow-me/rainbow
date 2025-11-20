@@ -218,7 +218,6 @@ export const AmountInputCard = memo(function AmountInputCard({
   validation,
 }: AmountInputCardProps) {
   const { isDarkMode } = useColorMode();
-  // const { accentColors } = usePerpsAccentColorContext();
 
   const availableBalanceString = useDerivedValue(() => availableBalance);
   const initialValues = useStableValue(() => buildInitialValues(availableBalance));

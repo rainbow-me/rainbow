@@ -6,6 +6,8 @@ import { erc20ABI } from '@/references';
 import { getProvider } from '@/handlers/web3';
 import { ChainId } from '@rainbow-me/swaps';
 import { BigNumber, ethers } from 'ethers';
+import { truncateToDecimals } from '@/safe-math/SafeMath';
+import { USD_DECIMALS } from '@/features/perps/constants';
 
 type PolymarketBalanceStoreActions = {
   getBalance: () => string;
@@ -41,8 +43,9 @@ async function fetchPolymarketBalance({ address }: PolymarketBalanceParams): Pro
 
   const rawBalance = (await usdcContract.balanceOf(address)) as BigNumber;
   const balance = ethers.utils.formatUnits(rawBalance, 6);
+  const truncatedBalance = truncateToDecimals(balance, USD_DECIMALS);
 
   return {
-    balance,
+    balance: truncatedBalance,
   };
 }

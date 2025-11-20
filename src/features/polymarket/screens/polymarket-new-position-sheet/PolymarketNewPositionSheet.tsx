@@ -11,26 +11,69 @@ import { ensureError, logger, RainbowError } from '@/logger';
 import ImgixImage from '@/components/images/ImgixImage';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
-import { divWorklet, greaterThanWorklet, toFixedWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, greaterThanWorklet, lessThanWorklet, maxWorklet, toFixedWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import LinearGradient from 'react-native-linear-gradient';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { useDerivedValue } from 'react-native-reanimated';
+import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
     params: { market, outcome },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
-  const polymarketAvailableBalance = usePolymarketBalanceStore(state => state.getBalance());
+  const availableBalance = usePolymarketBalanceStore(state => state.getBalance());
+  const accentColor = market.seriesColor ?? '#3ECFAD';
+  const outcomeIndex = market.outcomes.indexOf(outcome);
+
   const [amount, setAmount] = useState(() => {
-    const halfBalance = divWorklet(polymarketAvailableBalance, 2);
-    const initialAmount = greaterThanWorklet(polymarketAvailableBalance, '5') ? halfBalance : polymarketAvailableBalance;
+    const halfBalance = divWorklet(availableBalance, 2);
+    const initialAmount = greaterThanWorklet(availableBalance, '5') ? halfBalance : availableBalance;
     return toFixedWorklet(initialAmount, 2);
   });
 
-  const accentColor = market.seriesColor ?? '#3ECFAD';
+  const orderPrice = useMemo(() => {
+    return formatOrderPrice(Number(market.outcomePrices[outcomeIndex]), market.orderPriceMinTickSize);
+  }, [market.outcomePrices, outcomeIndex, market.orderPriceMinTickSize]);
 
-  const outcomeIndex = market.outcomes.indexOf(outcome);
+  const minBuyAmountUsd = useMemo(() => {
+    return market.orderMinSize * orderPrice;
+  }, [market.orderMinSize, orderPrice]);
+
+  const validation = useDerivedValue(() => {
+    'worklet';
+
+    const maxAmount = String(availableBalance);
+    const minAmount = String(maxWorklet(minBuyAmountUsd, '1'));
+
+    const isAboveMax = greaterThanWorklet(amount, maxAmount);
+    const isBelowMin = lessThanWorklet(amount, minAmount);
+
+    const isValid = !isAboveMax && !isBelowMin;
+
+    return {
+      isAboveMax,
+      isBelowMin,
+      isValid,
+      maxAmount,
+      minAmount,
+    };
+  });
+
+  const isValidOrderAmount = useDerivedValue(() => {
+    'worklet';
+    return validation.value.isValid;
+  });
+
+  const [isValidOrderAmountState, setIsValidOrderAmountState] = useState(false);
+
+  useSyncSharedValue({
+    setState: setIsValidOrderAmountState,
+    sharedValue: isValidOrderAmount,
+    state: isValidOrderAmountState,
+    syncDirection: 'sharedValueToState',
+  });
 
   const tokenId = useMemo(() => {
     return market.clobTokenIds[outcomeIndex];
@@ -108,13 +151,13 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               </Box>
             </Box>
             <AmountInputCard
-              availableBalance={polymarketAvailableBalance}
+              availableBalance={availableBalance}
               accentColor={accentColor}
               backgroundColor={opacityWorklet(accentColor, 0.08)}
               onAmountChange={setAmount}
               resetKey="polymarket-new-position-sheet"
               title="Amount"
-              // validation={validation}
+              validation={validation}
             />
             <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
               <Text size="15pt" weight="semibold" color="labelTertiary">
@@ -145,7 +188,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               showBiometryIcon={false}
               backgroundColor={accentColor}
               disabledBackgroundColor={opacityWorklet(accentColor, 0.12)}
-              disabled={false}
+              disabled={!isValidOrderAmountState}
               height={48}
               textStyle={{
                 color: 'white',
@@ -163,24 +206,12 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
 
 async function marketBuyPosition({ tokenId, amount, price }: { tokenId: string; amount: number; price: number }): Promise<unknown> {
   const client = await getPolymarketClobClient();
-  console.log('price', price);
-  const order = await client.createMarketOrder(
-    {
-      side: Side.BUY,
-      tokenID: tokenId,
-      amount,
-      price,
-    },
-    {
-      /**
-       * TODO: Docs imply these options are required, but the types are optional
-       */
-      // tickSize,
-      // negRisk
-    }
-  );
-
-  console.log('Order', JSON.stringify(order, null, 2));
+  const order = await client.createMarketOrder({
+    side: Side.BUY,
+    tokenID: tokenId,
+    amount,
+    price,
+  });
 
   return await client.postOrder(order, OrderType.FOK);
 }
