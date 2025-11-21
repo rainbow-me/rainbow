@@ -570,6 +570,19 @@ query tokenMetadata($address: String!, $chainId: Int!, $currency: String) {
         creatorAddress
       }
     }
+    launchpad {
+      creatorAddress
+      isLaunchpadAvailable
+      launchpad {
+        name
+        protocol
+        protocolIconURL
+        socialInterface
+        socialInterfaceIconURL
+        platform
+        platformIconURL
+      }
+    }
     totalSupply
     volume1d
   }

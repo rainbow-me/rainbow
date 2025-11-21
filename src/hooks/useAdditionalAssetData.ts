@@ -17,6 +17,7 @@ export type TokenMetadata = Pick<
   | 'links'
   | 'rainbow'
   | 'rainbowTokenDetails'
+  | 'launchpad'
 >;
 
 // Types for the query arguments
