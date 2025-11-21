@@ -3,7 +3,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet } from 'react-native';
 import { Box, Text } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 import { ImgixImage } from '@/components/images';
 import { USDC_COLORS, USDC_ICON_URL } from '@/features/perps/constants';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
@@ -11,18 +10,23 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import * as i18n from '@/languages';
 
-type PerpsAvailableBalanceProps = {
+type SectionAvailableBalanceProps = {
   balance: string;
   isDarkMode: boolean;
+  onPress: () => void;
 };
 
-export const PerpsAvailableBalance = memo(function PerpsAvailableBalance({ balance, isDarkMode }: PerpsAvailableBalanceProps) {
+export const SectionAvailableBalance = memo(function SectionAvailableBalance({
+  balance,
+  isDarkMode,
+  onPress,
+}: SectionAvailableBalanceProps) {
   const backgroundColor = opacityWorklet(USDC_COLORS.primary, isDarkMode ? 0.06 : 0.03);
   const borderColor = opacityWorklet(USDC_COLORS.primary, isDarkMode ? 0.06 : 0.02);
 
   return (
     <Box paddingHorizontal="20px">
-      <ButtonPressAnimation onPress={navigateToPerps} scaleTo={0.96} style={{ marginLeft: -4 }}>
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.96} style={{ marginLeft: -4 }}>
         <GradientBorderView
           borderGradientColors={[borderColor, 'transparent']}
           start={{ x: 0.2, y: 0 }}

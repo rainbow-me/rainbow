@@ -2,7 +2,7 @@ import { memo, useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import Navigation from '@/navigation/Navigation';
 import { Box, Separator, Text, TextIcon, useForegroundColor } from '@/design-system';
-import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
+import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -10,7 +10,7 @@ import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { PerpMarket, PerpsPosition } from '@/features/perps/types';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { AmountInputCard } from '@/features/perps/components/AmountInputCard/AmountInputCard';
+import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
 import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -65,6 +65,7 @@ const AddToPositionSheetContent = memo(function AddToPositionSheetContent({
   market: PerpMarket;
   position: PerpsPosition;
 }) {
+  const { accentColors } = usePerpsAccentColorContext();
   const availableBalance = useHyperliquidAccountStore(state => state.getBalance());
   const [amountToAdd, setAmountToAdd] = useState(() => {
     const halfBalance = divide(availableBalance, 2);
@@ -110,7 +111,13 @@ const AddToPositionSheetContent = memo(function AddToPositionSheetContent({
       <Box paddingHorizontal={'24px'}>
         <Box gap={28}>
           <PerpBottomSheetHeader title={i18n.t(i18n.l.perps.add_to_position.title)} symbol={market.symbol} />
-          <AmountInputCard availableBalance={availableBalance} onAmountChange={setAmountToAdd} validation={validation} />
+          <AmountInputCard
+            availableBalance={availableBalance}
+            accentColor={accentColors.opacity100}
+            backgroundColor={accentColors.opacity8}
+            onAmountChange={setAmountToAdd}
+            validation={validation}
+          />
         </Box>
         <Box gap={20} paddingTop={'20px'}>
           <LiquidationInfo market={market} leverage={leverageSharedValue} getInfo={getLiquidationInfo} />

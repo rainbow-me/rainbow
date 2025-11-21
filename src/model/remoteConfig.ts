@@ -94,6 +94,7 @@ export interface RainbowConfig
   rainbow_toasts_enabled: boolean;
   king_of_the_hill2_enabled: boolean;
   perps_enabled: boolean;
+  polymarket_enabled: boolean;
 }
 
 const Bips = {
@@ -225,6 +226,7 @@ export const DEFAULT_CONFIG = {
   candlestick_charts_enabled: IS_DEV || isTestFlight || false,
   rainbow_toasts_enabled: IS_DEV || isTestFlight || false,
   perps_enabled: false,
+  polymarket_enabled: false,
   dev_section_enabled: IS_DEV || false,
 } as const satisfies Readonly<RainbowConfig>;
 

@@ -1,0 +1,48 @@
+import { createDerivedStore } from '@/state/internal/createDerivedStore';
+import { RelayClient } from '@polymarket/builder-relayer-client';
+import { ChainId } from '@rainbow-me/swaps';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { loadWallet } from '@/model/wallet';
+import { getProvider } from '@/handlers/web3';
+import { logger, RainbowError } from '@/logger';
+import { usePolymarketProxyAddress } from '@/features/polymarket/stores/derived/usePolymarketProxyAddress';
+import { POLYMARKET_RELAYER_PROXY_URL, BUILDER_CONFIG } from '@/features/polymarket/constants';
+
+export const usePolymarketRelayClient = createDerivedStore(
+  $ => {
+    const address = $(useWalletsStore).accountAddress;
+    const proxyAddress = $(usePolymarketProxyAddress).proxyAddress;
+
+    return {
+      address,
+      proxyAddress,
+      client: (async () => {
+        const wallet = await loadWallet({
+          address,
+          provider: getProvider({ chainId: ChainId.polygon }),
+          showErrorIfNotLoaded: true,
+        });
+
+        if (!wallet) {
+          logger.error(new RainbowError('[PolymarketRelayClient] Failed to load wallet for signing'));
+          return undefined;
+        }
+
+        if ('_signingKey' in wallet) {
+          return new RelayClient(POLYMARKET_RELAYER_PROXY_URL, ChainId.polygon, wallet, BUILDER_CONFIG);
+        } else {
+          // TODO: Handle hardware wallets
+          logger.error(new RainbowError('[PolymarketRelayClient] Hardware wallets are not supported for Polymarket relay transactions'));
+          return undefined;
+        }
+      })(),
+    };
+  },
+  { fastMode: true }
+);
+
+export async function getPolymarketRelayClient(): Promise<RelayClient> {
+  const client = await usePolymarketRelayClient.getState().client;
+  if (!client) throw new RainbowError('[Polymarket] Failed to get relay client');
+  return client;
+}

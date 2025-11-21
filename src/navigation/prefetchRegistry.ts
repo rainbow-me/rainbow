@@ -1,4 +1,5 @@
 import { prefetchCandlestickData } from '@/features/charts/stores/candlestickStore';
+import { prefetchPolymarketEvent } from '@/features/polymarket/stores/polymarketEventStore';
 import Routes, { Route } from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { deepFreeze } from '@/utils/deepFreeze';
@@ -17,5 +18,9 @@ export const prefetchRegistry = deepFreeze<PrefetchRegistry>({
 
   [Routes.PERPS_DETAIL_SCREEN]: ({ market }) => {
     prefetchCandlestickData(market.symbol);
+  },
+
+  [Routes.POLYMARKET_EVENT_SCREEN]: ({ eventId }) => {
+    prefetchPolymarketEvent(eventId);
   },
 });

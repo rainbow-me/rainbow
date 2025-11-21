@@ -53,6 +53,7 @@ export const TradeDetailsGraphic = memo(function TradeDetailsGraphic({ trade }: 
   const gridHeight = CONFIG.layout.gridHeight;
   const gridWidth = sheetWidth + gridOverflow;
   const accentColor = getAccentColor(trade);
+  const gridBackgroundGradient = getGridBackgroundGradient(trade);
   const backgroundBlurredOvalColor = opacityWorklet(accentColor, CONFIG.backgroundBlurredOval.opacity);
   const backgroundBlurredOvalWidth = CONFIG.backgroundBlurredOval.width;
   const backgroundBlurredOvalHeight = CONFIG.backgroundBlurredOval.height;
@@ -61,12 +62,22 @@ export const TradeDetailsGraphic = memo(function TradeDetailsGraphic({ trade }: 
     <Box width={sheetWidth} height={graphicHeight}>
       <Canvas style={{ width: sheetWidth, height: graphicHeight }}>
         {isDarkMode && (
-          <GradientBackground
-            width={sheetWidth}
-            height={CONFIG.layout.topSectionHeight}
-            color={accentColor}
-            backgroundColor={backgroundColor}
-          />
+          <Group dither antiAlias>
+            <Rect x={0} y={0} width={sheetWidth} height={CONFIG.layout.topSectionHeight} opacity={0.2}>
+              <LinearGradient
+                colors={[opacityWorklet('#2EDC51', 0), '#31E054']}
+                start={vec(0, 32)}
+                end={vec(0, CONFIG.layout.topSectionHeight)}
+              />
+            </Rect>
+            <Rect x={0} y={0} width={sheetWidth} height={CONFIG.layout.topSectionHeight} opacity={0.03}>
+              <LinearGradient
+                colors={['#23D246', opacityWorklet('#26D449', 0)]}
+                start={vec(0, 0)}
+                end={vec(0, CONFIG.layout.topSectionHeight - 32)}
+              />
+            </Rect>
+          </Group>
         )}
         <FloatingSparks
           height={CONFIG.layout.topSectionHeight}
@@ -79,7 +90,7 @@ export const TradeDetailsGraphic = memo(function TradeDetailsGraphic({ trade }: 
         <Group transform={[{ translateY: CONFIG.layout.topSectionHeight }, { translateX: -gridOverflow / 2 }]}>
           <Group opacity={isDarkMode ? CONFIG.grid.opacity.dark : CONFIG.grid.opacity.light}>
             <PerspectiveGrid
-              lineColor={isDarkMode ? 'rgba(255, 255, 255, 0.4)' : '#E0E0E0'}
+              lineColor={isDarkMode ? 'rgba(255, 255, 255, 0.16)' : '#E0E0E0'}
               horizontalLines={CONFIG.grid.horizontalLines}
               verticalLines={CONFIG.grid.verticalLines}
               width={gridWidth}
@@ -99,7 +110,7 @@ export const TradeDetailsGraphic = memo(function TradeDetailsGraphic({ trade }: 
           {/* Grid background accent gradient */}
           {isDarkMode && (
             <Rect dither antiAlias x={0} y={0} width={gridWidth} height={gridHeight} opacity={CONFIG.grid.accentOpacity}>
-              <LinearGradient colors={[accentColor, opacityWorklet(accentColor, 0)]} start={vec(0, 0)} end={vec(0, gridHeight)} />
+              <LinearGradient colors={gridBackgroundGradient} start={vec(0, 0)} end={vec(0, gridHeight)} />
             </Rect>
           )}
         </Group>
@@ -158,28 +169,17 @@ function getAccentColor(trade: HlTrade) {
   }
 }
 
-const GradientBackground = ({
-  width,
-  height,
-  color,
-  backgroundColor,
-}: {
-  width: number;
-  height: number;
-  color: string;
-  backgroundColor: string;
-}) => {
-  return (
-    <Group dither antiAlias>
-      <Rect x={0} y={0} width={width} height={height} opacity={0.2}>
-        <LinearGradient colors={[backgroundColor, color]} start={vec(0, 32)} end={vec(0, height)} />
-      </Rect>
-      <Rect x={0} y={0} width={width} height={height} opacity={0.03}>
-        <LinearGradient colors={[color, backgroundColor]} start={vec(0, 0)} end={vec(0, height - 32)} />
-      </Rect>
-    </Group>
-  );
-};
+function getGridBackgroundGradient(trade: HlTrade) {
+  const displayType = getDisplayType(trade);
+  switch (displayType) {
+    case 'loss':
+      return ['#FF584D', opacityWorklet('#FF584D', 0)];
+    case 'profit':
+      return ['#23D246', opacityWorklet('#23D246', 0)];
+    case 'info':
+      return ['#3ECFAD', '#3ECFAD'];
+  }
+}
 
 function getTitleText(trade: HlTrade) {
   if (trade.executionType === TradeExecutionType.LONG_LIQUIDATED || trade.executionType === TradeExecutionType.SHORT_LIQUIDATED) {
@@ -268,7 +268,7 @@ const OutcomeInfo = ({ trade }: { trade: HlTrade }) => {
         <SkiaBadge
           text={`${assumedLeverage}x`}
           height={27}
-          horizontalPadding={8}
+          paddingHorizontal={8}
           fillColor={['rgba(255, 255, 255, 0.16)', 'rgba(0, 0, 0, 0.1)']}
           textColor={isDarkMode ? 'label' : { custom: opacityWorklet(labelSecondary, 0.8) }}
           strokeColor={
@@ -284,7 +284,7 @@ const OutcomeInfo = ({ trade }: { trade: HlTrade }) => {
         <SkiaBadge
           text={i18n.t(trade.isLong ? i18n.l.perps.position_side.long : i18n.l.perps.position_side.short).toUpperCase()}
           height={27}
-          horizontalPadding={8}
+          paddingHorizontal={8}
           fillColor={trade.isLong ? longGreen : shortRed}
           textColor={{ custom: '#FFFFFF' }}
           strokeColor={'rgba(255, 255, 255, 0.12)'}

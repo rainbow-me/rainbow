@@ -357,6 +357,7 @@ export function niceIncrementFormatter({
 export const opacityWorklet = (color: string, opacity: number) => {
   'worklet';
 
+  // TODO: This isColor check doubles the time of this function, is it required?
   if (isColor(color)) {
     const rgbaColor = convertToRGBA(color);
     return `rgba(${rgbaColor[0] * 255}, ${rgbaColor[1] * 255}, ${rgbaColor[2] * 255}, ${opacity})`;

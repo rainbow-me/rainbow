@@ -1,7 +1,21 @@
 import { StyleSheet } from 'react-native';
-import { Canvas, Group, Rect, RoundedRect, Shadow, SkParagraph, rect, rrect } from '@shopify/react-native-skia';
+import {
+  Canvas,
+  Group,
+  LinearGradient,
+  Rect,
+  RoundedRect,
+  Shadow,
+  SkParagraph,
+  rect,
+  rrect,
+  vec,
+  Vector,
+  type LinearGradientProps,
+  SkRRect,
+} from '@shopify/react-native-skia';
 import { memo, useCallback, useMemo } from 'react';
-import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, { type SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { SkiaText, useColorMode } from '@/design-system';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { TextWeight } from '@/design-system/components/Text/Text';
@@ -18,8 +32,9 @@ type Shadow = {
 type SkiaBadgeProps = {
   text: string;
   height?: number;
-  horizontalPadding?: number;
-  fillColor: string | string[];
+  paddingHorizontal?: number;
+  fillColor?: string | string[];
+  gradientFill?: LinearGradientProps | LinearGradientProps[];
   textColor: TextColor | CustomColor;
   strokeColor?: string | string[];
   strokeWidth?: number;
@@ -28,6 +43,7 @@ type SkiaBadgeProps = {
   fontSize?: TextSize;
   fontWeight?: TextWeight;
   lineHeight?: number;
+  borderRadius?: number;
 };
 
 const ZERO_RECT = rrect(rect(0, 0, 0, 0), 0, 0);
@@ -35,8 +51,9 @@ const ZERO_RECT = rrect(rect(0, 0, 0, 0), 0, 0);
 export const SkiaBadge = memo(function SkiaBadge({
   text,
   height = 27,
-  horizontalPadding = 8,
+  paddingHorizontal = 8,
   fillColor,
+  gradientFill,
   textColor,
   strokeColor,
   strokeWidth = 2,
@@ -44,6 +61,7 @@ export const SkiaBadge = memo(function SkiaBadge({
   innerShadows,
   fontSize = '15pt',
   fontWeight = 'heavy',
+  borderRadius,
 }: SkiaBadgeProps) {
   const { colorMode } = useColorMode();
   const measuredTextWidth = useSharedValue(0);
@@ -68,15 +86,17 @@ export const SkiaBadge = memo(function SkiaBadge({
         const { height: textHeight, width: textWidth } = metrics[0];
         measuredTextWidth.value = textWidth;
         measuredTextHeight.value = textHeight;
-        const rectWidth = measuredTextWidth.value + horizontalPadding * 2;
+        const rectWidth = measuredTextWidth.value + paddingHorizontal * 2;
         badgeWidth.value = rectWidth;
         textX.value = maxShadowExtent + (rectWidth - textWidth) / 2;
         textY.value = maxShadowExtent + (height - textHeight) / 2;
-        badgeRect.value = rrect(rect(maxShadowExtent, maxShadowExtent, rectWidth, height), height / 2, height / 2);
+        const radius = borderRadius ?? height / 2;
+        const innerRadius = borderRadius !== undefined ? Math.max(0, borderRadius - strokeWidth) : (height - strokeWidth * 2) / 2;
+        badgeRect.value = rrect(rect(maxShadowExtent, maxShadowExtent, rectWidth, height), radius, radius);
         innerStrokeRect.value = rrect(
           rect(maxShadowExtent + strokeWidth, maxShadowExtent + strokeWidth, rectWidth - strokeWidth * 2, height - strokeWidth * 2),
-          (height - strokeWidth * 2) / 2,
-          (height - strokeWidth * 2) / 2
+          innerRadius,
+          innerRadius
         );
         isReady.value = true;
       }
@@ -85,7 +105,7 @@ export const SkiaBadge = memo(function SkiaBadge({
       measuredTextWidth,
       measuredTextHeight,
       badgeWidth,
-      horizontalPadding,
+      paddingHorizontal,
       textX,
       maxShadowExtent,
       textY,
@@ -94,6 +114,7 @@ export const SkiaBadge = memo(function SkiaBadge({
       innerStrokeRect,
       strokeWidth,
       isReady,
+      borderRadius,
     ]
   );
 
@@ -116,7 +137,8 @@ export const SkiaBadge = memo(function SkiaBadge({
     };
   }, [badgeWidth, height, maxShadowExtent]);
 
-  const fillColors = Array.isArray(fillColor) ? fillColor : [fillColor];
+  const fillLayers = fillColor ? (Array.isArray(fillColor) ? fillColor : [fillColor]) : [];
+  const gradientLayers = gradientFill ? (Array.isArray(gradientFill) ? gradientFill : [gradientFill]) : [];
   const strokeColors = strokeColor ? (Array.isArray(strokeColor) ? strokeColor : [strokeColor]) : [];
 
   return (
@@ -131,8 +153,20 @@ export const SkiaBadge = memo(function SkiaBadge({
           ))}
 
           {/* Fill */}
-          {fillColors.map((color, index) => (
+          {fillLayers.map((color, index) => (
             <RoundedRect key={`fill-${index}`} rect={badgeRect} color={color} />
+          ))}
+
+          {/* Gradient fills */}
+          {gradientLayers.map((gradient, index) => (
+            <GradientRoundedRect
+              key={`fill-gradient-${index}`}
+              badgeRect={badgeRect}
+              badgeWidth={badgeWidth}
+              gradient={gradient}
+              height={height}
+              maxShadowExtent={maxShadowExtent}
+            />
           ))}
 
           {/* Inner stroke */}
@@ -176,6 +210,44 @@ export const SkiaBadge = memo(function SkiaBadge({
     </Animated.View>
   );
 });
+
+const DEFAULT_GRADIENT_START = { x: 0, y: 0 };
+const DEFAULT_GRADIENT_END = { x: 1, y: 0 };
+
+const GradientRoundedRect = memo(function GradientRoundedRect({
+  badgeRect,
+  badgeWidth,
+  gradient,
+  height,
+  maxShadowExtent,
+}: {
+  badgeRect: SharedValue<SkRRect>;
+  badgeWidth: SharedValue<number>;
+  gradient: LinearGradientProps;
+  height: number;
+  maxShadowExtent: number;
+}) {
+  const { colors, positions, mode, start, end } = gradient;
+  const gradientStart = useDerivedValue(
+    () => resolveGradientPoint(start ?? DEFAULT_GRADIENT_START, badgeWidth.value, height, maxShadowExtent),
+    [start?.x, start?.y, height, maxShadowExtent]
+  );
+  const gradientEnd = useDerivedValue(
+    () => resolveGradientPoint(end ?? DEFAULT_GRADIENT_END, badgeWidth.value, height, maxShadowExtent),
+    [end?.x, end?.y, height, maxShadowExtent]
+  );
+
+  return (
+    <RoundedRect rect={badgeRect}>
+      <LinearGradient colors={colors} end={gradientEnd} mode={mode} positions={positions} start={gradientStart} />
+    </RoundedRect>
+  );
+});
+
+function resolveGradientPoint(point: Vector, width: number, height: number, maxShadowExtent: number) {
+  'worklet';
+  return vec(maxShadowExtent + width * point.x, maxShadowExtent + height * point.y);
+}
 
 const styles = StyleSheet.create({
   canvas: {

@@ -103,6 +103,8 @@
     "@metamask/eth-sig-util": "7.0.2",
     "@nktkas/hyperliquid": "0.25.5",
     "@notifee/react-native": "7.8.2",
+    "@polymarket/builder-relayer-client": "0.0.6",
+    "@polymarket/clob-client": "4.22.8",
     "@rainbow-me/provider": "0.1.2",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/swaps": "0.39.0",
@@ -479,7 +481,8 @@
       "viem>ws>utf-8-validate": false,
       "@types/detox>detox": false,
       "react-native-bootsplash>sharp": false,
-      "ethereumjs-util>ethereum-cryptography>keccak": false
+      "ethereumjs-util>ethereum-cryptography>keccak": false,
+      "@polymarket/builder-relayer-client>tsx>esbuild": true
     }
   },
   "lint-staged": {

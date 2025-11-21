@@ -5,10 +5,9 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Inline, useForegroundColor } from '@/design-system';
 import { USD_DECIMALS } from '@/features/perps/constants';
 import { useOrderAmountValidation } from '@/features/perps/stores/derived/useOrderAmountValidation';
-import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import * as i18n from '@/languages';
-import { truncateToDecimals } from '@/safe-math/SafeMath';
+import { equalWorklet, truncateToDecimals } from '@/safe-math/SafeMath';
 import { ReadOnlySharedValue, useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
 
@@ -25,7 +24,7 @@ type AmountInputCardSubtitleProps = {
 };
 
 export const AmountInputCardSubtitle = ({ availableBalanceString, validation: validationOverride }: AmountInputCardSubtitleProps) => {
-  const hasBalance = useStoreSharedValue(useHyperliquidAccountStore, state => state.hasBalance());
+  const hasBalance = useDerivedValue(() => !equalWorklet(availableBalanceString.value, '0'));
   const defaultValidation = useStoreSharedValue(useOrderAmountValidation, state => state, { enabled: !validationOverride });
   const validation = validationOverride ?? defaultValidation;
   const labelSecondary = useForegroundColor('labelSecondary');

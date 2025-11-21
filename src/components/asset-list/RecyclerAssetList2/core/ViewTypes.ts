@@ -5,6 +5,7 @@ import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { RainbowPosition } from '@/features/positions/types';
 import { PerpsPosition as PerpsPosition } from '@/features/perps/types';
+import { PolymarketPosition } from '@/features/polymarket/types';
 export enum CellType {
   ASSETS_HEADER_SPACE_AFTER = 'ASSETS_HEADER_SPACE_AFTER',
   COIN = 'COIN',
@@ -50,6 +51,10 @@ export enum CellType {
   TOKENS_HEADER = 'TOKENS_HEADER',
 
   PERPS_FEATURE_CARD = 'PERPS_FEATURE_CARD',
+
+  POLYMARKET_HEADER = 'POLYMARKET_HEADER',
+  POLYMARKET_BALANCE = 'POLYMARKET_BALANCE',
+  POLYMARKET_POSITION = 'POLYMARKET_POSITION',
 
   LOADING_ASSETS = 'LOADING_ASSETS',
   RECEIVE_CARD = 'RECEIVE_CARD',
@@ -133,13 +138,22 @@ export type PerpsPositionExtraData = {
 export type PerpsHeaderExtraData = {
   type: CellType.PERPS_HEADER;
 };
+export type PerpsFeatureCardExtraData = {
+  type: CellType.PERPS_FEATURE_CARD;
+};
+
+export type PolymarketBalanceExtraData = {
+  type: CellType.POLYMARKET_BALANCE;
+  balance: string;
+};
+export type PolymarketPositionExtraData = {
+  type: CellType.POLYMARKET_POSITION;
+  position: PolymarketPosition;
+  index: number;
+};
 
 export type TokensHeaderExtraData = {
   type: CellType.TOKENS_HEADER;
-};
-
-export type PerpsFeatureCardExtraData = {
-  type: CellType.PERPS_FEATURE_CARD;
 };
 
 export type LegacyNFTFamilyExtraData = {
@@ -189,8 +203,10 @@ export type CellExtraData =
   | PerpsBalanceExtraData
   | PerpsPositionExtraData
   | PerpsHeaderExtraData
-  | TokensHeaderExtraData
   | PerpsFeatureCardExtraData
+  | PolymarketBalanceExtraData
+  | PolymarketPositionExtraData
+  | TokensHeaderExtraData
   | ProfileActionButtonsRowExtraData
   | SpacerExtraData;
 

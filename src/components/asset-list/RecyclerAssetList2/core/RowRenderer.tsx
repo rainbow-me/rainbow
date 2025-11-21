@@ -19,6 +19,8 @@ import {
   PositionHeaderExtraData,
   PerpsBalanceExtraData,
   PerpsPositionExtraData,
+  PolymarketBalanceExtraData,
+  PolymarketPositionExtraData,
 } from './ViewTypes';
 import assertNever from '@/helpers/assertNever';
 import { ProfileRowWrapper } from '../profile-header/ProfileRowWrapper';
@@ -45,8 +47,12 @@ import LegacyWrappedNFT from '../LegacyWrappedNFT';
 import LegacyWrappedTokenFamilyHeader from '../LegacyWrappedTokenFamilyHeader';
 import { PerpsHeader } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsHeader';
 import { PerpsPositionRow } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsPositionRow';
-import { PerpsAvailableBalance } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsAvailableBalance';
 import { TokensHeader } from '@/components/asset-list/RecyclerAssetList2/tokens/TokensHeader';
+import { SectionAvailableBalance } from '@/components/asset-list/RecyclerAssetList2/SectionAvailableBalance';
+import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
+import { PolymarketHeader } from '@/components/asset-list/RecyclerAssetList2/polymarket/PolymarketHeader';
+import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
+import { PolymarketPositionRow } from '@/components/asset-list/RecyclerAssetList2/polymarket/PolymarketPositionRow';
 
 function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
   const data = extendedState.additionalData[uid];
@@ -225,11 +231,22 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     }
     case CellType.PERPS_BALANCE: {
       const { balance } = data as PerpsBalanceExtraData;
-      return <PerpsAvailableBalance balance={balance} isDarkMode={extendedState.theme.isDarkMode} />;
+      return <SectionAvailableBalance balance={balance} isDarkMode={extendedState.theme.isDarkMode} onPress={navigateToPerps} />;
     }
     case CellType.PERPS_POSITION: {
       const { position } = data as PerpsPositionExtraData;
       return <PerpsPositionRow position={position} />;
+    }
+    case CellType.POLYMARKET_HEADER: {
+      return <PolymarketHeader isDarkMode={extendedState.theme.isDarkMode} />;
+    }
+    case CellType.POLYMARKET_BALANCE: {
+      const { balance } = data as PolymarketBalanceExtraData;
+      return <SectionAvailableBalance balance={balance} isDarkMode={extendedState.theme.isDarkMode} onPress={navigateToPolymarket} />;
+    }
+    case CellType.POLYMARKET_POSITION: {
+      const { position } = data as PolymarketPositionExtraData;
+      return <PolymarketPositionRow position={position} />;
     }
     case CellType.TOKENS_HEADER: {
       return <TokensHeader />;

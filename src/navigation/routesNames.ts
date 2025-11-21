@@ -134,6 +134,10 @@ const Routes = {
   PERPS_EXPLAIN_SHEET: 'PerpsExplainSheet',
   PERPS_TRADE_HISTORY_SCREEN: 'PerpsTradeHistoryScreen',
   PERPS_TRADE_DETAILS_SHEET: 'PerpsTradeDetailsSheet',
+  POLYMARKET_EVENT_SCREEN: 'PolymarketEventScreen',
+  POLYMARKET_MANAGE_POSITION_SHEET: 'PolymarketManagePositionSheet',
+  POLYMARKET_MARKET_SHEET: 'PolymarketMarketSheet',
+  POLYMARKET_NEW_POSITION_SHEET: 'PolymarketNewPositionSheet',
 } as const;
 
 export const NATIVE_ROUTES = new Set<Route>([
