@@ -3,7 +3,6 @@ import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPr
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
 import { IS_IOS } from '@/env';
-import showWalletErrorAlert from '@/helpers/support';
 import { useChartThrottledPoints, useColorForAsset } from '@/hooks';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
@@ -60,7 +59,7 @@ export const EthCard = () => {
       }
 
       if (getIsDamagedWallet()) {
-        showWalletErrorAlert();
+        navigate(Routes.WALLET_ERROR_SHEET);
         return;
       }
 

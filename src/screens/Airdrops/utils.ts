@@ -5,7 +5,6 @@ import { analytics } from '@/analytics';
 import { NativeCurrencyKey, NewTransaction, TransactionStatus } from '@/entities';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider, toHex } from '@/handlers/web3';
-import showWalletErrorAlert from '@/helpers/support';
 import { add, convertAmountToNativeDisplayWorklet, multiply, formatNumber } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
@@ -22,6 +21,8 @@ import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { ethereumUtils, time } from '@/utils';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 
 export interface GasInfo {
   gasFeeDisplay: string | undefined;
@@ -94,7 +95,7 @@ export async function executeAirdropClaim({
   try {
     wallet = await loadWallet({ address: accountAddress, provider });
   } catch {
-    showWalletErrorAlert();
+    Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
     return { error: '[claimAirdrop] Failed to load wallet', success: false };
   }
 

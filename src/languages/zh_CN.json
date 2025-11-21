@@ -2930,12 +2930,7 @@
         "no_price": "小额余额"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "您当前的身份验证方法（面部识别）不够安全，请去\"设置 > 生物识别 & 安全\"启用其他生物识别方法，如指纹或虹膜。",
-          "error": "错误"
-        },
-        "please": "请进行身份验证",
-        "please_seed_phrase": "请进行身份验证以查看私钥"
+        "please": "请进行身份验证"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} 钱包",

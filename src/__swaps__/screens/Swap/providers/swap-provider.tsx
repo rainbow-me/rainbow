@@ -60,7 +60,6 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
-import showWalletErrorAlert from '@/helpers/support';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
 import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
@@ -288,7 +287,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       if (!wallet) {
         isSwapping.value = false;
         triggerHaptics('notificationError');
-        showWalletErrorAlert();
+        Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
         return;
       }
 

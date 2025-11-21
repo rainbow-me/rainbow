@@ -10,7 +10,6 @@ import { watchingAlert } from '@/utils';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config';
-import showWalletErrorAlert from '@/helpers/support';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -141,7 +140,7 @@ function ActionButton({
 function BuyButton() {
   const handlePress = React.useCallback(() => {
     if (getIsDamagedWallet()) {
-      showWalletErrorAlert();
+      Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
       return;
     }
 
@@ -200,7 +199,7 @@ export function CopyButton() {
 
   const handlePressCopy = React.useCallback(() => {
     if (getIsDamagedWallet()) {
-      showWalletErrorAlert();
+      Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
       return;
     }
 

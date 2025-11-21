@@ -10,7 +10,6 @@ import { buildTokenDeeplink } from '@/handlers/deeplinks';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider } from '@/handlers/web3';
 import { BiometryTypes } from '@/helpers';
-import showWalletErrorAlert from '@/helpers/support';
 import { useBiometryType } from '@/hooks';
 import { useTokenLauncher } from '@/hooks/useTokenLauncher';
 import * as i18n from '@/languages';
@@ -40,11 +39,13 @@ import { useTokenLaunchGasOptions } from '../hooks/useTokenLaunchGasOptions';
 import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { GasButton } from './gas/GasButton';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
+import Routes from '@/navigation/routesNames';
 
 // height + top padding + bottom padding
 export const FOOTER_HEIGHT = 48 + 16 + 16;
 
 function HoldToCreateButton() {
+  const { navigate } = useNavigation();
   const { accentColors } = useTokenLauncherContext();
   const createToken = useTokenLauncherStore(state => state.createToken);
   const setStep = useTokenLauncherStore(state => state.setStep);
@@ -74,7 +75,7 @@ function HoldToCreateButton() {
     try {
       wallet = await loadWallet({ address: accountAddress, provider });
     } catch (e) {
-      showWalletErrorAlert();
+      navigate(Routes.WALLET_ERROR_SHEET);
       const error = e instanceof Error ? e : new Error(String(e));
       logger.error(new RainbowError('[TokenLauncher]: Error Loading Wallet'), {
         message: error.message,
@@ -109,7 +110,7 @@ function HoldToCreateButton() {
     // if (isHardwareWallet) {
     // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
     // } else {}
-  }, [createToken, accountAddress, chainId, transactionOptions, setStep, addStaleBalance]);
+  }, [createToken, accountAddress, chainId, transactionOptions, setStep, addStaleBalance, navigate]);
 
   return (
     <HoldToActivateButton

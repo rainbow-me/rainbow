@@ -2930,12 +2930,7 @@
         "no_price": "Saldos Pequenos"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "Seu método de autenticação atual (Reconhecimento Facial) não é seguro o suficiente, vá para \"Configurações > Biometria e Segurança\" e ative um método biométrico alternativo como Impressão Digital ou Íris.",
-          "error": "Erro"
-        },
-        "please": "Faça a autenticação",
-        "please_seed_phrase": "Por favor, autentique-se para visualizar a chave privada"
+        "please": "Faça a autenticação"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} carteira",

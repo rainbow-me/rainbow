@@ -22,7 +22,7 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { backupsStore } from '@/state/backups/backups';
-import { useSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
+import { checkAndShowWalletErrorSheet, useSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
 import { InteractionManager } from 'react-native';
 import { Source } from 'react-native-fast-image';
 import { ImgixImage } from '../images';
@@ -78,6 +78,8 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
       if (privateKeyAddress) {
         const privateKeyData = await loadPrivateKey(privateKeyAddress, false);
         if (privateKeyData === -1 || privateKeyData === -2 || !privateKeyData) {
+          // Check if wallet is damaged before showing "no seed" error
+          if (checkAndShowWalletErrorSheet()) return;
           setSectionState(SecretDisplayStates.noSeed);
           return;
         }
@@ -94,6 +96,8 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
         setSeed(seedPhrase);
         setSectionState(SecretDisplayStates.revealed);
       } else {
+        // Check if wallet is damaged before showing "no seed" error
+        if (checkAndShowWalletErrorSheet()) return;
         setSectionState(SecretDisplayStates.noSeed);
       }
       onSecretLoaded?.(!!seedPhrase);
@@ -102,10 +106,14 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
       logger.error(new RainbowError('[SecretDisplaySection]: Error while trying to reveal secret'), {
         error: message,
       });
+
+      // Check if wallet is damaged and navigate to error sheet
+      if (checkAndShowWalletErrorSheet()) return;
+
       setSectionState(message === createdWithBiometricError ? SecretDisplayStates.securedWithBiometrics : SecretDisplayStates.noSeed);
       onSecretLoaded?.(false);
     }
-  }, [onSecretLoaded, privateKeyAddress, onWalletTypeIdentified, walletId]);
+  }, [onSecretLoaded, privateKeyAddress, onWalletTypeIdentified, walletId, navigate]);
 
   useEffect(() => {
     // We need to run this after interactions since there were issues on Android

@@ -16,7 +16,6 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Box, Stack } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import showWalletErrorAlert from '@/helpers/support';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import WalletTypes from '@/helpers/walletTypes';
@@ -198,7 +197,7 @@ const ViewWalletBackup = () => {
                 logger.error(new RainbowError(`[ViewWalletBackup]: Error while trying to add account`, e));
                 if (getIsDamagedWallet()) {
                   setTimeout(() => {
-                    showWalletErrorAlert();
+                    navigate(Routes.WALLET_ERROR_SHEET);
                   }, 1000);
                 }
               } finally {

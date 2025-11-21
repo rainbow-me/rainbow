@@ -2930,12 +2930,7 @@
         "no_price": "Petits soldes"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "Votre méthode d'authentification actuelle (Reconnaissance faciale) n'est pas assez sécurisée, veuillez vous rendre à \"Paramètres > Biométrie & Sécurité\" et activer une autre méthode biométrique comme l'empreinte digitale ou l'iris.",
-          "error": "Erreur"
-        },
-        "please": "Veuillez vous authentifier pour afficher votre clé mnémonique",
-        "please_seed_phrase": "Veuillez vous authentifier pour voir la clé privée"
+        "please": "Veuillez vous authentifier pour afficher votre clé mnémonique"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} portefeuille",

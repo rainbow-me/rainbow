@@ -16,7 +16,6 @@ import * as i18n from '@/languages';
 import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
 import networkInfo from '../helpers/networkInfo';
-import showWalletErrorAlert from '../helpers/support';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../theme/ThemeContext';
 import { deviceUtils, magicMemo } from '../utils';
@@ -182,7 +181,7 @@ const AddFundsInterstitial = ({ network }) => {
   const handlePressAmount = useCallback(
     amount => {
       if (getIsDamagedWallet()) {
-        showWalletErrorAlert();
+        navigate(Routes.WALLET_ERROR_SHEET);
         captureMessage('Damaged wallet preventing add cash');
         return;
       }
@@ -205,7 +204,7 @@ const AddFundsInterstitial = ({ network }) => {
 
   const handlePressCopyAddress = useCallback(() => {
     if (getIsDamagedWallet()) {
-      showWalletErrorAlert();
+      navigate(Routes.WALLET_ERROR_SHEET);
       return;
     }
     navigate(Routes.RECEIVE_MODAL);

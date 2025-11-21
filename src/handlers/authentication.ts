@@ -92,6 +92,9 @@ export async function authenticateWithPIN(): Promise<string | undefined> {
     validPin = await getExistingPIN();
     // eslint-disable-next-line no-empty
   } catch (e) {}
+  if (!validPin) {
+    return undefined;
+  }
   return new Promise((resolve, reject) => {
     Navigation.handleAction(Routes.PIN_AUTHENTICATION_SCREEN, {
       onCancel: () => {

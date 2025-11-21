@@ -2,7 +2,6 @@
 import { analytics } from '@/analytics';
 import { DelayedAlert } from '@/components/alerts';
 import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
-import showWalletErrorAlert from '@/helpers/support';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { useWalletCloudBackup } from '@/hooks';
 import * as i18n from '@/languages';
@@ -76,7 +75,7 @@ export const useCreateBackup = () => {
     (msg: string, isDamaged?: boolean) => {
       InteractionManager.runAfterInteractions(async () => {
         if (isDamaged) {
-          showWalletErrorAlert();
+          Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
         } else {
           DelayedAlert({ title: msg }, 500);
         }
