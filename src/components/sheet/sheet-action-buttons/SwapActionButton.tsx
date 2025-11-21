@@ -10,6 +10,7 @@ import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { checkAndShowWalletErrorSheet } from '@/state/wallets/walletsStore';
 import {} from '@/__swaps__/utils/swaps';
 import { Inline, Text, TextIcon } from '@/design-system';
 import { NavigateToSwapsParams, navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
@@ -32,6 +33,9 @@ function SwapActionButton({ asset, color: givenColor, height, icon, inputType, l
   const symbolHasEmoji = useMemo(() => (label ? containsEmoji(label) : false), [label]);
 
   const goToSwap = useCallback(async () => {
+    // Check for damaged wallet before swapping
+    if (checkAndShowWalletErrorSheet()) return;
+
     const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
     const chainsName = useBackendNetworksStore.getState().getChainsName();
     const chainId = asset.chainId || chainsIdByName[asset.network];

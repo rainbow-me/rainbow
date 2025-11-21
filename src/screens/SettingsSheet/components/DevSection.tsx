@@ -14,7 +14,7 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { clearWalletState, updateWallets, useWallets } from '@/state/wallets/walletsStore';
+import { checkKeychainIntegrity, clearWalletState, updateWallets, useWallets } from '@/state/wallets/walletsStore';
 import { isAuthenticated } from '@/utils/authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -405,6 +405,9 @@ const DevSection = () => {
                   if (!credentials) return;
 
                   await Promise.all(credentials.results.map(c => resetInternetCredentials({ server: c.username })));
+
+                  // Check keychain integrity immediately to mark wallet as damaged
+                  await checkKeychainIntegrity();
                 }
               }}
               size={52}

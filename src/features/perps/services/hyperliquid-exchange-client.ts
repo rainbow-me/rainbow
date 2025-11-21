@@ -18,7 +18,7 @@ import { getOppositePositionSide } from '@/features/perps/utils';
 import { getProvider } from '@/handlers/web3';
 import { ChainId } from '@/state/backendNetworks/types';
 import { loadWallet } from '@/model/wallet';
-import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { checkAndShowWalletErrorSheet, checkIfReadOnlyWallet, getIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { logger, RainbowError } from '@/logger';
 import { isBuilderDexAssetId } from '@/features/perps/utils/hyperliquidSymbols';
 
@@ -63,6 +63,8 @@ export class HyperliquidExchangeClient {
   async withdraw(amount: string): Promise<void | undefined> {
     if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
 
+    if (checkAndShowWalletErrorSheet()) return;
+
     const exchangeClient = await this.getExchangeClient();
     if (!exchangeClient) return undefined;
 
@@ -98,6 +100,8 @@ export class HyperliquidExchangeClient {
     triggerOrders?: TriggerOrder[];
   }): Promise<hl.OrderSuccessResponse | undefined> {
     if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
+
+    if (checkAndShowWalletErrorSheet()) return;
 
     const exchangeClient = await this.getExchangeClient();
     if (!exchangeClient) return undefined;
