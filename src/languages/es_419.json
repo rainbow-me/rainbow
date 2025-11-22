@@ -970,6 +970,8 @@
       "baggy_title": "Has desbloqueado\n Rainbow Baggy",
       "chonks_description": "Imagina el viento en tu cabello Rainbow, conduciendo por la Ruta 101, sintiendo Chonky.",
       "chonks_title": "Has desbloqueado\n El Icono Más Chonky",
+      "mog_description": "Effortless cosmic world domination, mogging in colors.",
+      "mog_title": "You've unlocked\n Rainbow Mogs",
       "button": "Consigue el ícono"
     },
     "explain": {
@@ -1604,8 +1606,8 @@
         "liq": "liq"
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "Agregar a la Posición",
+        "new_total": "Nuevo Total"
       },
       "feature_card": {
         "title": "Perpetuos",

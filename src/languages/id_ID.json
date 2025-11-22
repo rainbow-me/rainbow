@@ -970,6 +970,8 @@
       "baggy_title": "Anda telah membuka\n Rainbow Baggy",
       "chonks_description": "Bayangkan angin di rambut Rainbow Anda, mengemudi di 101, merasakan Chonky.",
       "chonks_title": "Anda telah membuka\n Ikon Chonkiest",
+      "mog_description": "Effortless cosmic world domination, mogging in colors.",
+      "mog_title": "You've unlocked\n Rainbow Mogs",
       "button": "Ambil ikon"
     },
     "explain": {
@@ -1604,8 +1606,8 @@
         "liq": "liq"
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "Tambahkan ke Posisi",
+        "new_total": "Total Baru"
       },
       "feature_card": {
         "title": "Perps",
