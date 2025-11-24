@@ -1,8 +1,9 @@
 import { memo } from 'react';
+import { StyleSheet } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
-import { Box, Separator, Text, useForegroundColor } from '@/design-system';
+import { Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import ImgixImage from '@/components/images/ImgixImage';
@@ -11,17 +12,27 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Navigation } from '@/navigation';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { PolymarketOutcome } from '@/features/polymarket/constants';
+import LinearGradient from 'react-native-linear-gradient';
 
 export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   const {
     params: { market },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_MARKET_SHEET>>();
 
+  const { isDarkMode } = useColorMode();
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
+  // TODO:
+  const accentColor = market.seriesColor || '#DC5CEA';
 
   return (
-    <PanelSheet innerBorderWidth={1}>
+    <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? '#000000' : '#FFFFFF' }}>
+      <LinearGradient
+        colors={[opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)]}
+        style={StyleSheet.absoluteFillObject}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+      />
       <Box paddingHorizontal="24px" paddingBottom={'24px'} paddingTop={{ custom: 33 }}>
         <Box gap={20}>
           <Header market={market} />

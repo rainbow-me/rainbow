@@ -136,6 +136,8 @@ import { PolymarketEventScreen } from '@/features/polymarket/screens/polymarket-
 import { PolymarketManagePositionSheet } from '@/features/polymarket/screens/polymarket-manage-position-sheet/PolymarketManagePositionSheet';
 import { PolymarketMarketSheet } from '@/features/polymarket/screens/polymarket-market-sheet/PolymarketMarketSheet';
 import { PolymarketNewPositionSheet } from '@/features/polymarket/screens/polymarket-new-position-sheet/PolymarketNewPositionSheet';
+import { PolymarketAccountScreen } from '@/features/polymarket/screens/polymarket-account-screen/PolymarketAccountScreen';
+import { PolymarketBrowseEventsScreen } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketBrowseEventsScreen';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -328,6 +330,12 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={PolymarketManagePositionSheet} name={Routes.POLYMARKET_MANAGE_POSITION_SHEET} {...panelConfig} />
       <NativeStack.Screen component={PolymarketMarketSheet} name={Routes.POLYMARKET_MARKET_SHEET} {...panelConfig} />
       <NativeStack.Screen component={PolymarketNewPositionSheet} name={Routes.POLYMARKET_NEW_POSITION_SHEET} {...panelConfig} />
+      <NativeStack.Screen component={PolymarketAccountScreen} name={Routes.POLYMARKET_ACCOUNT_SCREEN} {...expandedAssetSheetV2Config} />
+      <NativeStack.Screen
+        component={PolymarketBrowseEventsScreen}
+        name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}
+        {...expandedAssetSheetV2Config}
+      />
     </NativeStack.Navigator>
   );
 }

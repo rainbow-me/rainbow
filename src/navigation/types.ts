@@ -39,7 +39,7 @@ import { AreAllKeysOptional, ExtractOptionalKeys } from '@/types/objects';
 import { ScrollView } from 'react-native';
 import { HlTrade, PerpMarket, PerpsPosition, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
 import { PolymarketOutcome, PolymarketPosition } from '@/features/polymarket/types';
-import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent, RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 
 export type PortalSheetProps = {
   children: React.FC;
@@ -671,6 +671,7 @@ type RouteParams = {
   };
   [Routes.POLYMARKET_EVENT_SCREEN]: {
     eventId: string;
+    event: PolymarketMarketEvent | PolymarketEvent;
   };
   [Routes.POLYMARKET_MANAGE_POSITION_SHEET]: {
     position: PolymarketPosition;

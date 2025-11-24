@@ -1,9 +1,9 @@
 import { memo, useMemo } from 'react';
 import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { Outcome } from '@/features/polymarket/types';
+import { PolymarketOutcome } from '@/features/polymarket/types';
 
-export const OutcomeBadge = memo(function OutcomeBadge({ outcome }: { outcome: Outcome }) {
+export const OutcomeBadge = memo(function OutcomeBadge({ outcome }: { outcome: PolymarketOutcome }) {
   const { isDarkMode } = useColorMode();
   const green = useForegroundColor('green');
   const red = isDarkMode ? '#FF655A' : '#FF584D';

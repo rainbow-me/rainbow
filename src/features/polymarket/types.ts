@@ -1,4 +1,4 @@
-import { RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { PolymarketMarket, RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { PolymarketOutcome } from '@/features/polymarket/constants';
 
 export type PolymarketOutcome = (typeof PolymarketOutcome)[keyof typeof PolymarketOutcome];
@@ -41,7 +41,7 @@ export type PolymarketPosition = RawPolymarketPosition & {
     currentValue: number;
     cashPnl: number;
   };
-  market: RawPolymarketMarket;
+  market: PolymarketMarket;
   /**
    * Some events have a unique image for each market, such as "Who will win the 2028 presidential election?"
    * Others use the same image for all markets, such as "Fed decision in December 2025?"

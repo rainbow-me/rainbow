@@ -16,21 +16,27 @@ import { MarketsSection } from '@/features/polymarket/screens/polymarket-event-s
 import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
 import { PriceHistoryInterval } from '@polymarket/clob-client';
 import { time } from '@/utils/time';
+import { formatNumber } from '@/helpers/strings';
+import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 
-export const EventHeaderSection = memo(function EventHeaderSection() {
-  const event = usePolymarketEventStore(state => state.getData());
+export const EventHeaderSection = memo(function EventHeaderSection({
+  initialEvent,
+}: {
+  initialEvent: PolymarketMarketEvent | PolymarketEvent;
+}) {
+  const event = usePolymarketEventStore(state => state.getData() ?? initialEvent);
   return (
     <Box>
       <Box flexDirection="row" alignItems="flex-start" gap={16}>
-        <Box gap={12} style={{ flex: 1 }}>
+        <Box gap={20} style={{ flex: 1 }}>
           <Text color={'label'} size="30pt" weight="heavy" align="left">
-            {event?.title}
+            {event.title}
           </Text>
-          <Text color={'labelSecondary'} size="15pt" weight="bold">
-            {event?.volume}
+          <Text color={'labelQuaternary'} size="15pt" weight="bold">
+            {`${formatNumber(String(event.volume), { useOrderSuffix: true, decimals: 1, style: '$' })} VOL`}
           </Text>
         </Box>
-        <ImgixImage resizeMode="cover" size={64} source={{ uri: event?.icon }} style={{ height: 64, width: 64, borderRadius: 9 }} />
+        <ImgixImage resizeMode="cover" size={64} source={{ uri: event.icon }} style={{ height: 64, width: 64, borderRadius: 9 }} />
       </Box>
     </Box>
   );
@@ -82,6 +88,9 @@ const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
 const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';
 
 const PolymarketEventScreenContent = memo(function PolymarketEventScreenContent({ eventId }: { eventId: string }) {
+  const {
+    params: { event: initialEvent },
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_EVENT_SCREEN>>();
   const { isDarkMode } = useColorMode();
   const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
   const safeAreaInsets = useSafeAreaInsets();
@@ -103,7 +112,7 @@ const PolymarketEventScreenContent = memo(function PolymarketEventScreenContent(
         }}
       >
         <Box gap={28} paddingTop={{ custom: 96 }} paddingBottom={{ custom: safeAreaInsets.bottom }} paddingHorizontal="24px">
-          <EventHeaderSection />
+          <EventHeaderSection initialEvent={initialEvent} />
           <ChartSection />
           <OpenPositionsSection eventId={eventId} />
           <MarketsSection />

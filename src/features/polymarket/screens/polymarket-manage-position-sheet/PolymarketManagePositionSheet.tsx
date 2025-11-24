@@ -1,8 +1,9 @@
 import { memo, useCallback } from 'react';
+import { StyleSheet } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
-import { Box, Text, useForegroundColor } from '@/design-system';
+import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
@@ -12,15 +13,20 @@ import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/us
 import { Side, OrderType, TickSize } from '@polymarket/clob-client';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { PolymarketPosition } from '@/features/polymarket/types';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import LinearGradient from 'react-native-linear-gradient';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getSolidColorEquivalent } from '@/worklets/colors';
 
 export const PolymarketManagePositionSheet = memo(function PolymarketManagePositionSheet() {
   const {
     params: { position: initialPosition },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_MANAGE_POSITION_SHEET>>();
 
+  const { isDarkMode } = useColorMode();
   const position = usePolymarketPositionsStore(state => state.getPosition(initialPosition.conditionId) ?? initialPosition);
-
-  const separatorSecondaryColor = useForegroundColor('separatorSecondary');
+  // TODO:
+  const accentColor = position.market.seriesColor || '#DC5CEA';
   const red = useForegroundColor('red');
   const green = useForegroundColor('green');
 
@@ -43,23 +49,30 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
   const absPnl = Math.abs(Number(position.cashPnl));
 
   return (
-    <PanelSheet innerBorderWidth={1} innerBorderColor={separatorSecondaryColor}>
+    <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? '#000000' : '#FFFFFF' }}>
+      <LinearGradient
+        colors={[opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)]}
+        style={StyleSheet.absoluteFillObject}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+      />
       <Box paddingHorizontal="24px" paddingBottom={'24px'}>
         <Box alignItems="center" gap={18} paddingTop={{ custom: 71 }} paddingBottom={{ custom: 78 }}>
           <Text size="20pt" weight="heavy" color="labelTertiary">
             {'Position Value'}
           </Text>
           <Text size="44pt" weight="heavy" color="label">
-            {truncateToDecimals(String(position.currentValue), 2)}
+            {formatCurrency(String(position.currentValue))}
           </Text>
           <Text size="20pt" weight="bold" color={{ custom: pnlColor }}>
-            {pnlSign} ${truncateToDecimals(String(absPnl), 2)}
+            {pnlSign}
+            {formatCurrency(String(absPnl))}
           </Text>
         </Box>
         <Box gap={24}>
           <PolymarketPositionCard position={position} showActionButton={false} />
           <HoldToActivateButton
-            backgroundColor="blue"
+            backgroundColor={getSolidColorEquivalent({ background: opacityWorklet(accentColor, 0.7), foreground: '#000000', opacity: 0.4 })}
             disabledBackgroundColor={'gray'}
             label="Hold to Cash Out"
             processingLabel="Cashing Out..."

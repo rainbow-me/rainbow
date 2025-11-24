@@ -98,7 +98,7 @@ const ViewDimensions: Record<CellType, Dim> = {
     width: deviceUtils.dimensions.width,
   },
   [CellType.POLYMARKET_POSITION]: {
-    height: 65,
+    height: 76,
     width: deviceUtils.dimensions.width,
   },
   [CellType.TOKENS_HEADER]: { height: AssetListHeaderHeight },

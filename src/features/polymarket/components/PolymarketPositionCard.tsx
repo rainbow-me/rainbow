@@ -4,7 +4,7 @@ import { PolymarketPosition } from '@/features/polymarket/types';
 import { memo, useMemo } from 'react';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import ImgixImage from '@/components/images/ImgixImage';
-import { toPercentageWorklet, truncateToDecimals } from '@/safe-math/SafeMath';
+import { toPercentageWorklet } from '@/safe-math/SafeMath';
 import { SkiaBadge } from '@/components/SkiaBadge';
 import { ButtonPressAnimation } from '@/components/animations';
 import Navigation from '@/navigation/Navigation';
@@ -13,6 +13,8 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import LinearGradient from 'react-native-linear-gradient';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { formatNumber } from '@/helpers/strings';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { getSolidColorEquivalent } from '@/worklets/colors';
 
 const ActionButtonType = {
   CLAIM: 'claim',
@@ -23,18 +25,22 @@ const ActionButtonType = {
 export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   position,
   showActionButton = true,
+  showEventTitle = true,
 }: {
   position: PolymarketPosition;
   showActionButton?: boolean;
+  showEventTitle?: boolean;
 }) {
   const { isDarkMode } = useColorMode();
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
   const wonGreen = isDarkMode ? '#1F9E39' : green;
   const lostRed = isDarkMode ? '#D53F35' : red;
-  const redeemable = position.redeemable;
 
+  const redeemable = position.redeemable;
   const isWin = redeemable && position.size === position.currentValue;
+
+  const accentColor = position.market.seriesColor || '#DC5CEA';
 
   const actionButtonType = useMemo(() => {
     if (redeemable) {
@@ -74,41 +80,47 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
 
   return (
     <GradientBorderView
-      borderGradientColors={[opacityWorklet('#DC5CEA', 0.06), opacityWorklet('#DC5CEA', 0)]}
+      borderGradientColors={[opacityWorklet(accentColor, 0.06), opacityWorklet(accentColor, 0)]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       borderRadius={24}
       style={{ overflow: 'hidden' }}
     >
       <LinearGradient
-        colors={[opacityWorklet('#DC5CEA', 0.14), opacityWorklet('#DC5CEA', 0)]}
+        colors={[opacityWorklet(accentColor, 0.14), opacityWorklet(accentColor, 0)]}
         style={StyleSheet.absoluteFillObject}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         pointerEvents="none"
       />
-      <Box padding={'12px'}>
+      <Box padding={'16px'}>
         <Box gap={14}>
-          <Box
-            borderWidth={1}
-            borderColor="separatorTertiary"
-            borderRadius={12}
-            flexDirection="row"
-            alignItems="center"
-            gap={7}
-            paddingLeft={'8px'}
-            paddingVertical={'6px'}
-          >
-            <ImgixImage
-              resizeMode="cover"
-              size={16}
-              source={{ uri: position.market.events[0].icon }}
-              style={{ height: 16, width: 16, borderRadius: 4 }}
-            />
-            <Text size="15pt" weight="bold" color="labelSecondary" numberOfLines={1} style={styles.flex}>
-              {position.market.events[0].title}
-            </Text>
-          </Box>
+          {showEventTitle && (
+            <GradientBorderView
+              borderGradientColors={[opacityWorklet(accentColor, 0.06), opacityWorklet(accentColor, 0)]}
+              borderRadius={12}
+              style={{ overflow: 'hidden' }}
+            >
+              <LinearGradient
+                colors={[opacityWorklet(accentColor, 0.14), opacityWorklet(accentColor, 0)]}
+                style={StyleSheet.absoluteFillObject}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                pointerEvents="none"
+              />
+              <Box flexDirection="row" alignItems="center" gap={7} paddingLeft={'8px'} paddingVertical={'6px'}>
+                <ImgixImage
+                  resizeMode="cover"
+                  size={16}
+                  source={{ uri: position.market.events[0].icon }}
+                  style={{ height: 16, width: 16, borderRadius: 4 }}
+                />
+                <Text size="15pt" weight="bold" color="labelSecondary" numberOfLines={1} style={styles.flex}>
+                  {position.market.events[0].title}
+                </Text>
+              </Box>
+            </GradientBorderView>
+          )}
           <Box gap={12}>
             <Box flexDirection="row" alignItems="center" justifyContent="space-between">
               <Box flexDirection="row" gap={4}>
@@ -134,7 +146,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                 </Bleed>
               ) : (
                 <Text size="17pt" weight="bold" color="label">
-                  {truncateToDecimals(String(position.currentValue), 2)}
+                  {formatCurrency(String(position.currentValue))}
                 </Text>
               )}
             </Box>
@@ -158,8 +170,8 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                   )}
                 </Box>
                 {!redeemable && (
-                  <Text size="15pt" weight="bold" color="label">
-                    {truncateToDecimals(String(position.cashPnl), 2)}
+                  <Text size="15pt" weight="bold" color={position.cashPnl > 0 ? 'green' : 'red'}>
+                    {formatCurrency(String(position.cashPnl))}
                   </Text>
                 )}
               </Box>
@@ -193,8 +205,21 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
             </Box>
           </Box>
           {showActionButton && (
-            <ButtonPressAnimation onPress={actionButtonOnPress} style={{ zIndex: 1000 }}>
-              <Box width="full" height={40} justifyContent="center" alignItems="center" background="accent" borderRadius={20}>
+            <ButtonPressAnimation onPress={actionButtonOnPress}>
+              <Box
+                width="full"
+                height={40}
+                justifyContent="center"
+                alignItems="center"
+                borderWidth={2}
+                borderColor={{ custom: opacityWorklet('#FFFFFF', 0.08) }}
+                backgroundColor={getSolidColorEquivalent({
+                  background: opacityWorklet(accentColor, 0.7),
+                  foreground: 'rgb(0, 0, 0)',
+                  opacity: 0.4,
+                })}
+                borderRadius={20}
+              >
                 <Text size="17pt" weight="heavy" color="label">
                   {actionButtonLabel}
                 </Text>

@@ -11,6 +11,7 @@ import { USD_DECIMALS } from '@/features/perps/constants';
 
 type PolymarketBalanceStoreActions = {
   getBalance: () => string;
+  isBalanceZero: () => boolean;
 };
 
 type PolymarketBalanceParams = {
@@ -33,6 +34,7 @@ export const usePolymarketBalanceStore = createQueryStore<
 
   (_, get) => ({
     getBalance: () => get().getData()?.balance ?? '0',
+    isBalanceZero: () => Number(get().getData()?.balance) === 0,
   })
 );
 

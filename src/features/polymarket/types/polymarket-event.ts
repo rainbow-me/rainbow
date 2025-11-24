@@ -98,7 +98,7 @@ export type RawPolymarketMarket = {
   upperBound: string;
   description: string;
   outcomes: string;
-  outcomePrices: string;
+  outcomePrices?: string;
   volume: string;
   active: boolean;
   marketType: string;
@@ -171,7 +171,7 @@ export type RawPolymarketMarket = {
   score: number;
   imageOptimized: ImageOptimized;
   iconOptimized: ImageOptimized;
-  events: RawPolymarketEvent[];
+  events: PolymarketMarketEvent[];
   categories: Category[];
   tags: Tag[];
   creator: string;
@@ -215,11 +215,12 @@ export type RawPolymarketMarket = {
   eventStartTime: string;
 };
 
-export type PolymarketMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'outcomes' | 'outcomePrices'> & {
+export type PolymarketMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'outcomes' | 'outcomePrices' | 'events'> & {
   // These are returned in the response as stringified JSON arrays
   clobTokenIds: string[];
   outcomes: PolymarketOutcome[];
   outcomePrices: string[];
+  events: PolymarketMarketEvent[];
 };
 
 type Collection = {
@@ -392,4 +393,54 @@ export type RawPolymarketEvent = {
 export type PolymarketEvent = Omit<RawPolymarketEvent, 'markets'> & {
   // These are returned in the response as stringified JSON arrays
   markets: PolymarketMarket[];
+  uniqueMarketImages: boolean;
+};
+
+/**
+ * This is a simplified version of the RawPolymarketEvent that is attached to the RawPolymarketMarket
+ * ie. market = { ...market, events: [PolymarketMarketEvent] }
+ */
+export type PolymarketMarketEvent = {
+  id: string;
+  ticker: string;
+  slug: string;
+  title: string;
+  description: string;
+  resolutionSource: string;
+  startDate: string;
+  creationDate: string;
+  endDate: string;
+  image: string;
+  icon: string;
+  active: boolean;
+  closed: boolean;
+  archived: boolean;
+  new: boolean;
+  featured: boolean;
+  restricted: boolean;
+  liquidity: number;
+  volume: number;
+  openInterest: number;
+  sortBy: string;
+  createdAt: string;
+  updatedAt: string;
+  competitive: number;
+  volume24hr: number;
+  volume1wk: number;
+  volume1mo: number;
+  volume1yr: number;
+  enableOrderBook: boolean;
+  liquidityClob: number;
+  negRisk: boolean;
+  negRiskMarketID: string;
+  commentCount: number;
+  cyom: boolean;
+  showAllOutcomes: boolean;
+  showMarketImages: boolean;
+  enableNegRisk: boolean;
+  gmpChartMode: string;
+  negRiskAugmented: boolean;
+  pendingDeployment: boolean;
+  deploying: boolean;
+  deployingTimestamp: string;
 };

@@ -18,6 +18,8 @@ import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymark
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { useDerivedValue } from 'react-native-reanimated';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
+import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { Navigation } from '@/navigation';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
@@ -94,9 +96,13 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   const handleMarketBuyPosition = useCallback(async () => {
     try {
       const price = formatOrderPrice(Number(market.outcomePrices[outcomeIndex]), market.orderPriceMinTickSize);
-      // console.log('market', JSON.stringify(market, null, 2));
       const result = await marketBuyPosition({ tokenId, amount: Number(amount), price });
       console.log('Order result', JSON.stringify(result, null, 2));
+      setTimeout(async () => {
+        await refetchPolymarketStores();
+      }, 1000);
+      Navigation.goBack();
+      Navigation.goBack();
     } catch (e) {
       const error = ensureError(e);
       logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', error), {
@@ -107,7 +113,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   }, [amount, market.orderPriceMinTickSize, market.outcomePrices, outcomeIndex, tokenId]);
 
   return (
-    <PanelSheet innerBorderWidth={1}>
+    <PanelSheet innerBorderWidth={1} enableKeyboardAvoidance>
       <View style={StyleSheet.absoluteFillObject}>
         <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000' }]} />
         <View style={[StyleSheet.absoluteFillObject, { opacity: 0.22 }]}>
