@@ -11,7 +11,7 @@ import { formatNumber } from '@/helpers/strings';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Navigation } from '@/navigation';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { PolymarketOutcome } from '@/features/polymarket/constants';
+import { POLYMARKET_OUTCOME } from '@/features/polymarket/constants';
 import LinearGradient from 'react-native-linear-gradient';
 
 export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
@@ -41,7 +41,7 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
         </Box>
         <Box paddingTop={'24px'} gap={12}>
           <ButtonPressAnimation
-            onPress={() => Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, { market, outcome: PolymarketOutcome.YES })}
+            onPress={() => Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, { market, outcome: POLYMARKET_OUTCOME.YES })}
           >
             <Box
               height={56}
@@ -59,7 +59,7 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
             </Box>
           </ButtonPressAnimation>
           <ButtonPressAnimation
-            onPress={() => Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, { market, outcome: PolymarketOutcome.NO })}
+            onPress={() => Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, { market, outcome: POLYMARKET_OUTCOME.NO })}
           >
             <Box
               height={56}

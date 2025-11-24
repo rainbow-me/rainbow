@@ -39,7 +39,7 @@ import { AreAllKeysOptional, ExtractOptionalKeys } from '@/types/objects';
 import { ScrollView } from 'react-native';
 import { HlTrade, PerpMarket, PerpsPosition, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
 import { PolymarketOutcome, PolymarketPosition } from '@/features/polymarket/types';
-import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent, RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 
 export type PortalSheetProps = {
   children: React.FC;

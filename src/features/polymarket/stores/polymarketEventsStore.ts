@@ -1,11 +1,9 @@
 import { rainbowFetch } from '@/rainbow-fetch';
 import { time } from '@/utils/time';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { RawPolymarketEvent, PolymarketEvent, PolymarketMarket, RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { RainbowError } from '@/logger';
+import { RawPolymarketEvent, PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
-import { PolymarketOutcome } from '@/features/polymarket/types';
-import { processRawPolymarketEvent, processRawPolymarketMarket } from '@/features/polymarket/utils/transforms';
+import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 
 type PolymarketEventsStoreState = {
   events: PolymarketEvent[];

@@ -17,7 +17,7 @@ export const BUILDER_CONFIG = new BuilderConfig({
 export const POLYMARKET_GAMMA_API_URL = 'https://gamma-api.polymarket.com';
 export const POLYMARKET_DATA_API_URL = 'https://data-api.polymarket.com';
 
-export const PolymarketOutcome = {
+export const POLYMARKET_OUTCOME = {
   YES: 'Yes',
   NO: 'No',
 } as const;

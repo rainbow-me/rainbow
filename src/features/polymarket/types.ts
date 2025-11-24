@@ -1,7 +1,7 @@
 import { PolymarketMarket, RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { PolymarketOutcome } from '@/features/polymarket/constants';
+import { POLYMARKET_OUTCOME } from '@/features/polymarket/constants';
 
-export type PolymarketOutcome = (typeof PolymarketOutcome)[keyof typeof PolymarketOutcome];
+export type PolymarketOutcome = (typeof POLYMARKET_OUTCOME)[keyof typeof POLYMARKET_OUTCOME];
 
 export type RawPolymarketPosition = {
   proxyWallet: string;

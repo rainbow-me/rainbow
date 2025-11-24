@@ -77,6 +77,6 @@ function extractPolymarketRawTokenIds(tokenIds: string[]): string[] {
   return tokenIds.map(tokenId => tokenId.replace(POLYMARKET_TOKEN_SUFFIX, ''));
 }
 
-function getPolymarketTokenId(tokenId: string): string {
+export function getPolymarketTokenId(tokenId: string): string {
   return `${tokenId}${POLYMARKET_TOKEN_SUFFIX}`;
 }
