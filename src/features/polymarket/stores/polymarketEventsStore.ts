@@ -41,15 +41,9 @@ async function fetchPolymarketEvents(_: Record<string, never>, abortController: 
   url.searchParams.set('limit', '50');
   url.searchParams.set('active', 'true');
   url.searchParams.set('archived', 'false');
-  // url.searchParams.set('tag_slug', 'sports');
   url.searchParams.set('closed', 'false');
   url.searchParams.set('order', 'volume24hr');
   url.searchParams.set('ascending', 'false');
-  // url.searchParams.set('offset', '0');
-
-  console.log(url.toString());
-  // https://gamma-api.polymarket.com/events/pagination?limit=50&active=true&archived=false&tag_slug=sports&closed=false&order=volume&ascending=false
-  // https://gamma-api.polymarket.com/events/pagination?limit=50&active=true&archived=false&tag_slug=sports&closed=false&order=volume&ascending=false
 
   const { data } = await rainbowFetch(url.toString(), { abortController, timeout: 30000 });
   const events = data as RawPolymarketEvent[];

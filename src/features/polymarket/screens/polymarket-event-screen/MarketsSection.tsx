@@ -13,7 +13,8 @@ import { formatNumber } from '@/helpers/strings';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { PolymarketOutcome } from '@/features/polymarket/constants';
+import { POLYMARKET_TOKEN_ID_SUFFIX, PolymarketOutcome } from '@/features/polymarket/constants';
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 
 export const MarketsSection = memo(function MarketsSection() {
   const markets = usePolymarketEventStore(state => state.getMarkets());
@@ -66,9 +67,13 @@ type MarketRowProps = {
 };
 
 const MarketRow = memo(function MarketRow({ accentColor, priceChange, image, title, volume, tokenId, price }: MarketRowProps) {
-  // const accentColor = market.seriesColor || '#DC5CEA';
-  // const priceChange = market.oneDayPriceChange;
   const shouldShowPriceChange = Math.abs(priceChange) >= 0.01;
+
+  const tokenPrice = useLiveTokenValue({
+    tokenId: `${tokenId}:${POLYMARKET_TOKEN_ID_SUFFIX}`,
+    initialValue: price,
+    selector: state => state.price,
+  });
 
   return (
     <GradientBorderView
@@ -113,7 +118,7 @@ const MarketRow = memo(function MarketRow({ accentColor, priceChange, image, tit
           </Text>
         </Box>
         <SkiaBadge
-          text={`${toPercentageWorklet(price, 0.001)}%`}
+          text={`${toPercentageWorklet(tokenPrice, 0.001)}%`}
           textColor={{ custom: accentColor }}
           gradientFill={[
             {

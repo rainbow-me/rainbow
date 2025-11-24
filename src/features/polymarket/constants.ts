@@ -26,3 +26,5 @@ export const POLYMARKET_ACCENT_COLOR = '#C55DE7';
 
 export const POLYMARKET_BACKGROUND_DARK = getSolidColorEquivalent({ background: '#000000', foreground: '#1D0E20', opacity: 0.4 });
 export const POLYMARKET_BACKGROUND_LIGHT = '#FFFFFF';
+
+export const POLYMARKET_TOKEN_ID_SUFFIX = 'polymarket';
