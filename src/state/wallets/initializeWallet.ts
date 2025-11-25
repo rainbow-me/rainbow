@@ -39,6 +39,10 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
   const curRunId = runId;
   const shouldCancel = () => curRunId !== runId;
 
+  setTimeout(() => {
+    Alert.alert('TEST 1');
+  }, 1000);
+
   const {
     seedPhrase,
     color = null,
