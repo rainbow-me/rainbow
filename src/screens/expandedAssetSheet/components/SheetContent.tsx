@@ -9,6 +9,7 @@ import {
   ClaimSection,
   HistorySection,
   AboutSection,
+  useIsAboutSectionDeemphasized,
 } from './sections';
 import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,6 +19,7 @@ import { NameAndLogoSection } from './sections/NameAndLogoSection';
 export const SheetContent = memo(function SheetContent({ accentColor }: { accentColor: string }) {
   const { colorMode } = useColorMode();
   const safeAreaInsets = useSafeAreaInsets();
+  const isAboutDeemphasized = useIsAboutSectionDeemphasized();
 
   return (
     <AccentColorProvider color={accentColor}>
@@ -38,7 +40,7 @@ export const SheetContent = memo(function SheetContent({ accentColor }: { accent
               <BalanceSection />
               <BuySection placement={Placement.AFTER_BALANCE} />
               <ClaimSection />
-              <AboutSection />
+              {!isAboutDeemphasized && <AboutSection />}
               <MarketStatsSection />
               <BuySection placement={Placement.AFTER_MARKET_STATS} />
               {/* BACKLOGGED */}
@@ -46,6 +48,7 @@ export const SheetContent = memo(function SheetContent({ accentColor }: { accent
               <CollapsibleSection content={<BridgeSection />} icon="􁾫" id={SectionId.BRIDGE} primaryText="Bridge" secondaryText={'to'} />
             )} */}
               <HistorySection />
+              {isAboutDeemphasized && <AboutSection />}
               <DetailsSection />
             </Box>
           </Box>

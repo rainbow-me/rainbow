@@ -71,6 +71,19 @@ export const AboutContent = memo(function AboutContent() {
   );
 });
 
+export function useIsAboutSectionDeemphasized() {
+  const { assetMetadata: metadata } = useExpandedAssetSheetContext();
+
+  return useMemo(() => {
+    const hasCreator = !!metadata?.launchpad?.creatorAddress;
+    const hasProtocol = !!metadata?.launchpad?.launchpad?.name;
+    const hasPlatform = !!metadata?.launchpad?.launchpad?.platform;
+
+    // De-emphasize if only creator exists (no protocol or platform)
+    return hasCreator && !hasProtocol && !hasPlatform;
+  }, [metadata]);
+}
+
 export const AboutSection = memo(function AboutSection() {
   const { assetMetadata: metadata } = useExpandedAssetSheetContext();
 
