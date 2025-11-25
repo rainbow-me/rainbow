@@ -1,6 +1,7 @@
 import { PolymarketEvent, PolymarketMarket, RawPolymarketEvent, RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { PolymarketOutcome, PolymarketPosition, RawPolymarketPosition } from '@/features/polymarket/types';
 import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
+import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';
 
 export function processRawPolymarketMarket(market: RawPolymarketMarket): PolymarketMarket {
   return {
@@ -8,6 +9,7 @@ export function processRawPolymarketMarket(market: RawPolymarketMarket): Polymar
     clobTokenIds: JSON.parse(market.clobTokenIds) as string[],
     outcomes: JSON.parse(market.outcomes) as PolymarketOutcome[],
     outcomePrices: market.outcomePrices ? (JSON.parse(market.outcomePrices) as string[]) : [],
+    ...getMarketColors(market),
   };
 }
 

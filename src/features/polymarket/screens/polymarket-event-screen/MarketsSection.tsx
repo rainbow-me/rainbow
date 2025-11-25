@@ -47,7 +47,7 @@ export const MarketsSection = memo(function MarketsSection() {
             {activeMarkets?.map(market => (
               <ButtonPressAnimation key={market.id} onPress={() => Navigation.handleAction(Routes.POLYMARKET_MARKET_SHEET, { market })}>
                 <MarketRow
-                  accentColor={market.seriesColor || '#DC5CEA'}
+                  accentColor={market.color}
                   priceChange={market.oneDayPriceChange}
                   image={uniqueMarketImages ? market.icon : undefined}
                   title={market.groupItemTitle}
@@ -281,7 +281,7 @@ const ResolvedMarketsSection = memo(function ResolvedMarketsSection({ markets }:
         return (
           <ResolvedMarketRow
             key={market.id}
-            accentColor={market.seriesColor || '#DC5CEA'}
+            accentColor={market.color}
             image={market.icon}
             title={market.groupItemTitle}
             volume={market.volume}

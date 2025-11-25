@@ -13,7 +13,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 
 export const PolymarketPositionRow = memo(function PolymarketPositionRow({ position }: { position: PolymarketPosition }) {
-  const accentColor = position.market.seriesColor || '#DC5CEA';
+  const accentColor = position.market.color;
   const isPositivePnl = position.cashPnl > 0;
   const pnlColor = isPositivePnl ? 'green' : 'red';
   position.market.events[0];

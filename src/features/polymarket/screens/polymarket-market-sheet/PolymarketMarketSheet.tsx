@@ -22,8 +22,7 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   const { isDarkMode } = useColorMode();
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
-  // TODO:
-  const accentColor = market.seriesColor || '#DC5CEA';
+  const accentColor = market.color;
 
   return (
     <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? '#000000' : '#FFFFFF' }}>

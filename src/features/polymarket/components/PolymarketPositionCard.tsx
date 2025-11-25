@@ -40,7 +40,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   const redeemable = position.redeemable;
   const isWin = redeemable && position.size === position.currentValue;
 
-  const accentColor = position.market.seriesColor || '#DC5CEA';
+  const accentColor = position.market.color;
 
   const actionButtonType = useMemo(() => {
     if (redeemable) {

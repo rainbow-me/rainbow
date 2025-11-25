@@ -7,7 +7,6 @@ import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
-import { truncateToDecimals } from '@/safe-math/SafeMath';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/usePolymarketClobClient';
 import { Side, OrderType, TickSize } from '@polymarket/clob-client';
@@ -25,8 +24,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
 
   const { isDarkMode } = useColorMode();
   const position = usePolymarketPositionsStore(state => state.getPosition(initialPosition.conditionId) ?? initialPosition);
-  // TODO:
-  const accentColor = position.market.seriesColor || '#DC5CEA';
+  const accentColor = position.market.color;
   const red = useForegroundColor('red');
   const green = useForegroundColor('green');
 

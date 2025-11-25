@@ -221,6 +221,8 @@ export type PolymarketMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'outco
   outcomes: PolymarketOutcome[];
   outcomePrices: string[];
   events: PolymarketMarketEvent[];
+  color: string;
+  secondaryColor: string | undefined;
 };
 
 type Collection = {
