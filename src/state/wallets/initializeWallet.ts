@@ -126,7 +126,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     if (!switching) {
       // Run keychain integrity checks right after walletInit
       // Except when switching wallets!
-      await runKeychainIntegrityChecks();
+      runKeychainIntegrityChecks();
       if (shouldCancel()) return null;
 
       if (seedPhrase || isNew) {
@@ -182,7 +182,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     });
     // TODO specify error states more granular
     if (!switching) {
-      await runKeychainIntegrityChecks();
+      runKeychainIntegrityChecks();
     }
 
     try {

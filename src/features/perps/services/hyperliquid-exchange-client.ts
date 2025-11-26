@@ -18,7 +18,7 @@ import { getOppositePositionSide } from '@/features/perps/utils';
 import { getProvider } from '@/handlers/web3';
 import { ChainId } from '@/state/backendNetworks/types';
 import { loadWallet } from '@/model/wallet';
-import { checkAndShowWalletErrorSheet, checkIfReadOnlyWallet, getIsDamagedWallet } from '@/state/wallets/walletsStore';
+import { checkAndShowWalletErrorSheet, checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { logger, RainbowError } from '@/logger';
 import { isBuilderDexAssetId } from '@/features/perps/utils/hyperliquidSymbols';
 

@@ -101,6 +101,18 @@ const SheetContainer = styled(Column).attrs({
 });
 
 const validateRecipient = (toAddress?: string, tokenAddress?: string) => {
+  if (!toAddress || toAddress?.toLowerCase() === tokenAddress?.toLowerCase()) {
+    return false;
+  }
+
+  // Don't allow send to known ERC20 contracts on mainnet
+  if (rainbowTokenList.RAINBOW_TOKEN_LIST[toAddress.toLowerCase()]) {
+    return false;
+  }
+  return true;
+};
+
+const validateRecipientDamagedState = (toAddress?: string) => {
   const wallets = getWallets();
   // check for if the recipient is in a damaged wallet state and prevent
   if (wallets) {
@@ -110,15 +122,6 @@ const validateRecipient = (toAddress?: string, tokenAddress?: string) => {
     if (internalWallet?.damaged) {
       return false;
     }
-  }
-
-  if (!toAddress || toAddress?.toLowerCase() === tokenAddress?.toLowerCase()) {
-    return false;
-  }
-
-  // Don't allow send to known ERC20 contracts on mainnet
-  if (rainbowTokenList.RAINBOW_TOKEN_LIST[toAddress.toLowerCase()]) {
-    return false;
   }
   return true;
 };
@@ -782,6 +785,11 @@ export default function SendSheet() {
         },
         type: 'sending_funds_to_contract',
       });
+      return;
+    }
+    const validRecipientDamagedState = validateRecipientDamagedState(toAddress);
+    if (!validRecipientDamagedState) {
+      navigate(Routes.WALLET_ERROR_SHEET);
       return;
     }
     const checkboxes = getDefaultCheckboxes({

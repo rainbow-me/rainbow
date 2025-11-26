@@ -196,9 +196,10 @@ function SendButton() {
 export function CopyButton() {
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
   const accountAddress = useAccountAddress();
+  const isDamagedWallet = getIsDamagedWallet();
 
   const handlePressCopy = React.useCallback(() => {
-    if (getIsDamagedWallet()) {
+    if (isDamagedWallet) {
       Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
       return;
     }
@@ -209,13 +210,12 @@ export function CopyButton() {
         setToastActive(false);
       }, 2000);
     }
-    Clipboard.setString(accountAddress);
-  }, [accountAddress, isToastActive, setToastActive]);
+  }, [isToastActive, setToastActive, isDamagedWallet]);
 
   return (
     <>
-      <CopyFloatingEmojis textToCopy={accountAddress}>
-        <ActionButton onPress={handlePressCopy} icon="􀐅" testID="receive-button">
+      <CopyFloatingEmojis textToCopy={accountAddress} onPress={handlePressCopy} disabled={isDamagedWallet}>
+        <ActionButton icon="􀐅" testID="receive-button">
           {i18n.t(i18n.l.wallet.copy)}
         </ActionButton>
       </CopyFloatingEmojis>

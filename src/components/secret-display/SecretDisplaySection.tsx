@@ -78,8 +78,7 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
       if (privateKeyAddress) {
         const privateKeyData = await loadPrivateKey(privateKeyAddress, false);
         if (privateKeyData === -1 || privateKeyData === -2 || !privateKeyData) {
-          // Check if wallet is damaged before showing "no seed" error
-          if (checkAndShowWalletErrorSheet()) return;
+          checkAndShowWalletErrorSheet();
           setSectionState(SecretDisplayStates.noSeed);
           return;
         }
@@ -96,8 +95,7 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
         setSeed(seedPhrase);
         setSectionState(SecretDisplayStates.revealed);
       } else {
-        // Check if wallet is damaged before showing "no seed" error
-        if (checkAndShowWalletErrorSheet()) return;
+        checkAndShowWalletErrorSheet();
         setSectionState(SecretDisplayStates.noSeed);
       }
       onSecretLoaded?.(!!seedPhrase);
@@ -107,13 +105,12 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
         error: message,
       });
 
-      // Check if wallet is damaged and navigate to error sheet
-      if (checkAndShowWalletErrorSheet()) return;
+      checkAndShowWalletErrorSheet();
 
       setSectionState(message === createdWithBiometricError ? SecretDisplayStates.securedWithBiometrics : SecretDisplayStates.noSeed);
       onSecretLoaded?.(false);
     }
-  }, [onSecretLoaded, privateKeyAddress, onWalletTypeIdentified, walletId, navigate]);
+  }, [onSecretLoaded, privateKeyAddress, onWalletTypeIdentified, walletId]);
 
   useEffect(() => {
     // We need to run this after interactions since there were issues on Android

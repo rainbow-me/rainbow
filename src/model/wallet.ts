@@ -47,7 +47,7 @@ import { sanitizeTypedData } from '@/utils/signingUtils';
 import { executeFn, ExecuteFnParams, Screen } from '@/state/performance/performance';
 import { Network } from '@/state/backendNetworks/types';
 import { GetOptions, SetOptions } from 'react-native-keychain';
-import { getWalletWithAccount } from '@/state/wallets/walletsStore';
+import { getWalletWithAccount, setWalletDamaged } from '@/state/wallets/walletsStore';
 import Routes from '@/navigation/routesNames';
 import Navigation from '@/navigation/Navigation';
 
@@ -119,6 +119,11 @@ export interface RainbowAccount {
   image?: string | null;
 }
 
+export enum EncryptionType {
+  rainbowPin = 'rainbowPin',
+  keychain = 'keychain',
+}
+
 export interface RainbowWallet {
   addresses: RainbowAccount[];
   color: number;
@@ -133,6 +138,7 @@ export interface RainbowWallet {
   backupType?: string;
   damaged?: boolean;
   deviceId?: string;
+  encryptionType: EncryptionType;
 }
 
 export interface AllRainbowWallets {
@@ -313,20 +319,22 @@ export const loadWallet = async <S extends Screen>({
   }
 
   // kc.ErrorType.UserCanceled means the user cancelled, so we don't wanna do anything
-  // kc.ErrorType.NotAuthenticated means the user is not authenticated (maybe removed biometrics).
-  //    In this case we show an alert inside loadPrivateKey
-  if (privateKey === kc.ErrorType.UserCanceled || privateKey === kc.ErrorType.NotAuthenticated) {
+  if (privateKey === kc.ErrorType.UserCanceled) {
     return null;
   }
 
-  if (isHardwareWalletKey(privateKey)) {
-    const index = privateKey?.split('/')[1];
-    const deviceId = privateKey?.split('/')[0];
-    if (typeof index !== undefined && deviceId) {
-      return new LedgerSigner(provider, getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }), deviceId);
+  setWalletDamaged(addressToUse, !privateKey || privateKey === kc.ErrorType.NotAuthenticated);
+
+  if (privateKey !== kc.ErrorType.NotAuthenticated) {
+    if (isHardwareWalletKey(privateKey)) {
+      const index = privateKey?.split('/')[1];
+      const deviceId = privateKey?.split('/')[0];
+      if (typeof index !== undefined && deviceId) {
+        return new LedgerSigner(provider, getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }), deviceId);
+      }
+    } else if (privateKey) {
+      return new Wallet(privateKey, provider);
     }
-  } else if (privateKey) {
-    return new Wallet(privateKey, provider);
   }
   if (showErrorIfNotLoaded) {
     Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
@@ -882,6 +890,7 @@ export const createWallet = async ({
       name: walletName,
       primary,
       type,
+      encryptionType: androidEncryptionPin ? EncryptionType.rainbowPin : EncryptionType.keychain,
     };
 
     // create notifications settings entry for newly created wallet
