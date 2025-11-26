@@ -34,7 +34,7 @@ import { toUtf8String } from '@ethersproject/strings';
 import { noop } from 'lodash';
 import { InteractionManager } from 'react-native';
 import { Address } from 'viem';
-import { getAccountAddress, getIsDamagedWallet, getIsReadOnlyWallet, getWalletWithAccount } from '@/state/wallets/walletsStore';
+import { getAccountAddress, getIsReadOnlyWallet, getWalletWithAccount } from '@/state/wallets/walletsStore';
 import { SEND_TRANSACTION } from './signingMethods';
 import watchingAlert from './watchingAlert';
 
@@ -400,24 +400,6 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
   const chainId = request?.walletConnectV2RequestValues?.chainId;
   if (!chainId) return;
   const address = request?.walletConnectV2RequestValues?.address;
-
-  // Check for damaged wallet before processing request
-  if (getIsDamagedWallet()) {
-    hideWalletConnectToast();
-    Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
-
-    // Reject the request
-    if (request?.walletConnectV2RequestValues) {
-      await handleSessionRequestResponse(request?.walletConnectV2RequestValues, {
-        result: null,
-        error: 'Wallet is damaged and cannot sign transactions',
-      });
-    }
-    removeWalletConnectRequest({
-      walletConnectRequestId: request.requestId,
-    });
-    return;
-  }
 
   const onSuccess = async (result: string) => {
     if (request?.walletConnectV2RequestValues) {

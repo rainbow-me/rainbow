@@ -293,12 +293,10 @@ export const walletInit = async (props: InitializeWalletParams): Promise<WalletI
 
 export const loadWallet = async <S extends Screen>({
   address,
-  showErrorIfNotLoaded = true,
   provider,
   timeTracking,
 }: {
   address?: EthereumAddress;
-  showErrorIfNotLoaded?: boolean;
   provider: Provider;
   timeTracking?: ExecuteFnParams<S>;
 }): Promise<null | Wallet | LedgerSigner> => {
@@ -336,9 +334,8 @@ export const loadWallet = async <S extends Screen>({
       return new Wallet(privateKey, provider);
     }
   }
-  if (showErrorIfNotLoaded) {
-    Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
-  }
+
+  Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
   return null;
 };
 

@@ -48,7 +48,6 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
       const provider = getProvider({ chainId: claimable.chainId });
       const wallet = await loadWallet({
         address: accountAddress,
-        showErrorIfNotLoaded: true,
         provider,
       });
 

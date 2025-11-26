@@ -40,7 +40,6 @@ export class HyperliquidExchangeClient {
         const wallet = await loadWallet({
           address: this.userAddress,
           provider: getProvider({ chainId: ChainId.arbitrum }),
-          showErrorIfNotLoaded: true,
         });
 
         if (!wallet) {

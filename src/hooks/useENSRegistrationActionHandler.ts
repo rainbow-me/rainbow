@@ -132,7 +132,6 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
 
       const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({
-        showErrorIfNotLoaded: false,
         provider,
       });
       if (!wallet) {
@@ -198,7 +197,6 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
 
       const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({
-        showErrorIfNotLoaded: false,
         provider,
       });
       if (!wallet) {
@@ -237,7 +235,6 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
 
       const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({
-        showErrorIfNotLoaded: false,
         provider,
       });
       if (!wallet) {
@@ -265,7 +262,6 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
 
       const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({
-        showErrorIfNotLoaded: false,
         provider,
       });
       if (!wallet) {
@@ -290,7 +286,6 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
     async (callback = noop) => {
       const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({
-        showErrorIfNotLoaded: false,
         provider,
       });
       if (!wallet) {
@@ -328,7 +323,6 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
       if (!wallet) {
         const provider = getProvider({ chainId: ChainId.mainnet });
         wallet = await loadWallet({
-          showErrorIfNotLoaded: false,
           provider,
         });
       }

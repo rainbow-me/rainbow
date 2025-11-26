@@ -274,7 +274,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         metadata: { degenMode },
       })({
         address: parameters.quote.from,
-        showErrorIfNotLoaded: false,
         provider,
         timeTracking: {
           screen: Screens.SWAPS,
@@ -287,7 +286,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       if (!wallet) {
         isSwapping.value = false;
         triggerHaptics('notificationError');
-        Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
         return;
       }
 

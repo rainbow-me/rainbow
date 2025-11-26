@@ -11,6 +11,7 @@ import { getProvider } from '@/handlers/web3';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
+import { Navigation } from '@/navigation';
 import { walletExecuteRap } from '@/raps/execute';
 import { RapSwapActionParameters, rapTypes } from '@/raps/references';
 import { sumWorklet } from '@/safe-math/SafeMath';
