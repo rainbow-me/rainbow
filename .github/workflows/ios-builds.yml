@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Set Xcode version
-        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+        run: sudo xcode-select --switch /Applications/Xcode_26.0.0.app
 
       - name: Setup env key
         uses: ./.github/actions/ssh/
@@ -112,7 +112,7 @@ jobs:
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Set Xcode version
-        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+        run: sudo xcode-select --switch /Applications/Xcode_26.0.0.app
 
       - name: Setup env key
         uses: ./.github/actions/ssh/
