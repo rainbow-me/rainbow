@@ -55,6 +55,8 @@
 		AA8C459E2EA172B0003F131A /* chonks@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AA8C459B2EA172B0003F131A /* chonks@2x.png */; };
 		AAE999CD2E41DD390072AFD5 /* RainbowSplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE999CC2E41DD390072AFD5 /* RainbowSplashScreen.swift */; };
 		AAE999D12E41E4670072AFD5 /* RainbowSplashScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = AAE999D02E41E4670072AFD5 /* RainbowSplashScreen.m */; };
+		AAF6A4FD2ECE43960024606A /* mog@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF6A4FB2ECE43960024606A /* mog@2x.png */; };
+		AAF6A4FE2ECE43960024606A /* mog@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF6A4FC2ECE43960024606A /* mog@3x.png */; };
 		B50C9AEB2A9D18DC00EB0019 /* adworld@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B50C9AE92A9D18DC00EB0019 /* adworld@3x.png */; };
 		B50C9AEC2A9D18DC00EB0019 /* adworld@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B50C9AEA2A9D18DC00EB0019 /* adworld@2x.png */; };
 		B52242E628B1B11F0024D19D /* smol@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B52242E428B1B11F0024D19D /* smol@2x.png */; };
@@ -304,6 +306,8 @@
 		AAA0EF342BF5A4AD00A19A53 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AAE999CC2E41DD390072AFD5 /* RainbowSplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowSplashScreen.swift; sourceTree = "<group>"; };
 		AAE999D02E41E4670072AFD5 /* RainbowSplashScreen.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RainbowSplashScreen.m; sourceTree = "<group>"; };
+		AAF6A4FB2ECE43960024606A /* mog@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mog@2x.png"; sourceTree = "<group>"; };
+		AAF6A4FC2ECE43960024606A /* mog@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mog@3x.png"; sourceTree = "<group>"; };
 		B0C692B061D7430D8194DC98 /* ToolTipMenuTests.xctest */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ToolTipMenuTests.xctest; sourceTree = "<group>"; };
 		B50C9AE92A9D18DC00EB0019 /* adworld@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "adworld@3x.png"; sourceTree = "<group>"; };
 		B50C9AEA2A9D18DC00EB0019 /* adworld@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "adworld@2x.png"; sourceTree = "<group>"; };
@@ -527,6 +531,8 @@
 				AA170DAF2E4FA5AB00DB8A97 /* baggy@3x.png */,
 				AA8C459B2EA172B0003F131A /* chonks@2x.png */,
 				AA8C459C2EA172B0003F131A /* chonks@3x.png */,
+				AAF6A4FB2ECE43960024606A /* mog@2x.png */,
+				AAF6A4FC2ECE43960024606A /* mog@3x.png */,
 			);
 			path = AppIcons;
 			sourceTree = "<group>";
@@ -1066,6 +1072,8 @@ Upload Debug Symbols to Sentry */,
 				B52242E728B1B11F0024D19D /* smol@3x.png in Resources */,
 				AA6228F224272F510078BDAA /* SF-Pro-Rounded-Regular.otf in Resources */,
 				B597E7C32B8E9E18004782B6 /* farcaster@2x.png in Resources */,
+				AAF6A4FD2ECE43960024606A /* mog@2x.png in Resources */,
+				AAF6A4FE2ECE43960024606A /* mog@3x.png in Resources */,
 				B5CE8FFF29A5758100EB1EFA /* pooly@3x.png in Resources */,
 				B5D7F2F029E8D41E003D6A54 /* finiliar@3x.png in Resources */,
 				AA6228F324272F510078BDAA /* SF-Pro-Rounded-Semibold.otf in Resources */,
@@ -1928,7 +1936,7 @@ Upload Debug Symbols to Sentry */ = {
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 2.0.12;
+				MARKETING_VERSION = 2.0.15;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1995,7 +2003,7 @@ Upload Debug Symbols to Sentry */ = {
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 2.0.12;
+				MARKETING_VERSION = 2.0.15;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2114,7 +2122,7 @@ Upload Debug Symbols to Sentry */ = {
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 2.0.12;
+				MARKETING_VERSION = 2.0.15;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2232,7 +2240,7 @@ Upload Debug Symbols to Sentry */ = {
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 2.0.12;
+				MARKETING_VERSION = 2.0.15;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
