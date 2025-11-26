@@ -5,14 +5,13 @@ import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { getIsDamagedWallet, getIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsStore';
+import { getIsDamagedWallet, getIsReadOnlyWallet, useAccountAddress, useIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { watchingAlert } from '@/utils';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import Clipboard from '@react-native-clipboard/clipboard';
 import * as React from 'react';
 import { PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
@@ -196,7 +195,7 @@ function SendButton() {
 export function CopyButton() {
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
   const accountAddress = useAccountAddress();
-  const isDamagedWallet = getIsDamagedWallet();
+  const isDamagedWallet = useIsDamagedWallet();
 
   const handlePressCopy = React.useCallback(() => {
     if (isDamagedWallet) {
