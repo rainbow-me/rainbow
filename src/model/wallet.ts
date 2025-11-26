@@ -1115,12 +1115,16 @@ export const getSeedPhrase = async (
       androidEncryptionPin,
     });
 
-    if (error === kc.ErrorType.NotAuthenticated) {
+    if (error === kc.ErrorType.UserCanceled) {
+      return null;
+    }
+
+    if (!seedPhraseData) {
       Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
       return null;
     }
 
-    return seedPhraseData || null;
+    return seedPhraseData;
   } catch (error) {
     logger.error(new RainbowError('[wallet]: Error in getSeedPhrase'), { error });
     return null;

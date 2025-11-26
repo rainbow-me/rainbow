@@ -96,7 +96,6 @@ interface WalletsState {
   setWalletDamaged: (walletId: string, damaged: boolean) => void;
 
   getIsDamagedWallet: () => boolean;
-  checkAndShowWalletErrorSheet: () => boolean;
   getIsReadOnlyWallet: () => boolean;
   getIsHardwareWallet: () => boolean;
   getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
@@ -109,13 +108,6 @@ const INITIAL_ADDRESS = '' as Address;
 export const useWalletsStore = createRainbowStore<WalletsState>(
   (set, get) => ({
     getIsDamagedWallet: () => !!get().selected?.damaged,
-    checkAndShowWalletErrorSheet: () => {
-      const isDamaged = get().getIsDamagedWallet();
-      if (isDamaged) {
-        Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
-      }
-      return isDamaged;
-    },
     getIsReadOnlyWallet: () => get().selected?.type === WalletTypes.readOnly,
     getIsHardwareWallet: () => !!get().selected?.deviceId,
 
@@ -866,7 +858,6 @@ export function checkIfReadOnlyWallet(address: string) {
 export const {
   clearWalletState,
   checkKeychainIntegrity,
-  checkAndShowWalletErrorSheet,
   clearAllWalletsBackupStatus,
   createAccountInExistingWallet,
   getAccountProfileInfo,

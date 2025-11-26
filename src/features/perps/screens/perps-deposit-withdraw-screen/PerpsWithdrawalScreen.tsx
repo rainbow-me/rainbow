@@ -18,7 +18,6 @@ import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { Navigation } from '@/navigation';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
-import { checkAndShowWalletErrorSheet } from '@/state/wallets/walletsStore';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { sanitizeAmount } from '@/worklets/strings';
 import React, { memo, useCallback, useMemo, useState } from 'react';
@@ -80,9 +79,6 @@ const PerpsWithdrawalScreenContent = memo(function PerpsWithdrawalScreenContent(
   });
 
   const handleSwap = useCallback(async () => {
-    // Check for damaged wallet before attempting withdrawal
-    if (checkAndShowWalletErrorSheet()) return;
-
     withdrawalActions.setIsSubmitting(true);
     const amountToWithdraw = isAtMax.value ? balance.value : displayedAmount.value;
     const sanitizedAmount = sanitizeAmount(amountToWithdraw);

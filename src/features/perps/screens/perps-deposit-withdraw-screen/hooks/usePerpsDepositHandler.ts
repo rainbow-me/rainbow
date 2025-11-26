@@ -11,7 +11,6 @@ import { getProvider } from '@/handlers/web3';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
-import { checkAndShowWalletErrorSheet } from '@/state/wallets/walletsStore';
 import { walletExecuteRap } from '@/raps/execute';
 import { RapSwapActionParameters, rapTypes } from '@/raps/references';
 import { sumWorklet } from '@/safe-math/SafeMath';
@@ -26,9 +25,6 @@ export function usePerpsDepositHandler({
   isSubmitting,
 }: Pick<PerpsDepositContextType, 'depositActions' | 'gasStores' | 'quoteActions' | 'isSubmitting'>) {
   return useCallback(async () => {
-    // Check for damaged wallet before attempting deposit
-    if (checkAndShowWalletErrorSheet()) return;
-
     const asset = depositActions.getAsset();
     const gasFeeParamsBySpeed = gasStores.useMeteorologyStore.getState().getGasSuggestions();
     const gasSettings = gasStores.useGasSettings.getState();
@@ -59,7 +55,6 @@ export function usePerpsDepositHandler({
       })({
         address: quote.from,
         provider,
-        showErrorIfNotLoaded: false,
         timeTracking: {
           operation: TimeToSignOperation.Authentication,
           screen: Screens.PERPS_DEPOSIT,
@@ -69,8 +64,6 @@ export function usePerpsDepositHandler({
 
       if (!wallet) {
         triggerHaptics('notificationError');
-        // Check if wallet is damaged and show error sheet
-        checkAndShowWalletErrorSheet();
         return;
       }
 

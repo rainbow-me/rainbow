@@ -22,7 +22,7 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { backupsStore } from '@/state/backups/backups';
-import { checkAndShowWalletErrorSheet, useSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
+import { useSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
 import { InteractionManager } from 'react-native';
 import { Source } from 'react-native-fast-image';
 import { ImgixImage } from '../images';
@@ -78,7 +78,6 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
       if (privateKeyAddress) {
         const privateKeyData = await loadPrivateKey(privateKeyAddress, false);
         if (privateKeyData === -1 || privateKeyData === -2 || !privateKeyData) {
-          checkAndShowWalletErrorSheet();
           setSectionState(SecretDisplayStates.noSeed);
           return;
         }
@@ -95,7 +94,6 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
         setSeed(seedPhrase);
         setSectionState(SecretDisplayStates.revealed);
       } else {
-        checkAndShowWalletErrorSheet();
         setSectionState(SecretDisplayStates.noSeed);
       }
       onSecretLoaded?.(!!seedPhrase);
@@ -104,8 +102,6 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
       logger.error(new RainbowError('[SecretDisplaySection]: Error while trying to reveal secret'), {
         error: message,
       });
-
-      checkAndShowWalletErrorSheet();
 
       setSectionState(message === createdWithBiometricError ? SecretDisplayStates.securedWithBiometrics : SecretDisplayStates.noSeed);
       onSecretLoaded?.(false);
