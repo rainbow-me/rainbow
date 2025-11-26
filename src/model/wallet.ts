@@ -912,6 +912,9 @@ export const createWallet = async ({
     logger.debug('[wallet]: saving all wallets', {}, DebugContext.wallet);
     await saveAllWallets(allWallets);
 
+    logger.debug('[wallet]: setting wallet damaged status to false', {}, DebugContext.wallet);
+    setWalletDamaged(id, false);
+
     if (walletResult && walletAddress) {
       const walletRes =
         walletType === WalletLibraryType.ethers || walletType === WalletLibraryType.ledger ? (walletResult as Wallet) : new Wallet(pkey);

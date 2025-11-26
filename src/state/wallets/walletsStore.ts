@@ -25,8 +25,6 @@ import {
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
 import { isLowerCaseMatch, time, watchingAlert } from '@/utils';
-import { Navigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import { addressKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
 import { shallowEqual } from '@/worklets/comparisons';
@@ -277,6 +275,8 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           logger.error(new RainbowError('[walletsStore]: No selectedWallet ever found'));
           return;
         }
+
+        console.log('Loaded wallets:', get().wallets, wallets);
 
         set(state => ({
           ...state,
@@ -535,6 +535,8 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           return;
         }
 
+        console.log(get().wallets);
+
         const updatedWalletDamagedStates = new Map<string, boolean>();
 
         // Try to detect cases where wallets will be unusable and might need to be re-imported
@@ -551,7 +553,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           }
           // Passcode is disabled - the keychain data will be inaccessible until the user re-enables it.
           else if (!isPasscodeAuthAvailable) {
-            logger.debug('[walletsStore]: Passcode is disabled, marking wallets as damaged');
+            logger.debug('[walletsStore]: Passcode is disabled, marking keychain encrypted wallets as damaged');
             healthyKeychain = false;
             keychainWallets.forEach(wallet => {
               updatedWalletDamagedStates.set(wallet.id, true);
@@ -568,7 +570,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         } else {
           // Passcode is disabled - the keychain data will be inaccessible permanently.
           if (!isPasscodeAuthAvailable) {
-            logger.debug('[walletsStore]: Passcode is disabled, marking wallets as damaged');
+            logger.debug('[walletsStore]: Passcode is disabled, marking keychain encrypted wallets as damaged');
             healthyKeychain = false;
             keychainWallets.forEach(wallet => {
               updatedWalletDamagedStates.set(wallet.id, true);
@@ -621,7 +623,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         const { selected, wallets } = state;
         const currentWallet = wallets[walletId];
 
-        if (currentWallet.damaged === damaged) return state;
+        if (!currentWallet || currentWallet.damaged === damaged) return state;
 
         const newWallets = {
           ...wallets,
@@ -806,7 +808,10 @@ function applyWalletUpdatesFromKeychain(storeWallets: AllRainbowWallets, keychai
       const existingAddresses = new Set(newWallets[walletId].addresses.map(a => a.address.toLowerCase()));
       const missingAddresses = keychainWallet.addresses.filter(account => !existingAddresses.has(account.address.toLowerCase()));
 
-      const needsUpdate = missingAddresses.length || newWallets[walletId].type !== keychainWallet.type;
+      const needsUpdate =
+        missingAddresses.length ||
+        newWallets[walletId].type !== keychainWallet.type ||
+        newWallets[walletId].encryptionType !== keychainWallet.encryptionType;
 
       if (needsUpdate) {
         // Add new addresses to existing wallet
@@ -816,6 +821,7 @@ function applyWalletUpdatesFromKeychain(storeWallets: AllRainbowWallets, keychai
             ...newWallets[walletId],
             addresses: missingAddresses.length ? [...newWallets[walletId].addresses, ...missingAddresses] : newWallets[walletId].addresses,
             type: keychainWallet.type,
+            encryptionType: keychainWallet.encryptionType,
           },
         };
       }

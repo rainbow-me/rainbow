@@ -102,7 +102,6 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
       logger.error(new RainbowError('[SecretDisplaySection]: Error while trying to reveal secret'), {
         error: message,
       });
-
       setSectionState(message === createdWithBiometricError ? SecretDisplayStates.securedWithBiometrics : SecretDisplayStates.noSeed);
       onSecretLoaded?.(false);
     }

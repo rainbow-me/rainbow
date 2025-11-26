@@ -107,7 +107,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     });
 
     // Capture wallet context in telemetry
-    // walletType maybe undefied after initial wallet creation
+    // walletType maybe undefined after initial wallet creation
     const { walletType, walletAddressHash } = await getWalletContext(walletAddress as Address);
     const [deviceId] = await getOrCreateDeviceId();
     if (shouldCancel()) return null;
