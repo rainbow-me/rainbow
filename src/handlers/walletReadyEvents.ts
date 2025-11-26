@@ -14,9 +14,14 @@ import { backupsStore, LoadingStates, oneWeekInMs } from '@/state/backups/backup
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 
+let integrityCheckTimeout: NodeJS.Timeout | null = null;
+
 export const runKeychainIntegrityChecks = (): void => {
   // Run with a small delay to avoid blocking more important tasks on startup.
-  setTimeout(checkKeychainIntegrity, 2_000);
+  if (integrityCheckTimeout) {
+    clearTimeout(integrityCheckTimeout);
+  }
+  integrityCheckTimeout = setTimeout(checkKeychainIntegrity, 2_500);
 };
 
 const delay = (ms: number) =>

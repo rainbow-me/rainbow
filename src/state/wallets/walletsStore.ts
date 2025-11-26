@@ -276,8 +276,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           return;
         }
 
-        console.log('Loaded wallets:', get().wallets, wallets);
-
         set(state => ({
           ...state,
           accountAddress: accountAddress ?? state.accountAddress,
@@ -529,13 +527,16 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         let healthyKeychain = true;
         logger.debug('[walletsStore]: Starting keychain integrity checks');
 
+        if (!get().walletReady) {
+          logger.debug('[walletsStore]: Wallets not ready yet, skipping keychain integrity checks');
+          return;
+        }
+
         const keychainWallets = Object.values(get().wallets).filter(wallet => wallet.encryptionType === EncryptionType.keychain);
         if (keychainWallets.length === 0) {
           logger.debug('[walletsStore]: No keychain-encrypted wallets found, skipping checks');
           return;
         }
-
-        console.log(get().wallets);
 
         const updatedWalletDamagedStates = new Map<string, boolean>();
 
