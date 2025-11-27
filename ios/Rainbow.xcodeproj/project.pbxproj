@@ -1137,7 +1137,7 @@ Upload Debug Symbols to Sentry */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\necho \"HELLO\"\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nSENTRY_XCODE=\"../node_modules/@sentry/react-native/scripts/sentry-xcode.sh\"\n\nset -x  # shell debug: echo each command\n/bin/sh -c \"$WITH_ENVIRONMENT $SENTRY_XCODE\"\nSENTRY_EXIT_CODE=$?\nset +x\n\necho \"sentry-xcode.sh exited with code: $SENTRY_EXIT_CODE\"\n";
+			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nSENTRY_XCODE=\"../node_modules/@sentry/react-native/scripts/sentry-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $SENTRY_XCODE\"\n";
 		};
 		255FC39E0B3B248618509EA8 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;

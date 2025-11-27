@@ -29,22 +29,6 @@ def getPassword(String currentUser, String keyChain) {
     stdout.toString().trim()
 }
 
-def containsReleaseTask(tasks) {
-    tasks?.any { taskName -> taskName?.toLowerCase()?.contains('release') }
-}
-
-def isReleaseBuildRequested() {
-    if (containsReleaseTask(gradle.startParameter.taskNames)) {
-        return true
-    }
-
-    gradle.startParameter.taskRequests.any { request ->
-        containsReleaseTask(request.args)
-    }
-}
-
-final boolean shouldUploadNativeSymbols = isReleaseBuildRequested()
-
 import com.android.build.OutputFile
 
 apply plugin: "com.facebook.react"
@@ -57,14 +41,13 @@ sentry {
     // for Sentry. This executes sentry-cli automatically so
     // you don't need to do it manually.
     // Default is disabled.
-    // Only upload native symbols as part of release builds to keep debug builds fast.
-    uploadNativeSymbols = shouldUploadNativeSymbols
+    uploadNativeSymbols = true
     // Enables or disables the automatic upload of the app's native source code to Sentry.
     // This executes sentry-cli with the --include-sources param automatically so
     // you don't need to do it manually.
     // This option has an effect only when [uploadNativeSymbols] is enabled.
     // Default is disabled.
-    includeNativeSources = shouldUploadNativeSymbols
+    includeNativeSources = true
     // `@sentry/react-native` ships with compatible `sentry-android`
     // This option would install the latest version that ships with the SDK or SAGP (Sentry Android Gradle Plugin)
     // which might be incompatible with the React Native SDK
