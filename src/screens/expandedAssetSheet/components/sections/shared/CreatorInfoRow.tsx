@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Address } from 'viem';
 import Animated, {
   FadeIn,
@@ -25,6 +25,7 @@ import { sliderConfig, pulsingConfig } from '@/__swaps__/screens/Swap/constants'
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useTheme } from '@/theme';
 import { IS_IOS } from '@/env';
+import { useStableValue } from '@/hooks/useStableValue';
 
 type CreatorInfoRowProps = {
   address?: Address | string | null;
@@ -71,7 +72,7 @@ const CreatorAddress = ({
 const CreatorAvatar = ({ avatarUrl, creatorAddress }: { avatarUrl: SharedValue<string | null | undefined>; creatorAddress: string }) => {
   const { colors } = useTheme();
   const fillTertiary = useBackgroundColor('fillTertiary');
-  const [{ color, emoji }] = useState(() => ({
+  const { color, emoji } = useStableValue(() => ({
     color: colors.avatarBackgrounds[addressHashedColorIndex(creatorAddress) ?? 0],
     emoji: addressHashedEmoji(creatorAddress),
   }));
