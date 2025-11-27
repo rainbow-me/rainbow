@@ -34,6 +34,8 @@ export type TextSegment = {
     }
 );
 
+type SkiaTextStyleWithHalfLeading = Omit<SkTextStyle, 'halfLeading'> & { halfLeading?: number };
+
 export type UseSkiaTextOptions = {
   additionalWeights?: TextWeight[];
   align?: TextAlign;
@@ -101,10 +103,16 @@ export function useSkiaText({
 
         if (segment.foregroundPaint && segment.color) segment.foregroundPaint.setColor(segmentStyle.color);
         if (shadows || segment.shadows) segmentStyle.shadows = segment.shadows;
-        if (segment.opacity !== undefined && segment.color) {
+        if (segment.opacity !== undefined && typeof segment.color === 'string') {
           segmentStyle.color = Skia.Color(opacityWorklet(segment.color, segment.opacity));
         }
-        paragraphBuilder.pushStyle(segmentStyle, segment.foregroundPaint ?? foregroundPaint, segment.backgroundPaint ?? backgroundPaint);
+
+        const styleForPush = {
+          ...segmentStyle,
+          halfLeading: typeof segmentStyle.halfLeading === 'number' ? segmentStyle.halfLeading : segmentStyle.halfLeading ? 1 : 0,
+        } as unknown as SkTextStyle;
+
+        paragraphBuilder.pushStyle(styleForPush, segment.foregroundPaint ?? foregroundPaint, segment.backgroundPaint ?? backgroundPaint);
         paragraphBuilder.addText(typeof segment.text === 'string' ? segment.text : segment.text.value ?? '');
         paragraphBuilder.pop();
       };
@@ -171,9 +179,10 @@ function getTextStyle({
   weight: TextWeight;
   weightOverride?: TextWeight;
 }): Required<
-  Pick<SkTextStyle, 'color' | 'fontFamilies' | 'fontSize' | 'fontStyle' | 'halfLeading' | 'heightMultiplier' | 'letterSpacing'>
+  Pick<SkiaTextStyleWithHalfLeading, 'color' | 'fontFamilies' | 'fontSize' | 'fontStyle' | 'heightMultiplier' | 'letterSpacing'>
 > & {
   fontFeatures: SkTextFontFeatures[] | undefined;
+  halfLeading?: number;
   shadows?: SkTextShadow[];
 } {
   'worklet';
@@ -187,7 +196,7 @@ function getTextStyle({
     fontSize: fontInfo.fontSize,
     fontStyle: IS_IOS ? { weight: getSkiaFontWeight(weightOverride ?? weight) } : EMPTY_FONT_STYLE,
     fontFeatures: tabularNumbers ? TABULAR_NUMBERS : EMPTY_FONT_FEATURES,
-    halfLeading,
+    halfLeading: halfLeading ? 1 : 0,
     heightMultiplier: (lineHeight ? lineHeight : fontInfo.lineHeight) / fontInfo.fontSize,
     letterSpacing: letterSpacing ?? fontInfo.letterSpacing,
   };
