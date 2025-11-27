@@ -71,27 +71,38 @@ export const AboutContent = memo(function AboutContent() {
   );
 });
 
-export function useIsAboutSectionDeemphasized() {
+const shouldShowAboutSection = (placement: Placement, hasContent: boolean, isDeemphasized: boolean) => {
+  if (!hasContent) {
+    return false;
+  }
+  return (placement === Placement.AFTER_CLAIM && !isDeemphasized) || (placement === Placement.AFTER_HISTORY && isDeemphasized);
+};
+
+export enum Placement {
+  AFTER_CLAIM = 'after_claim',
+  AFTER_HISTORY = 'after_history',
+}
+
+type AboutSectionProps = {
+  placement: Placement;
+};
+
+export const AboutSection = memo(function AboutSection({ placement }: AboutSectionProps) {
   const { assetMetadata: metadata } = useExpandedAssetSheetContext();
 
-  return useMemo(() => {
+  const { hasContent, isDeemphasized } = useMemo(() => {
     const hasCreator = !!metadata?.launchpad?.creatorAddress;
     const hasProtocol = !!metadata?.launchpad?.launchpad?.name;
     const hasPlatform = !!metadata?.launchpad?.launchpad?.platform;
 
+    const hasContent = hasCreator || hasProtocol || hasPlatform;
     // De-emphasize if only creator exists (no protocol or platform)
-    return hasCreator && !hasProtocol && !hasPlatform;
-  }, [metadata]);
-}
+    const isDeemphasized = hasCreator && !hasProtocol && !hasPlatform;
 
-export const AboutSection = memo(function AboutSection() {
-  const { assetMetadata: metadata } = useExpandedAssetSheetContext();
-
-  const hasContent = useMemo(() => {
-    return !!metadata?.launchpad?.creatorAddress || !!metadata?.launchpad?.launchpad?.name || !!metadata?.launchpad?.launchpad?.platform;
+    return { hasContent, isDeemphasized };
   }, [metadata]);
 
-  if (!hasContent) return null;
+  if (!shouldShowAboutSection(placement, hasContent, isDeemphasized)) return null;
 
   return (
     <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={28}>

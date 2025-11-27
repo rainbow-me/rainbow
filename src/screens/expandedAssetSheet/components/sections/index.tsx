@@ -1,5 +1,5 @@
 export { DetailsSection } from './DetailsSection';
-export { AboutSection, useIsAboutSectionDeemphasized } from './AboutSection';
+export { AboutSection, Placement as AboutPlacement } from './AboutSection';
 export { BalanceSection } from './BalanceSection';
 export { BridgeSection } from './BridgeSection';
 export { BuySection } from './BuySection';
