@@ -12,8 +12,6 @@
 
 default_platform(:ios)
 
-ENV["FASTLANE_XCPRETTY_DISABLE"] = "1"
-
 platform :ios do
   desc "Submit a new Beta build to Apple TestFlight"
   lane :beta do
@@ -53,6 +51,7 @@ platform :ios do
       scheme: "Rainbow",
       include_symbols: true,
       configuration: "Release",
+      xcodebuild_formatter: "",
       export_method: "app-store",
       export_options: {
         signingStyle: "manual",
