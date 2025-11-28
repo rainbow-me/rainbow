@@ -369,16 +369,20 @@ export const gasPricesStartPolling =
 
                     // Set a really gas estimate to guarantee that we're gonna be over
                     // the basefee at the time we fork mainnet during our anvil tests
-                    let baseFee = baseFeePerGas;
                     if (chainId === ChainId.mainnet && IS_TEST && useConnectedToAnvilStore.getState().connectedToAnvil) {
-                      baseFee = parseGasFeeParam(gweiToWei(1000));
+                      Object.keys(gasFeeParamsBySpeed).forEach(speed => {
+                        gasFeeParamsBySpeed[speed] = {
+                          ...gasFeeParamsBySpeed[speed],
+                          maxBaseFee: parseGasFeeParam(gweiToWei(1000)),
+                        };
+                      });
                     }
 
                     if (customGasFeeModifiedByUser) {
                       // Preserve custom values while updating prices
                       gasFeeParamsBySpeed[CUSTOM] = {
                         ...existingGasFees[CUSTOM],
-                        baseFeePerGas: baseFee,
+                        baseFeePerGas,
                       };
                     } else {
                       // set CUSTOM to URGENT if not defined

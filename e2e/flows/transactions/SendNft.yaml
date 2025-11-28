@@ -52,7 +52,7 @@ tags:
             id: wallet-screen
           direction: UP
       - tapOn:
-          id: 'wrapped-nft-Rainbow Pooly 104'
+          id: 'wrapped-nft-Rainbow Pooly 16'
 
 # we need to wait for the sheet to be done before clicking on the send else Maestro will click on the image
 - waitForAnimationToEnd:
@@ -72,7 +72,7 @@ tags:
 - tapOn: '.*Review'
 
 - assertVisible: 'Sending'
-- assertVisible: 'Rainbow Pooly 104'
+- assertVisible: 'Rainbow Pooly 16'
 - assertVisible: 'to'
 - assertVisible: 'rainbowwallet.eth'
 
@@ -91,7 +91,7 @@ tags:
           childOf:
             id: toast-.*
       - assertVisible:
-          text: 'Rainbow Pooly 104'
+          text: 'Rainbow Pooly 16'
           childOf:
             id: toast-.*
       # Open toast
