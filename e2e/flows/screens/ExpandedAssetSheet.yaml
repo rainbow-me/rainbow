@@ -1,6 +1,6 @@
 appId: ${APP_ID}
 tags:
-  - expanded-asset
+  - expanded-sheet
   - parallel
 ---
 # This test verifies the ExpandedAssetSheet (token detail view) behavior,

@@ -1,6 +1,6 @@
 appId: ${APP_ID}
 tags:
-  - positions
+  - expanded-sheet
   - parallel
 ---
 # This test verifies the PositionSheet behavior, specifically testing that
