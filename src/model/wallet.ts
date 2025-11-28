@@ -321,7 +321,9 @@ export const loadWallet = async <S extends Screen>({
     return null;
   }
 
-  setWalletDamaged(addressToUse, !privateKey || privateKey === kc.ErrorType.NotAuthenticated);
+  if (selectedWallet) {
+    setWalletDamaged(selectedWallet.id, !privateKey || privateKey === kc.ErrorType.NotAuthenticated);
+  }
 
   if (privateKey !== kc.ErrorType.NotAuthenticated) {
     if (isHardwareWalletKey(privateKey)) {
