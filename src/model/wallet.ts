@@ -122,6 +122,8 @@ export interface RainbowAccount {
 export enum EncryptionType {
   rainbowPin = 'rainbowPin',
   keychain = 'keychain',
+  hardware = 'hardware',
+  none = 'none',
 }
 
 export interface RainbowWallet {
@@ -889,7 +891,14 @@ export const createWallet = async ({
       name: walletName,
       primary,
       type,
-      encryptionType: androidEncryptionPin ? EncryptionType.rainbowPin : EncryptionType.keychain,
+      encryptionType:
+        type === EthereumWalletType.readOnly
+          ? EncryptionType.none
+          : type === EthereumWalletType.bluetooth
+            ? EncryptionType.hardware
+            : androidEncryptionPin
+              ? EncryptionType.rainbowPin
+              : EncryptionType.keychain,
     };
 
     // create notifications settings entry for newly created wallet

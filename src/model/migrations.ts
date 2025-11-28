@@ -843,7 +843,14 @@ export default async function runMigrations() {
       const hasPasscode = await kc.isPasscodeAuthAvailable();
       for (const wallet of Object.values(wallets)) {
         if (!wallet.encryptionType) {
-          wallet.encryptionType = hasPasscode ? EncryptionType.keychain : EncryptionType.rainbowPin;
+          wallet.encryptionType =
+            wallet.type === WalletTypes.readOnly
+              ? EncryptionType.none
+              : wallet.type === WalletTypes.bluetooth
+                ? EncryptionType.hardware
+                : hasPasscode
+                  ? EncryptionType.keychain
+                  : EncryptionType.rainbowPin;
         }
       }
     }

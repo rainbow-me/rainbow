@@ -27,7 +27,7 @@ import {
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
 import { isLowerCaseMatch, time, watchingAlert } from '@/utils';
-import { addressKey, didShowWalletErrorSheetKey } from '@/utils/keychainConstants';
+import { addressKey, didShowWalletErrorSheetKey, privateKeyKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
 import { shallowEqual } from '@/worklets/comparisons';
 import { captureMessage } from '@sentry/react-native';
@@ -546,9 +546,12 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         const isPasscodeAuthAvailable = await kc.isPasscodeAuthAvailable();
         if (IS_IOS) {
           // Device migration - the keychain cache will be transferred, but not the keychain data itself.
-          const hasAddressKey = await kc.has(addressKey);
-          if (!hasAddressKey) {
-            logger.debug('[walletsStore]: No address key found in keychain, marking wallets as damaged');
+          // It is enough to just check the first address.
+          const address = keychainWallets[0].addresses[0].address;
+          const key = `${address}_${privateKeyKey}`;
+          const hasPrivateKey = await kc.has(key);
+          if (!hasPrivateKey) {
+            logger.debug(`[walletsStore]: No private key found in keychain for ${address}, marking wallets as damaged`);
             healthyKeychain = false;
             keychainWallets.forEach(wallet => {
               updatedWalletDamagedStates.set(wallet.id, true);
