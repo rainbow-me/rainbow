@@ -83,7 +83,7 @@ tags:
 
 - longPressOn:
     id: swap-bottom-action-button
-- runFlow: ../../utils/MaybeSetupPin.yaml
+- runFlow: ../../utils/MaybeInputPin.yaml
 
 # Update balances
 - retry:
@@ -112,7 +112,7 @@ tags:
     id: flip-button
 - longPressOn:
     id: swap-bottom-action-button
-- runFlow: ../../utils/MaybeSetupPin.yaml
+- runFlow: ../../utils/MaybeInputPin.yaml
 # Update balances
 - retry:
     maxRetries: 3

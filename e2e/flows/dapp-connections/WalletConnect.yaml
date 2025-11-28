@@ -55,7 +55,7 @@ tags:
       # sign transaction
       - longPressOn:
           id: sign-transaction-action-button
-      - runFlow: ../../utils/MaybeSetupPin.yaml
+      - runFlow: ../../utils/MaybeInputPin.yaml
       # assert that the typed message data signature is visible
       - assertVisible:
           text: '.*typed message data sig.*'
@@ -74,7 +74,7 @@ tags:
       # sign transaction
       - longPressOn:
           id: sign-transaction-action-button
-      - runFlow: ../../utils/MaybeSetupPin.yaml
+      - runFlow: ../../utils/MaybeInputPin.yaml
       # assert that the signed message data signature is visible
       - assertVisible:
           text: '.*sign message data sig.*'

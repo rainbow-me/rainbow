@@ -80,7 +80,7 @@ tags:
 # Execute Swap SKIPPED FOR NOW
 # - longPressOn:
 #     id: swap-bottom-action-button
-# - runFlow: ../../utils/MaybeSetupPin.yaml
+# - runFlow: ../../utils/MaybeInputPin.yaml
 # - retry:
 #     maxRetries: 3
 #     commands:
