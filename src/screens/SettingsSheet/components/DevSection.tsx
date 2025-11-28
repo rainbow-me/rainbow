@@ -405,9 +405,6 @@ const DevSection = () => {
                   if (!credentials) return;
 
                   await Promise.all(credentials.results.map(c => resetInternetCredentials({ server: c.username })));
-
-                  // Check keychain integrity immediately to mark wallet as damaged
-                  await checkKeychainIntegrity();
                 }
               }}
               size={52}

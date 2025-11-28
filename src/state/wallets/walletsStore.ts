@@ -7,6 +7,8 @@ import { ensureError, logger, RainbowError } from '@/logger';
 import { parseTimestampFromBackupFile } from '@/model/backup';
 import * as kc from '@/keychain';
 import { PreferenceActionType, setPreference } from '@/model/preferences';
+import Routes from '@/navigation/routesNames';
+import Navigation from '@/navigation/Navigation';
 import {
   AllRainbowWallets,
   cleanUpWalletKeys,
@@ -25,7 +27,7 @@ import {
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
 import { isLowerCaseMatch, time, watchingAlert } from '@/utils';
-import { addressKey } from '@/utils/keychainConstants';
+import { addressKey, didShowWalletErrorSheetKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
 import { shallowEqual } from '@/worklets/comparisons';
 import { captureMessage } from '@sentry/react-native';
@@ -608,6 +610,12 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
         if (!healthyKeychain) {
           captureMessage('Keychain Integrity is not OK');
+          const didShowWalletErrorSheet = await kc.has(didShowWalletErrorSheetKey);
+          if (!didShowWalletErrorSheet) {
+            Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
+            // Save this flag in the keychain so we only show the alert once per device transfer.
+            await kc.set(didShowWalletErrorSheetKey, 'true', kc.publicAccessControlOptions);
+          }
         }
 
         logger.debug(`[walletsStore]: check completed in ${Date.now() - startTime} ms`);
