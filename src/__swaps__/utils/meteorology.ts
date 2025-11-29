@@ -12,6 +12,7 @@ import { GasSpeed } from '../types/gas';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
 import { IS_TEST } from '@/env';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
 // mocked data for testing. should be compatible with our anvil setup.
 const defaultTestMeteorologyData: MeteorologyResponse = {
@@ -143,7 +144,15 @@ function selectGasSuggestions({ data }: MeteorologyResult) {
     } as const;
   }
 
-  const { baseFeeSuggestion, maxPriorityFeeSuggestions } = data;
+  let { baseFeeSuggestion } = data;
+  const { maxPriorityFeeSuggestions } = data;
+
+  // Set a high gas estimate to guarantee that we're over the basefee
+  // at the time we fork mainnet during our anvil tests
+  if (IS_TEST && useConnectedToAnvilStore.getState().connectedToAnvil) {
+    baseFeeSuggestion = gweiToWei('1000');
+  }
+
   return {
     urgent: {
       isEIP1559: true,
