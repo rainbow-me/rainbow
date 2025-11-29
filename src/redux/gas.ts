@@ -36,11 +36,9 @@ import {
 import { ethUnits } from '@/references';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { addBuffer } from '@/helpers/utilities';
-import { IS_TEST } from '@/env';
 
 const { CUSTOM, NORMAL, URGENT } = gasUtils;
 
@@ -366,17 +364,6 @@ export const gasPricesStartPolling =
                   if (meteorologyGasParams.feeType === 'eip1559') {
                     const { gasFeeParamsBySpeed, baseFeePerGas, trend, currentBaseFee, blocksToConfirmation, secondsPerNewBlock } =
                       meteorologyGasParams as MeterologyGasParams;
-
-                    // Set a really gas estimate to guarantee that we're gonna be over
-                    // the basefee at the time we fork mainnet during our anvil tests
-                    if (chainId === ChainId.mainnet && IS_TEST && useConnectedToAnvilStore.getState().connectedToAnvil) {
-                      Object.keys(gasFeeParamsBySpeed).forEach(speed => {
-                        gasFeeParamsBySpeed[speed] = {
-                          ...gasFeeParamsBySpeed[speed],
-                          maxBaseFee: parseGasFeeParam(gweiToWei(1000)),
-                        };
-                      });
-                    }
 
                     if (customGasFeeModifiedByUser) {
                       // Preserve custom values while updating prices
