@@ -757,6 +757,13 @@
         },
         "about": {
           "title": "概要",
+          "created_by": "作成者",
+          "protocol": "プロトコル",
+          "created_via": "経由で作成",
+          "what_is": "%{assetName}とは何ですか？"
+        },
+        "details": {
+          "title": "詳細",
           "what_is": "%{assetName}とは何ですか？"
         },
         "history": {
