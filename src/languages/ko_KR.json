@@ -757,6 +757,13 @@
         },
         "about": {
           "title": "정보",
+          "created_by": "제작자",
+          "protocol": "프로토콜",
+          "created_via": "생성 방법",
+          "what_is": "%{assetName}에 대해 알고 싶으세요?"
+        },
+        "details": {
+          "title": "세부정보",
           "what_is": "%{assetName}에 대해 알고 싶으세요?"
         },
         "history": {
@@ -971,7 +978,7 @@
       "chonks_description": "Rainbow 헤어를 휘날리며 101번 도로를 달릴 때, Chonky의 기분을 느껴보세요.",
       "chonks_title": "당신은 가장 Chonky한 아이콘을 열었습니다",
       "mog_description": "노력 없이 우주적 세계 지배, 색깔로 모깅.",
-      "mog_title": "You've unlocked\n Rainbow Mogs",
+      "mog_title": "잠금 해제 Rainbow Mogs",
       "button": "아이콘 잡기"
     },
     "explain": {
