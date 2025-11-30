@@ -757,6 +757,13 @@
         },
         "about": {
           "title": "Hakkında",
+          "created_by": "Creator",
+          "protocol": "Protocol",
+          "created_via": "Created Via",
+          "what_is": "%{assetName} nedir?"
+        },
+        "details": {
+          "title": "Detaylar",
           "what_is": "%{assetName} nedir?"
         },
         "history": {
@@ -970,8 +977,8 @@
       "baggy_title": "Kazandınız\n Rainbow Baggy",
       "chonks_description": "101'de süzülürken, Rainbow saçlarınızda rüzgarı hayal edin, Chonky hissiyle.",
       "chonks_title": "En Chonky Simgeyi\n Açtınız",
-      "mog_description": "Effortless cosmic world domination, mogging in colors.",
-      "mog_title": "You've unlocked\n Rainbow Mogs",
+      "mog_description": "Renklerde kolay kozmik dünya hakimiyeti.",
+      "mog_title": "Kazandınız\n Rainbow Mogs",
       "button": "Simgeyi Yakala"
     },
     "explain": {
