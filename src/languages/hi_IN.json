@@ -757,6 +757,13 @@
         },
         "about": {
           "title": "के बारे में",
+          "created_by": "Creator",
+          "protocol": "Protocol",
+          "created_via": "Created Via",
+          "what_is": "%{assetName} क्या है?"
+        },
+        "details": {
+          "title": "विवरण",
           "what_is": "%{assetName} क्या है?"
         },
         "history": {
@@ -970,8 +977,8 @@
       "baggy_title": "आपने अनलॉक कर लिया है\n रेनबो बैगी",
       "chonks_description": "इमेजिन कीजिए कि आपके Rainbow बालों में हवा है, आप 101 पर ड्राइव कर रहे हैं और Chonky महसूस कर रहे हैं।",
       "chonks_title": "आपने Chonkiest आइकन अनलॉक कर लिया है",
-      "mog_description": "Effortless cosmic world domination, mogging in colors.",
-      "mog_title": "You've unlocked\n Rainbow Mogs",
+      "mog_description": "आसान ब्रह्मांडीय विश्व वर्चस्व, रंगों में मोगिंग।",
+      "mog_title": "आपने अनलॉक कर लिया है\nRainbow Mogs",
       "button": "आइकन पकड़ें"
     },
     "explain": {
