@@ -1,6 +1,16 @@
 import React, { memo } from 'react';
 import { AccentColorProvider, Box, ColorModeProvider, useColorMode } from '@/design-system';
-import { AboutSection, BalanceSection, BuySection, MarketStatsSection, ChartSection, ClaimSection, HistorySection } from './sections';
+import {
+  DetailsSection,
+  BalanceSection,
+  BuySection,
+  MarketStatsSection,
+  ChartSection,
+  ClaimSection,
+  HistorySection,
+  AboutSection,
+  AboutPlacement,
+} from './sections';
 import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Placement } from './sections/BuySection';
@@ -29,6 +39,7 @@ export const SheetContent = memo(function SheetContent({ accentColor }: { accent
               <BalanceSection />
               <BuySection placement={Placement.AFTER_BALANCE} />
               <ClaimSection />
+              <AboutSection placement={AboutPlacement.AFTER_CLAIM} />
               <MarketStatsSection />
               <BuySection placement={Placement.AFTER_MARKET_STATS} />
               {/* BACKLOGGED */}
@@ -36,7 +47,8 @@ export const SheetContent = memo(function SheetContent({ accentColor }: { accent
               <CollapsibleSection content={<BridgeSection />} icon="􁾫" id={SectionId.BRIDGE} primaryText="Bridge" secondaryText={'to'} />
             )} */}
               <HistorySection />
-              <AboutSection />
+              <AboutSection placement={AboutPlacement.AFTER_HISTORY} />
+              <DetailsSection />
             </Box>
           </Box>
         </Box>
