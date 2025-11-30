@@ -757,6 +757,13 @@
         },
         "about": {
           "title": "حول",
+          "created_by": "المنشئ",
+          "protocol": "البروتوكول",
+          "created_via": "تم الإنشاء عبر",
+          "what_is": "ما هو %{assetName}؟"
+        },
+        "details": {
+          "title": "تفاصيل",
           "what_is": "ما هو %{assetName}؟"
         },
         "history": {
