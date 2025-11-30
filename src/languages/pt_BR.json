@@ -757,6 +757,13 @@
         },
         "about": {
           "title": "Sobre",
+          "created_by": "Creator",
+          "protocol": "Protocol",
+          "created_via": "Created Via",
+          "what_is": "O que é %{assetName}?"
+        },
+        "details": {
+          "title": "Detalhes",
           "what_is": "O que é %{assetName}?"
         },
         "history": {
@@ -970,8 +977,8 @@
       "baggy_title": "Você desbloqueou Rainbow Baggy",
       "chonks_description": "Imagine o vento em seu cabelo Rainbow, dirigindo pela 101, sentindo a Chonky.",
       "chonks_title": "Você desbloqueou\n o Ícone Mais Chonky",
-      "mog_description": "Effortless cosmic world domination, mogging in colors.",
-      "mog_title": "You've unlocked\n Rainbow Mogs",
+      "mog_description": "Dominação cósmica do mundo sem esforço, mogando em cores.",
+      "mog_title": "Você desbloqueou\nRainbow Mogs",
       "button": "Desbloqueie o ícone"
     },
     "explain": {
