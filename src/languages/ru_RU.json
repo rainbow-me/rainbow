@@ -757,6 +757,13 @@
         },
         "about": {
           "title": "О компании",
+          "created_by": "Создатель",
+          "protocol": "Протокол",
+          "created_via": "Создан через",
+          "what_is": "Что такое %{assetName}?"
+        },
+        "details": {
+          "title": "Подробности",
           "what_is": "Что такое %{assetName}?"
         },
         "history": {
@@ -970,8 +977,8 @@
       "baggy_title": "Вы разблокировали\nRainbow Baggy",
       "chonks_description": "Представьте ветер в ваших Rainbow волосах, когда вы едете по трассе 101 и чувствуете себя Чонки.",
       "chonks_title": "Вы разблокировали\n Самую Чонкую Иконку",
-      "mog_description": "Effortless cosmic world domination, mogging in colors.",
-      "mog_title": "You've unlocked\n Rainbow Mogs",
+      "mog_description": "Легкое космическое покорение мира, выделение цветов.",
+      "mog_title": "Вы разблокировали\nRainbow Mogs",
       "button": "Разблокировать значок"
     },
     "explain": {
