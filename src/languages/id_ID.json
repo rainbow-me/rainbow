@@ -757,6 +757,13 @@
         },
         "about": {
           "title": "Tentang",
+          "created_by": "Creator",
+          "protocol": "Protocol",
+          "created_via": "Created Via",
+          "what_is": "Apa itu %{assetName}?"
+        },
+        "details": {
+          "title": "Rincian",
           "what_is": "Apa itu %{assetName}?"
         },
         "history": {
@@ -970,8 +977,8 @@
       "baggy_title": "Anda telah membuka\n Rainbow Baggy",
       "chonks_description": "Bayangkan angin di rambut Rainbow Anda, mengemudi di 101, merasakan Chonky.",
       "chonks_title": "Anda telah membuka\n Ikon Chonkiest",
-      "mog_description": "Effortless cosmic world domination, mogging in colors.",
-      "mog_title": "You've unlocked\n Rainbow Mogs",
+      "mog_description": "Dominasi dunia kosmik yang mudah, berpakaian dalam warna.",
+      "mog_title": "Anda telah membuka\nRainbow Mogs",
       "button": "Ambil ikon"
     },
     "explain": {
