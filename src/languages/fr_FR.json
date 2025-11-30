@@ -757,6 +757,13 @@
         },
         "about": {
           "title": "À propos",
+          "created_by": "Créateur",
+          "protocol": "Protocole",
+          "created_via": "Créé via",
+          "what_is": "Qu'est-ce que %{assetName}?"
+        },
+        "details": {
+          "title": "Détails",
           "what_is": "Qu'est-ce que %{assetName}?"
         },
         "history": {
