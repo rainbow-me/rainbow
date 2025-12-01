@@ -1,7 +1,4 @@
-import { PolymarketMarket, RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { POLYMARKET_OUTCOME } from '@/features/polymarket/constants';
-
-export type PolymarketOutcome = (typeof POLYMARKET_OUTCOME)[keyof typeof POLYMARKET_OUTCOME];
+import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 
 export type RawPolymarketPosition = {
   proxyWallet: string;
@@ -24,9 +21,9 @@ export type RawPolymarketPosition = {
   icon: string;
   eventId: string;
   eventSlug: string;
-  outcome: PolymarketOutcome;
+  outcome: string;
   outcomeIndex: number;
-  oppositeOutcome: PolymarketOutcome;
+  oppositeOutcome: string;
   oppositeAsset: string;
   endDate: string;
   negativeRisk: boolean;
@@ -35,7 +32,7 @@ export type RawPolymarketPosition = {
 export type PolymarketPosition = RawPolymarketPosition & {
   // These are returned in the response as stringified JSON arrays
   clobTokenIds: string[];
-  outcomes: PolymarketOutcome[];
+  outcomes: string[];
   outcomePrices: string[];
   nativeCurrency: {
     currentValue: number;

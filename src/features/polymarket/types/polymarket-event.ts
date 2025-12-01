@@ -1,4 +1,6 @@
-import { PolymarketOutcome } from '@/features/polymarket/types';
+import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
+
+export type SportsMarketType = (typeof POLYMARKET_SPORTS_MARKET_TYPE)[keyof typeof POLYMARKET_SPORTS_MARKET_TYPE];
 
 type ImageOptimized = {
   id: string;
@@ -202,9 +204,9 @@ export type RawPolymarketMarket = {
   showGmpOutcome: boolean;
   manualActivation: boolean;
   negRiskOther: boolean;
-  gameId: string;
+  gameId?: number;
   groupItemRange: string;
-  sportsMarketType: string;
+  sportsMarketType: SportsMarketType;
   line: number;
   umaResolutionStatuses: string;
   pendingDeployment: boolean;
@@ -218,7 +220,7 @@ export type RawPolymarketMarket = {
 export type PolymarketMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'outcomes' | 'outcomePrices' | 'events'> & {
   // These are returned in the response as stringified JSON arrays
   clobTokenIds: string[];
-  outcomes: PolymarketOutcome[];
+  outcomes: string[];
   outcomePrices: string[];
   events: PolymarketMarketEvent[];
   color: string;
@@ -382,20 +384,25 @@ export type RawPolymarketEvent = {
   cantEstimate: boolean;
   estimatedValue: string;
   templates: Template[];
-  spreadsMainLine: number;
-  totalsMainLine: number;
+  /**
+   * TODO: These are not getting returned, ask Polymarket team why
+   */
+  spreadsMainLine?: number;
+  totalsMainLine?: number;
   carouselMap: string;
   pendingDeployment: boolean;
   deploying: boolean;
   deployingTimestamp: string;
   scheduledDeploymentTimestamp: string;
   gameStatus: string;
+  gameId?: number;
 };
 
 export type PolymarketEvent = Omit<RawPolymarketEvent, 'markets'> & {
   // These are returned in the response as stringified JSON arrays
   markets: PolymarketMarket[];
   uniqueMarketImages: boolean;
+  color: string;
 };
 
 /**
@@ -445,4 +452,5 @@ export type PolymarketMarketEvent = {
   pendingDeployment: boolean;
   deploying: boolean;
   deployingTimestamp: string;
+  gameId?: number;
 };

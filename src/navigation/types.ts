@@ -38,7 +38,7 @@ import { ChartTime } from '@/hooks/charts/useChartInfo';
 import { AreAllKeysOptional, ExtractOptionalKeys } from '@/types/objects';
 import { ScrollView } from 'react-native';
 import { HlTrade, PerpMarket, PerpsPosition, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
-import { PolymarketOutcome, PolymarketPosition } from '@/features/polymarket/types';
+import { PolymarketPosition } from '@/features/polymarket/types';
 import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 
 export type PortalSheetProps = {
@@ -681,7 +681,7 @@ type RouteParams = {
   };
   [Routes.POLYMARKET_NEW_POSITION_SHEET]: {
     market: PolymarketMarket;
-    outcome: PolymarketOutcome;
+    outcome: string;
   };
 };
 

@@ -4,7 +4,7 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { RawPolymarketEvent, PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { RainbowError } from '@/logger';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
-import { processRawPolymarketMarket } from '@/features/polymarket/utils/transforms';
+import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 
 type FetchParams = { eventId: string | null };
 
@@ -35,7 +35,7 @@ export const usePolymarketEventStore = createQueryStore<PolymarketEvent, FetchPa
     getMarkets: (sortOrder: MarketSortOrder = MarketSortOrder.LAST_TRADE_PRICE) => {
       const markets = get().getData()?.markets;
       if (!markets) return undefined;
-      return sortMarkets(filterMarkets(markets), sortOrder);
+      return sortMarkets(markets, sortOrder);
     },
   })
 );
@@ -70,9 +70,10 @@ async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: A
   const { data } = await rainbowFetch(url, { abortController, timeout: 30000 });
   const event = data as RawPolymarketEvent;
 
+  const processedEvent = await processRawPolymarketEvent(event);
+
   return {
-    ...event,
-    markets: event.markets.map(processRawPolymarketMarket),
-    uniqueMarketImages: event.markets.some(market => market.icon !== event.icon),
-  } satisfies PolymarketEvent;
+    ...processedEvent,
+    markets: filterMarkets(processedEvent.markets),
+  };
 }

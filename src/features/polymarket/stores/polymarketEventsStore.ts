@@ -5,10 +5,6 @@ import { RawPolymarketEvent, PolymarketEvent } from '@/features/polymarket/types
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 
-type PolymarketEventsStoreState = {
-  events: PolymarketEvent[];
-};
-
 export const MarketSortOrder = {
   VOLUME: 'volume',
   LAST_TRADE_PRICE: 'lastTradePrice',
@@ -18,17 +14,12 @@ export const MarketSortOrder = {
 
 type MarketSortOrder = (typeof MarketSortOrder)[keyof typeof MarketSortOrder];
 
-export const usePolymarketEventsStore = createQueryStore<PolymarketEvent[]>(
-  {
-    fetcher: fetchPolymarketEvents,
-    keepPreviousData: true,
-    staleTime: time.minutes(2),
-    cacheTime: time.minutes(10),
-  }
-  // (_, get) => ({
-  //   events: [],
-  // })
-);
+export const usePolymarketEventsStore = createQueryStore<PolymarketEvent[]>({
+  fetcher: fetchPolymarketEvents,
+  keepPreviousData: true,
+  staleTime: time.minutes(2),
+  cacheTime: time.minutes(10),
+});
 
 export function prefetchPolymarketEvents() {
   usePolymarketEventsStore.getState().fetch();
@@ -42,9 +33,11 @@ async function fetchPolymarketEvents(_: Record<string, never>, abortController: 
   url.searchParams.set('closed', 'false');
   url.searchParams.set('order', 'volume24hr');
   url.searchParams.set('ascending', 'false');
+  // TESTING:
+  url.searchParams.set('tag_slug', 'sports');
 
   const { data } = await rainbowFetch(url.toString(), { abortController, timeout: 30000 });
   const events = data as RawPolymarketEvent[];
 
-  return events.map(processRawPolymarketEvent);
+  return await Promise.all(events.map(processRawPolymarketEvent));
 }

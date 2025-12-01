@@ -1,3 +1,4 @@
+import { StyleSheet } from 'react-native';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
@@ -13,6 +14,9 @@ import { Navigation } from '@/navigation';
 import { memo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Routes from '@/navigation/routesNames';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import LinearGradient from 'react-native-linear-gradient';
 
 export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEventsScreen() {
   const safeAreaInsets = useSafeAreaInsets();
@@ -93,14 +97,27 @@ const PolymarketEventCard = memo(function PolymarketEventCard({ event }: { event
         Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { eventId: event.id, event: event });
       }}
     >
-      <Box gap={4} background="surfacePrimaryElevated" padding="20px" borderRadius={12}>
-        <Box flexDirection="row" alignItems="flex-start" justifyContent="space-between" gap={12}>
-          <Text size="22pt" weight="bold" color="label" numberOfLines={2} style={{ flex: 1 }}>
-            {event.title}
-          </Text>
-          <ImgixImage source={{ uri: event.icon }} size={32} style={{ width: 32, height: 32, borderRadius: 9 }} />
+      <GradientBorderView
+        borderGradientColors={[opacityWorklet(event.color, 0.24), opacityWorklet(event.color, 0)]}
+        borderRadius={12}
+        style={{ overflow: 'hidden' }}
+      >
+        <LinearGradient
+          colors={[opacityWorklet(event.color, 0.24), opacityWorklet(event.color, 0)]}
+          style={StyleSheet.absoluteFillObject}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          pointerEvents="none"
+        />
+        <Box gap={4} padding="20px" borderRadius={12}>
+          <Box flexDirection="row" alignItems="flex-start" justifyContent="space-between" gap={12}>
+            <Text size="22pt" weight="bold" color="label" numberOfLines={2} style={{ flex: 1 }}>
+              {event.title}
+            </Text>
+            <ImgixImage source={{ uri: event.icon }} size={32} style={{ width: 32, height: 32, borderRadius: 9 }} />
+          </Box>
         </Box>
-      </Box>
+      </GradientBorderView>
     </ButtonPressAnimation>
   );
 });

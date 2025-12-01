@@ -27,7 +27,7 @@ export const OpenPositionsSection = memo(function OpenPositionsSection({ eventId
           ))}
         </Box>
       </Box>
-      <Separator color={'separatorTertiary'} direction="horizontal" thickness={1} />
+      <Separator color={'separatorSecondary'} direction="horizontal" thickness={1} />
     </Box>
   );
 });

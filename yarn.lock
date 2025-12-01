@@ -4267,6 +4267,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jimp/bmp@npm:^0.22.12":
+  version: 0.22.12
+  resolution: "@jimp/bmp@npm:0.22.12"
+  dependencies:
+    "@jimp/utils": "npm:^0.22.12"
+    bmp-js: "npm:^0.1.0"
+  peerDependencies:
+    "@jimp/custom": ">=0.3.5"
+  checksum: 10c0/45739eb159bbb313a8c6610bf8389ececc6cc0892dae312dfcb9963b36c43d67e5570dcf959de0450c420570d51683d0685e0ec881f99c7125313b992be99aff
+  languageName: node
+  linkType: hard
+
 "@jimp/core@npm:^0.16.13":
   version: 0.16.13
   resolution: "@jimp/core@npm:0.16.13"
@@ -4286,6 +4298,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jimp/core@npm:^0.22.12":
+  version: 0.22.12
+  resolution: "@jimp/core@npm:0.22.12"
+  dependencies:
+    "@jimp/utils": "npm:^0.22.12"
+    any-base: "npm:^1.1.0"
+    buffer: "npm:^5.2.0"
+    exif-parser: "npm:^0.1.12"
+    file-type: "npm:^16.5.4"
+    isomorphic-fetch: "npm:^3.0.0"
+    pixelmatch: "npm:^4.0.2"
+    tinycolor2: "npm:^1.6.0"
+  checksum: 10c0/535d48403f7147e26adabb38fc8ae08831190c7c1e6fda54640adcfdfd5d3a3491d98bd030f7e22a9112404aec0614f865ebfcef68f0022e025bed60bf1da454
+  languageName: node
+  linkType: hard
+
 "@jimp/custom@npm:^0.16.1":
   version: 0.16.13
   resolution: "@jimp/custom@npm:0.16.13"
@@ -4293,6 +4321,15 @@ __metadata:
     "@babel/runtime": "npm:^7.7.2"
     "@jimp/core": "npm:^0.16.13"
   checksum: 10c0/b494873e9477e8baf709d24cfa90f9b4576c76d72e682229a2f64751677b43044528932df0c6af125c228929d1ddc2d13e8acec7048c91964da4addec4d3edd5
+  languageName: node
+  linkType: hard
+
+"@jimp/custom@npm:^0.22.12":
+  version: 0.22.12
+  resolution: "@jimp/custom@npm:0.22.12"
+  dependencies:
+    "@jimp/core": "npm:^0.22.12"
+  checksum: 10c0/942254bfb22a40b0420d60fd14e20f2f5af0eee89133896f13c29adf6f1dcb90a836129710b14c5c2c3b72ea7c4b0a8d9a68b0a3806c6592fcfb3beb03c611b7
   languageName: node
   linkType: hard
 
@@ -4310,6 +4347,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jimp/gif@npm:^0.22.12":
+  version: 0.22.12
+  resolution: "@jimp/gif@npm:0.22.12"
+  dependencies:
+    "@jimp/utils": "npm:^0.22.12"
+    gifwrap: "npm:^0.10.1"
+    omggif: "npm:^1.0.9"
+  peerDependencies:
+    "@jimp/custom": ">=0.3.5"
+  checksum: 10c0/40a804449e888d3885946c11156a54681c26bac1dbd77a84dace8d2e9be9e54dd3cae7865d235296b072901034fd220b3caca7c136b13110eb4c3eead407958b
+  languageName: node
+  linkType: hard
+
 "@jimp/jpeg@npm:^0.16.13":
   version: 0.16.13
   resolution: "@jimp/jpeg@npm:0.16.13"
@@ -4323,6 +4373,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jimp/jpeg@npm:^0.22.12":
+  version: 0.22.12
+  resolution: "@jimp/jpeg@npm:0.22.12"
+  dependencies:
+    "@jimp/utils": "npm:^0.22.12"
+    jpeg-js: "npm:^0.4.4"
+  peerDependencies:
+    "@jimp/custom": ">=0.3.5"
+  checksum: 10c0/3ff0e72d6cb86d2ae968b8e82a4a01b828f0c21b95b2b74c9c9d17ab2f3ededbdbb87590659a3bd4d62a0b3e759818080d47a09aa6fca82388eda68106ae1b70
+  languageName: node
+  linkType: hard
+
 "@jimp/plugin-resize@npm:^0.16.1":
   version: 0.16.13
   resolution: "@jimp/plugin-resize@npm:0.16.13"
@@ -4332,6 +4394,17 @@ __metadata:
   peerDependencies:
     "@jimp/custom": ">=0.3.5"
   checksum: 10c0/4eb26ed6408e33d4ce380007669cfdaa4f88cf36685dffb63093c330f5d5860d46ed552cfffa366f3f3d38686b365d45c1051499a9688a57f51cebc3d9e5a4d4
+  languageName: node
+  linkType: hard
+
+"@jimp/plugin-resize@npm:^0.22.12":
+  version: 0.22.12
+  resolution: "@jimp/plugin-resize@npm:0.22.12"
+  dependencies:
+    "@jimp/utils": "npm:^0.22.12"
+  peerDependencies:
+    "@jimp/custom": ">=0.3.5"
+  checksum: 10c0/a43d6d1580d9b2eaf5c02713c141e3158f8f5c59c5e8796b9b79b5ce3db8892790fff92c828bada622324ad7648078646302013fcb971d538aa87b8b7faa3d0d
   languageName: node
   linkType: hard
 
@@ -4348,6 +4421,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jimp/png@npm:^0.22.12":
+  version: 0.22.12
+  resolution: "@jimp/png@npm:0.22.12"
+  dependencies:
+    "@jimp/utils": "npm:^0.22.12"
+    pngjs: "npm:^6.0.0"
+  peerDependencies:
+    "@jimp/custom": ">=0.3.5"
+  checksum: 10c0/99a6fcf49d43c98c12fc26e017046b774d82453163662effa9a53dbf2a8aca5450f6b13bdef0292fdb326f1f18c4dbeeb8b1fe7bce096d07cd9f1af96e1b3fa3
+  languageName: node
+  linkType: hard
+
 "@jimp/tiff@npm:^0.16.13":
   version: 0.16.13
   resolution: "@jimp/tiff@npm:0.16.13"
@@ -4357,6 +4442,17 @@ __metadata:
   peerDependencies:
     "@jimp/custom": ">=0.3.5"
   checksum: 10c0/7b900fa7dd899f6a51c3227ad2e2788ff26861128f1c8ecda961b9e6494dd69dba18cae7005a22aac99d27de4eb81fe9cbeddb2944c4db60f6dc1a815f19ae68
+  languageName: node
+  linkType: hard
+
+"@jimp/tiff@npm:^0.22.12":
+  version: 0.22.12
+  resolution: "@jimp/tiff@npm:0.22.12"
+  dependencies:
+    utif2: "npm:^4.0.1"
+  peerDependencies:
+    "@jimp/custom": ">=0.3.5"
+  checksum: 10c0/14f545efef722254232fd44e5f837ca8f84ce8cdf0eb3156bba4938a81674848c75effba69cf2a484018da5a81ad2b80be29523b20e7103307a2ce67a8192539
   languageName: node
   linkType: hard
 
@@ -4377,6 +4473,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jimp/types@npm:^0.22.12":
+  version: 0.22.12
+  resolution: "@jimp/types@npm:0.22.12"
+  dependencies:
+    "@jimp/bmp": "npm:^0.22.12"
+    "@jimp/gif": "npm:^0.22.12"
+    "@jimp/jpeg": "npm:^0.22.12"
+    "@jimp/png": "npm:^0.22.12"
+    "@jimp/tiff": "npm:^0.22.12"
+    timm: "npm:^1.6.1"
+  peerDependencies:
+    "@jimp/custom": ">=0.3.5"
+  checksum: 10c0/62440b2ca490f7dca5943dde8b9c2f154240d1349563263faf299d476365b93bb94a7e892ce4685cc817ca087850ffc0914c27662164f5be90f4d4dad97fc46e
+  languageName: node
+  linkType: hard
+
 "@jimp/utils@npm:^0.16.13":
   version: 0.16.13
   resolution: "@jimp/utils@npm:0.16.13"
@@ -4384,6 +4496,15 @@ __metadata:
     "@babel/runtime": "npm:^7.7.2"
     regenerator-runtime: "npm:^0.13.3"
   checksum: 10c0/632fcd0d4336d2f381aea5d5f64e4b7b1cce4016c5ff511ce4767ebd216550a383eb5246098a997e215c6925ef04cfe0ae58e30e8889ea0774ca255017218be5
+  languageName: node
+  linkType: hard
+
+"@jimp/utils@npm:^0.22.12":
+  version: 0.22.12
+  resolution: "@jimp/utils@npm:0.22.12"
+  dependencies:
+    regenerator-runtime: "npm:^0.13.3"
+  checksum: 10c0/c2ce050db71c5f98e8930ca6e48265edeac930afe98325e427a7b8c897e5f796538f7f75460e1ab26d0edaea0c9aea4bf7184f6a686db82f1d18cf6e5f890f99
   languageName: node
   linkType: hard
 
@@ -7988,7 +8109,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.7.18":
+"@types/node@npm:^18.15.3, @types/node@npm:^18.7.18":
   version: 18.19.130
   resolution: "@types/node@npm:18.19.130"
   dependencies:
@@ -8425,6 +8546,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vibrant/color@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@vibrant/color@npm:4.0.0"
+  checksum: 10c0/b51d146b6c15235fa97dfbdfdf784bef2a47bb035e84ccbdce102f30f024966fa67a9e7468feddd4bc5150e127328b3e1414132807c6cc11bfa6de0055d19e93
+  languageName: node
+  linkType: hard
+
 "@vibrant/core@npm:^3.2.1-alpha.1":
   version: 3.2.1-alpha.1
   resolution: "@vibrant/core@npm:3.2.1-alpha.1"
@@ -8439,6 +8567,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vibrant/core@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@vibrant/core@npm:4.0.0"
+  dependencies:
+    "@vibrant/color": "npm:^4.0.0"
+    "@vibrant/generator": "npm:^4.0.0"
+    "@vibrant/image": "npm:^4.0.0"
+    "@vibrant/quantizer": "npm:^4.0.0"
+    "@vibrant/worker": "npm:^4.0.0"
+  checksum: 10c0/f57ead6ebf6a9b88d04e78542a656b6ca3f05d49e8b2a71317bda54491a4f4eb66f4796faa199ea06850e86c6ba10634b69886752f963da6edb85ae4d82f1205
+  languageName: node
+  linkType: hard
+
 "@vibrant/generator-default@npm:^3.2.1-alpha.1":
   version: 3.2.1-alpha.1
   resolution: "@vibrant/generator-default@npm:3.2.1-alpha.1"
@@ -8446,6 +8587,16 @@ __metadata:
     "@vibrant/color": "npm:^3.2.1-alpha.1"
     "@vibrant/generator": "npm:^3.2.1-alpha.1"
   checksum: 10c0/17572dbf871411d1de6efd13d40a3997d147c2e394e02b8241d6deee867155dcdae7878bdc325d3dba0bf353e4930674b5f322a7d9a1779b2fca52cdefbd2807
+  languageName: node
+  linkType: hard
+
+"@vibrant/generator-default@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "@vibrant/generator-default@npm:4.0.3"
+  dependencies:
+    "@vibrant/color": "npm:^4.0.0"
+    "@vibrant/generator": "npm:^4.0.0"
+  checksum: 10c0/667f6c27dba52b68f4764a7f4485132c1045c17d538878a00a81adf21741aa0c5feee8cfbf9dba0f7847aa76f9d0fd45adfb57b1cb12584644c4e53010a89d17
   languageName: node
   linkType: hard
 
@@ -8459,12 +8610,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vibrant/generator@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@vibrant/generator@npm:4.0.0"
+  dependencies:
+    "@vibrant/color": "npm:^4.0.0"
+    "@vibrant/types": "npm:^4.0.0"
+  checksum: 10c0/17393f040417a3848b8c0f29e666df7396485c5a9df61974780ac4e5459d4c6669de43099241d69803ac7cf8d1cb27f0a3dd9f6f9a6b762b6c4e7c904afe4437
+  languageName: node
+  linkType: hard
+
 "@vibrant/image-browser@npm:^3.2.1-alpha.1":
   version: 3.2.1-alpha.1
   resolution: "@vibrant/image-browser@npm:3.2.1-alpha.1"
   dependencies:
     "@vibrant/image": "npm:^3.2.1-alpha.1"
   checksum: 10c0/00c8bc1bb9614300d91a5b44a25febb29ca6224dae2d772a72373234f4e694f103da8d3ea7929ba21731f322771e3e19927309975033c0d610e34d4a47631c99
+  languageName: node
+  linkType: hard
+
+"@vibrant/image-browser@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@vibrant/image-browser@npm:4.0.0"
+  dependencies:
+    "@vibrant/image": "npm:^4.0.0"
+  checksum: 10c0/9b1cdf7fa40c3e5a6051bc58e9e071bbedf04081b33129138b5cdd845698b662379f5dab0c1f7fcdaad8798157fa065ef650ac8f6e48392174a4f32ab115e1d4
   languageName: node
   linkType: hard
 
@@ -8480,6 +8650,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vibrant/image-node@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@vibrant/image-node@npm:4.0.0"
+  dependencies:
+    "@jimp/custom": "npm:^0.22.12"
+    "@jimp/plugin-resize": "npm:^0.22.12"
+    "@jimp/types": "npm:^0.22.12"
+    "@vibrant/image": "npm:^4.0.0"
+  checksum: 10c0/1a31cdaa48d2c81cd8dc56726284f6b99d0db8c387a793e5818689643b362c796d9c75d13880c66d23d066cfcbdb55a6f45680fac5bc2b6361a28089de84ab98
+  languageName: node
+  linkType: hard
+
 "@vibrant/image@npm:^3.2.1-alpha.1":
   version: 3.2.1-alpha.1
   resolution: "@vibrant/image@npm:3.2.1-alpha.1"
@@ -8487,6 +8669,15 @@ __metadata:
     "@vibrant/color": "npm:^3.2.1-alpha.1"
     "@vibrant/types": "npm:^3.2.1-alpha.1"
   checksum: 10c0/7367d0e1982ed23100884cfa705fe3221f17500a8e5164c9622f725bdd63a967dc7c1d64be6dbe4e6964b81bd167be059520479f2e00cfc3fcf2c965b992c606
+  languageName: node
+  linkType: hard
+
+"@vibrant/image@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@vibrant/image@npm:4.0.0"
+  dependencies:
+    "@vibrant/color": "npm:^4.0.0"
+  checksum: 10c0/bab9b50ec344d079d2b14a4aff21f5a6530e9bc4acc87a659872f3d0d79ca2713df5d83c4fd660f6cfc9709769a3945d370295e08075b1e61eff32eb7fc9625b
   languageName: node
   linkType: hard
 
@@ -8501,6 +8692,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vibrant/quantizer-mmcq@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@vibrant/quantizer-mmcq@npm:4.0.0"
+  dependencies:
+    "@vibrant/color": "npm:^4.0.0"
+    "@vibrant/image": "npm:^4.0.0"
+    "@vibrant/quantizer": "npm:^4.0.0"
+  checksum: 10c0/cd98296c26ae1fba38db66a104a5be3864e934c725095b3f8508e470ade773c1379af59b2e0a20630c2f3978813ae8a52ce7811daf70ce52003edba0125b3dbe
+  languageName: node
+  linkType: hard
+
 "@vibrant/quantizer@npm:^3.2.1-alpha.1":
   version: 3.2.1-alpha.1
   resolution: "@vibrant/quantizer@npm:3.2.1-alpha.1"
@@ -8512,10 +8714,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vibrant/quantizer@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@vibrant/quantizer@npm:4.0.0"
+  dependencies:
+    "@vibrant/color": "npm:^4.0.0"
+    "@vibrant/image": "npm:^4.0.0"
+    "@vibrant/types": "npm:^4.0.0"
+  checksum: 10c0/924a0023217754ba31093d2c9eade1a645543ef8d74d7dbe7723f403d8468da90f43148cc5d7de3540bbfc0eabb33ca01348f4d51c1cf1ea11399539a5ff6bc1
+  languageName: node
+  linkType: hard
+
 "@vibrant/types@npm:^3.2.1-alpha.1":
   version: 3.2.1-alpha.1
   resolution: "@vibrant/types@npm:3.2.1-alpha.1"
   checksum: 10c0/14877f1699556545422be77970d2f218fdef28a56123963249a417a6c374a67b88c57b60c6ac3733aa77891b3a9aae926707453071792463e34a9e7e9133d098
+  languageName: node
+  linkType: hard
+
+"@vibrant/types@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@vibrant/types@npm:4.0.0"
+  checksum: 10c0/6c3f06bcb750af53e271f5357edb8e9f200c763b615f6fcb3fd0c3cdae4c2a30151da0286338d2528031c4f4aa81b3ff374e38097fc1af018dbf530cd839a301
   languageName: node
   linkType: hard
 
@@ -8525,6 +8745,15 @@ __metadata:
   dependencies:
     "@vibrant/types": "npm:^3.2.1-alpha.1"
   checksum: 10c0/c2bcafc15c8e13fbf9d6c299cfec636fbb20a78f603eab6180863d06dd5483c02fda58da8bab59dd2b1e5bef46f9e8273d8c00eba1b8b5c626a72561845dcaad
+  languageName: node
+  linkType: hard
+
+"@vibrant/worker@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@vibrant/worker@npm:4.0.0"
+  dependencies:
+    "@vibrant/types": "npm:^4.0.0"
+  checksum: 10c0/3c570b06de8f64165e15234c17abaf06a5f7678a80d9246e5c7d7011925cab37a5a5df6c852a834800beef08f26c5e3f7ee6bfa3d8aa354ad664683bdd6330c9
   languageName: node
   linkType: hard
 
@@ -9666,6 +9895,7 @@ __metadata:
     react-native-gesture-handler: "npm:2.27.2"
     react-native-get-random-values: "npm:1.5.0"
     react-native-haptic-feedback: "npm:2.2.0"
+    react-native-image-colors: "npm:2.5.1"
     react-native-indicators: "npm:0.17.0"
     react-native-ios-context-menu: "npm:1.15.3"
     react-native-keyboard-controller: "npm:1.19.1"
@@ -16559,6 +16789,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"gifwrap@npm:^0.10.1":
+  version: 0.10.1
+  resolution: "gifwrap@npm:0.10.1"
+  dependencies:
+    image-q: "npm:^4.0.0"
+    omggif: "npm:^1.0.10"
+  checksum: 10c0/dd7327725d47c15bd4b23b69dc149043adff9013e352280a3f86a965eecab7f3e6027ecbb4177b05a6ab3bd1995f447f7adb9fdcb41db4372d8a239859f22492
+  languageName: node
+  linkType: hard
+
 "gifwrap@npm:^0.9.2":
   version: 0.9.4
   resolution: "gifwrap@npm:0.9.4"
@@ -18276,6 +18516,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"isomorphic-fetch@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "isomorphic-fetch@npm:3.0.0"
+  dependencies:
+    node-fetch: "npm:^2.6.1"
+    whatwg-fetch: "npm:^3.4.1"
+  checksum: 10c0/511b1135c6d18125a07de661091f5e7403b7640060355d2d704ce081e019bc1862da849482d079ce5e2559b8976d3de7709566063aec1b908369c0b98a2b075b
+  languageName: node
+  linkType: hard
+
 "isows@npm:1.0.3":
   version: 1.0.3
   resolution: "isows@npm:1.0.3"
@@ -18917,7 +19167,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jpeg-js@npm:^0.4.2":
+"jpeg-js@npm:^0.4.2, jpeg-js@npm:^0.4.4":
   version: 0.4.4
   resolution: "jpeg-js@npm:0.4.4"
   checksum: 10c0/4d0d5097f8e55d8bbce6f1dc32ffaf3f43f321f6222e4e6490734fdc6d005322e3bd6fb992c2df7f5b587343b1441a1c333281dc3285bc9116e369fd2a2b43a7
@@ -21816,6 +22066,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-vibrant@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "node-vibrant@npm:4.0.3"
+  dependencies:
+    "@types/node": "npm:^18.15.3"
+    "@vibrant/core": "npm:^4.0.0"
+    "@vibrant/generator-default": "npm:^4.0.3"
+    "@vibrant/image-browser": "npm:^4.0.0"
+    "@vibrant/image-node": "npm:^4.0.0"
+    "@vibrant/quantizer-mmcq": "npm:^4.0.0"
+  checksum: 10c0/eb8c86d43d0f1267158c78a1cc6668362ae43462c973968e39f4a832567dd164fd358e2ac2976aec2677624096dd3691714ccf342f98a8c18c2c79dedce90333
+  languageName: node
+  linkType: hard
+
 "nopt@npm:^6.0.0":
   version: 6.0.0
   resolution: "nopt@npm:6.0.0"
@@ -22495,7 +22759,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pako@npm:^1.0.5":
+"pako@npm:^1.0.11, pako@npm:^1.0.5":
   version: 1.0.11
   resolution: "pako@npm:1.0.11"
   checksum: 10c0/86dd99d8b34c3930345b8bbeb5e1cd8a05f608eeb40967b293f72fe469d0e9c88b783a8777e4cc7dc7c91ce54c5e93d88ff4b4f060e6ff18408fd21030d9ffbe
@@ -22978,6 +23242,13 @@ __metadata:
   version: 3.4.0
   resolution: "pngjs@npm:3.4.0"
   checksum: 10c0/88ee73e2ad3f736e0b2573722309eb80bd2aa28916f0862379b4fd0f904751b4f61bb6bd1ecd7d4242d331f2b5c28c13309dd4b7d89a9b78306e35122fdc5011
+  languageName: node
+  linkType: hard
+
+"pngjs@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "pngjs@npm:6.0.0"
+  checksum: 10c0/ac23ea329b1881d1a10575aff58116dc27b894ec3f5b84ba15c7f527d21e609fbce7ba16d48f8ccb86c7ce45ceed622472765476ab2875949d4bec55e153f87a
   languageName: node
   linkType: hard
 
@@ -23937,6 +24208,19 @@ __metadata:
   peerDependencies:
     react-native: ">=0.60.0"
   checksum: 10c0/6939804b1e3a4c1e35052a65c2536a00b6d7d93b2b5a5c4fc6ef690a06d043c38bf95536f9b54acfb32d08abf901b847171a574d0d863acfdee59cce012d2497
+  languageName: node
+  linkType: hard
+
+"react-native-image-colors@npm:2.5.1":
+  version: 2.5.1
+  resolution: "react-native-image-colors@npm:2.5.1"
+  dependencies:
+    node-vibrant: "npm:^4.0.3"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/4206687471055f00ba770b8e24f343b6407c95df0acd447427243be8083cc1e7a2bf84fd3127f48fd8567996fd119c6a558c8ea1e85cbc039fb7f9984ff295a0
   languageName: node
   linkType: hard
 
@@ -27365,7 +27649,7 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"tinycolor2@npm:^1.4.1":
+"tinycolor2@npm:^1.4.1, tinycolor2@npm:^1.6.0":
   version: 1.6.0
   resolution: "tinycolor2@npm:1.6.0"
   checksum: 10c0/9aa79a36ba2c2a87cb221453465cabacd04b9e35f9694373e846fdc78b1c768110f81e581ea41440106c0f24d9a023891d0887e8075885e790ac40eb0e74a5c1
@@ -28493,6 +28777,15 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
+"utif2@npm:^4.0.1":
+  version: 4.1.0
+  resolution: "utif2@npm:4.1.0"
+  dependencies:
+    pako: "npm:^1.0.11"
+  checksum: 10c0/c60fd91427548f6b866b66fa983d7f08347aef0ac4c5b85b517dd70a5b0031548f3496e55dad28435031534fda0d237673d881636ff60845bf4a014dc9edf676
+  languageName: node
+  linkType: hard
+
 "utif@npm:^2.0.1":
   version: 2.0.1
   resolution: "utif@npm:2.0.1"
@@ -28976,7 +29269,7 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"whatwg-fetch@npm:>=0.10.0, whatwg-fetch@npm:^3.0.0":
+"whatwg-fetch@npm:>=0.10.0, whatwg-fetch@npm:^3.0.0, whatwg-fetch@npm:^3.4.1":
   version: 3.6.20
   resolution: "whatwg-fetch@npm:3.6.20"
   checksum: 10c0/fa972dd14091321d38f36a4d062298df58c2248393ef9e8b154493c347c62e2756e25be29c16277396046d6eaa4b11bd174f34e6403fff6aaca9fb30fa1ff46d

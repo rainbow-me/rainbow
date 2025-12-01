@@ -1,23 +1,26 @@
 import { PolymarketEvent, PolymarketMarket, RawPolymarketEvent, RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { PolymarketOutcome, PolymarketPosition, RawPolymarketPosition } from '@/features/polymarket/types';
+import { PolymarketPosition, RawPolymarketPosition } from '@/features/polymarket/types';
 import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
 import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';
+import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
 
 export function processRawPolymarketMarket(market: RawPolymarketMarket): PolymarketMarket {
   return {
     ...market,
     clobTokenIds: JSON.parse(market.clobTokenIds) as string[],
-    outcomes: JSON.parse(market.outcomes) as PolymarketOutcome[],
-    outcomePrices: market.outcomePrices ? (JSON.parse(market.outcomePrices) as string[]) : [],
+    outcomes: JSON.parse(market.outcomes) as string[],
+    outcomePrices: market.outcomePrices ? (JSON.parse(market.outcomePrices) as string[]) : ['0', '0'],
     ...getMarketColors(market),
   };
 }
 
-export function processRawPolymarketEvent(event: RawPolymarketEvent): PolymarketEvent {
+export async function processRawPolymarketEvent(event: RawPolymarketEvent): Promise<PolymarketEvent> {
+  const color = await getImagePrimaryColor(event.icon);
   return {
     ...event,
     markets: event.markets.map(processRawPolymarketMarket),
     uniqueMarketImages: event.markets.some(market => market.icon !== event.icon),
+    color,
   };
 }
 
@@ -27,7 +30,7 @@ export function processRawPolymarketPosition(position: RawPolymarketPosition, ma
   return {
     ...position,
     clobTokenIds: JSON.parse(market.clobTokenIds) as string[],
-    outcomes: JSON.parse(market.outcomes) as PolymarketOutcome[],
+    outcomes: JSON.parse(market.outcomes) as string[],
     outcomePrices: market.outcomePrices ? (JSON.parse(market.outcomePrices) as string[]) : [],
     nativeCurrency: {
       currentValue: useCurrencyConversionStore.getState().convertToNativeCurrency(position.currentValue),

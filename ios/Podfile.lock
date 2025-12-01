@@ -232,6 +232,8 @@ PODS:
   - hermes-engine (0.79.5):
     - hermes-engine/Pre-built (= 0.79.5)
   - hermes-engine/Pre-built (0.79.5)
+  - ImageColors (2.5.1):
+    - ExpoModulesCore
   - libwebp (1.5.0):
     - libwebp/demux (= 1.5.0)
     - libwebp/mux (= 1.5.0)
@@ -2692,6 +2694,7 @@ DEPENDENCIES:
   - GoogleDataTransport
   - GoogleUtilities
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
+  - ImageColors (from `../node_modules/react-native-image-colors/ios`)
   - libwebp
   - "mobile-wallet-protocol-host (from `../node_modules/@coinbase/mobile-wallet-protocol-host`)"
   - nanopb
@@ -2918,6 +2921,8 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2025-06-04-RNv0.79.3-7f9a871eefeb2c3852365ee80f0b6733ec12ac3b
+  ImageColors:
+    :path: "../node_modules/react-native-image-colors/ios"
   mobile-wallet-protocol-host:
     :path: "../node_modules/@coinbase/mobile-wallet-protocol-host"
   PanModal:
@@ -3237,6 +3242,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   hermes-engine: f03b0e06d3882d71e67e45b073bb827da1a21aae
+  ImageColors: e12eb73e29bc1feaa3c228db8c174a1b25acb59d
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   MetricsReporter: 364b98791e868b10e9d512eb50af28d8c11e5cdb
   MMKV: b4802ebd5a7c68fc0c4a5ccb4926fbdfb62d68e0

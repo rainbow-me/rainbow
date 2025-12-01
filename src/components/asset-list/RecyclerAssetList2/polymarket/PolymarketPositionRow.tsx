@@ -16,7 +16,6 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
   const accentColor = position.market.color;
   const isPositivePnl = position.cashPnl > 0;
   const pnlColor = isPositivePnl ? 'green' : 'red';
-  position.market.events[0];
 
   return (
     <ButtonPressAnimation
@@ -60,7 +59,7 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
                       </Text>
                     )}
                     <Bleed vertical="3px">
-                      <OutcomeBadge outcome={position.outcome} />
+                      <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />
                     </Bleed>
                   </Box>
                 </Box>

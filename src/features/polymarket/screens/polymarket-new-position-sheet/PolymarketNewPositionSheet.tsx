@@ -11,7 +11,15 @@ import { ensureError, logger, RainbowError } from '@/logger';
 import ImgixImage from '@/components/images/ImgixImage';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
-import { divWorklet, greaterThanWorklet, lessThanWorklet, maxWorklet, toFixedWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
+import {
+  divWorklet,
+  greaterThanWorklet,
+  lessThanWorklet,
+  maxWorklet,
+  mulWorklet,
+  toFixedWorklet,
+  toPercentageWorklet,
+} from '@/safe-math/SafeMath';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import LinearGradient from 'react-native-linear-gradient';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
@@ -20,14 +28,15 @@ import { useDerivedValue } from 'react-native-reanimated';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { Navigation } from '@/navigation';
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
     params: { market, outcome },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
   const availableBalance = usePolymarketBalanceStore(state => state.getBalance());
-  const accentColor = market.seriesColor ?? '#3ECFAD';
-  const outcomeIndex = market.outcomes.indexOf(outcome);
+  const accentColor = market.color;
 
   const [amount, setAmount] = useState(() => {
     const halfBalance = divWorklet(availableBalance, 2);
@@ -35,13 +44,23 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     return toFixedWorklet(initialAmount, 2);
   });
 
-  const orderPrice = useMemo(() => {
-    return formatOrderPrice(Number(market.outcomePrices[outcomeIndex]), market.orderPriceMinTickSize);
-  }, [market.outcomePrices, outcomeIndex, market.orderPriceMinTickSize]);
+  const outcomeIndex = useMemo(() => {
+    return market.outcomes.indexOf(outcome);
+  }, [market.outcomes, outcome]);
+
+  const tokenId = useMemo(() => {
+    return market.clobTokenIds[outcomeIndex];
+  }, [market.clobTokenIds, outcomeIndex]);
+
+  const liveOrderPrice = useLiveTokenValue({
+    tokenId: getPolymarketTokenId(tokenId),
+    initialValue: String(formatOrderPrice(Number(market.outcomePrices[outcomeIndex]), market.orderPriceMinTickSize)),
+    selector: token => String(formatOrderPrice(Number(token.price), market.orderPriceMinTickSize)),
+  });
 
   const minBuyAmountUsd = useMemo(() => {
-    return market.orderMinSize * orderPrice;
-  }, [market.orderMinSize, orderPrice]);
+    return mulWorklet(market.orderMinSize, liveOrderPrice);
+  }, [market.orderMinSize, liveOrderPrice]);
 
   const validation = useDerivedValue(() => {
     'worklet';
@@ -77,27 +96,24 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     syncDirection: 'sharedValueToState',
   });
 
-  const tokenId = useMemo(() => {
-    return market.clobTokenIds[outcomeIndex];
-  }, [market.clobTokenIds, outcomeIndex]);
-
   const outcomeOdds = useMemo(() => {
-    const outcomePrice = Number(market.outcomePrices[outcomeIndex]);
-    return toPercentageWorklet(outcomePrice);
-  }, [market.outcomePrices, outcomeIndex]);
+    return toPercentageWorklet(liveOrderPrice);
+  }, [liveOrderPrice]);
 
   const amountToWin = useMemo(() => {
-    const outcomePrice = Number(market.outcomePrices[outcomeIndex]);
-    const estimatedPositionSize = divWorklet(amount, outcomePrice);
+    const estimatedPositionSize = divWorklet(amount, liveOrderPrice);
     // If you win, each unit of the position is worth $1.
     return formatCurrency(estimatedPositionSize);
-  }, [amount, market.outcomePrices, outcomeIndex]);
+  }, [amount, liveOrderPrice]);
 
   const handleMarketBuyPosition = useCallback(async () => {
     try {
-      const price = formatOrderPrice(Number(market.outcomePrices[outcomeIndex]), market.orderPriceMinTickSize);
-      const result = await marketBuyPosition({ tokenId, amount: Number(amount), price });
-      console.log('Order result', JSON.stringify(result, null, 2));
+      const result = await marketBuyPosition({ tokenId, amount: Number(amount), price: Number(liveOrderPrice) });
+      // console.log('Order result', JSON.stringify(result, null, 2));
+      // When the order is rejected for some valid reason - like the total amount was not filled on a fill or kill order - the error will be returned in the result.
+      if ('error' in result) {
+        throw new RainbowError(result.error);
+      }
       setTimeout(async () => {
         await refetchPolymarketStores();
       }, 1000);
@@ -110,7 +126,18 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
       });
       // TODO: Show error to user
     }
-  }, [amount, market.orderPriceMinTickSize, market.outcomePrices, outcomeIndex, tokenId]);
+  }, [amount, liveOrderPrice, tokenId]);
+
+  const outcomeSubtitle = useMemo(() => {
+    if (outcome !== 'Yes' && outcome !== 'No') {
+      if (market.line) {
+        return `${outcome} ${market.line}`;
+      }
+    } else if (market.groupItemTitle) {
+      return market.groupItemTitle;
+    }
+    return outcome;
+  }, [market.groupItemTitle, outcome, market.line]);
 
   return (
     <PanelSheet innerBorderWidth={1} enableKeyboardAvoidance>
@@ -147,11 +174,11 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
                   style={{ height: 38, width: 38, borderRadius: 10 }}
                 />
                 <Box gap={12} style={{ flex: 1 }}>
-                  <Text size="15pt" weight="bold" color="label" numberOfLines={1} style={{ flex: 1 }}>
-                    {market.events?.[0]?.title ?? market.question}
+                  <Text size="15pt" weight="bold" color="labelTertiary" numberOfLines={1} style={{ flex: 1 }}>
+                    {market.events?.[0]?.title || market.question}
                   </Text>
-                  <Text size="15pt" weight="bold" color="labelQuaternary">
-                    {market.groupItemTitle}
+                  <Text size="17pt" weight="bold" color="label">
+                    {outcomeSubtitle}
                   </Text>
                 </Box>
               </Box>
@@ -210,7 +237,29 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   );
 });
 
-async function marketBuyPosition({ tokenId, amount, price }: { tokenId: string; amount: number; price: number }): Promise<unknown> {
+/**
+ * Successful order result:
+{
+  "errorMsg": "",
+  "orderID": "0xb33730e62e3b884fc40a2b6b1e346c5e33430055a74c320e14d32eb320659ece",
+  "takingAmount": "5.301885",
+  "makingAmount": "2.809999",
+  "status": "matched",
+  "transactionsHashes": [
+    "0x044c79c36506f683945097e5902c4e7b53c6b40cd763fb04cf7cd6a39e3781c8"
+  ],
+  "success": true
+}
+Error order result:
+{
+  "error": "order couldn't be fully filled. FOK orders are fully filled or killed.",
+  "status": 400
+}
+*/
+
+// TODO: create types for order result
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function marketBuyPosition({ tokenId, amount, price }: { tokenId: string; amount: number; price: number }): Promise<any> {
   const client = await getPolymarketClobClient();
   const order = await client.createMarketOrder({
     side: Side.BUY,

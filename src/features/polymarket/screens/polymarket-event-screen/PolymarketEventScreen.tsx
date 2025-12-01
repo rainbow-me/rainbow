@@ -18,6 +18,8 @@ import { PriceHistoryInterval } from '@polymarket/clob-client';
 import { time } from '@/utils/time';
 import { formatNumber } from '@/helpers/strings';
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { AboutSection } from '@/features/polymarket/screens/polymarket-event-screen/AboutSection';
+import { SportsEventMarkets } from '@/features/polymarket/screens/polymarket-event-screen/SportsEventMarkets';
 
 export const EventHeaderSection = memo(function EventHeaderSection({
   initialEvent,
@@ -95,6 +97,11 @@ const PolymarketEventScreenContent = memo(function PolymarketEventScreenContent(
   const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
   const safeAreaInsets = useSafeAreaInsets();
 
+  /**
+   * TODO: Verify that this is the correct way to determine if an event is a sports event.
+   */
+  const isSportsEvent = initialEvent?.gameId !== undefined;
+
   return (
     <>
       <SlackSheet
@@ -115,7 +122,8 @@ const PolymarketEventScreenContent = memo(function PolymarketEventScreenContent(
           <EventHeaderSection initialEvent={initialEvent} />
           <ChartSection />
           <OpenPositionsSection eventId={eventId} />
-          <MarketsSection />
+          {isSportsEvent ? <SportsEventMarkets /> : <MarketsSection />}
+          {/* <AboutSection /> */}
         </Box>
       </SlackSheet>
       <Box position="absolute" top="0px" left="0px" right="0px" width="full" pointerEvents="none">

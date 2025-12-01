@@ -15,6 +15,8 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { formatNumber } from '@/helpers/strings';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { getSolidColorEquivalent } from '@/worklets/colors';
+import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 
 const ActionButtonType = {
   CLAIM: 'claim',
@@ -36,11 +38,10 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   const red = useForegroundColor('red');
   const wonGreen = isDarkMode ? '#1F9E39' : green;
   const lostRed = isDarkMode ? '#D53F35' : red;
+  const accentColor = position.market.color;
 
   const redeemable = position.redeemable;
   const isWin = redeemable && position.size === position.currentValue;
-
-  const accentColor = position.market.color;
 
   const actionButtonType = useMemo(() => {
     if (redeemable) {
@@ -77,6 +78,12 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
         };
     }
   }, [actionButtonType, position]);
+
+  const outcomeTokenId = useMemo(() => {
+    const outcomeIndex = position.outcomes.indexOf(position.outcome);
+    const tokenId = position.market.clobTokenIds[outcomeIndex];
+    return tokenId;
+  }, [position.market.clobTokenIds, position.outcomes, position.outcome]);
 
   return (
     <GradientBorderView
@@ -127,9 +134,9 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                 <Text size="15pt" weight="semibold" color="labelQuaternary">
                   {'Outcome'}
                 </Text>
-                <Bleed vertical="4px">
+                {/* <Bleed vertical="4px">
                   <OutcomeBadge outcome={position.outcome} />
-                </Bleed>
+                </Bleed> */}
               </Box>
               {redeemable ? (
                 <Bleed bottom="16px">
@@ -163,9 +170,13 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                       />
                     </Bleed>
                   )}
-                  {position.market.groupItemTitle && (
+                  {position.market.groupItemTitle ? (
                     <Text size="17pt" weight="bold" color="label">
                       {position.market.groupItemTitle}
+                    </Text>
+                  ) : (
+                    <Text size="17pt" weight="bold" color="label">
+                      {position.outcome}
                     </Text>
                   )}
                 </Box>
@@ -183,9 +194,17 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
               <Text size="15pt" weight="bold" color="labelQuaternary">
                 {'Odds'}
               </Text>
-              <Text size="15pt" weight="bold" color="labelSecondary">
+              {/* <Text size="15pt" weight="bold" color="labelSecondary">
                 {`${toPercentageWorklet(position.curPrice)}%`}
-              </Text>
+              </Text> */}
+              <LiveTokenText
+                size="15pt"
+                weight="bold"
+                color="labelSecondary"
+                tokenId={getPolymarketTokenId(outcomeTokenId)}
+                selector={token => `${toPercentageWorklet(token.price)}%`}
+                initialValue={`${toPercentageWorklet(position.curPrice)}%`}
+              />
             </Box>
             <Box flexDirection="row" alignItems="center" gap={3}>
               <Text size="15pt" weight="bold" color="labelQuaternary">
