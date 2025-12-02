@@ -19,7 +19,7 @@ jest.mock('@sentry/react-native', () => ({
 describe('general functionality', () => {
   test('default params', () => {
     const logger = new Logger();
-    expect(logger.enabled).toBeFalsy();
+    expect(logger.enabled).toBeTruthy();
     expect(logger.level).toEqual(LogLevel.Warn);
   });
 

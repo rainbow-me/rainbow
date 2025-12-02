@@ -213,7 +213,7 @@ export class Logger {
   protected debugContextRegexes: RegExp[] = [];
 
   constructor({
-    enabled = !env.IS_TEST && !device.get(['doNotTrack']),
+    enabled = !device.get(['doNotTrack']),
     level = LOG_LEVEL as LogLevel,
     debug = LOG_DEBUG || '',
   }: {

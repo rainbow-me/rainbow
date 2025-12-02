@@ -2,6 +2,10 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { RainbowFetchClient } from '../rainbow-fetch';
 import { ChainId } from '@/state/backendNetworks/types';
 import { METADATA_BASE_URL } from 'react-native-dotenv';
+import { IS_TEST } from '@/env';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { mockMeteorologyData } from '@/e2e-mocks/meteorology';
+
 let rainbowMeteorologyApi: RainbowFetchClient | undefined;
 
 export const getRainbowMeteorologyApi = () => {
@@ -20,7 +24,12 @@ export const getRainbowMeteorologyApi = () => {
   return rainbowMeteorologyApi;
 };
 
-export const rainbowMeteorologyGetData = <T>(chainId: ChainId, abortController?: AbortController | null) =>
-  getRainbowMeteorologyApi().get<T>(`/meteorology/v1/gas/${useBackendNetworksStore.getState().getChainsName()[chainId]}`, {
+export const rainbowMeteorologyGetData = <T>(chainId: ChainId, abortController?: AbortController | null) => {
+  // Return mocked data for anvil tests to ensure gas fees are high enough
+  if (IS_TEST && useConnectedToAnvilStore.getState().connectedToAnvil) {
+    return Promise.resolve({ data: mockMeteorologyData as T });
+  }
+  return getRainbowMeteorologyApi().get<T>(`/meteorology/v1/gas/${useBackendNetworksStore.getState().getChainsName()[chainId]}`, {
     abortController,
   });
+};
