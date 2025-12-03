@@ -7,8 +7,8 @@ import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors
 export function processRawPolymarketMarket(market: RawPolymarketMarket): PolymarketMarket {
   return {
     ...market,
-    clobTokenIds: JSON.parse(market.clobTokenIds) as string[],
-    outcomes: JSON.parse(market.outcomes) as string[],
+    clobTokenIds: market.clobTokenIds ? (JSON.parse(market.clobTokenIds) as string[]) : [],
+    outcomes: market.outcomes ? (JSON.parse(market.outcomes) as string[]) : [],
     outcomePrices: market.outcomePrices ? (JSON.parse(market.outcomePrices) as string[]) : ['0', '0'],
     ...getMarketColors(market),
   };

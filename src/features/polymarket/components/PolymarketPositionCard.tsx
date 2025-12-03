@@ -15,8 +15,10 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { formatNumber } from '@/helpers/strings';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { getSolidColorEquivalent } from '@/worklets/colors';
-import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
+import { redeemPosition } from '@/features/polymarket/utils/redeemPosition';
+import { ensureError, logger, RainbowError } from '@/logger';
 
 const ActionButtonType = {
   CLAIM: 'claim',
@@ -65,12 +67,21 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   const actionButtonOnPress = useMemo(() => {
     switch (actionButtonType) {
       case ActionButtonType.CLAIM:
-        return () => {
-          console.log('claim');
+        return async () => {
+          try {
+            const result = await redeemPosition(position);
+            console.log('Redeem result', JSON.stringify(result, null, 2));
+          } catch (e) {
+            const error = ensureError(e);
+            console.log('error stack:', error.stack);
+            logger.error(new RainbowError('[PolymarketPositionCard] Error redeeming position', error), {
+              message: error.message,
+            });
+          }
         };
       case ActionButtonType.BURN:
         return () => {
-          console.log('burn');
+          redeemPosition(position);
         };
       case ActionButtonType.CASH_OUT:
         return () => {
@@ -134,9 +145,9 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                 <Text size="15pt" weight="semibold" color="labelQuaternary">
                   {'Outcome'}
                 </Text>
-                {/* <Bleed vertical="4px">
-                  <OutcomeBadge outcome={position.outcome} />
-                </Bleed> */}
+                <Bleed vertical="4px">
+                  <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />
+                </Bleed>
               </Box>
               {redeemable ? (
                 <Bleed bottom="16px">
@@ -194,9 +205,6 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
               <Text size="15pt" weight="bold" color="labelQuaternary">
                 {'Odds'}
               </Text>
-              {/* <Text size="15pt" weight="bold" color="labelSecondary">
-                {`${toPercentageWorklet(position.curPrice)}%`}
-              </Text> */}
               <LiveTokenText
                 size="15pt"
                 weight="bold"

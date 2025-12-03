@@ -174,7 +174,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
                   style={{ height: 38, width: 38, borderRadius: 10 }}
                 />
                 <Box gap={12} style={{ flex: 1 }}>
-                  <Text size="15pt" weight="bold" color="labelTertiary" numberOfLines={1} style={{ flex: 1 }}>
+                  <Text size="15pt" weight="bold" color="labelTertiary" style={{ flex: 1 }}>
                     {market.events?.[0]?.title || market.question}
                   </Text>
                   <Text size="17pt" weight="bold" color="label">
@@ -272,5 +272,7 @@ async function marketBuyPosition({ tokenId, amount, price }: { tokenId: string; 
 }
 
 function formatOrderPrice(price: number, minTickSize: number): number {
-  return Math.ceil(price / minTickSize) * minTickSize;
+  const decimals = Math.round(-Math.log10(minTickSize));
+  const roundedPrice = Math.ceil(price / minTickSize) * minTickSize;
+  return Number(roundedPrice.toFixed(decimals));
 }

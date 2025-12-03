@@ -6,7 +6,7 @@ import { POLYGON_USDC_ADDRESS, POLYMARKET_CTF_ADDRESS } from '@/features/polymar
 import { getProvider } from '@/handlers/web3';
 import { ChainId } from '@rainbow-me/swaps';
 import { OperationType, RelayerTransaction, SafeTransaction } from '@polymarket/builder-relayer-client';
-import { Interface } from 'ethers/lib/utils';
+import { Interface } from '@ethersproject/abi';
 
 const erc20Interface = new Interface([
   {
@@ -54,7 +54,6 @@ export async function ensureUsdcIsMaxApprovedForCtf(address: string): Promise<Re
 export async function ensureProxyWalletIsDeployed(address: string): Promise<RelayerTransaction | undefined> {
   const client = await getPolymarketRelayClient();
 
-  // @ts-expect-error - TODO: patch getDeployed to be public
   const isDeployed = await client.getDeployed(address);
 
   if (!isDeployed) {

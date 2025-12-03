@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
-import { ScrollView, ScrollViewProps, StyleSheet, View } from 'react-native';
+import { ScrollView, ScrollViewProps, StyleProp, StyleSheet, ViewStyle, View } from 'react-native';
 import Animated, {
   DerivedValue,
   runOnJS,
@@ -18,64 +18,84 @@ import { opacity } from '@/__swaps__/utils/swaps';
 
 // ============ Constants ====================================================== //
 
-const MAX_ITEM_COUNT = 4;
+const DEFAULT_PILL_HEIGHT = 34;
+const DEFAULT_PILL_GAP = 3;
+const DEFAULT_PADDING_HORIZONTAL = 12;
+const DEFAULT_PADDING_VERTICAL = 0;
+const DEFAULT_MAX_VISIBLE_ITEMS = 4;
+const DEFAULT_CONTAINER_BORDER_RADIUS = 28;
+const DEFAULT_HIGHLIGHT_BORDER_RADIUS = 17;
 
 // ============ Types ========================================================== //
 
-type Items = Record<string, { value: string; label: string; index: number }>;
-
-type ItemSelectorProps = {
-  backgroundColor: string;
-  color: string;
-  selectedItem: string;
-  onSelectItem: (item: string) => void;
-  items: Items;
-  pillHeight: number;
-  pillWidth?: number;
-  pillGap: number;
-  containerWidth: number;
-  paddingHorizontal: number;
-  paddingVertical: number;
+export type Item = {
+  value: string;
+  label: string;
 };
 
-type ItemButtonProps = {
-  buttonWidth: number;
-  buttonHeight: number;
-  color: string;
-  index: number;
-  label: string;
-  onPress: (value: string) => void;
-  selectedIndex: SharedValue<number>;
-  value: string;
+export type ItemSelectorProps = {
+  items: Item[];
+  selectedValue: string;
+  onSelect: (value: string) => void;
+
+  // Colors
+  accentColor: string;
+  backgroundColor: string;
+
+  // Dimensions
+  containerWidth: number;
+  pillHeight?: number;
+  pillWidth?: number;
+  pillGap?: number;
+  paddingHorizontal?: number;
+  paddingVertical?: number;
+  maxVisibleItems?: number;
+
+  // Styling
+  containerStyle?: StyleProp<ViewStyle>;
+  containerBorderRadius?: number;
+  highlightBorderRadius?: number;
+  showBorder?: boolean;
+
+  // Separators (centered within pillGap between each item)
+  separatorWidth?: number;
+  SeparatorComponent?: React.ComponentType<{ width: number; height: number }>;
 };
 
 // ============ Main Component ================================================= //
 
 export const ItemSelector = memo(function ItemSelector({
-  backgroundColor,
-  color,
-  selectedItem,
-  onSelectItem,
   items,
-  pillHeight,
-  pillWidth,
-  pillGap,
+  selectedValue,
+  onSelect,
+  accentColor,
+  backgroundColor,
   containerWidth,
-  paddingHorizontal = 0,
-  paddingVertical = 0,
+  pillHeight = DEFAULT_PILL_HEIGHT,
+  pillWidth,
+  pillGap = DEFAULT_PILL_GAP,
+  paddingHorizontal = DEFAULT_PADDING_HORIZONTAL,
+  paddingVertical = DEFAULT_PADDING_VERTICAL,
+  maxVisibleItems = DEFAULT_MAX_VISIBLE_ITEMS,
+  containerStyle,
+  containerBorderRadius = DEFAULT_CONTAINER_BORDER_RADIUS,
+  highlightBorderRadius = DEFAULT_HIGHLIGHT_BORDER_RADIUS,
+  showBorder = true,
+  separatorWidth,
+  SeparatorComponent,
 }: ItemSelectorProps) {
-  const itemCount = useMemo(() => Object.keys(items).length, [items]);
-  const effectiveItemCount = useMemo(() => Math.min(itemCount, MAX_ITEM_COUNT), [itemCount]);
+  const itemCount = items.length;
+  const effectiveItemCount = Math.min(itemCount, maxVisibleItems);
 
   const buttonWidth = useMemo(() => {
     if (pillWidth) return pillWidth;
     return (containerWidth - paddingHorizontal * 2 - pillGap * (effectiveItemCount - 1)) / effectiveItemCount;
   }, [pillWidth, containerWidth, pillGap, paddingHorizontal, effectiveItemCount]);
 
-  const scrollEnabled = useMemo(() => itemCount > MAX_ITEM_COUNT, [itemCount]);
+  const scrollEnabled = itemCount > maxVisibleItems;
 
   const scrollViewRef = useRef<ScrollView>(null);
-  const selectedIndex = useSharedValue(items[selectedItem].index);
+  const selectedIndex = useSharedValue(items.findIndex(item => item.value === selectedValue));
   const scrollViewProps = getScrollViewProps({
     paddingHorizontal,
     valueCount: itemCount,
@@ -83,22 +103,37 @@ export const ItemSelector = memo(function ItemSelector({
     pillWidth: buttonWidth,
   });
 
-  // Sync selectedIndex when prop changes externally
   useEffect(() => {
-    selectedIndex.value = items[selectedItem].index;
-  }, [selectedItem, items, selectedIndex]);
+    const index = items.findIndex(item => item.value === selectedValue);
+    if (index !== -1) {
+      selectedIndex.value = index;
+    }
+  }, [selectedValue, items, selectedIndex]);
 
   const onPress = useCallback(
-    (item: string) => {
+    (value: string) => {
       'worklet';
-      selectedIndex.value = items[item].index;
-      runOnJS(onSelectItem)(item);
+      const index = items.findIndex(item => item.value === value);
+      if (index !== -1) {
+        selectedIndex.value = index;
+      }
+      runOnJS(onSelect)(value);
     },
-    [onSelectItem, selectedIndex, items]
+    [onSelect, selectedIndex, items]
+  );
+
+  const containerStyles = useMemo(
+    () => [styles.container, { borderRadius: containerBorderRadius }, containerStyle],
+    [containerBorderRadius, containerStyle]
   );
 
   return (
-    <Box style={styles.container} borderWidth={4 / 3} borderColor="separatorSecondary" borderRadius={28}>
+    <Box
+      style={containerStyles}
+      borderWidth={showBorder ? 4 / 3 : 0}
+      borderColor={showBorder ? 'separatorSecondary' : undefined}
+      borderRadius={containerBorderRadius}
+    >
       <ScrollView
         contentContainerStyle={[scrollViewProps.contentContainerStyle, { paddingVertical }]}
         horizontal
@@ -112,17 +147,29 @@ export const ItemSelector = memo(function ItemSelector({
           paddingHorizontal={paddingHorizontal}
           buttonWidth={useDerivedValue(() => buttonWidth)}
           buttonHeight={pillHeight}
-          color={color}
+          accentColor={accentColor}
           pillGap={pillGap}
           selectedIndex={selectedIndex}
+          borderRadius={highlightBorderRadius}
         />
+        {separatorWidth !== undefined && (
+          <Separators
+            itemCount={itemCount}
+            buttonWidth={buttonWidth}
+            buttonHeight={pillHeight}
+            pillGap={pillGap}
+            paddingHorizontal={paddingHorizontal}
+            separatorWidth={separatorWidth}
+            SeparatorComponent={SeparatorComponent}
+          />
+        )}
         <ItemButtons
+          items={items}
           buttonWidth={buttonWidth}
           buttonHeight={pillHeight}
-          color={color}
+          accentColor={accentColor}
           onPress={onPress}
           selectedIndex={selectedIndex}
-          items={items}
         />
       </ScrollView>
 
@@ -154,21 +201,23 @@ export const ItemSelector = memo(function ItemSelector({
 const SelectedHighlight = memo(function SelectedHighlight({
   buttonHeight,
   buttonWidth,
-  color,
+  accentColor,
   pillGap,
   selectedIndex,
   paddingHorizontal,
+  borderRadius,
 }: {
   buttonHeight: number;
   buttonWidth: DerivedValue<number>;
-  color: string;
+  accentColor: string;
   pillGap: number;
   selectedIndex: SharedValue<number>;
   paddingHorizontal: number;
+  borderRadius: number;
 }) {
   const { isDarkMode } = useColorMode();
-  const highlightBackgroundColor = opacity(color, 0.06);
-  const borderColor = isDarkMode ? highlightBackgroundColor : opacity(color, 0.03);
+  const highlightBackgroundColor = opacity(accentColor, 0.06);
+  const borderColor = isDarkMode ? highlightBackgroundColor : opacity(accentColor, 0.03);
 
   const translateX = useAnimatedStyle(() => ({
     transform: [
@@ -189,7 +238,7 @@ const SelectedHighlight = memo(function SelectedHighlight({
     <Animated.View
       style={[
         styles.selectedHighlight,
-        { backgroundColor: highlightBackgroundColor, borderColor, height: buttonHeight },
+        { backgroundColor: highlightBackgroundColor, borderColor, height: buttonHeight, borderRadius },
         translateX,
         width,
       ]}
@@ -197,14 +246,34 @@ const SelectedHighlight = memo(function SelectedHighlight({
   );
 });
 
-// ============ BetTypeButton ================================================== //
+// ============ ItemButton ===================================================== //
 
-const ItemButton = ({ buttonWidth, buttonHeight, color, index, label, onPress, selectedIndex, value }: ItemButtonProps) => {
+type ItemButtonProps = {
+  buttonWidth: number;
+  buttonHeight: number;
+  accentColor: string;
+  index: number;
+  label: string;
+  onPress: (value: string) => void;
+  selectedIndex: SharedValue<number>;
+  value: string;
+};
+
+const ItemButton = memo(function ItemButton({
+  buttonWidth,
+  buttonHeight,
+  accentColor,
+  index,
+  label,
+  onPress,
+  selectedIndex,
+  value,
+}: ItemButtonProps) {
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
   const textStyle = useAnimatedStyle(() => {
     const isSelected = selectedIndex.value === index;
-    const textColor = isSelected ? color : labelQuaternary;
+    const textColor = isSelected ? accentColor : labelQuaternary;
     if (!IS_IOS) return { color: textColor };
     return {
       color: textColor,
@@ -228,39 +297,84 @@ const ItemButton = ({ buttonWidth, buttonHeight, color, index, label, onPress, s
       </AnimatedText>
     </GestureHandlerButton>
   );
-};
+});
 
 // ============ Mapped Buttons ================================================= //
 
-const ItemButtons = ({
+const ItemButtons = memo(function ItemButtons({
+  items,
   buttonWidth,
   buttonHeight,
-  color,
+  accentColor,
   onPress,
   selectedIndex,
-  items,
 }: {
+  items: Item[];
   buttonWidth: number;
   buttonHeight: number;
-  color: string;
+  accentColor: string;
   onPress: (value: string) => void;
   selectedIndex: SharedValue<number>;
-  items: Items;
-}) => {
-  return Object.values(items).map(({ index, label, value }) => (
+}) {
+  return items.map((item, index) => (
     <ItemButton
-      key={value}
+      key={item.label}
       buttonWidth={buttonWidth}
       buttonHeight={buttonHeight}
-      color={color}
+      accentColor={accentColor}
       index={index}
-      label={label}
+      label={item.label}
       onPress={onPress}
       selectedIndex={selectedIndex}
-      value={value}
+      value={item.value}
     />
   ));
-};
+});
+
+// ============ Separators ==================================================== //
+
+const DefaultSeparator = memo(function DefaultSeparator({ width, height }: { width: number; height: number }) {
+  const separatorColor = useForegroundColor('separatorSecondary');
+  return <View style={[styles.separator, { width, height: height * 0.4, backgroundColor: separatorColor }]} />;
+});
+
+const Separators = memo(function Separators({
+  itemCount,
+  buttonWidth,
+  buttonHeight,
+  pillGap,
+  paddingHorizontal,
+  separatorWidth,
+  SeparatorComponent,
+}: {
+  itemCount: number;
+  buttonWidth: number;
+  buttonHeight: number;
+  pillGap: number;
+  paddingHorizontal: number;
+  separatorWidth: number;
+  SeparatorComponent?: React.ComponentType<{ width: number; height: number }>;
+}) {
+  const Separator = SeparatorComponent ?? DefaultSeparator;
+  const separatorCount = itemCount - 1;
+
+  if (separatorCount <= 0) return null;
+
+  const separators = Array.from({ length: separatorCount });
+
+  return (
+    <>
+      {separators.map((_, i) => {
+        const left = paddingHorizontal + (i + 1) * buttonWidth + (i + 0.5) * pillGap - separatorWidth / 2;
+        return (
+          <View key={i} style={[styles.separatorContainer, { left, height: buttonHeight }]}>
+            <Separator width={separatorWidth} height={buttonHeight} />
+          </View>
+        );
+      })}
+    </>
+  );
+});
 
 // ============ Utilities ====================================================== //
 
@@ -293,7 +407,6 @@ const styles = StyleSheet.create({
   container: {
     position: 'relative',
     width: '100%',
-    borderRadius: 28,
   },
   contentContainer: {
     alignItems: 'center',
@@ -322,10 +435,17 @@ const styles = StyleSheet.create({
   },
   selectedHighlight: {
     borderCurve: 'continuous',
-    borderRadius: 17,
     borderWidth: 2,
     left: 0,
     overflow: 'hidden',
+    position: 'absolute',
+  },
+  separator: {
+    borderRadius: 1,
+  },
+  separatorContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
     position: 'absolute',
   },
 });

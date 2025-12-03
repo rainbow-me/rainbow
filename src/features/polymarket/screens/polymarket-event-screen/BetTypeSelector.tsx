@@ -26,6 +26,7 @@ const BET_TYPES: Record<BetType, { index: number; label: string; type: BetType; 
   [BET_TYPE.MONEYLINE]: { index: 0, label: 'Winner', type: BET_TYPE.MONEYLINE, icon: '􀠏' },
   [BET_TYPE.SPREADS]: { index: 1, label: 'Spreads', type: BET_TYPE.SPREADS, icon: '􀄭' },
   [BET_TYPE.TOTALS]: { index: 2, label: 'Totals', type: BET_TYPE.TOTALS, icon: '􂝔' },
+  [BET_TYPE.OTHER]: { index: 3, label: 'Other', type: BET_TYPE.OTHER, icon: '􀐒' },
 };
 
 const BET_TYPE_COUNT = Object.keys(BET_TYPES).length;
@@ -86,7 +87,7 @@ export const BetTypeSelector = memo(function BetTypeSelector({
         horizontal
         maintainVisibleContentPosition={scrollViewProps.maintainVisibleContentPosition}
         ref={scrollViewRef}
-        scrollEnabled={false}
+        scrollEnabled={true}
         showsHorizontalScrollIndicator={false}
         style={scrollViewProps.style}
       >

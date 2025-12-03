@@ -5406,9 +5406,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymarket/builder-relayer-client@npm:0.0.6":
-  version: 0.0.6
-  resolution: "@polymarket/builder-relayer-client@npm:0.0.6"
+"@polymarket/builder-relayer-client@npm:0.0.7":
+  version: 0.0.7
+  resolution: "@polymarket/builder-relayer-client@npm:0.0.7"
   dependencies:
     "@polymarket/builder-abstract-signer": "npm:0.0.1"
     "@polymarket/builder-signing-sdk": "npm:^0.0.8"
@@ -5418,7 +5418,7 @@ __metadata:
     tsx: "npm:^4.20.3"
     typescript: "npm:^5.8.3"
     viem: "npm:^2.31.4"
-  checksum: 10c0/269fad1440feabfa2b7ff2e5b8b6af2a8624c75ad889fa0374ec8de94a578fe56d42ed92da2a26d0f92d963d83594c3f3a8b2be0fbb1c28dde75a660bf925624
+  checksum: 10c0/ea99f6c15551b0353a30985a060c22b3c6ec854af74951dd8edd93422413e455302be33677104b6affc197d1ff95a442709febb14ec9a4312f48fb19ba751d91
   languageName: node
   linkType: hard
 
@@ -9718,7 +9718,7 @@ __metadata:
     "@metamask/eth-sig-util": "npm:7.0.2"
     "@nktkas/hyperliquid": "npm:0.25.5"
     "@notifee/react-native": "npm:7.8.2"
-    "@polymarket/builder-relayer-client": "npm:0.0.6"
+    "@polymarket/builder-relayer-client": "npm:0.0.7"
     "@polymarket/clob-client": "npm:4.22.8"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"

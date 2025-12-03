@@ -34,7 +34,7 @@ async function fetchPolymarketEvents(_: Record<string, never>, abortController: 
   url.searchParams.set('order', 'volume24hr');
   url.searchParams.set('ascending', 'false');
   // TESTING:
-  url.searchParams.set('tag_slug', 'sports');
+  // url.searchParams.set('tag_slug', 'ufc');
 
   const { data } = await rainbowFetch(url.toString(), { abortController, timeout: 30000 });
   const events = data as RawPolymarketEvent[];
