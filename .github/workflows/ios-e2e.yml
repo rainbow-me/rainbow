@@ -91,7 +91,7 @@ jobs:
 
       - name: Rock Remote Build - iOS simulator
         id: rock-remote-build-ios
-        uses: callstackincubator/ios@0b4a5a6e4d6865d697bd5f277460088501982a5e
+        uses: callstackincubator/ios@0bfe6ed5c14bdf3fb88a638d5a19b440e59e845f
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         with:
