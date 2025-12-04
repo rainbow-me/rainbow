@@ -1,32 +1,26 @@
-import React, { memo, useCallback, useEffect } from 'react';
-import { Box, Text, useColorMode } from '@/design-system';
+import React, { memo, useMemo } from 'react';
+import { Bleed, Box, globalColors, Text, useColorMode } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
-import { Chart } from '@/components/value-chart/Chart';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { OpenPositionsSection } from '@/features/polymarket/screens/polymarket-event-screen/OpenPositionsSection';
 import SlackSheet from '@/components/sheet/SlackSheet';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
-import { MarketSortOrder, usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
+import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import ImgixImage from '@/components/images/ImgixImage';
 import { MarketsSection } from '@/features/polymarket/screens/polymarket-event-screen/MarketsSection';
-import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
-import { PriceHistoryInterval } from '@polymarket/clob-client';
-import { time } from '@/utils/time';
 import { formatNumber } from '@/helpers/strings';
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { AboutSection } from '@/features/polymarket/screens/polymarket-event-screen/AboutSection';
+import { PolymarketChart } from '@/features/charts/polymarket/components/PolymarketChart';
+import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { SportsEventMarkets } from '@/features/polymarket/screens/polymarket-event-screen/SportsEventMarkets';
+import { getChartLineColors } from '@/features/charts/polymarket/utils/getChartLineColors';
 
-export const EventHeaderSection = memo(function EventHeaderSection({
-  initialEvent,
-}: {
-  initialEvent: PolymarketMarketEvent | PolymarketEvent;
-}) {
-  const event = usePolymarketEventStore(state => state.getData() ?? initialEvent);
+export const EventHeaderSection = memo(function EventHeaderSection({ event }: { event: PolymarketMarketEvent | PolymarketEvent }) {
   return (
     <Box>
       <Box flexDirection="row" alignItems="flex-start" gap={16}>
@@ -38,51 +32,35 @@ export const EventHeaderSection = memo(function EventHeaderSection({
             {`${formatNumber(String(event.volume), { useOrderSuffix: true, decimals: 1, style: '$' })} VOL`}
           </Text>
         </Box>
-        <ImgixImage resizeMode="cover" size={64} source={{ uri: event.icon }} style={{ height: 64, width: 64, borderRadius: 9 }} />
+        <ImgixImage
+          enableFasterImage
+          resizeMode="cover"
+          size={64}
+          source={{ uri: event.icon }}
+          style={{ height: 64, width: 64, borderRadius: 9 }}
+        />
       </Box>
     </Box>
   );
 });
 
-export const ChartSection = memo(function ChartSection() {
-  const markets = usePolymarketEventStore(state => state.getMarkets(MarketSortOrder.VOLUME));
-  const topMarkets = markets?.slice(0, 5);
-  // The first token id in the array always represents the "Yes" outcome
-  const topMarketsTokenIds = topMarkets?.map(market => market.clobTokenIds[0]);
-
-  // Example usage:
-  const fetchPricesHistory = useCallback(async () => {
-    if (!topMarketsTokenIds) return;
-    const startTs = Math.floor((Date.now() - time.days(7)) / 1000);
-    const endTs = Math.floor(Date.now() / 1000);
-
-    const pricesHistories = await Promise.all(
-      topMarketsTokenIds.map(tokenId =>
-        polymarketClobDataClient.getPricesHistory({
-          market: tokenId,
-          startTs,
-          endTs,
-          fidelity: 1,
-          interval: PriceHistoryInterval.ONE_DAY,
-        })
-      )
-    );
-  }, [topMarketsTokenIds]);
-
+const ChartSection = memo(function ChartSection({
+  backgroundColor,
+  lineColors,
+}: {
+  backgroundColor: string;
+  lineColors?: readonly [string, string, string, string, string];
+}) {
   return (
-    <Box
-      height={350}
-      justifyContent="center"
-      alignItems="center"
-      backgroundColor="backgroundSecondary"
-      borderRadius={12}
-      borderWidth={1}
-      borderColor="separator"
-    >
-      <Text color="label" size="15pt" weight="bold">
-        Chart
-      </Text>
-    </Box>
+    <Bleed horizontal="24px">
+      <Box borderRadius={16} gap={8} overflow="hidden" width={DEVICE_WIDTH}>
+        <PolymarketChart
+          backgroundColor={backgroundColor}
+          config={lineColors ? { line: { colors: lineColors, overrideSeriesColors: true } } : undefined}
+        />
+        <PolymarketTimeframeSelector backgroundColor={backgroundColor} color={globalColors.white100} />
+      </Box>
+    </Bleed>
   );
 });
 
@@ -93,6 +71,8 @@ const PolymarketEventScreenContent = memo(function PolymarketEventScreenContent(
   const {
     params: { event: initialEvent },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_EVENT_SCREEN>>();
+
+  const event = usePolymarketEventStore(state => state.getData()) ?? initialEvent;
   const { isDarkMode } = useColorMode();
   const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
   const safeAreaInsets = useSafeAreaInsets();
@@ -100,7 +80,9 @@ const PolymarketEventScreenContent = memo(function PolymarketEventScreenContent(
   /**
    * TODO: Verify that this is the correct way to determine if an event is a sports event.
    */
-  const isSportsEvent = initialEvent?.gameId !== undefined;
+  const isSportsEvent = event?.gameId !== undefined;
+
+  const lineColors = useMemo(() => ('markets' in event ? getChartLineColors(event.markets) : undefined), [event]);
 
   return (
     <>
@@ -118,9 +100,15 @@ const PolymarketEventScreenContent = memo(function PolymarketEventScreenContent(
           top: safeAreaInsets.top + 32,
         }}
       >
-        <Box gap={28} paddingTop={{ custom: 96 }} paddingBottom={{ custom: safeAreaInsets.bottom }} paddingHorizontal="24px">
-          <EventHeaderSection initialEvent={initialEvent} />
-          <ChartSection />
+        <Box
+          gap={28}
+          paddingTop={{ custom: 96 }}
+          paddingBottom={{ custom: safeAreaInsets.bottom }}
+          paddingHorizontal="24px"
+          style={{ minHeight: DEVICE_HEIGHT }}
+        >
+          <EventHeaderSection event={event} />
+          <ChartSection backgroundColor={backgroundColor} lineColors={lineColors} />
           <OpenPositionsSection eventId={eventId} />
           {isSportsEvent ? <SportsEventMarkets /> : <MarketsSection />}
           {/* <AboutSection /> */}

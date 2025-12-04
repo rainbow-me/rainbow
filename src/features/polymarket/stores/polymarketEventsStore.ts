@@ -36,8 +36,7 @@ async function fetchPolymarketEvents(_: Record<string, never>, abortController: 
   // TESTING:
   // url.searchParams.set('tag_slug', 'ufc');
 
-  const { data } = await rainbowFetch(url.toString(), { abortController, timeout: 30000 });
-  const events = data as RawPolymarketEvent[];
+  const { data }: { data: RawPolymarketEvent[] } = await rainbowFetch(url.toString(), { abortController, timeout: time.seconds(30) });
 
-  return await Promise.all(events.map(processRawPolymarketEvent));
+  return await Promise.all(data.map(processRawPolymarketEvent));
 }

@@ -26,7 +26,6 @@ export const usePolymarketEventStore = createQueryStore<PolymarketEvent, FetchPa
   {
     fetcher: fetchPolymarketEvent,
     params: { eventId: ($, store) => $(store).eventId },
-    keepPreviousData: true,
     staleTime: time.minutes(2),
     cacheTime: time.minutes(10),
   },
@@ -67,8 +66,7 @@ async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: A
   if (!eventId) throw new RainbowError('[PolymarketEventStore] eventId is required');
 
   const url = `${POLYMARKET_GAMMA_API_URL}/events/${eventId}`;
-  const { data } = await rainbowFetch(url, { abortController, timeout: 30000 });
-  const event = data as RawPolymarketEvent;
+  const { data: event } = await rainbowFetch<RawPolymarketEvent>(url, { abortController, timeout: 30000 });
 
   const processedEvent = await processRawPolymarketEvent(event);
 

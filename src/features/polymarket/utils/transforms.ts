@@ -7,9 +7,9 @@ import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors
 export function processRawPolymarketMarket(market: RawPolymarketMarket): PolymarketMarket {
   return {
     ...market,
-    clobTokenIds: market.clobTokenIds ? (JSON.parse(market.clobTokenIds) as string[]) : [],
-    outcomes: market.outcomes ? (JSON.parse(market.outcomes) as string[]) : [],
-    outcomePrices: market.outcomePrices ? (JSON.parse(market.outcomePrices) as string[]) : ['0', '0'],
+    clobTokenIds: market.clobTokenIds ? JSON.parse(market.clobTokenIds) : [],
+    outcomes: market.outcomes ? JSON.parse(market.outcomes) : [],
+    outcomePrices: market.outcomePrices ? JSON.parse(market.outcomePrices) : ['0', '0'],
     ...getMarketColors(market),
   };
 }
@@ -29,9 +29,9 @@ export function processRawPolymarketPosition(position: RawPolymarketPosition, ma
   const marketHasUniqueImage = market.icon !== event.icon;
   return {
     ...position,
-    clobTokenIds: JSON.parse(market.clobTokenIds) as string[],
-    outcomes: JSON.parse(market.outcomes) as string[],
-    outcomePrices: market.outcomePrices ? (JSON.parse(market.outcomePrices) as string[]) : [],
+    clobTokenIds: JSON.parse(market.clobTokenIds),
+    outcomes: JSON.parse(market.outcomes),
+    outcomePrices: market.outcomePrices ? JSON.parse(market.outcomePrices) : [],
     nativeCurrency: {
       currentValue: useCurrencyConversionStore.getState().convertToNativeCurrency(position.currentValue),
       cashPnl: useCurrencyConversionStore.getState().convertToNativeCurrency(position.cashPnl),
@@ -41,7 +41,7 @@ export function processRawPolymarketPosition(position: RawPolymarketPosition, ma
   };
 }
 
-function sortMarketsByMostLikelyOutcome(markets: PolymarketMarket[]) {
+function sortMarketsByMostLikelyOutcome(markets: PolymarketMarket[]): PolymarketMarket[] {
   return markets.sort((a, b) => {
     return Number(b.lastTradePrice) - Number(a.lastTradePrice);
   });

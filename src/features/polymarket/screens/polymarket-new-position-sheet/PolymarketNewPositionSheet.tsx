@@ -168,6 +168,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
             >
               <Box flexDirection="row" alignItems="center" gap={12}>
                 <ImgixImage
+                  enableFasterImage
                   resizeMode="cover"
                   size={38}
                   source={{ uri: market.icon }}

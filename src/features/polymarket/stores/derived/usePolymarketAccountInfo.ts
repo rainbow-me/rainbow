@@ -1,12 +1,13 @@
 import { TextColor } from '@/design-system/color/palettes';
 import { USD_DECIMALS } from '@/features/perps/constants';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { abs, add, divide, greaterThan, isEqual, isZero, multiply, subtract } from '@/helpers/utilities';
+import { abs, add, greaterThan, isEqual, isZero } from '@/helpers/utilities';
 import { toFixedWorklet, truncateToDecimals } from '@/safe-math/SafeMath';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { PolymarketPosition } from '@/features/polymarket/types';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
+import { shallowEqual } from '@/worklets/comparisons';
 
 export type PolymarketAccountInfo = {
   balance: string;
@@ -22,6 +23,7 @@ export type PolymarketAccountInfo = {
   value: string;
 };
 
+const EMPTY_POSITIONS: PolymarketPosition[] = [];
 const EMPTY_ACCOUNT_INFO = Object.freeze<PolymarketAccountInfo>({
   balance: '0',
   equity: formatCurrency('0'),
@@ -30,7 +32,7 @@ const EMPTY_ACCOUNT_INFO = Object.freeze<PolymarketAccountInfo>({
   isNeutralPnl: true,
   isPositivePnl: false,
   textColor: 'labelTertiary',
-  positions: [],
+  positions: EMPTY_POSITIONS,
   unrealizedPnl: formatCurrency(abs('0')),
   unrealizedPnlPercent: `${toFixedWorklet('0', 2)}%`,
   value: '0',
@@ -39,7 +41,7 @@ const EMPTY_ACCOUNT_INFO = Object.freeze<PolymarketAccountInfo>({
 export const usePolymarketAccountInfo = createDerivedStore<PolymarketAccountInfo>(
   $ => {
     const balance = $(usePolymarketBalanceStore, state => truncateToDecimals(state.getBalance(), USD_DECIMALS));
-    const positions = $(usePolymarketPositionsStore, state => state.getPositions() ?? []);
+    const positions = $(usePolymarketPositionsStore, state => state.getPositions() ?? EMPTY_POSITIONS);
 
     if (!positions.length && !balance) return EMPTY_ACCOUNT_INFO;
 
@@ -55,19 +57,22 @@ export const usePolymarketAccountInfo = createDerivedStore<PolymarketAccountInfo
 
     const isNeutralPnl = isEqual(totalPositionsPnl, 0);
     const isPositivePnl = greaterThan(totalPositionsPnl, 0);
-    const textColor = isPositivePnl ? 'green' : isNeutralPnl ? 'labelTertiary' : 'red';
+    const textColor: TextColor = isPositivePnl ? 'green' : isNeutralPnl ? 'labelTertiary' : 'red';
 
     // const unrealizedPnlPercent = toFixedWorklet(multiply(divide(totalPositionsPnl, totalPositionsInitialValue), 100), 2);
+
+    const hasBalance = !isZero(balance);
+    const hasPositions = positions.length > 0;
 
     return {
       balance,
       equity: formatCurrency(totalPositionsEquity),
-      hasBalance: !isZero(balance),
-      hasPositions: positions.length > 0,
+      hasBalance,
+      hasPositions,
       positions,
       isNeutralPnl,
       isPositivePnl,
-      textColor: textColor satisfies TextColor,
+      textColor,
       unrealizedPnl: formatCurrency(abs(totalPositionsPnl)),
       // unrealizedPnlPercent: `${toFixedWorklet(abs(unrealizedPnlPercent), 2)}%`,
       unrealizedPnlPercent: '0%',
@@ -75,5 +80,5 @@ export const usePolymarketAccountInfo = createDerivedStore<PolymarketAccountInfo
     };
   },
 
-  { fastMode: true }
+  { equalityFn: shallowEqual, fastMode: true }
 );

@@ -153,6 +153,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
               />
               <Box flexDirection="row" alignItems="center" gap={7} paddingLeft={'8px'} paddingVertical={'6px'}>
                 <ImgixImage
+                  enableFasterImage
                   resizeMode="cover"
                   size={16}
                   source={{ uri: position.market.events[0].icon }}
@@ -199,6 +200,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                   {position.marketHasUniqueImage && (
                     <Bleed vertical="4px">
                       <ImgixImage
+                        enableFasterImage
                         resizeMode="cover"
                         size={16}
                         source={{ uri: position.icon }}

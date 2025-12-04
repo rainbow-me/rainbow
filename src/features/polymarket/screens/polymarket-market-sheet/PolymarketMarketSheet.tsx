@@ -1,10 +1,10 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
-import { Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
+import { Bleed, Box, globalColors, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { PANEL_WIDTH, PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import ImgixImage from '@/components/images/ImgixImage';
 import { formatNumber } from '@/helpers/strings';
@@ -12,6 +12,11 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Navigation } from '@/navigation';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import LinearGradient from 'react-native-linear-gradient';
+import { PolymarketChart } from '@/features/charts/polymarket/components/PolymarketChart';
+import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
+import { getChartLineColors } from '@/features/charts/polymarket/utils/getChartLineColors';
+
+const CHART_HEIGHT = 280;
 
 export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   const {
@@ -22,6 +27,7 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
   const accentColor = market.color;
+  const lineColors = useMemo(() => getChartLineColors([market]), [market]);
 
   return (
     <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? '#000000' : '#FFFFFF' }}>
@@ -35,7 +41,23 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
         <Box gap={20}>
           <Header market={market} />
           <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
-          <MarketChart />
+          <Bleed horizontal="24px">
+            <Box borderRadius={16} gap={8} justifyContent="center" overflow="hidden" width={PANEL_WIDTH}>
+              <PolymarketChart
+                backgroundColor={isDarkMode ? '#000000' : '#FFFFFF'}
+                chartHeight={CHART_HEIGHT}
+                chartWidth={PANEL_WIDTH}
+                config={lineColors ? { line: { colors: lineColors, overrideSeriesColors: true } } : undefined}
+                isMarketChart
+              />
+              <Bleed horizontal="8px">
+                <PolymarketTimeframeSelector
+                  backgroundColor={isDarkMode ? '#000000' : '#FFFFFF'}
+                  color={lineColors?.[0] ?? globalColors.white100}
+                />
+              </Bleed>
+            </Box>
+          </Bleed>
         </Box>
         <Box paddingTop={'24px'} gap={12}>
           <ButtonPressAnimation
@@ -84,7 +106,13 @@ const Header = memo(function Header({ market }: { market: PolymarketMarket }) {
   return (
     <Box>
       <Box flexDirection="row" alignItems="center" gap={14}>
-        <ImgixImage resizeMode="cover" size={56} source={{ uri: market.icon }} style={{ height: 56, width: 56, borderRadius: 12 }} />
+        <ImgixImage
+          enableFasterImage
+          resizeMode="cover"
+          size={56}
+          source={{ uri: market.icon }}
+          style={{ height: 56, width: 56, borderRadius: 12 }}
+        />
         <Box gap={14}>
           <Text size="26pt" weight="heavy" color="label">
             {market.groupItemTitle}
@@ -94,24 +122,6 @@ const Header = memo(function Header({ market }: { market: PolymarketMarket }) {
           </Text>
         </Box>
       </Box>
-    </Box>
-  );
-});
-
-const MarketChart = memo(function MarketChart() {
-  return (
-    <Box
-      height={350}
-      justifyContent="center"
-      alignItems="center"
-      backgroundColor="backgroundSecondary"
-      borderRadius={12}
-      borderWidth={1}
-      borderColor="separator"
-    >
-      <Text color="label" size="15pt" weight="bold">
-        Chart
-      </Text>
     </Box>
   );
 });
