@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
 import ImgixImage from '@/components/images/ImgixImage';
-import { Text } from '@/design-system';
+import { Text, TextIcon } from '@/design-system';
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { Navigation } from '@/navigation';
 import { memo, useMemo } from 'react';
@@ -12,7 +12,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { formatNumber } from '@/helpers/strings';
 import { toPercentageWorklet } from '@/safe-math/SafeMath';
 
-const HEIGHT = 239;
+export const HEIGHT = 239;
 
 export const PolymarketEventCard = memo(function PolymarketEventCard({ event }: { event: PolymarketEvent }) {
   const mostLikelyOutcome = useMemo(() => {
@@ -23,7 +23,8 @@ export const PolymarketEventCard = memo(function PolymarketEventCard({ event }: 
         odds: '0%',
       };
     const title = market.groupItemTitle || market.outcomes[0];
-    const odds = `${toPercentageWorklet(market.lastTradePrice)}%`;
+    // TODO: Decide how to handle this case
+    const odds = market.lastTradePrice !== undefined ? `${toPercentageWorklet(market.lastTradePrice)}%` : 'N/A';
     return {
       title,
       odds,
@@ -33,6 +34,7 @@ export const PolymarketEventCard = memo(function PolymarketEventCard({ event }: 
   const accentColors = useMemo(() => {
     return {
       opacity0: opacityWorklet(event.color, 0),
+      opacity6: opacityWorklet(event.color, 0.06),
       opacity12: opacityWorklet(event.color, 0.12),
       opacity24: opacityWorklet(event.color, 0.24),
       opacity100: event.color,
@@ -55,6 +57,11 @@ export const PolymarketEventCard = memo(function PolymarketEventCard({ event }: 
         />
 
         <View style={styles.contentContainer}>
+          <View style={{ position: 'absolute', top: 20, right: 20, opacity: 0.5 }}>
+            <TextIcon size="icon 13px" weight="heavy" color={'labelQuaternary'}>
+              {'􀋃'}
+            </TextIcon>
+          </View>
           <View style={{ gap: 10, flex: 1 }}>
             <View style={{ gap: 16 }}>
               <ImgixImage source={{ uri: event.icon }} size={32} style={styles.icon} />
@@ -68,15 +75,18 @@ export const PolymarketEventCard = memo(function PolymarketEventCard({ event }: 
           </View>
 
           <GradientBorderView
-            borderGradientColors={[accentColors.opacity24, accentColors.opacity0]}
+            borderGradientColors={[accentColors.opacity6, accentColors.opacity0]}
+            start={{ x: -1, y: 0 }}
+            end={{ x: 1, y: 0 }}
             borderRadius={26}
             style={{ overflow: 'hidden' }}
           >
             <LinearGradient
-              colors={[accentColors.opacity24, accentColors.opacity0]}
+              colors={[accentColors.opacity100, accentColors.opacity0]}
+              locations={[0.06, 1]}
               style={[StyleSheet.absoluteFill, { opacity: 0.14 }]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
+              start={{ x: -0.06, y: 0 }}
+              end={{ x: 0.79, y: 0 }}
               pointerEvents="none"
             />
             <View style={[styles.row, { height: 36, paddingHorizontal: 12 }]}>

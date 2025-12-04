@@ -1,12 +1,18 @@
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import MaskedView from '@react-native-masked-view/masked-view';
-import React from 'react';
+import React, { memo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+
+const DEFAULT_START = { x: 0, y: 0 };
+const DEFAULT_END = { x: 1, y: 1 };
+const DEFAULT_BORDER_RADIUS = 9999;
+const DEFAULT_BACKGROUND_COLOR = 'transparent';
 
 type GradientBorderViewProps = {
   children: React.ReactNode;
   borderGradientColors: string[];
+  locations?: number[];
   borderWidth?: number;
   start?: { x: number; y: number };
   end?: { x: number; y: number };
@@ -15,15 +21,16 @@ type GradientBorderViewProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-export function GradientBorderView({
+export const GradientBorderView = memo(function GradientBorderView({
   children,
   borderGradientColors,
-  start = { x: 0, y: 0 },
-  end = { x: 1, y: 1 },
+  locations,
+  start = DEFAULT_START,
+  end = DEFAULT_END,
   borderWidth = THICK_BORDER_WIDTH,
-  borderRadius = 9999,
+  borderRadius = DEFAULT_BORDER_RADIUS,
   style,
-  backgroundColor = 'transparent',
+  backgroundColor = DEFAULT_BACKGROUND_COLOR,
 }: GradientBorderViewProps) {
   return (
     <View style={[styles.baseStyle, style, { backgroundColor, borderRadius }]}>
@@ -32,17 +39,18 @@ export function GradientBorderView({
         style={styles.maskView}
         pointerEvents="none"
       >
-        <LinearGradient start={start} end={end} style={StyleSheet.absoluteFill} colors={borderGradientColors} />
+        <LinearGradient start={start} end={end} style={StyleSheet.absoluteFill} colors={borderGradientColors} locations={locations} />
       </MaskedView>
       {children}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   baseStyle: {
     borderCurve: 'continuous',
     position: 'relative',
+    overflow: 'hidden',
   },
   maskElement: {
     ...StyleSheet.absoluteFillObject,

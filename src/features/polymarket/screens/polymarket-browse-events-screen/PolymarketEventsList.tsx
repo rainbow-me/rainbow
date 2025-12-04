@@ -3,9 +3,12 @@ import { usePolymarketEventsStore } from '@/features/polymarket/stores/polymarke
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { memo, useCallback } from 'react';
 import { LegendList } from '@legendapp/list';
-import { NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
+import { NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { PolymarketEventCard } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketBrowseEventCard';
+import {
+  PolymarketEventCard,
+  HEIGHT as ITEM_HEIGHT,
+} from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketBrowseEventCard';
 
 const ITEM_GAP = 12;
 const PADDING_HORIZONTAL = 12;
@@ -24,7 +27,7 @@ export const PolymarketEventsList = memo(function PolymarketEventsList() {
     );
   }, []);
 
-  const paddingBottom = NAVIGATOR_FOOTER_HEIGHT + safeAreaInsets.bottom + 12;
+  const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
 
   return (
     <LegendList
@@ -36,6 +39,7 @@ export const PolymarketEventsList = memo(function PolymarketEventsList() {
       recycleItems
       scrollIndicatorInsets={{ bottom: paddingBottom }}
       style={styles.list}
+      estimatedItemSize={ITEM_HEIGHT + ITEM_GAP}
     />
   );
 });

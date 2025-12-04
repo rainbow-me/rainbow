@@ -48,4 +48,5 @@ export const POLYMARKET_SPORTS_MARKET_TYPE = {
 } as const;
 
 export const NAVIGATOR_FOOTER_HEIGHT = 66;
-export const NAVIGATOR_FOOTER_CLEARANCE = NAVIGATOR_FOOTER_HEIGHT + 5;
+// padding distance between bottom most content and the navigator footer
+export const NAVIGATOR_FOOTER_CLEARANCE = 12;

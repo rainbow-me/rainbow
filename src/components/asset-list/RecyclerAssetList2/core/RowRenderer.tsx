@@ -247,7 +247,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
         <SectionAvailableBalance
           balance={balance}
           isDarkMode={extendedState.theme.isDarkMode}
-          onPress={() => Navigation.handleAction(Routes.POLYMARKET_BROWSE_EVENTS_SCREEN)}
+          onPress={() => Navigation.handleAction(Routes.POLYMARKET_NAVIGATOR)}
         />
       );
     }

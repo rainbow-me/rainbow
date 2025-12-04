@@ -18,7 +18,10 @@ import { getSolidColorEquivalent } from '@/worklets/colors';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { redeemPosition } from '@/features/polymarket/utils/redeemPosition';
-import { ensureError, logger, RainbowError } from '@/logger';
+import { logger, RainbowError } from '@/logger';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 
 const ActionButtonType = {
   CLAIM: 'claim',
@@ -41,6 +44,24 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   const wonGreen = isDarkMode ? '#1F9E39' : green;
   const lostRed = isDarkMode ? '#D53F35' : red;
   const accentColor = position.market.color;
+  const accentColors = useMemo(() => {
+    return {
+      opacity0: opacityWorklet(accentColor, 0),
+      opacity4: opacityWorklet(accentColor, 0.04),
+      opacity6: opacityWorklet(accentColor, 0.06),
+      opacity12: opacityWorklet(accentColor, 0.12),
+      opacity14: opacityWorklet(accentColor, 0.14),
+      opacity20: opacityWorklet(accentColor, 0.2),
+      opacity24: opacityWorklet(accentColor, 0.24),
+      opacity70: opacityWorklet(accentColor, 0.7),
+      opacity100: accentColor,
+    };
+  }, [accentColor]);
+  const buttonBackgroundColor = getSolidColorEquivalent({
+    background: accentColors.opacity70,
+    foreground: 'rgb(0, 0, 0)',
+    opacity: 0.4,
+  });
 
   const redeemable = position.redeemable;
   const isWin = redeemable && position.size === position.currentValue;
@@ -67,24 +88,28 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   const actionButtonOnPress = useMemo(() => {
     switch (actionButtonType) {
       case ActionButtonType.CLAIM:
-        return async () => {
+        return async (e: ButtonPressAnimationTouchEvent) => {
+          if (e && 'stopPropagation' in e) {
+            e.stopPropagation();
+          }
           try {
-            const result = await redeemPosition(position);
-            console.log('Redeem result', JSON.stringify(result, null, 2));
+            await redeemPosition(position);
+            await refetchPolymarketStores();
+            Navigation.goBack();
           } catch (e) {
-            const error = ensureError(e);
-            console.log('error stack:', error.stack);
-            logger.error(new RainbowError('[PolymarketPositionCard] Error redeeming position', error), {
-              message: error.message,
-            });
+            logger.error(new RainbowError('[PolymarketPositionCard] Error redeeming position', e));
           }
         };
       case ActionButtonType.BURN:
         return () => {
-          redeemPosition(position);
+          // TODO: Implement burn position
+          // redeemPosition(position);
         };
       case ActionButtonType.CASH_OUT:
-        return () => {
+        return (e: ButtonPressAnimationTouchEvent) => {
+          if (e && 'stopPropagation' in e) {
+            e.stopPropagation();
+          }
           Navigation.handleAction(Routes.POLYMARKET_MANAGE_POSITION_SHEET, { position });
         };
     }
@@ -98,32 +123,32 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
 
   return (
     <GradientBorderView
-      borderGradientColors={[opacityWorklet(accentColor, 0.06), opacityWorklet(accentColor, 0)]}
+      borderGradientColors={[accentColors.opacity6, accentColors.opacity0]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
+      locations={[0, 0.94]}
       borderRadius={24}
-      style={{ overflow: 'hidden' }}
     >
       <LinearGradient
-        colors={[opacityWorklet(accentColor, 0.14), opacityWorklet(accentColor, 0)]}
-        style={StyleSheet.absoluteFillObject}
+        colors={[accentColors.opacity14, accentColors.opacity0]}
+        style={StyleSheet.absoluteFill}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
-        pointerEvents="none"
       />
       <Box padding={'16px'}>
         <Box gap={14}>
           {showEventTitle && (
             <GradientBorderView
-              borderGradientColors={[opacityWorklet(accentColor, 0.06), opacityWorklet(accentColor, 0)]}
+              borderGradientColors={[accentColors.opacity4, accentColors.opacity0]}
               borderRadius={12}
-              style={{ overflow: 'hidden' }}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0.75, y: 0 }}
             >
               <LinearGradient
-                colors={[opacityWorklet(accentColor, 0.14), opacityWorklet(accentColor, 0)]}
-                style={StyleSheet.absoluteFillObject}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+                colors={[accentColors.opacity6, accentColors.opacity0]}
+                style={StyleSheet.absoluteFill}
+                start={{ x: 0.29, y: 0 }}
+                end={{ x: 0.95, y: 0 }}
                 pointerEvents="none"
               />
               <Box flexDirection="row" alignItems="center" gap={7} paddingLeft={'8px'} paddingVertical={'6px'}>
@@ -232,7 +257,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
             </Box>
           </Box>
           {showActionButton && (
-            <ButtonPressAnimation onPress={actionButtonOnPress}>
+            <ButtonPressAnimation onPress={actionButtonOnPress} scaleTo={0.975}>
               <Box
                 width="full"
                 height={40}
@@ -240,13 +265,35 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                 alignItems="center"
                 borderWidth={2}
                 borderColor={{ custom: opacityWorklet('#FFFFFF', 0.08) }}
-                backgroundColor={getSolidColorEquivalent({
-                  background: opacityWorklet(accentColor, 0.7),
-                  foreground: 'rgb(0, 0, 0)',
-                  opacity: 0.4,
-                })}
+                backgroundColor={buttonBackgroundColor}
                 borderRadius={20}
+                shadow={{
+                  custom: {
+                    ios: [
+                      {
+                        blur: 12,
+                        x: 0,
+                        y: 8,
+                        color: { custom: accentColors.opacity100 },
+                        opacity: 0.2,
+                      },
+                      {
+                        blur: 6,
+                        x: 0,
+                        y: 4,
+                        color: 'shadowNear',
+                        opacity: 0.06,
+                      },
+                    ],
+                    android: {
+                      elevation: 12,
+                      color: { custom: accentColors.opacity100 },
+                      opacity: 0.2,
+                    },
+                  },
+                }}
               >
+                <InnerShadow borderRadius={20} color={'rgba(255, 255, 255, 0.17)'} blur={6} dx={0} dy={1} />
                 <Text size="17pt" weight="heavy" color="label">
                   {actionButtonLabel}
                 </Text>

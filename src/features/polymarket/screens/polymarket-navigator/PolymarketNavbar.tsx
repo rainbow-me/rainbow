@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text, TextIcon } from '@/design-system';
+import { Box, Text, TextShadow } from '@/design-system';
 import { AccountImage } from '@/components/AccountImage';
 import { Navbar } from '@/components/navbar/Navbar';
 import Routes from '@/navigation/routesNames';
@@ -21,11 +21,13 @@ export const PolymarketNavbar = function PolymarketNavbar() {
         titleComponent={
           <Animated.View key={title} entering={FadeIn.duration(150)} exiting={FadeOut.duration(100)}>
             <Box flexDirection="row" alignItems="center" gap={12} justifyContent="center">
-              <TextIcon size="icon 17px" weight="bold" color="label">
-                {'􀫸'}
-              </TextIcon>
+              <TextShadow blur={11} color={'#C75DE7'} shadowOpacity={0.9}>
+                <Text size="17pt" weight="bold" color={{ custom: '#C863E8' }}>
+                  {'􀫸'}
+                </Text>
+              </TextShadow>
               <Text size="20pt" weight="heavy" color="label" align="center">
-                {'Prediction'}
+                {'Predictions'}
               </Text>
             </Box>
           </Animated.View>

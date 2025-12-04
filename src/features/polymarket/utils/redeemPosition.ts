@@ -38,10 +38,8 @@ export async function redeemPosition(position: PolymarketPosition): Promise<Rela
     const rawAmount = BigInt(Math.round(position.size * 1e6));
     const amounts: [bigint, bigint] = position.outcomeIndex === 0 ? [rawAmount, BigInt(0)] : [BigInt(0), rawAmount];
     redeemTx = buildNegRiskRedeemTransaction(position.conditionId, amounts);
-    console.log('negativeRisk redeemTx', JSON.stringify(redeemTx, null, 2));
   } else {
     redeemTx = buildCtfRedeemTransaction(position.conditionId);
-    console.log('ctf redeemTx', JSON.stringify(redeemTx, null, 2));
   }
 
   const response = await client.execute([redeemTx], 'Redeem position');
