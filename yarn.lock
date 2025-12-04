@@ -9937,7 +9937,7 @@ __metadata:
     react-native-version-number: "npm:0.3.6"
     react-native-video: "npm:6.15.0"
     react-native-view-shot: "npm:4.0.2"
-    react-native-vision-camera: "npm:4.7.1"
+    react-native-vision-camera: "npm:4.7.3"
     react-native-webview: "npm:13.13.5"
     react-native-widgetkit: "npm:1.0.9"
     react-navigation-backhandler: "npm:2.0.3"
@@ -24706,9 +24706,9 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"react-native-vision-camera@npm:4.7.1":
-  version: 4.7.1
-  resolution: "react-native-vision-camera@npm:4.7.1"
+"react-native-vision-camera@npm:4.7.3":
+  version: 4.7.3
+  resolution: "react-native-vision-camera@npm:4.7.3"
   peerDependencies:
     "@shopify/react-native-skia": "*"
     react: "*"
@@ -24722,7 +24722,7 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
       optional: true
     react-native-worklets-core:
       optional: true
-  checksum: 10c0/6317596da5b0e361b7d49c5d739c1ce2e6f93eaa10973aee2d46ad3a4fbba68299c61c45aa2d5895bdbaee881fb0fa70005285068b8bb2e96bd99a9c441df8e8
+  checksum: 10c0/46001037f4f9a85e75c023e5082b137c179fd520741e088009d217f0a6eaf3a819b9784ae68aced95fa70c3345346c79dd2ee70bc04cfd811c7eefeda675cab2
   languageName: node
   linkType: hard
 

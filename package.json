@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "2.0.14-1",
+  "version": "2.0.15-1",
   "private": true,
   "scripts": {
     "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn graphql-codegen && yarn fetch:networks",
@@ -277,7 +277,7 @@
     "react-native-version-number": "0.3.6",
     "react-native-video": "6.15.0",
     "react-native-view-shot": "4.0.2",
-    "react-native-vision-camera": "4.7.1",
+    "react-native-vision-camera": "4.7.3",
     "react-native-webview": "13.13.5",
     "react-native-widgetkit": "1.0.9",
     "react-navigation-backhandler": "2.0.3",
