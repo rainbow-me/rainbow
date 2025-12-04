@@ -140,6 +140,8 @@ const Routes = {
   POLYMARKET_NEW_POSITION_SHEET: 'PolymarketNewPositionSheet',
   POLYMARKET_ACCOUNT_SCREEN: 'PolymarketAccountScreen',
   POLYMARKET_BROWSE_EVENTS_SCREEN: 'PolymarketBrowseEventsScreen',
+  POLYMARKET_SEARCH_SCREEN: 'PolymarketSearchScreen',
+  POLYMARKET_NAVIGATOR: 'PolymarketNavigator',
 } as const;
 
 export const NATIVE_ROUTES = new Set<Route>([

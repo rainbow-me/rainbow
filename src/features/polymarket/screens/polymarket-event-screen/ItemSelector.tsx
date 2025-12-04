@@ -33,6 +33,15 @@ export type Item = {
   label: string;
 };
 
+export type RenderItemProps = {
+  item: Item;
+  index: number;
+  selectedIndex: SharedValue<number>;
+  accentColor: string;
+  buttonWidth: number;
+  buttonHeight: number;
+};
+
 export type ItemSelectorProps = {
   items: Item[];
   selectedValue: string;
@@ -60,6 +69,9 @@ export type ItemSelectorProps = {
   // Separators (centered within pillGap between each item)
   separatorWidth?: number;
   SeparatorComponent?: React.ComponentType<{ width: number; height: number }>;
+
+  // Custom item rendering
+  renderItem?: (props: RenderItemProps) => React.ReactNode;
 };
 
 // ============ Main Component ================================================= //
@@ -83,6 +95,7 @@ export const ItemSelector = memo(function ItemSelector({
   showBorder = true,
   separatorWidth,
   SeparatorComponent,
+  renderItem,
 }: ItemSelectorProps) {
   const itemCount = items.length;
   const effectiveItemCount = Math.min(itemCount, maxVisibleItems);
@@ -170,6 +183,7 @@ export const ItemSelector = memo(function ItemSelector({
           accentColor={accentColor}
           onPress={onPress}
           selectedIndex={selectedIndex}
+          renderItem={renderItem}
         />
       </ScrollView>
 
@@ -246,29 +260,19 @@ const SelectedHighlight = memo(function SelectedHighlight({
   );
 });
 
-// ============ ItemButton ===================================================== //
+// ============ DefaultItemContent ============================================= //
 
-type ItemButtonProps = {
-  buttonWidth: number;
-  buttonHeight: number;
-  accentColor: string;
-  index: number;
-  label: string;
-  onPress: (value: string) => void;
-  selectedIndex: SharedValue<number>;
-  value: string;
-};
-
-const ItemButton = memo(function ItemButton({
-  buttonWidth,
-  buttonHeight,
-  accentColor,
-  index,
+const DefaultItemContent = memo(function DefaultItemContent({
   label,
-  onPress,
+  index,
   selectedIndex,
-  value,
-}: ItemButtonProps) {
+  accentColor,
+}: {
+  label: string;
+  index: number;
+  selectedIndex: SharedValue<number>;
+  accentColor: string;
+}) {
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
   const textStyle = useAnimatedStyle(() => {
@@ -282,19 +286,53 @@ const ItemButton = memo(function ItemButton({
   });
 
   return (
+    <AnimatedText align="center" color="labelQuaternary" size="15pt" style={textStyle} weight="bold">
+      {label}
+    </AnimatedText>
+  );
+});
+
+// ============ ItemButton ===================================================== //
+
+type ItemButtonProps = {
+  item: Item;
+  buttonWidth: number;
+  buttonHeight: number;
+  accentColor: string;
+  index: number;
+  onPress: (value: string) => void;
+  selectedIndex: SharedValue<number>;
+  renderItem?: (props: RenderItemProps) => React.ReactNode;
+};
+
+const ItemButton = memo(function ItemButton({
+  item,
+  buttonWidth,
+  buttonHeight,
+  accentColor,
+  index,
+  onPress,
+  selectedIndex,
+  renderItem,
+}: ItemButtonProps) {
+  const content = renderItem ? (
+    renderItem({ item, index, selectedIndex, accentColor, buttonWidth, buttonHeight })
+  ) : (
+    <DefaultItemContent label={item.label} index={index} selectedIndex={selectedIndex} accentColor={accentColor} />
+  );
+
+  return (
     <GestureHandlerButton
       hapticTrigger="tap-end"
       hapticType="soft"
       hitSlop={4}
       onPressWorklet={() => {
         'worklet';
-        onPress(value);
+        onPress(item.value);
       }}
       style={[styles.button, { width: buttonWidth, height: buttonHeight }]}
     >
-      <AnimatedText align="center" color="labelQuaternary" size="15pt" style={textStyle} weight="bold">
-        {label}
-      </AnimatedText>
+      {content}
     </GestureHandlerButton>
   );
 });
@@ -308,6 +346,7 @@ const ItemButtons = memo(function ItemButtons({
   accentColor,
   onPress,
   selectedIndex,
+  renderItem,
 }: {
   items: Item[];
   buttonWidth: number;
@@ -315,18 +354,19 @@ const ItemButtons = memo(function ItemButtons({
   accentColor: string;
   onPress: (value: string) => void;
   selectedIndex: SharedValue<number>;
+  renderItem?: (props: RenderItemProps) => React.ReactNode;
 }) {
   return items.map((item, index) => (
     <ItemButton
-      key={item.label}
+      key={item.value}
+      item={item}
       buttonWidth={buttonWidth}
       buttonHeight={buttonHeight}
       accentColor={accentColor}
       index={index}
-      label={item.label}
       onPress={onPress}
       selectedIndex={selectedIndex}
-      value={item.value}
+      renderItem={renderItem}
     />
   ));
 });

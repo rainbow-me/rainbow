@@ -46,3 +46,6 @@ export const POLYMARKET_SPORTS_MARKET_TYPE = {
   // Exclusive to soccer
   BOTH_TEAMS_TO_SCORE: 'both_teams_to_score',
 } as const;
+
+export const NAVIGATOR_FOOTER_HEIGHT = 66;
+export const NAVIGATOR_FOOTER_CLEARANCE = NAVIGATOR_FOOTER_HEIGHT + 5;

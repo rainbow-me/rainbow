@@ -99,8 +99,8 @@ type PanelSheetProps = PanelProps & {
 
 const DEFAULT_HANDLE_TOP = 14;
 const DEFAULT_HANDLE_SHOW_BLUR = true;
-const DEFAULT_HANDLE_COLOR_DARK = 'rgba(245, 248, 255, 0.3)';
-const DEFAULT_HANDLE_COLOR_LIGHT = 'rgba(59, 66, 83, 0.3)';
+export const DEFAULT_HANDLE_COLOR_DARK = 'rgba(245, 248, 255, 0.3)';
+export const DEFAULT_HANDLE_COLOR_LIGHT = 'rgba(59, 66, 83, 0.3)';
 
 export const PanelSheet = ({
   bottomOffset = PANEL_BOTTOM_OFFSET,

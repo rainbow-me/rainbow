@@ -18,7 +18,7 @@ export async function processRawPolymarketEvent(event: RawPolymarketEvent): Prom
   const color = await getImagePrimaryColor(event.icon);
   return {
     ...event,
-    markets: event.markets.map(processRawPolymarketMarket),
+    markets: sortMarketsByMostLikelyOutcome(event.markets.map(processRawPolymarketMarket)),
     uniqueMarketImages: event.markets.some(market => market.icon !== event.icon),
     color,
   };
@@ -39,4 +39,10 @@ export function processRawPolymarketPosition(position: RawPolymarketPosition, ma
     market: processRawPolymarketMarket(market),
     marketHasUniqueImage,
   };
+}
+
+function sortMarketsByMostLikelyOutcome(markets: PolymarketMarket[]) {
+  return markets.sort((a, b) => {
+    return Number(b.lastTradePrice) - Number(a.lastTradePrice);
+  });
 }

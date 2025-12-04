@@ -12,7 +12,7 @@ export const PolymarketHeader = memo(function PolymarketHeader({ isDarkMode }: {
   return (
     <SectionHeader
       title={i18n.t(i18n.l.account.tab_polymarket)}
-      onPress={() => Navigation.handleAction(Routes.POLYMARKET_ACCOUNT_SCREEN)}
+      onPress={() => Navigation.handleAction(Routes.POLYMARKET_NAVIGATOR)}
       isDarkMode={isDarkMode}
       value={formatCurrency(accountValueNative)}
     />
