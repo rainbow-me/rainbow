@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, globalColors, Inline, Text, useColorMode } from '@/design-system';
@@ -13,18 +13,12 @@ import Routes from '@/navigation/routesNames';
 import { POLYMARKET_BACKGROUND_DARK, PolymarketOutcome } from '@/features/polymarket/constants';
 import { GammaEvent } from '../types';
 import { PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { useOnChange } from '@/hooks/useOnChange';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { usePolymarketChartStore } from '@/features/charts/polymarket/stores/polymarketChartStore';
 
 // ============ Constants ====================================================== //
 
 const CHART_HEIGHT = 300;
-
-// const SMOOTHING_OPTIONS: { label: string; value: LineSmoothing }[] = Object.entries(LineSmoothing).map(([key, value]) => ({
-//   label: key,
-//   value: value,
-// }));
 
 const DEMO_MARKETS = [
   { name: 'Fed Decision', slug: 'fed-decision-in-december' },
@@ -41,22 +35,7 @@ const DEMO_MARKETS = [
 export const PolymarketChartDemo = memo(function PolymarketChartDemo() {
   const { isDarkMode } = useColorMode();
   const [refreshKey, setRefreshKey] = useState(0);
-  // const selectedEventSlug = usePolymarketStore(state => state.selectedEventSlug);
-  // const [selectedMarket, setSelectedMarket] = useState<(typeof DEMO_MARKETS)[number]>(DEMO_MARKETS[0]);
-  // const [selectedSmoothing, setSelectedSmoothing] = useState(LineSmoothing.Makima);
   const eventDataRef = useRef<GammaEvent | null>(null);
-  // const [isLoadingEvent, setIsLoadingEvent] = useState(false);
-
-  // const chartData = usePolymarketChartStore(state => state.getData());
-  // const highlightedSeriesId = usePolymarketStore(state => state.highlightedSeriesId);
-
-  // const seriesTokenIds = useMemo(() => chartData?.series.map(s => s.tokenId) ?? [], [chartData?.series]);
-
-  // const currentHighlightLabel = useMemo(() => {
-  //   if (!highlightedSeriesId) return 'None';
-  //   const series = chartData?.series.find(s => s.tokenId === highlightedSeriesId);
-  //   return series?.label ?? 'Unknown';
-  // }, [chartData?.series, highlightedSeriesId]);
 
   useLayoutEffect(() => {
     polymarketChartsActions.setSelectedEventSlug(DEMO_MARKETS[0].slug);
@@ -82,25 +61,16 @@ export const PolymarketChartDemo = memo(function PolymarketChartDemo() {
     if (currentEventSlug === market.slug) return;
     shouldResetRef.current = true;
     polymarketChartsActions.setSelectedEventSlug(market.slug);
-    // setRefreshKey(prev => prev + 1);
-    // fetchEventData();
   }, []);
-
-  // const handleSmoothingSelect = useCallback((smoothing: LineSmoothing) => {
-  //   setSelectedSmoothing(smoothing);
-  //   setRefreshKey(prev => prev + 1);
-  // }, []);
 
   useListen(
     usePolymarketChartStore,
     state => state.getData(),
     data => {
       if (!data || !shouldResetRef.current) return;
-      // queueMicrotask(() => {
       shouldResetRef.current = false;
       setRefreshKey(prev => prev + 1);
       fetchEventData();
-      // });
     }
   );
 
@@ -147,20 +117,6 @@ export const PolymarketChartDemo = memo(function PolymarketChartDemo() {
     Navigation.handleAction(Routes.POLYMARKET_ACCOUNT_SCREEN);
   }, []);
 
-  // const handleCycleHighlight = useCallback(() => {
-  //   if (!seriesTokenIds.length) return;
-
-  //   const currentIndex = highlightedSeriesId ? seriesTokenIds.indexOf(highlightedSeriesId) : -1;
-  //   const nextIndex = currentIndex + 1;
-
-  //   if (nextIndex >= seriesTokenIds.length) {
-  //     // Cycle back to "none"
-  //     polymarketChartsActions.setHighlightedSeriesId(null);
-  //   } else {
-  //     polymarketChartsActions.setHighlightedSeriesId(seriesTokenIds[nextIndex]);
-  //   }
-  // }, [highlightedSeriesId, seriesTokenIds]);
-
   return (
     <View style={[styles.container, isDarkMode ? styles.containerDark : styles.containerLight]}>
       <Box paddingHorizontal="16px" paddingVertical="12px">
@@ -182,17 +138,11 @@ export const PolymarketChartDemo = memo(function PolymarketChartDemo() {
         <DemoMarkets handleMarketSelect={handleMarketSelect} isDarkMode={isDarkMode} />
       </ScrollView>
 
-      <PolymarketChart
-        chartHeight={CHART_HEIGHT}
-        chartWidth={DEVICE_WIDTH}
-        key={refreshKey}
-        // key={`${selectedEventSlug}:${refreshKey}`}
-        smoothingMode={LineSmoothing.Makima}
-      />
+      <PolymarketChart chartHeight={CHART_HEIGHT} chartWidth={DEVICE_WIDTH} key={refreshKey} smoothingMode={LineSmoothing.Makima} />
 
       <PolymarketTimeframeSelector backgroundColor={isDarkMode ? '#050B14' : '#F5F5F7'} color={globalColors.white100} />
 
-      {/* Navigation Debug Buttons */}
+      {/* Test Navigation Buttons */}
       <Box paddingHorizontal="16px" paddingTop="16px" gap={8}>
         <View style={styles.debugButtonRow}>
           <ButtonPressAnimation
@@ -268,41 +218,6 @@ export const PolymarketChartDemo = memo(function PolymarketChartDemo() {
           </ButtonPressAnimation>
         </View>
       </Box>
-
-      {/* <View style={styles.highlightRow}>
-        <ButtonPressAnimation
-          disabled={!seriesTokenIds.length}
-          onPress={handleCycleHighlight}
-          scaleTo={0.96}
-          style={[styles.highlightButton, isDarkMode ? styles.highlightButtonDark : styles.highlightButtonLight]}
-        >
-          <Text color="label" size="13pt" weight="bold">
-            Highlight: {currentHighlightLabel}
-          </Text>
-        </ButtonPressAnimation>
-      </View> */}
-
-      {/* <View style={styles.smoothingGrid}>
-        {SMOOTHING_OPTIONS.map(option => {
-          const isSelected = option.value === selectedSmoothing;
-          return (
-            <ButtonPressAnimation
-              key={option.value}
-              // onPress={() => handleSmoothingSelect(option.value)}
-              onPress={() => handleSmoothingSelect(LineSmoothing.Makima)}
-              scaleTo={0.94}
-              style={[
-                styles.smoothingButton,
-                isSelected && (isDarkMode ? styles.smoothingButtonSelectedDark : styles.smoothingButtonSelectedLight),
-              ]}
-            >
-              <Text align="center" color={isSelected ? 'label' : 'labelQuaternary'} size="15pt" weight="bold">
-                {option.label}
-              </Text>
-            </ButtonPressAnimation>
-          );
-        })}
-      </View> */}
     </View>
   );
 });
@@ -342,7 +257,6 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   containerDark: {
-    // backgroundColor: '#141619',
     backgroundColor: POLYMARKET_BACKGROUND_DARK,
   },
   containerLight: {

@@ -1,4 +1,5 @@
 import { prefetchCandlestickData } from '@/features/charts/stores/candlestickStore';
+import { polymarketChartsActions } from '@/features/charts/polymarket/stores/polymarketStore';
 import { prefetchPolymarketEvent } from '@/features/polymarket/stores/polymarketEventStore';
 import Routes, { Route } from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
@@ -20,7 +21,17 @@ export const prefetchRegistry = deepFreeze<PrefetchRegistry>({
     prefetchCandlestickData(market.symbol);
   },
 
-  [Routes.POLYMARKET_EVENT_SCREEN]: ({ eventId }) => {
+  [Routes.POLYMARKET_EVENT_SCREEN]: ({ eventId, event }) => {
     prefetchPolymarketEvent(eventId);
+    if (event?.slug) polymarketChartsActions.setSelectedEventSlug(event.slug);
+  },
+
+  [Routes.POLYMARKET_MARKET_SHEET]: ({ market }) => {
+    if (market.clobTokenIds?.length && market.outcomes?.length) {
+      polymarketChartsActions.setSelectedMarketFilter({
+        tokenIds: market.clobTokenIds,
+        labels: market.outcomes,
+      });
+    }
   },
 });
