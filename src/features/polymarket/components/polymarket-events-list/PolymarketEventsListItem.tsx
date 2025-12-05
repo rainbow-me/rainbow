@@ -14,7 +14,7 @@ import { toPercentageWorklet } from '@/safe-math/SafeMath';
 
 export const HEIGHT = 239;
 
-export const PolymarketEventCard = memo(function PolymarketEventCard({ event }: { event: PolymarketEvent }) {
+export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({ event }: { event: PolymarketEvent }) {
   const mostLikelyOutcome = useMemo(() => {
     const market = getMostLikelyMarket(event);
     if (!market)
@@ -43,7 +43,7 @@ export const PolymarketEventCard = memo(function PolymarketEventCard({ event }: 
   }, [event.color]);
 
   return (
-    <ButtonPressAnimation onPress={() => navigateToEvent(event)}>
+    <ButtonPressAnimation scaleTo={0.97} onPress={() => navigateToEvent(event)}>
       <GradientBorderView
         borderGradientColors={[accentColors.opacity14, accentColors.opacity0]}
         locations={[0, 0.94]}
@@ -68,7 +68,7 @@ export const PolymarketEventCard = memo(function PolymarketEventCard({ event }: 
           </View>
           <View style={{ gap: 10, flex: 1 }}>
             <View style={{ gap: 16 }}>
-              <ImgixImage source={{ uri: event.icon }} size={32} style={styles.icon} />
+              <ImgixImage source={{ uri: event.icon ?? event.image }} size={32} style={styles.icon} />
               <Text size="13pt" weight="bold" color="labelQuaternary">
                 {formatNumber(event.volume, { useOrderSuffix: true, decimals: 1, style: '$' })}
               </Text>

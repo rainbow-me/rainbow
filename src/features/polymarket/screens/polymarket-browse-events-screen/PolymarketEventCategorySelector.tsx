@@ -1,28 +1,33 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import { Text, useColorMode, Box, TextShadow } from '@/design-system';
+import { Text, useColorMode, Border, AnimatedText, useForegroundColor } from '@/design-system';
 import { CATEGORIES, Category } from '@/features/polymarket/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
+import Animated, { runOnJS, SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
 const CONTAINER_HEIGHT = 40;
 const CATEGORY_ITEMS = Object.values(CATEGORIES);
 
 export const PolymarketEventCategorySelector = memo(function PolymarketEventCategorySelector() {
-  const selectedCategoryTagId = usePolymarketEventsStore(state => state.tagId);
-
-  const onPress = useCallback((category: Category) => {
-    usePolymarketEventsStore.getState().setTagId(category.tagId);
-  }, []);
+  const selectedCategoryTagId = useSharedValue<string | null>(null);
+  const onPress = useCallback(
+    (category: Category) => {
+      'worklet';
+      selectedCategoryTagId.value = category.tagId;
+      runOnJS(usePolymarketEventsStore.getState().setTagId)(category.tagId);
+    },
+    [selectedCategoryTagId]
+  );
 
   return (
     <View style={styles.container}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollViewContentContainer}>
         {CATEGORY_ITEMS.map(category => (
-          <CategoryItem key={category.tagId} category={category} onPress={onPress} isSelected={selectedCategoryTagId === category.tagId} />
+          <CategoryItem key={category.tagId} category={category} onPress={onPress} selectedCategoryTagId={selectedCategoryTagId} />
         ))}
       </ScrollView>
     </View>
@@ -32,11 +37,13 @@ export const PolymarketEventCategorySelector = memo(function PolymarketEventCate
 type CategoryItemProps = {
   category: Category;
   onPress: (category: Category) => void;
-  isSelected: boolean;
+  selectedCategoryTagId: SharedValue<string | null>;
 };
 
-const CategoryItem = memo(function CategoryItem({ category, onPress, isSelected }: CategoryItemProps) {
+const CategoryItem = memo(function CategoryItem({ category, onPress, selectedCategoryTagId }: CategoryItemProps) {
   const { isDarkMode } = useColorMode();
+  const labelColor = useForegroundColor('label');
+  const isSelected = useDerivedValue<boolean>(() => selectedCategoryTagId.value === category.tagId);
 
   const accentColors = useMemo(() => {
     const selectedColor = isDarkMode ? category.color.dark : category.color.light;
@@ -48,34 +55,37 @@ const CategoryItem = memo(function CategoryItem({ category, onPress, isSelected 
     };
   }, [category.color, isDarkMode]);
 
-  const iconColor = isSelected ? { custom: accentColors.opacity100 } : 'label';
+  const itemStyle = useAnimatedStyle(() => ({
+    backgroundColor: isSelected.value ? accentColors.opacity8 : 'transparent',
+    borderRadius: CONTAINER_HEIGHT / 2,
+  }));
+
+  const borderContainerStyle = useAnimatedStyle(() => ({
+    opacity: isSelected.value ? 1 : 0,
+  }));
+
+  const textStyle = useAnimatedStyle(() => ({
+    color: isSelected.value ? accentColors.opacity100 : labelColor,
+  }));
 
   return (
     <ButtonPressAnimation scaleTo={0.92} onPress={() => onPress(category)}>
-      <Box
-        borderRadius={CONTAINER_HEIGHT / 2}
-        borderWidth={THICKER_BORDER_WIDTH}
-        borderColor={{ custom: isSelected ? accentColors.opacity4 : 'transparent' }}
-        style={[styles.itemContainer, isSelected && { backgroundColor: accentColors.opacity8 }]}
-      >
-        <InnerShadow
-          borderRadius={CONTAINER_HEIGHT / 2}
-          color={isSelected ? accentColors.opacity28 : 'transparent'}
-          blur={16}
-          dx={0}
-          dy={8}
-        />
+      <Animated.View style={[itemStyle, styles.itemContainer]}>
+        <Animated.View style={[borderContainerStyle, StyleSheet.absoluteFill]}>
+          <Border borderRadius={CONTAINER_HEIGHT / 2} borderWidth={THICKER_BORDER_WIDTH} borderColor={{ custom: accentColors.opacity4 }} />
+          <InnerShadow borderRadius={CONTAINER_HEIGHT / 2} color={accentColors.opacity28} blur={16} dx={0} dy={8} />
+        </Animated.View>
         <View style={styles.iconContainer}>
-          <TextShadow blur={7} shadowOpacity={isSelected ? 0.4 : 0}>
-            <Text color={iconColor} size="icon 17px" weight="heavy">
-              {category.icon}
-            </Text>
-          </TextShadow>
+          {/* <TextShadow blur={7} shadowOpacity={isSelected ? 0.4 : 0}> */}
+          <AnimatedText color={'label'} size="icon 17px" weight="heavy" style={textStyle}>
+            {category.icon}
+          </AnimatedText>
+          {/* </TextShadow> */}
         </View>
         <Text size="17pt" weight="heavy" color="label">
           {category.label}
         </Text>
-      </Box>
+      </Animated.View>
     </ButtonPressAnimation>
   );
 });

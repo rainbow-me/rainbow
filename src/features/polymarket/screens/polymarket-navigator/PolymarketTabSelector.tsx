@@ -71,7 +71,7 @@ export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
       <View style={StyleSheet.absoluteFill}>
         <BlurView blurIntensity={24} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
         <LinearGradient
-          style={[StyleSheet.absoluteFillObject, { opacity: 0.07 }]}
+          style={[StyleSheet.absoluteFill, { opacity: 0.07 }]}
           colors={['#DC91F4', opacityWorklet('#DC91F4', 0.5)]}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}

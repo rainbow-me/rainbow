@@ -454,3 +454,37 @@ export type PolymarketMarketEvent = {
   deployingTimestamp: string;
   gameId?: number;
 };
+
+export type RawPolymarketOptimizedMarket = {
+  active: boolean;
+  archived: boolean;
+  bestAsk: number;
+  bestBid: number;
+  closed: boolean;
+  groupItemTitle: string;
+  lastTradePrice: number;
+  outcomePrices: string[];
+  outcomes: string[];
+  question: string;
+  slug: string;
+  spread: number;
+};
+
+export type RawPolymarketOptimizedEvent = {
+  markets: RawPolymarketOptimizedMarket[];
+  active: boolean;
+  archived: boolean;
+  closed: boolean;
+  endDate: string;
+  ended: boolean;
+  id: string;
+  image: string;
+  negRisk: boolean;
+  slug: string;
+  startDate: string;
+  title: string;
+};
+
+export type PolymarketOptimizedEvent = RawPolymarketOptimizedEvent & {
+  color: string;
+};
