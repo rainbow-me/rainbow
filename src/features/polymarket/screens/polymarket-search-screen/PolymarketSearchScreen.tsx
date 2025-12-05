@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from '@/design-system';
-import { usePolymarketEventSearchStore } from '@/features/polymarket/stores/polymarketEventSearchStore';
+import { polymarketEventSearchActions, usePolymarketEventSearchStore } from '@/features/polymarket/stores/polymarketEventSearchStore';
 import { PolymarketEventsListBase } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListBase';
 
 export const PolymarketSearchScreen = memo(function PolymarketSearchScreen() {
@@ -37,7 +37,7 @@ const SearchResults = memo(function SearchResults() {
     );
   }
 
-  return <PolymarketEventsListBase events={events} isLoading={isLoading} />;
+  return <PolymarketEventsListBase events={events} isLoading={isLoading} onEndReached={polymarketEventSearchActions.fetchNextPage} />;
 });
 
 const styles = StyleSheet.create({

@@ -39,7 +39,7 @@ export const PolymarketSearchFooter = memo(function PolymarketSearchFooter() {
     (query: string) => {
       polymarketEventSearchActions.setSearchQuery(query);
     },
-    time.ms(300),
+    time.ms(500),
     { leading: false, trailing: true }
   );
 

@@ -1,6 +1,6 @@
 import { FlatList, StyleSheet, View } from 'react-native';
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { memo, useCallback, ReactElement, ComponentType } from 'react';
+import { memo, useCallback, ComponentProps } from 'react';
 import { NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -17,16 +17,17 @@ const PADDING_HORIZONTAL = 12;
 const ROW_HEIGHT = ITEM_HEIGHT + ITEM_GAP;
 const CARD_BORDER_RADIUS = 26;
 
+type ListProps = Pick<ComponentProps<typeof FlatList>, 'onEndReached' | 'onEndReachedThreshold' | 'onRefresh' | 'refreshing' | 'onRefresh'>;
+
 type PolymarketEventsListBaseProps = {
   events: PolymarketEvent[];
   isLoading?: boolean;
-  ListHeaderComponent?: ComponentType | ReactElement | null;
-};
+} & ListProps;
 
 export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
   events,
   isLoading,
-  ListHeaderComponent,
+  ...listProps
 }: PolymarketEventsListBaseProps) {
   const safeAreaInsets = useSafeAreaInsets();
   const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
@@ -53,11 +54,12 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
       columnWrapperStyle={styles.columnWrapper}
       scrollIndicatorInsets={{ bottom: paddingBottom }}
       style={styles.list}
-      ListHeaderComponent={ListHeaderComponent}
       getItemLayout={getItemLayout}
-      initialNumToRender={6}
-      maxToRenderPerBatch={4}
-      windowSize={5}
+      maintainVisibleContentPosition={{
+        minIndexForVisible: 0,
+      }}
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...listProps}
     />
   );
 });
@@ -66,7 +68,7 @@ function keyExtractor(item: PolymarketEvent): string {
   return item.id;
 }
 
-function getItemLayout(data: unknown, index: number) {
+function getItemLayout(_: unknown, index: number) {
   return {
     length: ITEM_HEIGHT,
     offset: Math.floor(index / 2) * ROW_HEIGHT,
