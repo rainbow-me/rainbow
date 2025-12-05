@@ -40,13 +40,134 @@ export const POLYMARKET_SPORTS_MARKET_TYPE = {
   FIRST_HALF_SPREADS: 'first_half_spreads',
   FIRST_HALF_TOTALS: 'first_half_totals',
   FIRST_HALF_MONEYLINE: 'first_half_moneyline',
-  // Nested moneyline (eg. map specific in esports)
-  // Example: "Counter-Strike: Venom vs ARCRED - Map 2 Winner"
+  // Nested moneyline (eg. "Counter-Strike: Venom vs ARCRED - Map 2 Winner")
   CHILD_MONEYLINE: 'child_moneyline',
-  // Exclusive to soccer
   BOTH_TEAMS_TO_SCORE: 'both_teams_to_score',
 } as const;
 
 export const NAVIGATOR_FOOTER_HEIGHT = 66;
 // padding distance between bottom most content and the navigator footer
 export const NAVIGATOR_FOOTER_CLEARANCE = 12;
+
+export const CATEGORIES = {
+  trending: {
+    label: 'Trending',
+    icon: '􀙭',
+    // Trending represents the default 'all' category
+    tagId: null,
+    color: {
+      dark: '#C863E8',
+      light: '#E445D3',
+    },
+  },
+  sports: {
+    label: 'Sports',
+    icon: '􁗉',
+    tagId: 'sports',
+    color: {
+      dark: '#61D36E',
+      light: '#1DB847',
+    },
+  },
+  politics: {
+    label: 'Politics',
+    icon: '􀤩',
+    tagId: 'politics',
+    color: {
+      dark: '#F8A24B',
+      light: '#F8A24B',
+    },
+  },
+  finance: {
+    label: 'Finance',
+    icon: '􁎢',
+    tagId: 'finance',
+    color: {
+      dark: '#4F60FF',
+      light: '#4F60FF',
+    },
+  },
+  crypto: {
+    label: 'Crypto',
+    icon: '􀏻',
+    tagId: 'crypto',
+    color: {
+      dark: '#AA75FF',
+      light: '#8943F8',
+    },
+  },
+  geopolitics: {
+    label: 'Geopolitics',
+    icon: '􀵲',
+    tagId: 'geopolitics',
+    color: {
+      dark: '#EEA929',
+      light: '#D39013',
+    },
+  },
+  earnings: {
+    label: 'Earnings',
+    icon: '􀑁',
+    tagId: 'earnings',
+    color: {
+      dark: '#BAE447',
+      light: '#92BF16',
+    },
+  },
+  tech: {
+    label: 'Tech',
+    icon: '􀓗',
+    tagId: 'tech',
+    color: {
+      dark: '#438DFB',
+      light: '#438DFB',
+    },
+  },
+  culture: {
+    label: 'Culture',
+    icon: '􀫔',
+    tagId: 'pop-culture',
+    color: {
+      dark: '#F54F4F',
+      light: '#F54F4F',
+    },
+  },
+  world: {
+    label: 'World',
+    icon: '􀆪',
+    tagId: 'world',
+    color: {
+      dark: '#6BBDFF',
+      light: '#6BBDFF',
+    },
+  },
+  economy: {
+    label: 'Economy',
+    icon: '􀎜',
+    tagId: 'economy',
+    color: {
+      dark: '#43D4C8',
+      light: '#43D4C8',
+    },
+  },
+  elections: {
+    label: 'Elections',
+    icon: '􁅈',
+    tagId: 'elections',
+    color: {
+      dark: '#479DE4',
+      light: '#479DE4',
+    },
+  },
+  mentions: {
+    label: 'Mentions',
+    icon: '􀿋',
+    tagId: 'mentions',
+    color: {
+      dark: '#F262E3',
+      light: '#F54F4F',
+    },
+  },
+} as const;
+
+export type Category = (typeof CATEGORIES)[keyof typeof CATEGORIES];

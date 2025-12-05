@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
 import ImgixImage from '@/components/images/ImgixImage';
-import { Text, TextIcon } from '@/design-system';
+import { Bleed, Text, TextIcon } from '@/design-system';
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { Navigation } from '@/navigation';
 import { memo, useMemo } from 'react';
@@ -36,6 +36,7 @@ export const PolymarketEventCard = memo(function PolymarketEventCard({ event }: 
       opacity0: opacityWorklet(event.color, 0),
       opacity6: opacityWorklet(event.color, 0.06),
       opacity12: opacityWorklet(event.color, 0.12),
+      opacity14: opacityWorklet(event.color, 0.14),
       opacity24: opacityWorklet(event.color, 0.24),
       opacity100: event.color,
     };
@@ -44,16 +45,19 @@ export const PolymarketEventCard = memo(function PolymarketEventCard({ event }: 
   return (
     <ButtonPressAnimation onPress={() => navigateToEvent(event)}>
       <GradientBorderView
-        borderGradientColors={[accentColors.opacity24, accentColors.opacity0]}
+        borderGradientColors={[accentColors.opacity14, accentColors.opacity0]}
+        locations={[0, 0.94]}
         borderRadius={26}
-        style={{ overflow: 'hidden' }}
+        borderWidth={2}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0.75, y: 0.6 }}
       >
         <LinearGradient
-          colors={[accentColors.opacity24, accentColors.opacity0]}
+          colors={[accentColors.opacity14, accentColors.opacity0]}
+          locations={[0, 0.94]}
           style={StyleSheet.absoluteFill}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          pointerEvents="none"
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.6, y: 0.62 }}
         />
 
         <View style={styles.contentContainer}>
@@ -74,30 +78,32 @@ export const PolymarketEventCard = memo(function PolymarketEventCard({ event }: 
             </Text>
           </View>
 
-          <GradientBorderView
-            borderGradientColors={[accentColors.opacity6, accentColors.opacity0]}
-            start={{ x: -1, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            borderRadius={26}
-            style={{ overflow: 'hidden' }}
-          >
-            <LinearGradient
-              colors={[accentColors.opacity100, accentColors.opacity0]}
-              locations={[0.06, 1]}
-              style={[StyleSheet.absoluteFill, { opacity: 0.14 }]}
-              start={{ x: -0.06, y: 0 }}
-              end={{ x: 0.79, y: 0 }}
-              pointerEvents="none"
-            />
-            <View style={[styles.row, { height: 36, paddingHorizontal: 12 }]}>
-              <Text size="15pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
-                {mostLikelyOutcome.odds}
-              </Text>
-              <Text size="15pt" weight="bold" color="labelSecondary" numberOfLines={1} style={{ flex: 1 }}>
-                {mostLikelyOutcome.title}
-              </Text>
-            </View>
-          </GradientBorderView>
+          <Bleed horizontal={'8px'}>
+            <GradientBorderView
+              borderGradientColors={[accentColors.opacity6, accentColors.opacity0]}
+              start={{ x: -1, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              borderRadius={16}
+              borderWidth={2}
+            >
+              <LinearGradient
+                colors={[accentColors.opacity100, accentColors.opacity0]}
+                locations={[0.06, 1]}
+                style={[StyleSheet.absoluteFill, { opacity: 0.14 }]}
+                start={{ x: -0.06, y: 0 }}
+                end={{ x: 0.79, y: 0 }}
+                pointerEvents="none"
+              />
+              <View style={[styles.row, { height: 36, paddingHorizontal: 12 }]}>
+                <Text size="15pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
+                  {mostLikelyOutcome.odds}
+                </Text>
+                <Text size="15pt" weight="bold" color="labelSecondary" numberOfLines={1} style={{ flex: 1 }}>
+                  {mostLikelyOutcome.title}
+                </Text>
+              </View>
+            </GradientBorderView>
+          </Bleed>
         </View>
       </GradientBorderView>
     </ButtonPressAnimation>
