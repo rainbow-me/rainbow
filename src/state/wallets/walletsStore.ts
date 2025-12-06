@@ -543,22 +543,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         const updatedWalletDamagedStates = new Map<string, boolean>();
 
         // Try to detect cases where wallets will be unusable and might need to be re-imported
-        const isPasscodeAuthAvailable = await kc.isPasscodeAuthAvailable();
         if (IS_IOS) {
-          // Device migration - the keychain cache will be transferred, but not the keychain data itself.
-          // It is enough to just check the first address.
-          const address = keychainWallets[0].addresses[0].address;
-          const key = `${address}_${privateKeyKey}`;
-          const hasPrivateKey = await kc.has(key);
-          if (!hasPrivateKey) {
-            logger.debug(`[walletsStore]: No private key found in keychain for ${address}, marking wallets as damaged`);
-            healthyKeychain = false;
-            keychainWallets.forEach(wallet => {
-              updatedWalletDamagedStates.set(wallet.id, true);
-            });
-          }
           // Passcode is disabled - the keychain data will be inaccessible until the user re-enables it.
-          else if (!isPasscodeAuthAvailable) {
+          const isPasscodeAuthAvailable = await kc.isPasscodeAuthAvailable();
+          if (!isPasscodeAuthAvailable) {
             logger.debug('[walletsStore]: Passcode is disabled, marking keychain encrypted wallets as damaged');
             healthyKeychain = false;
             keychainWallets.forEach(wallet => {
@@ -573,8 +561,21 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
               });
             }
           }
+          // Device migration - the keychain cache will be transferred, but not the keychain data itself.
+          await Promise.all(
+            keychainWallets.map(async wallet => {
+              // It is enough to just check the first address of each wallet.
+              const key = `${wallet.addresses[0].address}_${privateKeyKey}`;
+              if (!(await kc.has(key))) {
+                logger.debug(`[walletsStore]: No private key found in keychain for wallet ${wallet.id}, marking as damaged`);
+                healthyKeychain = false;
+                updatedWalletDamagedStates.set(wallet.id, true);
+              }
+            })
+          );
         } else {
           // Passcode is disabled - the keychain data will be inaccessible permanently.
+          const isPasscodeAuthAvailable = await kc.isPasscodeAuthAvailable();
           if (!isPasscodeAuthAvailable) {
             logger.debug('[walletsStore]: Passcode is disabled, marking keychain encrypted wallets as damaged');
             healthyKeychain = false;
