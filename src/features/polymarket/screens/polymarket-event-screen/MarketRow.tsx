@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { Box, Text } from '@/design-system';
+import { Box, Text, TextShadow } from '@/design-system';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { memo } from 'react';
@@ -9,7 +9,7 @@ import { LinearGradient } from 'react-native-linear-gradient';
 import ImgixImage from '@/components/images/ImgixImage';
 import { lessThanWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
 import { formatNumber } from '@/helpers/strings';
-import { SkiaBadge } from '@/components/SkiaBadge';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 
 type MarketRowProps = {
   accentColor: string;
@@ -74,25 +74,30 @@ export const MarketRow = memo(function MarketRow({ accentColor, priceChange, ima
             </Text>
           )}
         </Box>
-        <SkiaBadge
-          text={`${toPercentageWorklet(tokenPrice, 0.001)}%`}
-          textColor={{ custom: accentColor }}
-          gradientFill={[
-            {
-              colors: [opacityWorklet(accentColor, 0.16), opacityWorklet(accentColor, 0.08)],
-              start: { x: 0, y: 0 },
-              end: { x: 0, y: 1 },
-            },
-          ]}
-          innerShadows={[{ dx: 0, dy: 1, blur: 2.5, color: opacityWorklet(accentColor, 0.24) }]}
-          strokeColor={opacityWorklet(accentColor, 0.06)}
-          strokeWidth={2.5}
-          fontSize="26pt"
-          fontWeight="heavy"
-          height={46}
-          paddingHorizontal={12}
+        <Box
           borderRadius={16}
-        />
+          paddingHorizontal={'12px'}
+          paddingVertical={'6px'}
+          alignItems="center"
+          justifyContent="center"
+          borderColor={{ custom: opacityWorklet(accentColor, 0.06) }}
+          borderWidth={2.5}
+          height={46}
+        >
+          <InnerShadow borderRadius={16} color={opacityWorklet(accentColor, 0.16)} blur={5} dx={0} dy={1} />
+          <LinearGradient
+            colors={[opacityWorklet(accentColor, 0.16), opacityWorklet(accentColor, 0.08)]}
+            style={StyleSheet.absoluteFill}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            pointerEvents="none"
+          />
+          <TextShadow blur={20} shadowOpacity={0.6}>
+            <Text size="26pt" weight="heavy" color={{ custom: accentColor }}>
+              {`${toPercentageWorklet(tokenPrice, 0.001)}%`}
+            </Text>
+          </TextShadow>
+        </Box>
       </Box>
     </GradientBorderView>
   );

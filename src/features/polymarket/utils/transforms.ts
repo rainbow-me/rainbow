@@ -1,4 +1,11 @@
-import { PolymarketEvent, PolymarketMarket, RawPolymarketEvent, RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import {
+  PolymarketEvent,
+  PolymarketMarket,
+  PolymarketOptimizedEvent,
+  RawPolymarketEvent,
+  RawPolymarketMarket,
+  RawPolymarketOptimizedEvent,
+} from '@/features/polymarket/types/polymarket-event';
 import { PolymarketPosition, RawPolymarketPosition } from '@/features/polymarket/types';
 import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
 import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';

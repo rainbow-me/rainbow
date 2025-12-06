@@ -33,7 +33,7 @@ export const InnerShadow = memo(function InnerShadow({ borderRadius = 0, color, 
   );
 
   return (
-    <Animated.View style={StyleSheet.absoluteFillObject} pointerEvents="none" onLayout={hasExplicitSize ? undefined : onLayout}>
+    <Animated.View style={StyleSheet.absoluteFill} pointerEvents="none" onLayout={hasExplicitSize ? undefined : onLayout}>
       <Canvas style={styles.canvas}>
         <RoundedRect rect={shadowRect}>
           <Shadow dx={dx} dy={dy} blur={blur} color={color} inner shadowOnly />

@@ -1,5 +1,4 @@
 import { Box, Separator, Text, TextIcon, useColorMode } from '@/design-system';
-import { BetTypeSelector } from '@/features/polymarket/screens/polymarket-event-screen/BetTypeSelector';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import React, { memo, useMemo, useState } from 'react';
@@ -15,24 +14,38 @@ import { useDimensions } from '@/hooks';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { SingleMarketEvent } from '@/features/polymarket/screens/polymarket-event-screen/components/SingleMarketEvent';
 import { ItemSelector } from '@/features/polymarket/screens/polymarket-event-screen/ItemSelector';
+import { BetTypeSelector } from '@/features/polymarket/screens/polymarket-event-screen/BetTypeSelector';
 
 export const SportsEventMarkets = memo(function SportsEventMarkets() {
   const event = usePolymarketEventStore(state => state.getData());
   const [selectedBetType, setSelectedBetType] = useState<BetType>(BET_TYPE.MONEYLINE);
   const { isDarkMode } = useColorMode();
+  const { width } = useDimensions();
 
   const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
   const groupedMarkets = event ? getMarketsGroupedByBetType(event) : null;
+
+  const availableBetTypes = useMemo(() => {
+    if (!groupedMarkets) return [];
+    const types: BetType[] = [];
+    if (groupedMarkets.moneyline.length > 0) types.push(BET_TYPE.MONEYLINE);
+    if (groupedMarkets.spreads.length > 0) types.push(BET_TYPE.SPREADS);
+    if (groupedMarkets.totals.length > 0) types.push(BET_TYPE.TOTALS);
+    if (groupedMarkets.other.length > 0) types.push(BET_TYPE.OTHER);
+    return types;
+  }, [groupedMarkets]);
 
   if (!event || !groupedMarkets) return null;
 
   return (
     <Box gap={16}>
       <BetTypeSelector
+        availableBetTypes={availableBetTypes}
         backgroundColor={backgroundColor}
         color={'#FFFFFF'}
-        selectedBetType={selectedBetType}
+        containerWidth={width - 2 * 24}
         onSelectBetType={setSelectedBetType}
+        selectedBetType={selectedBetType}
       />
       <Markets markets={groupedMarkets} selectedBetType={selectedBetType} />
     </Box>

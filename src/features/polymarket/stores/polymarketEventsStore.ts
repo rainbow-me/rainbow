@@ -5,36 +5,47 @@ import { RawPolymarketEvent, PolymarketEvent } from '@/features/polymarket/types
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 
-export const MarketSortOrder = {
-  VOLUME: 'volume',
-  LAST_TRADE_PRICE: 'lastTradePrice',
-  VOLUME_24HR: 'volume24hr',
-  END_DATE: 'endDate',
-} as const;
+type PolymarketEventsParams = {
+  tagId: string | null;
+};
 
-type MarketSortOrder = (typeof MarketSortOrder)[keyof typeof MarketSortOrder];
+type PolymarketEventsStoreState = {
+  tagId: string | null;
+  setTagId: (tagId: string | null) => void;
+};
 
-export const usePolymarketEventsStore = createQueryStore<PolymarketEvent[]>({
-  fetcher: fetchPolymarketEvents,
-  keepPreviousData: true,
-  staleTime: time.minutes(2),
-  cacheTime: time.minutes(10),
-});
+export const usePolymarketEventsStore = createQueryStore<PolymarketEvent[], PolymarketEventsParams, PolymarketEventsStoreState>(
+  {
+    fetcher: fetchPolymarketEvents,
+    staleTime: time.minutes(2),
+    cacheTime: time.minutes(10),
+    params: { tagId: ($, store) => $(store).tagId },
+  },
+  set => ({
+    tagId: null,
+    setTagId: (tagId: string | null) => set({ tagId }),
+  })
+);
 
 export function prefetchPolymarketEvents() {
   usePolymarketEventsStore.getState().fetch();
 }
 
-async function fetchPolymarketEvents(_: Record<string, never>, abortController: AbortController | null): Promise<PolymarketEvent[]> {
+async function fetchPolymarketEvents(
+  { tagId }: PolymarketEventsParams,
+  abortController: AbortController | null
+): Promise<PolymarketEvent[]> {
   const url = new URL(`${POLYMARKET_GAMMA_API_URL}/events`);
-  url.searchParams.set('limit', '50');
+  url.searchParams.set('limit', '26');
   url.searchParams.set('active', 'true');
   url.searchParams.set('archived', 'false');
   url.searchParams.set('closed', 'false');
   url.searchParams.set('order', 'volume24hr');
   url.searchParams.set('ascending', 'false');
-  // TESTING:
-  // url.searchParams.set('tag_slug', 'ufc');
+
+  if (tagId) {
+    url.searchParams.set('tag_slug', tagId);
+  }
 
   const { data }: { data: RawPolymarketEvent[] } = await rainbowFetch(url.toString(), { abortController, timeout: time.seconds(30) });
 
