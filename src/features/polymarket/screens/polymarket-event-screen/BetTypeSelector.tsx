@@ -1,166 +1,108 @@
-import React, { memo, useCallback, useEffect, useRef } from 'react';
-import { ScrollView, ScrollViewProps, StyleSheet, View } from 'react-native';
-import Animated, {
-  DerivedValue,
-  runOnJS,
-  SharedValue,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
-import { SPRING_CONFIGS, easing } from '@/components/animations/animationConfigs';
-import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { AnimatedText, useColorMode, useForegroundColor } from '@/design-system';
+import React, { memo, useCallback, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { useAnimatedStyle } from 'react-native-reanimated';
+import { AnimatedText, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { opacity } from '@/__swaps__/utils/swaps';
-import { BET_TYPE, BetType } from '@/features/polymarket/screens/polymarket-event-screen/utils/getMarketsGroupedByBetType';
+import { ItemSelector, Item, RenderItemProps } from './ItemSelector';
+import { BET_TYPE, BetType } from './utils/getMarketsGroupedByBetType';
 
 // ============ Constants ====================================================== //
 
-const PILL = Object.freeze({ gap: 3, height: 64, width: 109 });
-const BASE_HORIZONTAL_INSET = 0;
+const PILL_HEIGHT = 64;
+const PILL_GAP = 8;
 
-const BET_TYPES: Record<BetType, { index: number; label: string; type: BetType; icon: string }> = {
-  [BET_TYPE.MONEYLINE]: { index: 0, label: 'Winner', type: BET_TYPE.MONEYLINE, icon: '􀠏' },
-  [BET_TYPE.SPREADS]: { index: 1, label: 'Spreads', type: BET_TYPE.SPREADS, icon: '􀄭' },
-  [BET_TYPE.TOTALS]: { index: 2, label: 'Totals', type: BET_TYPE.TOTALS, icon: '􂝔' },
-  [BET_TYPE.OTHER]: { index: 3, label: 'Other', type: BET_TYPE.OTHER, icon: '􀐒' },
+const BET_TYPE_ORDER: BetType[] = [BET_TYPE.MONEYLINE, BET_TYPE.SPREADS, BET_TYPE.TOTALS, BET_TYPE.OTHER];
+
+const BET_TYPE_CONFIG: Record<BetType, { label: string; icon: string }> = {
+  [BET_TYPE.MONEYLINE]: { label: 'Winner', icon: '􀢊' },
+  [BET_TYPE.SPREADS]: { label: 'Spreads', icon: '􀄭' },
+  [BET_TYPE.TOTALS]: { label: 'Totals', icon: '􂝔' },
+  [BET_TYPE.OTHER]: { label: 'Other', icon: '􀬎' },
 };
-
-const BET_TYPE_COUNT = Object.keys(BET_TYPES).length;
-const CONTENT_WIDTH = PILL.width * BET_TYPE_COUNT + PILL.gap * (BET_TYPE_COUNT - 1);
 
 // ============ Types ========================================================== //
 
 type BetTypeSelectorProps = {
+  availableBetTypes: BetType[];
   backgroundColor: string;
   color: string;
-  selectedBetType: BetType;
+  containerWidth: number;
   onSelectBetType: (betType: BetType) => void;
-};
-
-type BetTypeButtonProps = {
-  color: string;
-  icon: string;
-  index: number;
-  label: string;
-  onPress: (betType: BetType) => void;
-  selectedIndex: SharedValue<number>;
-  type: BetType;
+  selectedBetType: BetType;
 };
 
 // ============ Main Component ================================================= //
 
 export const BetTypeSelector = memo(function BetTypeSelector({
+  availableBetTypes,
   backgroundColor,
   color,
-  selectedBetType,
+  containerWidth,
   onSelectBetType,
+  selectedBetType,
 }: BetTypeSelectorProps) {
-  const scrollViewRef = useRef<ScrollView>(null);
-  const selectedIndex = useSharedValue(BET_TYPES[selectedBetType].index);
-  const scrollViewProps = getScrollViewProps();
+  const items: Item[] = useMemo(
+    () =>
+      BET_TYPE_ORDER.filter(type => availableBetTypes.includes(type)).map(type => ({
+        value: type,
+        label: BET_TYPE_CONFIG[type].label,
+      })),
+    [availableBetTypes]
+  );
 
-  // Sync selectedIndex when prop changes externally
-  useEffect(() => {
-    selectedIndex.value = BET_TYPES[selectedBetType].index;
-  }, [selectedBetType, selectedIndex]);
-
-  const buttonWidth = useDerivedValue<number>(() => PILL.width);
-
-  const onPress = useCallback(
-    (betType: BetType) => {
-      'worklet';
-      selectedIndex.value = BET_TYPES[betType].index;
-      runOnJS(onSelectBetType)(betType);
+  const handleSelect = useCallback(
+    (value: string) => {
+      onSelectBetType(value as BetType);
     },
-    [onSelectBetType, selectedIndex]
+    [onSelectBetType]
+  );
+
+  const renderItem = useCallback(
+    ({ accentColor, index, item, selectedIndex }: RenderItemProps) => (
+      <BetTypeItemContent
+        accentColor={accentColor}
+        icon={BET_TYPE_CONFIG[item.value as BetType].icon}
+        index={index}
+        item={item}
+        selectedIndex={selectedIndex}
+      />
+    ),
+    []
   );
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        centerContent
-        contentContainerStyle={scrollViewProps.contentContainerStyle}
-        horizontal
-        maintainVisibleContentPosition={scrollViewProps.maintainVisibleContentPosition}
-        ref={scrollViewRef}
-        scrollEnabled={true}
-        showsHorizontalScrollIndicator={false}
-        style={scrollViewProps.style}
-      >
-        <SelectedHighlight buttonWidth={buttonWidth} color={color} selectedIndex={selectedIndex} />
-        <BetTypeButtons color={color} onPress={onPress} selectedIndex={selectedIndex} />
-      </ScrollView>
-
-      <EasingGradient
-        easing={easing.in.sin}
-        endColor={backgroundColor}
-        endPosition="left"
-        startColor={backgroundColor}
-        startPosition="right"
-        steps={8}
-        style={styles.leftFade}
-      />
-
-      <EasingGradient
-        easing={easing.in.sin}
-        endColor={backgroundColor}
-        endPosition="right"
-        startColor={backgroundColor}
-        startPosition="left"
-        steps={8}
-        style={styles.rightFade}
-      />
-    </View>
+    <ItemSelector
+      accentColor={color}
+      backgroundColor={backgroundColor}
+      containerWidth={containerWidth}
+      containerBorderRadius={24}
+      highlightBorderRadius={24}
+      items={items}
+      onSelect={handleSelect}
+      paddingHorizontal={0}
+      pillGap={PILL_GAP}
+      pillHeight={PILL_HEIGHT}
+      renderItem={renderItem}
+      selectedValue={selectedBetType}
+      showBorder={false}
+    />
   );
 });
 
-// ============ SelectedHighlight ============================================== //
+// ============ BetTypeItemContent ============================================= //
 
-const SelectedHighlight = memo(function SelectedHighlight({
-  buttonWidth,
-  color,
+const BetTypeItemContent = memo(function BetTypeItemContent({
+  accentColor,
+  index,
+  item,
   selectedIndex,
-}: {
-  buttonWidth: DerivedValue<number>;
-  color: string;
-  selectedIndex: SharedValue<number>;
-}) {
-  const { isDarkMode } = useColorMode();
-  const highlightBackgroundColor = opacity(color, 0.06);
-  const borderColor = isDarkMode ? highlightBackgroundColor : opacity(color, 0.03);
-
-  const translateX = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateX: withSpring(
-          selectedIndex.value * (buttonWidth.value + PILL.gap) + BASE_HORIZONTAL_INSET,
-          SPRING_CONFIGS.snappyMediumSpringConfig
-        ),
-      },
-    ],
-  }));
-
-  const width = useAnimatedStyle(() => ({
-    width: withSpring(buttonWidth.value, SPRING_CONFIGS.snappyMediumSpringConfig),
-  }));
-
-  return (
-    <Animated.View style={[styles.selectedHighlight, { backgroundColor: highlightBackgroundColor, borderColor }, translateX, width]} />
-  );
-});
-
-// ============ BetTypeButton ================================================== //
-
-const BetTypeButton = ({ color, index, label, icon, onPress, selectedIndex, type }: BetTypeButtonProps) => {
+  icon,
+}: Pick<RenderItemProps, 'accentColor' | 'index' | 'item' | 'selectedIndex'> & { icon: string }) {
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
   const textStyle = useAnimatedStyle(() => {
     const isSelected = selectedIndex.value === index;
-    const textColor = isSelected ? color : labelQuaternary;
+    const textColor = isSelected ? accentColor : labelQuaternary;
     if (!IS_IOS) return { color: textColor };
     return {
       color: textColor,
@@ -169,117 +111,22 @@ const BetTypeButton = ({ color, index, label, icon, onPress, selectedIndex, type
   });
 
   return (
-    <GestureHandlerButton
-      hapticTrigger="tap-end"
-      hapticType="soft"
-      hitSlop={4}
-      onPressWorklet={() => {
-        'worklet';
-        onPress(type);
-      }}
-      style={styles.button}
-    >
+    <View style={styles.itemContent}>
       <AnimatedText align="center" color="labelQuaternary" size="15pt" style={textStyle} weight="bold">
         {icon}
       </AnimatedText>
       <AnimatedText align="center" color="labelQuaternary" size="15pt" style={textStyle} weight="bold">
-        {label}
+        {item.label}
       </AnimatedText>
-    </GestureHandlerButton>
+    </View>
   );
-};
-
-// ============ Mapped Buttons ================================================= //
-
-const BetTypeButtons = ({
-  color,
-  onPress,
-  selectedIndex,
-}: {
-  color: string;
-  onPress: (betType: BetType) => void;
-  selectedIndex: SharedValue<number>;
-}) => {
-  return Object.values(BET_TYPES).map(({ icon, index, label, type }) => (
-    <BetTypeButton
-      color={color}
-      index={index}
-      key={type}
-      label={label}
-      icon={icon}
-      onPress={onPress}
-      selectedIndex={selectedIndex}
-      type={type}
-    />
-  ));
-};
-
-// ============ Utilities ====================================================== //
-
-function getScrollViewProps(): Pick<ScrollViewProps, 'contentContainerStyle' | 'maintainVisibleContentPosition' | 'style'> {
-  return {
-    contentContainerStyle: styles.contentContainer,
-    maintainVisibleContentPosition: IS_IOS ? undefined : { minIndexForVisible: 0 },
-    style: styles.scrollView,
-  };
-}
+});
 
 // ============ Styles ========================================================= //
 
 const styles = StyleSheet.create({
-  button: {
+  itemContent: {
     alignItems: 'center',
-    height: PILL.height,
-    justifyContent: 'center',
-    width: PILL.width,
     gap: 10,
-  },
-  container: {
-    position: 'relative',
-    width: '100%',
-  },
-  contentContainer: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    flexDirection: 'row',
-    gap: PILL.gap,
-    justifyContent: 'center',
-    marginVertical: -12,
-    paddingHorizontal: BASE_HORIZONTAL_INSET,
-    paddingVertical: 12,
-    position: 'relative',
-    width: IS_IOS ? undefined : CONTENT_WIDTH + BASE_HORIZONTAL_INSET * 2,
-  },
-  leftFade: {
-    height: '100%',
-    left: 0,
-    pointerEvents: 'none',
-    position: 'absolute',
-    top: 0,
-    width: BASE_HORIZONTAL_INSET,
-  },
-  rightFade: {
-    height: '100%',
-    pointerEvents: 'none',
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    width: BASE_HORIZONTAL_INSET,
-  },
-  scrollView: {
-    marginVertical: -12,
-    overflow: 'hidden',
-    paddingVertical: 12,
-    width: '100%',
-  },
-  selectedHighlight: {
-    borderCurve: 'continuous',
-    borderRadius: 24,
-    borderWidth: 2,
-    height: PILL.height,
-    left: 0,
-    overflow: 'hidden',
-    position: 'absolute',
-    width: PILL.width,
   },
 });
