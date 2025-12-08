@@ -12,49 +12,8 @@ import { GasSpeed } from '../types/gas';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
 import { IS_TEST } from '@/env';
-
-// mocked data for testing. should be compatible with our anvil setup.
-const defaultTestMeteorologyData: MeteorologyResponse = {
-  data: {
-    currentBaseFee: '3574694345',
-    baseFeeSuggestion: '4659422459',
-    baseFeeTrend: 1,
-    blocksToConfirmationByBaseFee: {
-      '4': '4385338784',
-      '8': '4127377679',
-      '40': '3884590757',
-      '120': '3656085418',
-      '240': '3441021570',
-    },
-    blocksToConfirmationByPriorityFee: {
-      '1': '765220123',
-      '2': '80328580',
-      '3': '75063929',
-      '4': '100',
-    },
-    confirmationTimeByPriorityFee: {
-      '15': '765220123',
-      '30': '80328580',
-      '45': '75063929',
-      '60': '100',
-    },
-    maxPriorityFeeSuggestions: {
-      fast: '765220124',
-      normal: '80328581',
-      urgent: '1325069176',
-    },
-    secondsPerNewBlock: 12,
-    meta: {
-      blockNumber: 22719166,
-      provider: 'rpc',
-    },
-  },
-  meta: {
-    feeType: 'eip1559',
-    blockNumber: '22719166',
-    provider: 'rpc',
-  },
-};
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { mockMeteorologyData } from '@/e2e-mocks/meteorology';
 
 // Query Types
 
@@ -73,6 +32,9 @@ type MeteorologyQueryKey = ReturnType<typeof meteorologyQueryKey>;
 // Query Function
 
 async function meteorologyQueryFunction({ queryKey: [{ chainId }] }: QueryFunctionArgs<typeof meteorologyQueryKey>) {
+  if (IS_TEST && useConnectedToAnvilStore.getState().connectedToAnvil) {
+    return mockMeteorologyData;
+  }
   const parsedResponse = await rainbowMeteorologyGetData(chainId);
   const meteorologyData = parsedResponse.data as MeteorologyResponse | MeteorologyLegacyResponse;
   return meteorologyData;
@@ -120,7 +82,6 @@ export function useMeteorology<Selected = MeteorologyResult>(
     cacheTime: 36_000, // 36 seconds
     refetchInterval: 12_000, // 12 seconds
     staleTime: staleTime ?? 12_000, // 12 seconds
-    initialData: IS_TEST ? () => defaultTestMeteorologyData : undefined,
   });
 }
 
@@ -143,7 +104,8 @@ function selectGasSuggestions({ data }: MeteorologyResult) {
     } as const;
   }
 
-  const { baseFeeSuggestion, maxPriorityFeeSuggestions } = data;
+  const { maxPriorityFeeSuggestions, baseFeeSuggestion } = data;
+
   return {
     urgent: {
       isEIP1559: true,
