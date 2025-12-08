@@ -121,6 +121,13 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
     return tokenId;
   }, [position.market.clobTokenIds, position.outcomes, position.outcome]);
 
+  const outcomeTitle = useMemo(() => {
+    if (position.market.groupItemTitle) {
+      return position.market.groupItemTitle;
+    }
+    return position.outcome;
+  }, [position.market.groupItemTitle, position.outcome]);
+
   return (
     <GradientBorderView
       borderGradientColors={[accentColors.opacity6, accentColors.opacity0]}
@@ -170,9 +177,6 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                 <Text size="15pt" weight="semibold" color="labelQuaternary">
                   {'Outcome'}
                 </Text>
-                <Bleed vertical="4px">
-                  <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />
-                </Bleed>
               </Box>
               {redeemable ? (
                 <Bleed bottom="16px">
@@ -206,15 +210,10 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                       />
                     </Bleed>
                   )}
-                  {position.market.groupItemTitle ? (
-                    <Text size="17pt" weight="bold" color="label">
-                      {position.market.groupItemTitle}
-                    </Text>
-                  ) : (
-                    <Text size="17pt" weight="bold" color="label">
-                      {position.outcome}
-                    </Text>
-                  )}
+                  <Text size="17pt" weight="bold" color="label">
+                    {outcomeTitle}
+                  </Text>
+                  {position.market.groupItemTitle && <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />}
                 </Box>
                 {!redeemable && (
                   <Text size="15pt" weight="bold" color={position.cashPnl > 0 ? 'green' : 'red'}>
@@ -234,7 +233,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                 size="15pt"
                 weight="bold"
                 color="labelSecondary"
-                tokenId={getPolymarketTokenId(outcomeTokenId)}
+                tokenId={getPolymarketTokenId(outcomeTokenId, 'sell')}
                 selector={token => `${toPercentageWorklet(token.price)}%`}
                 initialValue={`${toPercentageWorklet(position.curPrice)}%`}
               />

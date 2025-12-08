@@ -30,6 +30,7 @@ import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPoly
 import { Navigation } from '@/navigation';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
+import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
@@ -53,9 +54,9 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   }, [market.clobTokenIds, outcomeIndex]);
 
   const liveOrderPrice = useLiveTokenValue({
-    tokenId: getPolymarketTokenId(tokenId),
-    initialValue: String(formatOrderPrice(Number(market.outcomePrices[outcomeIndex]), market.orderPriceMinTickSize)),
-    selector: token => String(formatOrderPrice(Number(token.price), market.orderPriceMinTickSize)),
+    tokenId: getPolymarketTokenId(tokenId, 'sell'),
+    initialValue: String(formatPrice(Number(market.outcomePrices[outcomeIndex]), market.orderPriceMinTickSize)),
+    selector: token => String(formatPrice(Number(token.price), market.orderPriceMinTickSize)),
   });
 
   const minBuyAmountUsd = useMemo(() => {
@@ -269,10 +270,4 @@ async function marketBuyPosition({ tokenId, amount, price }: { tokenId: string; 
   });
 
   return await client.postOrder(order, OrderType.FOK);
-}
-
-function formatOrderPrice(price: number, minTickSize: number): number {
-  const decimals = Math.round(-Math.log10(minTickSize));
-  const roundedPrice = Math.ceil(price / minTickSize) * minTickSize;
-  return Number(roundedPrice.toFixed(decimals));
 }

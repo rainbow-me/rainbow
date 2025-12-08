@@ -25,7 +25,7 @@ export const MarketRow = memo(function MarketRow({ accentColor, priceChange, ima
   const shouldShowPriceChange = Math.abs(priceChange) >= 0.01;
 
   const tokenPrice = useLiveTokenValue({
-    tokenId: getPolymarketTokenId(tokenId),
+    tokenId: getPolymarketTokenId(tokenId, 'sell'),
     initialValue: price,
     selector: state => state.price,
   });

@@ -18,11 +18,6 @@ import { BetTypeSelector } from '@/features/polymarket/screens/polymarket-event-
 
 export const SportsEventMarkets = memo(function SportsEventMarkets() {
   const event = usePolymarketEventStore(state => state.getData());
-  const [selectedBetType, setSelectedBetType] = useState<BetType>(BET_TYPE.MONEYLINE);
-  const { isDarkMode } = useColorMode();
-  const { width } = useDimensions();
-
-  const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
   const groupedMarkets = event ? getMarketsGroupedByBetType(event) : null;
 
   const availableBetTypes = useMemo(() => {
@@ -35,18 +30,26 @@ export const SportsEventMarkets = memo(function SportsEventMarkets() {
     return types;
   }, [groupedMarkets]);
 
+  const [selectedBetType, setSelectedBetType] = useState<BetType>(availableBetTypes[0]);
+  const { isDarkMode } = useColorMode();
+  const { width } = useDimensions();
+
+  const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
+
   if (!event || !groupedMarkets) return null;
 
   return (
     <Box gap={16}>
-      <BetTypeSelector
-        availableBetTypes={availableBetTypes}
-        backgroundColor={backgroundColor}
-        color={'#FFFFFF'}
-        containerWidth={width - 2 * 24}
-        onSelectBetType={setSelectedBetType}
-        selectedBetType={selectedBetType}
-      />
+      {availableBetTypes.length > 1 && (
+        <BetTypeSelector
+          availableBetTypes={availableBetTypes}
+          backgroundColor={backgroundColor}
+          color={'#FFFFFF'}
+          containerWidth={width - 2 * 24}
+          onSelectBetType={setSelectedBetType}
+          selectedBetType={selectedBetType}
+        />
+      )}
       <Markets markets={groupedMarkets} selectedBetType={selectedBetType} />
     </Box>
   );
