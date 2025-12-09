@@ -3335,7 +3335,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNCMaskedView (0.3.2):
+  - RNCMaskedView (0.3.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -4595,7 +4595,7 @@ SPEC CHECKSUMS:
   RNBootSplash: 258842208ec34cd3b1596110f9f8e7193ce9e41d
   RNCAsyncStorage: 6161dbb167973ab36a7800c5deb506ed854f2c33
   RNCClipboard: adba6334687b7fb2c37760e26dedd550b4846a72
-  RNCMaskedView: 5ef8c95cbab95334a32763b72896a7b7d07e6299
+  RNCMaskedView: 3870b6feb3c87dda835bbbe8f624fbc57ecdc0f0
   RNDeviceInfo: c78d3d9ae81aed962fa0cc7c455e970f35a44a47
   RNFastImage: b4741be7fc96457586f610a1a454817518376819
   RNFBApp: 255fa19a91d6c1309e021ee75d5d209754e5961b
