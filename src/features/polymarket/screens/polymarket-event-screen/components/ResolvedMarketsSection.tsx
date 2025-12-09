@@ -6,12 +6,18 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LinearGradient } from 'react-native-linear-gradient';
 import { StyleSheet } from 'react-native';
-import { SkiaBadge } from '@/components/SkiaBadge';
 import { formatNumber } from '@/helpers/strings';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { ButtonPressAnimation } from '@/components/animations';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 
-export const ResolvedMarketsSection = memo(function ResolvedMarketsSection({ markets }: { markets: PolymarketMarket[] }) {
+export const ResolvedMarketsSection = memo(function ResolvedMarketsSection({
+  markets,
+  uniqueMarketImages,
+}: {
+  markets: PolymarketMarket[];
+  uniqueMarketImages: boolean;
+}) {
   const [showResolved, setShowResolved] = useState(false);
 
   return (
@@ -47,10 +53,11 @@ export const ResolvedMarketsSection = memo(function ResolvedMarketsSection({ mar
               <ResolvedMarketRow
                 key={market.id}
                 accentColor={market.color}
-                image={market.icon}
+                image={uniqueMarketImages ? market.icon : undefined}
                 title={market.groupItemTitle}
                 volume={market.volume}
                 outcome={resolvedOutcome}
+                outcomeIndex={resolvedOutcomeIndex}
               />
             );
           })}
@@ -66,12 +73,14 @@ const ResolvedMarketRow = memo(function ResolvedMarketRow({
   title,
   volume,
   outcome,
+  outcomeIndex,
 }: {
   accentColor: string;
   image?: string | undefined;
   title: string;
   volume: string;
   outcome: string;
+  outcomeIndex: number;
 }) {
   return (
     <GradientBorderView
@@ -100,19 +109,27 @@ const ResolvedMarketRow = memo(function ResolvedMarketRow({
             {formatNumber(volume, { useOrderSuffix: true, decimals: 1, style: '$' })}
           </Text>
         </Box>
-        <SkiaBadge
-          // TODO: How do we want to handle different outcome types like "Over / Under" or "Team A / Team B"?
-          text={outcome}
-          textColor={'label'}
-          fillColor={getSolidColorEquivalent({ background: accentColor, foreground: '#000000', opacity: 0.3 })}
-          innerShadows={[{ dx: 0, dy: 1, blur: 2.5, color: opacityWorklet(accentColor, 0.24) }]}
-          strokeColor={opacityWorklet('#FFFFFF', 0.12)}
-          strokeWidth={2}
-          fontSize="15pt"
-          fontWeight="heavy"
+        <Box
+          backgroundColor={getSolidColorEquivalent({ background: accentColor, foreground: '#000000', opacity: 0.3 })}
+          borderRadius={18}
           height={36}
-          paddingHorizontal={12}
-        />
+          paddingHorizontal={'12px'}
+          paddingVertical={'6px'}
+          justifyContent="center"
+          alignItems="center"
+          borderWidth={2}
+          borderColor={{ custom: opacityWorklet('#FFFFFF', 0.12) }}
+          flexDirection="row"
+          gap={6}
+        >
+          <InnerShadow borderRadius={10} color={opacityWorklet(accentColor, 0.24)} blur={2.5} dx={0} dy={1} />
+          <Text size="13pt" weight="heavy" color="label">
+            {outcomeIndex === 0 ? '􀆅' : '􀆄'}
+          </Text>
+          <Text size="15pt" weight="heavy" color="label">
+            {outcome.toUpperCase()}
+          </Text>
+        </Box>
       </Box>
     </GradientBorderView>
   );

@@ -157,10 +157,8 @@ async function fetchPolymarketEventSearch(
     timeout: time.seconds(15),
   });
 
-  console.log('fetch respo', response.pagination, response.events.length, page);
-
   return {
     ...response,
-    events: await Promise.all(response.events.map(processRawPolymarketEvent)),
+    events: await Promise.all(response.events.map(event => processRawPolymarketEvent(event))),
   };
 }

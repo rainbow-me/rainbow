@@ -47,7 +47,12 @@ async function fetchPolymarketEvents(
     url.searchParams.set('tag_slug', tagId);
   }
 
-  const { data }: { data: RawPolymarketEvent[] } = await rainbowFetch(url.toString(), { abortController, timeout: time.seconds(30) });
+  const { data: events }: { data: RawPolymarketEvent[] } = await rainbowFetch(url.toString(), {
+    abortController,
+    timeout: time.seconds(30),
+  });
 
-  return await Promise.all(data.map(processRawPolymarketEvent));
+  const filteredEvents = events.filter(event => event.ended !== true);
+
+  return await Promise.all(filteredEvents.map(event => processRawPolymarketEvent(event)));
 }

@@ -11,11 +11,15 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import LinearGradient from 'react-native-linear-gradient';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
+import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
 
 export const PolymarketPositionRow = memo(function PolymarketPositionRow({ position }: { position: PolymarketPosition }) {
   const accentColor = position.market.color;
   const isPositivePnl = position.cashPnl > 0;
   const pnlColor = isPositivePnl ? 'green' : 'red';
+
+  const outcomeTitle = position.market.groupItemTitle || position.outcome;
 
   return (
     <ButtonPressAnimation
@@ -35,9 +39,10 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
           <Box height={66} paddingLeft={'16px'} justifyContent="center">
             <LinearGradient
               colors={[opacityWorklet(accentColor, 0.14), opacityWorklet(accentColor, 0)]}
-              style={StyleSheet.absoluteFillObject}
+              style={StyleSheet.absoluteFill}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
+              locations={[0, 0.94]}
               pointerEvents="none"
             />
             <Box flexDirection="row" alignItems="center">
@@ -49,18 +54,24 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
                   style={{ height: 28, width: 28, borderRadius: 9 }}
                 />
                 <Box gap={12} style={styles.flex}>
-                  <Text color="label" size="13pt" weight="semibold" numberOfLines={1} style={styles.flex}>
-                    {position.market.events[0].title}
-                  </Text>
                   <Box flexDirection="row" alignItems="center" gap={4}>
-                    {position.market.groupItemTitle && (
-                      <Text color="labelSecondary" size="13pt" weight="semibold" numberOfLines={1}>
-                        {position.market.groupItemTitle}
+                    <Box flexDirection="row" alignItems="center" gap={4} style={styles.flex}>
+                      {position.redeemable && <CheckOrXBadge position={position} size={16} fontSize="icon 8px" />}
+                      <Text color="label" size="15pt" weight="bold" numberOfLines={1}>
+                        {outcomeTitle}
                       </Text>
+                      {position.market.groupItemTitle && <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />}
+                    </Box>
+                    {position.redeemable && (
+                      <Bleed vertical={'4px'}>
+                        <WinOrLossBadge position={position} paddingHorizontal={5} height={18} fontSize="11pt" borderWidth={1} />
+                      </Bleed>
                     )}
-                    <Bleed vertical="3px">
-                      <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />
-                    </Bleed>
+                  </Box>
+                  <Box flexDirection="row" alignItems="center" gap={4}>
+                    <Text color="labelSecondary" size="13pt" weight="semibold" numberOfLines={1} style={styles.flex}>
+                      {position.market.events[0].title}
+                    </Text>
                   </Box>
                 </Box>
               </Box>

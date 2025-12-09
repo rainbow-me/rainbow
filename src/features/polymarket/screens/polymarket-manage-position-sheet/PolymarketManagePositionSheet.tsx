@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
@@ -16,6 +16,10 @@ import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import LinearGradient from 'react-native-linear-gradient';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { getSolidColorEquivalent } from '@/worklets/colors';
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
+import { formatPrice } from '@/features/polymarket/utils/formatPrice';
+import { mulWorklet, subWorklet } from '@/safe-math/SafeMath';
 
 export const PolymarketManagePositionSheet = memo(function PolymarketManagePositionSheet() {
   const {
@@ -28,11 +32,23 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
   const red = useForegroundColor('red');
   const green = useForegroundColor('green');
 
+  const livePrice = useLiveTokenValue({
+    tokenId: getPositionTokenId(position),
+    initialValue: formatPrice(position.curPrice, position.market.orderPriceMinTickSize),
+    selector: token => formatPrice(token.price, position.market.orderPriceMinTickSize),
+  });
+
+  const livePositionValue = useMemo(() => {
+    return mulWorklet(position.size, livePrice);
+  }, [position.size, livePrice]);
+
+  const livePnl = useMemo(() => {
+    return subWorklet(livePositionValue, position.initialValue);
+  }, [livePositionValue, position.initialValue]);
+
   const handleMarketSellTotalPosition = useCallback(async () => {
     try {
-      // TODO: replace position.curPrice with latest price from live pricing store
-      const result = await marketSellTotalPosition({ position, latestPrice: position.curPrice });
-      console.log('Order result', JSON.stringify(result, null, 2));
+      await marketSellTotalPosition({ position, price: Number(livePrice) });
     } catch (e) {
       const error = ensureError(e);
       logger.error(new RainbowError('[PolymarketManagePositionSheet] Error selling position', error), {
@@ -40,11 +56,11 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
       });
       // TODO: Show error to user
     }
-  }, [position]);
+  }, [position, livePrice]);
 
-  const pnlColor = Number(position.cashPnl) >= 0 ? green : red;
-  const pnlSign = Number(position.cashPnl) >= 0 ? '+' : '-';
-  const absPnl = Math.abs(Number(position.cashPnl));
+  const pnlColor = Number(livePnl) >= 0 ? green : red;
+  const pnlSign = Number(livePnl) >= 0 ? '+' : '-';
+  const absPnl = Math.abs(Number(livePnl));
 
   return (
     <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? '#000000' : '#FFFFFF' }}>
@@ -60,7 +76,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
             {'Position Value'}
           </Text>
           <Text size="44pt" weight="heavy" color="label">
-            {formatCurrency(String(position.currentValue))}
+            {formatCurrency(livePositionValue)}
           </Text>
           <Text size="20pt" weight="bold" color={{ custom: pnlColor }}>
             {pnlSign}
@@ -84,14 +100,14 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
   );
 });
 
-async function marketSellTotalPosition({ position, latestPrice }: { position: PolymarketPosition; latestPrice: number }): Promise<unknown> {
+async function marketSellTotalPosition({ position, price }: { position: PolymarketPosition; price: number }): Promise<unknown> {
   const client = await getPolymarketClobClient();
   const order = await client.createMarketOrder(
     {
       side: Side.SELL,
       tokenID: position.asset,
       amount: position.size,
-      price: latestPrice,
+      price,
     },
     {
       /**
@@ -103,4 +119,9 @@ async function marketSellTotalPosition({ position, latestPrice }: { position: Po
   );
 
   return await client.postOrder(order, OrderType.FOK);
+}
+
+function getPositionTokenId(position: PolymarketPosition): string {
+  const outcomeIndex = position.outcomes.indexOf(position.outcome);
+  return getPolymarketTokenId(position.market.clobTokenIds[outcomeIndex], 'buy');
 }

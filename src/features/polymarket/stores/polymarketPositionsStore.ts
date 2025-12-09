@@ -50,8 +50,9 @@ export const usePolymarketPositionsStore = createQueryStore<
         .getData()
         ?.positions.find(position => position.conditionId === conditionId),
   }),
-
-  { storageKey: 'polymarketPositionsStore' }
+  {
+    storageKey: 'polymarketPositions',
+  }
 );
 
 async function fetchPolymarketPositions(
@@ -65,9 +66,9 @@ async function fetchPolymarketPositions(
   url.searchParams.set('sortDirection', 'DESC');
   url.searchParams.set('user', address);
 
-  const { data: rawPositions }: { data: RawPolymarketPosition[] } = await rainbowFetch(url.toString(), {
+  const { data: rawPositions } = await rainbowFetch<RawPolymarketPosition[]>(url.toString(), {
     abortController,
-    timeout: time.seconds(30),
+    timeout: time.seconds(15),
   });
 
   const markets = await fetchPolymarketMarkets(
@@ -75,11 +76,13 @@ async function fetchPolymarketPositions(
     abortController
   );
 
-  const positions = rawPositions.map((position: RawPolymarketPosition) => {
-    const market = markets.find(market => market.slug === position.slug);
-    if (!market) throw new RainbowError('[PolymarketPositionsStore] Market not found for position');
-    return processRawPolymarketPosition(position, market);
-  });
+  const positions = await Promise.all(
+    rawPositions.map((position: RawPolymarketPosition) => {
+      const market = markets.find(market => market.slug === position.slug);
+      if (!market) throw new RainbowError('[PolymarketPositionsStore] Market not found for position');
+      return processRawPolymarketPosition(position, market);
+    })
+  );
 
   return {
     positions,
@@ -92,10 +95,10 @@ async function fetchPolymarketMarkets(marketSlugs: string[], abortController: Ab
     url.searchParams.append('slug', slug);
   });
 
-  const { data: rawMarkets }: { data: RawPolymarketMarket[] } = await rainbowFetch(url.toString(), {
+  const { data: response } = await rainbowFetch<RawPolymarketMarket[]>(url.toString(), {
     abortController,
-    timeout: time.seconds(30),
+    timeout: time.seconds(15),
   });
 
-  return rawMarkets;
+  return response;
 }
