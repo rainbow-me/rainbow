@@ -667,6 +667,12 @@ type RouteParams = {
   [Routes.PERPS_TRADE_DETAILS_SHEET]: {
     trade: HlTrade;
   };
+  [Routes.REVOKE_DELEGATION_PANEL]: {
+    delegationsToRevoke: Array<{
+      chainId: number;
+      contractAddress: string;
+    }>;
+  };
 };
 
 /**
