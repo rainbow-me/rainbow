@@ -560,19 +560,20 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
                 updatedWalletDamagedStates.set(wallet.id, false);
               });
             }
+
+            // Device migration - the keychain cache will be transferred, but not the keychain data itself.
+            await Promise.all(
+              keychainWallets.map(async wallet => {
+                // It is enough to just check the first address of each wallet.
+                const key = `${wallet.addresses[0].address}_${privateKeyKey}`;
+                if (!(await kc.has(key))) {
+                  logger.debug(`[walletsStore]: No private key found in keychain for wallet ${wallet.id}, marking as damaged`);
+                  healthyKeychain = false;
+                  updatedWalletDamagedStates.set(wallet.id, true);
+                }
+              })
+            );
           }
-          // Device migration - the keychain cache will be transferred, but not the keychain data itself.
-          await Promise.all(
-            keychainWallets.map(async wallet => {
-              // It is enough to just check the first address of each wallet.
-              const key = `${wallet.addresses[0].address}_${privateKeyKey}`;
-              if (!(await kc.has(key))) {
-                logger.debug(`[walletsStore]: No private key found in keychain for wallet ${wallet.id}, marking as damaged`);
-                healthyKeychain = false;
-                updatedWalletDamagedStates.set(wallet.id, true);
-              }
-            })
-          );
         } else {
           // Passcode is disabled - the keychain data will be inaccessible permanently.
           const isPasscodeAuthAvailable = await kc.isPasscodeAuthAvailable();
