@@ -1,0 +1,35 @@
+diff --git a/node_modules/@polymarket/clob-client/dist/http-helpers/index.js b/node_modules/@polymarket/clob-client/dist/http-helpers/index.js
+index e270f4e..a6dcacc 100644
+--- a/node_modules/@polymarket/clob-client/dist/http-helpers/index.js
++++ b/node_modules/@polymarket/clob-client/dist/http-helpers/index.js
+@@ -4,30 +4,11 @@ exports.parseDropNotificationParams = exports.parseOrdersScoringParams = exports
+ const tslib_1 = require("tslib");
+ /* eslint-disable max-depth */
+ const axios_1 = tslib_1.__importDefault(require("axios"));
+-const browser_or_node_1 = require("browser-or-node");
+ exports.GET = "GET";
+ exports.POST = "POST";
+ exports.DELETE = "DELETE";
+ exports.PUT = "PUT";
+-const overloadHeaders = (method, headers) => {
+-    if (browser_or_node_1.isBrowser) {
+-        return;
+-    }
+-    if (!headers || typeof headers === undefined) {
+-        headers = {};
+-    }
+-    if (headers) {
+-        headers["User-Agent"] = `@polymarket/clob-client`;
+-        headers["Accept"] = "*/*";
+-        headers["Connection"] = "keep-alive";
+-        headers["Content-Type"] = "application/json";
+-        if (method === exports.GET) {
+-            headers["Accept-Encoding"] = "gzip";
+-        }
+-    }
+-};
+ const request = (endpoint, method, headers, data, params) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+-    overloadHeaders(method, headers);
+     return yield (0, axios_1.default)({ method, url: endpoint, headers, data, params });
+ });
+ exports.request = request;
