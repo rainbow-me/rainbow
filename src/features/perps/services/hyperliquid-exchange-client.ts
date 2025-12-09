@@ -59,16 +59,17 @@ export class HyperliquidExchangeClient {
     return client;
   }
 
-  async withdraw(amount: string): Promise<void | undefined> {
-    if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
+  async withdraw(amount: string): Promise<boolean> {
+    if (checkIfReadOnlyWallet(this.userAddress)) return false;
 
     const exchangeClient = await this.getExchangeClient();
-    if (!exchangeClient) return undefined;
+    if (!exchangeClient) return false;
 
     await exchangeClient.withdraw3({
       destination: this.userAddress,
       amount,
     });
+    return true;
   }
 
   /**

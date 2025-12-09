@@ -1363,7 +1363,12 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (id: RainbowWallet['id']):
   try {
     let seedPhrase = null;
     // First we need to check if that key already exists
-    const keyFound = await keychain.hasKey(`${id}_${seedPhraseKey}`);
+    let keyFound = true;
+    try {
+      keyFound = await keychain.hasKey(`${id}_${seedPhraseKey}`);
+    } catch (ex) {
+      // Can fail if passcode is removed, in that case we can skip migration and `getSeedPhrase` will handle the error.
+    }
     if (!keyFound) {
       logger.debug('[wallet]: key not found, should need migration', {}, DebugContext.wallet);
       // if it doesn't we might have a migration pending

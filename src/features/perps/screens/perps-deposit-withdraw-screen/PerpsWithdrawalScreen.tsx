@@ -83,11 +83,13 @@ const PerpsWithdrawalScreenContent = memo(function PerpsWithdrawalScreenContent(
     const amountToWithdraw = isAtMax.value ? balance.value : displayedAmount.value;
     const sanitizedAmount = sanitizeAmount(amountToWithdraw);
     try {
-      await hyperliquidAccountActions.withdraw(sanitizedAmount);
-      analytics.track(analytics.event.perpsWithdrew, {
-        amount: Number(sanitizedAmount),
-      });
-      Navigation.goBack();
+      const success = await hyperliquidAccountActions.withdraw(sanitizedAmount);
+      if (success) {
+        analytics.track(analytics.event.perpsWithdrew, {
+          amount: Number(sanitizedAmount),
+        });
+        Navigation.goBack();
+      }
     } catch (e) {
       const error = ensureError(e);
       const message = error.message;
