@@ -703,6 +703,12 @@ type RouteParams = {
   [Routes.POLYMARKET_EXPLAIN_SHEET]: {
     onDismiss?: () => void;
   };
+  [Routes.REVOKE_DELEGATION_PANEL]: {
+    delegationsToRevoke: Array<{
+      chainId: number;
+      contractAddress: string;
+    }>;
+  };
 };
 
 /**
