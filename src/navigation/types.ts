@@ -8,7 +8,7 @@ import { RequestData, WalletconnectApprovalSheetRouteParams, WalletconnectResult
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 import { RainbowWallet } from '@/model/wallet';
 import { RainbowPosition } from '@/features/positions/types';
-import { Address } from 'viem';
+import type { Address } from 'viem';
 import { SharedValue } from 'react-native-reanimated';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
@@ -708,6 +708,13 @@ type RouteParams = {
   };
   [Routes.RNBW_REWARDS_ESTIMATE_SHEET]: {
     estimatedAmount: string;
+  };
+  [Routes.REVOKE_DELEGATION_PANEL]: {
+    delegationsToRevoke: Array<{
+      chainId: number;
+      contractAddress: Address;
+    }>;
+    onSuccess?: () => void;
   };
 };
 
