@@ -18,6 +18,7 @@ type ToastContentProps = {
   icon: React.ReactNode;
   iconWidth?: number;
   type?: 'error';
+  bottomLabel?: React.ReactNode;
 };
 
 export const ToastContent = memo(function ToastContent({ toast }: { toast: RainbowToast }) {
@@ -32,7 +33,7 @@ export const ToastContent = memo(function ToastContent({ toast }: { toast: Rainb
 });
 
 // used by each toast type to display their inner contents
-function ToastContentDisplay({ icon, title, subtitle, type, iconWidth = TOAST_ICON_SIZE }: ToastContentProps) {
+function ToastContentDisplay({ icon, title, subtitle, type, iconWidth = TOAST_ICON_SIZE, bottomLabel }: ToastContentProps) {
   const colors = useToastColors();
 
   return (
@@ -70,6 +71,18 @@ function ToastContentDisplay({ icon, title, subtitle, type, iconWidth = TOAST_IC
         >
           {subtitle}
         </Text>
+        {bottomLabel && (
+          <Text
+            color={{ custom: colors.foreground }}
+            size="11pt"
+            weight="bold"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={{ opacity: 0.4 }}
+          >
+            {bottomLabel}
+          </Text>
+        )}
       </View>
     </View>
   );
@@ -99,6 +112,10 @@ const styles = StyleSheet.create({
 function SwapToastContent({ toast }: { toast: RainbowToast }) {
   const title = getToastTitle(toast);
   const subtitle = getSwapToastNetworkLabel(toast);
+  const { batch, delegation } = toast.transaction;
+  // Type 4 = new delegation + batch, Type 2 = already delegated + batch
+  const bottomLabel = batch ? (delegation ? 'Type 4' : 'Type 2') : undefined;
+
   return (
     <ToastContentDisplay
       iconWidth={isWideSwapIcon(toast) ? SWAP_ICON_WIDTH : TOAST_ICON_SIZE}
@@ -106,6 +123,7 @@ function SwapToastContent({ toast }: { toast: RainbowToast }) {
       icon={<SwapToastIcon toast={toast} />}
       title={title}
       subtitle={subtitle}
+      bottomLabel={bottomLabel}
     />
   );
 }
