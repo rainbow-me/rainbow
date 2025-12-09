@@ -11,7 +11,7 @@ export const AboutSection = memo(function AboutSection() {
   if (!event) return null;
 
   return (
-    <Box>
+    <Box gap={24}>
       <Box flexDirection="row" alignItems="center" gap={10}>
         <Box style={{ opacity: 0.4 }}>
           <TextIcon size="icon 17px" weight="bold" color="label">
@@ -22,9 +22,11 @@ export const AboutSection = memo(function AboutSection() {
           {'About'}
         </Text>
       </Box>
+      <Text color="label" size="17pt" weight="medium">
+        {event.description}
+      </Text>
       <Box gap={12}>
-        <InfoRow title="Market Type" value={'winner take all'} icon="􀏴" highlighted={true} />
-        <InfoRow title="End Date" value={formatDate(event.endDate, 'days')} icon="􀏴" highlighted={false} />
+        {event.endDate && <InfoRow title="End Date" value={formatDate(event.endDate, 'days')} icon="􀏴" highlighted={false} />}
       </Box>
     </Box>
   );

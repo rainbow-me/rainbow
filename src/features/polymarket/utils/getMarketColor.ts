@@ -1,3 +1,4 @@
+import { RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import colors from '@/styles/colors';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
@@ -7,7 +8,7 @@ type MarketColors = {
   secondaryColor: string | undefined;
 };
 
-export function getMarketColors(market: { id: string; seriesColor?: string }): MarketColors {
+export function getMarketColors(market: RawPolymarketMarket, eventColor: string): MarketColors {
   // TODO: Imperatively getting this would mean this does not adjust when toggling modes, but a hook would be inconvenient
   const isDarkMode = true;
 
@@ -20,9 +21,20 @@ export function getMarketColors(market: { id: string; seriesColor?: string }): M
     };
   }
 
+  if (isSingleMarketEvent(market)) {
+    return {
+      color: eventColor,
+      secondaryColor: undefined,
+    };
+  }
+
   const colorIndex = addressHashedColorIndex(market.id) ?? 0;
   return {
     color: colors.avatarBackgrounds[colorIndex],
     secondaryColor: undefined,
   };
+}
+
+function isSingleMarketEvent(market: RawPolymarketMarket) {
+  return market.negRisk === false;
 }

@@ -22,6 +22,7 @@ import { logger, RainbowError } from '@/logger';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
+import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
 
 const ActionButtonType = {
   CLAIM: 'claim',
@@ -101,9 +102,17 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
           }
         };
       case ActionButtonType.BURN:
-        return () => {
-          // TODO: Implement burn position
-          // redeemPosition(position);
+        return async (e: ButtonPressAnimationTouchEvent) => {
+          if (e && 'stopPropagation' in e) {
+            e.stopPropagation();
+          }
+          try {
+            await redeemPosition(position);
+            await refetchPolymarketStores();
+            Navigation.goBack();
+          } catch (e) {
+            logger.error(new RainbowError('[PolymarketPositionCard] Error redeeming position', e));
+          }
         };
       case ActionButtonType.CASH_OUT:
         return (e: ButtonPressAnimationTouchEvent) => {
@@ -197,30 +206,44 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                 </Text>
               )}
             </Box>
-            <Box>
-              <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-                <Box flexDirection="row" alignItems="center" gap={6}>
-                  {position.marketHasUniqueImage && (
-                    <Bleed vertical="4px">
-                      <ImgixImage
-                        resizeMode="cover"
-                        size={16}
-                        source={{ uri: position.icon }}
-                        style={{ height: 16, width: 16, borderRadius: 4 }}
-                      />
-                    </Bleed>
-                  )}
-                  <Text size="17pt" weight="bold" color="label">
-                    {outcomeTitle}
-                  </Text>
-                  {position.market.groupItemTitle && <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />}
-                </Box>
-                {!redeemable && (
-                  <Text size="15pt" weight="bold" color={position.cashPnl > 0 ? 'green' : 'red'}>
-                    {formatCurrency(String(position.cashPnl))}
-                  </Text>
+            <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={6} style={styles.flex}>
+              <Box flexDirection="row" alignItems="center" gap={6} flexShrink={1}>
+                {position.marketHasUniqueImage && (
+                  <Bleed vertical="4px">
+                    <ImgixImage
+                      resizeMode="cover"
+                      size={16}
+                      source={{ uri: position.icon }}
+                      style={{ height: 16, width: 16, borderRadius: 4 }}
+                    />
+                  </Bleed>
+                )}
+                {redeemable && (
+                  <Bleed vertical="4px">
+                    <CheckOrXBadge position={position} size={16} fontSize="icon 8px" />
+                  </Bleed>
+                )}
+                <Text size="17pt" weight="bold" color="label" numberOfLines={1} style={styles.flexShrink}>
+                  {outcomeTitle}
+                </Text>
+                {position.market.groupItemTitle && (
+                  <Bleed vertical="4px">
+                    <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />
+                  </Bleed>
                 )}
               </Box>
+              {!redeemable && (
+                <Text
+                  size="15pt"
+                  weight="bold"
+                  color={position.cashPnl > 0 ? 'green' : 'red'}
+                  align="right"
+                  numberOfLines={1}
+                  style={styles.flexShrink0}
+                >
+                  {formatCurrency(String(position.cashPnl))}
+                </Text>
+              )}
             </Box>
           </Box>
           <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
@@ -263,34 +286,9 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                 justifyContent="center"
                 alignItems="center"
                 borderWidth={2}
-                borderColor={{ custom: opacityWorklet('#FFFFFF', 0.08) }}
+                borderColor={{ custom: 'rgba(255, 255, 255, 0.08)' }}
                 backgroundColor={buttonBackgroundColor}
                 borderRadius={20}
-                shadow={{
-                  custom: {
-                    ios: [
-                      {
-                        blur: 12,
-                        x: 0,
-                        y: 8,
-                        color: { custom: accentColors.opacity100 },
-                        opacity: 0.2,
-                      },
-                      {
-                        blur: 6,
-                        x: 0,
-                        y: 4,
-                        color: 'shadowNear',
-                        opacity: 0.06,
-                      },
-                    ],
-                    android: {
-                      elevation: 12,
-                      color: { custom: accentColors.opacity100 },
-                      opacity: 0.2,
-                    },
-                  },
-                }}
               >
                 <InnerShadow borderRadius={20} color={'rgba(255, 255, 255, 0.17)'} blur={6} dx={0} dy={1} />
                 <Text size="17pt" weight="heavy" color="label">
@@ -308,6 +306,12 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
+  },
+  flexShrink: {
+    flexShrink: 1,
+  },
+  flexShrink0: {
+    flexShrink: 0,
   },
   row: {
     flexDirection: 'row',

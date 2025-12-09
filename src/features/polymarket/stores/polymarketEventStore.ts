@@ -5,6 +5,7 @@ import { RawPolymarketEvent, PolymarketEvent, PolymarketMarket } from '@/feature
 import { RainbowError } from '@/logger';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
+import { PolymarketGameMetadata, PolymarketTeamInfo } from '@/features/polymarket/types';
 
 type FetchParams = { eventId: string | null };
 
@@ -67,13 +68,45 @@ async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: A
   if (!eventId) throw new RainbowError('[PolymarketEventStore] eventId is required');
 
   const url = `${POLYMARKET_GAMMA_API_URL}/events/${eventId}`;
-  const { data } = await rainbowFetch(url, { abortController, timeout: 30000 });
-  const event = data as RawPolymarketEvent;
+  const { data: event } = await rainbowFetch<RawPolymarketEvent>(url, { abortController, timeout: 30000 });
 
-  const processedEvent = await processRawPolymarketEvent(event);
+  if (event.gameId && (!event.homeTeamName || !event.awayTeamName)) {
+    const gameMetadata = await fetchGameMetadata(event.slug);
+    if (gameMetadata.ordering === 'home') {
+      event.homeTeamName = gameMetadata.teams[0];
+      event.awayTeamName = gameMetadata.teams[1];
+    } else {
+      event.homeTeamName = gameMetadata.teams[1];
+      event.awayTeamName = gameMetadata.teams[0];
+    }
+  }
+
+  let teams: PolymarketTeamInfo[] = [];
+
+  if (event.homeTeamName && event.awayTeamName) {
+    teams = await fetchTeamsInfo([event.homeTeamName, event.awayTeamName]);
+  }
+
+  const processedEvent = await processRawPolymarketEvent(event, teams);
 
   return {
     ...processedEvent,
     markets: filterMarkets(processedEvent.markets),
   };
+}
+
+async function fetchGameMetadata(eventSlug: string) {
+  const url = new URL(`${POLYMARKET_GAMMA_API_URL}/games`);
+  url.searchParams.set('ticker', eventSlug);
+  const { data } = await rainbowFetch<PolymarketGameMetadata>(url.toString(), { timeout: time.seconds(15) });
+  return data;
+}
+
+async function fetchTeamsInfo(teamNames: string[]) {
+  const url = new URL(`${POLYMARKET_GAMMA_API_URL}/teams`);
+  teamNames.forEach(name => {
+    url.searchParams.append('name', name);
+  });
+  const { data } = await rainbowFetch<PolymarketTeamInfo[]>(url.toString(), { timeout: time.seconds(15) });
+  return data;
 }

@@ -48,7 +48,10 @@ export const usePolymarketPositionsStore = createQueryStore<
       get()
         .getData()
         ?.positions.find(position => position.conditionId === conditionId),
-  })
+  }),
+  {
+    storageKey: 'polymarketPositions',
+  }
 );
 
 async function fetchPolymarketPositions(
@@ -62,23 +65,23 @@ async function fetchPolymarketPositions(
   url.searchParams.set('sortDirection', 'DESC');
   url.searchParams.set('user', address);
 
-  const response = await rainbowFetch(url.toString(), {
+  const { data: rawPositions } = await rainbowFetch<RawPolymarketPosition[]>(url.toString(), {
     abortController,
-    timeout: 30000,
+    timeout: time.seconds(15),
   });
-
-  const rawPositions = response.data;
 
   const markets = await fetchPolymarketMarkets(
     rawPositions.map((position: RawPolymarketPosition) => position.slug),
     abortController
   );
 
-  const positions = rawPositions.map((position: RawPolymarketPosition) => {
-    const market = markets.find(market => market.slug === position.slug);
-    if (!market) throw new RainbowError('[PolymarketPositionsStore] Market not found for position');
-    return processRawPolymarketPosition(position, market);
-  });
+  const positions = await Promise.all(
+    rawPositions.map((position: RawPolymarketPosition) => {
+      const market = markets.find(market => market.slug === position.slug);
+      if (!market) throw new RainbowError('[PolymarketPositionsStore] Market not found for position');
+      return processRawPolymarketPosition(position, market);
+    })
+  );
 
   return {
     positions,
@@ -91,10 +94,10 @@ async function fetchPolymarketMarkets(marketSlugs: string[], abortController: Ab
     url.searchParams.append('slug', slug);
   });
 
-  const response = await rainbowFetch(url.toString(), {
+  const { data: response } = await rainbowFetch<RawPolymarketMarket[]>(url.toString(), {
     abortController,
-    timeout: 30000,
+    timeout: time.seconds(15),
   });
 
-  return response.data as RawPolymarketMarket[];
+  return response;
 }

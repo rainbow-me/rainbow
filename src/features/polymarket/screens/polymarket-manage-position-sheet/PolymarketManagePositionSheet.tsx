@@ -34,8 +34,8 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
 
   const livePrice = useLiveTokenValue({
     tokenId: getPositionTokenId(position),
-    initialValue: String(formatPrice(position.curPrice, position.market.orderPriceMinTickSize)),
-    selector: token => String(formatPrice(Number(token.price), position.market.orderPriceMinTickSize)),
+    initialValue: formatPrice(position.curPrice, position.market.orderPriceMinTickSize),
+    selector: token => formatPrice(token.price, position.market.orderPriceMinTickSize),
   });
 
   const livePositionValue = useMemo(() => {

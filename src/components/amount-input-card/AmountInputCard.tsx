@@ -427,7 +427,6 @@ export const AmountInputCard = memo(function AmountInputCard({
       alignItems="center"
       gap={20}
       height={INPUT_CARD_HEIGHT}
-      shadow={'18px'}
     >
       <Box width="full" flexDirection="row" alignItems="center" zIndex={2}>
         <Box gap={12}>

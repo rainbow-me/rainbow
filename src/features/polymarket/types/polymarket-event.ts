@@ -1,4 +1,5 @@
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
+import { PolymarketTeamInfo } from '@/features/polymarket/types';
 
 export type SportsMarketType = (typeof POLYMARKET_SPORTS_MARKET_TYPE)[keyof typeof POLYMARKET_SPORTS_MARKET_TYPE];
 
@@ -204,6 +205,7 @@ export type RawPolymarketMarket = {
   showGmpOutcome: boolean;
   manualActivation: boolean;
   negRiskOther: boolean;
+  negRisk: boolean;
   gameId?: number;
   groupItemRange: string;
   sportsMarketType: SportsMarketType;
@@ -218,7 +220,6 @@ export type RawPolymarketMarket = {
 };
 
 export type PolymarketMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'outcomes' | 'outcomePrices' | 'events'> & {
-  // These are returned in the response as stringified JSON arrays
   clobTokenIds: string[];
   outcomes: string[];
   outcomePrices: string[];
@@ -373,7 +374,7 @@ export type RawPolymarketEvent = {
   elapsed: string;
   period: string;
   live: boolean;
-  ended: boolean;
+  ended?: boolean;
   finishedTimestamp: string;
   gmpChartMode: string;
   eventCreators: EventCreator[];
@@ -396,13 +397,15 @@ export type RawPolymarketEvent = {
   scheduledDeploymentTimestamp: string;
   gameStatus: string;
   gameId?: number;
+  homeTeamName?: string;
+  awayTeamName?: string;
 };
 
 export type PolymarketEvent = Omit<RawPolymarketEvent, 'markets'> & {
-  // These are returned in the response as stringified JSON arrays
   markets: PolymarketMarket[];
   uniqueMarketImages: boolean;
   color: string;
+  teams?: PolymarketTeamInfo[];
 };
 
 /**

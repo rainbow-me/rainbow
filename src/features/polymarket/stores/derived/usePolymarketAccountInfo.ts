@@ -1,8 +1,8 @@
 import { TextColor } from '@/design-system/color/palettes';
 import { USD_DECIMALS } from '@/features/perps/constants';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { abs, add, divide, greaterThan, isEqual, isZero, multiply, subtract } from '@/helpers/utilities';
-import { toFixedWorklet, truncateToDecimals } from '@/safe-math/SafeMath';
+import { abs, add, greaterThan, isEqual, isZero } from '@/helpers/utilities';
+import { truncateToDecimals } from '@/safe-math/SafeMath';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { PolymarketPosition } from '@/features/polymarket/types';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
@@ -16,9 +16,9 @@ export type PolymarketAccountInfo = {
   isNeutralPnl: boolean;
   isPositivePnl: boolean;
   positions: PolymarketPosition[];
+  activePositions: PolymarketPosition[];
   textColor: TextColor;
   unrealizedPnl: string;
-  unrealizedPnlPercent: `${string}%`;
   value: string;
 };
 
@@ -31,8 +31,8 @@ const EMPTY_ACCOUNT_INFO = Object.freeze<PolymarketAccountInfo>({
   isPositivePnl: false,
   textColor: 'labelTertiary',
   positions: [],
+  activePositions: [],
   unrealizedPnl: formatCurrency(abs('0')),
-  unrealizedPnlPercent: `${toFixedWorklet('0', 2)}%`,
   value: '0',
 });
 
@@ -57,20 +57,17 @@ export const usePolymarketAccountInfo = createDerivedStore<PolymarketAccountInfo
     const isPositivePnl = greaterThan(totalPositionsPnl, 0);
     const textColor = isPositivePnl ? 'green' : isNeutralPnl ? 'labelTertiary' : 'red';
 
-    // const unrealizedPnlPercent = toFixedWorklet(multiply(divide(totalPositionsPnl, totalPositionsInitialValue), 100), 2);
-
     return {
       balance,
       equity: formatCurrency(totalPositionsEquity),
       hasBalance: !isZero(balance),
       hasPositions: positions.length > 0,
+      activePositions: positions.filter(position => !(position.redeemable && position.currentValue === 0)),
       positions,
       isNeutralPnl,
       isPositivePnl,
       textColor: textColor satisfies TextColor,
       unrealizedPnl: formatCurrency(abs(totalPositionsPnl)),
-      // unrealizedPnlPercent: `${toFixedWorklet(abs(unrealizedPnlPercent), 2)}%`,
-      unrealizedPnlPercent: '0%',
       value: add(balance, totalPositionsEquity),
     };
   },

@@ -50,5 +50,7 @@ async function fetchPolymarketEvents(
   const { data } = await rainbowFetch(url.toString(), { abortController, timeout: 30000 });
   const events = data as RawPolymarketEvent[];
 
-  return await Promise.all(events.map(processRawPolymarketEvent));
+  const filteredEvents = events.filter(event => event.ended !== true);
+
+  return await Promise.all(filteredEvents.map(event => processRawPolymarketEvent(event)));
 }

@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
-import { Box, Text, TextShadow } from '@/design-system';
+import { Box, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/usePolymarketClobClient';
 import { Side, OrderType } from '@polymarket/clob-client';
@@ -31,13 +31,17 @@ import { Navigation } from '@/navigation';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
+import { getSolidColorEquivalent } from '@/worklets/colors';
+import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
     params: { market, outcome },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
+  const red = useForegroundColor('red');
+  const green = useForegroundColor('green');
+
   const availableBalance = usePolymarketBalanceStore(state => state.getBalance());
-  const accentColor = market.color;
 
   const [amount, setAmount] = useState(() => {
     const halfBalance = divWorklet(availableBalance, 2);
@@ -49,14 +53,18 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     return market.outcomes.indexOf(outcome);
   }, [market.outcomes, outcome]);
 
+  const accentColor = useMemo(() => {
+    return market.negRisk ? market.color : outcomeIndex === 0 ? green : red;
+  }, [market.negRisk, red, green, market.color, outcomeIndex]);
+
   const tokenId = useMemo(() => {
     return market.clobTokenIds[outcomeIndex];
   }, [market.clobTokenIds, outcomeIndex]);
 
   const liveOrderPrice = useLiveTokenValue({
     tokenId: getPolymarketTokenId(tokenId, 'sell'),
-    initialValue: String(formatPrice(Number(market.outcomePrices[outcomeIndex]), market.orderPriceMinTickSize)),
-    selector: token => String(formatPrice(Number(token.price), market.orderPriceMinTickSize)),
+    initialValue: formatPrice(market.outcomePrices[outcomeIndex], market.orderPriceMinTickSize),
+    selector: token => formatPrice(token.price, market.orderPriceMinTickSize),
   });
 
   const minBuyAmountUsd = useMemo(() => {
@@ -130,11 +138,10 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   }, [amount, liveOrderPrice, tokenId]);
 
   const outcomeSubtitle = useMemo(() => {
-    if (outcome !== 'Yes' && outcome !== 'No') {
-      if (market.line) {
-        return `${outcome} ${market.line}`;
-      }
-    } else if (market.groupItemTitle) {
+    if (market.line) {
+      return `${outcome} ${market.line}`;
+    }
+    if (market.groupItemTitle) {
       return market.groupItemTitle;
     }
     return outcome;
@@ -162,7 +169,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
           <Box gap={24}>
             <Box
               padding={'20px'}
-              backgroundColor={opacityWorklet(accentColor, 0.16)}
+              backgroundColor={opacityWorklet(accentColor, 0.08)}
               borderRadius={26}
               borderColor={{ custom: opacityWorklet(accentColor, 0.03) }}
               borderWidth={2.5}
@@ -178,9 +185,12 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
                   <Text size="15pt" weight="bold" color="labelTertiary" style={{ flex: 1 }}>
                     {market.events?.[0]?.title || market.question}
                   </Text>
-                  <Text size="17pt" weight="bold" color="label">
-                    {outcomeSubtitle}
-                  </Text>
+                  <Box flexDirection="row" alignItems="center" gap={4}>
+                    <Text size="17pt" weight="bold" color="label">
+                      {outcomeSubtitle}
+                    </Text>
+                    {market.groupItemTitle && <OutcomeBadge outcome={outcome} outcomeIndex={outcomeIndex} />}
+                  </Box>
                 </Box>
               </Box>
             </Box>
@@ -220,7 +230,11 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               processingLabel="Placing Bet..."
               isProcessing={false}
               showBiometryIcon={false}
-              backgroundColor={accentColor}
+              backgroundColor={getSolidColorEquivalent({
+                background: opacityWorklet(accentColor, 0.7),
+                foreground: '#000000',
+                opacity: 0.4,
+              })}
               disabledBackgroundColor={opacityWorklet(accentColor, 0.12)}
               disabled={!isValidOrderAmountState}
               height={48}

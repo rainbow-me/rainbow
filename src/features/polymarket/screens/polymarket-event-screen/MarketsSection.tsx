@@ -7,7 +7,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { MarketRow } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
 import { ResolvedMarketsSection } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsSection';
-import { SingleMarketEvent } from '@/features/polymarket/screens/polymarket-event-screen/components/SingleMarketEvent';
+import { SingleMarketEventOutcomes } from '@/features/polymarket/screens/polymarket-event-screen/components/SingleMarketEvent';
 
 export const MarketsSection = memo(function MarketsSection() {
   const markets = usePolymarketEventStore(state => state.getMarkets());
@@ -28,7 +28,7 @@ export const MarketsSection = memo(function MarketsSection() {
           {'Outcomes'}
         </Text>
       </Box>
-      {isSingleMarketEvent && <SingleMarketEvent market={markets?.[0]} />}
+      {isSingleMarketEvent && <SingleMarketEventOutcomes market={markets?.[0]} />}
       {!isSingleMarketEvent && <MultiMarketEvent markets={markets} />}
     </Box>
   );
@@ -51,12 +51,14 @@ const MultiMarketEvent = memo(function MultiMarketEvent({ markets }: { markets: 
               title={market.groupItemTitle}
               volume={market.volume}
               tokenId={market.clobTokenIds[0]}
+              // TODO: check that this cannot be undefined
               price={String(market.lastTradePrice)}
+              minTickSize={market.orderPriceMinTickSize}
             />
           </ButtonPressAnimation>
         ))}
       </Box>
-      {resolvedMarkets?.length > 0 && <ResolvedMarketsSection markets={resolvedMarkets} />}
+      {resolvedMarkets?.length > 0 && <ResolvedMarketsSection markets={resolvedMarkets} uniqueMarketImages={uniqueMarketImages} />}
     </>
   );
 });

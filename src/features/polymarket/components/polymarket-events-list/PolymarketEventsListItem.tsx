@@ -10,7 +10,7 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import LinearGradient from 'react-native-linear-gradient';
 import { formatNumber } from '@/helpers/strings';
-import { toPercentageWorklet } from '@/safe-math/SafeMath';
+import { roundWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
 
 export const HEIGHT = 239;
 
@@ -24,7 +24,7 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
       };
     const title = market.groupItemTitle || market.outcomes[0];
     // TODO: Decide how to handle this case
-    const odds = market.lastTradePrice !== undefined ? `${toPercentageWorklet(market.lastTradePrice)}%` : 'N/A';
+    const odds = market.lastTradePrice !== undefined ? `${roundWorklet(toPercentageWorklet(market.lastTradePrice))}%` : 'N/A';
     return {
       title,
       odds,
@@ -113,6 +113,7 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
 function getMostLikelyMarket(event: PolymarketEvent) {
   // Markets are already sorted by lastTradePrice
   return event.markets.find(market => market.active && !market.closed);
+  // return event.markets.sort((a, b) => b.volume24hr - a.volume24hr).find(market => market.active && !market.closed);
 }
 
 function navigateToEvent(event: PolymarketEvent) {

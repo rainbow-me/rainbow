@@ -1,5 +1,10 @@
-export function formatPrice(price: number, minTickSize: number): number {
-  const decimals = Math.round(-Math.log10(minTickSize));
-  const roundedPrice = Math.ceil(price / minTickSize) * minTickSize;
-  return Number(roundedPrice.toFixed(decimals));
+import { ceilWorklet, divWorklet, mulWorklet, orderOfMagnitudeWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+
+export function formatPrice(price: string | number, minTickSize: string | number): string {
+  'worklet';
+  const decimals = Math.max(0, -orderOfMagnitudeWorklet(minTickSize));
+  const divided = divWorklet(price, minTickSize);
+  const ceiled = ceilWorklet(divided);
+  const roundedPrice = mulWorklet(ceiled, minTickSize);
+  return toFixedWorklet(roundedPrice, decimals);
 }

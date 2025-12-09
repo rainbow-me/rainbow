@@ -55,3 +55,24 @@ export type PolymarketWalletListData = {
   value: string;
   enabled: boolean;
 };
+
+export type PolymarketGameMetadata = {
+  teams: string[];
+  sport: string;
+  ordering: string;
+  type: string[];
+};
+
+export type PolymarketTeamInfo = {
+  id: number;
+  name: string;
+  league: string;
+  record: string;
+  logo: string;
+  abbreviation: string;
+  alias: string;
+  createdAt: string;
+  updatedAt: string;
+  providerId: number;
+  color: string;
+};

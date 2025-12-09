@@ -65,7 +65,6 @@ export function transformPolymarketPriceToTokenData(price: string, updateTime: s
       change24hPct: '0',
     },
     marketData: {
-      // This is available through the @nktkas/hyperliquid sdk's `tokenDetails` method, but we do not currently need to display this information
       circulatingMarketCap: '0',
     },
     reliability: {
