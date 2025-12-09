@@ -5371,6 +5371,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rainbow-me/delegation@file:vendor/rainbow-me-delegation-1.0.0.tgz::locator=Rainbow%40workspace%3A.":
+  version: 1.0.0
+  resolution: "@rainbow-me/delegation@file:vendor/rainbow-me-delegation-1.0.0.tgz#vendor/rainbow-me-delegation-1.0.0.tgz::hash=f6757d&locator=Rainbow%40workspace%3A."
+  peerDependencies:
+    viem: ^2.38.0
+  checksum: 10c0/16300d84c281893707fa9cf820361481829b927fc403f1bace2defbc1bee1bbd146b9af56784db704fed98b1bdaef340e720c1235d70e3a13864ee15d06a166e
+  languageName: node
+  linkType: hard
+
 "@rainbow-me/provider@npm:0.1.2":
   version: 0.1.2
   resolution: "@rainbow-me/provider@npm:0.1.2"
@@ -8987,6 +8996,7 @@ __metadata:
     "@metamask/eth-sig-util": "npm:7.0.2"
     "@nktkas/hyperliquid": "npm:0.25.5"
     "@notifee/react-native": "npm:7.8.2"
+    "@rainbow-me/delegation": "file:vendor/rainbow-me-delegation-1.0.0.tgz"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
     "@rainbow-me/swaps": "npm:0.39.0"

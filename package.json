@@ -103,6 +103,7 @@
     "@metamask/eth-sig-util": "7.0.2",
     "@nktkas/hyperliquid": "0.25.5",
     "@notifee/react-native": "7.8.2",
+    "@rainbow-me/delegation": "file:vendor/rainbow-me-delegation-1.0.0.tgz",
     "@rainbow-me/provider": "0.1.2",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/swaps": "0.39.0",
@@ -385,6 +386,7 @@
     "react": "19.0.0",
     "@tanstack/query-core": "4.36.1",
     "viem": "2.38.0",
+    "@rainbow-me/delegation/viem": "2.38.0",
     "@rainbow-me/provider/viem": "2.38.0",
     "mipd/viem": "2.38.0"
   },
