@@ -1,12 +1,13 @@
 import { CrosschainQuote, Quote, QuoteError, SwapType } from '@rainbow-me/swaps';
 import { useQuery } from '@tanstack/react-query';
 
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ParsedAsset, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
 import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
 import { estimateUnlockAndSwap } from '@/raps/actions/swap';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey } from '@/react-query';
 import { gasUnits } from '@/references/gasUnits';
+import { estimateDelegatedApproveAndSwapGasLimit, getShouldDelegate } from '@/delegateActions';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -40,19 +41,26 @@ async function estimateSwapGasLimitQueryFunction({
     };
   }
 
-  const gasLimit = await (quote.swapType === SwapType.crossChain
-    ? estimateUnlockAndCrosschainSwap({
-        chainId,
-        quote: quote as CrosschainQuote,
-        sellAmount: quote.sellAmount.toString(),
-        assetToSell,
-      })
-    : estimateUnlockAndSwap({
-        chainId,
-        quote,
-        sellAmount: quote.sellAmount.toString(),
-        assetToSell,
-      }));
+  let gasLimit: string | null;
+
+  const shouldDelegate = await getShouldDelegate(chainId, quote as Quote | CrosschainQuote, assetToSell as ParsedAsset);
+  if (shouldDelegate) {
+    gasLimit = BigInt((await estimateDelegatedApproveAndSwapGasLimit(quote as Quote | CrosschainQuote)) || '0').toString();
+  } else {
+    gasLimit = await (quote.swapType === SwapType.crossChain
+      ? estimateUnlockAndCrosschainSwap({
+          chainId,
+          quote: quote as CrosschainQuote,
+          sellAmount: quote.sellAmount.toString(),
+          assetToSell,
+        })
+      : estimateUnlockAndSwap({
+          chainId,
+          quote,
+          sellAmount: quote.sellAmount.toString(),
+          assetToSell,
+        }));
+  }
 
   if (!gasLimit) {
     return {
