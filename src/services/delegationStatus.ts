@@ -5,7 +5,7 @@ import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { Address } from 'viem';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getProviderViem } from '@/handlers/web3';
-import { getHasAnyDelegation, getIsDelegatedToAddress } from '@rainbow-me/delegation';
+import { getIsDelegated, getIsDelegatedToAddress } from '@rainbow-me/delegation';
 
 // Mocked delegation config data
 // Format: { [chainId: string]: contractAddress }
@@ -27,8 +27,9 @@ export async function isAddressDelegated(accountAddress: string, chainId: number
 
     const publicClient = getProviderViem({ chainId });
 
-    return await getHasAnyDelegation({
+    return await getIsDelegated({
       address: accountAddress as Address,
+      chainId,
       publicClient,
     });
   } catch (error) {
