@@ -108,6 +108,7 @@
     "@notifee/react-native": "7.8.2",
     "@polymarket/builder-relayer-client": "0.0.7",
     "@polymarket/clob-client": "4.22.8",
+    "@rainbow-me/delegation": "file:vendor/rainbow-me-delegation-1.0.0.tgz",
     "@rainbow-me/provider": "0.1.2",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/swaps": "file:vendor/rainbow-me-swaps-0.40.0.tgz",
@@ -133,6 +134,7 @@
     "@shopify/flash-list": "1.8.2",
     "@shopify/react-native-performance": "4.1.2",
     "@shopify/react-native-skia": "2.4.7",
+    "@storesjs/stores": "0.8.5",
     "@tanstack/react-query": "4.2.1",
     "@tanstack/react-query-persist-client": "4.2.1",
     "@tradle/react-native-http": "2.0.1",
@@ -390,6 +392,7 @@
     "react": "19.0.0",
     "@tanstack/query-core": "4.36.1",
     "viem": "2.38.0",
+    "@rainbow-me/delegation/viem": "2.38.0",
     "@rainbow-me/provider/viem": "2.38.0",
     "mipd/viem": "2.38.0"
   },
