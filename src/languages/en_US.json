@@ -2957,6 +2957,8 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Watching",
         "ledger": "Ledger",
+        "delegated": "Delegated",
+        "not_delegated": "Not Delegated",
         "wallets": "Wallets",
         "all_wallets": "All Wallets",
         "total_balance": "Total Balance",

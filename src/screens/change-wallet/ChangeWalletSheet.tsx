@@ -8,7 +8,10 @@ import { FeatureHintTooltip, TooltipRef } from '@/components/tooltips/FeatureHin
 import { NOTIFICATIONS, useExperimentalFlag } from '@/config';
 import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
 import { EthereumAddress } from '@/entities';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
+import isTestFlight from '@/helpers/isTestFlight';
+import { isAddressDelegated } from '@/services/delegationStatus';
+import { ChainId } from '@/state/backendNetworks/types';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import { isValidHex } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
@@ -80,6 +83,7 @@ export interface AddressItem {
   isReadOnly: boolean;
   isLedger: boolean;
   isSelected: boolean;
+  isDelegated: boolean;
   label: string;
   rowType: number;
   walletId: string;
@@ -109,8 +113,39 @@ export default function ChangeWalletSheet() {
 
   const [editMode, setEditMode] = useState(false);
   const [isLayoutMeasured, setIsLayoutMeasured] = useState(IS_IOS);
+  const [delegationStatusByAddress, setDelegationStatusByAddress] = useState<Record<string, boolean>>({});
 
   const setPinnedAddresses = usePinnedWalletsStore(state => state.setPinnedAddresses);
+
+  // Check delegation status for non-read-only wallets (only in dev/testflight)
+  useEffect(() => {
+    if (!IS_DEV && !isTestFlight) return;
+
+    const checkDelegationStatuses = async () => {
+      const walletsToCheck = Object.values(walletsWithBalancesAndNames || {}).flatMap(wallet => {
+        // Only check owned and hardware wallets, not read-only
+        if (wallet.type === WalletTypes.readOnly) return [];
+        return (wallet.addresses || []).filter(account => account.visible).map(account => account.address);
+      });
+
+      logger.debug('[ChangeWalletSheet] Checking delegation for wallets', { count: walletsToCheck.length, addresses: walletsToCheck });
+
+      const results: Record<string, boolean> = {};
+      await Promise.all(
+        walletsToCheck.map(async address => {
+          const [isDelegatedMainnet, isDelegatedBase] = await Promise.all([
+            isAddressDelegated(address, ChainId.mainnet),
+            isAddressDelegated(address, ChainId.base),
+          ]);
+          results[address.toLowerCase()] = isDelegatedMainnet || isDelegatedBase;
+        })
+      );
+      logger.debug('[ChangeWalletSheet] Delegation results', { results });
+      setDelegationStatusByAddress(results);
+    };
+
+    checkDelegationStatuses();
+  }, [walletsWithBalancesAndNames]);
 
   // Feature hint tooltip should only ever been shown once.
   useEffect(() => {
@@ -156,6 +191,7 @@ export default function ChangeWalletSheet() {
           isLedger: wallet.type === WalletTypes.bluetooth,
           isReadOnly: wallet.type === WalletTypes.readOnly,
           isSelected: account.address === accountAddress,
+          isDelegated: delegationStatusByAddress[account.address.toLowerCase()] ?? false,
           rowType: RowTypes.ADDRESS,
           walletId: wallet.id,
         };
@@ -172,7 +208,7 @@ export default function ChangeWalletSheet() {
 
     // sorts by order wallets were added
     return [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets].sort((a, b) => a.walletId.localeCompare(b.walletId));
-  }, [walletsWithBalancesAndNames, accountAddress, hideReadOnlyWallets, liveWalletBalance]);
+  }, [walletsWithBalancesAndNames, accountAddress, hideReadOnlyWallets, liveWalletBalance, delegationStatusByAddress]);
 
   // If user has never seen pinned addresses feature, auto-pin the users most used owned addresses
   useEffect(() => {
