@@ -5877,6 +5877,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rainbow-me/delegation@file:vendor/rainbow-me-delegation-1.0.0.tgz::locator=Rainbow%40workspace%3A.":
+  version: 1.0.0
+  resolution: "@rainbow-me/delegation@file:vendor/rainbow-me-delegation-1.0.0.tgz#vendor/rainbow-me-delegation-1.0.0.tgz::hash=f16a04&locator=Rainbow%40workspace%3A."
+  peerDependencies:
+    "@storesjs/stores": ^0.8.2
+    ethers: ^5.7.0
+    viem: ^2.38.0
+  peerDependenciesMeta:
+    ethers:
+      optional: true
+  checksum: 10c0/02ed05af50983c2bb677c80cd587d2dbce723eb34538e4f4c79949517cf559ec8b0b70e520fdfff55da8e7f10d80869006d6040aa34df52ba13fda400012ffc8
+  languageName: node
+  linkType: hard
+
 "@rainbow-me/provider@npm:0.1.2":
   version: 0.1.2
   resolution: "@rainbow-me/provider@npm:0.1.2"
@@ -7591,6 +7605,20 @@ __metadata:
     react: ^16.8.0
     react-dom: ^16.8.0
   checksum: 10c0/464b81e806b53d9c0d227e17370b73374cb62e0956b75d9a6fe7f928ce60c0e3821d15fb30247585c75d626619f723f93fc7867740d45c5e60a0c5c80dce0c36
+  languageName: node
+  linkType: hard
+
+"@storesjs/stores@npm:0.8.2":
+  version: 0.8.2
+  resolution: "@storesjs/stores@npm:0.8.2"
+  dependencies:
+    use-sync-external-store: "npm:1.6.0"
+    zustand: "npm:5.0.8"
+  peerDependencies:
+    react: ">=17.0.0"
+    react-native: ">=0.64.0"
+    react-native-mmkv: ">=2.0.0"
+  checksum: 10c0/5ede28b11afed5c55c61f37a56947570669e70ddd6f2209554ca4b60af1e2a1dbd24ef073cc40fb476e81219e67725ff4b632c890759706ce4c962ec885cf843
   languageName: node
   linkType: hard
 
@@ -9621,6 +9649,7 @@ __metadata:
     "@notifee/react-native": "npm:7.8.2"
     "@polymarket/builder-relayer-client": "npm:0.0.7"
     "@polymarket/clob-client": "npm:4.22.8"
+    "@rainbow-me/delegation": "file:vendor/rainbow-me-delegation-1.0.0.tgz"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
     "@rainbow-me/swaps": "file:vendor/rainbow-me-swaps-0.40.0.tgz"
@@ -9654,6 +9683,7 @@ __metadata:
     "@shopify/flash-list": "npm:1.8.2"
     "@shopify/react-native-performance": "npm:4.1.2"
     "@shopify/react-native-skia": "npm:2.4.7"
+    "@storesjs/stores": "npm:0.8.2"
     "@tanstack/react-query": "npm:4.2.1"
     "@tanstack/react-query-persist-client": "npm:4.2.1"
     "@testing-library/react-native": "npm:11.2.0"
@@ -28594,6 +28624,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"use-sync-external-store@npm:1.6.0":
+  version: 1.6.0
+  resolution: "use-sync-external-store@npm:1.6.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/35e1179f872a53227bdf8a827f7911da4c37c0f4091c29b76b1e32473d1670ebe7bcd880b808b7549ba9a5605c233350f800ffab963ee4a4ee346ee983b6019b
+  languageName: node
+  linkType: hard
+
 "use-sync-external-store@npm:^1.2.0, use-sync-external-store@npm:^1.5.0":
   version: 1.5.0
   resolution: "use-sync-external-store@npm:1.5.0"
@@ -29752,5 +29791,26 @@ __metadata:
     react:
       optional: true
   checksum: 10c0/d04469d76b29c7e4070da269886de4efdadedd3d3824dc2a06ac4ff62e3b5877f925e927afe7382de651829872b99adec48082f1bd69fe486149be666345e626
+  languageName: node
+  linkType: hard
+
+"zustand@npm:5.0.8":
+  version: 5.0.8
+  resolution: "zustand@npm:5.0.8"
+  peerDependencies:
+    "@types/react": ">=18.0.0"
+    immer: ">=9.0.6"
+    react: ">=18.0.0"
+    use-sync-external-store: ">=1.2.0"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    immer:
+      optional: true
+    react:
+      optional: true
+    use-sync-external-store:
+      optional: true
+  checksum: 10c0/e865a6f7f1c0e03571701db5904151aaa7acefd6f85541a117085e129bf16e8f60b11f8cc82f277472de5c7ad5dcb201e1b0a89035ea0b40c9d9aab3cd24c8ad
   languageName: node
   linkType: hard
