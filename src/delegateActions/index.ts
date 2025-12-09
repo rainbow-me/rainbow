@@ -7,11 +7,10 @@ import {
   Quote,
   QuoteError,
 } from '@rainbow-me/swaps';
-import { encodeFunctionData, Address, erc20Abi, WalletClient, PublicClient, createPublicClient, http } from 'viem';
+import { Address, encodeFunctionData, erc20Abi, WalletClient, PublicClient, createPublicClient, http } from 'viem';
 import { RapSwapActionParameters } from '@/raps/references';
 import { TransactionGasParamAmounts } from '@/entities/gas';
 import { ParsedAsset } from '@/__swaps__/types/assets';
-import { metadataPOSTClient } from '@/graphql';
 import { assetNeedsUnlocking } from '@/raps/actions/unlock';
 import { getProvider } from '@/handlers/web3';
 import { loadWallet, loadWalletViem } from '@/model/wallet';
@@ -28,6 +27,9 @@ import {
 } from '@rainbow-me/delegation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
+import { logger, RainbowError } from '@/logger';
+import { metadataPOSTClient } from '@/graphql';
+import { add } from '@/helpers/utilities';
 
 export type DelegateExecutionResult = {
   hash: `0x${string}` | null;
@@ -140,22 +142,70 @@ export const getApproveAndSwapCalls = async (quote: Quote | CrosschainQuote) => 
   ];
 };
 
-export const simulateDelegatedTransaction = async (quote: Quote | CrosschainQuote) => {
-  const delegateCalldata = await encodeDelegateCalldata(await getApproveAndSwapCalls(quote));
-  const simulationResult = await metadataPOSTClient.simulateTransactions({
-    chainId: quote.chainId,
-    transactions: [{ to: quote.from as Address, data: delegateCalldata, from: quote.from as Address, value: '0x0' }],
+/**
+ * Calculate the fixed gas overhead for EIP-7702 delegation transactions.
+ * This covers costs not captured when simulating internal calls separately.
+ */
+const estimateDelegationOverhead = (calldataLength: number): bigint => {
+  const BASE_TX = 21_000n;
+  const AUTH_COST = 15_800n;
+  const EXECUTE_OVERHEAD = 5_000n;
+  const AVG_CALLDATA_COST_PER_BYTE = 14n;
+  const BUFFER_BPS = 2000n;
+
+  const calldataCost = BigInt(calldataLength) * AVG_CALLDATA_COST_PER_BYTE;
+  const overhead = BASE_TX + AUTH_COST + EXECUTE_OVERHEAD + calldataCost;
+
+  logger.debug('[delegateActions] estimateDelegationOverhead', {
+    calldataCost: calldataCost.toString(),
+    overhead: overhead.toString(),
+    buffer: ((overhead * BUFFER_BPS) / 10000n).toString(),
+    total: (overhead + (overhead * BUFFER_BPS) / 10000n).toString(),
   });
-  return simulationResult;
+
+  return overhead + (overhead * BUFFER_BPS) / 10000n;
 };
 
-export const estimateDelegatedApproveAndSwapGasLimit = async (quote: Quote | CrosschainQuote) => {
-  const simulationResult = await simulateDelegatedTransaction(quote);
-  const simulatedEstimate = simulationResult.simulateTransactions?.[0]?.gas?.estimate;
-  if (simulatedEstimate) {
-    return simulatedEstimate;
+/**
+ * Estimate gas for a delegated approve + swap transaction.
+ * Simulates internal calls via metadata API and adds fixed delegation overhead.
+ */
+export const estimateDelegatedApproveAndSwapGasLimit = async (quote: Quote | CrosschainQuote): Promise<string | null> => {
+  try {
+    const calls = await getApproveAndSwapCalls(quote);
+    const delegateCalldata = await encodeDelegateCalldata(calls);
+
+    const simulation = await metadataPOSTClient.simulateTransactions({
+      chainId: quote.chainId,
+      transactions: [
+        { from: quote.from, to: calls[0].to, data: calls[0].data, value: '0x0' },
+        { from: quote.from, to: calls[1].to, data: calls[1].data, value: `0x${calls[1].value.toString(16)}` },
+      ],
+    });
+
+    const gasEstimate = simulation.simulateTransactions
+      ?.map(res => res?.gas?.estimate)
+      .reduce((acc, limit) => (acc && limit ? add(acc, limit) : acc), '0');
+
+    if (!gasEstimate) {
+      return null;
+    }
+
+    const total = BigInt(gasEstimate) + estimateDelegationOverhead(delegateCalldata.length);
+    logger.debug('[delegateActions] estimated delegation overhead', {
+      overhead: estimateDelegationOverhead(delegateCalldata.length).toString(),
+    });
+
+    logger.debug('[delegateActions] Gas estimation', {
+      gasEstimate,
+      total: total.toString(),
+    });
+
+    return total.toString();
+  } catch (error) {
+    logger.error(new RainbowError('[delegateActions] Gas estimation failed'), { error });
+    return null;
   }
-  return null;
 };
 
 export const walletExecuteDelegate = async ({
