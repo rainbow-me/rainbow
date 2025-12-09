@@ -5981,9 +5981,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/swaps@npm:0.40.0":
+"@rainbow-me/swaps@file:vendor/rainbow-me-swaps-0.40.0.tgz::locator=Rainbow%40workspace%3A.":
   version: 0.40.0
-  resolution: "@rainbow-me/swaps@npm:0.40.0"
+  resolution: "@rainbow-me/swaps@file:vendor/rainbow-me-swaps-0.40.0.tgz#vendor/rainbow-me-swaps-0.40.0.tgz::hash=e873f8&locator=Rainbow%40workspace%3A."
   dependencies:
     "@ethereumjs/util": "npm:9.0.0"
     "@ethersproject/abi": "npm:5.7.0"
@@ -5998,7 +5998,8 @@ __metadata:
     "@ethersproject/transactions": "npm:5.7.0"
     "@ethersproject/wallet": "npm:5.7.0"
     "@metamask/eth-sig-util": "npm:7.0.0"
-  checksum: 10c0/1589f275a67d89651d868775450d98d8ff76df9867f038d92cbfa4632949291d831c372d589d27554e21e05403f9c28b75f4cc918183c09618fe017961bea845
+    ox: "npm:0.9.14"
+  checksum: 10c0/f6859ff4ced5139998bfdbf44bea89a48d7616427928946d0b3b0197c2bb04bcee2fc9684a69a86ccca14446b64a297d9a8a78bb91dba146c5809b3722944ca8
   languageName: node
   linkType: hard
 
@@ -9763,7 +9764,7 @@ __metadata:
     "@polymarket/clob-client": "npm:4.22.8"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
-    "@rainbow-me/swaps": "npm:0.40.0"
+    "@rainbow-me/swaps": "file:vendor/rainbow-me-swaps-0.40.0.tgz"
     "@rainbow-me/token-launcher": "npm:0.2.0"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-native-camera-roll/camera-roll": "npm:7.10.0"
@@ -22712,6 +22713,27 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/a0919651e35b60d741f745ef6a0cfa1f63daf17d43e95cae7957c291eba90248be0968ee0a6d2f268e5e79f6dbbc3ab3b4617df0bcadcae722843168639795e1
+  languageName: node
+  linkType: hard
+
+"ox@npm:0.9.14":
+  version: 0.9.14
+  resolution: "ox@npm:0.9.14"
+  dependencies:
+    "@adraffy/ens-normalize": "npm:^1.11.0"
+    "@noble/ciphers": "npm:^1.3.0"
+    "@noble/curves": "npm:1.9.1"
+    "@noble/hashes": "npm:^1.8.0"
+    "@scure/bip32": "npm:^1.7.0"
+    "@scure/bip39": "npm:^1.6.0"
+    abitype: "npm:^1.0.9"
+    eventemitter3: "npm:5.0.1"
+  peerDependencies:
+    typescript: ">=5.4.0"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10c0/287e6beb626881882aafbd9b1d12583faace4693beb46860afa183b48a3469d7ff7ab0e9f7d282efc83d57c6d71c8ed6767f864bd2578fbe4a54825b265afb2f
   languageName: node
   linkType: hard
 
