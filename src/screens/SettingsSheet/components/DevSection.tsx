@@ -1,5 +1,6 @@
 import { ImgixImage } from '@/components/images';
 import { defaultConfig, getExperimentalFlag, LOG_PUSH } from '@/config';
+import { ChainId } from '@/state/backendNetworks/types';
 import { IS_DEV } from '@/env';
 import { deleteAllBackups } from '@/handlers/cloudBackup';
 import { RainbowContext } from '@/helpers/RainbowContext';
@@ -14,7 +15,7 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { clearWalletState, updateWallets, useWallets } from '@/state/wallets/walletsStore';
+import { clearWalletState, updateWallets, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { isAuthenticated } from '@/utils/authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -31,16 +32,20 @@ import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 import { getFCMToken } from '@/notifications/tokens';
 import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { nonceActions } from '@/state/nonces';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import FastImage from 'react-native-fast-image';
 import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
+import { walletExecuteDelegate, walletExecuteRevoke } from '@/delegateActions';
+import { checkDelegationStatus } from '@/services/delegationStatus';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
   const wallets = useWallets();
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
+  const accountAddress = useWalletsStore(state => state.accountAddress);
 
   const [loadingStates, setLoadingStates] = useState({
     clearLocalStorage: false,
@@ -136,6 +141,55 @@ const DevSection = () => {
   const clearPendingTransactions = async () => {
     pendingTransactionsActions.clearPendingTransactions();
     nonceActions.clearNonces();
+  };
+
+  const delegateOnChain = async (chainId: ChainId) => {
+    if (!accountAddress) {
+      Alert.alert('Error', 'No account address available');
+      return;
+    }
+
+    try {
+      const { txHash } = await walletExecuteDelegate({ accountAddress, chainId });
+      Alert.alert('Success', `Delegation set up on chain ${chainId}. Tx: ${txHash}`);
+      logger.info(`[DevSection] Delegation set up on chain ${chainId}`, { txHash });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      Alert.alert('Error', `Failed to delegate: ${errorMessage}`);
+      logger.error(new RainbowError(`[DevSection] Failed to delegate on chain ${chainId}: ${errorMessage}`));
+    }
+  };
+
+  const revokeOnChain = async (chainId: ChainId) => {
+    if (!accountAddress) {
+      Alert.alert('Error', 'No account address available');
+      return;
+    }
+
+    try {
+      const { txHash } = await walletExecuteRevoke({ accountAddress, chainId });
+      Alert.alert('Success', `Delegation revoked on chain ${chainId}. Tx: ${txHash}`);
+      logger.info(`[DevSection] Delegation revoked on chain ${chainId}`, { txHash });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      Alert.alert('Error', `Failed to revoke delegation: ${errorMessage}`);
+      logger.error(new RainbowError(`[DevSection] Failed to revoke delegation on chain ${chainId}: ${errorMessage}`));
+    }
+  };
+
+  const triggerKillSwitch = async () => {
+    try {
+      await checkDelegationStatus();
+      Alert.alert(
+        'Kill Switch Simulated',
+        'The delegation status check has been triggered. If any active delegations are found, the revocation panel will be shown.'
+      );
+      logger.info('[DevSection] Kill switch simulation triggered');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      Alert.alert('Error', `Failed to simulate kill switch: ${errorMessage}`);
+      logger.error(new RainbowError(`[DevSection] Failed to simulate kill switch: ${errorMessage}`));
+    }
   };
 
   const clearLocalStorage = async () => {
@@ -392,6 +446,38 @@ const DevSection = () => {
                 titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.copy_log_lines)} />}
               />
             )}
+          </Menu>
+          <Menu header="Delegation Controls">
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🔗" isEmoji />}
+              onPress={() => delegateOnChain(ChainId.mainnet)}
+              size={52}
+              titleComponent={<MenuItem.Title text="Delegate (Mainnet)" />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
+              onPress={() => revokeOnChain(ChainId.mainnet)}
+              size={52}
+              titleComponent={<MenuItem.Title text="Revoke (Mainnet)" />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🔗" isEmoji />}
+              onPress={() => delegateOnChain(ChainId.base)}
+              size={52}
+              titleComponent={<MenuItem.Title text="Delegate (Base)" />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
+              onPress={() => revokeOnChain(ChainId.base)}
+              size={52}
+              titleComponent={<MenuItem.Title text="Revoke (Base)" />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🔫" isEmoji />}
+              onPress={triggerKillSwitch}
+              size={52}
+              titleComponent={<MenuItem.Title text="Trigger Kill Switch" />}
+            />
           </Menu>
           <Menu header="Feature Flags">
             {Object.keys(config)
