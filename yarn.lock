@@ -5406,9 +5406,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/swaps@npm:0.39.0":
+"@rainbow-me/swaps@file:vendor/rainbow-me-swaps-0.39.0.tgz::locator=Rainbow%40workspace%3A.":
   version: 0.39.0
-  resolution: "@rainbow-me/swaps@npm:0.39.0"
+  resolution: "@rainbow-me/swaps@file:vendor/rainbow-me-swaps-0.39.0.tgz#vendor/rainbow-me-swaps-0.39.0.tgz::hash=fc4871&locator=Rainbow%40workspace%3A."
   dependencies:
     "@ethereumjs/util": "npm:9.0.0"
     "@ethersproject/abi": "npm:5.7.0"
@@ -5423,7 +5423,7 @@ __metadata:
     "@ethersproject/transactions": "npm:5.7.0"
     "@ethersproject/wallet": "npm:5.7.0"
     "@metamask/eth-sig-util": "npm:7.0.0"
-  checksum: 10c0/a21f6934276578c0165b2dd34a78fcf1d58a210090a6865738f8f9a83ba592b76846d94a28a5b81bbb8ad593a3c3d94611aa0c20f08e24c304bea2bb0b20bce0
+  checksum: 10c0/b34a72c4531191104373030539b1b1a8184cfc6377d5001b216d58a46cfba9dc7b6a215b57e65cfe99f94c7c502112c70a1e3b0076160cdabb789de2e7c1a922
   languageName: node
   linkType: hard
 
@@ -8999,7 +8999,7 @@ __metadata:
     "@rainbow-me/delegation": "file:vendor/rainbow-me-delegation-1.0.0.tgz"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
-    "@rainbow-me/swaps": "npm:0.39.0"
+    "@rainbow-me/swaps": "file:vendor/rainbow-me-swaps-0.39.0.tgz"
     "@rainbow-me/token-launcher": "npm:0.2.0"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-native-camera-roll/camera-roll": "npm:7.10.0"

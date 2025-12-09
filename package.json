@@ -106,7 +106,7 @@
     "@rainbow-me/delegation": "file:vendor/rainbow-me-delegation-1.0.0.tgz",
     "@rainbow-me/provider": "0.1.2",
     "@rainbow-me/react-native-animated-number": "0.0.2",
-    "@rainbow-me/swaps": "0.39.0",
+    "@rainbow-me/swaps": "file:vendor/rainbow-me-swaps-0.39.0.tgz",
     "@rainbow-me/token-launcher": "0.2.0",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-camera-roll/camera-roll": "7.10.0",
