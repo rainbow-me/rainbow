@@ -7,18 +7,27 @@ import {
   Quote,
   QuoteError,
 } from '@rainbow-me/swaps';
-import { encodeFunctionData, Address, erc20Abi, WalletClient, PublicClient } from 'viem';
+import { encodeFunctionData, Address, erc20Abi, WalletClient, PublicClient, createPublicClient, http } from 'viem';
 import { RapSwapActionParameters } from '@/raps/references';
 import { TransactionGasParamAmounts } from '@/entities/gas';
 import { metadataPOSTClient } from '@/graphql';
 import { assetNeedsUnlocking } from '@/raps/actions/unlock';
 import { ParsedAsset } from '@/__swaps__/types/assets';
 import { getProvider } from '@/handlers/web3';
-import { loadWallet } from '@/model/wallet';
+import { loadWallet, loadWalletViem } from '@/model/wallet';
 import { Signer } from '@ethersproject/abstract-signer';
 import { ATOMIC_SWAPS, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { encodeDelegateCalldata, executeBatchedTransaction, getCanDelegate, getIsDelegated } from '@rainbow-me/delegation';
+import {
+  encodeDelegateCalldata,
+  executeBatchedTransaction,
+  executeDelegation,
+  executeRevokeDelegation,
+  getCanDelegate,
+  getIsDelegated,
+} from '@rainbow-me/delegation';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export type DelegateExecutionResult = {
   hash: `0x${string}` | null;
@@ -152,4 +161,92 @@ export const estimateDelegatedApproveAndSwapGasLimit = async (quote: Quote | Cro
     return simulatedEstimate;
   }
   return null;
+};
+
+export const walletExecuteDelegate = async ({
+  accountAddress,
+  chainId,
+}: {
+  accountAddress: string;
+  chainId: ChainId;
+}): Promise<{ txHash: `0x${string}` | undefined }> => {
+  const networks = useBackendNetworksStore.getState().getDefaultChains();
+  const network = networks[chainId];
+
+  if (!network?.rpcUrls?.default?.http?.[0]) {
+    throw new Error(`No RPC URL found for chain ${chainId}`);
+  }
+
+  const publicClient = createPublicClient({
+    chain: network,
+    transport: http(network.rpcUrls.default.http[0]),
+  });
+
+  const walletClient = await loadWalletViem({
+    address: accountAddress,
+    publicClient,
+  });
+
+  if (!walletClient) {
+    throw new Error('Failed to load wallet client');
+  }
+
+  const feeData = await publicClient.estimateFeesPerGas();
+  const gasLimit = 100000n;
+
+  const tx = await executeDelegation({
+    walletClient,
+    publicClient,
+    calldata: '0x',
+    transactionOptions: {
+      maxFeePerGas: feeData.maxFeePerGas ?? 0n,
+      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas ?? 0n,
+      gasLimit,
+    },
+  });
+
+  return { txHash: tx.txHash as `0x${string}` | undefined };
+};
+
+export const walletExecuteRevoke = async ({
+  accountAddress,
+  chainId,
+}: {
+  accountAddress: string;
+  chainId: ChainId;
+}): Promise<{ txHash: `0x${string}` | undefined }> => {
+  const networks = useBackendNetworksStore.getState().getDefaultChains();
+  const network = networks[chainId];
+
+  if (!network?.rpcUrls?.default?.http?.[0]) {
+    throw new Error(`No RPC URL found for chain ${chainId}`);
+  }
+
+  const publicClient = createPublicClient({
+    chain: network,
+    transport: http(network.rpcUrls.default.http[0]),
+  });
+
+  const walletClient = await loadWalletViem({
+    address: accountAddress,
+    publicClient,
+  });
+
+  if (!walletClient) {
+    throw new Error('Failed to load wallet client');
+  }
+
+  const feeData = await publicClient.estimateFeesPerGas();
+
+  const result = await executeRevokeDelegation({
+    walletClient,
+    publicClient,
+    transactionOptions: {
+      maxFeePerGas: feeData.maxFeePerGas ?? 0n,
+      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas ?? 0n,
+      gasLimit: null,
+    },
+  });
+
+  return { txHash: result.txHash as `0x${string}` | undefined };
 };
