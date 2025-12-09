@@ -93,6 +93,8 @@ export interface RainbowTransaction {
     fromChainId: ChainId;
     isBridge: boolean;
   };
+  /** For delegated transactions: 'type4' = new delegation + action, 'type2' = already delegated + action */
+  txType?: 'type4' | 'type2';
   symbol?: string | null;
   timestamp?: number; // for purchases
   title: string;
