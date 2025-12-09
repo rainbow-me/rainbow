@@ -566,7 +566,13 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
               keychainWallets.map(async wallet => {
                 // It is enough to just check the first address of each wallet.
                 const key = `${wallet.addresses[0].address}_${privateKeyKey}`;
-                if (!(await kc.has(key))) {
+                let hasKey = false;
+                try {
+                  hasKey = await kc.has(key);
+                } catch (e) {
+                  logger.debug(`[walletsStore]: Error checking keychain key existence for wallet ${wallet.id}: ${ensureError(e).message}`);
+                }
+                if (!hasKey) {
                   logger.debug(`[walletsStore]: No private key found in keychain for wallet ${wallet.id}, marking as damaged`);
                   healthyKeychain = false;
                   updatedWalletDamagedStates.set(wallet.id, true);
