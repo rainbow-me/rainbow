@@ -53,7 +53,7 @@ export const ImportOrWatchWalletSheet = () => {
     }
   };
 
-  const buttonDisabled = seedPhrase && !isSecretValid;
+  const buttonDisabled = !!seedPhrase && !isSecretValid;
 
   return (
     <>
@@ -110,7 +110,7 @@ export const ImportOrWatchWalletSheet = () => {
                 disabled={buttonDisabled}
                 onPress={
                   seedPhrase
-                    ? handlePressImportButton
+                    ? () => handlePressImportButton({ type })
                     : () => Clipboard.getString().then((text: string) => handleSetSeedPhrase(text.trim()))
                 }
                 overflowMargin={50}

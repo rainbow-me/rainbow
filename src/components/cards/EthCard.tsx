@@ -54,7 +54,7 @@ export const EthCard = () => {
   const cardType = 'stretch';
 
   const handlePressBuy = useCallback(
-    (e: ButtonPressAnimationTouchEvent) => {
+    (e?: ButtonPressAnimationTouchEvent) => {
       if (e && 'stopPropagation' in e) {
         e.stopPropagation();
       }

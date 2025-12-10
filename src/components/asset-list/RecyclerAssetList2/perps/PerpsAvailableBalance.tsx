@@ -22,7 +22,7 @@ export const PerpsAvailableBalance = memo(function PerpsAvailableBalance({ balan
 
   return (
     <Box paddingHorizontal="20px">
-      <ButtonPressAnimation onPress={navigateToPerps} scaleTo={0.96} style={{ marginLeft: -4 }}>
+      <ButtonPressAnimation onPress={() => navigateToPerps()} scaleTo={0.96} style={{ marginLeft: -4 }}>
         <GradientBorderView
           borderGradientColors={[borderColor, 'transparent']}
           start={{ x: 0.2, y: 0 }}

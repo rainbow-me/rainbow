@@ -5,9 +5,9 @@ type OnPressEvent = Readonly<{
   locationY: CodegenTypes.Double;
 }>;
 
-type TransformOrigin = Readonly<{
-  x: CodegenTypes.Double;
-  y: CodegenTypes.Double;
+type OnCancelEvent = Readonly<{
+  close: boolean;
+  state: CodegenTypes.Int32;
 }>;
 
 export interface NativeButtonProps extends ViewProps {
@@ -22,12 +22,12 @@ export interface NativeButtonProps extends ViewProps {
   shouldLongPressHoldPress?: CodegenTypes.WithDefault<boolean, false>;
   throttle?: CodegenTypes.WithDefault<boolean, false>;
   useLateHaptic?: CodegenTypes.WithDefault<boolean, true>;
-  transformOrigin: TransformOrigin;
-  onCancel?: CodegenTypes.DirectEventHandler<undefined>;
-  onLongPress?: CodegenTypes.DirectEventHandler<undefined>;
-  onLongPressEnded?: CodegenTypes.DirectEventHandler<undefined>;
+  transformOrigin: CodegenTypes.Double[];
+  onCancel?: CodegenTypes.BubblingEventHandler<OnCancelEvent>;
+  onLongPress?: CodegenTypes.BubblingEventHandler<undefined>;
+  onLongPressEnded?: CodegenTypes.BubblingEventHandler<undefined>;
   onPress?: CodegenTypes.BubblingEventHandler<OnPressEvent>;
-  onPressStart?: CodegenTypes.DirectEventHandler<undefined>;
+  onPressStart?: CodegenTypes.BubblingEventHandler<undefined>;
 }
 
 export default codegenNativeComponent<NativeButtonProps>('Button');

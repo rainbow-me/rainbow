@@ -190,12 +190,8 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
     _hapticType = RCTNSStringFromString(newButtonProps.hapticType);
   }
 
-  if (newButtonProps.transformOrigin.x != oldButtonProps.transformOrigin.x ||
-      newButtonProps.transformOrigin.y != oldButtonProps.transformOrigin.y) {
-    CGPoint origin = CGPointMake(newButtonProps.transformOrigin.x, newButtonProps.transformOrigin.y);
-    if (origin.x == 0.0 && origin.y == 0.0) {
-      origin = CGPointMake(0.5, 0.5);
-    }
+  if (newButtonProps.transformOrigin != oldButtonProps.transformOrigin) {
+    CGPoint origin = CGPointMake(newButtonProps.transformOrigin[0], newButtonProps.transformOrigin[1]);
     SetAnchorPoint(self, origin);
   }
 
@@ -244,13 +240,16 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
   std::dynamic_pointer_cast<const ButtonEventEmitter>(_eventEmitter)->onLongPressEnded({});
 }
 
-- (void)sendCancel
+- (void)sendCancelWithState:(UIGestureRecognizerState)state close:(BOOL)close
 {
   if (!_eventEmitter) {
     return;
   }
 
-  std::dynamic_pointer_cast<const ButtonEventEmitter>(_eventEmitter)->onCancel({});
+  std::dynamic_pointer_cast<const ButtonEventEmitter>(_eventEmitter)->onCancel({
+      .state = static_cast<int>(state),
+      .close = close,
+  });
 }
 
 #pragma mark - Touch handling
@@ -417,10 +416,11 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
   if (_invalidated) {
     return;
   }
-
+    
   UITouch *touch = touches.anyObject;
   if (touch && _hasTapLocation) {
-    [self sendCancel];
+    CGPoint location = [touch locationInView:self];
+    [self sendCancelWithState:_longPress.state close:[self isClose:location to:_tapLocation]];
   }
 
   if (!_shouldLongPressHoldPress) {
@@ -431,7 +431,7 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
   if (_throttle) {
     _blocked = YES;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-      _blocked = NO;
+      self->_blocked = NO;
     });
   }
 }

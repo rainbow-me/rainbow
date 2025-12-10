@@ -23,7 +23,7 @@ export const PerpsHeader = React.memo(function PerpsHeader({ isDarkMode }: { isD
   }, [accountColor, isDarkMode]);
 
   return (
-    <ButtonPressAnimation onPress={navigateToPerps} scaleTo={1.05} testID={'perps-list-header'}>
+    <ButtonPressAnimation onPress={() => navigateToPerps()} scaleTo={1.05} testID={'perps-list-header'}>
       <Box height={{ custom: HEIGHT }} paddingHorizontal="20px" justifyContent="center">
         <Inline alignHorizontal="justify" alignVertical="center">
           <Inline horizontalSpace={'8px'} alignVertical="center">

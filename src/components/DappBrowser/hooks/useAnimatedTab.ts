@@ -270,7 +270,9 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
       );
 
     const wasCloseButtonPressed = gestureScale.value === 1 && gestureX.value < 0;
-    const zIndex = scaleWeighting * (isPendingActiveTab || gestureScale.value > 1 ? 9999 : 1) + (wasCloseButtonPressed ? 9999 : 0);
+    const zIndex = Math.round(
+      scaleWeighting * (isPendingActiveTab || gestureScale.value > 1 ? 9999 : 1) + (wasCloseButtonPressed ? 9999 : 0)
+    );
 
     return { zIndex };
   });

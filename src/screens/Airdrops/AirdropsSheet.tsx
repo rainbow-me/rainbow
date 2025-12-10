@@ -42,7 +42,7 @@ export interface AirdropClaimable {
   hasZeroValue: boolean;
   icon: string;
   name: string;
-  onPress: (claimable: RainbowClaimable) => void;
+  onPress: () => void;
   symbol: string;
   uniqueId: string;
 }

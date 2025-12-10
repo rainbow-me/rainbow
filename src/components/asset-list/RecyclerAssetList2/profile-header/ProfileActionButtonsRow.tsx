@@ -1,4 +1,4 @@
-import { ButtonPressAnimation } from '@/components/animations';
+import { ButtonPressAnimation, ButtonPressAnimationProps } from '@/components/animations';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
 import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
@@ -15,7 +15,6 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as React from 'react';
-import { PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { useRecoilState } from 'recoil';
 
@@ -86,12 +85,12 @@ function ActionButton({
 }: {
   children: string;
   icon: string;
-  onPress?: PressableProps['onPress'];
+  onPress?: ButtonPressAnimationProps['onPress'];
   testID?: string;
 }) {
   const { colorMode } = useColorMode();
   return (
-    <ButtonPressAnimation onPress={onPress} scale={0.8} testID={testID}>
+    <ButtonPressAnimation onPress={onPress ?? undefined} scaleTo={0.8} testID={testID}>
       <Stack alignHorizontal="center" space="10px">
         <Box
           alignItems="center"

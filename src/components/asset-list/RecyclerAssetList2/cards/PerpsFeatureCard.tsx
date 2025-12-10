@@ -49,7 +49,7 @@ export const PerpsFeatureCard = memo(function PerpsFeatureCard({
   return (
     <AccentColorProvider color={accentColor}>
       <View style={styles.container}>
-        <ButtonPressAnimation onPress={navigateToPerps} scaleTo={0.96}>
+        <ButtonPressAnimation onPress={() => navigateToPerps()} scaleTo={0.96}>
           <ConditionalWrap
             condition={isDarkMode}
             wrap={children => (

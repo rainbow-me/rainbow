@@ -196,10 +196,10 @@ function getStyles({
       width,
     },
     container: {
-      alignItems: 'center',
+      alignItems: 'center' as const,
       height,
-      justifyContent: 'center',
-      position: 'relative',
+      justifyContent: 'center' as const,
+      position: 'relative' as const,
       width,
     },
     innerContainer: {

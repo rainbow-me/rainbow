@@ -1,33 +1,13 @@
 import React, { useMemo } from 'react';
 import { View, ViewStyle } from 'react-native';
-import { BaseButtonAnimationProps, TransformOrigin } from './types';
+import type { ButtonProps, TransformOrigin } from './types';
 import NativeButtonNativeComponent, { NativeButtonProps } from '@/codegen/specs/NativeButtonNativeComponent';
 import styled from '@/styled-thing';
-import { HapticFeedback, HapticFeedbackType } from '@/utils/haptics';
+import { HapticFeedback } from '@/utils/haptics';
 
-interface Props extends BaseButtonAnimationProps {
-  children?: React.ReactNode;
-  compensateForTransformOrigin?: boolean;
-  enableHapticFeedback?: boolean;
-  hapticType?: HapticFeedbackType;
-  onCancel?: () => void;
-  onLongPressEnded?: () => void;
-  onPressStart?: () => void;
-  pressOutDuration?: number;
-  shouldLongPressHoldPress?: boolean;
-  throttle?: boolean;
-  useLateHaptic?: boolean;
-}
-
-type NormalizedTransformOrigin = { x: number; y: number };
-
-const ButtonWithTransformOrigin = styled(NativeButtonNativeComponent)(({
-  transformOrigin,
-}: {
-  transformOrigin?: NormalizedTransformOrigin;
-}) => {
+const ButtonWithTransformOrigin = styled(NativeButtonNativeComponent)(({ transformOrigin }: { transformOrigin?: TransformOrigin }) => {
   if (!transformOrigin) return {};
-  const { x, y } = transformOrigin;
+  const [x, y] = transformOrigin;
   // 👇️ Here we want to set the button's top / left
   // properties (relative to the parent wrapper view) to
   // values opposite of the provided transformOrigin.
@@ -45,26 +25,26 @@ const ButtonWithTransformOrigin = styled(NativeButtonNativeComponent)(({
   return styles;
 });
 
-export function normalizeTransformOrigin(transformOrigin: TransformOrigin | string | undefined): NormalizedTransformOrigin {
+export function normalizeTransformOrigin(transformOrigin: TransformOrigin | string | undefined): TransformOrigin {
   if (Array.isArray(transformOrigin) && transformOrigin.length === 2) {
-    return { x: transformOrigin[0], y: transformOrigin[1] };
+    return transformOrigin;
   }
 
   switch (transformOrigin) {
     case 'bottom':
-      return { x: 0.5, y: 1 };
+      return [0.5, 1];
     case 'left':
-      return { x: 0, y: 0.5 };
+      return [0, 0.5];
     case 'right':
-      return { x: 1, y: 0.5 };
+      return [1, 0.5];
     case 'top':
-      return { x: 0.5, y: 1 };
+      return [0.5, 1];
     default:
-      return { x: 0.5, y: 0.5 };
+      return [0.5, 0.5];
   }
 }
 
-const NativeButton = React.forwardRef<React.ElementRef<typeof NativeButtonNativeComponent>, Props>(
+const NativeButton = React.forwardRef<React.ElementRef<typeof NativeButtonNativeComponent>, ButtonProps>(
   (
     {
       children,
@@ -79,7 +59,7 @@ const NativeButton = React.forwardRef<React.ElementRef<typeof NativeButtonNative
       testID,
       onPress,
       ...rest
-    }: Props,
+    }: ButtonProps,
     ref
   ) => {
     const normalizedTransformOrigin = useMemo(() => normalizeTransformOrigin(transformOrigin), [transformOrigin]);

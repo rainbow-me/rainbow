@@ -144,7 +144,7 @@ const Description = memo(function Description({ text }: { text: string }) {
         {showFullDescription ? text : truncatedText}
       </Text>
       {!showFullDescription && (
-        <ButtonPressAnimation scaleTo={0.96} hapticTrigger="tap-end" onPress={() => setShowFullDescription(prev => !prev)}>
+        <ButtonPressAnimation scaleTo={0.96} enableHapticFeedback onPress={() => setShowFullDescription(prev => !prev)}>
           <Row highlighted={true}>
             <Bleed vertical="4px" horizontal="2px">
               <Box width="full" flexDirection="row" alignItems="center" gap={8}>
