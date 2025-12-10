@@ -47,7 +47,7 @@ import { sanitizeTypedData } from '@/utils/signingUtils';
 import { executeFn, ExecuteFnParams, Screen } from '@/state/performance/performance';
 import { Network } from '@/state/backendNetworks/types';
 import { GetOptions, SetOptions } from 'react-native-keychain';
-import { getWalletWithAccount, setWalletDamaged } from '@/state/wallets/walletsStore';
+import { getIsDamagedWallet, getWalletWithAccount, setWalletDamaged } from '@/state/wallets/walletsStore';
 import Routes from '@/navigation/routesNames';
 import Navigation from '@/navigation/Navigation';
 
@@ -1363,12 +1363,9 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (id: RainbowWallet['id']):
   try {
     let seedPhrase = null;
     // First we need to check if that key already exists
-    let keyFound = true;
-    try {
-      keyFound = await keychain.hasKey(`${id}_${seedPhraseKey}`);
-    } catch (ex) {
-      // Can fail if passcode is removed, in that case we can skip migration and `getSeedPhrase` will handle the error.
-    }
+    // If the wallet is damaged, assume it is already migrated, since we can't check if it was.
+    const keyFound = getIsDamagedWallet(id) ? true : await keychain.hasKey(`${id}_${seedPhraseKey}`);
+
     if (!keyFound) {
       logger.debug('[wallet]: key not found, should need migration', {}, DebugContext.wallet);
       // if it doesn't we might have a migration pending

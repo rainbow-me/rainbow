@@ -27,7 +27,7 @@ import {
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
 import { isLowerCaseMatch, time, watchingAlert } from '@/utils';
-import { addressKey, didShowWalletErrorSheetKey, privateKeyKey } from '@/utils/keychainConstants';
+import { didShowWalletErrorSheetKey, privateKeyKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
 import { shallowEqual } from '@/worklets/comparisons';
 import { captureMessage } from '@sentry/react-native';
@@ -95,7 +95,7 @@ interface WalletsState {
   checkKeychainIntegrity: () => Promise<void>;
   setWalletDamaged: (walletId: string, damaged: boolean) => void;
 
-  getIsDamagedWallet: () => boolean;
+  getIsDamagedWallet: (walletId?: string) => boolean;
   getIsReadOnlyWallet: () => boolean;
   getIsHardwareWallet: () => boolean;
   getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
@@ -107,7 +107,10 @@ const INITIAL_ADDRESS = '' as Address;
 
 export const useWalletsStore = createRainbowStore<WalletsState>(
   (set, get) => ({
-    getIsDamagedWallet: () => !!get().selected?.damaged,
+    getIsDamagedWallet: (walletId?: string) => {
+      const { wallets, selected } = get();
+      return !!wallets[walletId ?? selected?.id ?? '']?.damaged;
+    },
     getIsReadOnlyWallet: () => get().selected?.type === WalletTypes.readOnly,
     getIsHardwareWallet: () => !!get().selected?.deviceId,
 
