@@ -61,6 +61,7 @@ function PrivateColumn({ space, width, alignVertical, children, style }: Private
       paddingRight={space}
       width={width !== 'content' ? width : undefined}
       style={style}
+      collapsable={false}
     >
       {children}
     </Box>

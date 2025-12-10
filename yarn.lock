@@ -6128,13 +6128,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-masked-view/masked-view@rainbow-me/masked-view#df59db7f504838ce633d2ba006ab82717ded1985":
-  version: 0.3.1
-  resolution: "@react-native-masked-view/masked-view@https://github.com/rainbow-me/masked-view.git#commit=df59db7f504838ce633d2ba006ab82717ded1985"
+"@react-native-masked-view/masked-view@rainbow-me/masked-view#a749b9e21ca613dfda15996c939aad094d4d284b":
+  version: 0.4.0
+  resolution: "@react-native-masked-view/masked-view@https://github.com/rainbow-me/masked-view.git#commit=a749b9e21ca613dfda15996c939aad094d4d284b"
   peerDependencies:
     react: ">=18"
     react-native: ">=0.71"
-  checksum: 10c0/e499a004df15b01386ee78df44355d5e1876fa9fef2c525be3197a01f2f3310dd83ad08a2d7c48c2834ec85a163e4691039da73115d1c4509bb6f823f95bb757
+  checksum: 10c0/e3f9ce35b0bc9de707564b570b71808b5ecdc38bb485ceae9f13408fdf66b71cf0e623d062cd507c6c2e341ebf080078aff90339e2f12011c8c2e965a26038a6
   languageName: node
   linkType: hard
 
@@ -9004,7 +9004,7 @@ __metadata:
     "@react-native-firebase/app": "npm:23.5.0"
     "@react-native-firebase/messaging": "npm:23.5.0"
     "@react-native-firebase/remote-config": "npm:23.5.0"
-    "@react-native-masked-view/masked-view": "rainbow-me/masked-view#df59db7f504838ce633d2ba006ab82717ded1985"
+    "@react-native-masked-view/masked-view": "rainbow-me/masked-view#a749b9e21ca613dfda15996c939aad094d4d284b"
     "@react-native-menu/menu": "npm:2.0.0"
     "@react-native/babel-preset": "npm:0.81.5"
     "@react-native/metro-config": "npm:0.81.5"

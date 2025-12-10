@@ -359,6 +359,34 @@ PODS:
   - Permission-Notifications (3.10.1):
     - RNPermissions
   - PromisesObjC (2.4.0)
+  - rainbow-codegen (1.0.0):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - Rainbow-Internals (0.1.0):
     - React-Core
   - RCT-Folly (2024.11.18.00):
@@ -3335,7 +3363,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNCMaskedView (0.3.1):
+  - RNCMaskedView (0.4.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3936,6 +3964,7 @@ DEPENDENCIES:
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID`)
   - Permission-Notifications (from `../node_modules/react-native-permissions/ios/Notifications`)
+  - rainbow-codegen (from `../src/codegen`)
   - Rainbow-Internals (from `./Internals`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTDeprecation (from `../node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)
@@ -4171,6 +4200,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-permissions/ios/FaceID"
   Permission-Notifications:
     :path: "../node_modules/react-native-permissions/ios/Notifications"
+  rainbow-codegen:
+    :path: "../src/codegen"
   Rainbow-Internals:
     :path: "./Internals"
   RCT-Folly:
@@ -4492,6 +4523,7 @@ SPEC CHECKSUMS:
   Permission-FaceID: 57f30c981224753654df9350828dfbfc75dc5e83
   Permission-Notifications: e254bc5abf9c33a6ac6b9f68f4c406d5bf7ab46e
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
+  rainbow-codegen: ee6b5b96e5deac80c6c65d3f663428b7db1f1b1a
   Rainbow-Internals: ebb58dacc43c3061546db8d1fc04939ff4af194d
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
   RCTDeprecation: 5eb1d2eeff5fb91151e8a8eef45b6c7658b6c897
@@ -4595,7 +4627,7 @@ SPEC CHECKSUMS:
   RNBootSplash: 258842208ec34cd3b1596110f9f8e7193ce9e41d
   RNCAsyncStorage: 6161dbb167973ab36a7800c5deb506ed854f2c33
   RNCClipboard: adba6334687b7fb2c37760e26dedd550b4846a72
-  RNCMaskedView: 3870b6feb3c87dda835bbbe8f624fbc57ecdc0f0
+  RNCMaskedView: c043be2a699ed709e66c2be8fea61d69c5008e03
   RNDeviceInfo: c78d3d9ae81aed962fa0cc7c455e970f35a44a47
   RNFastImage: b4741be7fc96457586f610a1a454817518376819
   RNFBApp: 255fa19a91d6c1309e021ee75d5d209754e5961b

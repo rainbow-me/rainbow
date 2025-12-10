@@ -39,8 +39,6 @@
 		8057C859592B6EE50724B0ED /* libPods-SelectTokenIntent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1DCD9F6831578F1F6ACDBA0 /* libPods-SelectTokenIntent.a */; };
 		A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277D9E23CBD1910042BAF4 /* Extensions.swift */; };
 		A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277DA223CFE85F0042BAF4 /* Theme.swift */; };
-		A4D04BA923D12F99008C1DEC /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BA823D12F99008C1DEC /* Button.swift */; };
-		A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */; };
 		AA0B1CBB2B00C5E100EAF77D /* SF-Mono-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1CB82B00C5E100EAF77D /* SF-Mono-Semibold.otf */; };
 		AA0B1CBD2B00C5E100EAF77D /* SF-Mono-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1CB92B00C5E100EAF77D /* SF-Mono-Bold.otf */; };
 		AA0B1CBF2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1CBA2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf */; };
@@ -289,8 +287,6 @@
 		A1DCD9F6831578F1F6ACDBA0 /* libPods-SelectTokenIntent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SelectTokenIntent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4277D9E23CBD1910042BAF4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		A4277DA223CFE85F0042BAF4 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
-		A4D04BA823D12F99008C1DEC /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
-		A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ButtonManager.m; sourceTree = "<group>"; };
 		AA0B1CB82B00C5E100EAF77D /* SF-Mono-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Mono-Semibold.otf"; path = "../src/assets/fonts/SF-Mono-Semibold.otf"; sourceTree = "<group>"; };
 		AA0B1CB92B00C5E100EAF77D /* SF-Mono-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Mono-Bold.otf"; path = "../src/assets/fonts/SF-Mono-Bold.otf"; sourceTree = "<group>"; };
 		AA0B1CBA2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Black.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Black.otf"; sourceTree = "<group>"; };
@@ -475,7 +471,6 @@
 				15E531D6242B28F800797B89 /* Animations */,
 				157155042418734C009B698B /* RainbowDebug.entitlements */,
 				157155032418733F009B698B /* RainbowRelease.entitlements */,
-				A4D04BA723D12F27008C1DEC /* Button */,
 				3C379D5D20FD1F92009AF81F /* Rainbow.entitlements */,
 				152643462B9AD97E004AC9AA /* InjectedJSBundle.js */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -695,15 +690,6 @@
 				C9B378B82C515A860085E5D0 /* ShareWithRainbow.appex */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		A4D04BA723D12F27008C1DEC /* Button */ = {
-			isa = PBXGroup;
-			children = (
-				A4D04BA823D12F99008C1DEC /* Button.swift */,
-				A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */,
-			);
-			name = Button;
 			sourceTree = "<group>";
 		};
 		C16DCF61272BA6EF00FF5C78 /* PriceWidget */ = {
@@ -1514,7 +1500,6 @@ Upload Debug Symbols to Sentry */ = {
 				C18FCD3B273C64CF0079CE28 /* UIImage.swift in Sources */,
 				C97EAD8D2BD6C6DF00322D53 /* RCTDeviceUUID.m in Sources */,
 				A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */,
-				A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */,
 				AAE999D12E41E4670072AFD5 /* RainbowSplashScreen.m in Sources */,
 				C18FCD3C273C64D10079CE28 /* TokenDetails.swift in Sources */,
 				C179298527499A5B00044684 /* Constants.swift in Sources */,
@@ -1523,7 +1508,6 @@ Upload Debug Symbols to Sentry */ = {
 				66A1FEB624AB641100C3F539 /* RNCMScreen.m in Sources */,
 				C18FCD3F273C64D80079CE28 /* CoinGeckoToken.swift in Sources */,
 				C11640E8274DC10B00C9120A /* UIColor.swift in Sources */,
-				A4D04BA923D12F99008C1DEC /* Button.swift in Sources */,
 				AAE999CD2E41DD390072AFD5 /* RainbowSplashScreen.swift in Sources */,
 				66A1FEBC24ACBBE600C3F539 /* RNCMPortal.m in Sources */,
 				C18FCD43273C64E40079CE28 /* PriceDataProvider.swift in Sources */,
