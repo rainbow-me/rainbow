@@ -1,10 +1,11 @@
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { BuilderConfig } from '@polymarket/builder-signing-sdk';
 import { PLATFORM_API_KEY } from 'react-native-dotenv';
+import { Address } from 'viem';
 
-export const POLYGON_USDC_ADDRESS = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
-export const POLYMARKET_CTF_ADDRESS = '0x4d97dcd97ec945f40cf65f87097ace5ea0476045';
-export const POLYMARKET_NEG_RISK_ADAPTER_ADDRESS = '0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296';
+export const POLYGON_USDC_ADDRESS: Address = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
+export const POLYMARKET_CTF_ADDRESS: Address = '0x4d97dcd97ec945f40cf65f87097ace5ea0476045';
+export const POLYMARKET_NEG_RISK_ADAPTER_ADDRESS: Address = '0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296';
 
 const RAINBOW_POLYMARKET_PROXY_URL = 'https://platform.p.rainbow.me/v1/polymarket';
 
@@ -171,3 +172,5 @@ export const CATEGORIES = {
 } as const;
 
 export type Category = (typeof CATEGORIES)[keyof typeof CATEGORIES];
+
+export const USD_FEE_PER_TOKEN = '0.01';

@@ -6,7 +6,7 @@ import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { usePolymarketProxyAddress } from '@/features/polymarket/stores/derived/usePolymarketProxyAddress';
 import { POLYMARKET_RELAYER_PROXY_URL, BUILDER_CONFIG } from '@/features/polymarket/constants';
-import { loadWallet } from '@/features/polymarket/utils/loadWallet';
+import { loadViemWallet } from '@/features/polymarket/utils/loadViemWallet';
 
 export const usePolymarketRelayClient = createDerivedStore(
   $ => {
@@ -17,7 +17,7 @@ export const usePolymarketRelayClient = createDerivedStore(
       address,
       proxyAddress,
       client: (async () => {
-        const wallet = await loadWallet(address, getProvider({ chainId: ChainId.polygon }));
+        const wallet = await loadViemWallet(address, getProvider({ chainId: ChainId.polygon }));
         if (!wallet) {
           logger.error(new RainbowError('[PolymarketRelayClient] Failed to load wallet for signing'));
           return null;

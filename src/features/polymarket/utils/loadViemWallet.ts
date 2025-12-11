@@ -10,8 +10,7 @@ import * as kc from '@/keychain';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { Provider } from '@ethersproject/providers';
 
-export async function loadWallet(address: Hex, provider: Provider) {
-  // checks if the address is a hardware wallet for proper handling
+export async function loadViemWallet(address: Hex, provider: Provider) {
   const selectedWallet = getWalletWithAccount(address);
   const isHardwareWallet = selectedWallet?.type === walletTypes.bluetooth;
 

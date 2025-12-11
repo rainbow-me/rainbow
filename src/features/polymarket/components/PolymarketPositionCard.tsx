@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { Bleed, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { PolymarketPosition } from '@/features/polymarket/types';
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import ImgixImage from '@/components/images/ImgixImage';
 import { toPercentageWorklet } from '@/safe-math/SafeMath';
@@ -17,18 +17,10 @@ import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
-import { redeemPosition } from '@/features/polymarket/utils/redeemPosition';
-import { logger, RainbowError } from '@/logger';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
-
-const ActionButtonType = {
-  CLAIM: 'claim',
-  BURN: 'burn',
-  CASH_OUT: 'cash_out',
-} as const;
+import { PositionAction, getPositionAction } from '@/features/polymarket/utils/getPositionAction';
 
 export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   position,
@@ -67,62 +59,28 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   const redeemable = position.redeemable;
   const isWin = redeemable && position.size === position.currentValue;
 
-  const actionButtonType = useMemo(() => {
-    if (redeemable) {
-      if (isWin) return ActionButtonType.CLAIM;
-      return ActionButtonType.BURN;
-    }
-    return ActionButtonType.CASH_OUT;
-  }, [redeemable, isWin]);
+  const actionButtonType = useMemo(() => getPositionAction(position), [position]);
 
   const actionButtonLabel = useMemo(() => {
     switch (actionButtonType) {
-      case ActionButtonType.CLAIM:
+      case PositionAction.CLAIM:
         return 'Claim';
-      case ActionButtonType.BURN:
+      case PositionAction.BURN:
         return 'Burn';
-      case ActionButtonType.CASH_OUT:
+      case PositionAction.CASH_OUT:
         return 'Cash Out';
     }
   }, [actionButtonType]);
 
-  const actionButtonOnPress = useMemo(() => {
-    switch (actionButtonType) {
-      case ActionButtonType.CLAIM:
-        return async (e: ButtonPressAnimationTouchEvent) => {
-          if (e && 'stopPropagation' in e) {
-            e.stopPropagation();
-          }
-          try {
-            await redeemPosition(position);
-            await refetchPolymarketStores();
-            Navigation.goBack();
-          } catch (e) {
-            logger.error(new RainbowError('[PolymarketPositionCard] Error redeeming position', e));
-          }
-        };
-      case ActionButtonType.BURN:
-        return async (e: ButtonPressAnimationTouchEvent) => {
-          if (e && 'stopPropagation' in e) {
-            e.stopPropagation();
-          }
-          try {
-            await redeemPosition(position);
-            await refetchPolymarketStores();
-            Navigation.goBack();
-          } catch (e) {
-            logger.error(new RainbowError('[PolymarketPositionCard] Error redeeming position', e));
-          }
-        };
-      case ActionButtonType.CASH_OUT:
-        return (e: ButtonPressAnimationTouchEvent) => {
-          if (e && 'stopPropagation' in e) {
-            e.stopPropagation();
-          }
-          Navigation.handleAction(Routes.POLYMARKET_MANAGE_POSITION_SHEET, { position });
-        };
-    }
-  }, [actionButtonType, position]);
+  const onPressActionButton = useCallback(
+    (e: ButtonPressAnimationTouchEvent) => {
+      if (e && 'stopPropagation' in e) {
+        e.stopPropagation();
+      }
+      Navigation.handleAction(Routes.POLYMARKET_MANAGE_POSITION_SHEET, { position });
+    },
+    [position]
+  );
 
   const outcomeTokenId = useMemo(() => {
     const outcomeIndex = position.outcomes.indexOf(position.outcome);
@@ -279,7 +237,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
             </Box>
           </Box>
           {showActionButton && (
-            <ButtonPressAnimation onPress={actionButtonOnPress} scaleTo={0.975}>
+            <ButtonPressAnimation onPress={onPressActionButton} scaleTo={0.975}>
               <Box
                 width="full"
                 height={40}

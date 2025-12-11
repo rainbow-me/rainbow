@@ -1,4 +1,4 @@
-import { Box, Text, TextIcon } from '@/design-system';
+import { Bleed, Box, Text, TextIcon } from '@/design-system';
 import { memo } from 'react';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
@@ -41,23 +41,25 @@ const MultiMarketEvent = memo(function MultiMarketEvent({ markets }: { markets: 
 
   return (
     <>
-      <Box gap={8}>
-        {activeMarkets?.map(market => (
-          <ButtonPressAnimation key={market.id} onPress={() => Navigation.handleAction(Routes.POLYMARKET_MARKET_SHEET, { market })}>
-            <MarketRow
-              accentColor={market.color}
-              priceChange={market.oneDayPriceChange}
-              image={uniqueMarketImages ? market.icon : undefined}
-              title={market.groupItemTitle}
-              volume={market.volume}
-              tokenId={market.clobTokenIds[0]}
-              // TODO: check that this cannot be undefined
-              price={String(market.lastTradePrice)}
-              minTickSize={market.orderPriceMinTickSize}
-            />
-          </ButtonPressAnimation>
-        ))}
-      </Box>
+      <Bleed right={'8px'}>
+        <Box gap={8}>
+          {activeMarkets?.map(market => (
+            <ButtonPressAnimation key={market.id} onPress={() => Navigation.handleAction(Routes.POLYMARKET_MARKET_SHEET, { market })}>
+              <MarketRow
+                accentColor={market.color}
+                priceChange={market.oneDayPriceChange}
+                image={uniqueMarketImages ? market.icon : undefined}
+                title={market.groupItemTitle}
+                volume={market.volume}
+                tokenId={market.clobTokenIds[0]}
+                // TODO: check that this cannot be undefined
+                price={String(market.lastTradePrice)}
+                minTickSize={market.orderPriceMinTickSize}
+              />
+            </ButtonPressAnimation>
+          ))}
+        </Box>
+      </Bleed>
       {resolvedMarkets?.length > 0 && <ResolvedMarketsSection markets={resolvedMarkets} uniqueMarketImages={uniqueMarketImages} />}
     </>
   );

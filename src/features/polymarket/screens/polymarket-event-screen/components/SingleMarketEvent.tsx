@@ -30,7 +30,7 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
           <ButtonPressAnimation
             key={outcome}
             scaleTo={0.96}
-            onPress={() => Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, { market, outcome })}
+            onPress={() => Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, { market, outcomeIndex: index })}
           >
             <MarketRow
               accentColor={outcomeColor}

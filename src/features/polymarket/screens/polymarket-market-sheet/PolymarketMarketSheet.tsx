@@ -27,7 +27,7 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
     <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? '#000000' : '#FFFFFF' }}>
       <LinearGradient
         colors={[opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)]}
-        style={StyleSheet.absoluteFillObject}
+        style={StyleSheet.absoluteFill}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
       />
@@ -38,42 +38,35 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
           <MarketChart />
         </Box>
         <Box paddingTop={'24px'} gap={12}>
-          <ButtonPressAnimation
-            onPress={() => Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, { market, outcome: market.outcomes[0] })}
-          >
-            <Box
-              height={56}
-              backgroundColor={opacityWorklet(green, 0.16)}
-              borderRadius={28}
-              borderWidth={2.5}
-              borderColor={{ custom: opacityWorklet(green, 0.06) }}
-              paddingHorizontal="24px"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Text size="22pt" weight="heavy" color={'green'}>
-                {'Buy Yes'}
-              </Text>
-            </Box>
-          </ButtonPressAnimation>
-          <ButtonPressAnimation
-            onPress={() => Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, { market, outcome: market.outcomes[1] })}
-          >
-            <Box
-              height={56}
-              backgroundColor={opacityWorklet(red, 0.16)}
-              borderRadius={28}
-              borderWidth={2.5}
-              borderColor={{ custom: opacityWorklet(red, 0.06) }}
-              paddingHorizontal="24px"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Text size="22pt" weight="heavy" color={'red'}>
-                {'Buy No'}
-              </Text>
-            </Box>
-          </ButtonPressAnimation>
+          {market.outcomes.map((outcome, index) => {
+            const accentColor = index === 0 ? green : red;
+            return (
+              <ButtonPressAnimation
+                key={outcome}
+                onPress={() =>
+                  Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, {
+                    market,
+                    outcomeIndex: index,
+                  })
+                }
+              >
+                <Box
+                  height={56}
+                  backgroundColor={opacityWorklet(accentColor, 0.16)}
+                  borderRadius={28}
+                  borderWidth={2.5}
+                  borderColor={{ custom: opacityWorklet(accentColor, 0.06) }}
+                  paddingHorizontal="24px"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <Text size="22pt" weight="heavy" color={{ custom: accentColor }}>
+                    {`Buy ${outcome}`}
+                  </Text>
+                </Box>
+              </ButtonPressAnimation>
+            );
+          })}
         </Box>
       </Box>
     </PanelSheet>
