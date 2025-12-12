@@ -4,15 +4,13 @@ import { ChainId } from '@rainbow-me/swaps';
 import { getProvider } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { usePolymarketProxyAddress } from '@/features/polymarket/stores/derived/usePolymarketProxyAddress';
-import { POLYGON_USDC_ADDRESS, USD_FEE_PER_TOKEN } from '../constants';
+import { POLYGON_USDC_ADDRESS, RAINBOW_POLYMARKET_FEE_ADDRESS, USD_FEE_PER_TOKEN } from '../constants';
 import { mulWorklet } from '@/safe-math/SafeMath';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
 import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/usePolymarketClobClient';
+import { GELATO_API_KEY } from 'react-native-dotenv';
 
-const GELATO_API_KEY = '';
-// TODO: Move to constants and configure proper recipient
-const RAINBOW_POLYMARKET_FEE_ADDRESS = '0x83e3057f7b619ffe340bb8157356e3eb4aecc40f';
 const POLLING_INTERVAL = time.seconds(1);
 const ZERO_BN = 0n;
 

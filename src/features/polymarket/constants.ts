@@ -6,6 +6,7 @@ import { Address } from 'viem';
 export const POLYGON_USDC_ADDRESS: Address = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
 export const POLYMARKET_CTF_ADDRESS: Address = '0x4d97dcd97ec945f40cf65f87097ace5ea0476045';
 export const POLYMARKET_NEG_RISK_ADAPTER_ADDRESS: Address = '0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296';
+export const RAINBOW_POLYMARKET_FEE_ADDRESS: Address = '0x83e3057f7b619ffe340bb8157356e3eb4aecc40f';
 
 const RAINBOW_POLYMARKET_PROXY_URL = 'https://platform.p.rainbow.me/v1/polymarket';
 
@@ -36,7 +37,6 @@ export const POLYMARKET_TOKEN_ID_SUFFIX = 'polymarket';
 export const POLYMARKET_SPORTS_MARKET_TYPE = {
   SPREADS: 'spreads',
   TOTALS: 'totals',
-  TEAM_TOTALS: 'team_totals',
   MONEYLINE: 'moneyline',
   FIRST_HALF_SPREADS: 'first_half_spreads',
   FIRST_HALF_TOTALS: 'first_half_totals',
@@ -44,6 +44,13 @@ export const POLYMARKET_SPORTS_MARKET_TYPE = {
   // Nested moneyline (eg. "Counter-Strike: Venom vs ARCRED - Map 2 Winner")
   CHILD_MONEYLINE: 'child_moneyline',
   BOTH_TEAMS_TO_SCORE: 'both_teams_to_score',
+  UFC_METHOD_OF_VICTORY: 'ufc_method_of_victory',
+  UFC_GO_THE_DISTANCE: 'ufc_go_the_distance',
+  // Known unsupported market types
+  // TEAM_TOTALS: 'team_totals',
+  // POINTS: 'points',
+  // REBOUNDS: 'rebounds',
+  // ASSISTS: 'assists',
 } as const;
 
 export const NAVIGATOR_FOOTER_HEIGHT = 66;
