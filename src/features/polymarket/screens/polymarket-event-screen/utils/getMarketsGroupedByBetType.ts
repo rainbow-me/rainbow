@@ -54,6 +54,7 @@ const SPORTS_MARKET_TYPE_LABELS: Partial<
 };
 
 export type MoneylineGroup = {
+  id: string;
   sportsMarketType: SportsMarketType;
   label: string;
   icon?: string;
@@ -61,6 +62,7 @@ export type MoneylineGroup = {
 };
 
 export type LineBasedGroup = {
+  id: string;
   sportsMarketType: SportsMarketType;
   label: string;
   icon?: string;
@@ -175,6 +177,7 @@ function buildLineBasedGroups(map: Map<SportsMarketType, PolymarketMarket[]>, ev
 
       const labels = getSportsMarketTypeLabels(sportsMarketType);
       return {
+        id: sportsMarketType,
         sportsMarketType,
         label: labels.label,
         icon: labels.icon,
@@ -193,6 +196,7 @@ function buildMoneylineGroups(map: Map<SportsMarketType, PolymarketMarket[]>): M
     .map(([sportsMarketType, groupMarkets]) => {
       const labels = getSportsMarketTypeLabels(sportsMarketType);
       return {
+        id: sportsMarketType,
         sportsMarketType,
         label: labels.label,
         icon: labels.icon,
@@ -206,8 +210,12 @@ function buildOtherGroups(map: Map<SportsMarketType, PolymarketMarket[]>): Money
     .sort(([a], [b]) => sportsMarketTypeOrder.indexOf(a) - sportsMarketTypeOrder.indexOf(b))
     .map(([sportsMarketType, groupMarkets]) => {
       return groupMarkets.map(market => {
-        const labels = getSportsMarketTypeLabels(sportsMarketType);
+        const labels = {
+          label: market.groupItemTitle || market.question,
+          icon: '',
+        };
         return {
+          id: market.id,
           sportsMarketType,
           label: labels.label,
           icon: labels.icon,

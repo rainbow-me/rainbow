@@ -7,6 +7,7 @@ import { logger, RainbowError } from '@/logger';
 import { usePolymarketProxyAddress } from '@/features/polymarket/stores/derived/usePolymarketProxyAddress';
 import { POLYMARKET_RELAYER_PROXY_URL, BUILDER_CONFIG } from '@/features/polymarket/constants';
 import { loadViemWallet } from '@/features/polymarket/utils/loadViemWallet';
+import { Address } from 'viem';
 
 export const usePolymarketRelayClient = createDerivedStore(
   $ => {
@@ -16,19 +17,21 @@ export const usePolymarketRelayClient = createDerivedStore(
     return {
       address,
       proxyAddress,
-      client: (async () => {
-        const wallet = await loadViemWallet(address, getProvider({ chainId: ChainId.polygon }));
-        if (!wallet) {
-          logger.error(new RainbowError('[PolymarketRelayClient] Failed to load wallet for signing'));
-          return null;
-        }
-        // @ts-expect-error - TODO: Fix
-        return new RelayClient(POLYMARKET_RELAYER_PROXY_URL, ChainId.polygon, wallet, BUILDER_CONFIG);
-      })(),
+      client: createClient(address),
     };
   },
   { fastMode: true }
 );
+
+async function createClient(address: Address): Promise<RelayClient | undefined> {
+  const wallet = await loadViemWallet(address, getProvider({ chainId: ChainId.polygon }));
+  if (!wallet) {
+    logger.error(new RainbowError('[PolymarketRelayClient] Failed to load wallet for signing'));
+    return undefined;
+  }
+  // @ts-expect-error - TODO: Fix
+  return new RelayClient(POLYMARKET_RELAYER_PROXY_URL, ChainId.polygon, wallet, BUILDER_CONFIG);
+}
 
 export async function getPolymarketRelayClient(): Promise<RelayClient> {
   const client = await usePolymarketRelayClient.getState().client;

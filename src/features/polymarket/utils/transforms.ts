@@ -17,15 +17,25 @@ export function processRawPolymarketMarket(market: RawPolymarketMarket, eventCol
     clobTokenIds: market.clobTokenIds ? (JSON.parse(market.clobTokenIds) as string[]) : [],
     outcomes: market.outcomes ? (JSON.parse(market.outcomes) as string[]) : [],
     outcomePrices: market.outcomePrices ? (JSON.parse(market.outcomePrices) as string[]) : [],
+    ...(market.events
+      ? {
+          events: market.events.map(event => ({
+            ...event,
+            color: eventColor,
+          })),
+        }
+      : {}),
     ...getMarketColors(market, eventColor),
   };
 }
 
 export async function processRawPolymarketEvent(event: RawPolymarketEvent, teams?: PolymarketTeamInfo[]): Promise<PolymarketEvent> {
   const color = await getImagePrimaryColor(event.icon);
+  const sortedMarkets = event.sortBy ? sortMarkets(event.markets, event.sortBy) : event.markets;
+  const processedMarkets = sortedMarkets.map(market => processRawPolymarketMarket(market, color));
   return {
     ...event,
-    markets: sortMarketsByMostLikelyOutcome(event.markets.map(market => processRawPolymarketMarket(market, color))),
+    markets: processedMarkets,
     uniqueMarketImages: event.markets.some(market => market.icon !== event.icon),
     color,
     teams,
@@ -62,8 +72,11 @@ export async function processRawPolymarketOptimizedEvent(event: RawPolymarketOpt
   };
 }
 
-function sortMarketsByMostLikelyOutcome(markets: PolymarketMarket[]) {
-  return markets.sort((a, b) => {
-    return Number(b.lastTradePrice) - Number(a.lastTradePrice);
-  });
+function sortMarkets(markets: RawPolymarketMarket[], sortBy: string) {
+  switch (sortBy) {
+    case 'price':
+      return markets.sort((a, b) => b.lastTradePrice - a.lastTradePrice);
+    default:
+      return markets;
+  }
 }

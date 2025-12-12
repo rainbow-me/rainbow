@@ -5,7 +5,7 @@ import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { Box, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { ensureError, logger, RainbowError } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import ImgixImage from '@/components/images/ImgixImage';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
@@ -57,9 +57,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
       Navigation.goBack();
       Navigation.goBack();
     } catch (e) {
-      const error = ensureError(e);
-      logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', error));
-      // TODO: Show error to user
+      logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', e));
     }
   }, [worstPrice, tokenId, buyAmount, fee]);
 

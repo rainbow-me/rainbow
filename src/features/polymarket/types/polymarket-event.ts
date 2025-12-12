@@ -130,7 +130,7 @@ export type RawPolymarketMarket = {
   enableOrderBook: boolean;
   orderPriceMinTickSize: number;
   orderMinSize: number;
-  umaResolutionStatus: string;
+  umaResolutionStatus?: string;
   curationOrder: number;
   volumeNum: number;
   liquidityNum: number;
@@ -189,11 +189,11 @@ export type RawPolymarketMarket = {
   rewardsMaxSpread: number;
   spread: number;
   automaticallyResolved: boolean;
-  oneDayPriceChange: number;
-  oneHourPriceChange: number;
-  oneWeekPriceChange: number;
-  oneMonthPriceChange: number;
-  oneYearPriceChange: number;
+  oneDayPriceChange: number | undefined;
+  oneHourPriceChange: number | undefined;
+  oneWeekPriceChange: number | undefined;
+  oneMonthPriceChange: number | undefined;
+  oneYearPriceChange: number | undefined;
   lastTradePrice: number;
   bestBid: number;
   bestAsk: number;
@@ -324,7 +324,7 @@ export type RawPolymarketEvent = {
   liquidity: number;
   volume: number;
   openInterest: number;
-  sortBy: string;
+  sortBy: string | undefined;
   category: string;
   subcategory: string;
   isTemplate: boolean;
@@ -456,6 +456,7 @@ export type PolymarketMarketEvent = {
   deploying: boolean;
   deployingTimestamp: string;
   gameId?: number;
+  color: string;
 };
 
 export type RawPolymarketOptimizedMarket = {

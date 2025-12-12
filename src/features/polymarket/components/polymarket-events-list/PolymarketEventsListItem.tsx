@@ -1,22 +1,23 @@
 import { StyleSheet, View } from 'react-native';
-import { ButtonPressAnimation } from '@/components/animations';
+import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import ImgixImage from '@/components/images/ImgixImage';
-import { Bleed, Text, TextIcon } from '@/design-system';
+import { Bleed, Text, TextIcon, useBackgroundColor } from '@/design-system';
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { Navigation } from '@/navigation';
 import { memo, useMemo } from 'react';
 import Routes from '@/navigation/routesNames';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import LinearGradient from 'react-native-linear-gradient';
 import { formatNumber } from '@/helpers/strings';
 import { roundWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
+import { createOpacityPalette } from '@/worklets/colors';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
 export const HEIGHT = 239;
 
 export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({ event }: { event: PolymarketEvent }) {
-  const mostLikelyOutcome = useMemo(() => {
-    const market = getMostLikelyMarket(event);
+  const firstMarket = useMemo(() => {
+    const market = event.markets.find(market => market.active && !market.closed);
     if (!market)
       return {
         title: 'No market found',
@@ -32,14 +33,7 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
   }, [event]);
 
   const accentColors = useMemo(() => {
-    return {
-      opacity0: opacityWorklet(event.color, 0),
-      opacity6: opacityWorklet(event.color, 0.06),
-      opacity12: opacityWorklet(event.color, 0.12),
-      opacity14: opacityWorklet(event.color, 0.14),
-      opacity24: opacityWorklet(event.color, 0.24),
-      opacity100: event.color,
-    };
+    return createOpacityPalette(event.color);
   }, [event.color]);
 
   return (
@@ -96,10 +90,10 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
               />
               <View style={[styles.row, { height: 36, paddingHorizontal: 12 }]}>
                 <Text size="15pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
-                  {mostLikelyOutcome.odds}
+                  {firstMarket.odds}
                 </Text>
-                <Text size="15pt" weight="bold" color="labelSecondary" numberOfLines={1} style={{ flex: 1 }}>
-                  {mostLikelyOutcome.title}
+                <Text size="15pt" weight="bold" color="labelSecondary" numberOfLines={1} style={styles.flex}>
+                  {firstMarket.title}
                 </Text>
               </View>
             </GradientBorderView>
@@ -110,11 +104,16 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
   );
 });
 
-function getMostLikelyMarket(event: PolymarketEvent) {
-  // Markets are already sorted by lastTradePrice
-  return event.markets.find(market => market.active && !market.closed);
-  // return event.markets.sort((a, b) => b.volume24hr - a.volume24hr).find(market => market.active && !market.closed);
-}
+export const LoadingSkeleton = memo(function LoadingSkeleton() {
+  const skeletonColor = useBackgroundColor('fillQuaternary');
+  const shimmerColor = opacityWorklet(useBackgroundColor('fillSecondary'), 0.1);
+
+  return (
+    <View style={[styles.skeleton, { backgroundColor: skeletonColor }]}>
+      <ShimmerAnimation color={shimmerColor} gradientColor={shimmerColor} />
+    </View>
+  );
+});
 
 function navigateToEvent(event: PolymarketEvent) {
   Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { eventId: event.id, event: event });
@@ -137,5 +136,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  flex: {
+    flex: 1,
+  },
+  skeleton: {
+    height: HEIGHT,
+    borderRadius: 26,
+    overflow: 'hidden',
   },
 });

@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect } from 'react';
-import { Box, Text, useColorMode } from '@/design-system';
+import { Box, Separator, Text, useColorMode } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
@@ -9,7 +9,6 @@ import { OpenPositionsSection } from '@/features/polymarket/screens/polymarket-e
 import SlackSheet from '@/components/sheet/SlackSheet';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import { MarketSortOrder, usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import ImgixImage from '@/components/images/ImgixImage';
 import { MarketsSection } from '@/features/polymarket/screens/polymarket-event-screen/MarketsSection';
@@ -20,6 +19,7 @@ import { formatNumber } from '@/helpers/strings';
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { AboutSection } from '@/features/polymarket/screens/polymarket-event-screen/AboutSection';
 import { SportsEventMarkets } from '@/features/polymarket/screens/polymarket-event-screen/SportsEventMarkets';
+import { getSolidColorEquivalent } from '@/worklets/colors';
 
 export const EventHeaderSection = memo(function EventHeaderSection({
   initialEvent,
@@ -89,18 +89,16 @@ export const ChartSection = memo(function ChartSection() {
 const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
 const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';
 
-const PolymarketEventScreenContent = memo(function PolymarketEventScreenContent({ eventId }: { eventId: string }) {
+export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
   const {
-    params: { event: initialEvent },
+    params: { event: initialEvent, eventId },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_EVENT_SCREEN>>();
   const { isDarkMode } = useColorMode();
-  const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
+  const backgroundColor = isDarkMode
+    ? getSolidColorEquivalent({ background: initialEvent.color, foreground: '#000000', opacity: 0.92 })
+    : '#FFFFFF';
   const safeAreaInsets = useSafeAreaInsets();
-
-  /**
-   * TODO: Verify that this is the correct way to determine if an event is a sports event.
-   */
-  const isSportsEvent = initialEvent?.gameId !== undefined;
+  const isSportsEvent = initialEvent.gameId !== undefined;
 
   return (
     <>
@@ -123,7 +121,8 @@ const PolymarketEventScreenContent = memo(function PolymarketEventScreenContent(
           <ChartSection />
           <OpenPositionsSection eventId={eventId} />
           {isSportsEvent ? <SportsEventMarkets /> : <MarketsSection />}
-          {/* <AboutSection /> */}
+          <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
+          <AboutSection />
         </Box>
       </SlackSheet>
       <Box position="absolute" top="0px" left="0px" right="0px" width="full" pointerEvents="none">
@@ -147,11 +146,3 @@ const PolymarketEventScreenContent = memo(function PolymarketEventScreenContent(
     </>
   );
 });
-
-export const PolymarketEventScreen = () => {
-  const {
-    params: { eventId },
-  } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_EVENT_SCREEN>>();
-
-  return <PolymarketEventScreenContent eventId={eventId} />;
-};

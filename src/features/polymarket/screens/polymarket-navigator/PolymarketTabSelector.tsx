@@ -37,7 +37,7 @@ const CONTENT_WIDTH = PILL.width * Object.keys(TABS).length + PILL.gap * (Object
 export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
   const { isDarkMode } = useColorMode();
   const buttonWidth = useDerivedValue<number>(() => PILL.width);
-  const selectedIndex = useSharedValue(TABS[Routes.POLYMARKET_BROWSE_EVENTS_SCREEN].index);
+  const selectedIndex = useSharedValue(TABS[usePolymarketNavigationStore.getState().activeRoute as Tab]?.index ?? 0);
 
   useListen(
     usePolymarketNavigationStore,

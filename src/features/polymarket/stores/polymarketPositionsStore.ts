@@ -30,9 +30,7 @@ export const usePolymarketPositionsStore = createQueryStore<
   {
     fetcher: fetchPolymarketPositions,
     params: { address: $ => $(usePolymarketProxyAddress).proxyAddress },
-    // TODO: TESTING
-    staleTime: time.seconds(5),
-    // disableAutoRefetching: true,
+    staleTime: time.seconds(10),
   },
 
   (_, get) => ({

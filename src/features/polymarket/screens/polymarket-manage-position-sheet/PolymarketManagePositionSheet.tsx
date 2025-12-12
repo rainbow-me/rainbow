@@ -24,6 +24,8 @@ import { getPositionAction, PositionAction } from '@/features/polymarket/utils/g
 import Navigation from '@/navigation/Navigation';
 import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { redeemPosition } from '@/features/polymarket/utils/redeemPosition';
+import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
+import { Side } from '@polymarket/clob-client';
 
 export const PolymarketManagePositionSheet = memo(function PolymarketManagePositionSheet() {
   const {
@@ -83,7 +85,8 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
 
   const handleCashOutPosition = useCallback(async () => {
     try {
-      const orderResult = await marketSellTotalPosition({ position, price: livePrice });
+      const price = await polymarketClobDataClient.calculateMarketPrice(position.asset, Side.SELL, position.size);
+      const orderResult = await marketSellTotalPosition({ position, price });
       const tokensSold = orderResult.makingAmount;
       await collectTradeFee(tokensSold);
       Navigation.goBack();
@@ -92,7 +95,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
     } finally {
       setIsProcessing(false);
     }
-  }, [position, livePrice]);
+  }, [position]);
 
   const handleClaimPosition = useCallback(async () => {
     try {
@@ -107,7 +110,6 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
   }, [position]);
 
   const onPressActionButton = useCallback(() => {
-    console.log('onPressActionButton', actionButtonType);
     setIsProcessing(true);
     switch (actionButtonType) {
       case PositionAction.CLAIM:

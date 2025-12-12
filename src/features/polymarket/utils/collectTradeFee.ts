@@ -1,19 +1,16 @@
 import { GelatoRelay, SponsoredCallRequest, TaskState } from '@gelatonetwork/relay-sdk';
-import { Address, erc20Abi, encodeFunctionData, Hex, parseUnits, WalletClient, zeroAddress } from 'viem';
+import { Address, erc20Abi, encodeFunctionData, parseUnits, zeroAddress } from 'viem';
 import { ChainId } from '@rainbow-me/swaps';
 import { getProvider } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { usePolymarketProxyAddress } from '@/features/polymarket/stores/derived/usePolymarketProxyAddress';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { loadViemWallet } from './loadViemWallet';
 import { POLYGON_USDC_ADDRESS, USD_FEE_PER_TOKEN } from '../constants';
-import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { mulWorklet } from '@/safe-math/SafeMath';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
+import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/usePolymarketClobClient';
 
-// TODO: Move to environment variable
-const GELATO_API_KEY = 'nyRoSDLjBOBgKIhKbIXxBxrdKfKDNrazOr_10HELMLA_';
+const GELATO_API_KEY = '';
 // TODO: Move to constants and configure proper recipient
 const RAINBOW_POLYMARKET_FEE_ADDRESS = '0x83e3057f7b619ffe340bb8157356e3eb4aecc40f';
 const POLLING_INTERVAL = time.seconds(1);
@@ -58,7 +55,7 @@ const safeTxTypes = {
     { name: 'refundReceiver', type: 'address' },
     { name: 'nonce', type: 'uint256' },
   ],
-} as const;
+};
 
 type CollectTradeFeeResult = {
   success: boolean;
@@ -69,19 +66,18 @@ type CollectTradeFeeResult = {
 
 // TODO: Figure out if there are transient error cases and implement retry logic
 export async function collectTradeFee(tokenAmount: string): Promise<CollectTradeFeeResult | undefined> {
-  const address = useWalletsStore.getState().accountAddress as Hex;
   const safeAddress = usePolymarketProxyAddress.getState().proxyAddress as Address;
   const feeAmount = mulWorklet(tokenAmount, USD_FEE_PER_TOKEN);
 
   try {
-    const wallet = await loadViemWallet(address, getProvider({ chainId: ChainId.polygon }));
-
-    if (wallet instanceof LedgerSigner) {
-      throw new RainbowError('[collectTradeFee] Hardware wallets are not supported for fee collection');
-    }
-
-    if (!isViemWalletClient(wallet)) {
-      throw new RainbowError('[collectTradeFee] Unexpected wallet type');
+    /**
+     * We use the CLOB client's signer to sign the transaction because it is already unlocked from placing the trade
+     * Otherwise, we would need to show biometrics twice for every trade
+     */
+    const polymarketClobClient = await getPolymarketClobClient();
+    const signer = polymarketClobClient.signer;
+    if (!signer) {
+      throw new RainbowError('[collectTradeFee] Failed to get signer');
     }
 
     const nonce = await getSafeNonce(safeAddress);
@@ -105,15 +101,12 @@ export async function collectTradeFee(tokenAmount: string): Promise<CollectTrade
       nonce,
     };
 
-    const signature = await wallet.signTypedData({
-      domain: {
-        chainId: ChainId.polygon,
-        verifyingContract: safeAddress,
-      },
-      types: safeTxTypes,
-      primaryType: 'SafeTx',
-      message: safeTxData,
-    });
+    const domain = {
+      chainId: ChainId.polygon,
+      verifyingContract: safeAddress,
+    };
+
+    const signature = await signer._signTypedData(domain, safeTxTypes, safeTxData);
 
     const execData = encodeFunctionData({
       abi: safeAbi,
@@ -156,10 +149,6 @@ export async function collectTradeFee(tokenAmount: string): Promise<CollectTrade
       feeAmount,
     });
   }
-}
-
-function isViemWalletClient(wallet: unknown): wallet is WalletClient {
-  return wallet !== null && typeof wallet === 'object' && 'signTypedData' in wallet;
 }
 
 async function getSafeNonce(safeAddress: Address): Promise<bigint> {

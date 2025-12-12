@@ -1,6 +1,5 @@
-import { ParsedColorArray, convertToRGBA, processColor } from 'react-native-reanimated';
+import { ParsedColorArray, convertToRGBA } from 'react-native-reanimated';
 import { globalColors } from '@/design-system';
-import { logger } from '@/logger';
 
 export interface HSV {
   h: number;
@@ -455,4 +454,45 @@ export function getSolidColorEquivalent({
   const blendedB = fgB * opacity + bgB * (1 - opacity);
 
   return colorToHex(blendedR, blendedG, blendedB);
+}
+
+const DEFAULT_OPACITIES = [0, 6, 8, 12, 14, 16, 24, 100] as const;
+
+type OpacityKey<T extends number> = `opacity${T}`;
+type OpacityPalette<T extends readonly number[]> = {
+  [K in T[number] as OpacityKey<K>]: string;
+};
+
+/**
+ * Creates an object with multiple opacity variants of a color.
+ * Parses the color once and generates all rgba strings, avoiding
+ * repeated color parsing when you need multiple opacity variants.
+ *
+ * @param color - The base color string (hex, rgb, rgba, etc.)
+ * @param opacities - Array of opacity percentages (0-100). Defaults to [0, 6, 8, 12, 14, 16, 24]
+ * @returns Object with keys like `opacity0`, `opacity6`, etc.
+ *
+ * @example
+ * const palette = createOpacityPalette('#FF0000');
+ * // { opacity0: 'rgba(..., 0)', opacity6: 'rgba(..., 0.06)', ... }
+ *
+ */
+export function createOpacityPalette<T extends readonly number[] = typeof DEFAULT_OPACITIES>(
+  color: string,
+  opacities: T = DEFAULT_OPACITIES as unknown as T
+): OpacityPalette<T> {
+  'worklet';
+
+  const result = {} as OpacityPalette<T>;
+
+  const [r, g, b] = convertToRGBA(color);
+  const r255 = r * 255;
+  const g255 = g * 255;
+  const b255 = b * 255;
+
+  for (const op of opacities) {
+    (result as Record<string, string>)[`opacity${op}`] = `rgba(${r255}, ${g255}, ${b255}, ${op / 100})`;
+  }
+
+  return result;
 }
