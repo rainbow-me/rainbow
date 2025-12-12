@@ -8,6 +8,8 @@ export const BET_TYPE = {
   OTHER: 'other',
 } as const;
 
+const SUPPORTED_SPORTS_MARKET_TYPES = new Set(Object.values(POLYMARKET_SPORTS_MARKET_TYPE));
+
 export type BetType = (typeof BET_TYPE)[keyof typeof BET_TYPE];
 
 const SPORTS_MARKET_TYPE_LABELS: Partial<
@@ -47,10 +49,6 @@ const SPORTS_MARKET_TYPE_LABELS: Partial<
     title: 'Totals: First Half',
     icon: '½',
   },
-  [POLYMARKET_SPORTS_MARKET_TYPE.TEAM_TOTALS]: {
-    title: 'Team Totals: Full Match',
-    icon: '􁙌',
-  },
 };
 
 export type MoneylineGroup = {
@@ -89,11 +87,12 @@ const sportsMarketTypeOrder: SportsMarketType[] = [
   POLYMARKET_SPORTS_MARKET_TYPE.FIRST_HALF_SPREADS,
   POLYMARKET_SPORTS_MARKET_TYPE.TOTALS,
   POLYMARKET_SPORTS_MARKET_TYPE.FIRST_HALF_TOTALS,
-  POLYMARKET_SPORTS_MARKET_TYPE.TEAM_TOTALS,
 ];
 
 export function getMarketsGroupedByBetType(event: PolymarketEvent): GroupedSportsMarkets {
-  const { markets } = event;
+  const { markets: rawMarkets } = event;
+
+  const markets = filterUnsupportedMarkets(rawMarkets);
 
   const moneylineByType = new Map<SportsMarketType, PolymarketMarket[]>();
   const spreadsByType = new Map<SportsMarketType, PolymarketMarket[]>();
@@ -138,12 +137,10 @@ function getBetType(sportsMarketType: SportsMarketType): BetType {
 
     case POLYMARKET_SPORTS_MARKET_TYPE.TOTALS:
     case POLYMARKET_SPORTS_MARKET_TYPE.FIRST_HALF_TOTALS:
-    case POLYMARKET_SPORTS_MARKET_TYPE.TEAM_TOTALS:
       return BET_TYPE.TOTALS;
 
     case POLYMARKET_SPORTS_MARKET_TYPE.MONEYLINE:
     case POLYMARKET_SPORTS_MARKET_TYPE.FIRST_HALF_MONEYLINE:
-      // case POLYMARKET_SPORTS_MARKET_TYPE.CHILD_MONEYLINE:
       return BET_TYPE.MONEYLINE;
 
     default:
@@ -224,4 +221,8 @@ function buildOtherGroups(map: Map<SportsMarketType, PolymarketMarket[]>): Money
       });
     })
     .flat();
+}
+
+function filterUnsupportedMarkets(markets: PolymarketMarket[]): PolymarketMarket[] {
+  return markets.filter(market => SUPPORTED_SPORTS_MARKET_TYPES.has(market.sportsMarketType));
 }
