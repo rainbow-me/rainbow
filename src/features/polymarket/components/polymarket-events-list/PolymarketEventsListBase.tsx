@@ -9,10 +9,12 @@ import {
   LoadingSkeleton,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { Grid } from '@/screens/token-launcher/components/Grid';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const ITEM_GAP = 12;
 const PADDING_HORIZONTAL = 12;
 const ROW_HEIGHT = ITEM_HEIGHT + ITEM_GAP;
+const ITEM_WIDTH = (DEVICE_WIDTH - PADDING_HORIZONTAL * 2 - ITEM_GAP) / 2;
 
 type ListProps = Pick<ComponentProps<typeof FlatList>, 'onEndReached' | 'onEndReachedThreshold' | 'onRefresh' | 'refreshing' | 'onRefresh'>;
 
@@ -99,7 +101,7 @@ const styles = StyleSheet.create({
     gap: ITEM_GAP,
   },
   itemWrapper: {
-    flex: 1,
+    width: ITEM_WIDTH,
   },
   skeletonContainer: {
     paddingHorizontal: PADDING_HORIZONTAL,
