@@ -1,7 +1,6 @@
 import { memo } from 'react';
 import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { Box, useForegroundColor } from '@/design-system';
-import { ButtonPressAnimation } from '@/components/animations';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { MarketRow } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
@@ -27,21 +26,17 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
         const outcomeImage = team?.logo;
 
         return (
-          <ButtonPressAnimation
+          <MarketRow
             key={outcome}
-            scaleTo={0.96}
-            onPress={() => Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, { market, outcome })}
-          >
-            <MarketRow
-              accentColor={outcomeColor}
-              image={outcomeImage}
-              priceChange={0}
-              title={outcomeTitles?.[index] ?? outcome}
-              tokenId={market.clobTokenIds[index]}
-              price={market.outcomePrices[index]}
-              minTickSize={market.orderPriceMinTickSize}
-            />
-          </ButtonPressAnimation>
+            accentColor={outcomeColor}
+            image={outcomeImage}
+            priceChange={0}
+            title={outcomeTitles?.[index] ?? outcome}
+            tokenId={market.clobTokenIds[index]}
+            price={market.outcomePrices[index]}
+            minTickSize={market.orderPriceMinTickSize}
+            onPress={() => Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, { market, outcomeIndex: index })}
+          />
         );
       })}
     </Box>

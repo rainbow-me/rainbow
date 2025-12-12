@@ -1,142 +1,42 @@
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { Box, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/usePolymarketClobClient';
-import { Side, OrderType } from '@polymarket/clob-client';
-import { ensureError, logger, RainbowError } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import ImgixImage from '@/components/images/ImgixImage';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
-import {
-  divWorklet,
-  greaterThanWorklet,
-  lessThanWorklet,
-  maxWorklet,
-  mulWorklet,
-  toFixedWorklet,
-  toPercentageWorklet,
-} from '@/safe-math/SafeMath';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import LinearGradient from 'react-native-linear-gradient';
-import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { useDerivedValue } from 'react-native-reanimated';
-import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { Navigation } from '@/navigation';
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
-import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
+import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { marketBuyToken } from '@/features/polymarket/utils/orders';
+import { subWorklet } from '@/safe-math/SafeMath';
+import { collectTradeFee } from '@/features/polymarket/utils/collectTradeFee';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
-    params: { market, outcome },
+    params: { market, outcomeIndex },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
+
+  const outcome = market.outcomes[outcomeIndex];
+  const tokenId = market.clobTokenIds[outcomeIndex];
+
+  const { availableBalance, worstPrice, validation, isValidOrderAmount, amountToWin, outcomeOdds, fee, spread, setBuyAmount, buyAmount } =
+    useNewPositionForm({ tokenId });
+
   const red = useForegroundColor('red');
   const green = useForegroundColor('green');
+  const accentColor = market.negRisk ? market.color : outcomeIndex === 0 ? green : red;
 
-  const availableBalance = usePolymarketBalanceStore(state => state.getBalance());
-
-  const [amount, setAmount] = useState(() => {
-    const halfBalance = divWorklet(availableBalance, 2);
-    const initialAmount = greaterThanWorklet(availableBalance, '5') ? halfBalance : availableBalance;
-    return toFixedWorklet(initialAmount, 2);
-  });
-
-  const outcomeIndex = useMemo(() => {
-    return market.outcomes.indexOf(outcome);
-  }, [market.outcomes, outcome]);
-
-  const accentColor = useMemo(() => {
-    return market.negRisk ? market.color : outcomeIndex === 0 ? green : red;
-  }, [market.negRisk, red, green, market.color, outcomeIndex]);
-
-  const tokenId = useMemo(() => {
-    return market.clobTokenIds[outcomeIndex];
-  }, [market.clobTokenIds, outcomeIndex]);
-
-  const liveOrderPrice = useLiveTokenValue({
-    tokenId: getPolymarketTokenId(tokenId, 'sell'),
-    initialValue: formatPrice(market.outcomePrices[outcomeIndex], market.orderPriceMinTickSize),
-    selector: token => formatPrice(token.price, market.orderPriceMinTickSize),
-  });
-
-  const minBuyAmountUsd = useMemo(() => {
-    return mulWorklet(market.orderMinSize, liveOrderPrice);
-  }, [market.orderMinSize, liveOrderPrice]);
-
-  const validation = useDerivedValue(() => {
-    'worklet';
-
-    const maxAmount = String(availableBalance);
-    const minAmount = String(maxWorklet(minBuyAmountUsd, '1'));
-
-    const isAboveMax = greaterThanWorklet(amount, maxAmount);
-    const isBelowMin = lessThanWorklet(amount, minAmount);
-
-    const isValid = !isAboveMax && !isBelowMin;
-
-    return {
-      isAboveMax,
-      isBelowMin,
-      isValid,
-      maxAmount,
-      minAmount,
-    };
-  });
-
-  const isValidOrderAmount = useDerivedValue(() => {
-    'worklet';
-    return validation.value.isValid;
-  });
-
-  const [isValidOrderAmountState, setIsValidOrderAmountState] = useState(false);
-
-  useSyncSharedValue({
-    setState: setIsValidOrderAmountState,
-    sharedValue: isValidOrderAmount,
-    state: isValidOrderAmountState,
-    syncDirection: 'sharedValueToState',
-  });
-
-  const outcomeOdds = useMemo(() => {
-    return toPercentageWorklet(liveOrderPrice);
-  }, [liveOrderPrice]);
-
-  const amountToWin = useMemo(() => {
-    const estimatedPositionSize = divWorklet(amount, liveOrderPrice);
-    // If you win, each unit of the position is worth $1.
-    return formatCurrency(estimatedPositionSize);
-  }, [amount, liveOrderPrice]);
-
-  const handleMarketBuyPosition = useCallback(async () => {
-    try {
-      const result = await marketBuyPosition({ tokenId, amount: Number(amount), price: Number(liveOrderPrice) });
-      // console.log('Order result', JSON.stringify(result, null, 2));
-      // When the order is rejected for some valid reason - like the total amount was not filled on a fill or kill order - the error will be returned in the result.
-      if ('error' in result) {
-        throw new RainbowError(result.error);
-      }
-      setTimeout(async () => {
-        await refetchPolymarketStores();
-      }, 1000);
-      Navigation.goBack();
-      Navigation.goBack();
-    } catch (e) {
-      const error = ensureError(e);
-      logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', error), {
-        message: error.message,
-      });
-      // TODO: Show error to user
-    }
-  }, [amount, liveOrderPrice, tokenId]);
-
+  const outcomeTitle = market.events?.[0]?.title || market.question;
   const outcomeSubtitle = useMemo(() => {
     if (market.line) {
       return `${outcome} ${market.line}`;
@@ -147,14 +47,28 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     return outcome;
   }, [market.groupItemTitle, outcome, market.line]);
 
+  const handleMarketBuyPosition = useCallback(async () => {
+    try {
+      const amountToBuy = subWorklet(buyAmount, fee);
+      const orderResult = await marketBuyToken({ tokenId, amountUsd: amountToBuy, price: worstPrice });
+      const tokensBought = orderResult.takingAmount;
+      await collectTradeFee(tokensBought);
+      await refetchPolymarketStores();
+      Navigation.goBack();
+      Navigation.goBack();
+    } catch (e) {
+      logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', e));
+    }
+  }, [worstPrice, tokenId, buyAmount, fee]);
+
   return (
     <PanelSheet innerBorderWidth={1} enableKeyboardAvoidance>
-      <View style={StyleSheet.absoluteFillObject}>
-        <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000' }]} />
-        <View style={[StyleSheet.absoluteFillObject, { opacity: 0.22 }]}>
+      <View style={StyleSheet.absoluteFill}>
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: '#000000' }]} />
+        <View style={[StyleSheet.absoluteFill, { opacity: 0.22 }]}>
           <LinearGradient
             colors={[accentColor, opacityWorklet(accentColor, 0)]}
-            style={StyleSheet.absoluteFillObject}
+            style={StyleSheet.absoluteFill}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
             pointerEvents="none"
@@ -184,7 +98,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
                 />
                 <Box gap={12} style={{ flex: 1 }}>
                   <Text size="15pt" weight="bold" color="labelTertiary" style={{ flex: 1 }}>
-                    {market.events?.[0]?.title || market.question}
+                    {outcomeTitle}
                   </Text>
                   <Box flexDirection="row" alignItems="center" gap={4}>
                     <Text size="17pt" weight="bold" color="label">
@@ -199,8 +113,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               availableBalance={availableBalance}
               accentColor={accentColor}
               backgroundColor={opacityWorklet(accentColor, 0.08)}
-              onAmountChange={setAmount}
-              resetKey="polymarket-new-position-sheet"
+              onAmountChange={setBuyAmount}
               title="Amount"
               validation={validation}
             />
@@ -221,7 +134,27 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
 
               <TextShadow blur={6} shadowOpacity={0.24}>
                 <Text size="17pt" weight="heavy" color="green">
-                  {amountToWin}
+                  {formatCurrency(amountToWin)}
+                </Text>
+              </TextShadow>
+            </Box>
+            <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
+              <Text size="15pt" weight="semibold" color="labelTertiary">
+                {'Fees'}
+              </Text>
+              <TextShadow blur={6} shadowOpacity={0.24}>
+                <Text size="17pt" weight="heavy" color="green">
+                  {formatCurrency(fee)}
+                </Text>
+              </TextShadow>
+            </Box>
+            <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
+              <Text size="15pt" weight="semibold" color="labelTertiary">
+                {'Spread'}
+              </Text>
+              <TextShadow blur={6} shadowOpacity={0.24}>
+                <Text size="17pt" weight="heavy" color="green">
+                  {formatCurrency(spread)}
                 </Text>
               </TextShadow>
             </Box>
@@ -237,7 +170,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
                 opacity: 0.4,
               })}
               disabledBackgroundColor={opacityWorklet(accentColor, 0.12)}
-              disabled={!isValidOrderAmountState}
+              disabled={!isValidOrderAmount}
               height={48}
               textStyle={{
                 color: 'white',
@@ -252,37 +185,3 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     </PanelSheet>
   );
 });
-
-/**
- * Successful order result:
-{
-  "errorMsg": "",
-  "orderID": "0xb33730e62e3b884fc40a2b6b1e346c5e33430055a74c320e14d32eb320659ece",
-  "takingAmount": "5.301885",
-  "makingAmount": "2.809999",
-  "status": "matched",
-  "transactionsHashes": [
-    "0x044c79c36506f683945097e5902c4e7b53c6b40cd763fb04cf7cd6a39e3781c8"
-  ],
-  "success": true
-}
-Error order result:
-{
-  "error": "order couldn't be fully filled. FOK orders are fully filled or killed.",
-  "status": 400
-}
-*/
-
-// TODO: create types for order result
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function marketBuyPosition({ tokenId, amount, price }: { tokenId: string; amount: number; price: number }): Promise<any> {
-  const client = await getPolymarketClobClient();
-  const order = await client.createMarketOrder({
-    side: Side.BUY,
-    tokenID: tokenId,
-    amount,
-    price,
-  });
-
-  return await client.postOrder(order, OrderType.FOK);
-}

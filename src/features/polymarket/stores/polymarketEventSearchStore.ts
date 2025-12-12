@@ -10,7 +10,7 @@ const PAGE_SIZE = 10;
 const EMPTY_RESULT = Object.freeze({ events: [], pagination: { hasMore: false, totalResults: 0 } });
 
 type RawPolymarketEventSearchResponse = {
-  events: RawPolymarketEvent[];
+  events?: RawPolymarketEvent[];
   pagination: {
     hasMore: boolean;
     totalResults: number;
@@ -101,7 +101,7 @@ export const usePolymarketEventSearchStore = createQueryStore<
 
       const paginationInfo = searchResults?.pagination;
 
-      if (!paginationInfo) return;
+      if (!paginationInfo || !paginationInfo.hasMore) return;
 
       const currentEvents = searchResults.events;
       const nextPage = paginationInfo.currentPage + 1;
@@ -159,6 +159,6 @@ async function fetchPolymarketEventSearch(
 
   return {
     ...response,
-    events: await Promise.all(response.events.map(event => processRawPolymarketEvent(event))),
+    events: await Promise.all(response.events?.map(event => processRawPolymarketEvent(event)) ?? []),
   };
 }

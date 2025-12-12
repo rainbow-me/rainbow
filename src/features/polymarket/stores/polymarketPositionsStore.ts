@@ -4,7 +4,6 @@ import { time } from '@/utils/time';
 import { usePolymarketProxyAddress } from '@/features/polymarket/stores/derived/usePolymarketProxyAddress';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { PolymarketPosition, RawPolymarketPosition } from '@/features/polymarket/types';
-import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
 import { POLYMARKET_DATA_API_URL, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketPosition } from '@/features/polymarket/utils/transforms';
@@ -31,9 +30,7 @@ export const usePolymarketPositionsStore = createQueryStore<
   {
     fetcher: fetchPolymarketPositions,
     params: { address: $ => $(usePolymarketProxyAddress).proxyAddress },
-    // TODO: TESTING
     staleTime: time.seconds(30),
-    // disableAutoRefetching: true,
   },
 
   (_, get) => ({

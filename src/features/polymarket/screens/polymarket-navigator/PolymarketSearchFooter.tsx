@@ -63,7 +63,7 @@ export const PolymarketSearchFooter = memo(function PolymarketSearchFooter() {
 
   return (
     <View style={styles.container}>
-      <ButtonPressAnimation onPress={() => PolymarketNavigation.navigate(Routes.POLYMARKET_BROWSE_EVENTS_SCREEN)}>
+      <ButtonPressAnimation onPress={() => PolymarketNavigation.goBack()}>
         <Box
           borderRadius={64}
           height={SEARCH_BAR_HEIGHT}

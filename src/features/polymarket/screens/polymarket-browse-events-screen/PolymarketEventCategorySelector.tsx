@@ -1,5 +1,5 @@
-import React, { memo, useCallback, useMemo } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import React, { memo, useCallback, useMemo, useRef } from 'react';
+import { View, ScrollView, StyleSheet, LayoutChangeEvent } from 'react-native';
 import { Text, useColorMode, Border, AnimatedText, useForegroundColor } from '@/design-system';
 import { CATEGORIES, Category } from '@/features/polymarket/constants';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -13,10 +13,29 @@ const CONTAINER_HEIGHT = 40;
 const CATEGORY_ITEMS = Object.values(CATEGORIES);
 
 export const PolymarketEventCategorySelector = memo(function PolymarketEventCategorySelector() {
-  const selectedCategoryTagId = useSharedValue<string | null>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const itemOffsets = useRef<number[]>([]);
+
+  const selectedCategoryTagId = useSharedValue<string | null>(usePolymarketEventsStore.getState().tagId);
+
+  const scrollToSelectedCategory = useCallback(() => {
+    const index = CATEGORY_ITEMS.findIndex(category => category.tagId === selectedCategoryTagId.value);
+    const offset = itemOffsets.current[index];
+    scrollViewRef.current?.scrollTo({ x: offset - 20, y: 0, animated: false });
+  }, [selectedCategoryTagId, itemOffsets]);
+
+  const onItemLayout = useCallback(
+    (event: LayoutChangeEvent, index: number) => {
+      itemOffsets.current[index] = event.nativeEvent.layout.x;
+      if (itemOffsets.current.length === CATEGORY_ITEMS.length - 1) {
+        scrollToSelectedCategory();
+      }
+    },
+    [itemOffsets, scrollToSelectedCategory]
+  );
+
   const onPress = useCallback(
     (category: Category) => {
-      'worklet';
       selectedCategoryTagId.value = category.tagId;
       runOnJS(usePolymarketEventsStore.getState().setTagId)(category.tagId);
     },
@@ -25,9 +44,16 @@ export const PolymarketEventCategorySelector = memo(function PolymarketEventCate
 
   return (
     <View style={styles.container}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollViewContentContainer}>
-        {CATEGORY_ITEMS.map(category => (
-          <CategoryItem key={category.tagId} category={category} onPress={onPress} selectedCategoryTagId={selectedCategoryTagId} />
+      <ScrollView
+        ref={scrollViewRef}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.scrollViewContentContainer}
+      >
+        {CATEGORY_ITEMS.map((category, index) => (
+          <View key={category.tagId} onLayout={event => onItemLayout(event, index)}>
+            <CategoryItem category={category} onPress={onPress} selectedCategoryTagId={selectedCategoryTagId} />
+          </View>
         ))}
       </ScrollView>
     </View>

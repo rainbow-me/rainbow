@@ -17,15 +17,25 @@ export function processRawPolymarketMarket(market: RawPolymarketMarket, eventCol
     clobTokenIds: market.clobTokenIds ? JSON.parse(market.clobTokenIds) : [],
     outcomes: market.outcomes ? JSON.parse(market.outcomes) : [],
     outcomePrices: market.outcomePrices ? JSON.parse(market.outcomePrices) : [],
+    ...(market.events
+      ? {
+          events: market.events.map(event => ({
+            ...event,
+            color: eventColor,
+          })),
+        }
+      : {}),
     ...getMarketColors(market, eventColor),
   };
 }
 
 export async function processRawPolymarketEvent(event: RawPolymarketEvent, teams?: PolymarketTeamInfo[]): Promise<PolymarketEvent> {
   const color = await getImagePrimaryColor(event.icon);
+  const sortedMarkets = sortMarkets(event.markets, event.sortBy);
+  const processedMarkets = sortedMarkets.map(market => processRawPolymarketMarket(market, color));
   return {
     ...event,
-    markets: sortMarketsByMostLikelyOutcome(event.markets.map(market => processRawPolymarketMarket(market, color))),
+    markets: processedMarkets,
     uniqueMarketImages: event.markets.some(market => market.icon !== event.icon),
     color,
     teams,
@@ -54,8 +64,19 @@ export async function processRawPolymarketPosition(
   };
 }
 
-function sortMarketsByMostLikelyOutcome(markets: PolymarketMarket[]): PolymarketMarket[] {
-  return markets.sort((a, b) => {
-    return Number(b.lastTradePrice) - Number(a.lastTradePrice);
-  });
+export async function processRawPolymarketOptimizedEvent(event: RawPolymarketOptimizedEvent): Promise<PolymarketOptimizedEvent> {
+  const color = await getImagePrimaryColor(event.image);
+  return {
+    ...event,
+    color,
+  };
+}
+
+function sortMarkets(markets: RawPolymarketMarket[], sortBy?: 'price') {
+  switch (sortBy) {
+    case 'price':
+      return markets.sort((a, b) => (b.lastTradePrice ?? 0) - (a.lastTradePrice ?? 0));
+    default:
+      return markets.sort((a, b) => Number(a.groupItemThreshold) - Number(b.groupItemThreshold));
+  }
 }

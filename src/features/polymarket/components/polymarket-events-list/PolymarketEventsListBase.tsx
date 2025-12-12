@@ -6,27 +6,28 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   PolymarketEventsListItem,
   HEIGHT as ITEM_HEIGHT,
+  LoadingSkeleton,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
-import Skeleton from '@/components/skeleton/Skeleton';
-import { useBackgroundColor } from '@/design-system';
-import { opacity } from '@/__swaps__/utils/swaps';
 import { Grid } from '@/screens/token-launcher/components/Grid';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const ITEM_GAP = 12;
 const PADDING_HORIZONTAL = 12;
 const ROW_HEIGHT = ITEM_HEIGHT + ITEM_GAP;
-const CARD_BORDER_RADIUS = 26;
+const ITEM_WIDTH = (DEVICE_WIDTH - PADDING_HORIZONTAL * 2 - ITEM_GAP) / 2;
 
 type ListProps = Pick<ComponentProps<typeof FlatList>, 'onEndReached' | 'onEndReachedThreshold' | 'onRefresh' | 'refreshing' | 'onRefresh'>;
 
 type PolymarketEventsListBaseProps = {
   events: PolymarketEvent[];
   isLoading?: boolean;
+  listRef?: React.RefObject<FlatList<PolymarketEvent> | null>;
 } & ListProps;
 
 export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
   events,
   isLoading,
+  listRef,
   ...listProps
 }: PolymarketEventsListBaseProps) {
   const safeAreaInsets = useSafeAreaInsets();
@@ -41,13 +42,14 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
   }, []);
 
   if (isLoading) {
-    return <LoadingSkeleton />;
+    return <ListLoadingSkeleton />;
   }
 
   return (
     <FlatList
       data={events}
       numColumns={2}
+      ref={listRef}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       contentContainerStyle={[styles.contentContainer, { paddingBottom }]}
@@ -76,24 +78,17 @@ function getItemLayout(_: unknown, index: number) {
   };
 }
 
-function LoadingSkeleton() {
-  const skeletonColor = useBackgroundColor('fillQuaternary');
-  const shimmerColor = opacity(useBackgroundColor('fillSecondary'), 0.1);
-
+const ListLoadingSkeleton = memo(function ListLoadingSkeleton() {
   return (
     <View style={styles.skeletonContainer}>
       <Grid columns={2} spacing={ITEM_GAP}>
         {Array.from({ length: 6 }).map((_, index) => (
-          <View key={index} style={styles.skeletonItemWrapper}>
-            <Skeleton skeletonColor={skeletonColor} shimmerColor={shimmerColor}>
-              <View style={styles.skeletonCard} />
-            </Skeleton>
-          </View>
+          <LoadingSkeleton key={index} />
         ))}
       </Grid>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   list: {
@@ -109,17 +104,9 @@ const styles = StyleSheet.create({
     gap: ITEM_GAP,
   },
   itemWrapper: {
-    flex: 1,
+    width: ITEM_WIDTH,
   },
   skeletonContainer: {
     paddingHorizontal: PADDING_HORIZONTAL,
-  },
-  skeletonItemWrapper: {
-    height: ITEM_HEIGHT,
-  },
-  skeletonCard: {
-    height: ITEM_HEIGHT,
-    borderRadius: CARD_BORDER_RADIUS,
-    backgroundColor: 'black',
   },
 });

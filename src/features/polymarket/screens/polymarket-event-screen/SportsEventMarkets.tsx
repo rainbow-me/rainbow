@@ -18,6 +18,8 @@ import { BetTypeSelector } from '@/features/polymarket/screens/polymarket-event-
 import { PolymarketTeamInfo } from '@/features/polymarket/types';
 
 export const SportsEventMarkets = memo(function SportsEventMarkets() {
+  const { isDarkMode } = useColorMode();
+  const { width, height } = useDimensions();
   const event = usePolymarketEventStore(state => state.getData());
   const groupedMarkets = event ? getMarketsGroupedByBetType(event) : null;
 
@@ -32,12 +34,12 @@ export const SportsEventMarkets = memo(function SportsEventMarkets() {
   }, [groupedMarkets]);
 
   const [selectedBetType, setSelectedBetType] = useState<BetType>(availableBetTypes[0] ?? BET_TYPE.MONEYLINE);
-  const { isDarkMode } = useColorMode();
-  const { width } = useDimensions();
 
   const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
 
-  if (!event || !groupedMarkets) return null;
+  // TODO: Add a loading state
+  // This is a hack to ensure the screen is scrollable once the data is loaded
+  if (!event || !groupedMarkets) return <Box height={height} />;
 
   return (
     <Box gap={16}>
@@ -84,12 +86,10 @@ const Markets = memo(function Markets({
     <Box gap={24}>
       {selectedMarketsGroup.map(marketsGroup => {
         return (
-          <React.Fragment key={marketsGroup.sportsMarketType}>
+          <React.Fragment key={marketsGroup.id}>
             <Separator color="separatorSecondary" thickness={1} />
             {'lines' in marketsGroup && <LineBasedMarkets key={marketsGroup.sportsMarketType} marketsGroup={marketsGroup} teams={teams} />}
-            {!('lines' in marketsGroup) && (
-              <MoneylineMarkets key={marketsGroup.sportsMarketType} marketsGroup={marketsGroup} teams={teams} />
-            )}
+            {!('lines' in marketsGroup) && <MoneylineMarkets marketsGroup={marketsGroup} teams={teams} />}
           </React.Fragment>
         );
       })}
