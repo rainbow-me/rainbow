@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import ImgixImage from '@/components/images/ImgixImage';
 import { Bleed, Text, TextIcon, useBackgroundColor } from '@/design-system';
-import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { Navigation } from '@/navigation';
 import { memo, useMemo } from 'react';
 import Routes from '@/navigation/routesNames';
@@ -19,16 +19,16 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
   const firstMarket = useMemo(() => {
     const market = event.markets.find(market => market.active && !market.closed);
     if (!market)
+      // Placeholder for case that should not happen
       return {
-        title: 'No market found',
-        odds: '0%',
+        title: 'Yes',
+        odds: '',
       };
     const title = market.groupItemTitle || market.outcomes[0];
-    // TODO: Decide how to handle this case
-    const odds = market.lastTradePrice !== undefined ? `${roundWorklet(toPercentageWorklet(market.lastTradePrice))}%` : 'N/A';
+    const odds = calculateOddsPrice(market);
     return {
       title,
-      odds,
+      odds: `${roundWorklet(toPercentageWorklet(odds))}%`,
     };
   }, [event]);
 
@@ -117,6 +117,19 @@ export const LoadingSkeleton = memo(function LoadingSkeleton() {
 
 function navigateToEvent(event: PolymarketEvent) {
   Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { eventId: event.id, event: event });
+}
+
+function calculateOddsPrice(market: PolymarketMarket) {
+  let price = market.lastTradePrice;
+  if (price === undefined) {
+    if (market.bestAsk !== undefined && market.bestBid !== undefined) {
+      price = (market.bestAsk + market.bestBid) / 2;
+    } else {
+      price = 0;
+    }
+  }
+
+  return price;
 }
 
 const styles = StyleSheet.create({

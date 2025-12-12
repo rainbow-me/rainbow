@@ -16,9 +16,10 @@ type PolymarketEventStoreState = {
 
 export const MarketSortOrder = {
   VOLUME: 'volume',
-  LAST_TRADE_PRICE: 'lastTradePrice',
+  PRICE: 'price',
   VOLUME_24HR: 'volume24hr',
   END_DATE: 'endDate',
+  DEFAULT: 'default',
 } as const;
 
 type MarketSortOrder = (typeof MarketSortOrder)[keyof typeof MarketSortOrder];
@@ -30,10 +31,12 @@ export const usePolymarketEventStore = createQueryStore<PolymarketEvent, FetchPa
   },
   (_, get) => ({
     eventId: null,
-    getMarkets: (sortOrder: MarketSortOrder = MarketSortOrder.LAST_TRADE_PRICE) => {
-      const markets = get().getData()?.markets;
+    getMarkets: (sortOrder?: MarketSortOrder) => {
+      const event = get().getData();
+      const markets = event?.markets;
+      const sortBy = sortOrder ?? event?.sortBy ?? MarketSortOrder.DEFAULT;
       if (!markets) return undefined;
-      return sortMarkets(markets, sortOrder);
+      return sortMarkets(markets, sortBy);
     },
   })
 );
@@ -47,12 +50,14 @@ function sortMarkets(markets: PolymarketMarket[], sortOrder: MarketSortOrder) {
     switch (sortOrder) {
       case MarketSortOrder.VOLUME:
         return Number(b.volume) - Number(a.volume);
-      case MarketSortOrder.LAST_TRADE_PRICE:
+      case MarketSortOrder.PRICE:
         return Number(b.lastTradePrice) - Number(a.lastTradePrice);
       case MarketSortOrder.VOLUME_24HR:
         return Number(b.volume24hr) - Number(a.volume24hr);
       case MarketSortOrder.END_DATE:
         return new Date(b.endDate).getTime() - new Date(a.endDate).getTime();
+      case MarketSortOrder.DEFAULT:
+        return Number(a.groupItemThreshold) - Number(b.groupItemThreshold);
     }
   });
 }

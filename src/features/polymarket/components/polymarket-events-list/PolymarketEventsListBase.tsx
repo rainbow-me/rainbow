@@ -21,11 +21,13 @@ type ListProps = Pick<ComponentProps<typeof FlatList>, 'onEndReached' | 'onEndRe
 type PolymarketEventsListBaseProps = {
   events: PolymarketEvent[];
   isLoading?: boolean;
+  listRef?: React.RefObject<FlatList<PolymarketEvent> | null>;
 } & ListProps;
 
 export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
   events,
   isLoading,
+  listRef,
   ...listProps
 }: PolymarketEventsListBaseProps) {
   const safeAreaInsets = useSafeAreaInsets();
@@ -47,6 +49,7 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
     <FlatList
       data={events}
       numColumns={2}
+      ref={listRef}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       contentContainerStyle={[styles.contentContainer, { paddingBottom }]}

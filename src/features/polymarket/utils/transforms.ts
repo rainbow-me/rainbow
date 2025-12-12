@@ -31,7 +31,7 @@ export function processRawPolymarketMarket(market: RawPolymarketMarket, eventCol
 
 export async function processRawPolymarketEvent(event: RawPolymarketEvent, teams?: PolymarketTeamInfo[]): Promise<PolymarketEvent> {
   const color = await getImagePrimaryColor(event.icon);
-  const sortedMarkets = event.sortBy ? sortMarkets(event.markets, event.sortBy) : event.markets;
+  const sortedMarkets = sortMarkets(event.markets, event.sortBy);
   const processedMarkets = sortedMarkets.map(market => processRawPolymarketMarket(market, color));
   return {
     ...event,
@@ -72,11 +72,11 @@ export async function processRawPolymarketOptimizedEvent(event: RawPolymarketOpt
   };
 }
 
-function sortMarkets(markets: RawPolymarketMarket[], sortBy: string) {
+function sortMarkets(markets: RawPolymarketMarket[], sortBy?: 'price') {
   switch (sortBy) {
     case 'price':
-      return markets.sort((a, b) => b.lastTradePrice - a.lastTradePrice);
+      return markets.sort((a, b) => (b.lastTradePrice ?? 0) - (a.lastTradePrice ?? 0));
     default:
-      return markets;
+      return markets.sort((a, b) => Number(a.groupItemThreshold) - Number(b.groupItemThreshold));
   }
 }

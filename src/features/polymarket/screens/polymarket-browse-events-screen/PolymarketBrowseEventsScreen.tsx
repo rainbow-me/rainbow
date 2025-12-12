@@ -1,8 +1,10 @@
-import { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { memo, useRef } from 'react';
+import { FlatList, StyleSheet, View } from 'react-native';
+import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { PolymarketEventsListBase } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListBase';
 import { PolymarketEventCategorySelector } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketEventCategorySelector';
 import { usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
+import { useListen } from '@/state/internal/hooks/useListen';
 
 export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEventsScreen() {
   return (
@@ -14,10 +16,19 @@ export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEvents
 });
 
 const PolymarketBrowseEventsList = memo(function PolymarketBrowseEventsList() {
+  const listRef = useRef<FlatList<PolymarketEvent>>(null);
   const isInitialLoad = usePolymarketEventsStore(state => state.getStatus('isInitialLoad'));
   const events = usePolymarketEventsStore(state => state.getData());
 
-  return <PolymarketEventsListBase events={events ?? []} isLoading={isInitialLoad} />;
+  useListen(
+    usePolymarketEventsStore,
+    state => state.tagId,
+    () => {
+      listRef.current?.scrollToOffset({ offset: 0, animated: true });
+    }
+  );
+
+  return <PolymarketEventsListBase events={events ?? []} isLoading={isInitialLoad} listRef={listRef} />;
 });
 
 const styles = StyleSheet.create({

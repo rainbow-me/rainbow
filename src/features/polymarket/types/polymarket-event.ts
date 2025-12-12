@@ -189,12 +189,12 @@ export type RawPolymarketMarket = {
   rewardsMaxSpread: number;
   spread: number;
   automaticallyResolved: boolean;
-  oneDayPriceChange: number | undefined;
-  oneHourPriceChange: number | undefined;
-  oneWeekPriceChange: number | undefined;
-  oneMonthPriceChange: number | undefined;
-  oneYearPriceChange: number | undefined;
-  lastTradePrice: number;
+  oneDayPriceChange?: number;
+  oneHourPriceChange?: number;
+  oneWeekPriceChange?: number;
+  oneMonthPriceChange?: number;
+  oneYearPriceChange?: number;
+  lastTradePrice?: number;
   bestBid: number;
   bestAsk: number;
   automaticallyActive: boolean;
@@ -324,7 +324,8 @@ export type RawPolymarketEvent = {
   liquidity: number;
   volume: number;
   openInterest: number;
-  sortBy: string | undefined;
+  // TODO: Find out what the other possible values are
+  sortBy?: 'price';
   category: string;
   subcategory: string;
   isTemplate: boolean;
