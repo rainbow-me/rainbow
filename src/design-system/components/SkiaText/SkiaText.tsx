@@ -1,8 +1,7 @@
 import { AnimatedProp, Paragraph, SkPaint, SkParagraph, SkTextShadow, Transforms3d } from '@shopify/react-native-skia';
-import React, { ComponentType, ReactNode, useCallback, useContext, useMemo } from 'react';
+import React, { ComponentType, ReactNode, useCallback, useMemo } from 'react';
 import { isSharedValue, runOnUI, useDerivedValue } from 'react-native-reanimated';
 import { TextAlign } from '@/components/text/types';
-import { AccentColorContext } from '@/design-system/color/AccentColorContext';
 import { ColorMode, TextColor } from '@/design-system/color/palettes';
 import { CustomColor, getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
@@ -91,16 +90,15 @@ export const SkiaText = ({
   x,
   y,
 }: SkiaTextProps) => {
-  const accentColor = useContext(AccentColorContext);
-  const color = getColorForTheme(providedColor, colorMode, accentColor);
+  const color = getColorForTheme(providedColor, colorMode);
 
   const getSegmentColor = useCallback(
-    (textColor: TextColor | CustomColor | undefined) => {
+    (textColor: TextColor | CustomColor | undefined): string => {
       'worklet';
       if (!textColor) return color;
-      return getColorForTheme(textColor, colorMode, accentColor);
+      return getColorForTheme(textColor, colorMode);
     },
-    [accentColor, color, colorMode]
+    [color, colorMode]
   );
 
   const buildParagraph = useSkiaText(
