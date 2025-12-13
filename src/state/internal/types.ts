@@ -145,6 +145,15 @@ export type DeriveOptions<DerivedState = unknown> =
        */
       equalityFn?: EqualityFn<DerivedState>;
       /**
+       * If `true`, the derived store will never destroy itself. Useful in cases where your
+       * derived store serves as a permanent cache subscribed to intermittently or not at all.
+       * Manual calls to `destroy` *will* destroy the store even when `keepAlive` is `true`.
+       *
+       * *Use this option carefully.*
+       * @default false
+       */
+      keepAlive?: boolean;
+      /**
        * **In fast mode, subscriptions to underlying stores are established only once**, during
        * the initial run of your `deriveFunction` — they are *not* rebuilt on subsequent runs
        * like they are by default.
