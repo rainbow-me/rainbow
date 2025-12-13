@@ -39,9 +39,9 @@ export type QueryStatus = (typeof QueryStatuses)[keyof typeof QueryStatuses];
  */
 export type QueryStatusInfo = {
   isError: boolean;
-  isLoading: boolean;
   isIdle: boolean;
   isInitialLoad: boolean;
+  isLoading: boolean;
   isSuccess: boolean;
 };
 
@@ -132,7 +132,7 @@ export type CacheEntry<TData> = {
  * - **`getStatus(statusKey?)`**: Returns expanded status information for the current query parameters.
  * - **`isDataExpired(override?)`**: Checks if the current data has expired based on `cacheTime`.
  * - **`isStale(override?)`**: Checks if the current data is stale based on `staleTime`.
- * - **`reset()`**: Resets the store to its initial state, clearing data and errors.
+ * - **`reset(resetStoreState?)`**: Resets the store to its initial state, clearing data and errors.
  */
 interface QueryCapableStore<
   TData,
@@ -190,7 +190,7 @@ interface QueryCapableStore<
   /**
    * Resets the store to its initial state, clearing data, error, and any cached values.
    */
-  reset: () => void;
+  reset: (resetStoreState?: boolean) => void;
 }
 
 export type QueryStoreStateCreator<Q, U> = StateCreator<Q, [], [['zustand/subscribeWithSelector', never]], U>;
