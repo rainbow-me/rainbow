@@ -4,8 +4,6 @@ import { useDebouncedCallback } from 'use-debounce';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
-import { INITIAL_SLIDER_PROGRESS } from '@/features/perps/screens/perps-deposit-withdraw-screen/shared/constants';
-import { amountFromSliderProgress, sliderProgressFromAmount } from '@/features/perps/screens/perps-deposit-withdraw-screen/shared/worklets';
 import { handleSignificantDecimalsWorklet } from '@/helpers/utilities';
 import { useStableValue } from '@/hooks/useStableValue';
 import { divWorklet, equalWorklet, greaterThanOrEqualToWorklet, mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/safe-math/SafeMath';
@@ -17,7 +15,9 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { addCommasToNumber, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { time } from '@/utils/time';
 import { sanitizeAmount } from '@/worklets/strings';
+import { INITIAL_SLIDER_PROGRESS } from '../constants';
 import { AmountStoreType, DepositGasStoresType, DepositStoreType, InputMethod, InteractionSource, MinifiedAsset } from '../types';
+import { amountFromSliderProgress, sliderProgressFromAmount } from '../utils/sliderWorklets';
 
 // ============ Controller Hook =============================================== //
 

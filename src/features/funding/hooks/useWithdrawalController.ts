@@ -3,16 +3,15 @@ import { runOnJS, runOnUI, useAnimatedReaction, useSharedValue, withSpring } fro
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
-import { sliderProgressFromAmount, valueFromSliderProgress } from '@/features/perps/screens/perps-deposit-withdraw-screen/shared/worklets';
-import { INITIAL_SLIDER_PROGRESS } from '@/features/perps/screens/perps-deposit-withdraw-screen/shared/constants';
-import { InteractionSource } from '@/features/perps/screens/perps-deposit-withdraw-screen/shared/types';
 import { equalWorklet, greaterThanOrEqualToWorklet } from '@/safe-math/SafeMath';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { RainbowStore } from '@/state/internal/types';
 import { StoreActions } from '@/state/internal/utils/createStoreActions';
 import { sanitizeAmount } from '@/worklets/strings';
-import { AmountStoreType } from '../types';
+import { INITIAL_SLIDER_PROGRESS } from '../constants';
+import { AmountStoreType, InteractionSource } from '../types';
+import { sliderProgressFromAmount, valueFromSliderProgress } from '../utils/sliderWorklets';
 
 // ============ Types ========================================================== //
 

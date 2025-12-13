@@ -10,11 +10,11 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BASE_INPUT_WIDTH, ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, globalColors, useColorMode } from '@/design-system';
-import { BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT } from '@/features/perps/screens/perps-deposit-withdraw-screen/constants';
+import { BASE_INPUT_WIDTH, ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT } from '../../constants';
 import { useDepositContext } from '../../contexts/DepositContext';
 
 // ============ Constants ====================================================== //

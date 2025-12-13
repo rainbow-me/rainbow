@@ -11,16 +11,15 @@ import Animated, {
   useDerivedValue,
   withTiming,
 } from 'react-native-reanimated';
-
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Column, Columns, Cover, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
-import { GestureHandlerButton, GestureHandlerButtonProps } from './GestureHandlerButton';
-import { useSwapContext } from '../providers/swap-provider';
 import { SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
-import { PerpsDepositContextType } from '@/features/perps/screens/perps-deposit-withdraw-screen/types';
+import { IS_IOS } from '@/env';
+import { DepositContextType } from '@/features/funding/types';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { useSwapContext } from '../providers/swap-provider';
+import { GestureHandlerButton, GestureHandlerButtonProps } from './GestureHandlerButton';
 
 function SwapButton({
   asset,
@@ -37,7 +36,7 @@ function SwapButton({
   children,
   testID,
 }: {
-  asset: DerivedValue<ExtendedAnimatedAssetWithColors | null> | PerpsDepositContextType['minifiedAsset'];
+  asset: DerivedValue<ExtendedAnimatedAssetWithColors | null> | DepositContextType['minifiedAsset'];
   borderRadius?: number;
   disableShadow?: boolean;
   icon?: string | SharedOrDerivedValueText;
@@ -238,7 +237,7 @@ export const SwapActionButton = ({
   testID,
   ...props
 }: {
-  asset: DerivedValue<ExtendedAnimatedAssetWithColors | null> | PerpsDepositContextType['minifiedAsset'];
+  asset: DerivedValue<ExtendedAnimatedAssetWithColors | null> | DepositContextType['minifiedAsset'];
   borderRadius?: number;
   disableShadow?: boolean;
   holdProgress?: SharedValue<number>;

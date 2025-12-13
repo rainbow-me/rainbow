@@ -1,12 +1,12 @@
-import { INITIAL_SLIDER_PROGRESS } from '@/features/perps/screens/perps-deposit-withdraw-screen/shared/constants';
-import { amountFromSliderProgress } from '@/features/perps/screens/perps-deposit-withdraw-screen/shared/worklets';
 import { equalWorklet, trimTrailingZeros } from '@/safe-math/SafeMath';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { sanitizeAmount } from '@/worklets/strings';
-import { computeMaxSwappableAmount } from './createDepositStore';
+import { INITIAL_SLIDER_PROGRESS } from '../constants';
 import { AmountState, AmountStoreType } from '../types';
+import { amountFromSliderProgress } from '../utils/sliderWorklets';
+import { computeMaxSwappableAmount } from './createDepositStore';
 
 // ============ Amount Store Factory ========================================== //
 
