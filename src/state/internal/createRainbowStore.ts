@@ -68,7 +68,6 @@ function buildPersistOptions<S, PersistedState extends Partial<S>>(
     version: storageConfig.version,
   };
 
-  if (options.merge !== undefined) persistConfig.merge = options.merge;
   if (options.migrate !== undefined) persistConfig.migrate = options.migrate;
 
   return persistConfig;
