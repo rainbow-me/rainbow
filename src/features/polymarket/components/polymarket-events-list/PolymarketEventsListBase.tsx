@@ -1,6 +1,7 @@
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { ComponentProps, ComponentType, ReactElement, memo, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { ComponentProps, ComponentType, ReactElement, memo, useMemo } from 'react';
 import { NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER_HEIGHT, POLYMARKET_BACKGROUND_DARK } from '@/features/polymarket/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -23,8 +24,9 @@ type PolymarketEventsListBaseProps = {
   events: PolymarketEvent[];
   isLoading?: boolean;
   ListHeaderComponent?: ComponentType | ReactElement | null;
+  listRef?: React.RefObject<Animated.FlatList<PolymarketEvent> | null>;
   onEndReached?: () => void;
-  listRef?: React.RefObject<FlatList<PolymarketEvent> | null>;
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 } & ListProps;
 
 export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
@@ -35,6 +37,7 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
   onEndReached,
   onEndReachedThreshold,
   onRefresh,
+  onScroll,
   refreshing,
 }: PolymarketEventsListBaseProps) {
   const safeAreaInsets = useSafeAreaInsets();
@@ -47,10 +50,9 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
     };
   }, [safeAreaInsets.bottom]);
 
-  if (isLoading) return <ListLoadingSkeleton />;
-
   return (
-    <FlatList
+    <Animated.FlatList
+      ListEmptyComponent={<ListLoadingSkeleton />}
       ListHeaderComponent={ListHeaderComponent}
       contentContainerStyle={contentContainerStyle}
       data={events}
@@ -62,8 +64,9 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
       onEndReached={onEndReached}
       onEndReachedThreshold={onEndReachedThreshold}
       onRefresh={onRefresh}
-      refreshing={refreshing}
+      onScroll={onScroll}
       ref={listRef}
+      refreshing={refreshing}
       renderItem={renderItem}
       scrollIndicatorInsets={scrollIndicatorInsets}
       style={styles.list}

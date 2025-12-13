@@ -48,8 +48,8 @@ export const PolymarketNavigator = memo(function PolymarketNavigator() {
 
       {useStableValue(() => (
         <SmoothPager
-          enableSwipeToGoBack={true}
-          enableSwipeToGoForward={true}
+          enableSwipeToGoBack
+          enableSwipeToGoForward="always"
           initialPage={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}
           onNewIndex={Navigator.handlePagerIndexChange}
           ref={ref}
