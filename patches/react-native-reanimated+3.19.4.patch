@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
-index f3742ed..da2d111 100644
+index 7cf6c8e..c9e0da7 100644
 --- a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
 +++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
 @@ -13,6 +13,7 @@
@@ -10,7 +10,7 @@ index f3742ed..da2d111 100644
  #include <worklets/Tools/AsyncQueue.h>
  #include <worklets/Tools/WorkletEventHandler.h>
  
-@@ -293,6 +294,17 @@ jsi::Value ReanimatedModuleProxy::scheduleOnRuntime(
+@@ -318,6 +319,17 @@ jsi::Value ReanimatedModuleProxy::scheduleOnRuntime(
    return jsi::Value::undefined();
  }
  
@@ -29,10 +29,10 @@ index f3742ed..da2d111 100644
      jsi::Runtime &rt,
      const jsi::Value &worklet,
 diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h
-index f9332ea..3bab115 100644
+index 1896e98..ad07c50 100644
 --- a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h
 +++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h
-@@ -53,6 +53,10 @@ class ReanimatedModuleProxy
+@@ -54,6 +54,10 @@ class ReanimatedModuleProxy
    jsi::Value executeOnUIRuntimeSync(jsi::Runtime &rt, const jsi::Value &worklet)
        override;
  
@@ -87,10 +87,6 @@ index 5a9fd67..191ce58 100644
    // events
    virtual jsi::Value registerEventHandler(
        jsi::Runtime &rt,
-diff --git a/node_modules/react-native-reanimated/Common/cpp/worklets/.DS_Store b/node_modules/react-native-reanimated/Common/cpp/worklets/.DS_Store
-new file mode 100644
-index 0000000..ef0c65e
-Binary files /dev/null and b/node_modules/react-native-reanimated/Common/cpp/worklets/.DS_Store differ
 diff --git a/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/Synchronizable.cpp b/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/Synchronizable.cpp
 new file mode 100644
 index 0000000..faa6a47
@@ -440,11 +436,11 @@ index 0000000..97ff93a
 +
 +} // namespace worklets
 diff --git a/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.cpp b/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.cpp
-index 0726b31..b44c0d7 100644
+index eaa59a8..d3f2424 100644
 --- a/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.cpp
 +++ b/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.cpp
-@@ -411,6 +411,10 @@ void NativeProxy::progressLayoutAnimation(
-       tag, newPropsJNI, isSharedTransition);
+@@ -433,6 +433,10 @@ void NativeProxy::progressLayoutAnimation(
+       ->progressLayoutAnimation(tag, newPropsJNI, isSharedTransition);
  }
  
 +void NativeProxy::endLayoutAnimation(int tag, bool shouldRemove) {
@@ -454,27 +450,27 @@ index 0726b31..b44c0d7 100644
  PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
  #ifdef RCT_NEW_ARCH_ENABLED
    // nothing
-@@ -450,14 +454,7 @@ PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
+@@ -473,14 +477,7 @@ PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
    auto progressLayoutAnimation =
        bindThis(&NativeProxy::progressLayoutAnimation);
  
--  auto endLayoutAnimation = [weakThis = weak_from_this()](
--                                int tag, bool removeView) {
--    auto strongThis = weakThis.lock();
--    if (!strongThis) {
--      return;
--    }
--    strongThis->layoutAnimations_->cthis()->endLayoutAnimation(tag, removeView);
--  };
+-  auto endLayoutAnimation =
+-      [layoutAnimationsWeak =
+-           std::weak_ptr<jni::global_ref<LayoutAnimations::javaobject>>(
+-               layoutAnimations_)](int tag, bool removeView) {
+-        if (auto layoutAnimations = layoutAnimationsWeak.lock()) {
+-          (*layoutAnimations)->cthis()->endLayoutAnimation(tag, removeView);
+-        }
+-      };
 +  auto endLayoutAnimation = bindThis(&NativeProxy::endLayoutAnimation);
  
    auto maybeFlushUiUpdatesQueueFunction =
        bindThis(&NativeProxy::maybeFlushUIUpdatesQueue);
 diff --git a/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.h b/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.h
-index 2ee2cc8..2edb5c9 100644
+index b2c1fab..abdec99 100644
 --- a/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.h
 +++ b/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.h
-@@ -234,6 +234,8 @@ class NativeProxy : public jni::HybridClass<NativeProxy>,
+@@ -240,6 +240,8 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
        const jsi::Object &newProps,
        bool isSharedTransition);
  
@@ -484,7 +480,7 @@ index 2ee2cc8..2edb5c9 100644
     * Wraps a method of `NativeProxy` in a function object capturing `this`
     * @tparam TReturn return type of passed method
 diff --git a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
-index 91ba53e..8c589e6 100644
+index 91ba53e..193850e 100644
 --- a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
 +++ b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
 @@ -175,7 +175,11 @@ - (READisplayLink *)getDisplayLink
@@ -493,15 +489,24 @@ index 91ba53e..8c589e6 100644
  #if !TARGET_OS_OSX
 -    _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
 +    if (@available(iOS 15.0, *)) {
-+      _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(80, 120, 80);
++      _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(80, 120, 120);
 +    } else {
 +      _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
 +    }
  #endif // TARGET_OS_OSX
      [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
    }
+@@ -347,7 +351,7 @@ - (void)performOperations
+       // from CADisplayLink but it is easier to hardcode it for the time being.
+       // The reason why we use frame duration here is that if takes longer than one frame to complete layout tasks
+       // there is no point of synchronizing layout with the UI interaction as we get that one frame delay anyways.
+-      [syncUpdateObserver waitAndMountWithTimeout:0.016];
++      [syncUpdateObserver waitAndMountWithTimeout:1 / 120];
+     }
+   }
+   _wantRunUpdates = NO;
 diff --git a/node_modules/react-native-reanimated/src/ReanimatedModule/NativeReanimated.ts b/node_modules/react-native-reanimated/src/ReanimatedModule/NativeReanimated.ts
-index fa014ee..15d2cf0 100644
+index 78df0bc..1808f25 100644
 --- a/node_modules/react-native-reanimated/src/ReanimatedModule/NativeReanimated.ts
 +++ b/node_modules/react-native-reanimated/src/ReanimatedModule/NativeReanimated.ts
 @@ -10,6 +10,7 @@ import type {
@@ -562,13 +567,13 @@ index fed3331..002d2a6 100644
      eventHandler: ShareableRef<T>,
      eventName: string,
 diff --git a/node_modules/react-native-reanimated/src/commonTypes.ts b/node_modules/react-native-reanimated/src/commonTypes.ts
-index 4e102c8..d16c058 100644
+index a28c136..2d38706 100644
 --- a/node_modules/react-native-reanimated/src/commonTypes.ts
 +++ b/node_modules/react-native-reanimated/src/commonTypes.ts
-@@ -608,3 +608,23 @@ export type AnimateStyle<Style = DefaultStyle> = AnimatedStyle<Style>;
- export type StylesOrDefault<T> = 'style' extends keyof T
-   ? MaybeSharedValueRecursive<T['style']>
-   : Record<string, unknown>;
+@@ -621,3 +621,23 @@ export type InternalHostInstance = Partial<
+     _reactInternals: unknown;
+   }
+ >;
 +
 +export interface HostSynchronizableRef<TValue = unknown> {
 +  // TODO: TSDOC with links to documentation.
@@ -676,6 +681,18 @@ index 6bc0b66..20a007f 100644
      },
      set value(newValue) {
        checkInvalidWriteDuringRender();
+diff --git a/node_modules/react-native-reanimated/src/propsAllowlists.ts b/node_modules/react-native-reanimated/src/propsAllowlists.ts
+index 9aaeb8d..f88d3a2 100644
+--- a/node_modules/react-native-reanimated/src/propsAllowlists.ts
++++ b/node_modules/react-native-reanimated/src/propsAllowlists.ts
+@@ -85,6 +85,7 @@ export const PropsAllowlists: AllowlistsHolder = {
+     elevation: true,
+     fontSize: true,
+     lineHeight: true,
++    textShadowColor: true,
+     textShadowRadius: true,
+     textShadowOffset: true,
+     letterSpacing: true,
 diff --git a/node_modules/react-native-reanimated/src/synchronizable.ts b/node_modules/react-native-reanimated/src/synchronizable.ts
 new file mode 100644
 index 0000000..d97c2a8
