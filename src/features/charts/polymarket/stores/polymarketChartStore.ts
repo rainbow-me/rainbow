@@ -19,8 +19,8 @@ import { PolymarketStoreState, usePolymarketStore } from './polymarketStore';
 // ============ Constants ====================================================== //
 
 export const MAX_POLYMARKET_SERIES = 3;
-const EMPTY_SERIES: OutcomeSeries[] = [];
 
+const EMPTY_SERIES: OutcomeSeries[] = [];
 const YES_COLOR = '#3ECF5B';
 const NO_COLOR = '#FF584D';
 

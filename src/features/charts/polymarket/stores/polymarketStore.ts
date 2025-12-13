@@ -2,23 +2,6 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { MarketFilter, PolymarketInterval } from '../types';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
-// ============ Helpers ======================================================== //
-
-function areMarketFiltersEqual(a: MarketFilter | null, b: MarketFilter | null): boolean {
-  if (a === b) return true;
-  if (a === null || b === null) return false;
-  const { tokenIds: aIds, labels: aLabels } = a;
-  const { tokenIds: bIds, labels: bLabels } = b;
-  if (aIds.length !== bIds.length || aLabels.length !== bLabels.length) return false;
-  for (let i = 0; i < aIds.length; i++) {
-    if (aIds[i] !== bIds[i]) return false;
-  }
-  for (let i = 0; i < aLabels.length; i++) {
-    if (aLabels[i] !== bLabels[i]) return false;
-  }
-  return true;
-}
-
 // ============ Types ========================================================== //
 
 export type PolymarketStoreState = {
@@ -37,14 +20,14 @@ export type PolymarketStoreState = {
 
 export const usePolymarketStore = createRainbowStore<PolymarketStoreState>(
   set => ({
-    chartInterval: 'max',
+    chartInterval: '1w',
     highlightedSeriesId: null,
     selectedEventSlug: null,
     selectedMarketFilter: null,
 
     reset: () => {
       set({
-        chartInterval: 'max',
+        chartInterval: '1w',
         highlightedSeriesId: null,
         selectedEventSlug: null,
         selectedMarketFilter: null,
@@ -87,3 +70,20 @@ export const usePolymarketStore = createRainbowStore<PolymarketStoreState>(
 );
 
 export const polymarketChartsActions = createStoreActions(usePolymarketStore);
+
+// ============ Helpers ======================================================== //
+
+function areMarketFiltersEqual(a: MarketFilter | null, b: MarketFilter | null): boolean {
+  if (a === b) return true;
+  if (a === null || b === null) return false;
+  const { tokenIds: aIds, labels: aLabels } = a;
+  const { tokenIds: bIds, labels: bLabels } = b;
+  if (aIds.length !== bIds.length || aLabels.length !== bLabels.length) return false;
+  for (let i = 0; i < aIds.length; i++) {
+    if (aIds[i] !== bIds[i]) return false;
+  }
+  for (let i = 0; i < aLabels.length; i++) {
+    if (aLabels[i] !== bLabels[i]) return false;
+  }
+  return true;
+}
