@@ -72,10 +72,9 @@ async function fetchMarketFilterChart(
   marketFilter: MarketFilter,
   fidelity?: number
 ): Promise<PolymarketChartData> {
-  const { tokenIds, labels } = marketFilter;
+  const { labels, tokenIds } = marketFilter;
 
-  // For Yes/No markets, only show the Yes outcome (matching event chart behavior)
-  const isYesNoMarket = labels.length === 2 && hasYesAndNo(labels);
+  const isYesNoMarket = hasYesAndNo(labels);
   const yesIndex = isYesNoMarket ? labels.findIndex(l => l?.toLowerCase() === 'yes') : -1;
 
   const filteredTokenIds = yesIndex >= 0 ? [tokenIds[yesIndex]] : tokenIds;
@@ -195,6 +194,7 @@ function getOutcomeColor(label: string, index: number, enableYesNoColors: boolea
 }
 
 function hasYesAndNo(labels: readonly string[]): boolean {
+  if (labels.length !== 2) return false;
   let hasYes = false;
   let hasNo = false;
   for (let i = 0; i < labels.length; i++) {

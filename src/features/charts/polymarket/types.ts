@@ -147,8 +147,8 @@ export type PolymarketChartData = PolymarketChartDataPayload | null;
 
 /** Filter for direct tokenId-based chart fetching (used by market sheet). */
 export type MarketFilter = {
-  tokenIds: string[];
   labels: string[];
+  tokenIds: string[];
 };
 
 /** Parameters for fetching chart data. */

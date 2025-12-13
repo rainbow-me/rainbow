@@ -297,7 +297,7 @@ export const PolymarketChart = memo(function PolymarketChart({
         <AnimatedSpinner color={isDarkMode ? globalColors.white100 : globalColors.grey100} isLoading={isLoading} size={SPINNER_SIZE} />
       </Animated.View>
 
-      <Animated.View pointerEvents="none" style={[styles.overlay, emptyStateOpacity]}>
+      <Animated.View pointerEvents="none" style={[styles.overlay, { height: chartHeight }, emptyStateOpacity]}>
         <NoChartData height={{ custom: providedChartHeight }} />
       </Animated.View>
 
@@ -338,7 +338,6 @@ function prepareChartConfig({
 
   const height = baseChartHeight;
   const width = chartWidth;
-
   const status = cachedData ? (cachedData.series.length ? ChartStatus.Loaded : ChartStatus.Empty) : ChartStatus.Loading;
 
   return {

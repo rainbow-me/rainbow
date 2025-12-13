@@ -139,6 +139,8 @@ import { PolymarketNewPositionSheet } from '@/features/polymarket/screens/polyma
 import { PolymarketAccountScreen } from '@/features/polymarket/screens/polymarket-account-screen/PolymarketAccountScreen';
 import { PolymarketBrowseEventsScreen } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketBrowseEventsScreen';
 import { PolymarketNavigator } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
+import { PolymarketDepositScreen } from '@/features/polymarket/funding/screens/PolymarketDepositScreen';
+import { PolymarketWithdrawalScreen } from '@/features/polymarket/funding/screens/PolymarketWithdrawalScreen';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -308,8 +310,14 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
       <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
       <NativeStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} {...perpsDepositWithdrawalConfig} />
+      <NativeStack.Screen component={PolymarketDepositScreen} name={Routes.POLYMARKET_DEPOSIT_SCREEN} {...perpsDepositWithdrawalConfig} />
       <NativeStack.Screen component={PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={PerpsWithdrawalScreen} name={Routes.PERPS_WITHDRAWAL_SCREEN} {...perpsDepositWithdrawalConfig} />
+      <NativeStack.Screen
+        component={PolymarketWithdrawalScreen}
+        name={Routes.POLYMARKET_WITHDRAWAL_SCREEN}
+        {...perpsDepositWithdrawalConfig}
+      />
       <NativeStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} {...airdropsSheetConfig} />
       <NativeStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} {...claimAirdropSheetConfig} />

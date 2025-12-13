@@ -110,6 +110,8 @@ import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePosition
 import { PerpsExplainSheet } from '@/features/perps/screens/perps-explain-sheet/PerpsExplainSheet';
 import { PerpsAddToPositionSheet } from '@/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet';
 import { PerpsTradeDetailsSheet } from '@/features/perps/screens/perps-trade-details-sheet/PerpsTradeDetailsSheet';
+import { PolymarketDepositScreen } from '@/features/polymarket/funding/screens/PolymarketDepositScreen';
+import { PolymarketWithdrawalScreen } from '@/features/polymarket/funding/screens/PolymarketWithdrawalScreen';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -263,7 +265,9 @@ function BSNavigator() {
       <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
       <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
       <BSStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} {...swapSheetPreset} />
+      <BSStack.Screen component={PolymarketDepositScreen} name={Routes.POLYMARKET_DEPOSIT_SCREEN} {...swapSheetPreset} />
       <BSStack.Screen component={PerpsWithdrawalScreen} name={Routes.PERPS_WITHDRAWAL_SCREEN} {...swapSheetPreset} />
+      <BSStack.Screen component={PolymarketWithdrawalScreen} name={Routes.POLYMARKET_WITHDRAWAL_SCREEN} {...swapSheetPreset} />
       <BSStack.Screen component={SendSheet} name={Routes.SEND_SHEET_NAVIGATOR} options={expandedPresetWithSmallGestureResponseDistance} />
       <BSStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} />
       <BSStack.Screen component={PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} />
