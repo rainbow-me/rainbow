@@ -34,7 +34,7 @@ export const PolymarketSearchButton = memo(function PolymarketSearchButton() {
           />
           <InnerShadow borderRadius={29} color={opacityWorklet('#DC91F4', 0.14)} blur={5} dx={0} dy={1} />
         </View>
-        <TextIcon size="icon 20px" weight="heavy" color={{ custom: '#C863E8' }}>
+        <TextIcon size="icon 21px" weight="heavy" color={{ custom: '#C863E8' }}>
           {'􀊫'}
         </TextIcon>
       </Box>

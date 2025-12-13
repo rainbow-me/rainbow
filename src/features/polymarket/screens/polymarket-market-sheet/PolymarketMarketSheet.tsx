@@ -15,6 +15,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { PolymarketChart } from '@/features/charts/polymarket/components/PolymarketChart';
 import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
 import { getChartLineColors } from '@/features/charts/polymarket/utils/getChartLineColors';
+import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
 const CHART_HEIGHT = 280;
 
@@ -30,7 +31,7 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   const lineColors = useMemo(() => getChartLineColors([market]), [market]);
 
   return (
-    <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? '#000000' : '#FFFFFF' }}>
+    <PanelSheet innerBorderWidth={THICKER_BORDER_WIDTH} panelStyle={{ backgroundColor: isDarkMode ? '#000000' : '#FFFFFF' }}>
       <LinearGradient
         colors={[opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)]}
         style={StyleSheet.absoluteFill}

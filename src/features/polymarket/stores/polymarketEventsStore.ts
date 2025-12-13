@@ -18,13 +18,14 @@ export const usePolymarketEventsStore = createQueryStore<PolymarketEvent[], Poly
   {
     fetcher: fetchPolymarketEvents,
     staleTime: time.minutes(2),
-    cacheTime: time.minutes(10),
+    cacheTime: time.minutes(20),
     params: { tagId: ($, store) => $(store).tagId },
   },
   set => ({
     tagId: null,
     setTagId: (tagId: string | null) => set({ tagId }),
-  })
+  }),
+  { storageKey: 'polymarketEventsStore' }
 );
 
 export function prefetchPolymarketEvents() {

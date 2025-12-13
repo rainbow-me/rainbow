@@ -1,7 +1,7 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import ImgixImage from '@/components/images/ImgixImage';
-import { Bleed, Text, TextIcon, useBackgroundColor } from '@/design-system';
+import { Text, TextIcon, useBackgroundColor } from '@/design-system';
 import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { Navigation } from '@/navigation';
 import { memo, useMemo } from 'react';
@@ -12,10 +12,34 @@ import { formatNumber } from '@/helpers/strings';
 import { roundWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
 import { createOpacityPalette } from '@/worklets/colors';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { deepFreeze } from '@/utils/deepFreeze';
 
-export const HEIGHT = 239;
+export const HEIGHT = 228;
 
-export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({ event }: { event: PolymarketEvent }) {
+const GRADIENT_CONFIGS = {
+  card: {
+    end: { x: 0, y: 1 },
+    start: { x: 0, y: 0 },
+  },
+  outcomePill: {
+    end: { x: 0.79, y: 0 },
+    locations: [0.06, 1],
+    start: { x: -0.06, y: 0 },
+  },
+  outcomePillBorder: {
+    end: { x: 1, y: 0 },
+    start: { x: -1, y: 0 },
+  },
+};
+const OPACITIES = deepFreeze([0, 12, 24]);
+
+export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
+  event,
+  style,
+}: {
+  event: PolymarketEvent;
+  style?: StyleProp<ViewStyle>;
+}) {
   const firstMarket = useMemo(() => {
     const market = event.markets.find(market => market.active && !market.closed);
     if (!market)
@@ -32,72 +56,67 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
     };
   }, [event]);
 
-  const accentColors = useMemo(() => {
-    return createOpacityPalette(event.color);
+  const colors = useMemo(() => {
+    const palette = createOpacityPalette(event.color, OPACITIES);
+    return {
+      borderGradient: [palette.opacity12, palette.opacity0],
+      cardGradient: [palette.opacity24, palette.opacity0],
+      outcomePillGradient: [event.color, palette.opacity0],
+      textColor: { custom: event.color },
+    };
   }, [event.color]);
 
+  const iconSource = useMemo(() => ({ uri: event.icon ?? event.image }), [event.icon, event.image]);
+
   return (
-    <ButtonPressAnimation scaleTo={0.97} onPress={() => navigateToEvent(event)}>
-      <GradientBorderView
-        borderGradientColors={[accentColors.opacity14, accentColors.opacity0]}
-        locations={[0, 0.94]}
-        borderRadius={26}
-        borderWidth={2}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0.75, y: 0.6 }}
-      >
+    <ButtonPressAnimation onPress={() => navigateToEvent(event)} scaleTo={0.92} style={style}>
+      <GradientBorderView borderGradientColors={colors.borderGradient} borderRadius={26} borderWidth={2} style={styles.overflowHidden}>
         <LinearGradient
-          colors={[accentColors.opacity14, accentColors.opacity0]}
-          locations={[0, 0.94]}
+          colors={colors.cardGradient}
           style={StyleSheet.absoluteFill}
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.6, y: 0.62 }}
+          start={GRADIENT_CONFIGS.card.start}
+          end={GRADIENT_CONFIGS.card.end}
+          pointerEvents="none"
         />
 
         <View style={styles.contentContainer}>
-          <View style={{ position: 'absolute', top: 20, right: 20, opacity: 0.5 }}>
-            <TextIcon size="icon 13px" weight="heavy" color={'labelQuaternary'}>
+          <View style={styles.starContainer}>
+            <TextIcon size="icon 13px" weight="black" color={'labelQuaternary'}>
               {'􀋃'}
             </TextIcon>
           </View>
-          <View style={{ gap: 10, flex: 1 }}>
-            <View style={{ gap: 16 }}>
-              <ImgixImage source={{ uri: event.icon ?? event.image }} size={32} style={styles.icon} />
-              <Text size="13pt" weight="bold" color="labelQuaternary">
-                {formatNumber(event.volume, { useOrderSuffix: true, decimals: 1, style: '$' })}
-              </Text>
-            </View>
-            <Text size="17pt" weight="bold" color="label" numberOfLines={4} style={{}} align="left">
+          <View style={styles.headerContainer}>
+            <ImgixImage enableFasterImage source={iconSource} size={32} style={styles.icon} />
+            <Text size="20pt" weight="bold" color="label" numberOfLines={4} align="left">
               {event.title}
             </Text>
           </View>
 
-          <Bleed horizontal={'8px'}>
-            <GradientBorderView
-              borderGradientColors={[accentColors.opacity6, accentColors.opacity0]}
-              start={{ x: -1, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              borderRadius={16}
-              borderWidth={2}
-            >
-              <LinearGradient
-                colors={[accentColors.opacity100, accentColors.opacity0]}
-                locations={[0.06, 1]}
-                style={[StyleSheet.absoluteFill, { opacity: 0.14 }]}
-                start={{ x: -0.06, y: 0 }}
-                end={{ x: 0.79, y: 0 }}
-                pointerEvents="none"
-              />
-              <View style={[styles.row, { height: 36, paddingHorizontal: 12 }]}>
-                <Text size="15pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
-                  {firstMarket.odds}
-                </Text>
-                <Text size="15pt" weight="bold" color="labelSecondary" numberOfLines={1} style={styles.flex}>
-                  {firstMarket.title}
-                </Text>
-              </View>
-            </GradientBorderView>
-          </Bleed>
+          <GradientBorderView
+            borderGradientColors={colors.borderGradient}
+            borderWidth={2}
+            start={GRADIENT_CONFIGS.outcomePillBorder.start}
+            end={GRADIENT_CONFIGS.outcomePillBorder.end}
+            borderRadius={14}
+            style={styles.outcomePillContainer}
+          >
+            <LinearGradient
+              colors={colors.outcomePillGradient}
+              locations={GRADIENT_CONFIGS.outcomePill.locations}
+              style={styles.outcomePillGradient}
+              start={GRADIENT_CONFIGS.outcomePill.start}
+              end={GRADIENT_CONFIGS.outcomePill.end}
+              pointerEvents="none"
+            />
+            <View style={styles.row}>
+              <Text size="15pt" weight="bold" color={colors.textColor}>
+                {firstMarket.odds}
+              </Text>
+              <Text size="15pt" weight="bold" color="labelSecondary" numberOfLines={1} style={styles.flex}>
+                {firstMarket.title}
+              </Text>
+            </View>
+          </GradientBorderView>
         </View>
       </GradientBorderView>
     </ButtonPressAnimation>
@@ -140,18 +159,43 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 12,
   },
+  flex: {
+    flex: 1,
+  },
+  headerContainer: {
+    flex: 1,
+    gap: 10,
+  },
   icon: {
-    width: 32,
-    height: 32,
     borderRadius: 9,
+    height: 32,
+    marginBottom: 6,
+    width: 32,
+  },
+  outcomePillContainer: {
+    overflow: 'hidden',
+    marginLeft: -8,
+    marginRight: -8,
+  },
+  outcomePillGradient: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.14,
+  },
+  overflowHidden: {
+    overflow: 'hidden',
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    height: 36,
+    paddingHorizontal: 12,
   },
-  flex: {
-    flex: 1,
+  starContainer: {
+    opacity: 0.5,
+    position: 'absolute',
+    right: 20,
+    top: 20,
   },
   skeleton: {
     height: HEIGHT,

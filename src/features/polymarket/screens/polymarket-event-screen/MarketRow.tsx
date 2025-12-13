@@ -6,12 +6,13 @@ import { memo, useMemo } from 'react';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LinearGradient } from 'react-native-linear-gradient';
 import ImgixImage from '@/components/images/ImgixImage';
-import { toPercentageWorklet } from '@/safe-math/SafeMath';
+import { lessThanWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
 import { formatNumber } from '@/helpers/strings';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { createOpacityPalette } from '@/worklets/colors';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
 type MarketRowProps = {
   accentColor: string;
@@ -24,6 +25,8 @@ type MarketRowProps = {
   minTickSize: number;
   onPress: () => void;
 };
+
+const ROW_RIGHT_BLEED = 4;
 
 export const MarketRow = memo(function MarketRow({
   accentColor,
@@ -56,13 +59,14 @@ export const MarketRow = memo(function MarketRow({
   }, [accentColor]);
 
   return (
-    <ButtonPressAnimation scaleTo={0.97} onPress={onPress}>
+    <ButtonPressAnimation scaleTo={0.95} onPress={onPress}>
       <GradientBorderView
         borderGradientColors={[accentColors.opacity6, accentColors.opacity0]}
+        borderWidth={2.5}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 0 }}
         borderRadius={24}
-        style={{ overflow: 'hidden' }}
+        style={{ height: 66, marginRight: -ROW_RIGHT_BLEED, overflow: 'hidden' }}
       >
         <LinearGradient
           colors={[accentColors.opacity14, accentColors.opacity0]}
@@ -71,8 +75,8 @@ export const MarketRow = memo(function MarketRow({
           end={{ x: 0, y: 0 }}
           pointerEvents="none"
         />
-        <Box height={66} flexDirection="row" alignItems="center" gap={12} paddingRight={'10px'}>
-          {image && <ImgixImage resizeMode="cover" size={40} source={{ uri: image }} style={styles.image} />}
+        <Box flexDirection="row" alignItems="center" height="full" gap={12} paddingRight={'10px'}>
+          {image && <ImgixImage enableFasterImage resizeMode="cover" size={40} source={{ uri: image }} style={styles.image} />}
           <Box gap={12} style={styles.flex}>
             <Box flexDirection="row" alignItems="center" gap={8}>
               <Text size="17pt" weight="bold" color="label" numberOfLines={1} style={styles.flexShrink}>

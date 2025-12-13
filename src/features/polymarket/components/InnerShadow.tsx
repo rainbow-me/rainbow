@@ -2,12 +2,13 @@ import { memo, useCallback, useMemo } from 'react';
 import { LayoutChangeEvent, StyleSheet } from 'react-native';
 import { Canvas, RoundedRect, Shadow, rect, rrect } from '@shopify/react-native-skia';
 import Animated, { useSharedValue } from 'react-native-reanimated';
+import { SharedOrDerivedValue } from '@/types/reanimated';
 
 const ZERO_RECT = Object.freeze(rrect(rect(0, 0, 0, 0), 0, 0));
 
 type InnerShadowProps = {
   borderRadius?: number;
-  color: string;
+  color: string | SharedOrDerivedValue<string>;
   blur: number;
   dx: number;
   dy: number;
@@ -27,7 +28,7 @@ export const InnerShadow = memo(function InnerShadow({ borderRadius = 0, color, 
     (event: LayoutChangeEvent) => {
       'worklet';
       const { width, height } = event.nativeEvent.layout;
-      shadowRect.value = rrect(rect(0, 0, width, height), borderRadius, borderRadius);
+      shadowRect.value = rrect(rect(0, 0, Math.floor(width), Math.floor(height)), borderRadius, borderRadius);
     },
     [borderRadius, shadowRect]
   );

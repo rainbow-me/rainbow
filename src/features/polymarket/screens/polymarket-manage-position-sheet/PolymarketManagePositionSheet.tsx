@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
@@ -8,6 +8,7 @@ import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
+import { Side } from '@polymarket/clob-client';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { PolymarketPosition } from '@/features/polymarket/types';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
@@ -25,7 +26,6 @@ import Navigation from '@/navigation/Navigation';
 import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { redeemPosition } from '@/features/polymarket/utils/redeemPosition';
 import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
-import { Side } from '@polymarket/clob-client';
 
 export const PolymarketManagePositionSheet = memo(function PolymarketManagePositionSheet() {
   const {
@@ -88,24 +88,25 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
       const price = await polymarketClobDataClient.calculateMarketPrice(position.asset, Side.SELL, position.size);
       const orderResult = await marketSellTotalPosition({ position, price });
       const tokensSold = orderResult.makingAmount;
-      await collectTradeFee(tokensSold);
+      collectTradeFee(tokensSold);
+      refetchPolymarketStores();
       Navigation.goBack();
     } catch (e) {
       logger.error(new RainbowError('[PolymarketManagePositionSheet] Error selling position', ensureError(e)));
-    } finally {
       setIsProcessing(false);
+      Alert.alert('Error', 'Failed to cash out position. Please try again.');
     }
   }, [position]);
 
   const handleClaimPosition = useCallback(async () => {
     try {
       await redeemPosition(position);
-      await refetchPolymarketStores();
+      refetchPolymarketStores();
       Navigation.goBack();
     } catch (e) {
       logger.error(new RainbowError('[PolymarketManagePositionSheet] Error claiming position', ensureError(e)));
-    } finally {
       setIsProcessing(false);
+      Alert.alert('Error', 'Failed to claim position. Please try again.');
     }
   }, [position]);
 

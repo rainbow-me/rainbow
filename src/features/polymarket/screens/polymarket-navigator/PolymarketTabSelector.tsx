@@ -129,15 +129,14 @@ const TabButton = ({
   selectedIndex: SharedValue<number>;
   value: Tab;
 }) => {
-  const labelQuaternary = useForegroundColor('labelQuaternary');
+  const labelTertiary = useForegroundColor('labelTertiary');
 
   const iconStyle = useAnimatedStyle(() => {
     const isSelected = selectedIndex.value === index;
-    const textColor = isSelected ? '#C863E8' : labelQuaternary;
+    const textColor = isSelected ? '#C863E8' : labelTertiary;
     if (!IS_IOS) return { color: textColor };
     return {
       color: textColor,
-      fontWeight: isSelected ? '800' : '700',
     };
   });
 
@@ -152,12 +151,14 @@ const TabButton = ({
       }}
       style={styles.button}
     >
-      <AnimatedText align="center" color="label" size="22pt" style={iconStyle} weight="bold">
-        {icon}
-      </AnimatedText>
-      <AnimatedText align="center" color="label" size="15pt" weight="bold">
-        {label}
-      </AnimatedText>
+      <View style={styles.iconContainer}>
+        <AnimatedText align="center" color="label" size={icon === '􀫸' ? 'icon 21px' : 'icon 20px'} style={iconStyle} weight="heavy">
+          {icon}
+        </AnimatedText>
+        <AnimatedText align="center" color="label" size="13pt" weight="bold">
+          {label}
+        </AnimatedText>
+      </View>
     </GestureHandlerButton>
   );
 };
@@ -179,6 +180,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: PILL.width,
     gap: 10,
+  },
+  iconContainer: {
+    flexDirection: 'column',
+    height: 34,
+    justifyContent: 'space-between',
   },
   selectedHighlight: {
     borderCurve: 'continuous',

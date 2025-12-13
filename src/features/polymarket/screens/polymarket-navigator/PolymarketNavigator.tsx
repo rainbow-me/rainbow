@@ -72,6 +72,7 @@ export const PolymarketNavigator = memo(function PolymarketNavigator() {
               </Navigator.Route>
             }
             id={Routes.POLYMARKET_ACCOUNT_SCREEN}
+            lazy
           />
 
           <SmoothPager.Page
@@ -81,6 +82,7 @@ export const PolymarketNavigator = memo(function PolymarketNavigator() {
               </Navigator.Route>
             }
             id={Routes.POLYMARKET_SEARCH_SCREEN}
+            lazy
           />
         </SmoothPager>
       ))}

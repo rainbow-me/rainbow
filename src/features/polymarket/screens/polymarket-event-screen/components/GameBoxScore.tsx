@@ -1,12 +1,10 @@
 import React, { memo } from 'react';
 import { Box, Separator, Text, TextShadow } from '@/design-system';
-import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { ImgixImage } from '@/components/images';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 
-export const GameBoxScore = memo(function GameBoxScore() {
-  const event = usePolymarketEventStore(state => state.getData());
+export const GameBoxScore = memo(function GameBoxScore({ event }: { event: PolymarketEvent | null }) {
   // TODO: Add loading state
   if (!event) return null;
 

@@ -18,8 +18,6 @@ export async function getImagePrimaryColor(imageUrl: string) {
     const colors = await getImageColors(imageUrl);
     if (colors.platform === 'ios') {
       primaryColor = colors.primary;
-    } else if (colors.platform === 'android') {
-      primaryColor = colors.dominant;
     } else {
       primaryColor = colors.dominant;
     }

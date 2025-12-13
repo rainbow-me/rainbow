@@ -1,5 +1,5 @@
-import { memo, useCallback, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { memo, useCallback, useMemo, useState } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
@@ -32,6 +32,8 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   const { availableBalance, worstPrice, validation, isValidOrderAmount, amountToWin, outcomeOdds, fee, spread, setBuyAmount, buyAmount } =
     useNewPositionForm({ tokenId });
 
+  const [isProcessing, setIsProcessing] = useState(false);
+
   const red = useForegroundColor('red');
   const green = useForegroundColor('green');
   const accentColor = market.negRisk ? market.color : outcomeIndex === 0 ? green : red;
@@ -48,18 +50,20 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   }, [market.groupItemTitle, outcome, market.line]);
 
   const handleMarketBuyPosition = useCallback(async () => {
+    setIsProcessing(true);
     try {
       const amountToBuy = subWorklet(buyAmount, fee);
-      const orderResult = await marketBuyToken({ tokenId, amountUsd: amountToBuy, price: worstPrice });
+      const orderResult = await marketBuyToken({ tokenId, amount: amountToBuy, price: worstPrice });
       const tokensBought = orderResult.takingAmount;
-      await collectTradeFee(tokensBought);
-      await refetchPolymarketStores();
-      Navigation.goBack();
+      collectTradeFee(tokensBought);
+      refetchPolymarketStores();
       Navigation.goBack();
     } catch (e) {
       logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', e));
+      setIsProcessing(false);
+      Alert.alert('Error', 'Failed to place bet. Please try again.');
     }
-  }, [worstPrice, tokenId, buyAmount, fee]);
+  }, [buyAmount, fee, tokenId, worstPrice]);
 
   return (
     <PanelSheet innerBorderWidth={1} enableKeyboardAvoidance>
@@ -162,7 +166,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               onLongPress={handleMarketBuyPosition}
               label="Hold to Place Bet"
               processingLabel="Placing Bet..."
-              isProcessing={false}
+              isProcessing={isProcessing}
               showBiometryIcon={false}
               backgroundColor={getSolidColorEquivalent({
                 background: opacityWorklet(accentColor, 0.7),

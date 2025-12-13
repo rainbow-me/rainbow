@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Box } from '@/design-system';
+import { Box, globalColors, useColorMode } from '@/design-system';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { easing } from '@/components/animations/animationConfigs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,7 +12,7 @@ import { PolymarketRoute } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import Animated from 'react-native-reanimated';
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
-import { NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
+import { NAVIGATOR_FOOTER_HEIGHT, POLYMARKET_BACKGROUND_DARK } from '@/features/polymarket/constants';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { IS_ANDROID } from '@/env';
 import { PolymarketSearchFooter } from '@/features/polymarket/screens/polymarket-navigator/PolymarketSearchFooter';
@@ -30,7 +30,9 @@ const DefaultFooter = memo(function DefaultFooter() {
 });
 
 export const PolymarketNavigatorFooter = function PolymarketNavigatorFooter() {
+  const { isDarkMode } = useColorMode();
   const safeAreaInsets = useSafeAreaInsets();
+  const gradientColor = isDarkMode ? globalColors.grey100 : globalColors.white100;
 
   return (
     <>
@@ -48,11 +50,11 @@ export const PolymarketNavigatorFooter = function PolymarketNavigatorFooter() {
       <KeyboardStickyView offset={{ opened: safeAreaInsets.bottom + MAGIC_KEYBOARD_OFFSET_NUDGE - DISTANCE_FROM_KEYBOARD }}>
         <EasingGradient
           easing={easing.in.sin}
-          startColor={opacityWorklet('#000000', 0)}
-          endColor={opacityWorklet('#000000', 1)}
+          startColor={opacityWorklet(gradientColor, 0)}
+          endColor={opacityWorklet(gradientColor, 1)}
           startPosition={{ x: 0, y: 0 }}
           endPosition={{ x: 0, y: 0.8 }}
-          style={styles.easingGradient}
+          style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 152, width: '100%' }}
         />
         <View
           style={[

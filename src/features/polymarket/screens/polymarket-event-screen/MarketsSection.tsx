@@ -45,24 +45,22 @@ const MultiMarketEvent = memo(function MultiMarketEvent({ markets }: { markets: 
 
   return (
     <>
-      <Bleed right={'8px'}>
-        <Box gap={8}>
-          {activeMarkets?.map(market => (
-            <MarketRow
-              key={market.id}
-              accentColor={market.color}
-              priceChange={market.oneDayPriceChange}
-              image={uniqueMarketImages ? market.icon : undefined}
-              title={market.groupItemTitle}
-              volume={market.volume}
-              tokenId={market.clobTokenIds[0]}
-              price={market.lastTradePrice ? String(market.lastTradePrice) : '0'}
-              minTickSize={market.orderPriceMinTickSize}
-              onPress={() => Navigation.handleAction(Routes.POLYMARKET_MARKET_SHEET, { market })}
-            />
-          ))}
-        </Box>
-      </Bleed>
+      <Box gap={8}>
+        {activeMarkets?.map(market => (
+          <MarketRow
+            key={market.id}
+            accentColor={market.color}
+            priceChange={market.oneDayPriceChange}
+            image={uniqueMarketImages ? market.icon : undefined}
+            title={market.groupItemTitle}
+            volume={market.volume}
+            tokenId={market.clobTokenIds[0]}
+            price={market.lastTradePrice ? String(market.lastTradePrice) : '0'}
+            minTickSize={market.orderPriceMinTickSize}
+            onPress={() => Navigation.handleAction(Routes.POLYMARKET_MARKET_SHEET, { market })}
+          />
+        ))}
+      </Box>
       {resolvedMarkets?.length > 0 && <ResolvedMarketsSection markets={resolvedMarkets} uniqueMarketImages={uniqueMarketImages} />}
     </>
   );

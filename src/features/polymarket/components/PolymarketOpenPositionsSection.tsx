@@ -1,7 +1,8 @@
 import React from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Stack, Text, TextShadow } from '@/design-system';
-import { DOWN_ARROW, HYPERLIQUID_COLORS, UP_ARROW } from '@/features/perps/constants';
+import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
+import { POLYMARKET_ACCENT_COLOR } from '@/features/polymarket/constants';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { Image, StyleSheet } from 'react-native';
@@ -56,10 +57,10 @@ export const PolymarketOpenPositionsSection = function PolymarketOpenPositionsSe
           )}
         </Box>
       </Box>
-      <Box gap={20}>
+      <Box gap={12}>
         {!positionsInfo.hasPositions && (
           <Box height={124} justifyContent="center" alignItems="center" gap={20} paddingBottom="24px">
-            <Image source={infinityIcon} tintColor={HYPERLIQUID_COLORS.green} />
+            <Image source={infinityIcon} tintColor={POLYMARKET_ACCENT_COLOR} />
             <Text align="center" size="20pt" weight="heavy" color="labelSecondary">
               {i18n.t(i18n.l.perps.positions.no_open_positions)}
             </Text>

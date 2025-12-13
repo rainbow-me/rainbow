@@ -85,10 +85,11 @@ const ResolvedMarketRow = memo(function ResolvedMarketRow({
   return (
     <GradientBorderView
       borderGradientColors={[opacityWorklet(accentColor, 0.06), opacityWorklet(accentColor, 0)]}
+      borderWidth={2.5}
       start={{ x: 1, y: 0 }}
       end={{ x: 0, y: 0 }}
       borderRadius={24}
-      style={{ overflow: 'hidden' }}
+      style={{ height: 66, marginRight: -4, overflow: 'hidden' }}
     >
       <LinearGradient
         colors={[opacityWorklet(accentColor, 0.14), opacityWorklet(accentColor, 0)]}
@@ -97,8 +98,16 @@ const ResolvedMarketRow = memo(function ResolvedMarketRow({
         end={{ x: 0, y: 0 }}
         pointerEvents="none"
       />
-      <Box height={66} flexDirection="row" alignItems="center" gap={12} paddingRight={'10px'}>
-        {image && <ImgixImage resizeMode="cover" size={40} source={{ uri: image }} style={{ height: 40, width: 40, borderRadius: 9 }} />}
+      <Box height="full" flexDirection="row" alignItems="center" gap={12} paddingRight={{ custom: 15 }}>
+        {image && (
+          <ImgixImage
+            enableFasterImage
+            resizeMode="cover"
+            size={40}
+            source={{ uri: image }}
+            style={{ height: 40, width: 40, borderRadius: 9 }}
+          />
+        )}
         <Box gap={12} style={{ flex: 1 }}>
           <Box flexDirection="row" alignItems="center" gap={8}>
             <Text size="17pt" weight="bold" color="label" numberOfLines={1}>

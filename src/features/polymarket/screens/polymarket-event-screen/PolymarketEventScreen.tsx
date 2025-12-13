@@ -74,12 +74,14 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
     params: { event: initialEvent, eventId },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_EVENT_SCREEN>>();
 
-  const event = usePolymarketEventStore(state => state.getData()) ?? initialEvent;
   const { isDarkMode } = useColorMode();
+  const safeAreaInsets = useSafeAreaInsets();
+  const eventData = usePolymarketEventStore(state => state.getData());
+  const event = eventData ?? initialEvent;
+
   const backgroundColor = isDarkMode
     ? getSolidColorEquivalent({ background: initialEvent.color, foreground: '#000000', opacity: 0.92 })
     : '#FFFFFF';
-  const safeAreaInsets = useSafeAreaInsets();
 
   const lineColors = useMemo(() => ('markets' in event ? getChartLineColors(event.markets) : undefined), [event]);
   const isSportsEvent = initialEvent.gameId !== undefined;
@@ -108,7 +110,7 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
           style={{ minHeight: DEVICE_HEIGHT }}
         >
           <EventHeaderSection event={event} />
-          {isSportsEvent && <GameBoxScore />}
+          {isSportsEvent && <GameBoxScore event={eventData} />}
           <ChartSection backgroundColor={backgroundColor} lineColors={lineColors} />
           <OpenPositionsSection eventId={eventId} />
           {isSportsEvent ? <SportsEventMarkets /> : <MarketsSection />}

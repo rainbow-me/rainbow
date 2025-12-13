@@ -24,7 +24,7 @@ export const OutcomeBadge = memo(function OutcomeBadge({ outcome, outcomeIndex }
       borderRadius={10}
       paddingHorizontal={'6px'}
     >
-      <Text color={{ custom: colors.textColor }} size="11pt" weight="heavy" align="center">
+      <Text align="center" color={{ custom: colors.textColor }} size="11pt" weight="heavy">
         {outcome.toUpperCase()}
       </Text>
     </Box>

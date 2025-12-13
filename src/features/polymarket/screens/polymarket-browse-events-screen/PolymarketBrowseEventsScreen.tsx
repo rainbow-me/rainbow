@@ -15,6 +15,8 @@ export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEvents
   );
 });
 
+const EMPTY_EVENTS: PolymarketEvent[] = [];
+
 const PolymarketBrowseEventsList = memo(function PolymarketBrowseEventsList() {
   const listRef = useRef<FlatList<PolymarketEvent>>(null);
   const isInitialLoad = usePolymarketEventsStore(state => state.getStatus('isInitialLoad'));
@@ -28,7 +30,7 @@ const PolymarketBrowseEventsList = memo(function PolymarketBrowseEventsList() {
     }
   );
 
-  return <PolymarketEventsListBase events={events ?? []} isLoading={isInitialLoad} listRef={listRef} />;
+  return <PolymarketEventsListBase events={events ?? EMPTY_EVENTS} isLoading={isInitialLoad} listRef={listRef} />;
 });
 
 const styles = StyleSheet.create({
