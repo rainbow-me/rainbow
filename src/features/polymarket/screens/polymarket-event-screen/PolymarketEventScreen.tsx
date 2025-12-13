@@ -20,6 +20,7 @@ import { SportsEventMarkets } from '@/features/polymarket/screens/polymarket-eve
 import { getChartLineColors } from '@/features/charts/polymarket/utils/getChartLineColors';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { AboutSection } from '@/features/polymarket/screens/polymarket-event-screen/AboutSection';
+import { GameBoxScore } from '@/features/polymarket/screens/polymarket-event-screen/components/GameBoxScore';
 
 export const EventHeaderSection = memo(function EventHeaderSection({ event }: { event: PolymarketMarketEvent | PolymarketEvent }) {
   return (
@@ -107,6 +108,7 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
           style={{ minHeight: DEVICE_HEIGHT }}
         >
           <EventHeaderSection event={event} />
+          {isSportsEvent && <GameBoxScore />}
           <ChartSection backgroundColor={backgroundColor} lineColors={lineColors} />
           <OpenPositionsSection eventId={eventId} />
           {isSportsEvent ? <SportsEventMarkets /> : <MarketsSection />}

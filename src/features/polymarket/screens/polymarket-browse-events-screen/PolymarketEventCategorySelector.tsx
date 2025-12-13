@@ -36,6 +36,7 @@ export const PolymarketEventCategorySelector = memo(function PolymarketEventCate
 
   const onPress = useCallback(
     (category: Category) => {
+      'worklet';
       selectedCategoryTagId.value = category.tagId;
       runOnJS(usePolymarketEventsStore.getState().setTagId)(category.tagId);
     },
@@ -95,7 +96,13 @@ const CategoryItem = memo(function CategoryItem({ category, onPress, selectedCat
   }));
 
   return (
-    <ButtonPressAnimation scaleTo={0.92} onPress={() => onPress(category)}>
+    <ButtonPressAnimation
+      scaleTo={0.92}
+      onPress={() => {
+        'worklet';
+        onPress(category);
+      }}
+    >
       <Animated.View style={[itemStyle, styles.itemContainer]}>
         <Animated.View style={[borderContainerStyle, StyleSheet.absoluteFill]}>
           <Border borderRadius={CONTAINER_HEIGHT / 2} borderWidth={THICKER_BORDER_WIDTH} borderColor={{ custom: accentColors.opacity4 }} />
