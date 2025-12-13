@@ -30,7 +30,6 @@ export function createDepositQuoteStore(
 ): DepositQuoteStoreType {
   const recipientStore = config.to.recipient;
   return createQueryStore({
-    cacheTime: time.seconds(30),
     fetcher: createQuoteFetcher(config),
     params: {
       accountAddress: $ => $(useWalletsStore).accountAddress,
@@ -38,13 +37,14 @@ export function createDepositQuoteStore(
       asset: $ => $(useDepositStore, selectDepositAsset),
       recipient: recipientStore ? $ => $(recipientStore) : null,
     },
+    cacheTime: time.seconds(30),
     staleTime: time.seconds(15),
   });
 }
 
 // ============ Quote Fetcher ================================================== //
 
-type QuoteResult =
+type DepositQuoteResult =
   | Quote
   | CrosschainQuote
   | DepositQuoteStatus.Error
@@ -56,7 +56,7 @@ function createQuoteFetcher(config: DepositConfig) {
   return async function fetchQuote(
     { accountAddress, amount, asset, recipient }: DepositQuoteStoreParams,
     abortController: AbortController | null
-  ): Promise<QuoteResult> {
+  ): Promise<DepositQuoteResult> {
     if (!asset) return null;
     if (config.to.recipient && !recipient) return null;
 

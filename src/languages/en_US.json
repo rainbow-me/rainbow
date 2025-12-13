@@ -1639,7 +1639,8 @@
         "confirm_button_over_balance_text": "Insufficient Funds",
         "confirm_button_error_text": "Quote Error",
         "quote_error": "􀇿 No quote available",
-        "insufficient_balance": "􀫲 Insufficient Funds"
+        "insufficient_balance": "􀫲 Insufficient Funds",
+        "insufficient_gas": "Insufficient Gas"
       },
       "withdraw": {
         "title": "Withdraw",

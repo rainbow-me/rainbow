@@ -21,16 +21,16 @@ type DepositAmountInputProps = {
   displayedAmount: SharedValue<string>;
   displayedNativeValue: SharedValue<string>;
   inputMethod: SharedValue<'inputAmount' | 'inputNativeValue'>;
-  onChangeInputMethod: () => void;
-  onSelectAsset: () => void;
+  onChangeInputMethodWorklet: () => void;
+  onSelectAssetWorklet: () => void;
 };
 
 // ============ Component ====================================================== //
 
 export const DepositAmountInput = memo(function DepositAmountInput({
   inputMethod,
-  onChangeInputMethod,
-  onSelectAsset,
+  onChangeInputMethodWorklet,
+  onSelectAssetWorklet,
 }: DepositAmountInputProps) {
   const { isDarkMode } = useColorMode();
   const { config, minifiedAsset, primaryFormattedInput, secondaryFormattedInput, useDepositStore } = useDepositContext();
@@ -87,7 +87,7 @@ export const DepositAmountInput = memo(function DepositAmountInput({
               disableShadow={isDarkMode}
               hugContent
               label={assetSymbol}
-              onPressWorklet={onSelectAsset}
+              onPressWorklet={onSelectAssetWorklet}
               rightIcon={'􀆏'}
               small
               style={{ marginLeft: 20 }}
@@ -119,7 +119,7 @@ export const DepositAmountInput = memo(function DepositAmountInput({
           hapticTrigger="tap-end"
           hapticType="soft"
           hitSlop={{ bottom: 12, top: 8 }}
-          onPressWorklet={onChangeInputMethod}
+          onPressWorklet={onChangeInputMethodWorklet}
           scaleTo={0.88}
           style={{ minWidth: '50%', paddingHorizontal: 16 }}
         >
