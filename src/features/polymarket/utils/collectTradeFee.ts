@@ -1,15 +1,14 @@
 import { GelatoRelay, SponsoredCallRequest, TaskState } from '@gelatonetwork/relay-sdk';
-import { Address, erc20Abi, encodeFunctionData, parseUnits, zeroAddress } from 'viem';
 import { ChainId } from '@rainbow-me/swaps';
+import { Address, erc20Abi, encodeFunctionData, parseUnits, zeroAddress } from 'viem';
+import { GELATO_API_KEY } from 'react-native-dotenv';
+import { getPolymarketClobClient, usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { getProvider } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { usePolymarketProxyAddress } from '@/features/polymarket/stores/derived/usePolymarketProxyAddress';
-import { POLYGON_USDC_ADDRESS, RAINBOW_POLYMARKET_FEE_ADDRESS, USD_FEE_PER_TOKEN } from '../constants';
 import { mulWorklet } from '@/safe-math/SafeMath';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
-import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/usePolymarketClobClient';
-import { GELATO_API_KEY } from 'react-native-dotenv';
+import { POLYGON_USDC_ADDRESS, RAINBOW_POLYMARKET_FEE_ADDRESS, USD_FEE_PER_TOKEN } from '../constants';
 
 const POLLING_INTERVAL = time.seconds(1);
 const ZERO_BN = 0n;
@@ -64,7 +63,10 @@ type CollectTradeFeeResult = {
 
 // TODO: Figure out if there are transient error cases and implement retry logic
 export async function collectTradeFee(tokenAmount: string): Promise<CollectTradeFeeResult | undefined> {
-  const safeAddress = usePolymarketProxyAddress.getState().proxyAddress as Address;
+  const safeAddress = usePolymarketClients.getState().proxyAddress;
+  if (!safeAddress) {
+    throw new RainbowError('[collectTradeFee] No proxy address available');
+  }
   const feeAmount = mulWorklet(tokenAmount, USD_FEE_PER_TOKEN);
 
   try {

@@ -4,22 +4,24 @@ import { useAnimatedStyle, useDerivedValue, SharedValue, withTiming, withRepeat,
 import { opacity } from '@/__swaps__/utils/swaps';
 import { pulsingConfig, sliderConfig } from '@/__swaps__/screens/Swap/constants';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { usePerpsDepositContext } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsDepositContext';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
 export const GasFeeText = memo(function GasFeeText({
   align,
   color,
   isFetching,
-  label,
   size,
   weight,
   tabularNumbers,
-}: { label: SharedValue<string>; isFetching: SharedValue<boolean> } & Pick<
-  TextProps,
-  'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'
->) {
+}: { isFetching: SharedValue<boolean> } & Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'>) {
+  const { gasStores } = usePerpsDepositContext();
+
   const textColor = useForegroundColor(color);
   const labelTertiary = useForegroundColor('labelTertiary');
   const zeroAmountColor = opacity(labelTertiary, 0.3);
+
+  const estimatedGasFee = useStoreSharedValue(gasStores.useEstimatedGasFee, estimate => estimate ?? '--');
 
   const animatedOpacity = useDerivedValue(() => {
     return isFetching.value
@@ -29,7 +31,7 @@ export const GasFeeText = memo(function GasFeeText({
 
   const animatedColor = useDerivedValue(() => {
     return withTiming(
-      isFetching.value ? zeroAmountColor : label.value === '--' ? zeroAmountColor : textColor,
+      isFetching.value ? zeroAmountColor : estimatedGasFee.value === '--' ? zeroAmountColor : textColor,
       TIMING_CONFIGS.slowFadeConfig
     );
   });
@@ -41,14 +43,14 @@ export const GasFeeText = memo(function GasFeeText({
 
   return (
     <AnimatedText
-      style={[animatedTextOpacity, { letterSpacing: 0.3 }]}
       align={align}
       color={color}
       size={size}
-      weight={weight}
+      style={[animatedTextOpacity, { letterSpacing: 0.3 }]}
       tabularNumbers={tabularNumbers}
+      weight={weight}
     >
-      {label}
+      {estimatedGasFee}
     </AnimatedText>
   );
 });

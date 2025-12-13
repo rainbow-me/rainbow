@@ -22,6 +22,7 @@ import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
 import { PerpsDepositQuoteStoreType } from './createPerpsDepositQuoteStore';
 import { PerpsDepositStoreType, computeMaxSwappableAmount } from './createPerpsDepositStore';
+import { createExternalTokenStore } from '@/features/perps/screens/perps-deposit-withdraw-screen/stores/createExternalAssetStore';
 
 // ============ Types ========================================================== //
 
@@ -37,7 +38,7 @@ type GasSuggestions = {
 };
 
 export type PerpsDepositGasStoresType = {
-  useGasFeeEstimator: DerivedStore<GasFeeEstimator>;
+  useEstimatedGasFee: DerivedStore<string | undefined>;
   useGasLimitStore: QueryStore<GasLimit, GasLimitParams>;
   useGasSettings: DerivedStore<GasSettings | undefined>;
   useMaxSwappableAmount: DerivedStore<string | undefined>;
@@ -89,6 +90,8 @@ export function createPerpsDepositGasStores(useDepositStore: PerpsDepositStoreTy
     staleTime: time.seconds(30),
   });
 
+  const useNativeAssetStore = createExternalTokenStore({ useDepositStore });
+
   const useGasSettings = createDerivedStore(
     $ => {
       const meteorologyData = $(useMeteorologyStore, state => state.getData());
@@ -99,12 +102,15 @@ export function createPerpsDepositGasStores(useDepositStore: PerpsDepositStoreTy
     { equalityFn: shallowEqual, fastMode: true }
   );
 
-  const useGasFeeEstimator = createDerivedStore(
+  const useEstimatedGasFee = createDerivedStore(
     $ => {
       const gasSettings = $(useGasSettings);
       const gasLimit = $(useGasLimitStore, state => state.getData());
       const currency = $(userAssetsStoreManager, state => state.currency);
-      return buildGasFeeEstimator(gasSettings, gasLimit, currency);
+      const nativeNetworkAsset = $(useNativeAssetStore, state => state.getData());
+
+      if (!gasLimit || !gasSettings) return;
+      return calculateGasFee(gasSettings, gasLimit, currency, nativeNetworkAsset);
     },
     { fastMode: true }
   );
@@ -120,7 +126,7 @@ export function createPerpsDepositGasStores(useDepositStore: PerpsDepositStoreTy
   );
 
   return {
-    useGasFeeEstimator,
+    useEstimatedGasFee,
     useGasLimitStore,
     useGasSettings,
     useMaxSwappableAmount,
@@ -200,13 +206,6 @@ function selectGasSuggestions(meteorologyData: MeteorologyData | null): GasSugge
 
 // ============ Utilities ==================================================== //
 
-type GasFeeEstimator = (nativeNetworkAsset: FormattedExternalAsset | null | undefined) => string | undefined;
-
-function buildGasFeeEstimator(gasSettings: GasSettings | undefined, gasLimit: string | null, currency: NativeCurrencyKey): GasFeeEstimator {
-  if (!gasLimit || !gasSettings) return getUndefinedFee;
-  return nativeNetworkAsset => calculateGasFee(gasSettings, gasLimit, currency, nativeNetworkAsset);
-}
-
 function calculateGasFee(
   gasSettings: GasSettings,
   gasLimit: string,
@@ -225,8 +224,4 @@ function calculateGasFee(
   const feeInNativeCurrency = multiply(nativeAssetPrice, formattedFee);
 
   return convertAmountToNativeDisplayWorklet(feeInNativeCurrency, currency, true);
-}
-
-function getUndefinedFee(): undefined {
-  return undefined;
 }

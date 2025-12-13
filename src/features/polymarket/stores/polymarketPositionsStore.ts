@@ -1,10 +1,10 @@
 import { RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
-import { usePolymarketProxyAddress } from '@/features/polymarket/stores/derived/usePolymarketProxyAddress';
 import { rainbowFetch } from '@/rainbow-fetch';
-import { PolymarketPosition, RawPolymarketPosition } from '@/features/polymarket/types';
 import { POLYMARKET_DATA_API_URL, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
+import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { PolymarketPosition, RawPolymarketPosition } from '@/features/polymarket/types';
 import { RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketPosition } from '@/features/polymarket/utils/transforms';
 
@@ -29,7 +29,7 @@ export const usePolymarketPositionsStore = createQueryStore<
 >(
   {
     fetcher: fetchPolymarketPositions,
-    params: { address: $ => $(usePolymarketProxyAddress).proxyAddress },
+    params: { address: $ => $(usePolymarketClients).proxyAddress },
     staleTime: time.seconds(30),
   },
 
