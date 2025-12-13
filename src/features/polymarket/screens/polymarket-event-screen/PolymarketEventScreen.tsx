@@ -20,6 +20,7 @@ import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/ty
 import { AboutSection } from '@/features/polymarket/screens/polymarket-event-screen/AboutSection';
 import { SportsEventMarkets } from '@/features/polymarket/screens/polymarket-event-screen/SportsEventMarkets';
 import { getSolidColorEquivalent } from '@/worklets/colors';
+import { GameBoxScore } from '@/features/polymarket/screens/polymarket-event-screen/components/GameBoxScore';
 
 export const EventHeaderSection = memo(function EventHeaderSection({
   initialEvent,
@@ -118,6 +119,7 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
       >
         <Box gap={28} paddingTop={{ custom: 96 }} paddingBottom={{ custom: safeAreaInsets.bottom }} paddingHorizontal="24px">
           <EventHeaderSection initialEvent={initialEvent} />
+          {isSportsEvent && <GameBoxScore />}
           <ChartSection />
           <OpenPositionsSection eventId={eventId} />
           {isSportsEvent ? <SportsEventMarkets /> : <MarketsSection />}

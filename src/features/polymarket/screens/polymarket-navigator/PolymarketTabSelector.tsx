@@ -69,13 +69,13 @@ export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
       borderColor={{ custom: opacityWorklet('#DC91F4', 0.03) }}
     >
       <View style={StyleSheet.absoluteFill}>
-        <BlurView blurIntensity={24} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
         <LinearGradient
           style={[StyleSheet.absoluteFill, { opacity: 0.07 }]}
           colors={['#DC91F4', opacityWorklet('#DC91F4', 0.5)]}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
         />
+        <BlurView blurIntensity={24} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
         <InnerShadow borderRadius={PILL.borderRadius} color={opacityWorklet('#DC91F4', 0.14)} blur={5} dx={0} dy={1} />
       </View>
       <SelectedHighlight buttonWidth={buttonWidth} selectedIndex={selectedIndex} paddingHorizontal={PADDING_HORIZONTAL} />

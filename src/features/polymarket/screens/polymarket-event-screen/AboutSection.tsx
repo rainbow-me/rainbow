@@ -25,9 +25,6 @@ export const AboutSection = memo(function AboutSection() {
       <Text color="label" size="17pt" weight="medium">
         {event.description}
       </Text>
-      <Box gap={12}>
-        {event.endDate && <InfoRow title="End Date" value={formatDate(event.endDate, 'days')} icon="􀏴" highlighted={false} />}
-      </Box>
     </Box>
   );
 });
