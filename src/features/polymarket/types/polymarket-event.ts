@@ -404,7 +404,6 @@ export type RawPolymarketEvent = {
 
 export type PolymarketEvent = Omit<RawPolymarketEvent, 'markets'> & {
   markets: PolymarketMarket[];
-  uniqueMarketImages: boolean;
   color: string;
   teams?: PolymarketTeamInfo[];
 };

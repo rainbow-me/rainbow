@@ -36,7 +36,6 @@ export async function processRawPolymarketEvent(event: RawPolymarketEvent, teams
   return {
     ...event,
     markets: processedMarkets,
-    uniqueMarketImages: event.markets.some(market => market.icon !== event.icon),
     color,
     teams,
   };

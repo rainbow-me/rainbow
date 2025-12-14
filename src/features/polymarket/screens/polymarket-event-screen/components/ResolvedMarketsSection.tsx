@@ -13,10 +13,10 @@ import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 
 export const ResolvedMarketsSection = memo(function ResolvedMarketsSection({
   markets,
-  uniqueMarketImages,
+  showMarketImages,
 }: {
   markets: PolymarketMarket[];
-  uniqueMarketImages: boolean;
+  showMarketImages: boolean;
 }) {
   const [showResolved, setShowResolved] = useState(false);
 
@@ -53,7 +53,7 @@ export const ResolvedMarketsSection = memo(function ResolvedMarketsSection({
               <ResolvedMarketRow
                 key={market.id}
                 accentColor={market.color}
-                image={uniqueMarketImages ? market.icon : undefined}
+                image={showMarketImages ? market.icon : undefined}
                 title={market.groupItemTitle}
                 volume={market.volume}
                 outcome={resolvedOutcome}

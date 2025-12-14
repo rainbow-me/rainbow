@@ -41,7 +41,7 @@ export const MarketsSection = memo(function MarketsSection() {
 const MultiMarketEvent = memo(function MultiMarketEvent({ markets }: { markets: PolymarketMarket[] }) {
   const activeMarkets = markets.filter(market => !market.closed);
   const resolvedMarkets = markets.filter(market => market.closed);
-  const uniqueMarketImages = usePolymarketEventStore(state => state.getData()?.uniqueMarketImages ?? false);
+  const showMarketImages = usePolymarketEventStore(state => state.getData()?.showMarketImages ?? false);
 
   return (
     <>
@@ -51,7 +51,7 @@ const MultiMarketEvent = memo(function MultiMarketEvent({ markets }: { markets: 
             key={market.id}
             accentColor={market.color}
             priceChange={market.oneDayPriceChange}
-            image={uniqueMarketImages ? market.icon : undefined}
+            image={showMarketImages ? market.icon : undefined}
             title={market.groupItemTitle}
             volume={market.volume}
             tokenId={market.clobTokenIds[0]}
@@ -61,7 +61,7 @@ const MultiMarketEvent = memo(function MultiMarketEvent({ markets }: { markets: 
           />
         ))}
       </Box>
-      {resolvedMarkets?.length > 0 && <ResolvedMarketsSection markets={resolvedMarkets} uniqueMarketImages={uniqueMarketImages} />}
+      {resolvedMarkets?.length > 0 && <ResolvedMarketsSection markets={resolvedMarkets} showMarketImages={showMarketImages} />}
     </>
   );
 });
