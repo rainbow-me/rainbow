@@ -5,7 +5,6 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { PolymarketTeamInfo } from '@/features/polymarket/types';
 import { View } from 'react-native';
-import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 
 type PolymarketEventGameInfo = {
   score: string;
@@ -14,9 +13,7 @@ type PolymarketEventGameInfo = {
   teams?: PolymarketTeamInfo[];
 };
 
-export const GameBoxScore = memo(function GameBoxScore({ initialEvent }: { initialEvent: PolymarketMarketEvent | PolymarketEvent }) {
-  const fetchedEvent = usePolymarketEventStore(state => state.getData());
-  const event = fetchedEvent ?? initialEvent;
+export const GameBoxScore = memo(function GameBoxScore({ event }: { event: PolymarketMarketEvent | PolymarketEvent }) {
   const gameStatus = getGameStatus(event);
 
   const gameInfo: PolymarketEventGameInfo = {

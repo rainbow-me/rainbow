@@ -110,7 +110,7 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
           style={{ minHeight: DEVICE_HEIGHT }}
         >
           <EventHeaderSection event={event} />
-          {isSportsEvent && <GameBoxScore event={eventData} />}
+          {isSportsEvent && <GameBoxScore event={event} />}
           <ChartSection backgroundColor={backgroundColor} lineColors={lineColors} />
           <OpenPositionsSection eventId={eventId} />
           {isSportsEvent ? <SportsEventMarkets /> : <MarketsSection />}
