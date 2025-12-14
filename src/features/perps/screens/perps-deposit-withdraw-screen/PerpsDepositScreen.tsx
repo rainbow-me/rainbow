@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
-import { DepositScreen } from '@/features/funding/components/DepositScreen';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, HYPERLIQUID_COLORS } from '@/features/perps/constants';
 import { PERPS_DEPOSIT_CONFIG } from '@/features/perps/depositConfig';
+import { DepositScreen } from '@/systems/funding/components/DepositScreen';
 
 // ============ Screen ========================================================= //
 

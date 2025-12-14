@@ -7,7 +7,7 @@ import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { useDepositContext } from '@/features/funding/contexts/DepositContext';
+import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
 import { add, formatNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { weiToGwei } from '@/parsers';

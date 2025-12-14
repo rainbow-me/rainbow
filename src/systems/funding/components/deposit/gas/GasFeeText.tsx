@@ -4,7 +4,7 @@ import { pulsingConfig, sliderConfig } from '@/__swaps__/screens/Swap/constants'
 import { opacity } from '@/__swaps__/utils/swaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, TextProps, useForegroundColor } from '@/design-system';
-import { useDepositContext } from '@/features/funding/contexts/DepositContext';
+import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
 export const GasFeeText = memo(function GasFeeText({

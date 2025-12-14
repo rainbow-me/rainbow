@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
-import { WithdrawalScreen } from '@/features/funding/components/WithdrawalScreen';
 import { HYPERLIQUID_COLORS, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import { PERPS_WITHDRAWAL_CONFIG } from '@/features/perps/withdrawalConfig';
+import { WithdrawalScreen } from '@/systems/funding/components/WithdrawalScreen';
 
 // ============ Screen ========================================================= //
 

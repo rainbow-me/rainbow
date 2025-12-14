@@ -1,8 +1,8 @@
 import { analytics } from '@/analytics';
-import { createWithdrawalConfig } from '@/features/funding/config';
-import { WithdrawalExecutionResult, WithdrawalExecutorParams } from '@/features/funding/types';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
+import { createWithdrawalConfig } from '@/systems/funding/config';
+import { WithdrawalExecutionResult, WithdrawalExecutorParams } from '@/systems/funding/types';
 import { time } from '@/utils/time';
 import { USD_DECIMALS } from './constants';
 import { getHyperliquidExchangeClient } from './services';

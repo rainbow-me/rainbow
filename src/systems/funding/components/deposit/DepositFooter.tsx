@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { SharedValue, useDerivedValue } from 'react-native-reanimated';
 import { Box, Separator, useColorMode } from '@/design-system';
-import { DepositQuoteStatus, DepositQuoteStoreType, getAccentColor } from '@/features/funding/types';
+import { DepositQuoteStatus, DepositQuoteStoreType, getAccentColor } from '@/systems/funding/types';
 import { PerpsSwapButton } from '@/features/perps/components/PerpsSwapButton';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';

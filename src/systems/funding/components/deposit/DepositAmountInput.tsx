@@ -8,7 +8,7 @@ import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIc
 import { ImgixImage } from '@/components/images';
 import { AnimatedText, Bleed, Box, Column, Columns, Separator, Stack, Text, useColorMode } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
-import { DepositQuoteStatus } from '@/features/funding/types';
+import { DepositQuoteStatus } from '@/systems/funding/types';
 import { InputValueCaret } from '@/features/perps/components/InputValueCaret';
 import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton';
 import * as i18n from '@/languages';

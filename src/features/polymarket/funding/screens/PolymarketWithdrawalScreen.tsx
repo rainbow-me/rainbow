@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
-import { WithdrawalScreen } from '@/features/funding/components/WithdrawalScreen';
 import { POLYMARKET_ACCENT_COLOR, POLYMARKET_BACKGROUND_DARK, POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { POLYMARKET_WITHDRAWAL_CONFIG } from '@/features/polymarket/withdrawalConfig';
+import { WithdrawalScreen } from '@/systems/funding/components/WithdrawalScreen';
 
 export const PolymarketWithdrawalScreen = memo(function PolymarketWithdrawalScreen() {
   return (
