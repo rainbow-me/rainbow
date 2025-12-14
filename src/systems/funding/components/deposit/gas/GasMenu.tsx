@@ -1,16 +1,16 @@
 import React, { ReactNode, useCallback, useMemo } from 'react';
-import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
-import { GasSpeed } from '@/__swaps__/types/gas';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
 import { add, formatNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { weiToGwei } from '@/parsers';
+import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { GasSpeed } from '@/__swaps__/types/gas';
+import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
 import { gasUtils } from '@/utils';
 
 const GAS_BUTTON_HIT_SLOP = 16;
