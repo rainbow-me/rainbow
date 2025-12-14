@@ -25,7 +25,6 @@ const EMPTY_EVENTS: PolymarketEvent[] = [];
 const PolymarketBrowseEventsList = memo(function PolymarketBrowseEventsList() {
   const { isDarkMode } = useColorMode();
   const events = usePolymarketEventsStore(state => state.getData());
-  const isInitialLoad = usePolymarketEventsStore(state => state.getStatus('isInitialLoad'));
 
   const listRef = useRef<Animated.FlatList<PolymarketEvent>>(null);
   const scrollOffset = useSharedValue(0);
@@ -43,7 +42,7 @@ const PolymarketBrowseEventsList = memo(function PolymarketBrowseEventsList() {
 
   return (
     <View style={styles.listContainer}>
-      <PolymarketEventsListBase events={events ?? EMPTY_EVENTS} isLoading={isInitialLoad} listRef={listRef} onScroll={onScroll} />
+      <PolymarketEventsListBase events={events ?? EMPTY_EVENTS} listRef={listRef} onScroll={onScroll} />
       <ScrollHeaderFade color={backgroundColor} scrollOffset={scrollOffset} />
     </View>
   );
