@@ -10,13 +10,11 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { Side } from '@polymarket/clob-client';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { PolymarketPosition } from '@/features/polymarket/types';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import LinearGradient from 'react-native-linear-gradient';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { mulWorklet, subWorklet } from '@/safe-math/SafeMath';
 import { marketSellTotalPosition } from '@/features/polymarket/utils/orders';
@@ -26,6 +24,7 @@ import Navigation from '@/navigation/Navigation';
 import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { redeemPosition } from '@/features/polymarket/utils/redeemPosition';
 import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
+import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
 
 export const PolymarketManagePositionSheet = memo(function PolymarketManagePositionSheet() {
   const {
@@ -163,8 +162,3 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
     </PanelSheet>
   );
 });
-
-function getPositionTokenId(position: PolymarketPosition): string {
-  const outcomeIndex = position.outcomes.indexOf(position.outcome);
-  return getPolymarketTokenId(position.market.clobTokenIds[outcomeIndex], 'buy');
-}

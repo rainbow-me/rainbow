@@ -4,7 +4,7 @@ import { PolymarketPosition } from '@/features/polymarket/types';
 import { memo, useCallback, useMemo } from 'react';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import ImgixImage from '@/components/images/ImgixImage';
-import { toPercentageWorklet } from '@/safe-math/SafeMath';
+import { mulWorklet, subWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
 import { SkiaBadge } from '@/components/SkiaBadge';
 import { ButtonPressAnimation } from '@/components/animations';
 import Navigation from '@/navigation/Navigation';
@@ -15,12 +15,14 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { formatNumber } from '@/helpers/strings';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { getSolidColorEquivalent } from '@/worklets/colors';
-import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
 import { PositionAction, getPositionAction } from '@/features/polymarket/utils/getPositionAction';
+import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
+import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 
 export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   position,
@@ -58,7 +60,6 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
 
   const redeemable = position.redeemable;
   const isWin = redeemable && position.size === position.currentValue;
-
   const actionButtonType = useMemo(() => getPositionAction(position), [position]);
 
   const actionButtonLabel = useMemo(() => {
@@ -94,6 +95,20 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
     }
     return position.outcome;
   }, [position.market.groupItemTitle, position.outcome]);
+
+  const livePrice = useLiveTokenValue({
+    tokenId: getPositionTokenId(position),
+    initialValue: formatPrice(position.curPrice, position.market.orderPriceMinTickSize),
+    selector: token => formatPrice(token.price, position.market.orderPriceMinTickSize),
+  });
+
+  const livePositionValue = useMemo(() => {
+    return mulWorklet(position.size, livePrice);
+  }, [position.size, livePrice]);
+
+  const livePnl = useMemo(() => {
+    return subWorklet(livePositionValue, position.initialValue);
+  }, [livePositionValue, position.initialValue]);
 
   return (
     <GradientBorderView
@@ -161,7 +176,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                 </Bleed>
               ) : (
                 <Text size="17pt" weight="bold" color="label">
-                  {formatCurrency(String(position.currentValue))}
+                  {formatCurrency(livePositionValue)}
                 </Text>
               )}
             </Box>
@@ -201,7 +216,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                   numberOfLines={1}
                   style={styles.flexShrink0}
                 >
-                  {formatCurrency(String(position.cashPnl))}
+                  {formatCurrency(livePnl)}
                 </Text>
               )}
             </Box>
