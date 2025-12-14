@@ -44,7 +44,8 @@ export async function processRawPolymarketEvent(event: RawPolymarketEvent, teams
 
 export async function processRawPolymarketPosition(
   position: RawPolymarketPosition,
-  market: RawPolymarketMarket
+  market: RawPolymarketMarket,
+  teams?: PolymarketTeamInfo[]
 ): Promise<PolymarketPosition> {
   const event = market.events[0];
   const marketHasUniqueImage = market.icon !== event.icon;
@@ -61,6 +62,7 @@ export async function processRawPolymarketPosition(
     },
     market: processRawPolymarketMarket(market, eventColor),
     marketHasUniqueImage,
+    teams,
   };
 }
 

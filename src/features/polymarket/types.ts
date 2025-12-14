@@ -45,6 +45,7 @@ export type PolymarketPosition = RawPolymarketPosition & {
    * For those that do not have unique images, we do not show the image when displaying the market.
    */
   marketHasUniqueImage: boolean;
+  teams?: PolymarketTeamInfo[];
 };
 
 export type PolymarketWalletListData = {

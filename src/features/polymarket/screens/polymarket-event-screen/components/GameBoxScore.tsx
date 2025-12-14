@@ -2,31 +2,52 @@ import React, { memo } from 'react';
 import { Box, Separator, Text, TextShadow } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { PolymarketTeamInfo } from '@/features/polymarket/types';
+import { View } from 'react-native';
+import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 
-export const GameBoxScore = memo(function GameBoxScore({ event }: { event: PolymarketEvent | null }) {
-  // TODO: Add loading state
-  if (!event) return null;
+type PolymarketEventGameInfo = {
+  score: string;
+  period: string;
+  elapsed: string;
+  teams?: PolymarketTeamInfo[];
+};
 
+export const GameBoxScore = memo(function GameBoxScore({ initialEvent }: { initialEvent: PolymarketMarketEvent | PolymarketEvent }) {
+  const fetchedEvent = usePolymarketEventStore(state => state.getData());
+  const event = fetchedEvent ?? initialEvent;
   const gameStatus = getGameStatus(event);
+
+  const gameInfo: PolymarketEventGameInfo = {
+    score: event.score ?? '',
+    period: event.period ?? '',
+    elapsed: event.elapsed ?? '',
+    teams: event.teams,
+  };
 
   return (
     <Box>
-      {gameStatus === 'upcoming' && <UpcomingGameBoxScore event={event} />}
-      {gameStatus === 'live' && <LiveGameBoxScore event={event} />}
-      {gameStatus === 'ended' && <EndedGameBoxScore event={event} />}
+      {gameStatus === 'upcoming' && <UpcomingGameBoxScore gameInfo={gameInfo} />}
+      {gameStatus === 'live' && <LiveGameBoxScore gameInfo={gameInfo} />}
+      {gameStatus === 'ended' && <EndedGameBoxScore gameInfo={gameInfo} />}
     </Box>
   );
 });
 
-const UpcomingGameBoxScore = memo(function UpcomingGameBoxScore({ event }: { event: PolymarketEvent }) {
-  const teamA = event.teams?.[0];
-  const teamB = event.teams?.[1];
+const UpcomingGameBoxScore = memo(function UpcomingGameBoxScore({ gameInfo }: { gameInfo: PolymarketEventGameInfo }) {
+  const { teams } = gameInfo;
+
+  const teamA = teams?.[0];
+  const teamB = teams?.[1];
+
   return (
-    <Box flexDirection="row" alignItems="center" justifyContent="center" gap={22}>
+    <Box height={125} flexDirection="row" alignItems="center" justifyContent="center" gap={22}>
       <Box gap={12} alignItems="center" width={120}>
-        <ImgixImage enableFasterImage size={60} source={{ uri: teamA?.logo }} style={{ height: 60, width: 60, borderRadius: 16 }} />
-        <Text size="17pt" weight="bold" color="label">
+        {teamA?.logo && (
+          <ImgixImage enableFasterImage size={32} source={{ uri: teamA.logo }} style={{ height: 32, width: 32, borderRadius: 8 }} />
+        )}
+        <Text size="17pt" weight="bold" color="label" align="center">
           {teamA?.name}
         </Text>
       </Box>
@@ -34,8 +55,10 @@ const UpcomingGameBoxScore = memo(function UpcomingGameBoxScore({ event }: { eve
         {'VS'}
       </Text>
       <Box gap={12} alignItems="center" width={120}>
-        <ImgixImage enableFasterImage size={60} source={{ uri: teamB?.logo }} style={{ height: 60, width: 60, borderRadius: 16 }} />
-        <Text size="17pt" weight="bold" color="label">
+        {teamB?.logo && (
+          <ImgixImage enableFasterImage size={32} source={{ uri: teamB.logo }} style={{ height: 32, width: 32, borderRadius: 8 }} />
+        )}
+        <Text size="17pt" weight="bold" color="label" align="center">
           {teamB?.name}
         </Text>
       </Box>
@@ -43,12 +66,14 @@ const UpcomingGameBoxScore = memo(function UpcomingGameBoxScore({ event }: { eve
   );
 });
 
-const LiveGameBoxScore = memo(function LiveGameBoxScore({ event }: { event: PolymarketEvent }) {
-  const { periodTitle } = getGameBoxScore(event);
+const LiveGameBoxScore = memo(function LiveGameBoxScore({ gameInfo }: { gameInfo: PolymarketEventGameInfo }) {
+  const { score, period, elapsed } = gameInfo;
+  const { periodTitle } = getGameBoxScore({ score, period, elapsed });
 
   return (
     <Box gap={20}>
       <Box flexDirection="row" alignItems="center" justifyContent="center" gap={8}>
+        <View style={{ width: 8, height: 8, backgroundColor: '#E75C29', borderRadius: 4 }} />
         <TextShadow blur={7} shadowOpacity={0.5}>
           <Text size="15pt" weight="heavy" color={{ custom: '#E75C29' }}>
             {'LIVE'}
@@ -67,26 +92,28 @@ const LiveGameBoxScore = memo(function LiveGameBoxScore({ event }: { event: Poly
           </Text>
         </Box>
       </Box>
-      <TeamScores event={event} />
+      <TeamScores gameInfo={gameInfo} />
     </Box>
   );
 });
 
-const EndedGameBoxScore = memo(function EndedGameBoxScore({ event }: { event: PolymarketEvent }) {
-  return <TeamScores event={event} />;
+const EndedGameBoxScore = memo(function EndedGameBoxScore({ gameInfo }: { gameInfo: PolymarketEventGameInfo }) {
+  return <TeamScores gameInfo={gameInfo} />;
 });
 
-const TeamScores = memo(function TeamScores({ event }: { event: PolymarketEvent }) {
-  const { score, elapsed, period } = event;
+const TeamScores = memo(function TeamScores({ gameInfo }: { gameInfo: PolymarketEventGameInfo }) {
+  const { score, elapsed, period, teams } = gameInfo;
   const { teamAScore, teamBScore } = getGameBoxScore({ score, period, elapsed });
 
-  const teamA = event.teams?.[0];
-  const teamB = event.teams?.[1];
+  const teamA = teams?.[0];
+  const teamB = teams?.[1];
 
   return (
     <Box gap={12}>
       <Box flexDirection="row" alignItems="center" gap={10}>
-        <ImgixImage enableFasterImage size={24} source={{ uri: teamA?.logo }} style={{ height: 24, width: 24, borderRadius: 8 }} />
+        {teamA?.logo && (
+          <ImgixImage enableFasterImage size={24} source={{ uri: teamA.logo }} style={{ height: 24, width: 24, borderRadius: 8 }} />
+        )}
         <Text size="17pt" weight="bold" color="label" style={{ flex: 1 }}>
           {teamA?.name}
         </Text>
@@ -96,7 +123,7 @@ const TeamScores = memo(function TeamScores({ event }: { event: PolymarketEvent 
       </Box>
       <Separator color="separatorSecondary" direction="horizontal" thickness={1} />
       <Box flexDirection="row" alignItems="center" gap={10}>
-        <ImgixImage size={24} source={{ uri: teamB?.logo }} style={{ height: 24, width: 24, borderRadius: 8 }} />
+        {teamB?.logo && <ImgixImage size={24} source={{ uri: teamB.logo }} style={{ height: 24, width: 24, borderRadius: 8 }} />}
         <Text size="17pt" weight="bold" color="label" style={{ flex: 1 }}>
           {teamB?.name}
         </Text>
@@ -108,7 +135,7 @@ const TeamScores = memo(function TeamScores({ event }: { event: PolymarketEvent 
   );
 });
 
-function getGameStatus(event: PolymarketEvent) {
+function getGameStatus(event: PolymarketMarketEvent | PolymarketEvent) {
   const { live, ended } = event;
   if (live) return 'live';
   if (ended) return 'ended';
@@ -155,6 +182,7 @@ function parseRegularScore(string: string) {
 }
 
 // Example: "000-000|1-1|Bo3",
+// TODO: Handle UFC format "0-1|KO/TKO"
 function parseBestOfScore(string: string) {
   const [_, scorePart, bestOfPart] = string.split('|');
   const [teamAScore, teamBScore] = scorePart.split('-');

@@ -371,9 +371,9 @@ export type RawPolymarketEvent = {
   startTime: string;
   eventWeek: number;
   seriesSlug: string;
-  score: string;
-  elapsed: string;
-  period: string;
+  score?: string;
+  elapsed?: string;
+  period?: string;
   live: boolean;
   ended?: boolean;
   finishedTimestamp: string;
@@ -458,6 +458,12 @@ export type PolymarketMarketEvent = {
   deployingTimestamp: string;
   gameId?: number;
   color: string;
+  ended?: boolean;
+  live?: boolean;
+  period?: string;
+  score?: string;
+  elapsed?: string;
+  teams?: PolymarketTeamInfo[];
 };
 
 export type RawPolymarketOptimizedMarket = {

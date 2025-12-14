@@ -4,9 +4,10 @@ import { time } from '@/utils/time';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { POLYMARKET_DATA_API_URL, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
-import { PolymarketPosition, RawPolymarketPosition } from '@/features/polymarket/types';
+import { PolymarketPosition, RawPolymarketPosition, PolymarketTeamInfo } from '@/features/polymarket/types';
 import { RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketPosition } from '@/features/polymarket/utils/transforms';
+import { fetchTeamsForGame } from '@/features/polymarket/utils/sports';
 
 type PolymarketPositionsStoreActions = {
   getPositions: () => PolymarketPosition[] | undefined;
@@ -36,16 +37,13 @@ export const usePolymarketPositionsStore = createQueryStore<
   (_, get) => ({
     getPositions: () => get().getData()?.positions,
     getEventPositions: (eventId: string) => {
-      return (
-        get()
-          .getData()
-          ?.positions.filter(position => position.eventId === eventId) ?? []
-      );
+      const positions = get().getData()?.positions;
+      return positions?.filter(position => position.eventId === eventId) ?? [];
     },
-    getPosition: (conditionId: string) =>
-      get()
-        .getData()
-        ?.positions.find(position => position.conditionId === conditionId),
+    getPosition: (conditionId: string) => {
+      const positions = get().getData()?.positions;
+      return positions?.find(position => position.conditionId === conditionId);
+    },
   }),
   {
     storageKey: 'polymarketPositions',
@@ -73,11 +71,15 @@ async function fetchPolymarketPositions(
     abortController
   );
 
+  const teamsMap = await fetchTeamsForGameMarkets(markets);
+
   const positions = await Promise.all(
     rawPositions.map((position: RawPolymarketPosition) => {
       const market = markets.find(market => market.slug === position.slug);
       if (!market) throw new RainbowError('[PolymarketPositionsStore] Market not found for position');
-      return processRawPolymarketPosition(position, market);
+      const eventTicker = market.events[0]?.ticker;
+      const teams = eventTicker ? teamsMap.get(eventTicker) : undefined;
+      return processRawPolymarketPosition(position, market, teams);
     })
   );
 
@@ -98,4 +100,27 @@ async function fetchPolymarketMarkets(marketSlugs: string[], abortController: Ab
   });
 
   return response;
+}
+
+async function fetchTeamsForGameMarkets(markets: RawPolymarketMarket[]): Promise<Map<string, PolymarketTeamInfo[]>> {
+  const teamsMap = new Map<string, PolymarketTeamInfo[]>();
+
+  const gameEventTickers = new Set<string>();
+  for (const market of markets) {
+    const event = market.events[0];
+    if (event.gameId && event.ticker) {
+      gameEventTickers.add(event.ticker);
+    }
+  }
+
+  await Promise.all(
+    Array.from(gameEventTickers).map(async ticker => {
+      const teams = await fetchTeamsForGame(ticker);
+      if (teams) {
+        teamsMap.set(ticker, teams);
+      }
+    })
+  );
+
+  return teamsMap;
 }
