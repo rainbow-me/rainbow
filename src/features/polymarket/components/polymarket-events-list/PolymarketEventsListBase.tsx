@@ -44,7 +44,7 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
   const { contentContainerStyle, scrollIndicatorInsets } = useMemo(() => {
     const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
     return {
-      contentContainerStyle: { minHeight: DEVICE_HEIGHT, paddingBottom, paddingHorizontal: ITEM_GAP / 2 },
+      contentContainerStyle: { minHeight: DEVICE_HEIGHT, paddingBottom, paddingHorizontal: ITEM_GAP / 2, paddingTop: 12 },
       scrollIndicatorInsets: { bottom: paddingBottom },
     };
   }, [safeAreaInsets.bottom]);

@@ -22,7 +22,7 @@ export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEvents
 
 const EMPTY_EVENTS: PolymarketEvent[] = [];
 
-const PolymarketBrowseEventsList = memo(function PolymarketBrowseEventsList() {
+const PolymarketBrowseEventsList = () => {
   const { isDarkMode } = useColorMode();
   const events = usePolymarketEventsStore(state => state.getData());
 
@@ -46,12 +46,11 @@ const PolymarketBrowseEventsList = memo(function PolymarketBrowseEventsList() {
       <ScrollHeaderFade color={backgroundColor} scrollOffset={scrollOffset} />
     </View>
   );
-});
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: 12,
     width: '100%',
   },
   listContainer: {
