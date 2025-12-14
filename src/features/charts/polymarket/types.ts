@@ -56,63 +56,38 @@ export type ClobPriceHistoryResponse = {
   history: PricePoint[];
 };
 
-/** Raw market from the Gamma API (arrays are JSON strings). */
-export type GammaMarketRaw = {
+type GammaMarketBase = {
   active: boolean;
-  clobTokenIds: string;
   closed: boolean;
   conditionId: string;
   groupItemTitle?: string;
   id: string;
   liquidity: string;
-  outcomes: string;
-  outcomePrices: string;
   question: string;
+  seriesColor?: string;
   slug: string;
-  /** Market start timestamp (ISO). Optional in API responses. */
+  sportsMarketType?: string;
   startDate?: string;
   volume: string;
 };
 
-/** Parsed market with proper array types. */
-export type GammaMarket = {
-  active: boolean;
-  clobTokenIds: string[];
-  closed: boolean;
-  conditionId: string;
-  groupItemTitle?: string;
-  id: string;
-  liquidity: string;
-  outcomes: string[];
-  outcomePrices: string[];
-  question: string;
-  slug: string;
-  /** Market start timestamp (ISO). Optional in API responses. */
-  startDate?: string;
-  volume: string;
-};
+export type GammaMarketRaw = GammaMarketBase & { clobTokenIds: string; outcomes: string; outcomePrices: string };
+export type GammaMarket = GammaMarketBase & { clobTokenIds: string[]; outcomes: string[]; outcomePrices: string[] };
 
-/** Raw event from the Gamma API. */
-export type GammaEventRaw = {
+type GammaEventBase = {
+  awayTeamName?: string;
   closed: boolean;
   description: string;
+  gameId?: number;
+  homeTeamName?: string;
   id: string;
-  markets: GammaMarketRaw[];
   negRisk: boolean;
   slug: string;
   title: string;
 };
 
-/** Parsed event with proper array types. */
-export type GammaEvent = {
-  closed: boolean;
-  description: string;
-  id: string;
-  markets: GammaMarket[];
-  negRisk: boolean;
-  slug: string;
-  title: string;
-};
+export type GammaEventRaw = GammaEventBase & { markets: GammaMarketRaw[] };
+export type GammaEvent = GammaEventBase & { markets: GammaMarket[] };
 
 // ============ Chart Data Types =============================================== //
 

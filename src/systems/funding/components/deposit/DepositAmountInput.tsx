@@ -1,17 +1,17 @@
 import React, { memo } from 'react';
 import Animated, { SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
-import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { ImgixImage } from '@/components/images';
 import { AnimatedText, Bleed, Box, Column, Columns, Separator, Stack, Text, useColorMode } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
-import { DepositQuoteStatus } from '@/features/funding/types';
 import { InputValueCaret } from '@/features/perps/components/InputValueCaret';
 import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton';
 import * as i18n from '@/languages';
+import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { DepositQuoteStatus } from '@/systems/funding/types';
 import { useDepositContext } from '../../contexts/DepositContext';
 import { DepositAssetCoinIcon } from './DepositAssetCoinIcon';
 
@@ -21,16 +21,16 @@ type DepositAmountInputProps = {
   displayedAmount: SharedValue<string>;
   displayedNativeValue: SharedValue<string>;
   inputMethod: SharedValue<'inputAmount' | 'inputNativeValue'>;
-  onChangeInputMethod: () => void;
-  onSelectAsset: () => void;
+  onChangeInputMethodWorklet: () => void;
+  onSelectAssetWorklet: () => void;
 };
 
 // ============ Component ====================================================== //
 
 export const DepositAmountInput = memo(function DepositAmountInput({
   inputMethod,
-  onChangeInputMethod,
-  onSelectAsset,
+  onChangeInputMethodWorklet,
+  onSelectAssetWorklet,
 }: DepositAmountInputProps) {
   const { isDarkMode } = useColorMode();
   const { config, minifiedAsset, primaryFormattedInput, secondaryFormattedInput, useDepositStore } = useDepositContext();
@@ -87,7 +87,7 @@ export const DepositAmountInput = memo(function DepositAmountInput({
               disableShadow={isDarkMode}
               hugContent
               label={assetSymbol}
-              onPressWorklet={onSelectAsset}
+              onPressWorklet={onSelectAssetWorklet}
               rightIcon={'􀆏'}
               small
               style={{ marginLeft: 20 }}
@@ -119,7 +119,7 @@ export const DepositAmountInput = memo(function DepositAmountInput({
           hapticTrigger="tap-end"
           hapticType="soft"
           hitSlop={{ bottom: 12, top: 8 }}
-          onPressWorklet={onChangeInputMethod}
+          onPressWorklet={onChangeInputMethodWorklet}
           scaleTo={0.88}
           style={{ minWidth: '50%', paddingHorizontal: 16 }}
         >

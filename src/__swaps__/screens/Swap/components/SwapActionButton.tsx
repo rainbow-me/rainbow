@@ -15,9 +15,9 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Column, Columns, Cover, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
 import { IS_IOS } from '@/env';
-import { DepositContextType } from '@/features/funding/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { DepositContextType } from '@/systems/funding/types';
 import { useSwapContext } from '../providers/swap-provider';
 import { GestureHandlerButton, GestureHandlerButtonProps } from './GestureHandlerButton';
 

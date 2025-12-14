@@ -2,7 +2,7 @@ import { FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } f
 import Animated from 'react-native-reanimated';
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { ComponentProps, ComponentType, ReactElement, memo, useMemo } from 'react';
-import { NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER_HEIGHT, POLYMARKET_BACKGROUND_DARK } from '@/features/polymarket/constants';
+import { NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   PolymarketEventsListItem,
@@ -10,20 +10,19 @@ import {
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { safeAreaInsetValues } from '@/utils';
-import { useBackgroundColor } from '@/design-system';
 import Skeleton from '@/components/skeleton/Skeleton';
+import { useBackgroundColor } from '@/design-system';
 import { Grid } from '@/screens/token-launcher/components/Grid';
 
 const ITEM_GAP = 12;
 const ROW_HEIGHT = ITEM_HEIGHT + ITEM_GAP;
-const EMPTY_EVENTS: PolymarketEvent[] = [];
 
 type ListProps = Pick<ComponentProps<typeof FlatList>, 'onEndReached' | 'onEndReachedThreshold' | 'onRefresh' | 'refreshing'>;
 
 type PolymarketEventsListBaseProps = {
+  ListHeaderComponent?: ComponentType | ReactElement | null;
   events: PolymarketEvent[];
   isLoading?: boolean;
-  ListHeaderComponent?: ComponentType | ReactElement | null;
   listRef?: React.RefObject<Animated.FlatList<PolymarketEvent> | null>;
   onEndReached?: () => void;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
@@ -45,10 +44,12 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
   const { contentContainerStyle, scrollIndicatorInsets } = useMemo(() => {
     const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
     return {
-      contentContainerStyle: { minHeight: DEVICE_HEIGHT, paddingBottom, paddingHorizontal: ITEM_GAP / 2 },
+      contentContainerStyle: { minHeight: DEVICE_HEIGHT, paddingBottom, paddingHorizontal: ITEM_GAP / 2, paddingTop: 12 },
       scrollIndicatorInsets: { bottom: paddingBottom },
     };
   }, [safeAreaInsets.bottom]);
+
+  if (isLoading) return <ListLoadingSkeleton />;
 
   return (
     <Animated.FlatList
@@ -75,14 +76,6 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
   );
 });
 
-function getItemLayout(data: unknown, index: number) {
-  return {
-    length: ITEM_HEIGHT,
-    offset: Math.floor(index / 2) * ROW_HEIGHT,
-    index,
-  };
-}
-
 const ListLoadingSkeleton = memo(function ListLoadingSkeleton() {
   const skeletonColor = useBackgroundColor('fillQuaternary');
   const shimmerColor = useBackgroundColor('fillQuaternary');
@@ -101,6 +94,14 @@ const ListLoadingSkeleton = memo(function ListLoadingSkeleton() {
     </View>
   );
 });
+
+function getItemLayout(data: unknown, index: number) {
+  return {
+    length: ITEM_HEIGHT,
+    offset: Math.floor(index / 2) * ROW_HEIGHT,
+    index,
+  };
+}
 
 function keyExtractor(item: PolymarketEvent): string {
   return item ? item.id : '';
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
   },
   skeletonContainer: {
     marginTop: ITEM_GAP / 2,
-    paddingHorizontal: ITEM_GAP,
+    paddingHorizontal: ITEM_GAP / 2,
   },
   skeletonItemWrapper: {
     height: ITEM_HEIGHT,

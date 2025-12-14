@@ -72,6 +72,8 @@ export type SliderProps = {
   width?: number;
 };
 
+const DEFAULT_HIT_SLOP: SliderProps['hitSlop'] = { horizontal: 20, vertical: 40 };
+
 export const Slider: React.FC<SliderProps> = ({
   progressValue: progressValueProp,
   initialProgress = 0,
@@ -87,7 +89,7 @@ export const Slider: React.FC<SliderProps> = ({
   onProgressSettleWorklet,
   onTouchesUpWorklet,
   containerStyle,
-  hitSlop = { horizontal: 20, vertical: 40 },
+  hitSlop = DEFAULT_HIT_SLOP,
   silenceEdgeHaptics,
   gestureState,
 }) => {

@@ -1,8 +1,7 @@
-import { createDepositConfig } from '@/features/funding/config';
 import { USDC_ICON_URL } from '@/features/perps/constants';
 import { ChainId } from '@/state/backendNetworks/types';
+import { createDepositConfig } from '@/systems/funding/config';
 import { time } from '@/utils/time';
-
 import { POLYGON_USDC_ADDRESS } from './constants';
 import { usePolymarketProxyAddress } from './stores/derived/usePolymarketProxyAddress';
 import { ensureProxyWalletDeployedAndUsdcApproved } from './utils/proxyWallet';

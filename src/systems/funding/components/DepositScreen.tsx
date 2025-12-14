@@ -21,6 +21,7 @@ import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { SliderWithLabels } from '@/features/perps/components/Slider';
 import { SLIDER_MAX, SliderColors } from '@/features/perps/components/Slider/Slider';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
+import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet } from '@/safe-math/SafeMath';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -32,7 +33,7 @@ import { sanitizeAmount } from '@/worklets/strings';
 import { FOOTER_HEIGHT, INITIAL_SLIDER_PROGRESS, SLIDER_WIDTH, SLIDER_WITH_LABELS_HEIGHT } from '../constants';
 import { DepositProvider, useDepositContext } from '../contexts/DepositContext';
 import { computeMaxSwappableAmount } from '../stores/createDepositStore';
-import { DepositConfig, FundingScreenTheme, getAccentColor } from '../types';
+import { DepositConfig, DepositQuoteStatus, FundingScreenTheme, getAccentColor } from '../types';
 import { amountFromSliderProgress } from '../utils/sliderWorklets';
 import { DepositAmountInput } from './deposit/DepositAmountInput';
 import { DepositFooter } from './deposit/DepositFooter';
@@ -46,27 +47,18 @@ type DepositScreenProps = {
   theme: FundingScreenTheme;
 };
 
-// ============ Navigation ===================================================== //
-
-const enum NavigationSteps {
+enum NavigationSteps {
   INPUT_ELEMENT_FOCUSED = 0,
   TOKEN_LIST_FOCUSED = 1,
-}
-
-// ============ Helpers ======================================================== //
-
-function getInputAmountError(amount: string, balance: string): 'overBalance' | 'zero' | null {
-  'worklet';
-  if (equalWorklet(amount, '0')) return 'zero';
-  if (greaterThanWorklet(amount, balance)) return 'overBalance';
-  return null;
 }
 
 // ============ Main Screen ==================================================== //
 
 export const DepositScreen = memo(function DepositScreen({ config, theme }: DepositScreenProps) {
-  const highestValueNativeAsset = useUserAssetsStore.getState().getHighestValueNativeAsset();
-  const initialAsset = highestValueNativeAsset ? parseAssetAndExtend({ asset: highestValueNativeAsset }) : null;
+  const initialAsset = useStableValue(() => {
+    const highestValueNativeAsset = useUserAssetsStore.getState().getHighestValueNativeAsset();
+    return highestValueNativeAsset ? parseAssetAndExtend({ asset: highestValueNativeAsset }) : null;
+  });
 
   return (
     <DepositProvider config={config} initialAsset={initialAsset} initialGasSpeed={GasSpeed.FAST} theme={theme}>
@@ -75,12 +67,25 @@ export const DepositScreen = memo(function DepositScreen({ config, theme }: Depo
   );
 });
 
+// ============ Worklets ======================================================= //
+
+function getInputAmountError(
+  amount: string,
+  balance: string
+): DepositQuoteStatus.InsufficientBalance | DepositQuoteStatus.ZeroAmountError | null {
+  'worklet';
+  if (equalWorklet(amount, '0')) return DepositQuoteStatus.ZeroAmountError;
+  if (greaterThanWorklet(amount, balance)) return DepositQuoteStatus.InsufficientBalance;
+  return null;
+}
+
 // ============ Screen Content ================================================= //
 
 const DepositScreenContent = memo(function DepositScreenContent() {
-  const { isDarkMode } = useColorMode();
   const { displayedAmount, fields, gasStores, handleDeposit, handleNumberPadChange, inputMethod, isSubmitting, minifiedAsset, theme } =
     useDepositContext();
+
+  const { isDarkMode } = useColorMode();
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const insets = useSafeAreaInsets();
 
@@ -114,7 +119,6 @@ const DepositScreenContent = memo(function DepositScreenContent() {
   );
 
   const inputAmountErrorShared = useDerivedValue(() => {
-    'worklet';
     const balance = maxSwappableAmount.value || '0';
     return getInputAmountError(displayedAmount.value, balance);
   });
@@ -156,7 +160,7 @@ const DepositScreenContent = memo(function DepositScreenContent() {
             paddingTop="16px"
             width="full"
           >
-            <DepositFooter inputAmountErrorShared={inputAmountErrorShared} isSubmitting={isSubmitting} onSubmit={handleDeposit} />
+            <DepositFooter inputAmountError={inputAmountErrorShared} isSubmitting={isSubmitting} onSubmit={handleDeposit} />
           </Box>
         </Box>
       </Box>
@@ -255,8 +259,8 @@ const DepositInput = ({ inputProgress }: { inputProgress: SharedValue<number> })
             displayedAmount={displayedAmount}
             displayedNativeValue={displayedNativeValue}
             inputMethod={inputMethod}
-            onChangeInputMethod={handleInputMethodChangeWorklet}
-            onSelectAsset={handleOpenTokenList}
+            onChangeInputMethodWorklet={handleInputMethodChangeWorklet}
+            onSelectAssetWorklet={handleOpenTokenList}
           />
         </Box>
       </DepositInputWrapper>

@@ -1,10 +1,9 @@
 import React, { memo } from 'react';
-import { Box, Separator, Text, TextShadow } from '@/design-system';
 import { ImgixImage } from '@/components/images';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { Box, Separator, Text, TextShadow } from '@/design-system';
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { PolymarketTeamInfo } from '@/features/polymarket/types';
-import { View } from 'react-native';
 
 type PolymarketEventGameInfo = {
   score: string;
@@ -69,22 +68,22 @@ const LiveGameBoxScore = memo(function LiveGameBoxScore({ gameInfo }: { gameInfo
 
   return (
     <Box gap={20}>
-      <Box flexDirection="row" alignItems="center" justifyContent="center" gap={8}>
-        <View style={{ width: 8, height: 8, backgroundColor: '#E75C29', borderRadius: 4 }} />
-        <TextShadow blur={7} shadowOpacity={0.5}>
-          <Text size="15pt" weight="heavy" color={{ custom: '#E75C29' }}>
+      <Box flexDirection="row" alignItems="center" justifyContent="center" gap={10}>
+        <TextShadow blur={14} shadowOpacity={0.5}>
+          <Text align="center" size="15pt" style={{ letterSpacing: 0.8 }} weight="heavy" color={{ custom: '#E75C29' }}>
             {'LIVE'}
           </Text>
         </TextShadow>
         <Box
+          background="fillTertiary"
           height={26}
-          paddingHorizontal={'6px'}
-          borderWidth={1}
-          borderColor={{ custom: opacityWorklet('#FFFFFF', 0.08) }}
-          borderRadius={8}
+          paddingHorizontal={{ custom: 7 }}
+          borderWidth={THICKER_BORDER_WIDTH}
+          borderColor="separatorSecondary"
+          borderRadius={10}
           justifyContent="center"
         >
-          <Text align="center" size="15pt" weight="bold" color="labelQuaternary">
+          <Text align="right" size="15pt" weight="bold" color="labelTertiary">
             {periodTitle}
           </Text>
         </Box>
@@ -142,7 +141,7 @@ function getGameStatus(event: PolymarketMarketEvent | PolymarketEvent) {
 function getGameBoxScore({ score, period, elapsed }: { score: string; period: string; elapsed?: string }) {
   const parsedScore = parseScore(score);
   const { currentPeriod } = parsePeriod(period);
-  let periodTitle = `${currentPeriod} ${elapsed ? `- ${elapsed}` : ''}`;
+  let periodTitle = `${currentPeriod} ${elapsed ? `· ${elapsed}` : ''}`;
 
   if ('bestOf' in parsedScore) {
     periodTitle = `Game ${currentPeriod} - Best of ${parsedScore.bestOf}`;

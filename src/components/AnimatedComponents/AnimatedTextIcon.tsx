@@ -34,7 +34,7 @@ export const AnimatedTextIcon = ({
   width,
 }: AnimatedTextIconProps) => {
   // Prevent wide icons from being clipped
-  const extraHorizontalSpace = 4;
+  const extraHorizontalSpace = 8;
 
   return (
     <Bleed

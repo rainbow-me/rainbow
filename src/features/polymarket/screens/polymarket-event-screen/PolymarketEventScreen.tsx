@@ -83,8 +83,8 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
     ? getSolidColorEquivalent({ background: initialEvent.color, foreground: '#000000', opacity: 0.92 })
     : '#FFFFFF';
 
-  const lineColors = useMemo(() => ('markets' in event ? getChartLineColors(event.markets) : undefined), [event]);
   const isSportsEvent = initialEvent.gameId !== undefined;
+  const lineColors = useMemo(() => parseLineColors(event, isSportsEvent), [event, isSportsEvent]);
 
   return (
     <>
@@ -139,3 +139,12 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
     </>
   );
 });
+
+function parseLineColors(
+  event: PolymarketEvent | PolymarketMarketEvent,
+  isSportsEvent: boolean
+): readonly [string, string, string, string, string] | undefined {
+  if (isSportsEvent) return undefined;
+  if (!('markets' in event)) return undefined;
+  return getChartLineColors(event.markets);
+}

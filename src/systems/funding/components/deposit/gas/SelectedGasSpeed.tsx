@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import { Inline, Text, TextIcon } from '@/design-system';
-import { useDepositContext } from '@/features/funding/contexts/DepositContext';
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
+import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
 import { gasUtils } from '@/utils';
 
 const SWAP_GAS_ICONS = gasUtils.SWAP_GAS_ICONS;
