@@ -188,7 +188,9 @@ interface QueryCapableStore<
    */
   isStale: (override?: number) => boolean;
   /**
-   * Resets the store to its initial state, clearing data, error, and any cached values.
+   * Tears down param subscriptions and timers and resets fetch state. Optionally resets store state.
+   * @param resetStoreState - If `true`, the store's state will be reset to its initial state.
+   * @default false
    */
   reset: (resetStoreState?: boolean) => void;
 }
