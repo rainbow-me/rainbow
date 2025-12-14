@@ -54,10 +54,10 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
                   style={{ height: 28, width: 28, borderRadius: 9 }}
                 />
                 <Box gap={12} style={styles.flex}>
-                  <Box flexDirection="row" alignItems="center" gap={4}>
+                  <Box flexDirection="row" alignItems="center" gap={6}>
                     <Box flexDirection="row" alignItems="center" gap={4} style={styles.flex}>
                       {position.redeemable && <CheckOrXBadge position={position} size={16} fontSize="icon 8px" />}
-                      <Text color="label" size="15pt" weight="bold" numberOfLines={1}>
+                      <Text color="label" size="15pt" weight="bold" numberOfLines={1} style={styles.flexShrink}>
                         {outcomeTitle}
                       </Text>
                       {position.market.groupItemTitle && <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />}
@@ -94,5 +94,8 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
+  },
+  flexShrink: {
+    flexShrink: 1,
   },
 });
