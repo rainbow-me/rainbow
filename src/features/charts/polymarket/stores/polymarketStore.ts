@@ -20,14 +20,14 @@ export type PolymarketStoreState = {
 
 export const usePolymarketStore = createRainbowStore<PolymarketStoreState>(
   set => ({
-    chartInterval: '1w',
+    chartInterval: '1d',
     highlightedSeriesId: null,
     selectedEventSlug: null,
     selectedMarketFilter: null,
 
     reset: () => {
       set({
-        chartInterval: '1w',
+        chartInterval: '1d',
         highlightedSeriesId: null,
         selectedEventSlug: null,
         selectedMarketFilter: null,
