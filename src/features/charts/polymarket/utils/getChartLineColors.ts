@@ -13,8 +13,7 @@ export function getChartLineColors(markets?: PolymarketMarket[]): readonly [stri
   if (!markets?.length) return undefined;
   const selected = selectTopMarketsForChart(markets, MAX_POLYMARKET_SERIES);
   const topMarkets = selected.length > 5 ? selected.slice(0, 5) : selected;
-  const colors = buildFixedLengthColors(topMarkets.map(m => m.color));
-  return colors;
+  return buildFixedLengthColors(topMarkets.map(m => m.color));
 }
 
 function buildFixedLengthColors(customColors: string[]): [string, string, string, string, string] {

@@ -1,9 +1,12 @@
-import { time } from '@/utils';
+import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
+import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { createQueryStore } from '@/state/internal/createQueryStore';
+import { time } from '@/utils';
 import { fetchGammaEvent } from '../api/gammaClient';
 import { fetchPriceHistory } from '../api/clobClient';
 import {
   FIDELITY_MAP,
+  GammaEvent,
   GammaMarket,
   MarketFilter,
   OutcomeSeries,
@@ -34,7 +37,7 @@ export const usePolymarketChartStore = createQueryStore<PolymarketChartData, Pol
     interval: $ => $(usePolymarketStore, getInterval),
   },
   cacheTime: time.minutes(2),
-  staleTime: time.seconds(20),
+  staleTime: time.seconds(10),
 });
 
 export const usePolymarketMarketChartStore = createQueryStore<PolymarketChartData, PolymarketMarketChartParams>({
@@ -48,98 +51,135 @@ export const usePolymarketMarketChartStore = createQueryStore<PolymarketChartDat
   staleTime: time.seconds(20),
 });
 
-// ============ Fetcher ======================================================== //
+// ============ Fetchers ======================================================= //
 
 async function fetchPolymarketChartData(
   params: PolymarketChartParams | PolymarketMarketChartParams,
   abortController: AbortController | null
 ): Promise<PolymarketChartData> {
-  if ('eventSlug' in params) {
-    const { eventSlug, fidelity, interval } = params;
-    return fetchEventChart(abortController, eventSlug, interval, fidelity);
-  }
-
-  const { interval, marketFilter, fidelity } = params;
-  if (marketFilter?.tokenIds.length) {
-    return fetchMarketFilterChart(abortController, interval, marketFilter, fidelity);
-  }
+  if ('eventSlug' in params) return fetchEventChart(params, abortController);
+  if (params.marketFilter?.tokenIds.length) return fetchMarketFilterChart(params, abortController);
   return null;
 }
 
-async function fetchMarketFilterChart(
-  abortController: AbortController | null,
-  interval: PolymarketInterval,
-  marketFilter: MarketFilter,
-  fidelity?: number
-): Promise<PolymarketChartData> {
-  const { labels, tokenIds } = marketFilter;
-
-  const isYesNoMarket = hasYesAndNo(labels);
-  const yesIndex = isYesNoMarket ? labels.findIndex(l => l?.toLowerCase() === 'yes') : -1;
-
-  const filteredTokenIds = yesIndex >= 0 ? [tokenIds[yesIndex]] : tokenIds;
-  const filteredLabels = yesIndex >= 0 ? [labels[yesIndex]] : labels;
-
-  const resolvedFidelity = resolveFidelityForInterval(null, interval, fidelity);
-
-  const histories = await Promise.all(
-    filteredTokenIds.map(tokenId => fetchPriceHistory(abortController, interval, tokenId, resolvedFidelity))
-  );
-  const useYesNoColors = hasYesAndNo(filteredLabels);
-
-  const series: OutcomeSeries[] = filteredTokenIds
-    .map((tokenId, i) => {
-      const history = histories[i];
-      if (!history?.length) return null;
-      const { prices, timestamps } = buildSeriesArrays(history);
-      return {
-        color: getOutcomeColor(filteredLabels[i], i, useYesNoColors),
-        label: filteredLabels[i] ?? `Outcome ${i + 1}`,
-        prices,
-        timestamps,
-        tokenId,
-      };
-    })
-    .filter(s => s !== null);
-
-  return series.length ? { interval, series } : { interval, series: EMPTY_SERIES };
-}
-
-async function fetchEventChart(
-  abortController: AbortController | null,
-  eventSlug: string,
-  interval: PolymarketInterval,
-  fidelity?: number
-): Promise<PolymarketChartData> {
-  const event = await fetchGammaEvent(abortController, eventSlug);
+async function fetchEventChart(params: PolymarketChartParams, abortController: AbortController | null): Promise<PolymarketChartData> {
+  const event = await fetchGammaEvent(abortController, params.eventSlug);
   if (!event) return null;
 
-  const markets = selectTopMarketsForChart(event.markets, MAX_POLYMARKET_SERIES);
-  if (!markets.length) return { interval, series: EMPTY_SERIES };
+  const isSportsEvent = event.gameId !== undefined;
+  const inputs = isSportsEvent ? await extractSportsChartInputs(event) : extractTopMarketsInputs(event.markets);
 
-  const tokenIds = markets.map(m => m.clobTokenIds[0]).filter(Boolean);
-  const resolvedFidelity = resolveFidelityForInterval(event.markets, interval, fidelity);
-  const histories = await Promise.all(tokenIds.map(tokenId => fetchPriceHistory(abortController, interval, tokenId, resolvedFidelity)));
+  return buildChartData(params.interval, inputs, params.fidelity, abortController);
+}
 
-  const outcomeLabels = markets.map(m => m.outcomes[0] ?? '');
-  const useYesNoColors = hasYesAndNo(outcomeLabels);
+async function fetchMarketFilterChart(
+  params: PolymarketMarketChartParams,
+  abortController: AbortController | null
+): Promise<PolymarketChartData> {
+  const marketFilter = params.marketFilter;
+  if (!marketFilter) return null;
+  const inputs = extractMarketFilterInputs(marketFilter);
+  return buildChartData(params.interval, inputs, params.fidelity, abortController);
+}
 
-  const series: OutcomeSeries[] = markets
-    .map((market, i) => {
-      const history = histories[i];
-      if (!history?.length) return null;
-      const { prices, timestamps } = buildSeriesArrays(history);
-      return {
-        color: getOutcomeColor(market.outcomes[0], i, useYesNoColors),
-        label: getMarketLabel(market),
-        prices,
-        timestamps,
-        tokenId: tokenIds[i],
-      };
-    })
-    .filter(s => s !== null);
+// ============ Series Building ================================================ //
 
-  return series.length ? { interval, series } : { interval, series: EMPTY_SERIES };
+type SeriesInputs = {
+  colors: string[] | null;
+  labels: string[];
+  markets: GammaMarket[] | null;
+  tokenIds: string[];
+};
+
+async function buildChartData(
+  interval: PolymarketInterval,
+  inputs: SeriesInputs,
+  fidelity: number | undefined,
+  abortController: AbortController | null
+): Promise<PolymarketChartData> {
+  const { colors, labels, markets, tokenIds } = inputs;
+  if (!tokenIds.length) return { interval, series: EMPTY_SERIES };
+
+  const resolvedFidelity = resolveFidelity(interval, fidelity, markets);
+  const histories = await Promise.all(tokenIds.map(id => fetchPriceHistory(abortController, interval, id, resolvedFidelity)));
+  const series = buildSeries(tokenIds, labels, histories, colors);
+
+  return { interval, series };
+}
+
+function buildSeries(tokenIds: string[], labels: string[], histories: (PricePoint[] | null)[], colors: string[] | null): OutcomeSeries[] {
+  const useYesNoColors = hasYesAndNo(labels);
+  const series: OutcomeSeries[] = [];
+
+  for (let i = 0; i < tokenIds.length; i++) {
+    const history = histories[i];
+    if (!history?.length) continue;
+
+    const { prices, timestamps } = buildSeriesArrays(history);
+    series.push({
+      color: colors?.[i] ?? getOutcomeColor(labels[i], i, useYesNoColors),
+      label: labels[i] ?? `Outcome ${i + 1}`,
+      prices,
+      timestamps,
+      tokenId: tokenIds[i],
+    });
+  }
+
+  return series.length ? series : EMPTY_SERIES;
+}
+
+// ============ Input Extraction =============================================== //
+
+const EMPTY_INPUTS: SeriesInputs = Object.freeze({ colors: null, labels: [], markets: null, tokenIds: [] });
+
+async function extractSportsChartInputs(event: GammaEvent): Promise<SeriesInputs> {
+  const moneyline = event.markets.find(isActiveMoneylineMarket);
+  if (!moneyline) return EMPTY_INPUTS;
+
+  const eventData = await usePolymarketEventStore.getState().fetch({ eventId: event.id });
+  const teams = eventData?.teams;
+
+  const colors = teams
+    ? moneyline.outcomes.map(outcome => {
+        const team = teams.find(t => t.alias === outcome);
+        return team ? getHighContrastColor(team.color, true) : null;
+      })
+    : null;
+
+  const hasAllColors = colors?.every(c => c !== null);
+
+  return {
+    colors: hasAllColors ? colors : null,
+    labels: moneyline.outcomes,
+    markets: [moneyline],
+    tokenIds: moneyline.clobTokenIds,
+  };
+}
+
+function extractTopMarketsInputs(markets: GammaMarket[]): SeriesInputs {
+  const selected = selectTopMarketsForChart(markets, MAX_POLYMARKET_SERIES);
+  return {
+    colors: null,
+    labels: selected.map(getMarketLabel),
+    markets,
+    tokenIds: selected.map(m => m.clobTokenIds[0]).filter(Boolean),
+  };
+}
+
+function extractMarketFilterInputs(filter: MarketFilter): SeriesInputs {
+  const { labels, tokenIds } = collapseYesNoFilter(filter.labels, filter.tokenIds);
+  return { colors: null, labels, markets: null, tokenIds };
+}
+
+function collapseYesNoFilter(labels: string[], tokenIds: string[]): { labels: string[]; tokenIds: string[] } {
+  if (!hasYesAndNo(labels)) return { labels, tokenIds };
+  const yesIndex = labels.findIndex(l => l?.toLowerCase() === 'yes');
+  if (yesIndex < 0) return { labels, tokenIds };
+  return { labels: [labels[yesIndex]], tokenIds: [tokenIds[yesIndex]] };
+}
+
+function isActiveMoneylineMarket(m: GammaMarket): boolean {
+  return m.active && !m.closed && m.clobTokenIds.length > 0 && m.sportsMarketType === 'moneyline';
 }
 
 // ============ Selectors ====================================================== //
@@ -172,9 +212,9 @@ function buildSeriesArrays(history: PricePoint[]): { prices: Float32Array; times
   const timestamps = new Float32Array(len);
   if (!len) return { prices, timestamps };
 
-  const firstTs = history[0].t;
-  const lastTs = history[len - 1].t;
-  const isAscending = firstTs <= lastTs;
+  const firstTimestamp = history[0].t;
+  const lastTimestamp = history[len - 1].t;
+  const isAscending = firstTimestamp <= lastTimestamp;
 
   for (let i = 0; i < len; i++) {
     const point = isAscending ? history[i] : history[len - 1 - i];
@@ -224,44 +264,41 @@ export function selectTopMarketsForChart<T extends { active: boolean; closed: bo
     .reverse();
 }
 
-// ============ Fidelity Selection ============================================= //
+// ============ Fidelity ======================================================= //
 
-enum HistoryBucketMinutes {
+enum FidelityMinutes {
   FourHours = 240,
   TwelveHours = 720,
   OneDay = 1440,
 }
 
-enum HistorySpanDays {
+enum MarketSpanDays {
   Short = 60,
   Medium = 180,
 }
 
-function resolveFidelityForInterval(markets: GammaMarket[] | null | undefined, interval: PolymarketInterval, fidelity?: number): number {
-  if (fidelity !== undefined) return fidelity;
+function resolveFidelity(interval: PolymarketInterval, override: number | undefined, markets: GammaMarket[] | null): number {
+  if (override !== undefined) return override;
   if (interval !== 'max') return FIDELITY_MAP[interval];
 
-  const spanDays = getSpanDays(markets);
+  const spanDays = getMarketSpanDays(markets);
   if (spanDays === null) return FIDELITY_MAP.max;
-  if (spanDays <= HistorySpanDays.Short) return HistoryBucketMinutes.FourHours;
-  if (spanDays <= HistorySpanDays.Medium) return HistoryBucketMinutes.TwelveHours;
-  return HistoryBucketMinutes.OneDay;
+  if (spanDays <= MarketSpanDays.Short) return FidelityMinutes.FourHours;
+  if (spanDays <= MarketSpanDays.Medium) return FidelityMinutes.TwelveHours;
+  return FidelityMinutes.OneDay;
 }
 
-function getSpanDays(markets: GammaMarket[] | null | undefined): number | null {
+function getMarketSpanDays(markets: GammaMarket[] | null): number | null {
   if (!markets?.length) return null;
 
-  let minStart = Number.POSITIVE_INFINITY;
+  let earliestStart = Number.POSITIVE_INFINITY;
   for (const m of markets) {
     if (!m.startDate) continue;
     const ts = Date.parse(m.startDate);
-    if (Number.isFinite(ts) && ts < minStart) {
-      minStart = ts;
-    }
+    if (Number.isFinite(ts) && ts < earliestStart) earliestStart = ts;
   }
 
-  if (minStart === Number.POSITIVE_INFINITY) return null;
+  if (earliestStart === Number.POSITIVE_INFINITY) return null;
   const now = Date.now();
-  if (now <= minStart) return 0;
-  return (now - minStart) / time.days(1);
+  return now <= earliestStart ? 0 : (now - earliestStart) / time.days(1);
 }

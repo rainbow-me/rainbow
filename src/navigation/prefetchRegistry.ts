@@ -1,5 +1,5 @@
-import { prefetchCandlestickData } from '@/features/charts/stores/candlestickStore';
 import { polymarketChartsActions } from '@/features/charts/polymarket/stores/polymarketStore';
+import { prefetchCandlestickData } from '@/features/charts/stores/candlestickStore';
 import { prefetchPolymarketEvent } from '@/features/polymarket/stores/polymarketEventStore';
 import { usePolymarketOrderBookStore } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import Routes, { Route } from '@/navigation/routesNames';
