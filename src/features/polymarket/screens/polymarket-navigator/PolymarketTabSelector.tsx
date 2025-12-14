@@ -95,7 +95,7 @@ const SelectedHighlight = memo(function SelectedHighlight({
 }) {
   const { isDarkMode } = useColorMode();
   const highlightBackgroundColor = opacityWorklet('#82408F', 0.3);
-  const borderColor = isDarkMode ? highlightBackgroundColor : opacityWorklet('#DC91F4', 0.03);
+  const borderColor = opacityWorklet('#DC91F4', isDarkMode ? 0.06 : 0.03);
 
   const translateX = useAnimatedStyle(() => ({
     transform: [
