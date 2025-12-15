@@ -31,7 +31,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
     params: { position: initialPosition },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_MANAGE_POSITION_SHEET>>();
 
-  const position = usePolymarketPositionsStore(state => state.getPosition(initialPosition.conditionId) ?? initialPosition);
+  const position = usePolymarketPositionsStore(state => state.getPosition(initialPosition.asset) ?? initialPosition);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const { isDarkMode } = useColorMode();
@@ -103,7 +103,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
       refetchPolymarketStores();
       Navigation.goBack();
     } catch (e) {
-      logger.error(new RainbowError('[PolymarketManagePositionSheet] Error claiming position', ensureError(e)));
+      logger.error(new RainbowError('[PolymarketManagePositionSheet] Error claiming position', e));
       setIsProcessing(false);
       Alert.alert('Error', 'Failed to claim position. Please try again.');
     }

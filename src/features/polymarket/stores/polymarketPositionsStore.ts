@@ -12,7 +12,7 @@ import { fetchTeamsForGame } from '@/features/polymarket/utils/sports';
 type PolymarketPositionsStoreActions = {
   getPositions: () => PolymarketPosition[] | undefined;
   getEventPositions: (eventId: string) => PolymarketPosition[];
-  getPosition: (conditionId: string) => PolymarketPosition | undefined;
+  getPosition: (asset: string) => PolymarketPosition | undefined;
 };
 
 type PolymarketPositionsParams = {
@@ -40,9 +40,9 @@ export const usePolymarketPositionsStore = createQueryStore<
       const positions = get().getData()?.positions;
       return positions?.filter(position => position.eventId === eventId) ?? [];
     },
-    getPosition: (conditionId: string) => {
+    getPosition: (asset: string) => {
       const positions = get().getData()?.positions;
-      return positions?.find(position => position.conditionId === conditionId);
+      return positions?.find(position => position.asset === asset);
     },
   }),
   {
