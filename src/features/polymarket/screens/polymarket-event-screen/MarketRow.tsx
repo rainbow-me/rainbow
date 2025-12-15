@@ -6,13 +6,12 @@ import { memo, useMemo } from 'react';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LinearGradient } from 'react-native-linear-gradient';
 import ImgixImage from '@/components/images/ImgixImage';
-import { lessThanWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
+import { toPercentageWorklet } from '@/safe-math/SafeMath';
 import { formatNumber } from '@/helpers/strings';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { createOpacityPalette } from '@/worklets/colors';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
 type MarketRowProps = {
   accentColor: string;

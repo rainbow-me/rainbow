@@ -426,6 +426,7 @@ export type PolymarketMarketEvent = {
   icon: string;
   active: boolean;
   closed: boolean;
+  closedTime?: string;
   archived: boolean;
   new: boolean;
   featured: boolean;

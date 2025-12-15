@@ -182,7 +182,7 @@ function parseRegularScore(string: string) {
 function parseBestOfScore(string: string) {
   const [_, scorePart, bestOfPart] = string.split('|');
   const [teamAScore, teamBScore] = scorePart.split('-');
-  const bestOf = parseInt(bestOfPart.split('Bo')[1]);
+  const bestOf = bestOfPart ? parseInt(bestOfPart.split('Bo')[1]) : undefined;
   return {
     teamAScore,
     teamBScore,

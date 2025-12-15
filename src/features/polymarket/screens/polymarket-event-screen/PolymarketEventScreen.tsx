@@ -21,6 +21,7 @@ import { getChartLineColors } from '@/features/charts/polymarket/utils/getChartL
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { AboutSection } from '@/features/polymarket/screens/polymarket-event-screen/AboutSection';
 import { GameBoxScore } from '@/features/polymarket/screens/polymarket-event-screen/components/GameBoxScore';
+import { ResolvedEventHeader } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedEventHeader';
 
 export const EventHeaderSection = memo(function EventHeaderSection({ event }: { event: PolymarketMarketEvent | PolymarketEvent }) {
   return (
@@ -85,6 +86,8 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
 
   const isSportsEvent = initialEvent.gameId !== undefined;
   const lineColors = useMemo(() => parseLineColors(event, isSportsEvent), [event, isSportsEvent]);
+  const isEventResolved = event.closed;
+  const shouldShowChart = !isEventResolved;
 
   return (
     <>
@@ -109,9 +112,10 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
           paddingHorizontal="24px"
           style={{ minHeight: DEVICE_HEIGHT }}
         >
+          {isEventResolved && <ResolvedEventHeader resolvedAt={event.closedTime} />}
           <EventHeaderSection event={event} />
           {isSportsEvent && <GameBoxScore event={event} />}
-          <ChartSection backgroundColor={backgroundColor} lineColors={lineColors} />
+          {shouldShowChart && <ChartSection backgroundColor={backgroundColor} lineColors={lineColors} />}
           <OpenPositionsSection eventId={eventId} />
           {isSportsEvent ? <SportsEventMarkets /> : <MarketsSection />}
           <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
