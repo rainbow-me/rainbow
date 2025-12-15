@@ -167,6 +167,7 @@ const buildBriefWalletSections = (
         ...perpsFeatureCardSection,
         ...contentSection,
         ...perpsSection,
+        ...polymarketSection,
         ...claimablesSection,
         ...positionsSection,
         ...uniqueTokenFamiliesSection,
