@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { Bleed, Box, globalColors, Separator, Text, useColorMode } from '@/design-system';
+import { Bleed, Box, globalColors, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
@@ -22,8 +22,11 @@ import { getSolidColorEquivalent } from '@/worklets/colors';
 import { AboutSection } from '@/features/polymarket/screens/polymarket-event-screen/AboutSection';
 import { GameBoxScore } from '@/features/polymarket/screens/polymarket-event-screen/components/GameBoxScore';
 import { ResolvedEventHeader } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedEventHeader';
+import { formatTimestamp, toUnixTime } from '@/worklets/dates';
 
 export const EventHeaderSection = memo(function EventHeaderSection({ event }: { event: PolymarketMarketEvent | PolymarketEvent }) {
+  const labelQuaternary = useForegroundColor('labelQuaternary');
+
   return (
     <Box>
       <Box flexDirection="row" alignItems="flex-start" gap={16}>
@@ -31,9 +34,17 @@ export const EventHeaderSection = memo(function EventHeaderSection({ event }: { 
           <Text color={'label'} size="30pt" weight="heavy" align="left">
             {event.title}
           </Text>
-          <Text color={'labelQuaternary'} size="15pt" weight="bold">
-            {`${formatNumber(String(event.volume), { useOrderSuffix: true, decimals: 1, style: '$' })} VOL`}
-          </Text>
+          <Box flexDirection="row" alignItems="center" gap={8}>
+            <Text color={'labelQuaternary'} size="15pt" weight="bold">
+              {`${formatNumber(String(event.volume), { useOrderSuffix: true, decimals: 1, style: '$' })} VOL`}
+            </Text>
+            <Box height={3} width={3} backgroundColor={labelQuaternary} borderRadius={1.5} />
+            {event.startTime && !event.closed && (
+              <Text color={'labelQuaternary'} size="15pt" weight="bold">
+                {formatTimestamp(toUnixTime(event.startTime))}
+              </Text>
+            )}
+          </Box>
         </Box>
         <ImgixImage
           enableFasterImage
@@ -88,6 +99,9 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
   const lineColors = useMemo(() => parseLineColors(event, isSportsEvent), [event, isSportsEvent]);
   const isEventResolved = event.closed;
   const shouldShowChart = !isEventResolved;
+
+  console.log('event', eventData);
+  console.log('initialEvent', initialEvent);
 
   return (
     <>

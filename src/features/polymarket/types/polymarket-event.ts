@@ -450,6 +450,7 @@ export type PolymarketMarketEvent = {
   cyom: boolean;
   showAllOutcomes: boolean;
   showMarketImages: boolean;
+  startTime?: string;
   enableNegRisk: boolean;
   gmpChartMode: string;
   negRiskAugmented: boolean;
