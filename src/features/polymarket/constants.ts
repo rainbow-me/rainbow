@@ -3,7 +3,7 @@ import { PLATFORM_API_KEY } from 'react-native-dotenv';
 import { Address } from 'viem';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
-export const RAINBOW_POLYMARKET_FEE_ADDRESS: Address = '0x83e3057f7b619ffe340bb8157356e3eb4aecc40f';
+export const RAINBOW_POLYMARKET_FEE_ADDRESS: Address = '0x757758506d6a4F8a433F8BECaFd52545f9Cb050a';
 
 export const POLYGON_USDC_ADDRESS: Address = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
 export const POLYGON_USDC_DECIMALS = 6;
