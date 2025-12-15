@@ -17,9 +17,12 @@ export async function fetchGameMetadata(eventTicker: string) {
   }
 }
 
-export async function fetchTeamsInfo(teamNames: string[]) {
+export async function fetchTeamsInfo({ teamNames, league }: { teamNames: string[]; league: string | undefined }) {
   try {
     const url = new URL(`${POLYMARKET_GAMMA_API_URL}/teams`);
+    if (league) {
+      url.searchParams.set('league', league);
+    }
     teamNames.forEach(name => {
       url.searchParams.append('name', name);
     });
@@ -39,5 +42,6 @@ export async function fetchTeamsForGame(eventTicker: string): Promise<Polymarket
   const teamNames =
     gameMetadata.ordering === 'home' ? [gameMetadata.teams[0], gameMetadata.teams[1]] : [gameMetadata.teams[1], gameMetadata.teams[0]];
 
-  return fetchTeamsInfo(teamNames);
+  // Field is named 'sport' but it is the league
+  return fetchTeamsInfo({ teamNames, league: gameMetadata.sport });
 }

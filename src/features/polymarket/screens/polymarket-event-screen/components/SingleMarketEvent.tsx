@@ -51,7 +51,7 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
             price={market.outcomePrices[index]}
             minTickSize={market.orderPriceMinTickSize}
             onPress={() => {
-              Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, { market, outcomeIndex: index });
+              Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, { market, outcomeIndex: index, outcomeColor });
             }}
           />
         );

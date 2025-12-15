@@ -11,10 +11,9 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import LinearGradient from 'react-native-linear-gradient';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { formatNumber } from '@/helpers/strings';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { getSolidColorEquivalent } from '@/worklets/colors';
+import { createOpacityPalette, getSolidColorEquivalent } from '@/worklets/colors';
 import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
@@ -38,20 +37,11 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   const red = useForegroundColor('red');
   const wonGreen = isDarkMode ? '#1F9E39' : green;
   const lostRed = isDarkMode ? '#D53F35' : red;
-  const accentColor = position.market.color;
+  const accentColor = getPositionAccentColor(position);
   const accentColors = useMemo(() => {
-    return {
-      opacity0: opacityWorklet(accentColor, 0),
-      opacity4: opacityWorklet(accentColor, 0.04),
-      opacity6: opacityWorklet(accentColor, 0.06),
-      opacity12: opacityWorklet(accentColor, 0.12),
-      opacity14: opacityWorklet(accentColor, 0.14),
-      opacity20: opacityWorklet(accentColor, 0.2),
-      opacity24: opacityWorklet(accentColor, 0.24),
-      opacity70: opacityWorklet(accentColor, 0.7),
-      opacity100: accentColor,
-    };
+    return createOpacityPalette(accentColor, [0, 4, 6, 12, 14, 20, 24, 70, 100]);
   }, [accentColor]);
+
   const buttonBackgroundColor = getSolidColorEquivalent({
     background: accentColors.opacity70,
     foreground: 'rgb(0, 0, 0)',
@@ -277,6 +267,14 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
     </GradientBorderView>
   );
 });
+
+function getPositionAccentColor(position: PolymarketPosition): string {
+  if (position.teams) {
+    const team = position.teams.find(team => team.alias === position.outcome);
+    if (team?.color) return team.color;
+  }
+  return position.market.color;
+}
 
 const styles = StyleSheet.create({
   flex: {

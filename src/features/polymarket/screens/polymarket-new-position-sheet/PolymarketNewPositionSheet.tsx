@@ -3,7 +3,7 @@ import { Alert, StyleSheet, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
-import { Box, Text, TextShadow, useForegroundColor } from '@/design-system';
+import { Box, Text, TextShadow } from '@/design-system';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { logger, RainbowError } from '@/logger';
 import ImgixImage from '@/components/images/ImgixImage';
@@ -23,20 +23,17 @@ import { collectTradeFee } from '@/features/polymarket/utils/collectTradeFee';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
-    params: { market, outcomeIndex },
+    params: { market, outcomeIndex, outcomeColor },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
 
   const outcome = market.outcomes[outcomeIndex];
   const tokenId = market.clobTokenIds[outcomeIndex];
+  const accentColor = outcomeColor;
 
   const { availableBalance, worstPrice, validation, isValidOrderAmount, amountToWin, outcomeOdds, fee, spread, setBuyAmount, buyAmount } =
     useNewPositionForm({ tokenId });
 
   const [isProcessing, setIsProcessing] = useState(false);
-
-  const red = useForegroundColor('red');
-  const green = useForegroundColor('green');
-  const accentColor = market.negRisk ? market.color : outcomeIndex === 0 ? green : red;
 
   const outcomeTitle = market.events?.[0]?.title || market.question;
   const outcomeSubtitle = useMemo(() => {

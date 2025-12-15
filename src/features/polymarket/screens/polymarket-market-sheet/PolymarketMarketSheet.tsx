@@ -70,6 +70,7 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
                   Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, {
                     market,
                     outcomeIndex: index,
+                    outcomeColor: accentColor,
                   })
                 }
               >
