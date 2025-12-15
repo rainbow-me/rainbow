@@ -27,9 +27,7 @@ export function useOrderValidation({ buyAmount, availableBalance, minBuyAmountUs
     'worklet';
 
     const maxAmount = availableBalance;
-    // const minAmount = String(minBuyAmountUsd);
-    // TESTING
-    const minAmount = String('2');
+    const minAmount = minBuyAmountUsd;
 
     const isAboveMax = greaterThanWorklet(buyAmount, maxAmount);
     const isBelowMin = lessThanWorklet(buyAmount, minAmount);
