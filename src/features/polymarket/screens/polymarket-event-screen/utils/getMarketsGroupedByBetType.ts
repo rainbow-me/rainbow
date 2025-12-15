@@ -56,6 +56,7 @@ export type MoneylineGroup = {
   sportsMarketType: SportsMarketType;
   label: string;
   icon?: string;
+  isThreeWay?: boolean;
   markets: PolymarketMarket[];
 };
 
@@ -187,16 +188,32 @@ function buildLineBasedGroups(map: Map<SportsMarketType, PolymarketMarket[]>, ev
     });
 }
 
+// TODO: confirm this works when there are first half moneyline markets
+function isThreeWayMoneyline(markets: PolymarketMarket[]): boolean {
+  return (
+    markets.length === 3 &&
+    markets.every(
+      m =>
+        m.outcomes.length === 2 &&
+        m.outcomes[0] === 'Yes' &&
+        m.outcomes[1] === 'No' &&
+        m.sportsMarketType === POLYMARKET_SPORTS_MARKET_TYPE.MONEYLINE
+    )
+  );
+}
+
 function buildMoneylineGroups(map: Map<SportsMarketType, PolymarketMarket[]>): MoneylineGroup[] {
   return Array.from(map.entries())
     .sort(([a], [b]) => sportsMarketTypeOrder.indexOf(a) - sportsMarketTypeOrder.indexOf(b))
     .map(([sportsMarketType, groupMarkets]) => {
       const labels = getSportsMarketTypeLabels(sportsMarketType);
+
       return {
         id: sportsMarketType,
         sportsMarketType,
         label: labels.label,
         icon: labels.icon,
+        isThreeWay: isThreeWayMoneyline(groupMarkets),
         markets: groupMarkets,
       };
     });

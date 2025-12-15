@@ -61,7 +61,6 @@ const MultiMarketEvent = memo(function MultiMarketEvent({ markets }: { markets: 
               price={market.lastTradePrice ? String(market.lastTradePrice) : '0'}
               minTickSize={market.orderPriceMinTickSize}
               onPress={() => {
-                console.log('market row on press', market);
                 Navigation.handleAction(Routes.POLYMARKET_MARKET_SHEET, { market });
               }}
             />

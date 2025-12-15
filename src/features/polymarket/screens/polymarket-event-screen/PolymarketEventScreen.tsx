@@ -131,7 +131,7 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
           {shouldShowChart && <ChartSection backgroundColor={screenBackgroundColor} lineColors={lineColors} />}
           <OpenPositionsSection eventId={eventId} />
           {isSportsEvent ? <SportsEventMarkets /> : <MarketsSection />}
-          <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
+          <Separator color="separatorSecondary" direction="horizontal" thickness={1} />
           <AboutSection event={event} screenBackgroundColor={screenBackgroundColor} />
         </Box>
       </SlackSheet>

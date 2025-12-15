@@ -1,4 +1,4 @@
-import { Box, Separator, Text, TextIcon, useColorMode } from '@/design-system';
+import { Box, Separator, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import React, { memo, useMemo, useState } from 'react';
@@ -15,7 +15,11 @@ import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { SingleMarketEventOutcomes } from '@/features/polymarket/screens/polymarket-event-screen/components/SingleMarketEvent';
 import { ItemSelector } from '@/features/polymarket/screens/polymarket-event-screen/ItemSelector';
 import { BetTypeSelector } from '@/features/polymarket/screens/polymarket-event-screen/BetTypeSelector';
+import { MarketRow } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
 import { PolymarketTeamInfo } from '@/features/polymarket/types';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 
 export const SportsEventMarkets = memo(function SportsEventMarkets() {
   const { isDarkMode } = useColorMode();
@@ -42,7 +46,7 @@ export const SportsEventMarkets = memo(function SportsEventMarkets() {
   if (!event || !groupedMarkets) return <Box height={height} />;
 
   return (
-    <Box gap={16}>
+    <Box gap={24}>
       {availableBetTypes.length > 1 && (
         <BetTypeSelector
           availableBetTypes={availableBetTypes}
@@ -84,12 +88,12 @@ const Markets = memo(function Markets({
 
   return (
     <Box gap={24}>
-      {selectedMarketsGroup.map(marketsGroup => {
+      {selectedMarketsGroup.map((marketsGroup, index) => {
         return (
           <React.Fragment key={marketsGroup.id}>
-            <Separator color="separatorSecondary" thickness={1} />
             {'lines' in marketsGroup && <LineBasedMarkets key={marketsGroup.sportsMarketType} marketsGroup={marketsGroup} teams={teams} />}
             {!('lines' in marketsGroup) && <MoneylineMarkets marketsGroup={marketsGroup} teams={teams} />}
+            {index < selectedMarketsGroup.length - 1 && <Separator color="separatorSecondary" thickness={1} />}
           </React.Fragment>
         );
       })}
@@ -181,6 +185,70 @@ const MoneylineMarkets = memo(function MoneylineMarket({
   marketsGroup: MoneylineGroup;
   teams?: PolymarketTeamInfo[];
 }) {
+  if (marketsGroup.isThreeWay) {
+    return <ThreeWayMoneylineMarkets marketsGroup={marketsGroup} teams={teams} />;
+  }
+
+  return <StandardMoneylineMarkets marketsGroup={marketsGroup} teams={teams} />;
+});
+
+const ThreeWayMoneylineMarkets = memo(function ThreeWayMoneylineMarkets({
+  marketsGroup,
+  teams,
+}: {
+  marketsGroup: MoneylineGroup;
+  teams?: PolymarketTeamInfo[];
+}) {
+  const green = useForegroundColor('green');
+  const red = useForegroundColor('red');
+  const drawColor = '#808080';
+
+  return (
+    <Box gap={24}>
+      <Box flexDirection="row" alignItems="center" gap={10}>
+        {marketsGroup.icon && (
+          <TextIcon color="labelQuaternary" size="icon 17px" weight="heavy">
+            {marketsGroup.icon}
+          </TextIcon>
+        )}
+        <Text size="20pt" weight="heavy" color="label">
+          {marketsGroup.label}
+        </Text>
+      </Box>
+      <Box gap={8}>
+        {marketsGroup.markets.map((market, index) => {
+          const team = teams?.find(t => (t.name ?? t.alias)?.toLowerCase() === market.groupItemTitle.toLowerCase());
+          const isDraw = isDrawMarket(market);
+          const outcomeColor = isDraw ? drawColor : team?.color ?? (index === 0 ? green : red);
+
+          return (
+            <MarketRow
+              key={market.id}
+              accentColor={outcomeColor}
+              image={team?.logo}
+              priceChange={0}
+              title={market.groupItemTitle}
+              tokenId={market.clobTokenIds[0]}
+              price={market.outcomePrices[0]}
+              minTickSize={market.orderPriceMinTickSize}
+              onPress={() => {
+                Navigation.handleAction(Routes.POLYMARKET_MARKET_SHEET, { market });
+              }}
+            />
+          );
+        })}
+      </Box>
+    </Box>
+  );
+});
+
+const StandardMoneylineMarkets = memo(function StandardMoneylineMarkets({
+  marketsGroup,
+  teams,
+}: {
+  marketsGroup: MoneylineGroup;
+  teams?: PolymarketTeamInfo[];
+}) {
   return (
     <Box gap={24}>
       <Box flexDirection="row" alignItems="center" gap={10}>
@@ -199,3 +267,7 @@ const MoneylineMarkets = memo(function MoneylineMarket({
     </Box>
   );
 });
+
+export function isDrawMarket(market: PolymarketMarket): boolean {
+  return market.slug.includes('-draw') || market.question.toLowerCase().includes('draw');
+}
