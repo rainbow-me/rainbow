@@ -68,9 +68,8 @@ const MultiMarketEvent = memo(function MultiMarketEvent({ markets }: { markets: 
           ))}
         </Box>
       )}
-      {resolvedMarkets.length > 0 && allResolved ? (
-        <ResolvedMarketsList markets={resolvedMarkets} showMarketImages={showMarketImages} />
-      ) : (
+      {resolvedMarkets.length > 0 && allResolved && <ResolvedMarketsList markets={resolvedMarkets} showMarketImages={showMarketImages} />}
+      {resolvedMarkets.length > 0 && !allResolved && (
         <ResolvedMarketsSection markets={resolvedMarkets} showMarketImages={showMarketImages} />
       )}
     </>

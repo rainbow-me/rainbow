@@ -141,6 +141,7 @@ import { PolymarketBrowseEventsScreen } from '@/features/polymarket/screens/poly
 import { PolymarketNavigator } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
 import { PolymarketDepositScreen } from '@/features/polymarket/funding/screens/PolymarketDepositScreen';
 import { PolymarketWithdrawalScreen } from '@/features/polymarket/funding/screens/PolymarketWithdrawalScreen';
+import { PolymarketMarketDescriptionSheet } from '@/features/polymarket/screens/polymarket-market-description-sheet/PolymarketMarketDescriptionSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -338,6 +339,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={PolymarketEventScreen} name={Routes.POLYMARKET_EVENT_SCREEN} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={PolymarketManagePositionSheet} name={Routes.POLYMARKET_MANAGE_POSITION_SHEET} {...panelConfig} />
       <NativeStack.Screen component={PolymarketMarketSheet} name={Routes.POLYMARKET_MARKET_SHEET} {...panelConfig} />
+      <NativeStack.Screen component={PolymarketMarketDescriptionSheet} name={Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET} {...panelConfig} />
       <NativeStack.Screen component={PolymarketNewPositionSheet} name={Routes.POLYMARKET_NEW_POSITION_SHEET} {...panelConfig} />
       <NativeStack.Screen component={PolymarketAccountScreen} name={Routes.POLYMARKET_ACCOUNT_SCREEN} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={PolymarketNavigator} name={Routes.POLYMARKET_NAVIGATOR} {...perpsAccountStackConfig} />

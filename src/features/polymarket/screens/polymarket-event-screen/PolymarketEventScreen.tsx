@@ -38,11 +38,13 @@ export const EventHeaderSection = memo(function EventHeaderSection({ event }: { 
             <Text color={'labelQuaternary'} size="15pt" weight="bold">
               {`${formatNumber(String(event.volume), { useOrderSuffix: true, decimals: 1, style: '$' })} VOL`}
             </Text>
-            <Box height={3} width={3} backgroundColor={labelQuaternary} borderRadius={1.5} />
             {event.startTime && !event.closed && (
-              <Text color={'labelQuaternary'} size="15pt" weight="bold">
-                {formatTimestamp(toUnixTime(event.startTime))}
-              </Text>
+              <>
+                <Box height={3} width={3} backgroundColor={labelQuaternary} borderRadius={1.5} />
+                <Text color={'labelQuaternary'} size="15pt" weight="bold">
+                  {formatTimestamp(toUnixTime(event.startTime))}
+                </Text>
+              </>
             )}
           </Box>
         </Box>
@@ -91,8 +93,8 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
   const eventData = usePolymarketEventStore(state => state.getData());
   const event = eventData ?? initialEvent;
 
-  const backgroundColor = isDarkMode
-    ? getSolidColorEquivalent({ background: initialEvent.color, foreground: '#000000', opacity: 0.92 })
+  const screenBackgroundColor = isDarkMode
+    ? getSolidColorEquivalent({ background: event.color, foreground: '#000000', opacity: 0.92 })
     : '#FFFFFF';
 
   const isSportsEvent = initialEvent.gameId !== undefined;
@@ -100,13 +102,10 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
   const isEventResolved = event.closed;
   const shouldShowChart = !isEventResolved;
 
-  console.log('event', eventData);
-  console.log('initialEvent', initialEvent);
-
   return (
     <>
       <SlackSheet
-        backgroundColor={backgroundColor}
+        backgroundColor={screenBackgroundColor}
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...(IS_IOS ? { height: '100%' } : {})}
         scrollEnabled
@@ -129,15 +128,15 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
           {isEventResolved && <ResolvedEventHeader resolvedAt={event.closedTime} />}
           <EventHeaderSection event={event} />
           {isSportsEvent && <GameBoxScore event={event} />}
-          {shouldShowChart && <ChartSection backgroundColor={backgroundColor} lineColors={lineColors} />}
+          {shouldShowChart && <ChartSection backgroundColor={screenBackgroundColor} lineColors={lineColors} />}
           <OpenPositionsSection eventId={eventId} />
           {isSportsEvent ? <SportsEventMarkets /> : <MarketsSection />}
           <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
-          <AboutSection />
+          <AboutSection event={event} screenBackgroundColor={screenBackgroundColor} />
         </Box>
       </SlackSheet>
       <Box position="absolute" top="0px" left="0px" right="0px" width="full" pointerEvents="none">
-        <Box backgroundColor={backgroundColor} height={safeAreaInsets.top + (IS_ANDROID ? 24 : 12)} width="full">
+        <Box backgroundColor={screenBackgroundColor} height={safeAreaInsets.top + (IS_ANDROID ? 24 : 12)} width="full">
           <Box
             height={{ custom: 5 }}
             width={{ custom: 36 }}
@@ -147,8 +146,8 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
           />
         </Box>
         <EasingGradient
-          endColor={backgroundColor}
-          startColor={backgroundColor}
+          endColor={screenBackgroundColor}
+          startColor={screenBackgroundColor}
           endOpacity={0}
           startOpacity={1}
           style={{ height: 32, width: '100%', pointerEvents: 'none' }}

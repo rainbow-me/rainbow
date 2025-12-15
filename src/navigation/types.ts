@@ -687,6 +687,9 @@ type RouteParams = {
     market: PolymarketMarket;
     outcomeIndex: number;
   };
+  [Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET]: {
+    description: string;
+  };
 };
 
 /**
