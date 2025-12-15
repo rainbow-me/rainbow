@@ -26,8 +26,12 @@ export async function fetchTeamsInfo({ teamNames, league }: { teamNames: string[
     teamNames.forEach(name => {
       url.searchParams.append('name', name);
     });
-    const { data } = await rainbowFetch<PolymarketTeamInfo[]>(url.toString(), { timeout: time.seconds(15) });
-    return data;
+    const { data: teams } = await rainbowFetch<PolymarketTeamInfo[]>(url.toString(), { timeout: time.seconds(15) });
+    if (!teams) return undefined;
+    if (teams.length > teamNames.length) {
+      return filterFetchedTeams(teams);
+    }
+    return teams;
   } catch (e) {
     // This can fail unexpectedly, but should not prevent the event from being loaded
     logger.error(new RainbowError('[Polymarket] Error fetching teams info', e));
@@ -44,4 +48,26 @@ export async function fetchTeamsForGame(eventTicker: string): Promise<Polymarket
 
   // Field is named 'sport' but it is the league
   return fetchTeamsInfo({ teamNames, league: gameMetadata.sport });
+}
+
+/**
+ * We don't always have access to the league, and team names can overlap across leagues
+ * This is a hack to filter teams when we receive more than the amount of teams we expect
+ * It returns the teams from the league with the most teams in the response
+ */
+function filterFetchedTeams(teams: PolymarketTeamInfo[]): PolymarketTeamInfo[] {
+  const leagueCounts = new Map<string, number>();
+  let leagueWithMostTeams = teams[0].league;
+
+  for (const team of teams) {
+    leagueCounts.set(team.league, (leagueCounts.get(team.league) ?? 0) + 1);
+  }
+
+  for (const [league, count] of leagueCounts.entries()) {
+    if (count > (leagueCounts.get(leagueWithMostTeams) ?? 0)) {
+      leagueWithMostTeams = league;
+    }
+  }
+
+  return teams.filter(team => team.league === leagueWithMostTeams);
 }

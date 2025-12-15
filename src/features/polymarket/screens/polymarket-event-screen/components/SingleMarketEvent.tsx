@@ -24,7 +24,7 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
   return (
     <Box gap={8}>
       {market.outcomes.map((outcome, index) => {
-        const team = teams?.find(team => team.alias === outcome);
+        const team = teams?.find(team => (team.alias ?? team.name)?.toLowerCase() === outcome.toLowerCase());
         const outcomeColor = team?.color ?? (index === 0 ? green : red);
         const outcomeImage = team?.logo;
 

@@ -97,7 +97,7 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
     ? getSolidColorEquivalent({ background: event.color, foreground: '#000000', opacity: 0.92 })
     : '#FFFFFF';
 
-  const isSportsEvent = initialEvent.gameId !== undefined;
+  const isSportsEvent = event.gameId !== undefined;
   const lineColors = useMemo(() => parseLineColors(event, isSportsEvent), [event, isSportsEvent]);
   const isEventResolved = event.closed;
   const shouldShowChart = !isEventResolved;

@@ -71,9 +71,9 @@ export type PolymarketTeamInfo = {
   record: string;
   logo: string;
   abbreviation: string;
-  alias: string;
+  alias: string | null;
   createdAt: string;
   updatedAt: string;
   providerId: number;
-  color: string;
+  color?: string;
 };
