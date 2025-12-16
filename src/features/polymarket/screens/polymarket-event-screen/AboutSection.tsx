@@ -6,7 +6,6 @@ import { Box, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
 import { CATEGORIES } from '@/features/polymarket/constants';
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { Navigation } from '@/navigation';
-import formatURLForDisplay from '@/utils/formatURLForDisplay';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { format } from 'date-fns';
 import { memo, useMemo } from 'react';
@@ -104,7 +103,7 @@ const InfoRows = memo(function InfoRows({ event }: { event: PolymarketEvent | Po
     if (event.resolutionSource) {
       items.push({
         title: 'Res. Source',
-        value: formatURLForDisplay(event.resolutionSource),
+        value: new URL(event.resolutionSource).hostname.replace('www.', ''),
         icon: '􀉣',
         rightIcon: '􀄯',
       });
