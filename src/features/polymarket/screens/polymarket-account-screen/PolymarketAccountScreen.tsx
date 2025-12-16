@@ -8,6 +8,7 @@ import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollF
 import { Box, Separator, useColorMode } from '@/design-system';
 import { PolymarketAccountBalanceCard } from '@/features/polymarket/components/PolymarketAccountBalanceCard';
 import { PolymarketOpenPositionsSection } from '@/features/polymarket/components/PolymarketOpenPositionsSection';
+import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import {
   NAVIGATOR_FOOTER_CLEARANCE,
   NAVIGATOR_FOOTER_HEIGHT,
@@ -17,6 +18,7 @@ import {
 
 export const PolymarketAccountScreen = function PolymarketAccountScreen() {
   const { isDarkMode } = useColorMode();
+  const { accountScrollRef } = usePolymarketContext();
   const safeAreaInsets = useSafeAreaInsets();
 
   const scrollOffset = useSharedValue(0);
@@ -27,7 +29,11 @@ export const PolymarketAccountScreen = function PolymarketAccountScreen() {
 
   return (
     <View style={styles.container}>
-      <Animated.ScrollView contentContainerStyle={[styles.scrollViewContentContainer, { paddingBottom }]} onScroll={onScroll}>
+      <Animated.ScrollView
+        contentContainerStyle={[styles.scrollViewContentContainer, { paddingBottom }]}
+        onScroll={onScroll}
+        ref={accountScrollRef}
+      >
         <Box gap={20} width="full">
           <PolymarketAccountBalanceCard accentColor={'#C55DE7'} />
           <Separator color="separatorTertiary" direction="horizontal" thickness={THICK_BORDER_WIDTH} />

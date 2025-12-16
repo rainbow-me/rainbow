@@ -1,6 +1,5 @@
 import React, { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
 import Animated, {
   DerivedValue,
   runOnJS,
@@ -10,16 +9,18 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { IS_IOS } from '@/env';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import Routes from '@/navigation/routesNames';
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from 'react-native-blur-view';
-import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
+import { IS_IOS } from '@/env';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { PolymarketNavigation, usePolymarketNavigationStore } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
+import Routes from '@/navigation/routesNames';
 import { useListen } from '@/state/internal/hooks/useListen';
 
 const TABS = Object.freeze({
@@ -36,6 +37,8 @@ const CONTENT_WIDTH = PILL.width * Object.keys(TABS).length + PILL.gap * (Object
 
 export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
   const { isDarkMode } = useColorMode();
+  const { accountScrollRef, eventsListRef } = usePolymarketContext();
+
   const buttonWidth = useDerivedValue<number>(() => PILL.width);
   const selectedIndex = useSharedValue(TABS[usePolymarketNavigationStore.getState().activeRoute as Tab]?.index ?? 0);
 
@@ -48,13 +51,31 @@ export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
     }
   );
 
+  const handleTabPress = useCallback(
+    (tab: Tab) => {
+      if (PolymarketNavigation.isRouteActive(tab)) {
+        switch (tab) {
+          case Routes.POLYMARKET_BROWSE_EVENTS_SCREEN:
+            eventsListRef.current?.scrollToOffset({ animated: true, offset: 0 });
+            break;
+          case Routes.POLYMARKET_ACCOUNT_SCREEN:
+            accountScrollRef.current?.scrollTo({ animated: true, y: 0 });
+            break;
+        }
+      } else {
+        PolymarketNavigation.navigate(tab);
+      }
+    },
+    [accountScrollRef, eventsListRef]
+  );
+
   const onPress = useCallback(
     (tab: Tab) => {
       'worklet';
       selectedIndex.value = TABS[tab].index;
-      runOnJS(navigateToTab)(tab);
+      runOnJS(handleTabPress)(tab);
     },
-    [selectedIndex]
+    [handleTabPress, selectedIndex]
   );
 
   return (
@@ -168,10 +189,6 @@ const TabButtons = ({ onPress, selectedIndex }: { onPress: (tab: Tab) => void; s
     <TabButton index={index} key={value} label={label} icon={icon} onPress={onPress} selectedIndex={selectedIndex} value={value} />
   ));
 };
-
-function navigateToTab(tab: Tab) {
-  PolymarketNavigation.navigate(tab);
-}
 
 const styles = StyleSheet.create({
   button: {

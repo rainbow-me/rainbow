@@ -16,6 +16,7 @@ import { PolymarketSheetHandle } from '@/features/polymarket/screens/polymarket-
 import { PolymarketNavbar } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavbar';
 import { PolymarketBrowseEventsScreen } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketBrowseEventsScreen';
 import { PolymarketNavigatorFooter } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigatorFooter';
+import { PolymarketProvider, usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 
 const Navigator = createVirtualNavigator<PolymarketRoute>({
   initialRoute: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN,
@@ -26,8 +27,17 @@ export const PolymarketNavigation = Navigator.Navigation;
 export const usePolymarketNavigationStore = Navigator.useNavigationStore;
 
 export const PolymarketNavigator = memo(function PolymarketNavigator() {
+  return (
+    <PolymarketProvider>
+      <PolymarketNavigatorContent />
+    </PolymarketProvider>
+  );
+});
+
+const PolymarketNavigatorContent = () => {
   const { isDarkMode } = useColorMode();
   const { ref, goToPage } = usePagerNavigation();
+  const { categorySelectorRef } = usePolymarketContext();
 
   const screenBackgroundColor = isDarkMode ? POLYMARKET_BACKGROUND_DARK : POLYMARKET_BACKGROUND_LIGHT;
 
@@ -40,57 +50,60 @@ export const PolymarketNavigator = memo(function PolymarketNavigator() {
   useCleanup(PolymarketNavigation.resetNavigationState);
 
   return (
-    <Box backgroundColor={screenBackgroundColor} style={styles.container}>
-      <Box alignItems="center" backgroundColor={screenBackgroundColor} width="full">
-        <PolymarketSheetHandle />
-        <PolymarketNavbar />
+    <>
+      <Box backgroundColor={screenBackgroundColor} style={styles.container}>
+        <Box alignItems="center" backgroundColor={screenBackgroundColor} width="full">
+          <PolymarketSheetHandle />
+          <PolymarketNavbar />
+        </Box>
+
+        {useStableValue(() => (
+          <SmoothPager
+            enableSwipeToGoBack
+            enableSwipeToGoForward="always"
+            initialPage={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}
+            onNewIndex={Navigator.handlePagerIndexChange}
+            ref={ref}
+            scaleTo={1}
+            springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
+            waitFor={categorySelectorRef}
+          >
+            <SmoothPager.Page
+              component={
+                <Navigator.Route name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}>
+                  <PolymarketBrowseEventsScreen />
+                </Navigator.Route>
+              }
+              id={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}
+            />
+
+            <SmoothPager.Page
+              component={
+                <Navigator.Route name={Routes.POLYMARKET_ACCOUNT_SCREEN}>
+                  <PolymarketAccountScreen />
+                </Navigator.Route>
+              }
+              id={Routes.POLYMARKET_ACCOUNT_SCREEN}
+              lazy
+            />
+
+            <SmoothPager.Page
+              component={
+                <Navigator.Route name={Routes.POLYMARKET_SEARCH_SCREEN}>
+                  <PolymarketSearchScreen />
+                </Navigator.Route>
+              }
+              id={Routes.POLYMARKET_SEARCH_SCREEN}
+              lazy
+            />
+          </SmoothPager>
+        ))}
       </Box>
 
-      {useStableValue(() => (
-        <SmoothPager
-          enableSwipeToGoBack
-          enableSwipeToGoForward="always"
-          initialPage={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}
-          onNewIndex={Navigator.handlePagerIndexChange}
-          ref={ref}
-          scaleTo={1}
-          springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
-        >
-          <SmoothPager.Page
-            component={
-              <Navigator.Route name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}>
-                <PolymarketBrowseEventsScreen />
-              </Navigator.Route>
-            }
-            id={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}
-          />
-
-          <SmoothPager.Page
-            component={
-              <Navigator.Route name={Routes.POLYMARKET_ACCOUNT_SCREEN}>
-                <PolymarketAccountScreen />
-              </Navigator.Route>
-            }
-            id={Routes.POLYMARKET_ACCOUNT_SCREEN}
-            lazy
-          />
-
-          <SmoothPager.Page
-            component={
-              <Navigator.Route name={Routes.POLYMARKET_SEARCH_SCREEN}>
-                <PolymarketSearchScreen />
-              </Navigator.Route>
-            }
-            id={Routes.POLYMARKET_SEARCH_SCREEN}
-            lazy
-          />
-        </SmoothPager>
-      ))}
-
       <PolymarketNavigatorFooter />
-    </Box>
+    </>
   );
-});
+};
 
 const styles = StyleSheet.create({
   container: {

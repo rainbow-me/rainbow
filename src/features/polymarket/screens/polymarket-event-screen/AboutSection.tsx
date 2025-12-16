@@ -49,6 +49,7 @@ const Description = memo(function Description({
       onPress={() => {
         Navigation.handleAction(Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET, { description });
       }}
+      scaleTo={0.95}
     >
       <Box
         width="full"
@@ -58,7 +59,7 @@ const Description = memo(function Description({
         borderWidth={2}
         borderColor={{ custom: opacityWorklet('#F5F8FF', 0.02) }}
       >
-        <Text color="label" size="17pt / 150%" weight="medium" numberOfLines={3}>
+        <Text color="labelTertiary" size="17pt / 150%" weight="medium" numberOfLines={3}>
           {description}
         </Text>
         <Box height={26} position="absolute" bottom={{ custom: 12 }} right={{ custom: 14 }} zIndex={1}>
@@ -72,7 +73,7 @@ const Description = memo(function Description({
               startOpacity={0}
               style={{ height: 26, width: 100 }}
             />
-            <Box flexDirection="row" alignItems="center" gap={6} backgroundColor={backgroundColor}>
+            <Box flexDirection="row" alignItems="center" gap={4} backgroundColor={backgroundColor}>
               <Text color="label" size="15pt" weight="bold">
                 {'Show Rules'}
               </Text>
@@ -176,7 +177,7 @@ function InfoRow({
 
         <Box flexDirection="row" alignItems="center" gap={8}>
           <TextShadow blur={12} shadowOpacity={0.24}>
-            <Text align="right" color={valueColor ? { custom: valueColor } : 'label'} weight="semibold" size="17pt">
+            <Text align="right" color={valueColor ? { custom: valueColor } : 'label'} weight="semibold" numberOfLines={1} size="17pt">
               {value}
             </Text>
           </TextShadow>

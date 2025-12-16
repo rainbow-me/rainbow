@@ -1,4 +1,5 @@
-import { FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
+import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { ComponentProps, ComponentType, ReactElement, memo, useMemo } from 'react';
@@ -41,7 +42,7 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
 }: PolymarketEventsListBaseProps) {
   const safeAreaInsets = useSafeAreaInsets();
 
-  const { contentContainerStyle, scrollIndicatorInsets } = useMemo(() => {
+  const listStyles = useMemo(() => {
     const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
     return {
       contentContainerStyle: { minHeight: DEVICE_HEIGHT, paddingBottom, paddingHorizontal: ITEM_GAP / 2, paddingTop: 12 },
@@ -55,7 +56,7 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
     <Animated.FlatList
       ListEmptyComponent={<ListLoadingSkeleton />}
       ListHeaderComponent={ListHeaderComponent}
-      contentContainerStyle={contentContainerStyle}
+      contentContainerStyle={listStyles.contentContainerStyle}
       data={events}
       getItemLayout={getItemLayout}
       initialNumToRender={6}
@@ -69,7 +70,7 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
       ref={listRef}
       refreshing={refreshing}
       renderItem={renderItem}
-      scrollIndicatorInsets={scrollIndicatorInsets}
+      scrollIndicatorInsets={listStyles.scrollIndicatorInsets}
       style={styles.list}
       windowSize={12}
     />

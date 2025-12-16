@@ -17,8 +17,6 @@ import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/compon
 import { getChartLineColors } from '@/features/charts/polymarket/utils/getChartLineColors';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
-const CHART_HEIGHT = 280;
-
 export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   const {
     params: { market },
@@ -46,7 +44,6 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
             <Box borderRadius={16} gap={8} justifyContent="center" overflow="hidden" width={PANEL_WIDTH}>
               <PolymarketChart
                 backgroundColor={isDarkMode ? '#000000' : '#FFFFFF'}
-                chartHeight={CHART_HEIGHT}
                 chartWidth={PANEL_WIDTH}
                 config={lineColors ? { line: { colors: lineColors, overrideSeriesColors: true } } : undefined}
                 isMarketChart

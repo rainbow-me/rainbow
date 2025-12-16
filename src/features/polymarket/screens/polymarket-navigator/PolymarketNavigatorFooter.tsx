@@ -12,7 +12,7 @@ import { PolymarketRoute } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import Animated from 'react-native-reanimated';
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
-import { NAVIGATOR_FOOTER_HEIGHT, POLYMARKET_BACKGROUND_DARK } from '@/features/polymarket/constants';
+import { NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { IS_ANDROID } from '@/env';
 import { PolymarketSearchFooter } from '@/features/polymarket/screens/polymarket-navigator/PolymarketSearchFooter';
