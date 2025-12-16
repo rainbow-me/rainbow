@@ -60,24 +60,29 @@ export const PolymarketOpenPositionsSection = function PolymarketOpenPositionsSe
       <Box gap={12}>
         {!positionsInfo.hasPositions && (
           <Box height={124} justifyContent="center" alignItems="center" gap={20} paddingBottom="24px">
-            <Image source={infinityIcon} tintColor={POLYMARKET_ACCENT_COLOR} />
+            <TextShadow blur={22} shadowOpacity={0.9}>
+              <Text size="34pt" weight="heavy" color={{ custom: POLYMARKET_ACCENT_COLOR }}>
+                {'􀫸'}
+              </Text>
+            </TextShadow>
             <Text align="center" size="20pt" weight="heavy" color="labelSecondary">
-              {i18n.t(i18n.l.perps.positions.no_open_positions)}
+              {'No open positions'}
             </Text>
-            <ButtonPressAnimation
+            {/* TODO: Enable once learn more sheet is done */}
+            {/* <ButtonPressAnimation
               onPress={() => {
                 Navigation.handleAction(Routes.PERPS_EXPLAIN_SHEET);
               }}
             >
               <Box flexDirection="row" alignItems="center" gap={4}>
                 <Text align="center" size="15pt" weight="bold" color={'labelTertiary'}>
-                  {i18n.t(i18n.l.perps.positions.learn_more_about_perps)}
+                  {'Learn more about Predictions'}
                 </Text>
                 <Text align="center" size="icon 11px" weight="heavy" color={'labelQuaternary'} style={{ top: StyleSheet.hairlineWidth }}>
                   {'􀆊'}
                 </Text>
               </Box>
-            </ButtonPressAnimation>
+            </ButtonPressAnimation> */}
           </Box>
         )}
         {positionsInfo.positions.map(position => (
