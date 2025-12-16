@@ -682,11 +682,13 @@ type RouteParams = {
   };
   [Routes.POLYMARKET_MARKET_SHEET]: {
     market: PolymarketMarket;
+    event: PolymarketMarketEvent | PolymarketEvent;
   };
   [Routes.POLYMARKET_NEW_POSITION_SHEET]: {
     market: PolymarketMarket;
     outcomeIndex: number;
     outcomeColor: string;
+    event: PolymarketMarketEvent | PolymarketEvent;
   };
   [Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET]: {
     description: string;

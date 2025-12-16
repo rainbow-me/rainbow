@@ -88,7 +88,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
       const price = await polymarketClobDataClient.calculateMarketPrice(position.asset, Side.SELL, position.size);
       const orderResult = await marketSellTotalPosition({ position, price });
       const tokensSold = orderResult.makingAmount;
-      collectTradeFee(tokensSold);
+      void collectTradeFee(tokensSold);
       await waitForPositionSizeUpdate(position.asset);
       Navigation.goBack();
     } catch (e) {

@@ -138,7 +138,7 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
             <ChartSection backgroundColor={screenBackgroundColor} isSportsEvent={isSportsEvent} lineColors={lineColors} />
           )}
           <OpenPositionsSection eventId={eventId} />
-          {isSportsEvent ? <SportsEventMarkets /> : <MarketsSection />}
+          {isSportsEvent ? <SportsEventMarkets /> : <MarketsSection event={eventData} />}
           <Separator color="separatorSecondary" direction="horizontal" thickness={1} />
           <AboutSection event={event} screenBackgroundColor={screenBackgroundColor} />
         </Box>

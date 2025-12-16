@@ -46,6 +46,11 @@ export const POLYMARKET_SPORTS_MARKET_TYPE = {
   BOTH_TEAMS_TO_SCORE: 'both_teams_to_score',
   UFC_METHOD_OF_VICTORY: 'ufc_method_of_victory',
   UFC_GO_THE_DISTANCE: 'ufc_go_the_distance',
+  TENNIS_MATCH_TOTALS: 'tennis_match_totals',
+  TENNIS_SET_HANDICAP: 'tennis_set_handicap',
+  TENNIS_SET_TOTALS: 'tennis_set_totals',
+  TENNIS_FIRST_SET_WINNER: 'tennis_first_set_winner',
+  TENNIS_FIRST_SET_TOTALS: 'tennis_first_set_totals',
   // Known unsupported market types
   // TEAM_TOTALS: 'team_totals',
   // POINTS: 'points',

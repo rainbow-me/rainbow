@@ -19,7 +19,8 @@ import { MarketRow } from '@/features/polymarket/screens/polymarket-event-screen
 import { PolymarketTeamInfo } from '@/features/polymarket/types';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
 
 export const SportsEventMarkets = memo(function SportsEventMarkets() {
   const { isDarkMode } = useColorMode();
@@ -57,7 +58,7 @@ export const SportsEventMarkets = memo(function SportsEventMarkets() {
           selectedBetType={selectedBetType}
         />
       )}
-      <Markets markets={groupedMarkets} selectedBetType={selectedBetType} teams={event.teams} />
+      <Markets markets={groupedMarkets} selectedBetType={selectedBetType} teams={event.teams} event={event} />
     </Box>
   );
 });
@@ -66,10 +67,12 @@ const Markets = memo(function Markets({
   markets,
   selectedBetType,
   teams,
+  event,
 }: {
   markets: GroupedSportsMarkets;
   selectedBetType: BetType;
   teams?: PolymarketTeamInfo[];
+  event: PolymarketEvent;
 }) {
   const selectedMarketsGroup = useMemo(() => {
     switch (selectedBetType) {
@@ -91,8 +94,10 @@ const Markets = memo(function Markets({
       {selectedMarketsGroup.map((marketsGroup, index) => {
         return (
           <React.Fragment key={marketsGroup.id}>
-            {'lines' in marketsGroup && <LineBasedMarkets key={marketsGroup.sportsMarketType} marketsGroup={marketsGroup} teams={teams} />}
-            {!('lines' in marketsGroup) && <MoneylineMarkets marketsGroup={marketsGroup} teams={teams} />}
+            {'lines' in marketsGroup && (
+              <LineBasedMarkets key={marketsGroup.sportsMarketType} marketsGroup={marketsGroup} teams={teams} event={event} />
+            )}
+            {!('lines' in marketsGroup) && <MoneylineMarkets marketsGroup={marketsGroup} teams={teams} event={event} />}
             {index < selectedMarketsGroup.length - 1 && <Separator color="separatorSecondary" thickness={1} />}
           </React.Fragment>
         );
@@ -104,9 +109,11 @@ const Markets = memo(function Markets({
 const LineBasedMarkets = memo(function LineBasedMarket({
   marketsGroup,
   teams,
+  event,
 }: {
   marketsGroup: LineBasedGroup;
   teams?: PolymarketTeamInfo[];
+  event: PolymarketEvent;
 }) {
   const { isDarkMode } = useColorMode();
   const { width } = useDimensions();
@@ -172,7 +179,7 @@ const LineBasedMarkets = memo(function LineBasedMarket({
             items={lineSelectorItems}
           />
         )}
-        <SingleMarketEventOutcomes market={selectedLine.market} outcomeTitles={outcomeTitles} teams={teams} />
+        <SingleMarketEventOutcomes market={selectedLine.market} outcomeTitles={outcomeTitles} teams={teams} event={event} />
       </Box>
     </Box>
   );
@@ -181,23 +188,27 @@ const LineBasedMarkets = memo(function LineBasedMarket({
 const MoneylineMarkets = memo(function MoneylineMarket({
   marketsGroup,
   teams,
+  event,
 }: {
   marketsGroup: MoneylineGroup;
   teams?: PolymarketTeamInfo[];
+  event: PolymarketEvent;
 }) {
   if (marketsGroup.isThreeWay) {
-    return <ThreeWayMoneylineMarkets marketsGroup={marketsGroup} teams={teams} />;
+    return <ThreeWayMoneylineMarkets marketsGroup={marketsGroup} teams={teams} event={event} />;
   }
 
-  return <StandardMoneylineMarkets marketsGroup={marketsGroup} teams={teams} />;
+  return <StandardMoneylineMarkets marketsGroup={marketsGroup} teams={teams} event={event} />;
 });
 
 const ThreeWayMoneylineMarkets = memo(function ThreeWayMoneylineMarkets({
   marketsGroup,
   teams,
+  event,
 }: {
   marketsGroup: MoneylineGroup;
   teams?: PolymarketTeamInfo[];
+  event: PolymarketEvent;
 }) {
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
@@ -217,7 +228,7 @@ const ThreeWayMoneylineMarkets = memo(function ThreeWayMoneylineMarkets({
       </Box>
       <Box gap={8}>
         {marketsGroup.markets.map((market, index) => {
-          const team = teams?.find(t => (t.name ?? t.alias)?.toLowerCase() === market.groupItemTitle.toLowerCase());
+          const team = getOutcomeTeam(market.groupItemTitle, teams);
           const isDraw = isDrawMarket(market);
           const outcomeColor = isDraw ? drawColor : team?.color ?? (index === 0 ? green : red);
 
@@ -232,7 +243,7 @@ const ThreeWayMoneylineMarkets = memo(function ThreeWayMoneylineMarkets({
               price={market.outcomePrices[0]}
               minTickSize={market.orderPriceMinTickSize}
               onPress={() => {
-                Navigation.handleAction(Routes.POLYMARKET_MARKET_SHEET, { market });
+                Navigation.handleAction(Routes.POLYMARKET_MARKET_SHEET, { market, event });
               }}
             />
           );
@@ -245,9 +256,11 @@ const ThreeWayMoneylineMarkets = memo(function ThreeWayMoneylineMarkets({
 const StandardMoneylineMarkets = memo(function StandardMoneylineMarkets({
   marketsGroup,
   teams,
+  event,
 }: {
   marketsGroup: MoneylineGroup;
   teams?: PolymarketTeamInfo[];
+  event: PolymarketEvent;
 }) {
   return (
     <Box gap={24}>
@@ -262,7 +275,7 @@ const StandardMoneylineMarkets = memo(function StandardMoneylineMarkets({
         </Text>
       </Box>
       {marketsGroup.markets.map(market => {
-        return <SingleMarketEventOutcomes key={market.id} market={market} outcomeTitles={market.outcomes} teams={teams} />;
+        return <SingleMarketEventOutcomes key={market.id} market={market} outcomeTitles={market.outcomes} teams={teams} event={event} />;
       })}
     </Box>
   );

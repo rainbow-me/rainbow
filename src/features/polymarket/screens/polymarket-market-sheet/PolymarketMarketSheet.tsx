@@ -5,9 +5,8 @@ import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { Bleed, Box, globalColors, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { PANEL_WIDTH, PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import ImgixImage from '@/components/images/ImgixImage';
-import { formatNumber } from '@/helpers/strings';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Navigation } from '@/navigation';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
@@ -19,7 +18,7 @@ import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
 export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   const {
-    params: { market },
+    params: { market, event },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_MARKET_SHEET>>();
 
   const { isDarkMode } = useColorMode();
@@ -38,7 +37,7 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
       />
       <Box paddingHorizontal="24px" paddingBottom={'24px'} paddingTop={{ custom: 33 }}>
         <Box gap={20}>
-          <Header market={market} />
+          <Header market={market} event={event} />
           <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
           <Bleed horizontal="24px">
             <Box borderRadius={16} gap={8} justifyContent="center" overflow="hidden" width={PANEL_WIDTH}>
@@ -66,6 +65,7 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
                 onPress={() =>
                   Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, {
                     market,
+                    event,
                     outcomeIndex: index,
                     outcomeColor: accentColor,
                   })
@@ -94,25 +94,25 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   );
 });
 
-const Header = memo(function Header({ market }: { market: PolymarketMarket }) {
+const Header = memo(function Header({ market, event }: { market: PolymarketMarket; event: PolymarketEvent | PolymarketMarketEvent }) {
+  const isLongGroupItemTitle = market.groupItemTitle?.length > 20;
+
   return (
-    <Box>
-      <Box flexDirection="row" alignItems="center" gap={14}>
-        <ImgixImage
-          enableFasterImage
-          resizeMode="cover"
-          size={56}
-          source={{ uri: market.icon }}
-          style={{ height: 56, width: 56, borderRadius: 12 }}
-        />
-        <Box gap={14}>
-          <Text size="26pt" weight="heavy" color="label">
-            {market.groupItemTitle}
-          </Text>
-          <Text size="15pt" weight="bold" color="labelQuaternary">
-            {formatNumber(market.volume, { useOrderSuffix: true, decimals: 1, style: '$' })}
-          </Text>
-        </Box>
+    <Box flexDirection="row" alignItems="flex-start" gap={16}>
+      <ImgixImage
+        enableFasterImage
+        resizeMode="cover"
+        size={52}
+        source={{ uri: market.icon }}
+        style={{ height: 52, width: 52, borderRadius: 12 }}
+      />
+      <Box gap={12} style={{ flex: 1 }}>
+        <Text size="15pt" weight="bold" color="labelQuaternary" numberOfLines={1}>
+          {event.title}
+        </Text>
+        <Text size={isLongGroupItemTitle ? '22pt' : '26pt'} weight="heavy" color="label">
+          {market.groupItemTitle}
+        </Text>
       </Box>
     </Box>
   );

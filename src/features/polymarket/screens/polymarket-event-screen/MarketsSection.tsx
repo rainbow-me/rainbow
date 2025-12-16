@@ -1,7 +1,7 @@
 import { Box, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { memo } from 'react';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
-import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { ShimmerAnimation } from '@/components/animations';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -11,8 +11,8 @@ import { ResolvedMarketsList } from '@/features/polymarket/screens/polymarket-ev
 import { SingleMarketEventOutcomes } from '@/features/polymarket/screens/polymarket-event-screen/components/SingleMarketEvent';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
-export const MarketsSection = memo(function MarketsSection() {
-  const markets = usePolymarketEventStore(state => state.getMarkets());
+export const MarketsSection = memo(function MarketsSection({ event }: { event: PolymarketEvent | null }) {
+  const markets = event?.markets;
   const isSingleMarketEvent = markets?.length === 1;
 
   return (
@@ -29,8 +29,8 @@ export const MarketsSection = memo(function MarketsSection() {
       </Box>
       {markets ? (
         <>
-          {isSingleMarketEvent && <SingleMarketEventOutcomes market={markets[0]} />}
-          {!isSingleMarketEvent && <MultiMarketEvent markets={markets} />}
+          {isSingleMarketEvent && <SingleMarketEventOutcomes market={markets[0]} event={event} />}
+          {!isSingleMarketEvent && <MultiMarketEvent markets={markets} event={event} />}
         </>
       ) : (
         <MarketRowLoadingSkeleton />
@@ -39,7 +39,13 @@ export const MarketsSection = memo(function MarketsSection() {
   );
 });
 
-const MultiMarketEvent = memo(function MultiMarketEvent({ markets }: { markets: PolymarketMarket[] }) {
+const MultiMarketEvent = memo(function MultiMarketEvent({
+  markets,
+  event,
+}: {
+  markets: PolymarketMarket[];
+  event: PolymarketMarketEvent | PolymarketEvent;
+}) {
   const activeMarkets = markets.filter(market => !market.closed);
   const resolvedMarkets = markets.filter(market => market.closed);
   const showMarketImages = usePolymarketEventStore(state => state.getData()?.showMarketImages ?? false);
@@ -61,7 +67,7 @@ const MultiMarketEvent = memo(function MultiMarketEvent({ markets }: { markets: 
               price={market.lastTradePrice ? String(market.lastTradePrice) : '0'}
               minTickSize={market.orderPriceMinTickSize}
               onPress={() => {
-                Navigation.handleAction(Routes.POLYMARKET_MARKET_SHEET, { market });
+                Navigation.handleAction(Routes.POLYMARKET_MARKET_SHEET, { market, event });
               }}
             />
           ))}

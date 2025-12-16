@@ -25,7 +25,7 @@ import { usePolymarketAccountInfo } from '@/features/polymarket/stores/derived/u
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
-    params: { market, outcomeIndex, outcomeColor },
+    params: { market, event, outcomeIndex, outcomeColor },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
 
   const hasBalance = usePolymarketAccountInfo(state => state.hasBalance);
@@ -43,7 +43,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   const { availableBalance, worstPrice, validation, isValidOrderAmount, amountToWin, outcomeOdds, fee, spread, setBuyAmount, buyAmount } =
     useNewPositionForm({ tokenId });
 
-  const outcomeTitle = market.events?.[0]?.title || market.question;
+  const outcomeTitle = event.title || market.question;
   const outcomeSubtitle = useMemo(() => {
     if (market.line) {
       return `${outcome} ${market.line}`;
@@ -95,7 +95,8 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
           <Text size="26pt" weight="heavy" color="label">
             {'Place Bet'}
           </Text>
-          <Box gap={24}>
+
+          <Box gap={12}>
             <Box
               padding={'20px'}
               backgroundColor={opacityWorklet(accentColor, 0.08)}
@@ -103,7 +104,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               borderColor={{ custom: opacityWorklet(accentColor, 0.03) }}
               borderWidth={2.5}
             >
-              <Box flexDirection="row" alignItems="center" gap={12}>
+              <Box flexDirection="row" alignItems="flex-start" gap={12}>
                 <ImgixImage
                   enableFasterImage
                   resizeMode="cover"
@@ -112,16 +113,14 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
                   style={{ height: 38, width: 38, borderRadius: 10 }}
                 />
                 <Box gap={12} style={{ flex: 1 }}>
-                  <Text size="15pt" weight="bold" color="labelTertiary" style={{ flex: 1 }}>
+                  <Text size="15pt" weight="semibold" color="labelTertiary" style={{ flex: 1 }} numberOfLines={1}>
                     {outcomeTitle}
                   </Text>
-                  <Box flexDirection="row" alignItems="center" gap={4}>
-                    <Text size="17pt" weight="bold" color="label">
-                      {outcomeSubtitle}
-                    </Text>
-                    {market.groupItemTitle && <OutcomeBadge outcome={outcome} outcomeIndex={outcomeIndex} />}
-                  </Box>
+                  <Text size="17pt" weight="bold" color="label">
+                    {outcomeSubtitle}
+                  </Text>
                 </Box>
+                {market.groupItemTitle && <OutcomeBadge outcome={outcome} outcomeIndex={outcomeIndex} />}
               </Box>
             </Box>
             <AmountInputCard
@@ -132,6 +131,9 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               title="Amount"
               validation={validation}
             />
+          </Box>
+
+          <Box gap={24}>
             <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
               <Text size="15pt" weight="semibold" color="labelTertiary">
                 {'Chance of Outcome'}
@@ -174,44 +176,44 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
                 </Text>
               </TextShadow>
             </Box>
-            {hasBalance ? (
-              <HoldToActivateButton
-                onLongPress={handleMarketBuyPosition}
-                label="Hold to Place Bet"
-                processingLabel="Placing Bet..."
-                isProcessing={isProcessing}
-                showBiometryIcon={false}
-                backgroundColor={buttonColor}
-                disabledBackgroundColor={opacityWorklet(accentColor, 0.12)}
-                disabled={!isValidOrderAmount}
+          </Box>
+          {hasBalance ? (
+            <HoldToActivateButton
+              onLongPress={handleMarketBuyPosition}
+              label="Hold to Place Bet"
+              processingLabel="Placing Bet..."
+              isProcessing={isProcessing}
+              showBiometryIcon={false}
+              backgroundColor={buttonColor}
+              disabledBackgroundColor={opacityWorklet(accentColor, 0.12)}
+              disabled={!isValidOrderAmount}
+              height={48}
+              borderColor={{ custom: opacityWorklet('#FFFFFF', 0.08) }}
+              borderWidth={2}
+              textStyle={{
+                color: 'white',
+                fontSize: 20,
+                fontWeight: '900',
+              }}
+              progressColor="white"
+            />
+          ) : (
+            <ButtonPressAnimation onPress={handleDepositFunds} scaleTo={0.96}>
+              <Box
+                alignItems="center"
+                justifyContent="center"
                 height={48}
+                borderRadius={24}
+                backgroundColor={buttonColor}
                 borderColor={{ custom: opacityWorklet('#FFFFFF', 0.08) }}
                 borderWidth={2}
-                textStyle={{
-                  color: 'white',
-                  fontSize: 20,
-                  fontWeight: '900',
-                }}
-                progressColor="white"
-              />
-            ) : (
-              <ButtonPressAnimation onPress={handleDepositFunds} scaleTo={0.96}>
-                <Box
-                  alignItems="center"
-                  justifyContent="center"
-                  height={48}
-                  borderRadius={24}
-                  backgroundColor={buttonColor}
-                  borderColor={{ custom: opacityWorklet('#FFFFFF', 0.08) }}
-                  borderWidth={2}
-                >
-                  <Text color="label" size="20pt" weight="black">
-                    {'Deposit Funds'}
-                  </Text>
-                </Box>
-              </ButtonPressAnimation>
-            )}
-          </Box>
+              >
+                <Text color="label" size="20pt" weight="black">
+                  {'Deposit Funds'}
+                </Text>
+              </Box>
+            </ButtonPressAnimation>
+          )}
         </Box>
       </Box>
     </PanelSheet>

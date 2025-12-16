@@ -44,10 +44,6 @@ export const usePolymarketEventStore = createQueryStore<PolymarketEvent, FetchPa
   })
 );
 
-function filterMarkets(markets: PolymarketMarket[]) {
-  return markets.filter(market => market.active);
-}
-
 function sortMarkets(markets: PolymarketMarket[], sortOrder: MarketSortOrder) {
   return markets.sort((a, b) => {
     switch (sortOrder) {
@@ -97,9 +93,13 @@ async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: A
   }
 
   const processedEvent = await processRawPolymarketEvent(event, teams);
+  const sortBy = processedEvent?.sortBy ?? MarketSortOrder.DEFAULT;
 
   return {
     ...processedEvent,
-    markets: filterMarkets(processedEvent.markets),
+    markets: sortMarkets(
+      processedEvent.markets.filter(market => market.active),
+      sortBy
+    ),
   };
 }
