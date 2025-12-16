@@ -2,7 +2,7 @@ import { ShimmerAnimation } from '@/components/animations';
 import { useBiometryIconString } from '@/components/buttons/BiometricButtonContent';
 import HoldToAuthorizeButtonIcon from '@/components/buttons/hold-to-authorize/HoldToAuthorizeButtonIcon';
 import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
-import { Box, Text, TextProps, useColorMode } from '@/design-system';
+import { Box, BoxProps, Text, TextProps, useColorMode } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { colors } from '@/styles';
 import { useTheme } from '@/theme';
@@ -81,6 +81,8 @@ export type HoldToActivateButtonProps = {
   color?: TextProps['color'];
   size?: TextProps['size'];
   weight?: TextProps['weight'];
+  borderColor?: BoxProps['borderColor'];
+  borderWidth?: BoxProps['borderWidth'];
 };
 
 export function HoldToActivateButton({
@@ -101,6 +103,8 @@ export function HoldToActivateButton({
   color = 'label',
   size = '20pt',
   weight = 'heavy',
+  borderColor,
+  borderWidth,
 }: HoldToActivateButtonProps) {
   const longPressProgress = useSharedValue(0);
   const buttonScale = useSharedValue(1);
@@ -158,6 +162,8 @@ export function HoldToActivateButton({
           overflow="hidden"
           borderRadius={height}
           shadow={disabled ? ('12px' as const) : ('18px' as const)}
+          borderColor={borderColor}
+          borderWidth={borderWidth}
         >
           {!IS_ANDROID && !disabled && <HoldToAuthorizeButtonIcon sharedValue={longPressProgress} progressColor={progressColor} />}
           <LabelWithBiometryIcon

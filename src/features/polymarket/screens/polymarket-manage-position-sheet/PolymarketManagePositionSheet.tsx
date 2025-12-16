@@ -151,12 +151,15 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
           <PolymarketPositionCard position={position} showActionButton={false} />
           <HoldToActivateButton
             backgroundColor={buttonBackgroundColor}
+            borderColor={{ custom: opacityWorklet('#FFFFFF', 0.08) }}
+            borderWidth={2}
             disabledBackgroundColor={'gray'}
             label={actionButtonLabel}
             processingLabel={actionButtonLoadingLabel}
             isProcessing={isProcessing}
             onLongPress={onPressActionButton}
             showBiometryIcon={false}
+            height={48}
           />
         </Box>
       </Box>

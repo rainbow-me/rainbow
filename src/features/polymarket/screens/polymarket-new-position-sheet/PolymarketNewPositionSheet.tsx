@@ -10,6 +10,7 @@ import ImgixImage from '@/components/images/ImgixImage';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import LinearGradient from 'react-native-linear-gradient';
 import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { Navigation } from '@/navigation';
@@ -20,20 +21,27 @@ import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { marketBuyToken } from '@/features/polymarket/utils/orders';
 import { subWorklet } from '@/safe-math/SafeMath';
 import { collectTradeFee } from '@/features/polymarket/utils/collectTradeFee';
+import { usePolymarketAccountInfo } from '@/features/polymarket/stores/derived/usePolymarketAccountInfo';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
     params: { market, outcomeIndex, outcomeColor },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
 
+  const hasBalance = usePolymarketAccountInfo(state => state.hasBalance);
+  const [isProcessing, setIsProcessing] = useState(false);
+
   const outcome = market.outcomes[outcomeIndex];
   const tokenId = market.clobTokenIds[outcomeIndex];
   const accentColor = outcomeColor;
+  const buttonColor = getSolidColorEquivalent({
+    background: opacityWorklet(accentColor, 0.7),
+    foreground: '#000000',
+    opacity: 0.4,
+  });
 
   const { availableBalance, worstPrice, validation, isValidOrderAmount, amountToWin, outcomeOdds, fee, spread, setBuyAmount, buyAmount } =
     useNewPositionForm({ tokenId });
-
-  const [isProcessing, setIsProcessing] = useState(false);
 
   const outcomeTitle = market.events?.[0]?.title || market.question;
   const outcomeSubtitle = useMemo(() => {
@@ -61,6 +69,10 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
       Alert.alert('Error', 'Failed to place bet. Please try again.');
     }
   }, [buyAmount, fee, tokenId, worstPrice]);
+
+  const handleDepositFunds = useCallback(() => {
+    Navigation.handleAction(Routes.POLYMARKET_DEPOSIT_SCREEN);
+  }, []);
 
   return (
     <PanelSheet innerBorderWidth={1} enableKeyboardAvoidance>
@@ -139,7 +151,8 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
                 </Text>
               </TextShadow>
             </Box>
-            <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
+            {/* For testing purposes */}
+            {/* <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
               <Text size="15pt" weight="semibold" color="labelTertiary">
                 {'Fees'}
               </Text>
@@ -148,7 +161,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
                   {formatCurrency(fee)}
                 </Text>
               </TextShadow>
-            </Box>
+            </Box> */}
             <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
               <Text size="15pt" weight="semibold" color="labelTertiary">
                 {'Spread'}
@@ -159,27 +172,43 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
                 </Text>
               </TextShadow>
             </Box>
-            <HoldToActivateButton
-              onLongPress={handleMarketBuyPosition}
-              label="Hold to Place Bet"
-              processingLabel="Placing Bet..."
-              isProcessing={isProcessing}
-              showBiometryIcon={false}
-              backgroundColor={getSolidColorEquivalent({
-                background: opacityWorklet(accentColor, 0.7),
-                foreground: '#000000',
-                opacity: 0.4,
-              })}
-              disabledBackgroundColor={opacityWorklet(accentColor, 0.12)}
-              disabled={!isValidOrderAmount}
-              height={48}
-              textStyle={{
-                color: 'white',
-                fontSize: 20,
-                fontWeight: '900',
-              }}
-              progressColor="white"
-            />
+            {hasBalance ? (
+              <HoldToActivateButton
+                onLongPress={handleMarketBuyPosition}
+                label="Hold to Place Bet"
+                processingLabel="Placing Bet..."
+                isProcessing={isProcessing}
+                showBiometryIcon={false}
+                backgroundColor={buttonColor}
+                disabledBackgroundColor={opacityWorklet(accentColor, 0.12)}
+                disabled={!isValidOrderAmount}
+                height={48}
+                borderColor={{ custom: opacityWorklet('#FFFFFF', 0.08) }}
+                borderWidth={2}
+                textStyle={{
+                  color: 'white',
+                  fontSize: 20,
+                  fontWeight: '900',
+                }}
+                progressColor="white"
+              />
+            ) : (
+              <ButtonPressAnimation onPress={handleDepositFunds} scaleTo={0.96}>
+                <Box
+                  alignItems="center"
+                  justifyContent="center"
+                  height={48}
+                  borderRadius={24}
+                  backgroundColor={buttonColor}
+                  borderColor={{ custom: opacityWorklet('#FFFFFF', 0.08) }}
+                  borderWidth={2}
+                >
+                  <Text color="label" size="20pt" weight="black">
+                    {'Deposit Funds'}
+                  </Text>
+                </Box>
+              </ButtonPressAnimation>
+            )}
           </Box>
         </Box>
       </Box>
