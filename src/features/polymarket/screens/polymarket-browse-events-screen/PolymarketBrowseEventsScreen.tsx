@@ -34,7 +34,7 @@ const PolymarketBrowseEventsList = () => {
     usePolymarketEventsStore,
     state => state.tagId,
     () => {
-      listRef.current?.scrollToOffset({ offset: 0, animated: true });
+      eventsListRef.current?.scrollToOffset({ offset: 0, animated: true });
     }
   );
 

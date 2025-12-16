@@ -33,7 +33,7 @@ export const PolymarketEventCategorySelector = memo(function PolymarketEventCate
   const itemLayouts = useRef<ItemLayout[]>([]);
   const didInitialScroll = useRef(false);
 
-  const selectedCategoryKey = useSharedValue<CategoryKey>(usePolymarketEventsStore.getState().categoryKey as CategoryKey);
+  const selectedCategoryKey = useSharedValue<CategoryKey>(usePolymarketEventsStore.getState().tagId as CategoryKey);
 
   const scrollToSelectedCategory = useCallback(() => {
     const index = CATEGORY_ITEMS.findIndex(category => category.key === selectedCategoryKey.value);
@@ -55,7 +55,7 @@ export const PolymarketEventCategorySelector = memo(function PolymarketEventCate
   const onPress = useCallback(
     (category: CategoryWithKey) => {
       selectedCategoryKey.value = category.key;
-      usePolymarketEventsStore.getState().setCategoryKey(category.key);
+      usePolymarketEventsStore.getState().setTagId(category.key);
     },
     [selectedCategoryKey]
   );
