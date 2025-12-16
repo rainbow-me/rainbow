@@ -36,25 +36,27 @@ export const ResolvedMarketRow = memo(function ResolvedMarketRow({
 
   return (
     <GradientBorderView
-      borderGradientColors={[opacityWorklet(accentColor, 0.06), opacityWorklet(accentColor, 0)]}
+      borderGradientColors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.02)']}
+      locations={[0.06, 1]}
       borderWidth={2.5}
-      start={{ x: 1, y: 0 }}
-      end={{ x: 0, y: 0 }}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
       borderRadius={24}
       style={styles.container}
     >
       <LinearGradient
-        colors={[opacityWorklet(accentColor, 0.14), opacityWorklet(accentColor, 0)]}
-        style={StyleSheet.absoluteFillObject}
-        start={{ x: 1, y: 0 }}
-        end={{ x: 0, y: 0 }}
+        colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)']}
+        locations={[0.06, 1]}
+        style={[StyleSheet.absoluteFillObject, { opacity: 0.1 }]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
         pointerEvents="none"
       />
       <Box height="full" flexDirection="row" alignItems="center" gap={12} paddingRight={{ custom: 15 }}>
         {image && <ImgixImage enableFasterImage resizeMode="cover" size={40} source={{ uri: image }} style={styles.image} />}
         <Box gap={12} style={styles.flex}>
           <Box flexDirection="row" alignItems="center" gap={8}>
-            <Text size="17pt" weight="bold" color="label" numberOfLines={1}>
+            <Text size="17pt" weight="bold" color={isWinningOutcome ? 'label' : 'labelTertiary'} numberOfLines={1}>
               {title}
             </Text>
           </Box>
@@ -65,13 +67,10 @@ export const ResolvedMarketRow = memo(function ResolvedMarketRow({
           )}
         </Box>
         <Box
-          // backgroundColor={getSolidColorEquivalent({ background: accentColor, foreground: '#000000', opacity: 0.3 })}
-          // paddingHorizontal={'12px'}
-          // paddingVertical={'6px'}
+          paddingHorizontal={'12px'}
           backgroundColor={badgeBackgroundColor}
           borderRadius={18}
           height={36}
-          width={36}
           justifyContent="center"
           alignItems="center"
           borderWidth={2}
@@ -80,10 +79,14 @@ export const ResolvedMarketRow = memo(function ResolvedMarketRow({
           gap={6}
         >
           <InnerShadow borderRadius={10} color={opacityWorklet(accentColor, 0.24)} blur={2.5} dx={0} dy={1} />
-
-          <Text size="icon 15px" weight="heavy" color="label">
-            {isWinningOutcome ? '􀆅' : '􀆄'}
-          </Text>
+          <Box flexDirection="row" alignItems="center" justifyContent="center" gap={6}>
+            <Text size="icon 13px" weight="heavy" color="label">
+              {isWinningOutcome ? '􀆅' : '􀆄'}
+            </Text>
+            <Text size="15pt" weight="heavy" color="label">
+              {isWinningOutcome ? 'YES' : 'NO'}
+            </Text>
+          </Box>
         </Box>
       </Box>
     </GradientBorderView>

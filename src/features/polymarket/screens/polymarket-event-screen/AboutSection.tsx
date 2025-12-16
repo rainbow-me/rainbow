@@ -62,7 +62,7 @@ const Description = memo(function Description({
         <Text color="label" size="17pt / 150%" weight="medium" numberOfLines={3}>
           {description}
         </Text>
-        <Box height={24} position="absolute" bottom={{ custom: 14 }} right={{ custom: 14 }} zIndex={1}>
+        <Box height={26} position="absolute" bottom={{ custom: 12 }} right={{ custom: 14 }} zIndex={1}>
           <Box flexDirection="row" alignItems="center" justifyContent="center">
             <EasingGradient
               startPosition={'left'}
@@ -71,7 +71,7 @@ const Description = memo(function Description({
               startColor={backgroundColor}
               endOpacity={1}
               startOpacity={0}
-              style={{ height: 24, width: 100 }}
+              style={{ height: 26, width: 100 }}
             />
             <Box flexDirection="row" alignItems="center" gap={6} backgroundColor={backgroundColor}>
               <Text color="label" size="15pt" weight="bold">
