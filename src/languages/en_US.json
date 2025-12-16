@@ -3715,6 +3715,27 @@
           }
         }
       }
+    },
+    "predictions": {
+      "explain_sheet": {
+        "next": "Next",
+        "get_started": "Get started",
+        "title": "Predictions",
+        "steps": {
+          "step_1": {
+            "title": "Predictions",
+            "subtitle_parts": ["Try a new way to follow what's happening in the markets. Powered by Polymarket"]
+          },
+          "step_2": {
+            "title": "Bet on Almost Anything",
+            "subtitle_parts": ["Pick a market you like, place your position, and see where it goes."]
+          },
+          "step_3": {
+            "title": "Choose Your Outcome",
+            "subtitle_parts": ["Each market has clear options. Pick the one you believe in and track how it performs."]
+          }
+        }
+      }
     }
   }
 }

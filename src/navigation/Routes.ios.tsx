@@ -44,7 +44,7 @@ import {
   ensAdditionalRecordsSheetConfig,
   ensConfirmRegisterSheetConfig,
   expandedAssetSheetConfigWithLimit,
-  explainSheetConfig,
+  learnSheetConfig,
   externalLinkWarningSheetConfig,
   hardwareWalletTxNavigatorConfig,
   mintsSheetConfig,
@@ -75,7 +75,7 @@ import {
   recieveModalSheetConfig,
   expandedAssetSheetV2Config,
   tokenLauncherConfig,
-  kingOfTheHillExplainSheetConfig,
+  explainSheetConfig,
   activitySheetConfig,
   perpsAccountStackConfig,
   perpsDepositWithdrawalConfig,
@@ -142,6 +142,7 @@ import { PolymarketNavigator } from '@/features/polymarket/screens/polymarket-na
 import { PolymarketDepositScreen } from '@/features/polymarket/funding/screens/PolymarketDepositScreen';
 import { PolymarketWithdrawalScreen } from '@/features/polymarket/funding/screens/PolymarketWithdrawalScreen';
 import { PolymarketMarketDescriptionSheet } from '@/features/polymarket/screens/polymarket-market-description-sheet/PolymarketMarketDescriptionSheet';
+import { PolymarketExplainSheet } from '@/features/polymarket/screens/polymarket-learn-sheet/PolymarketExplainSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -329,11 +330,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={CreateTriggerOrderBottomSheet} name={Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET} {...panelConfig} />
       <NativeStack.Screen component={ClosePositionBottomSheet} name={Routes.CLOSE_POSITION_BOTTOM_SHEET} {...panelConfig} />
       <NativeStack.Screen component={PerpsAddToPositionSheet} name={Routes.PERPS_ADD_TO_POSITION_SHEET} {...panelConfig} />
-      <NativeStack.Screen
-        component={KingOfTheHillExplainSheet}
-        name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET}
-        {...kingOfTheHillExplainSheetConfig}
-      />
+      <NativeStack.Screen component={KingOfTheHillExplainSheet} name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET} {...learnSheetConfig} />
       <NativeStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} {...perpsExplainSheetConfig} />
       <NativeStack.Screen component={PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} {...panelConfig} />
       <NativeStack.Screen component={PolymarketEventScreen} name={Routes.POLYMARKET_EVENT_SCREEN} {...expandedAssetSheetV2Config} />
@@ -343,6 +340,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={PolymarketNewPositionSheet} name={Routes.POLYMARKET_NEW_POSITION_SHEET} {...panelConfig} />
       <NativeStack.Screen component={PolymarketAccountScreen} name={Routes.POLYMARKET_ACCOUNT_SCREEN} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={PolymarketNavigator} name={Routes.POLYMARKET_NAVIGATOR} {...perpsAccountStackConfig} />
+      <NativeStack.Screen component={PolymarketExplainSheet} name={Routes.POLYMARKET_EXPLAIN_SHEET} {...learnSheetConfig} />
 
       <NativeStack.Screen
         component={PolymarketBrowseEventsScreen}

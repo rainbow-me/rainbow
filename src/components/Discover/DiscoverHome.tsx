@@ -31,6 +31,7 @@ import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
 import { DiscoverSeparator } from './DiscoverSeparator';
 import { useWallets } from '@/state/wallets/walletsStore';
 import { FeatureCard } from '@/components/Discover/FeatureCard';
+import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
 
 export const HORIZONTAL_PADDING = 20;
 
@@ -81,9 +82,7 @@ export default function DiscoverHome() {
                 icon="􀫸"
                 title="Predictions"
                 subtitle="Bet on anything on-chain"
-                onPress={() => {
-                  Navigation.handleAction(Routes.POLYMARKET_NAVIGATOR);
-                }}
+                onPress={navigateToPolymarket}
               />
             )}
             {perpsEnabled && (

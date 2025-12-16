@@ -693,6 +693,9 @@ type RouteParams = {
   [Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET]: {
     description: string;
   };
+  [Routes.POLYMARKET_EXPLAIN_SHEET]: {
+    onDismiss?: () => void;
+  };
 };
 
 /**

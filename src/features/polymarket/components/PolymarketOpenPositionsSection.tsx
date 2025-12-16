@@ -5,8 +5,7 @@ import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { POLYMARKET_ACCENT_COLOR } from '@/features/polymarket/constants';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { Image, StyleSheet } from 'react-native';
-import infinityIcon from '@/assets/infinity.png';
+import { StyleSheet } from 'react-native';
 import * as i18n from '@/languages';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { usePolymarketPositionsInfo } from '@/features/polymarket/stores/derived/usePolymarketPositionsInfo';
@@ -69,9 +68,9 @@ export const PolymarketOpenPositionsSection = function PolymarketOpenPositionsSe
               {'No open positions'}
             </Text>
             {/* TODO: Enable once learn more sheet is done */}
-            {/* <ButtonPressAnimation
+            <ButtonPressAnimation
               onPress={() => {
-                Navigation.handleAction(Routes.PERPS_EXPLAIN_SHEET);
+                Navigation.handleAction(Routes.POLYMARKET_EXPLAIN_SHEET);
               }}
             >
               <Box flexDirection="row" alignItems="center" gap={4}>
@@ -82,7 +81,7 @@ export const PolymarketOpenPositionsSection = function PolymarketOpenPositionsSe
                   {'􀆊'}
                 </Text>
               </Box>
-            </ButtonPressAnimation> */}
+            </ButtonPressAnimation>
           </Box>
         )}
         {positionsInfo.positions.map(position => (
