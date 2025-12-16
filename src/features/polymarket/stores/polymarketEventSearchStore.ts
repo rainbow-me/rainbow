@@ -41,7 +41,7 @@ type AccumulatedSearchResults = {
 
 type PolymarketEventSearchStoreState = {
   searchQuery: string;
-  searchResults: AccumulatedSearchResults | null;
+  accumulatedResultsByQuery: Record<string, AccumulatedSearchResults>;
   setSearchQuery: (query: string) => void;
   fetchNextPage: () => Promise<void>;
   getEvents: () => PolymarketEvent[];
@@ -65,32 +65,38 @@ export const usePolymarketEventSearchStore = createQueryStore<
     },
     onFetched: ({ data, params, set }) => {
       if (params.page === 1) {
-        set({
-          searchResults: {
-            events: data.events,
-            pagination: {
-              hasMore: data.pagination.hasMore,
-              totalResults: data.pagination.totalResults,
-              currentPage: 1,
+        const trimmedQuery = params.searchQuery.trim();
+        if (!trimmedQuery) return;
+
+        set(state => ({
+          accumulatedResultsByQuery: {
+            ...state.accumulatedResultsByQuery,
+            [trimmedQuery]: {
+              events: data.events,
+              pagination: {
+                hasMore: data.pagination.hasMore,
+                totalResults: data.pagination.totalResults,
+                currentPage: 1,
+              },
             },
           },
-        });
+        }));
       }
     },
   },
   (set, get) => ({
     searchQuery: '',
-    searchResults: null,
+    accumulatedResultsByQuery: {},
 
     setSearchQuery: (searchQuery: string) => {
       const currentQuery = get().searchQuery;
       if (currentQuery !== searchQuery) {
-        set({ searchQuery, searchResults: null });
+        set({ searchQuery });
       }
     },
 
     async fetchNextPage() {
-      const { searchQuery, searchResults, fetch } = get();
+      const { searchQuery, accumulatedResultsByQuery, fetch } = get();
       const trimmedQuery = searchQuery.trim();
 
       if (!trimmedQuery) return;
@@ -99,25 +105,31 @@ export const usePolymarketEventSearchStore = createQueryStore<
         return paginationPromise.promise;
       }
 
-      const paginationInfo = searchResults?.pagination;
+      const currentResults = accumulatedResultsByQuery[trimmedQuery];
 
-      if (!paginationInfo || !paginationInfo.hasMore) return;
+      if (!currentResults?.pagination.hasMore) return;
 
-      const currentEvents = searchResults.events;
-      const nextPage = paginationInfo.currentPage + 1;
+      const nextPage = currentResults.pagination.currentPage + 1;
 
       paginationPromise = {
         searchQuery: trimmedQuery,
         promise: fetch({ page: nextPage }, { force: true, skipStoreUpdates: true })
           .then(data => {
             if (!data) return;
+            const latestState = get();
+            const latestResults = latestState.accumulatedResultsByQuery[trimmedQuery];
+            if (!latestResults) return;
+
             set({
-              searchResults: {
-                events: [...currentEvents, ...data.events],
-                pagination: {
-                  hasMore: data.pagination.hasMore,
-                  totalResults: data.pagination.totalResults,
-                  currentPage: nextPage,
+              accumulatedResultsByQuery: {
+                ...latestState.accumulatedResultsByQuery,
+                [trimmedQuery]: {
+                  events: [...latestResults.events, ...data.events],
+                  pagination: {
+                    hasMore: data.pagination.hasMore,
+                    totalResults: data.pagination.totalResults,
+                    currentPage: nextPage,
+                  },
                 },
               },
             });
@@ -128,9 +140,19 @@ export const usePolymarketEventSearchStore = createQueryStore<
       return paginationPromise.promise;
     },
 
-    getEvents: () => get().searchResults?.events ?? [],
+    getEvents: () => {
+      const { searchQuery, accumulatedResultsByQuery } = get();
+      const trimmedQuery = searchQuery.trim();
+      if (!trimmedQuery) return [];
+      return accumulatedResultsByQuery[trimmedQuery]?.events ?? [];
+    },
 
-    hasNextPage: () => get().searchResults?.pagination?.hasMore ?? false,
+    hasNextPage: () => {
+      const { searchQuery, accumulatedResultsByQuery } = get();
+      const trimmedQuery = searchQuery.trim();
+      if (!trimmedQuery) return false;
+      return accumulatedResultsByQuery[trimmedQuery]?.pagination?.hasMore ?? false;
+    },
   })
 );
 
