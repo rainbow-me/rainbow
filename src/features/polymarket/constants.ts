@@ -57,6 +57,7 @@ export const NAVIGATOR_FOOTER_HEIGHT = 66;
 // padding distance between bottom most content and the navigator footer
 export const NAVIGATOR_FOOTER_CLEARANCE = 12;
 
+export const DEFAULT_CATEGORY_KEY = 'trending';
 export const CATEGORIES = {
   trending: {
     label: 'Trending',
@@ -167,7 +168,7 @@ export const CATEGORIES = {
       light: '#479DE4',
     },
   },
-  mentions: {
+  ['mention-markets']: {
     label: 'Mentions',
     icon: '􀿋',
     tagId: 'mention-markets',

@@ -2,16 +2,16 @@ import { rainbowFetch } from '@/rainbow-fetch';
 import { time } from '@/utils/time';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { RawPolymarketEvent, PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
+import { DEFAULT_CATEGORY_KEY, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 
 type PolymarketEventsParams = {
-  tagId: string | null;
+  tagId: string;
 };
 
 type PolymarketEventsStoreState = {
-  tagId: string | null;
-  setTagId: (tagId: string | null) => void;
+  tagId: string;
+  setTagId: (tagId: string) => void;
 };
 
 export const usePolymarketEventsStore = createQueryStore<PolymarketEvent[], PolymarketEventsParams, PolymarketEventsStoreState>(
@@ -22,8 +22,8 @@ export const usePolymarketEventsStore = createQueryStore<PolymarketEvent[], Poly
     params: { tagId: ($, store) => $(store).tagId },
   },
   set => ({
-    tagId: null,
-    setTagId: (tagId: string | null) => set({ tagId }),
+    tagId: DEFAULT_CATEGORY_KEY,
+    setTagId: (tagId: string) => set({ tagId }),
   }),
   { storageKey: 'polymarketEventsStore' }
 );
@@ -44,7 +44,7 @@ async function fetchPolymarketEvents(
   url.searchParams.set('order', 'volume24hr');
   url.searchParams.set('ascending', 'false');
 
-  if (tagId) {
+  if (tagId && tagId !== DEFAULT_CATEGORY_KEY) {
     url.searchParams.set('tag_slug', tagId);
   }
 
