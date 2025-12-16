@@ -37,7 +37,7 @@ export function getMarketColors(market: RawPolymarketMarket, eventColor: string)
 }
 
 function isSingleMarketEvent(market: RawPolymarketMarket) {
-  return market.negRisk === false;
+  return market.negRisk === false && market.groupItemTitle === '';
 }
 
 export function getPositionAccentColor(position: PolymarketPosition): string {
