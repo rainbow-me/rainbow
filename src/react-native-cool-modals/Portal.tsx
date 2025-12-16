@@ -1,11 +1,12 @@
 import React from 'react';
 import { IS_IOS } from '@/env';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { requireNativeComponent, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Routes from '@/navigation/routesNames';
 import { useActiveRoute } from '@/hooks/useActiveRoute';
+import NativeWindowPortal from './specs/NativeWindowPortal';
 
-const NativePortal = IS_IOS ? requireNativeComponent('WindowPortal') : View;
+const NativePortal = IS_IOS ? NativeWindowPortal : View;
 const Wrapper = IS_IOS ? ({ children }: { children: React.ReactNode }) => children : View;
 
 export function Portal() {

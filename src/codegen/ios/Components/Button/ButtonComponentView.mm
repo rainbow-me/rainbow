@@ -112,8 +112,7 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ButtonProps>();
-    _props = defaultProps;
+      _props = ButtonShadowNode::defaultSharedProps();
 
     _duration = 0.16;
     _pressOutDuration = -1.0;

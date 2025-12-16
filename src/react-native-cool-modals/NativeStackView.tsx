@@ -1,10 +1,16 @@
 import { StackActions, useTheme } from '@react-navigation/native';
 import React, { createContext, useMemo, useRef } from 'react';
-import { findNodeHandle, NativeModules, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Components from './screens';
 
-export const ModalContext = createContext();
+type ModalContextValue = {
+  jumpToLong: () => void;
+  jumpToShort: () => void;
+  layout: () => void;
+};
+
+export const ModalContext = createContext<ModalContextValue | undefined>(undefined);
 
 const sx = StyleSheet.create({
   container: {
@@ -12,12 +18,39 @@ const sx = StyleSheet.create({
   },
 });
 
-const { RNCMScreenManager } = NativeModules;
+type Descriptor = {
+  key: string;
+  options: Record<string, any>;
+  render: () => React.ReactNode;
+};
 
-function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
+type Route = {
+  key: string;
+  name: string;
+};
+
+type NavigationHelpersLike = {
+  emit?: (event: { target: string; type: string }) => void;
+  dispatch?: (action: any) => void;
+  addListener?: (type: string, listener: (e: any) => void) => void;
+  isFocused?: () => boolean;
+};
+
+type NativeStackViewProps = {
+  colors: { background: string };
+  descriptors: Record<string, Descriptor>;
+  navigation: NavigationHelpersLike;
+  route: Route;
+  state: { routes: Route[]; index: number; key: string };
+  hidden?: boolean;
+};
+
+function ScreenView({ colors, descriptors, navigation, route, state, hidden }: NativeStackViewProps) {
   const insets = useSafeAreaInsets();
-  const { options, render: renderScene } = descriptors[route.key];
-  const ref = useRef(undefined);
+  const descriptor = descriptors[route.key];
+
+  const { options = {}, render: renderScene } = descriptor;
+  const ref = useRef<React.ComponentRef<typeof Components.Screen> | null>(null);
   const {
     allowsDragToDismiss,
     allowsTapToDismiss,
@@ -51,24 +84,9 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
 
   const context = useMemo(
     () => ({
-      jumpToLong: () => {
-        const screen = findNodeHandle(ref.current);
-        if (screen) {
-          RNCMScreenManager.jumpTo(true, screen);
-        }
-      },
-      jumpToShort: () => {
-        const screen = findNodeHandle(ref.current);
-        if (screen) {
-          RNCMScreenManager.jumpTo(false, screen);
-        }
-      },
-      layout: () => {
-        const screen = findNodeHandle(ref.current);
-        if (screen) {
-          RNCMScreenManager.layout(screen);
-        }
-      },
+      jumpToLong: () => {},
+      jumpToShort: () => {},
+      layout: () => {},
     }),
     []
   );
@@ -96,7 +114,7 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
         isShortFormEnabled={isShortFormEnabled}
         key={route.key}
         // Slack sheet adds insets internally so for consistency with android remove them.
-        longFormHeight={longFormHeight != null ? longFormHeight - insets.bottom : undefined}
+        longFormHeight={(longFormHeight != null ? longFormHeight - insets.bottom : undefined) ?? Dimensions.get('screen').height}
         modalBackgroundColor={backgroundColor}
         onAppear={() => {
           options?.onAppear?.();
@@ -143,7 +161,7 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
             {
               backgroundColor: stackPresentation !== 'transparentModal' ? colors.background : undefined,
             },
-            contentStyle,
+            contentStyle as StyleProp<ViewStyle>,
           ]}
         >
           {renderScene()}
@@ -153,18 +171,24 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
   );
 }
 
-export default function NativeStackView({ state, navigation, descriptors }) {
+type NativeStackViewComponentProps = {
+  state: { routes: Route[]; index: number; key: string };
+  navigation: NavigationHelpersLike;
+  descriptors: Record<string, Descriptor>;
+} & Record<string, unknown>;
+
+export default function NativeStackView({ state, navigation, descriptors }: NativeStackViewComponentProps) {
   const { colors } = useTheme();
 
   const nonSingleRoutesLength = state.routes.filter(route => {
-    const { options } = descriptors[route.key];
+    const { options = {} } = descriptors[route.key] ?? {};
     return !options.single;
   }).length;
 
   return (
     <Components.ScreenStack style={sx.container}>
       {state.routes.map((route, i) => {
-        const { options } = descriptors[route.key];
+        const { options = {} } = descriptors[route.key] ?? {};
         const { limitActiveModals } = options;
         return (
           <ScreenView

@@ -2366,6 +2366,65 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - react-native-cool-modals (1.0.0):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - PanModal
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - react-native-cool-modals/common (= 1.0.0)
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
+  - react-native-cool-modals/common (1.0.0):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - PanModal
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - react-native-get-random-values (1.5.0):
     - React
   - react-native-ios-context-menu (1.15.3):
@@ -4010,6 +4069,7 @@ DEPENDENCIES:
   - react-native-change-icon (from `../node_modules/react-native-change-icon`)
   - react-native-cloud-fs (from `../node_modules/react-native-cloud-fs`)
   - "react-native-compat (from `../node_modules/@walletconnect/react-native-compat`)"
+  - react-native-cool-modals (from `../src/react-native-cool-modals`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-ios-context-menu (from `../node_modules/react-native-ios-context-menu`)
   - react-native-keyboard-controller (from `../node_modules/react-native-keyboard-controller`)
@@ -4290,6 +4350,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-cloud-fs"
   react-native-compat:
     :path: "../node_modules/@walletconnect/react-native-compat"
+  react-native-cool-modals:
+    :path: "../src/react-native-cool-modals"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
   react-native-ios-context-menu:
@@ -4569,6 +4631,7 @@ SPEC CHECKSUMS:
   react-native-change-icon: 2abab62ecabf10adf6e03cc9516484a27385b580
   react-native-cloud-fs: 0646046c613edacda3902576805cee7c61813801
   react-native-compat: 5e92ef57769ce61c2e0c932ade8708a2d72f76fa
+  react-native-cool-modals: a20cb15e213629aa22034c7c0082ea48130d1fe2
   react-native-get-random-values: 04e59f21c9076958ba50576bdd51878fac5b35ef
   react-native-ios-context-menu: 986da6dcba70094bcc2a8049f68410fe7d25aff1
   react-native-keyboard-controller: bac5843c58ad18f3e450b4ccb1d0635a03eea706

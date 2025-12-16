@@ -1,27 +1,41 @@
-import { createNavigatorFactory, StackRouter as OldStackRouter, StackActions, useNavigationBuilder } from '@react-navigation/native';
+import {
+  createNavigatorFactory,
+  StackActions,
+  StackRouter as OldStackRouter,
+  useNavigationBuilder,
+  type NavigationState,
+  type ParamListBase,
+} from '@react-navigation/native';
 import * as React from 'react';
 
 import NativeStackView from './NativeStackView';
 import { logger } from '@/logger';
 
-function NativeStackNavigator(props) {
-  const { children, initialRouteName, screenOptions, ...rest } = props;
-  const StackRouter = (...args) => {
-    const oldRouter = OldStackRouter(...args);
-    return {
-      ...oldRouter,
-      getStateForAction(state, action, options) {
-        if (action.type === 'PUSH') {
-          if (state.routes[state.routes.length - 1].name === action.payload.name) {
-            logger.debug(`[NativeStackNavigator]: pushing twice the same name is not allowed`);
-            return state;
-          }
+type NavigatorProps = {
+  children: React.ReactNode;
+  initialRouteName?: string;
+  screenOptions?: Record<string, unknown>;
+} & Record<string, unknown>;
+
+const StackRouter = (...args: Parameters<typeof OldStackRouter>) => {
+  const oldRouter = OldStackRouter(...args);
+  return {
+    ...oldRouter,
+    getStateForAction(state: NavigationState, action: any, options: any) {
+      if (action.type === 'PUSH') {
+        if (state.routes[state.routes.length - 1].name === action.payload.name) {
+          logger.debug(`[NativeStackNavigator]: pushing twice the same name is not allowed`);
+          return state;
         }
-        return oldRouter.getStateForAction(state, action, options);
-      },
-    };
+      }
+      return oldRouter.getStateForAction(state, action, options);
+    },
   };
-  const { descriptors, navigation, state } = useNavigationBuilder(StackRouter, {
+};
+
+function NativeStackNavigator(props: NavigatorProps) {
+  const { children, initialRouteName, screenOptions, ...rest } = props;
+  const { descriptors, navigation, state } = useNavigationBuilder<ParamListBase, any, any, any, any>(StackRouter as any, {
     children,
     initialRouteName,
     screenOptions,

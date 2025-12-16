@@ -31,10 +31,6 @@
 		4D098C2F2811A9A5006A801A /* RNStartTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D098C2E2811A9A5006A801A /* RNStartTime.m */; };
 		6630540924A38A1900E5B030 /* RainbowText.m in Sources */ = {isa = PBXBuildFile; fileRef = 6630540824A38A1900E5B030 /* RainbowText.m */; };
 		6655FFB425BB2B0700642961 /* ThemeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 6655FFB325BB2B0700642961 /* ThemeModule.m */; };
-		66A1FEB424AB641100C3F539 /* RNCMScreenStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEB024AB641100C3F539 /* RNCMScreenStack.m */; };
-		66A1FEB524AB641100C3F539 /* UIViewController+slack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEB124AB641100C3F539 /* UIViewController+slack.swift */; };
-		66A1FEB624AB641100C3F539 /* RNCMScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEB324AB641100C3F539 /* RNCMScreen.m */; };
-		66A1FEBC24ACBBE600C3F539 /* RNCMPortal.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEBB24ACBBE600C3F539 /* RNCMPortal.m */; };
 		66A28EB024CAF1B500410A88 /* TestFlight.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A28EAF24CAF1B500410A88 /* TestFlight.m */; };
 		8057C859592B6EE50724B0ED /* libPods-SelectTokenIntent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1DCD9F6831578F1F6ACDBA0 /* libPods-SelectTokenIntent.a */; };
 		A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277D9E23CBD1910042BAF4 /* Extensions.swift */; };
@@ -271,12 +267,6 @@
 		6655FFB325BB2B0700642961 /* ThemeModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThemeModule.m; sourceTree = "<group>"; };
 		668ADB2C25A4E3A40050859D /* Stickers.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Stickers.xcassets; sourceTree = "<group>"; };
 		668ADB2E25A4E3A40050859D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		66A1FEAF24AB641100C3F539 /* RNCMScreenStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNCMScreenStack.h; path = "../src/react-native-cool-modals/ios/RNCMScreenStack.h"; sourceTree = "<group>"; };
-		66A1FEB024AB641100C3F539 /* RNCMScreenStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNCMScreenStack.m; path = "../src/react-native-cool-modals/ios/RNCMScreenStack.m"; sourceTree = "<group>"; };
-		66A1FEB124AB641100C3F539 /* UIViewController+slack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIViewController+slack.swift"; path = "../src/react-native-cool-modals/ios/UIViewController+slack.swift"; sourceTree = "<group>"; };
-		66A1FEB224AB641100C3F539 /* RNCMScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNCMScreen.h; path = "../src/react-native-cool-modals/ios/RNCMScreen.h"; sourceTree = "<group>"; };
-		66A1FEB324AB641100C3F539 /* RNCMScreen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNCMScreen.m; path = "../src/react-native-cool-modals/ios/RNCMScreen.m"; sourceTree = "<group>"; };
-		66A1FEBB24ACBBE600C3F539 /* RNCMPortal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNCMPortal.m; path = "../src/react-native-cool-modals/ios/RNCMPortal.m"; sourceTree = "<group>"; };
 		66A28EAF24CAF1B500410A88 /* TestFlight.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestFlight.m; sourceTree = "<group>"; };
 		66A29CCA2511074500481F4A /* ReaHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReaHeader.h; sourceTree = SOURCE_ROOT; };
 		7C797E074715D161E05BD761 /* Pods-ImageNotification.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.staging.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.staging.xcconfig"; sourceTree = "<group>"; };
@@ -466,7 +456,6 @@
 			children = (
 				15C398772880DF82006033AC /* AppIcons */,
 				4D098C2C2811A95F006A801A /* RNStartTime */,
-				66A1FEAE24AB63D600C3F539 /* RNCoolModals */,
 				15E531D7242DAB3500797B89 /* NSNotifications */,
 				15E531D6242B28F800797B89 /* Animations */,
 				157155042418734C009B698B /* RainbowDebug.entitlements */,
@@ -628,19 +617,6 @@
 				668ADB2E25A4E3A40050859D /* Info.plist */,
 			);
 			path = "Rainbow Stickers";
-			sourceTree = "<group>";
-		};
-		66A1FEAE24AB63D600C3F539 /* RNCoolModals */ = {
-			isa = PBXGroup;
-			children = (
-				66A1FEBB24ACBBE600C3F539 /* RNCMPortal.m */,
-				66A1FEB224AB641100C3F539 /* RNCMScreen.h */,
-				66A1FEB324AB641100C3F539 /* RNCMScreen.m */,
-				66A1FEAF24AB641100C3F539 /* RNCMScreenStack.h */,
-				66A1FEB024AB641100C3F539 /* RNCMScreenStack.m */,
-				66A1FEB124AB641100C3F539 /* UIViewController+slack.swift */,
-			);
-			name = RNCoolModals;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -1487,10 +1463,8 @@ Upload Debug Symbols to Sentry */ = {
 				C18FCD42273C64E10079CE28 /* TokenProvider.swift in Sources */,
 				C18FCD39273C64C90079CE28 /* TokenData.swift in Sources */,
 				15E531DA242DAB7100797B89 /* NotificationManager.m in Sources */,
-				66A1FEB524AB641100C3F539 /* UIViewController+slack.swift in Sources */,
 				0C88C38F2E30192C0057BDCE /* AppDelegate.swift in Sources */,
 				4D098C2F2811A9A5006A801A /* RNStartTime.m in Sources */,
-				66A1FEB424AB641100C3F539 /* RNCMScreenStack.m in Sources */,
 				C18FCD3E273C64D60079CE28 /* PriceData.swift in Sources */,
 				15D66135277A751C0082F041 /* SelectTokenIntent.intentdefinition in Sources */,
 				C127238A274EBBB6006AC743 /* CurrencyDetails.swift in Sources */,
@@ -1505,11 +1479,9 @@ Upload Debug Symbols to Sentry */ = {
 				C179298527499A5B00044684 /* Constants.swift in Sources */,
 				6655FFB425BB2B0700642961 /* ThemeModule.m in Sources */,
 				C18C8E022798B02700D38B34 /* CurrencyProvider.swift in Sources */,
-				66A1FEB624AB641100C3F539 /* RNCMScreen.m in Sources */,
 				C18FCD3F273C64D80079CE28 /* CoinGeckoToken.swift in Sources */,
 				C11640E8274DC10B00C9120A /* UIColor.swift in Sources */,
 				AAE999CD2E41DD390072AFD5 /* RainbowSplashScreen.swift in Sources */,
-				66A1FEBC24ACBBE600C3F539 /* RNCMPortal.m in Sources */,
 				C18FCD43273C64E40079CE28 /* PriceDataProvider.swift in Sources */,
 				E8D2945956C9619768A8D361 /* ExpoModulesProvider.swift in Sources */,
 			);

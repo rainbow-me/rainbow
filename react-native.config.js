@@ -9,6 +9,9 @@ module.exports = {
     '@rainbow-me/codegen': {
       root: path.join(__dirname, 'src/codegen'),
     },
+    'react-native-cool-modals': {
+      root: path.join(__dirname, 'src/react-native-cool-modals'),
+    },
   },
   project: {
     android: {},
