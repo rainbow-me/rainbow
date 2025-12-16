@@ -225,7 +225,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
           {rank <= 3 && gradient ? (
             <Bleed vertical="10px">
               <MaskedView
-                style={{ height: 30, alignItems: 'center' }}
+                style={{ height: 50, alignItems: 'center', borderWidth: 2, borderColor: 'red' }}
                 maskElement={
                   <Box paddingVertical="10px" justifyContent="center">
                     <Text align="right" weight="bold" color="label" size="15pt">

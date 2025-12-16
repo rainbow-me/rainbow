@@ -114,7 +114,7 @@
     "@react-native-firebase/app": "23.5.0",
     "@react-native-firebase/messaging": "23.5.0",
     "@react-native-firebase/remote-config": "23.5.0",
-    "@react-native-masked-view/masked-view": "rainbow-me/masked-view#a749b9e21ca613dfda15996c939aad094d4d284b",
+    "@react-native-masked-view/masked-view": "rainbow-me/masked-view#5822423a9d6aaf70711ed9d8b903e180b0664786",
     "@react-native-menu/menu": "2.0.0",
     "@react-navigation/core": "6.4.16",
     "@react-navigation/material-top-tabs": "6.6.2",

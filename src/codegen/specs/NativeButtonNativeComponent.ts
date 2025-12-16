@@ -30,4 +30,4 @@ export interface NativeButtonProps extends ViewProps {
   onPressStart?: CodegenTypes.BubblingEventHandler<undefined>;
 }
 
-export default codegenNativeComponent<NativeButtonProps>('Button');
+export default codegenNativeComponent<NativeButtonProps>('Button', { excludedPlatforms: ['android'] });

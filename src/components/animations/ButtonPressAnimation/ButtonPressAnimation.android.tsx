@@ -15,10 +15,10 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { normalizeTransformOrigin } from './NativeButton';
 import { ScaleButtonContext } from './ScaleButtonZoomable';
 import type { ButtonProps } from './types';
 import { useLongPressEvents } from '@/hooks';
+import { normalizeTransformOrigin } from './normalizeTransformOrigin';
 
 const ZoomableRawButton = requireNativeComponent<
   Omit<
