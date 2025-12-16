@@ -22,6 +22,7 @@ import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
 import { PositionAction, getPositionAction } from '@/features/polymarket/utils/getPositionAction';
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
+import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 
 export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   position,
@@ -267,14 +268,6 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
     </GradientBorderView>
   );
 });
-
-function getPositionAccentColor(position: PolymarketPosition): string {
-  if (position.teams) {
-    const team = position.teams.find(team => team.alias === position.outcome);
-    if (team?.color) return team.color;
-  }
-  return position.market.color;
-}
 
 const styles = StyleSheet.create({
   flex: {

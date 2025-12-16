@@ -13,9 +13,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
+import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 
 export const PolymarketPositionRow = memo(function PolymarketPositionRow({ position }: { position: PolymarketPosition }) {
-  const accentColor = position.market.color;
+  const accentColor = getPositionAccentColor(position);
   const isPositivePnl = position.cashPnl > 0;
   const pnlColor = isPositivePnl ? 'green' : 'red';
 

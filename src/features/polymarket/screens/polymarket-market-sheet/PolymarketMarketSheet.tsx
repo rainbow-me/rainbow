@@ -62,7 +62,6 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
         </Box>
         <Box paddingTop={'24px'} gap={12}>
           {market.outcomes.map((outcome, index) => {
-            const accentColor = index === 0 ? green : red;
             return (
               <ButtonPressAnimation
                 key={outcome}

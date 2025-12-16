@@ -1,3 +1,4 @@
+import { PolymarketPosition } from '@/features/polymarket/types';
 import { RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import colors from '@/styles/colors';
@@ -37,4 +38,12 @@ export function getMarketColors(market: RawPolymarketMarket, eventColor: string)
 
 function isSingleMarketEvent(market: RawPolymarketMarket) {
   return market.negRisk === false;
+}
+
+export function getPositionAccentColor(position: PolymarketPosition): string {
+  if (position.teams) {
+    const team = position.teams.find(team => team.alias === position.outcome);
+    if (team?.color) return team.color;
+  }
+  return position.market.color;
 }

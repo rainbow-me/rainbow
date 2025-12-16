@@ -25,6 +25,7 @@ import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPoly
 import { redeemPosition } from '@/features/polymarket/utils/redeemPosition';
 import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
+import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 
 export const PolymarketManagePositionSheet = memo(function PolymarketManagePositionSheet() {
   const {
@@ -35,7 +36,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
   const [isProcessing, setIsProcessing] = useState(false);
 
   const { isDarkMode } = useColorMode();
-  const accentColor = position.market.color;
+  const accentColor = getPositionAccentColor(position);
   const red = useForegroundColor('red');
   const green = useForegroundColor('green');
   const buttonBackgroundColor = getSolidColorEquivalent({
