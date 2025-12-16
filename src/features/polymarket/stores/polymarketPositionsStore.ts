@@ -84,8 +84,21 @@ async function fetchPolymarketPositions(
   );
 
   return {
-    positions,
+    positions: sortPositions(positions),
   };
+}
+function getPositionSortPriority(position: PolymarketPosition): number {
+  if (!position.redeemable) return 0;
+  if (position.size === position.currentValue) return 1;
+  return 2;
+}
+
+function sortPositions(positions: PolymarketPosition[]): PolymarketPosition[] {
+  return positions.sort((a, b) => {
+    const priorityDiff = getPositionSortPriority(a) - getPositionSortPriority(b);
+    if (priorityDiff !== 0) return priorityDiff;
+    return b.currentValue - a.currentValue;
+  });
 }
 
 async function fetchPolymarketMarkets(marketSlugs: string[], abortController: AbortController | null): Promise<RawPolymarketMarket[]> {

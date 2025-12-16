@@ -199,7 +199,7 @@ function selectPolymarketData(state: PolymarketAccountInfo, polymarketEnabled: b
     balance: state.balance,
     hasBalance: state.hasBalance,
     hasPositions: state.hasPositions,
-    positions: state.positions,
+    positions: state.activePositions,
     value: state.value,
     enabled: polymarketEnabled,
   };
