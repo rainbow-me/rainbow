@@ -39,7 +39,7 @@ const UpcomingGameBoxScore = memo(function UpcomingGameBoxScore({ gameInfo }: { 
 
   return (
     <Box height={125} flexDirection="row" alignItems="center" justifyContent="center" gap={22}>
-      <Box gap={12} alignItems="center" width={120}>
+      <Box gap={12} alignItems="center" width={120} height={84}>
         {teamA?.logo && (
           <ImgixImage enableFasterImage size={32} source={{ uri: teamA.logo }} style={{ height: 32, width: 32, borderRadius: 8 }} />
         )}
@@ -50,7 +50,7 @@ const UpcomingGameBoxScore = memo(function UpcomingGameBoxScore({ gameInfo }: { 
       <Text size="13pt" weight="bold" color="labelQuaternary">
         {'VS'}
       </Text>
-      <Box gap={12} alignItems="center" width={120}>
+      <Box gap={12} alignItems="center" width={120} height={84}>
         {teamB?.logo && (
           <ImgixImage enableFasterImage size={32} source={{ uri: teamB.logo }} style={{ height: 32, width: 32, borderRadius: 8 }} />
         )}
@@ -106,7 +106,7 @@ const TeamScores = memo(function TeamScores({ gameInfo }: { gameInfo: Polymarket
 
   return (
     <Box gap={12}>
-      <Box flexDirection="row" alignItems="center" gap={10}>
+      <Box flexDirection="row" alignItems="center" gap={10} height={24}>
         {teamA?.logo && (
           <ImgixImage enableFasterImage size={24} source={{ uri: teamA.logo }} style={{ height: 24, width: 24, borderRadius: 8 }} />
         )}
@@ -118,7 +118,7 @@ const TeamScores = memo(function TeamScores({ gameInfo }: { gameInfo: Polymarket
         </Text>
       </Box>
       <Separator color="separatorSecondary" direction="horizontal" thickness={1} />
-      <Box flexDirection="row" alignItems="center" gap={10}>
+      <Box flexDirection="row" alignItems="center" gap={10} height={24}>
         {teamB?.logo && <ImgixImage size={24} source={{ uri: teamB.logo }} style={{ height: 24, width: 24, borderRadius: 8 }} />}
         <Text size="17pt" weight="bold" color="label" style={{ flex: 1 }}>
           {teamB?.name}
