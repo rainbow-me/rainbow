@@ -1,5 +1,6 @@
 import c from 'chroma-js';
 import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
+import { getAddress, type Address } from 'viem';
 
 import {
   ETH_COLOR,
@@ -608,7 +609,7 @@ export function getQuotePrice(
 }
 
 type BuildQuoteParamsProps = {
-  currentAddress: string;
+  currentAddress: Address;
   inputAmount: BigNumberish;
   outputAmount: BigNumberish;
   inputAsset: ExtendedAnimatedAssetWithColors | null;
@@ -641,8 +642,8 @@ export const buildQuoteParams = ({
     source: source === 'auto' ? undefined : source,
     chainId: inputAsset.chainId,
     fromAddress: currentAddress,
-    sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : inputAsset.address,
-    buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : outputAsset.address,
+    sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : getAddress(inputAsset.address),
+    buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : getAddress(outputAsset.address),
     sellAmount:
       lastTypedInput === 'inputAmount' || lastTypedInput === 'inputNativeValue'
         ? convertAmountToRawAmount(inputAmount.toString(), inputAsset.decimals)

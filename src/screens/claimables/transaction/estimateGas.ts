@@ -1,4 +1,4 @@
-import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
+import { CrosschainQuote, ETH_ADDRESS, Quote } from '@rainbow-me/swaps';
 import { getProvider } from '@/handlers/web3';
 import { Address } from 'viem';
 import { metadataPOSTClient } from '@/graphql';
@@ -7,7 +7,6 @@ import { add, convertAmountToRawAmount, greaterThan } from '@/helpers/utilities'
 import { populateSwap } from '@/raps/utils';
 import { estimateApprove, getAssetRawAllowance, populateApprove } from '@/raps/actions/unlock';
 import { isNativeAsset } from '@/handlers/assets';
-import { ETH_ADDRESS } from '@/references';
 import { logger, RainbowError } from '@/logger';
 import { estimateSwapGasLimit } from '@/raps/actions/swap';
 

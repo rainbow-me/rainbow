@@ -15,13 +15,14 @@ import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
 import { PerpsDepositAmountStoreType } from './createPerpsDepositAmountStore';
 import { PerpsDepositStoreType } from './createPerpsDepositStore';
+import { getAddress, type Address } from 'viem';
 
 export type PerpsDepositQuoteStoreType = QueryStore<CrosschainQuote | QuoteStatus.InsufficientBalance, QuoteStoreParams>;
 
 type QuoteStoreParams = {
-  accountAddress: string;
+  accountAddress: Address;
   amount: string;
-  asset: { address: string; balance: string; chainId: ChainId; decimals: number } | null;
+  asset: { address: Address; balance: string; chainId: ChainId; decimals: number } | null;
 };
 
 export function createPerpsDepositQuoteStore(
@@ -94,8 +95,11 @@ async function fetchCrosschainQuote(
 }
 
 function selectDepositAsset(state: InferStoreState<PerpsDepositStoreType>): QuoteStoreParams['asset'] | null {
+  const address = state.asset?.address;
+  if (!address) return null;
+
   return {
-    address: state.asset?.address ?? '',
+    address: getAddress(address),
     balance: state.asset?.balance?.amount ?? '0',
     chainId: state.asset?.chainId ?? ChainId.mainnet,
     decimals: state.asset?.decimals ?? 18,
