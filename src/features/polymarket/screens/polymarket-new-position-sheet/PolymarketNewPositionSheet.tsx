@@ -12,7 +12,7 @@ import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard'
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import LinearGradient from 'react-native-linear-gradient';
-import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { Navigation } from '@/navigation';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
@@ -60,8 +60,10 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
       const amountToBuy = subWorklet(buyAmount, fee);
       const orderResult = await marketBuyToken({ tokenId, amount: amountToBuy, price: worstPrice });
       const tokensBought = orderResult.takingAmount;
-      collectTradeFee(tokensBought);
-      refetchPolymarketStores();
+      void collectTradeFee(tokensBought);
+      await waitForPositionSizeUpdate(tokenId);
+      // TODO: How do we handle this if there is no PolyMarketMarketSheet in the stack vs. not?
+      // Navigation.goBack();
       Navigation.goBack();
     } catch (e) {
       logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', e));

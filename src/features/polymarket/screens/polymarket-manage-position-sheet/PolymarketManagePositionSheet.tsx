@@ -21,7 +21,7 @@ import { marketSellTotalPosition } from '@/features/polymarket/utils/orders';
 import { collectTradeFee } from '@/features/polymarket/utils/collectTradeFee';
 import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
 import Navigation from '@/navigation/Navigation';
-import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { refetchPolymarketStores, waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { redeemPosition } from '@/features/polymarket/utils/redeemPosition';
 import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
@@ -89,7 +89,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
       const orderResult = await marketSellTotalPosition({ position, price });
       const tokensSold = orderResult.makingAmount;
       collectTradeFee(tokensSold);
-      refetchPolymarketStores();
+      await waitForPositionSizeUpdate(position.asset);
       Navigation.goBack();
     } catch (e) {
       logger.error(new RainbowError('[PolymarketManagePositionSheet] Error selling position', ensureError(e)));

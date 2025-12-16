@@ -8,6 +8,7 @@ import { PolymarketPosition, RawPolymarketPosition, PolymarketTeamInfo } from '@
 import { RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketPosition } from '@/features/polymarket/utils/transforms';
 import { fetchTeamsForGame } from '@/features/polymarket/utils/sports';
+import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
 type PolymarketPositionsStoreActions = {
   getPositions: () => PolymarketPosition[] | undefined;
@@ -49,6 +50,8 @@ export const usePolymarketPositionsStore = createQueryStore<
     storageKey: 'polymarketPositions',
   }
 );
+
+export const polymarketPositionsActions = createStoreActions(usePolymarketPositionsStore);
 
 async function fetchPolymarketPositions(
   { address }: PolymarketPositionsParams,
