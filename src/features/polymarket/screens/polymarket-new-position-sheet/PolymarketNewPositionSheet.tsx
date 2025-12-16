@@ -62,13 +62,14 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
       const tokensBought = orderResult.takingAmount;
       void collectTradeFee(tokensBought);
       await waitForPositionSizeUpdate(tokenId);
+      Navigation.goBack();
       // TODO: How do we handle this if there is no PolyMarketMarketSheet in the stack vs. not?
       // Navigation.goBack();
-      Navigation.goBack();
     } catch (e) {
       logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', e));
-      setIsProcessing(false);
       Alert.alert('Error', 'Failed to place bet. Please try again.');
+    } finally {
+      setIsProcessing(false);
     }
   }, [buyAmount, fee, tokenId, worstPrice]);
 

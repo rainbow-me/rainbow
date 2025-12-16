@@ -18,7 +18,8 @@ export async function waitForPositionSizeUpdate(tokenId: string): Promise<void> 
   for (let i = 0; i < MAX_ATTEMPTS; i++) {
     await polymarketPositionsActions.fetch(undefined, { force: true });
     const position = polymarketPositionsActions.getPosition(tokenId);
-    if (position?.size !== initialSize) {
+    const currentSize = position?.size ?? 0;
+    if (currentSize !== initialSize) {
       await usePolymarketBalanceStore.getState().fetch(undefined, { force: true });
       return;
     }
