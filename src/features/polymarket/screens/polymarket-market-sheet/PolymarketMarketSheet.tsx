@@ -62,6 +62,7 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
         </Box>
         <Box paddingTop={'24px'} gap={12}>
           {market.outcomes.map((outcome, index) => {
+            const buttonColor = index === 0 ? green : red;
             return (
               <ButtonPressAnimation
                 key={outcome}
@@ -75,15 +76,15 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
               >
                 <Box
                   height={56}
-                  backgroundColor={opacityWorklet(accentColor, 0.16)}
+                  backgroundColor={opacityWorklet(buttonColor, 0.16)}
                   borderRadius={28}
                   borderWidth={2.5}
-                  borderColor={{ custom: opacityWorklet(accentColor, 0.06) }}
+                  borderColor={{ custom: opacityWorklet(buttonColor, 0.06) }}
                   paddingHorizontal="24px"
                   justifyContent="center"
                   alignItems="center"
                 >
-                  <Text size="22pt" weight="heavy" color={{ custom: accentColor }}>
+                  <Text size="22pt" weight="heavy" color={{ custom: buttonColor }}>
                     {`Buy ${outcome}`}
                   </Text>
                 </Box>
