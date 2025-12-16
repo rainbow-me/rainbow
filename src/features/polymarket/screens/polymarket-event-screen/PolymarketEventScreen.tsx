@@ -14,6 +14,7 @@ import { MarketsSection } from '@/features/polymarket/screens/polymarket-event-s
 import { formatNumber } from '@/helpers/strings';
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { PolymarketChart } from '@/features/charts/polymarket/components/PolymarketChart';
+import { PolymarketChartLegend } from '@/features/charts/polymarket/components/PolymarketChartLegend';
 import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { SportsEventMarkets } from '@/features/polymarket/screens/polymarket-event-screen/SportsEventMarkets';
@@ -62,21 +63,26 @@ export const EventHeaderSection = memo(function EventHeaderSection({ event }: { 
 
 const ChartSection = memo(function ChartSection({
   backgroundColor,
+  isSportsEvent,
   lineColors,
 }: {
   backgroundColor: string;
-  lineColors?: readonly [string, string, string, string, string];
+  isSportsEvent: boolean;
+  lineColors: readonly [string, string, string, string, string] | undefined;
 }) {
   return (
-    <Bleed horizontal="24px">
-      <Box borderRadius={16} gap={8} overflow="hidden" width={DEVICE_WIDTH}>
-        <PolymarketChart
-          backgroundColor={backgroundColor}
-          config={lineColors ? { line: { colors: lineColors, overrideSeriesColors: true } } : undefined}
-        />
-        <PolymarketTimeframeSelector backgroundColor={backgroundColor} color={globalColors.white100} />
-      </Box>
-    </Bleed>
+    <Box gap={16}>
+      {isSportsEvent ? null : <PolymarketChartLegend backgroundColor={backgroundColor} colors={lineColors} />}
+      <Bleed horizontal="24px">
+        <Box borderRadius={16} gap={8} overflow="hidden" width={DEVICE_WIDTH}>
+          <PolymarketChart
+            backgroundColor={backgroundColor}
+            config={lineColors ? { line: { colors: lineColors, overrideSeriesColors: true } } : undefined}
+          />
+          <PolymarketTimeframeSelector backgroundColor={backgroundColor} color={globalColors.white100} />
+        </Box>
+      </Bleed>
+    </Box>
   );
 });
 
@@ -128,7 +134,9 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
           {isEventResolved && <ResolvedEventHeader resolvedAt={event.closedTime} />}
           <EventHeaderSection event={event} />
           {isSportsEvent && <GameBoxScore event={event} />}
-          {shouldShowChart && <ChartSection backgroundColor={screenBackgroundColor} lineColors={lineColors} />}
+          {shouldShowChart && (
+            <ChartSection backgroundColor={screenBackgroundColor} isSportsEvent={isSportsEvent} lineColors={lineColors} />
+          )}
           <OpenPositionsSection eventId={eventId} />
           {isSportsEvent ? <SportsEventMarkets /> : <MarketsSection />}
           <Separator color="separatorSecondary" direction="horizontal" thickness={1} />

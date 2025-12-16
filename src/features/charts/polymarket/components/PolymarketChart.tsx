@@ -3,7 +3,7 @@ import { cloneDeep, merge } from 'lodash';
 import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { runOnUI, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { SharedValue, runOnUI, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { globalColors, useColorMode, useForegroundColor } from '@/design-system';
@@ -21,7 +21,7 @@ import { opacity } from '@/__swaps__/utils/swaps';
 import { createBlankPicture } from '@/worklets/skia';
 import { NoChartData } from '../../components/NoChartData';
 import { LineSmoothing } from '../../line/LineSmoothingAlgorithms';
-import { PolymarketChartManager, PolymarketChartConfig } from '../classes/PolymarketChartManager';
+import { ActiveInteractionData, PolymarketChartConfig, PolymarketChartManager } from '../classes/PolymarketChartManager';
 import { usePolymarketChartStore, usePolymarketMarketChartStore } from '../stores/polymarketChartStore';
 import { usePolymarketStore } from '../stores/polymarketStore';
 import { EntranceAnimation, PolymarketChartData, SeriesPalette } from '../types';
@@ -32,10 +32,12 @@ export type PartialPolymarketChartConfig = DeepPartial<
 >;
 
 type PolymarketChartProps = {
+  activeInteraction?: SharedValue<ActiveInteractionData | undefined>;
   backgroundColor?: string;
   chartHeight?: number;
   chartWidth?: number;
   config?: PartialPolymarketChartConfig;
+  isChartGestureActive?: SharedValue<boolean>;
   isMarketChart?: boolean;
   smoothingMode?: LineSmoothing;
 };
@@ -46,7 +48,7 @@ enum ChartStatus {
   Loading = 'loading',
 }
 
-const DEFAULT_CHART_HEIGHT = 300;
+const DEFAULT_CHART_HEIGHT = 272;
 const SPINNER_SIZE = 28;
 
 type PreparedChartConfig = {
@@ -109,10 +111,12 @@ export const DEFAULT_POLYMARKET_CHART_CONFIG = deepFreeze({
 } as const satisfies PolymarketChartConfig);
 
 export const PolymarketChart = memo(function PolymarketChart({
+  activeInteraction,
   backgroundColor: providedBackgroundColor,
   chartHeight: providedChartHeight = DEFAULT_CHART_HEIGHT,
   chartWidth = DEVICE_WIDTH,
   config: providedConfig,
+  isChartGestureActive: providedIsChartGestureActive,
   isMarketChart = false,
   smoothingMode,
 }: PolymarketChartProps) {
@@ -141,12 +145,14 @@ export const PolymarketChart = memo(function PolymarketChart({
     })
   );
 
+  const internalIsChartGestureActive = useSharedValue(false);
+  const isChartGestureActive = providedIsChartGestureActive ?? internalIsChartGestureActive;
+
   const animationProgress = useSharedValue(100);
   const chartMaxY = useSharedValue(1);
   const chartMinY = useSharedValue(0);
   const chartStatus = useSharedValue<ChartStatus>(initialStatus);
   const interactionProgress = useSharedValue(0);
-  const isChartGestureActive = useSharedValue(false);
 
   const chartPicture = useSharedValue(initialPicture);
   const crosshairPicture = useSharedValue(initialPicture);
@@ -162,6 +168,7 @@ export const PolymarketChart = memo(function PolymarketChart({
   const chartManager = useWorkletClass(() => {
     'worklet';
     const manager = new PolymarketChartManager({
+      activeInteraction,
       animationProgress,
       buildParagraph,
       chartHeight,

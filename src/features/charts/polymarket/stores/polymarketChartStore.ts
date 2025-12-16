@@ -67,7 +67,7 @@ async function fetchEventChart(params: PolymarketChartParams, abortController: A
   if (!event) return null;
 
   const isSportsEvent = event.gameId !== undefined;
-  const inputs = isSportsEvent ? await extractSportsChartInputs(event) : extractTopMarketsInputs(event.markets);
+  const inputs = isSportsEvent ? await extractSportsChartInputs(event) : await extractTopMarketsInputs(event);
 
   return buildChartData(params.interval, inputs, params.fidelity, abortController);
 }
@@ -142,7 +142,7 @@ async function extractSportsChartInputs(event: GammaEvent): Promise<SeriesInputs
   const colors = teams
     ? moneyline.outcomes.map(outcome => {
         const team = teams.find(t => t.alias === outcome);
-        return team ? getHighContrastColor(team.color, true) : null;
+        return team?.color ? getHighContrastColor(team.color, true) : null;
       })
     : null;
 
@@ -156,12 +156,15 @@ async function extractSportsChartInputs(event: GammaEvent): Promise<SeriesInputs
   };
 }
 
-function extractTopMarketsInputs(markets: GammaMarket[]): SeriesInputs {
+async function extractTopMarketsInputs(event: GammaEvent): Promise<SeriesInputs> {
+  const eventData = await usePolymarketEventStore.getState().fetch({ eventId: event.id });
+  const markets = eventData?.markets ?? event.markets;
   const selected = selectTopMarketsForChart(markets, MAX_POLYMARKET_SERIES);
+
   return {
-    colors: null,
+    colors: eventData ? selected.map(m => ('color' in m ? m.color : null)).filter((c): c is string => c !== null) : null,
     labels: selected.map(getMarketLabel),
-    markets,
+    markets: event.markets,
     tokenIds: selected.map(m => m.clobTokenIds[0]).filter(Boolean),
   };
 }

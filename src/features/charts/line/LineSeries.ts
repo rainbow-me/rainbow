@@ -19,12 +19,14 @@ export type LineEffectsConfig = {
   endCirclePaint?: SkPaint;
   endCircleRadius?: number;
   endCircleScale?: number;
-  endCircleShadowOffset?: { x: number; y: number };
-  endCircleShadowPaint?: SkPaint;
-  lineShadowAlpha?: number;
-  lineShadowPaint?: SkPaint;
-  lineShadowYOffset?: number;
-};
+} & (
+  | { endCircleShadowPaint: SkPaint; endCircleShadowAlpha: number; endCircleShadowOffset?: { x: number; y: number } }
+  | { endCircleShadowPaint?: undefined; endCircleShadowAlpha?: undefined; endCircleShadowOffset?: undefined }
+) &
+  (
+    | { lineShadowPaint: SkPaint; lineShadowAlpha: number; lineShadowYOffset?: number }
+    | { lineShadowPaint?: undefined; lineShadowAlpha?: undefined; lineShadowYOffset?: undefined }
+  );
 
 export type InteractionConfig = {
   greyCirclePaint: SkPaint;
@@ -42,7 +44,7 @@ export type LineSeriesConfig = {
   lineWidth?: number;
   /**
    * The smoothing algorithm to use for rendering the line.
-   * @default LineSmoothing.MonotoneX
+   * @default LineSmoothing.Makima
    */
   smoothingMode?: LineSmoothing;
   /**
@@ -408,7 +410,7 @@ export class LineSeries {
     }
 
     // Draw line shadow (behind line)
-    if (effects?.lineShadowPaint && effects.lineShadowAlpha) {
+    if (effects?.lineShadowPaint) {
       const yOffset = effects.lineShadowYOffset ?? 0;
       if (yOffset !== 0) {
         canvas.save();
@@ -438,6 +440,8 @@ export class LineSeries {
 
       // Draw circle shadow first (with optional offset, scaled)
       if (effects.endCircleShadowPaint) {
+        effects.endCircleShadowPaint.setColor(this.color);
+        effects.endCircleShadowPaint.setAlphaf(effects.endCircleShadowAlpha);
         const shadowX = endX + (effects.endCircleShadowOffset?.x ?? 0) * circleScale;
         const shadowY = endY + (effects.endCircleShadowOffset?.y ?? 0) * circleScale;
         canvas.drawCircle(shadowX, shadowY, scaledRadius, effects.endCircleShadowPaint);
@@ -521,7 +525,7 @@ export class LineSeries {
     this.interpolatedColor[2] = this.color[2] + (interaction.greyColor[2] - this.color[2]) * t;
     this.interpolatedColor[3] = this.color[3] + (interaction.greyColor[3] - this.color[3]) * t;
 
-    if (effects?.lineShadowPaint && effects.lineShadowAlpha) {
+    if (effects?.lineShadowPaint) {
       const yOffset = effects.lineShadowYOffset ?? 0;
       const drawShadow = (targetPath: SkPath, color: Float32Array | SkColor, alpha: number) => {
         if (alpha <= 0) return;
@@ -636,9 +640,14 @@ export class LineSeries {
 
       if (scaledRadius > 0) {
         if (effects?.endCircleShadowPaint) {
-          const shadowX = endX + (effects.endCircleShadowOffset?.x ?? 0) * endCircleScale;
-          const shadowY = endY + (effects.endCircleShadowOffset?.y ?? 0) * endCircleScale;
-          canvas.drawCircle(shadowX, shadowY, scaledRadius, effects.endCircleShadowPaint);
+          const fadedAlpha = effects.endCircleShadowAlpha * (1 - interactionProgress);
+          if (fadedAlpha > 0) {
+            effects.endCircleShadowPaint.setColor(this.color);
+            effects.endCircleShadowPaint.setAlphaf(fadedAlpha);
+            const shadowX = endX + (effects.endCircleShadowOffset?.x ?? 0) * endCircleScale;
+            const shadowY = endY + (effects.endCircleShadowOffset?.y ?? 0) * endCircleScale;
+            canvas.drawCircle(shadowX, shadowY, scaledRadius, effects.endCircleShadowPaint);
+          }
         }
 
         this.interpolatedColor[0] = this.color[0] + (interaction.greyColor[0] - this.color[0]) * interactionProgress;
@@ -654,6 +663,8 @@ export class LineSeries {
       const scaledRadius = circleRadius * interactionProgress;
 
       if (effects.endCircleShadowPaint) {
+        effects.endCircleShadowPaint.setColor(this.color);
+        effects.endCircleShadowPaint.setAlphaf(effects.endCircleShadowAlpha);
         const shadowX = clampedSplitX + (effects.endCircleShadowOffset?.x ?? 0) * interactionProgress;
         const shadowY = splitY + (effects.endCircleShadowOffset?.y ?? 0) * interactionProgress;
         canvas.drawCircle(shadowX, shadowY, scaledRadius, effects.endCircleShadowPaint);
