@@ -6,7 +6,7 @@ import { PolymarketPosition } from '@/features/polymarket/types';
 import { memo, useMemo } from 'react';
 
 export const CheckOrXBadge = memo(function CheckOrXBadge({
-  borderWidth = 1,
+  borderWidth,
   fontSize = 'icon 8px',
   size = 16,
   position,
@@ -19,6 +19,8 @@ export const CheckOrXBadge = memo(function CheckOrXBadge({
   const { isDarkMode } = useColorMode();
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
+  const defaultBorderWidth = isDarkMode ? 1 : 2 / 3;
+  const resolvedBorderWidth = borderWidth || defaultBorderWidth;
 
   const isWin = useMemo(() => {
     return position.redeemable && position.size === position.currentValue;
@@ -38,11 +40,11 @@ export const CheckOrXBadge = memo(function CheckOrXBadge({
       borderRadius={size / 2}
       justifyContent="center"
       alignItems="center"
-      borderWidth={borderWidth}
+      borderWidth={resolvedBorderWidth}
       borderColor={{ custom: 'rgba(255, 255, 255, 0.12)' }}
     >
       <InnerShadow borderRadius={size / 2} color={opacityWorklet('#FFFFFF', 0.28)} width={size} height={size} blur={2.5} dx={0} dy={1} />
-      <Text color="label" size={fontSize} weight="heavy">
+      <Text color="white" size={fontSize} weight="heavy">
         {isWin ? '􀆅' : '􀆄'}
       </Text>
     </Box>

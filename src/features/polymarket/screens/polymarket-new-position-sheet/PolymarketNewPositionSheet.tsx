@@ -3,7 +3,7 @@ import { Alert, StyleSheet, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
-import { Box, Text, TextShadow } from '@/design-system';
+import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { logger, RainbowError } from '@/logger';
 import ImgixImage from '@/components/images/ImgixImage';
@@ -22,11 +22,13 @@ import { marketBuyToken } from '@/features/polymarket/utils/orders';
 import { subWorklet } from '@/safe-math/SafeMath';
 import { collectTradeFee } from '@/features/polymarket/utils/collectTradeFee';
 import { usePolymarketAccountInfo } from '@/features/polymarket/stores/derived/usePolymarketAccountInfo';
+import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
     params: { market, event, outcomeIndex, outcomeColor },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
+  const { isDarkMode } = useColorMode();
 
   const hasBalance = usePolymarketAccountInfo(state => state.hasBalance);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -79,17 +81,14 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
 
   return (
     <PanelSheet innerBorderWidth={1} enableKeyboardAvoidance>
-      <View style={StyleSheet.absoluteFill}>
-        <View style={[StyleSheet.absoluteFill, { backgroundColor: '#000000' }]} />
-        <View style={[StyleSheet.absoluteFill, { opacity: 0.22 }]}>
-          <LinearGradient
-            colors={[accentColor, opacityWorklet(accentColor, 0)]}
-            style={StyleSheet.absoluteFill}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            pointerEvents="none"
-          />
-        </View>
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }]}>
+        <LinearGradient
+          colors={[opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)]}
+          style={StyleSheet.absoluteFill}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          pointerEvents="none"
+        />
       </View>
       <Box paddingHorizontal="32px" paddingBottom={'24px'} paddingTop={{ custom: 43 }}>
         <Box gap={28}>
@@ -172,7 +171,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
                 {'Spread'}
               </Text>
               <TextShadow blur={6} shadowOpacity={0.24}>
-                <Text size="17pt" weight="heavy" color="green">
+                <Text size="17pt" weight="heavy" color={'label'}>
                   {formatCurrency(spread)}
                 </Text>
               </TextShadow>

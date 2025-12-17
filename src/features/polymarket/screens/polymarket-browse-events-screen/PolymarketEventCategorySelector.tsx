@@ -5,7 +5,7 @@ import Animated, { SharedValue, useAnimatedStyle, useSharedValue } from 'react-n
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
-import { Border, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Border, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { CATEGORIES, Category } from '@/features/polymarket/constants';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
@@ -13,6 +13,7 @@ import { usePolymarketEventsStore } from '@/features/polymarket/stores/polymarke
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createOpacityPalette } from '@/worklets/colors';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
 type CategoryKey = keyof typeof CATEGORIES;
 type CategoryWithKey = Category & { key: CategoryKey };
@@ -90,17 +91,26 @@ type CategoryItemProps = {
 const CategoryItem = memo(function CategoryItem({ category, onPress, selectedCategoryKey }: CategoryItemProps) {
   const { isDarkMode } = useColorMode();
   const labelColor = useForegroundColor('label');
+  const selectedColor = isDarkMode ? category.color.dark : category.color.light;
+  const unselectedIconColor = isDarkMode ? labelColor : selectedColor;
 
   const categoryKey = category.key;
-  const selectedColor = isDarkMode ? category.color.dark : category.color.light;
   const accentColors = useMemo(() => createOpacityPalette(selectedColor, PALETTE_OPACITIES), [selectedColor]);
+
+  const backgroundFillStyle = useMemo(
+    () => ({
+      backgroundColor: isDarkMode ? accentColors.opacity6 : opacityWorklet(globalColors.white100, 0.6),
+      borderRadius: CONTAINER_HEIGHT / 2,
+    }),
+    [isDarkMode, accentColors]
+  );
 
   const borderContainerStyle = useAnimatedStyle(() => ({
     opacity: selectedCategoryKey.value === categoryKey ? 1 : 0,
   }));
 
-  const textStyle = useAnimatedStyle(() => ({
-    color: selectedCategoryKey.value === categoryKey ? selectedColor : labelColor,
+  const iconStyle = useAnimatedStyle(() => ({
+    color: selectedCategoryKey.value === categoryKey ? selectedColor : unselectedIconColor,
   }));
 
   return (
@@ -108,10 +118,11 @@ const CategoryItem = memo(function CategoryItem({ category, onPress, selectedCat
       <Animated.View style={styles.itemContainer}>
         <Animated.View style={[StyleSheet.absoluteFill, borderContainerStyle]}>
           <Border borderColor={{ custom: accentColors.opacity6 }} borderRadius={CONTAINER_HEIGHT / 2} borderWidth={THICKER_BORDER_WIDTH} />
-          <InnerShadow blur={16} borderRadius={CONTAINER_HEIGHT / 2} color={accentColors.opacity28} dx={0} dy={8} />
+          <View style={[StyleSheet.absoluteFill, backgroundFillStyle]} />
+          {isDarkMode && <InnerShadow blur={16} borderRadius={CONTAINER_HEIGHT / 2} color={accentColors.opacity28} dx={0} dy={8} />}
         </Animated.View>
         <View style={styles.iconContainer}>
-          <AnimatedTextIcon align="center" color="label" size="icon 16px" textStyle={textStyle} weight="heavy">
+          <AnimatedTextIcon align="center" color="label" size="icon 16px" textStyle={iconStyle} weight="heavy">
             {category.icon}
           </AnimatedTextIcon>
         </View>

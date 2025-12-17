@@ -87,15 +87,19 @@ export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
       paddingVertical={{ custom: PADDING_VERTICAL }}
       borderRadius={64}
       borderWidth={THICKER_BORDER_WIDTH}
-      borderColor={{ custom: opacityWorklet('#DC91F4', 0.03) }}
+      borderColor={isDarkMode ? { custom: opacityWorklet('#DC91F4', 0.03) } : 'white'}
     >
       <View style={StyleSheet.absoluteFill}>
-        <LinearGradient
-          style={[StyleSheet.absoluteFill, { opacity: 0.07 }]}
-          colors={['#DC91F4', opacityWorklet('#DC91F4', 0.5)]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-        />
+        {isDarkMode ? (
+          <LinearGradient
+            style={[StyleSheet.absoluteFill, { opacity: 0.07 }]}
+            colors={['#DC91F4', opacityWorklet('#DC91F4', 0.5)]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+          />
+        ) : (
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(255, 255, 255, 0.6)' }]} />
+        )}
         <BlurView blurIntensity={24} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
         <InnerShadow borderRadius={PILL.borderRadius} color={opacityWorklet('#DC91F4', 0.14)} blur={5} dx={0} dy={1} />
       </View>
@@ -115,7 +119,7 @@ const SelectedHighlight = memo(function SelectedHighlight({
   paddingHorizontal?: number;
 }) {
   const { isDarkMode } = useColorMode();
-  const highlightBackgroundColor = opacityWorklet('#82408F', 0.3);
+  const highlightBackgroundColor = isDarkMode ? opacityWorklet('#82408F', 0.3) : opacityWorklet('#FF76FF', 0.07);
   const borderColor = opacityWorklet('#DC91F4', isDarkMode ? 0.06 : 0.03);
 
   const translateX = useAnimatedStyle(() => ({
@@ -150,12 +154,25 @@ const TabButton = ({
   selectedIndex: SharedValue<number>;
   value: Tab;
 }) => {
-  const labelTertiary = useForegroundColor('labelTertiary');
+  const { isDarkMode } = useColorMode();
+  const labelColor = useForegroundColor('label');
+
+  const selectedTextColor = isDarkMode ? labelColor : '#C863E8';
+  const unselectedTextColor = isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)';
+  const selectedIconColor = '#C863E8';
+  const unselectedIconColor = isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)';
 
   const iconStyle = useAnimatedStyle(() => {
     const isSelected = selectedIndex.value === index;
-    const textColor = isSelected ? '#C863E8' : labelTertiary;
-    if (!IS_IOS) return { color: textColor };
+    const textColor = isSelected ? selectedIconColor : unselectedIconColor;
+    return {
+      color: textColor,
+    };
+  });
+
+  const labelStyle = useAnimatedStyle(() => {
+    const isSelected = selectedIndex.value === index;
+    const textColor = isSelected ? selectedTextColor : unselectedTextColor;
     return {
       color: textColor,
     };
@@ -176,7 +193,7 @@ const TabButton = ({
         <AnimatedText align="center" color="label" size={icon === '􀫸' ? 'icon 21px' : 'icon 20px'} style={iconStyle} weight="heavy">
           {icon}
         </AnimatedText>
-        <AnimatedText align="center" color="label" size="13pt" weight="bold">
+        <AnimatedText align="center" color="label" size="13pt" weight="bold" style={labelStyle}>
           {label}
         </AnimatedText>
       </View>

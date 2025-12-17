@@ -1,5 +1,7 @@
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { PolymarketPosition } from '@/features/polymarket/types';
 import { memo, useMemo } from 'react';
 
@@ -39,9 +41,10 @@ export const WinOrLossBadge = memo(function WinOrLossBadge({
       alignItems="center"
       borderWidth={borderWidth}
       paddingHorizontal={{ custom: paddingHorizontal }}
-      borderColor={{ custom: 'rgba(255, 255, 255, 0.12)' }}
+      borderColor={{ custom: isDarkMode ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.12)' }}
     >
-      <Text color="label" size={fontSize} weight="heavy">
+      <InnerShadow borderRadius={13} color={opacityWorklet('#FFFFFF', 0.28)} height={height} blur={2.5} dx={0} dy={1} />
+      <Text color="white" size={fontSize} weight="heavy">
         {isWin ? 'WON' : 'LOST'}
       </Text>
     </Box>

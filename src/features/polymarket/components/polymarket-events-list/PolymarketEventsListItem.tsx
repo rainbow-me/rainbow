@@ -5,7 +5,7 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
-import { Separator, Text, useBackgroundColor } from '@/design-system';
+import { globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
 // import {
 //   polymarketRecommendationsActions,
 //   usePolymarketRecommendationsStore,
@@ -35,7 +35,7 @@ const GRADIENT_CONFIGS = {
     start: { x: -1, y: 0 },
   },
 };
-const OPACITIES = deepFreeze([0, 16, 24]);
+const OPACITIES = deepFreeze([0, 14, 16, 24]);
 
 export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
   event,
@@ -44,6 +44,8 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
   event: PolymarketEvent;
   style?: StyleProp<ViewStyle>;
 }) {
+  const { isDarkMode } = useColorMode();
+
   const markets = useMemo(() => {
     const activeMarkets = event.markets.filter(m => m.active && !m.closed).slice(0, 2);
 
@@ -60,12 +62,13 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
   const colors = useMemo(() => {
     const palette = createOpacityPalette(event.color, OPACITIES);
     return {
-      borderGradient: [palette.opacity16, palette.opacity0],
-      cardGradient: [palette.opacity24, palette.opacity0],
+      cardBorderGradient: isDarkMode ? [palette.opacity16, palette.opacity0] : [globalColors.white100, globalColors.white100],
+      outcomePillBorderGradient: [palette.opacity16, palette.opacity0],
+      cardGradient: isDarkMode ? [palette.opacity24, palette.opacity0] : [palette.opacity14, palette.opacity0],
       outcomePillGradient: [event.color, palette.opacity0],
       textColor: { custom: event.color },
     };
-  }, [event.color]);
+  }, [event.color, isDarkMode]);
 
   const iconSource = useMemo(() => ({ uri: event.icon ?? event.image }), [event.icon, event.image]);
 
@@ -73,13 +76,14 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
     <View style={style}>
       <ButtonPressAnimation onPress={() => navigateToEvent(event)} scaleTo={0.96}>
         <GradientBorderView
-          borderGradientColors={colors.borderGradient}
+          borderGradientColors={colors.cardBorderGradient}
           borderRadius={26}
           borderWidth={2}
           end={GRADIENT_CONFIGS.card.end}
           start={GRADIENT_CONFIGS.card.start}
           style={styles.overflowHidden}
         >
+          {!isDarkMode && <View style={[StyleSheet.absoluteFill, styles.lightModeCardFill]} />}
           <LinearGradient
             colors={colors.cardGradient}
             style={StyleSheet.absoluteFill}
@@ -97,7 +101,7 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
             </View>
 
             <GradientBorderView
-              borderGradientColors={colors.borderGradient}
+              borderGradientColors={colors.outcomePillBorderGradient}
               borderWidth={2}
               start={GRADIENT_CONFIGS.outcomePillBorder.start}
               end={GRADIENT_CONFIGS.outcomePillBorder.end}
@@ -247,5 +251,8 @@ const styles = StyleSheet.create({
     borderRadius: 26,
     height: HEIGHT,
     overflow: 'hidden',
+  },
+  lightModeCardFill: {
+    backgroundColor: opacityWorklet(globalColors.white100, 0.89),
   },
 });

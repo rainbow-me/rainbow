@@ -80,10 +80,10 @@ export const ResolvedMarketRow = memo(function ResolvedMarketRow({
         >
           <InnerShadow borderRadius={10} color={opacityWorklet(accentColor, 0.24)} blur={2.5} dx={0} dy={1} />
           <Box flexDirection="row" alignItems="center" justifyContent="center" gap={6}>
-            <Text size="icon 13px" weight="heavy" color="label">
+            <Text size="icon 13px" weight="heavy" color="white">
               {isWinningOutcome ? '􀆅' : '􀆄'}
             </Text>
-            <Text size="15pt" weight="heavy" color="label">
+            <Text size="15pt" weight="heavy" color="white">
               {isWinningOutcome ? 'YES' : 'NO'}
             </Text>
           </Box>

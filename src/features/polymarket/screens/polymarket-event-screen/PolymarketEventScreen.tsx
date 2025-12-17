@@ -24,6 +24,7 @@ import { AboutSection } from '@/features/polymarket/screens/polymarket-event-scr
 import { GameBoxScore } from '@/features/polymarket/screens/polymarket-event-screen/components/GameBoxScore';
 import { ResolvedEventHeader } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedEventHeader';
 import { formatTimestamp, toUnixTime } from '@/worklets/dates';
+import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 
 export const EventHeaderSection = memo(function EventHeaderSection({ event }: { event: PolymarketMarketEvent | PolymarketEvent }) {
   const labelQuaternary = useForegroundColor('labelQuaternary');
@@ -101,7 +102,7 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
 
   const screenBackgroundColor = isDarkMode
     ? getSolidColorEquivalent({ background: event.color, foreground: '#000000', opacity: 0.92 })
-    : '#FFFFFF';
+    : POLYMARKET_BACKGROUND_LIGHT;
 
   const isSportsEvent = event.gameId !== undefined;
   const lineColors = useMemo(() => parseLineColors(event, isSportsEvent), [event, isSportsEvent]);

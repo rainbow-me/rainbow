@@ -23,6 +23,7 @@ import { PositionAction, getPositionAction } from '@/features/polymarket/utils/g
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
+import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
 
 export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   position,
@@ -43,11 +44,13 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
     return createOpacityPalette(accentColor, [0, 4, 6, 12, 14, 20, 24, 70, 100]);
   }, [accentColor]);
 
-  const buttonBackgroundColor = getSolidColorEquivalent({
-    background: accentColors.opacity70,
-    foreground: 'rgb(0, 0, 0)',
-    opacity: 0.4,
-  });
+  const buttonBackgroundColor = isDarkMode
+    ? getSolidColorEquivalent({
+        background: accentColors.opacity70,
+        foreground: 'rgb(0, 0, 0)',
+        opacity: 0.4,
+      })
+    : accentColor;
 
   const redeemable = position.redeemable;
   const isWin = redeemable && position.size === position.currentValue;
@@ -103,14 +106,16 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
 
   return (
     <GradientBorderView
-      borderGradientColors={[accentColors.opacity6, accentColors.opacity0]}
+      borderGradientColors={
+        isDarkMode ? [accentColors.opacity6, accentColors.opacity0] : ['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0)']
+      }
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       locations={[0, 0.94]}
       borderRadius={24}
     >
       <LinearGradient
-        colors={[accentColors.opacity14, accentColors.opacity0]}
+        colors={isDarkMode ? [accentColors.opacity14, accentColors.opacity0] : ['rgba(255, 255, 255, 0.8)', 'rgba(255, 255, 255, 0)']}
         style={StyleSheet.absoluteFill}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
@@ -154,16 +159,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
               </Box>
               {redeemable ? (
                 <Bleed bottom="16px">
-                  <SkiaBadge
-                    height={26}
-                    text={isWin ? 'WON' : 'LOST'}
-                    fillColor={isWin ? wonGreen : lostRed}
-                    textColor="label"
-                    fontSize="15pt"
-                    fontWeight="heavy"
-                    strokeColor={'rgba(255, 255, 255, 0.12)'}
-                    strokeWidth={2}
-                  />
+                  <WinOrLossBadge position={position} height={26} borderWidth={isDarkMode ? 2 : 2 / 3} />
                 </Bleed>
               ) : (
                 <Text size="17pt" weight="bold" color="label">
@@ -251,13 +247,13 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                 height={40}
                 justifyContent="center"
                 alignItems="center"
-                borderWidth={2}
+                borderWidth={isDarkMode ? 2 : StyleSheet.hairlineWidth}
                 borderColor={{ custom: 'rgba(255, 255, 255, 0.08)' }}
                 backgroundColor={buttonBackgroundColor}
                 borderRadius={20}
               >
                 <InnerShadow borderRadius={20} color={'rgba(255, 255, 255, 0.17)'} blur={6} dx={0} dy={1} />
-                <Text size="17pt" weight="heavy" color="label">
+                <Text size="17pt" weight="heavy" color={'white'}>
                   {actionButtonLabel}
                 </Text>
               </Box>

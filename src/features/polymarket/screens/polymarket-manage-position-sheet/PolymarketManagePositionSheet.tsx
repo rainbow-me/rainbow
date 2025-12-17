@@ -1,9 +1,9 @@
 import { memo, useCallback, useMemo, useState } from 'react';
-import { Alert, StyleSheet } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
-import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Box, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
@@ -26,6 +26,7 @@ import { redeemPosition } from '@/features/polymarket/utils/redeemPosition';
 import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
+import { BlurView } from 'react-native-blur-view';
 
 export const PolymarketManagePositionSheet = memo(function PolymarketManagePositionSheet() {
   const {
@@ -126,14 +127,19 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
   const pnlSign = Number(livePnl) >= 0 ? '+' : '-';
   const absPnl = Math.abs(Number(livePnl));
 
+  const gradientFillColors = isDarkMode
+    ? [opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)]
+    : [opacityWorklet(accentColor, 0), opacityWorklet(accentColor, 0.06)];
+
   return (
-    <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? '#000000' : '#FFFFFF' }}>
-      <LinearGradient
-        colors={[opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)]}
-        style={StyleSheet.absoluteFillObject}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-      />
+    <PanelSheet
+      innerBorderWidth={1}
+      panelStyle={{ backgroundColor: isDarkMode ? globalColors.grey100 : opacityWorklet(globalColors.white100, 0.92) }}
+    >
+      <View style={StyleSheet.absoluteFill}>
+        <LinearGradient colors={gradientFillColors} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} />
+        {!isDarkMode && <BlurView style={StyleSheet.absoluteFill} blurIntensity={42} />}
+      </View>
       <Box paddingHorizontal="24px" paddingBottom={'24px'}>
         <Box alignItems="center" gap={18} paddingTop={{ custom: 71 }} paddingBottom={{ custom: 78 }}>
           <Text size="20pt" weight="heavy" color="labelTertiary">
@@ -160,6 +166,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
             onLongPress={onPressActionButton}
             showBiometryIcon={false}
             height={48}
+            color={'white'}
           />
         </Box>
       </Box>

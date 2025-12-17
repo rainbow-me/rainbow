@@ -40,7 +40,7 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
             </Text>
             <View style={{ opacity: isBalanceZero ? 0.4 : 1 }}>
               <TextShadow blur={16} color={accentColor} shadowOpacity={0.24}>
-                <Text color={{ custom: accentColor }} size="17pt" weight="heavy">
+                <Text color={'label'} size="17pt" weight="heavy">
                   {formatCurrency(balance)}
                 </Text>
               </TextShadow>

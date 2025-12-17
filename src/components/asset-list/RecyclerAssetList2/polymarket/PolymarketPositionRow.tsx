@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { StyleSheet } from 'react-native';
-import { Bleed, Box, Text } from '@/design-system';
+import { Bleed, Box, Text, useColorMode } from '@/design-system';
 import { PolymarketPosition } from '@/features/polymarket/types';
 import ImgixImage from '@/components/images/ImgixImage';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -14,13 +14,16 @@ import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
 export const PolymarketPositionRow = memo(function PolymarketPositionRow({ position }: { position: PolymarketPosition }) {
+  const { isDarkMode } = useColorMode();
   const accentColor = getPositionAccentColor(position);
   const isPositivePnl = position.cashPnl > 0;
   const pnlColor = isPositivePnl ? 'green' : 'red';
 
   const outcomeTitle = position.market.groupItemTitle || position.outcome;
+  THICK_BORDER_WIDTH;
 
   return (
     <ButtonPressAnimation
@@ -65,7 +68,13 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
                     </Box>
                     {position.redeemable && (
                       <Bleed vertical={'4px'}>
-                        <WinOrLossBadge position={position} paddingHorizontal={5} height={18} fontSize="11pt" borderWidth={1} />
+                        <WinOrLossBadge
+                          position={position}
+                          paddingHorizontal={5}
+                          height={18}
+                          fontSize="11pt"
+                          borderWidth={isDarkMode ? 2 : 2 / 3}
+                        />
                       </Bleed>
                     )}
                   </Box>

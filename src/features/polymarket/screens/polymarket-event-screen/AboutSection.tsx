@@ -2,7 +2,7 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { Box, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { Box, globalColors, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
 import { CATEGORIES } from '@/features/polymarket/constants';
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { Navigation } from '@/navigation';
@@ -43,7 +43,11 @@ const Description = memo(function Description({
   screenBackgroundColor: string;
   description: string;
 }) {
-  const backgroundColor = getSolidColorEquivalent({ background: screenBackgroundColor, foreground: '#F5F8FF', opacity: 0.04 });
+  const { isDarkMode } = useColorMode();
+  const backgroundColor = isDarkMode
+    ? getSolidColorEquivalent({ background: screenBackgroundColor, foreground: '#F5F8FF', opacity: 0.04 })
+    : getSolidColorEquivalent({ background: screenBackgroundColor, foreground: '#09111F', opacity: 0.02 });
+
   return (
     <ButtonPressAnimation
       onPress={() => {
@@ -56,8 +60,8 @@ const Description = memo(function Description({
         backgroundColor={backgroundColor}
         borderRadius={26}
         padding={'20px'}
-        borderWidth={2}
-        borderColor={{ custom: opacityWorklet('#F5F8FF', 0.02) }}
+        borderWidth={isDarkMode ? 2 : THICK_BORDER_WIDTH}
+        borderColor={{ custom: opacityWorklet(isDarkMode ? '#F5F8FF' : '#09111F', 0.02) }}
       >
         <Text color="labelTertiary" size="17pt / 150%" weight="medium" numberOfLines={3}>
           {description}
@@ -89,8 +93,6 @@ const Description = memo(function Description({
 });
 
 const InfoRows = memo(function InfoRows({ event }: { event: PolymarketEvent | PolymarketMarketEvent }) {
-  const { isDarkMode } = useColorMode();
-
   const rowItems = useMemo(() => {
     const items = [];
     if (event.endDate) {
@@ -118,12 +120,11 @@ const InfoRows = memo(function InfoRows({ event }: { event: PolymarketEvent | Po
         title: 'Category',
         value: category.label,
         icon: '􀋡',
-        valueColor: isDarkMode ? category.color.dark : category.color.light,
       });
     }
 
     return items;
-  }, [event, isDarkMode]);
+  }, [event]);
 
   return (
     <Box gap={4}>
@@ -135,7 +136,6 @@ const InfoRows = memo(function InfoRows({ event }: { event: PolymarketEvent | Po
           icon={infoRow.icon}
           highlighted={index % 2 === 1}
           rightIcon={infoRow.rightIcon}
-          valueColor={infoRow.valueColor}
         />
       ))}
     </Box>
@@ -148,24 +148,26 @@ function InfoRow({
   icon,
   highlighted,
   rightIcon,
-  valueColor,
 }: {
   title: string;
   value: string;
   icon: string;
   highlighted: boolean;
   rightIcon: string | undefined;
-  valueColor: string | undefined;
 }) {
+  const { isDarkMode } = useColorMode();
+  const highlightedBackgroundColor = isDarkMode ? opacityWorklet(globalColors.white100, 0.04) : opacityWorklet(globalColors.grey100, 0.03);
+  const highlightedBorderColor = opacityWorklet(isDarkMode ? globalColors.white100 : globalColors.grey100, 0.02);
+
   return (
     <Box
       height={36}
-      backgroundColor={highlighted ? opacityWorklet('#FFFFFF', 0.04) : 'transparent'}
+      backgroundColor={highlighted ? highlightedBackgroundColor : 'transparent'}
       justifyContent="center"
       paddingHorizontal="10px"
       borderRadius={14}
       borderWidth={THICK_BORDER_WIDTH}
-      borderColor={{ custom: highlighted ? opacityWorklet('#FFFFFF', 0.02) : 'transparent' }}
+      borderColor={{ custom: highlighted ? highlightedBorderColor : 'transparent' }}
     >
       <Box width={'full'} flexDirection="row" alignItems="center" gap={12}>
         <TextIcon color="labelSecondary" containerSize={20} size="icon 15px" weight="medium">
@@ -177,7 +179,7 @@ function InfoRow({
 
         <Box flexDirection="row" alignItems="center" gap={8}>
           <TextShadow blur={12} shadowOpacity={0.24}>
-            <Text align="right" color={valueColor ? { custom: valueColor } : 'label'} weight="semibold" numberOfLines={1} size="17pt">
+            <Text align="right" color="label" weight="semibold" numberOfLines={1} size="17pt">
               {value}
             </Text>
           </TextShadow>
