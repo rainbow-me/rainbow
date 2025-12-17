@@ -5,7 +5,7 @@ import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import ImgixImage from '@/components/images/ImgixImage';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
@@ -23,6 +23,7 @@ import { subWorklet } from '@/safe-math/SafeMath';
 import { collectTradeFee } from '@/features/polymarket/utils/collectTradeFee';
 import { usePolymarketAccountInfo } from '@/features/polymarket/stores/derived/usePolymarketAccountInfo';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
+import { analytics } from '@/analytics';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
@@ -42,8 +43,19 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     opacity: 0.4,
   });
 
-  const { availableBalance, worstPrice, validation, isValidOrderAmount, amountToWin, outcomeOdds, fee, spread, setBuyAmount, buyAmount } =
-    useNewPositionForm({ tokenId });
+  const {
+    availableBalance,
+    bestPrice,
+    worstPrice,
+    validation,
+    isValidOrderAmount,
+    amountToWin,
+    outcomeOdds,
+    fee,
+    spread,
+    setBuyAmount,
+    buyAmount,
+  } = useNewPositionForm({ tokenId });
 
   const outcomeTitle = event.title || market.question;
   const outcomeSubtitle = useMemo(() => {
@@ -58,22 +70,51 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
 
   const handleMarketBuyPosition = useCallback(async () => {
     setIsProcessing(true);
+    const amountToBuy = subWorklet(buyAmount, fee);
     try {
-      const amountToBuy = subWorklet(buyAmount, fee);
       const orderResult = await marketBuyToken({ tokenId, amount: amountToBuy, price: worstPrice });
       const tokensBought = orderResult.takingAmount;
+
+      analytics.track(analytics.event.predictionsPlaceOrder, {
+        eventSlug: event.slug,
+        marketSlug: market.slug,
+        outcome,
+        orderAmountUsd: Number(orderResult.makingAmount),
+        feeAmountUsd: Number(fee),
+        tokenAmount: Number(tokensBought),
+        tokenId,
+        spread: Number(spread),
+        bestPriceUsd: Number(bestPrice),
+        orderPriceUsd: Number(worstPrice),
+        averagePriceUsd: Number(orderResult.makingAmount) / Number(tokensBought),
+        side: 'buy',
+      });
+
       void collectTradeFee(tokensBought);
       await waitForPositionSizeUpdate(tokenId);
       Navigation.goBack();
       // TODO: How do we handle this if there is no PolyMarketMarketSheet in the stack vs. not?
       // Navigation.goBack();
     } catch (e) {
-      logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', e));
+      const error = ensureError(e);
+      logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', error));
       Alert.alert('Error', 'Failed to place bet. Please try again.');
+
+      analytics.track(analytics.event.predictionsPlaceOrderFailed, {
+        eventSlug: event.slug,
+        marketSlug: market.slug,
+        outcome,
+        orderAmountUsd: Number(amountToBuy),
+        feeAmountUsd: Number(fee),
+        orderPriceUsd: Number(worstPrice),
+        tokenId,
+        side: 'buy',
+        errorMessage: error.message,
+      });
     } finally {
       setIsProcessing(false);
     }
-  }, [buyAmount, fee, tokenId, worstPrice]);
+  }, [bestPrice, buyAmount, event.slug, fee, market.slug, outcome, spread, tokenId, worstPrice]);
 
   const handleDepositFunds = useCallback(() => {
     Navigation.handleAction(Routes.POLYMARKET_DEPOSIT_SCREEN);

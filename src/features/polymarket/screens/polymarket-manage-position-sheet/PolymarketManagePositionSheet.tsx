@@ -16,7 +16,7 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
-import { mulWorklet, subWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, mulWorklet, subWorklet } from '@/safe-math/SafeMath';
 import { marketSellTotalPosition } from '@/features/polymarket/utils/orders';
 import { collectTradeFee } from '@/features/polymarket/utils/collectTradeFee';
 import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
@@ -27,6 +27,8 @@ import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 import { BlurView } from 'react-native-blur-view';
+import { analytics } from '@/analytics';
+import { USD_FEE_PER_TOKEN } from '@/features/polymarket/constants';
 
 export const PolymarketManagePositionSheet = memo(function PolymarketManagePositionSheet() {
   const {
@@ -89,15 +91,42 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
       const price = await polymarketClobDataClient.calculateMarketPrice(position.asset, Side.SELL, position.size);
       const orderResult = await marketSellTotalPosition({ position, price });
       const tokensSold = orderResult.makingAmount;
+      const usdReceived = orderResult.takingAmount;
+      const fee = mulWorklet(tokensSold, USD_FEE_PER_TOKEN);
+
+      analytics.track(analytics.event.predictionsPlaceOrder, {
+        eventSlug: position.eventSlug,
+        marketSlug: position.slug,
+        outcome: position.outcome,
+        orderAmountUsd: Number(usdReceived),
+        feeAmountUsd: Number(fee),
+        tokenAmount: Number(tokensSold),
+        tokenId: position.asset,
+        orderPriceUsd: Number(price),
+        bestPriceUsd: Number(livePrice),
+        averagePriceUsd: Number(divWorklet(usdReceived, tokensSold)),
+        side: 'sell',
+      });
+
       void collectTradeFee(tokensSold);
       await waitForPositionSizeUpdate(position.asset);
       Navigation.goBack();
     } catch (e) {
-      logger.error(new RainbowError('[PolymarketManagePositionSheet] Error selling position', ensureError(e)));
+      const error = ensureError(e);
+      logger.error(new RainbowError('[PolymarketManagePositionSheet] Error selling position', error));
       setIsProcessing(false);
       Alert.alert('Error', 'Failed to cash out position. Please try again.');
+
+      analytics.track(analytics.event.predictionsPlaceOrderFailed, {
+        eventSlug: position.eventSlug,
+        marketSlug: position.slug,
+        outcome: position.outcome,
+        tokenId: position.asset,
+        side: 'sell',
+        errorMessage: error.message,
+      });
     }
-  }, [position]);
+  }, [livePrice, position]);
 
   const handleClaimPosition = useCallback(async () => {
     try {

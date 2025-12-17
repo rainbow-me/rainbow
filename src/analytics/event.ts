@@ -332,6 +332,14 @@ export const event = {
   perpsWithdrawFailed: 'perps.withdraw.failed',
   perpsAddedToPosition: 'perps.added_to_position',
   perpsAddedToPositionFailed: 'perps.added_to_position.failed',
+
+  // predictions
+  predictionsPlaceOrder: 'predictions.place_order',
+  predictionsPlaceOrderFailed: 'predictions.place_order.failed',
+  predictionsCollectTradeFee: 'predictions.collect_trade_fee',
+  predictionsCollectTradeFeeFailed: 'predictions.collect_trade_fee.failed',
+  predictionsRedeemPosition: 'predictions.redeem_position',
+  predictionsRedeemPositionFailed: 'predictions.redeem_position.failed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -1272,6 +1280,65 @@ export type EventProperties = {
     side: PerpPositionSide;
     leverage: number;
     perpsBalance: number;
+    errorMessage: string;
+  };
+
+  // predictions
+  [event.predictionsPlaceOrder]: {
+    eventSlug: string;
+    marketSlug: string;
+    outcome: string;
+    feeAmountUsd: number;
+    orderAmountUsd: number;
+    tokenAmount: number;
+    tokenId: string;
+    orderPriceUsd: number;
+    bestPriceUsd: number;
+    averagePriceUsd: number;
+    side: 'buy' | 'sell';
+    spread?: number;
+  };
+  [event.predictionsPlaceOrderFailed]: {
+    eventSlug: string;
+    marketSlug: string;
+    outcome: string;
+    tokenId: string;
+    side: 'buy' | 'sell';
+    orderPriceUsd?: number;
+    feeAmountUsd?: number;
+    orderAmountUsd?: number;
+    errorMessage: string;
+  };
+  [event.predictionsCollectTradeFee]: {
+    feeAmountUsd: number;
+    gasCostUsd: number;
+    netFeeAmountUsd: number;
+  };
+  [event.predictionsCollectTradeFeeFailed]: {
+    tokenAmount: number;
+    feeAmountUsd: number;
+    errorMessage: string;
+  };
+  [event.predictionsRedeemPosition]: {
+    eventSlug: string;
+    marketSlug: string;
+    outcome: string;
+    tokenId: string;
+    type: 'claim' | 'burn';
+    valueUsd: number;
+    transactionHash: string;
+    transactionId: string;
+  };
+  [event.predictionsRedeemPositionFailed]: {
+    eventSlug: string;
+    marketSlug: string;
+    outcome: string;
+    tokenId: string;
+    type: 'claim' | 'burn';
+    valueUsd: number;
+    transactionHash: string | undefined;
+    transactionId: string | undefined;
+    transactionState: string | undefined;
     errorMessage: string;
   };
 };
