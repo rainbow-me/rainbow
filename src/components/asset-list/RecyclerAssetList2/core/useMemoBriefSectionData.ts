@@ -5,6 +5,7 @@ import { CellType, CellTypes, CoinExtraData, LegacyNFTFamilyExtraData, NFTFamily
 import { useCoinListEdited, useExternalWalletSectionsData, useWalletSectionsData } from '@/hooks';
 import useOpenPositionCards from '@/hooks/useOpenPositionCards';
 import useOpenClaimables from '@/hooks/useOpenClaimables';
+import useOpenPolymarket from '@/hooks/useOpenPolymarket';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
@@ -44,6 +45,7 @@ export default function useMemoBriefSectionData({
   const { isSmallBalancesOpen } = useOpenSmallBalances();
   const { isPositionCardsOpen } = useOpenPositionCards();
   const { isClaimablesOpen } = useOpenClaimables();
+  const { isPolymarketOpen } = useOpenPolymarket();
   const { isCoinListEdited } = useCoinListEdited();
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const openCollections = useOpenCollectionsStore(state => state.openCollections);
@@ -113,6 +115,10 @@ export default function useMemoBriefSectionData({
           return false;
         }
 
+        if ((data.type === CellType.POLYMARKET_POSITION || data.type === CellType.POLYMARKET_BALANCE) && !isPolymarketOpen) {
+          return false;
+        }
+
         index++;
         return true;
       })
@@ -132,6 +138,7 @@ export default function useMemoBriefSectionData({
     hiddenAssets,
     isPositionCardsOpen,
     isClaimablesOpen,
+    isPolymarketOpen,
     openCollections,
   ]);
   const memoizedResult = useDeepCompareMemo(() => result, [result]);
