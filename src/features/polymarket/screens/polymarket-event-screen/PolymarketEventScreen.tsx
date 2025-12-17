@@ -12,6 +12,7 @@ import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarket
 import ImgixImage from '@/components/images/ImgixImage';
 import { MarketsSection } from '@/features/polymarket/screens/polymarket-event-screen/MarketsSection';
 import { formatNumber } from '@/helpers/strings';
+import * as i18n from '@/languages';
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { PolymarketChart } from '@/features/charts/polymarket/components/PolymarketChart';
 import { PolymarketChartLegend } from '@/features/charts/polymarket/components/PolymarketChartLegend';
@@ -38,7 +39,7 @@ export const EventHeaderSection = memo(function EventHeaderSection({ event }: { 
           </Text>
           <Box flexDirection="row" alignItems="center" gap={8}>
             <Text color={'labelQuaternary'} size="15pt" weight="bold">
-              {`${formatNumber(String(event.volume), { useOrderSuffix: true, decimals: 1, style: '$' })} VOL`}
+              {`${formatNumber(String(event.volume), { useOrderSuffix: true, decimals: 1, style: '$' })} ${i18n.t(i18n.l.predictions.event.volume_suffix)}`}
             </Text>
             {event.startTime && !event.closed && !event.live && (
               <>

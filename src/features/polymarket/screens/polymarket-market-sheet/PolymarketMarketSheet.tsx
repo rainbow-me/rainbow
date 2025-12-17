@@ -4,6 +4,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { Bleed, Box, globalColors, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import * as i18n from '@/languages';
 import { PANEL_WIDTH, PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import ImgixImage from '@/components/images/ImgixImage';
@@ -82,7 +83,7 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
                   alignItems="center"
                 >
                   <Text size="22pt" weight="heavy" color={{ custom: buttonColor }}>
-                    {`Buy ${outcome}`}
+                    {i18n.t(i18n.l.predictions.market.buy_outcome, { outcome })}
                   </Text>
                 </Box>
               </ButtonPressAnimation>

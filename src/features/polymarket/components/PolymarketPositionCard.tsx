@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Bleed, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import * as i18n from '@/languages';
 import { PolymarketPosition } from '@/features/polymarket/types';
 import { memo, useCallback, useMemo } from 'react';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
@@ -55,11 +56,11 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   const actionButtonLabel = useMemo(() => {
     switch (actionButtonType) {
       case PositionAction.CLAIM:
-        return 'Claim';
+        return i18n.t(i18n.l.predictions.position.claim);
       case PositionAction.BURN:
-        return 'Burn';
+        return i18n.t(i18n.l.predictions.position.burn);
       case PositionAction.CASH_OUT:
-        return 'Cash Out';
+        return i18n.t(i18n.l.predictions.position.cash_out);
     }
   }, [actionButtonType]);
 
@@ -151,7 +152,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
               <Box flexDirection="row" alignItems="center" justifyContent="space-between">
                 <Box flexDirection="row" gap={4}>
                   <Text size="15pt" weight="semibold" color="labelQuaternary">
-                    {'Outcome'}
+                    {i18n.t(i18n.l.predictions.position.outcome)}
                   </Text>
                 </Box>
                 {redeemable ? (
@@ -209,7 +210,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
             <Box flexDirection="row" alignItems="center" justifyContent="space-between">
               <Box flexDirection="row" alignItems="center" gap={3}>
                 <Text size="15pt" weight="bold" color="labelQuaternary">
-                  {'Odds'}
+                  {i18n.t(i18n.l.predictions.position.odds)}
                 </Text>
                 <LiveTokenText
                   size="15pt"
@@ -222,7 +223,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
               </Box>
               <Box flexDirection="row" alignItems="center" gap={3}>
                 <Text size="15pt" weight="bold" color="labelQuaternary">
-                  {'Bet'}
+                  {i18n.t(i18n.l.predictions.position.bet)}
                 </Text>
                 <Text size="15pt" weight="bold" color="labelSecondary">
                   {formatNumber(position.initialValue, { useOrderSuffix: true, decimals: 2, style: '$' })}
@@ -230,7 +231,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
               </Box>
               <Box flexDirection="row" alignItems="center" gap={3}>
                 <Text size="15pt" weight="bold" color="labelQuaternary">
-                  {isWin ? 'Won' : 'To Win'}
+                  {isWin ? i18n.t(i18n.l.predictions.position.won) : i18n.t(i18n.l.predictions.position.to_win)}
                 </Text>
                 <Text size="15pt" weight="bold" color="labelSecondary">
                   {formatNumber(position.size, { useOrderSuffix: true, decimals: 2, style: '$' })}

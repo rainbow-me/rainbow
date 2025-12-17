@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { Box, Separator, Text, TextIcon } from '@/design-system';
+import * as i18n from '@/languages';
 import { formatTimestamp, toUnixTime } from '@/worklets/dates';
 
 export const ResolvedEventHeader = memo(function ResolvedEventHeader({ resolvedAt }: { resolvedAt: string | undefined }) {
@@ -11,7 +12,7 @@ export const ResolvedEventHeader = memo(function ResolvedEventHeader({ resolvedA
             {'􀁢'}
           </TextIcon>
           <Text color="label" size="15pt" weight="heavy" align="center">
-            {'MARKET RESOLVED'}
+            {i18n.t(i18n.l.predictions.event.market_resolved)}
           </Text>
         </Box>
         {resolvedAt && (

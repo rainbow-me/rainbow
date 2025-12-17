@@ -4,6 +4,7 @@ import { Box, Separator, Text, TextShadow } from '@/design-system';
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { PolymarketTeamInfo } from '@/features/polymarket/types';
+import * as i18n from '@/languages';
 
 type PolymarketEventGameInfo = {
   score: string;
@@ -48,7 +49,7 @@ const UpcomingGameBoxScore = memo(function UpcomingGameBoxScore({ gameInfo }: { 
         </Text>
       </Box>
       <Text size="13pt" weight="bold" color="labelQuaternary">
-        {'VS'}
+        {i18n.t(i18n.l.predictions.sports.vs)}
       </Text>
       <Box gap={12} alignItems="center" width={120} height={84}>
         {teamB?.logo && (
@@ -71,7 +72,7 @@ const LiveGameBoxScore = memo(function LiveGameBoxScore({ gameInfo }: { gameInfo
       <Box flexDirection="row" alignItems="center" justifyContent="center" gap={10}>
         <TextShadow blur={14} shadowOpacity={0.5}>
           <Text align="center" size="15pt" style={{ letterSpacing: 0.8 }} weight="heavy" color={{ custom: '#E75C29' }}>
-            {'LIVE'}
+            {i18n.t(i18n.l.predictions.sports.live)}
           </Text>
         </TextShadow>
         <Box
@@ -143,8 +144,8 @@ function getGameBoxScore({ score, period, elapsed }: { score: string; period: st
   const { currentPeriod } = parsePeriod(period);
   let periodTitle = `${currentPeriod} ${elapsed ? `· ${elapsed}` : ''}`;
 
-  if ('bestOf' in parsedScore) {
-    periodTitle = `Game ${currentPeriod} - Best of ${parsedScore.bestOf}`;
+  if ('bestOf' in parsedScore && parsedScore.bestOf !== undefined) {
+    periodTitle = i18n.t(i18n.l.predictions.sports.game_best_of, { currentPeriod, bestOf: String(parsedScore.bestOf) });
   }
 
   return {

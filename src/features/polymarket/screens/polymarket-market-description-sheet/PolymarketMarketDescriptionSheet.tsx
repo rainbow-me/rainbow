@@ -7,6 +7,7 @@ import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { Box, globalColors, MarkdownText, Text, useColorMode } from '@/design-system';
+import * as i18n from '@/languages';
 import { useUntrustedUrlOpener } from '@/navigation';
 import { useRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -78,7 +79,7 @@ export const PolymarketMarketDescriptionSheet = memo(function PolymarketMarketDe
       <View style={styles.header}>
         <Box paddingHorizontal={{ custom: LAYOUT.horizontalPadding }}>
           <Text color="label" size="26pt" weight="heavy">
-            Rules
+            {i18n.t(i18n.l.predictions.event.rules)}
           </Text>
         </Box>
       </View>

@@ -1,4 +1,5 @@
 import { Box, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
+import * as i18n from '@/languages';
 import { memo } from 'react';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
@@ -24,7 +25,7 @@ export const MarketsSection = memo(function MarketsSection({ event }: { event: P
           </TextIcon>
         </Box>
         <Text size="20pt" weight="heavy" color="label">
-          {'Outcomes'}
+          {i18n.t(i18n.l.predictions.event.outcomes)}
         </Text>
       </Box>
       {markets ? (

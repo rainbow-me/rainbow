@@ -15,6 +15,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { time } from '@/utils/time';
 import { useDebouncedCallback } from 'use-debounce';
+import * as i18n from '@/languages';
 
 const SEARCH_BAR_HEIGHT = 52;
 
@@ -108,7 +109,7 @@ export const PolymarketSearchFooter = memo(function PolymarketSearchFooter() {
           clearButtonMode="while-editing"
           enablesReturnKeyAutomatically
           onChange={onSearchQueryChange}
-          placeholder="Search markets"
+          placeholder={i18n.t(i18n.l.predictions.search.input_placeholder)}
           placeholderTextColor={opacityWorklet(textAccentColor, 0.4)}
           ref={inputRef}
           returnKeyType="search"

@@ -4,6 +4,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Box, globalColors, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
 import { CATEGORIES } from '@/features/polymarket/constants';
+import * as i18n from '@/languages';
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { Navigation } from '@/navigation';
 import { getSolidColorEquivalent } from '@/worklets/colors';
@@ -27,7 +28,7 @@ export const AboutSection = memo(function AboutSection({
           </TextIcon>
         </Box>
         <Text size="20pt" weight="heavy" color="label">
-          {'About'}
+          {i18n.t(i18n.l.predictions.event.about)}
         </Text>
       </Box>
       <Description screenBackgroundColor={screenBackgroundColor} description={event.description} />
@@ -79,7 +80,7 @@ const Description = memo(function Description({
             />
             <Box flexDirection="row" alignItems="center" gap={4} backgroundColor={backgroundColor}>
               <Text color="label" size="15pt" weight="bold">
-                {'Show Rules'}
+                {i18n.t(i18n.l.predictions.event.show_rules)}
               </Text>
               <TextIcon size="icon 12px" weight="heavy" color="label">
                 {'􀆊'}
@@ -97,7 +98,7 @@ const InfoRows = memo(function InfoRows({ event }: { event: PolymarketEvent | Po
     const items = [];
     if (event.endDate) {
       items.push({
-        title: 'End Date',
+        title: i18n.t(i18n.l.predictions.event.end_date),
         value: format(new Date(event.endDate), 'MMM d, yyyy'),
         icon: '􀐫',
       });
@@ -105,7 +106,7 @@ const InfoRows = memo(function InfoRows({ event }: { event: PolymarketEvent | Po
 
     if (event.resolutionSource) {
       items.push({
-        title: 'Res. Source',
+        title: i18n.t(i18n.l.predictions.event.resolution_source),
         value: new URL(event.resolutionSource).hostname.replace('www.', ''),
         icon: '􀉣',
         rightIcon: '􀄯',
@@ -117,7 +118,7 @@ const InfoRows = memo(function InfoRows({ event }: { event: PolymarketEvent | Po
 
     if (category) {
       items.push({
-        title: 'Category',
+        title: i18n.t(i18n.l.predictions.event.category),
         value: category.label,
         icon: '􀋡',
       });

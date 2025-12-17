@@ -4,6 +4,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
+import * as i18n from '@/languages';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { ensureError, logger, RainbowError } from '@/logger';
 import ImgixImage from '@/components/images/ImgixImage';
@@ -98,7 +99,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     } catch (e) {
       const error = ensureError(e);
       logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', error));
-      Alert.alert('Error', 'Failed to place bet. Please try again.');
+      Alert.alert(i18n.t(i18n.l.predictions.errors.title), i18n.t(i18n.l.predictions.errors.failed_to_place_bet));
 
       analytics.track(analytics.event.predictionsPlaceOrderFailed, {
         eventSlug: event.slug,
@@ -138,7 +139,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
       <Box paddingHorizontal="32px" paddingBottom={'24px'} paddingTop={{ custom: 43 }}>
         <Box gap={28}>
           <Text size="26pt" weight="heavy" color="label">
-            {'Place Bet'}
+            {i18n.t(i18n.l.predictions.new_position.title)}
           </Text>
 
           <Box gap={12}>
@@ -173,7 +174,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               accentColor={accentColor}
               backgroundColor={isDarkMode ? opacityWorklet(accentColor, 0.08) : opacityWorklet(globalColors.white100, 0.9)}
               onAmountChange={setBuyAmount}
-              title="Amount"
+              title={i18n.t(i18n.l.predictions.new_position.amount)}
               validation={validation}
             />
           </Box>
@@ -181,7 +182,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
           <Box gap={24}>
             <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
               <Text size="15pt" weight="semibold" color="labelTertiary">
-                {'Chance of Outcome'}
+                {i18n.t(i18n.l.predictions.new_position.chance_of_outcome)}
               </Text>
               <TextShadow blur={6} shadowOpacity={0.24}>
                 <Text size="17pt" weight="heavy" color={{ custom: accentColor }}>
@@ -191,7 +192,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
             </Box>
             <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
               <Text size="15pt" weight="semibold" color="labelTertiary">
-                {'To Win'}
+                {i18n.t(i18n.l.predictions.new_position.to_win)}
               </Text>
 
               <TextShadow blur={6} shadowOpacity={0.24}>
@@ -213,7 +214,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
             </Box> */}
             <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
               <Text size="15pt" weight="semibold" color="labelTertiary">
-                {'Spread'}
+                {i18n.t(i18n.l.predictions.new_position.spread)}
               </Text>
               <TextShadow blur={6} shadowOpacity={0.24}>
                 <Text size="17pt" weight="heavy" color={'label'}>
@@ -225,8 +226,8 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
           {hasBalance ? (
             <HoldToActivateButton
               onLongPress={handleMarketBuyPosition}
-              label="Hold to Place Bet"
-              processingLabel="Placing Bet..."
+              label={i18n.t(i18n.l.predictions.new_position.hold_to_place_bet)}
+              processingLabel={i18n.t(i18n.l.predictions.new_position.placing_bet)}
               isProcessing={isProcessing}
               showBiometryIcon={false}
               backgroundColor={buttonColor}
@@ -254,7 +255,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
                 borderWidth={2}
               >
                 <Text color="white" size="20pt" weight="black">
-                  {'Deposit Funds'}
+                  {i18n.t(i18n.l.predictions.new_position.deposit_funds)}
                 </Text>
               </Box>
             </ButtonPressAnimation>

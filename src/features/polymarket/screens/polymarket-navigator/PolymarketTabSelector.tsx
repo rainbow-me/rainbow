@@ -16,6 +16,7 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
+import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
@@ -24,8 +25,18 @@ import Routes from '@/navigation/routesNames';
 import { useListen } from '@/state/internal/hooks/useListen';
 
 const TABS = Object.freeze({
-  [Routes.POLYMARKET_BROWSE_EVENTS_SCREEN]: { index: 0, label: 'Browse', value: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN, icon: '􀫸' },
-  [Routes.POLYMARKET_ACCOUNT_SCREEN]: { index: 1, label: 'Portfolio', value: Routes.POLYMARKET_ACCOUNT_SCREEN, icon: '􁎢' },
+  [Routes.POLYMARKET_BROWSE_EVENTS_SCREEN]: {
+    index: 0,
+    labelKey: i18n.l.predictions.tabs.browse,
+    value: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN,
+    icon: '􀫸',
+  },
+  [Routes.POLYMARKET_ACCOUNT_SCREEN]: {
+    index: 1,
+    labelKey: i18n.l.predictions.tabs.portfolio,
+    value: Routes.POLYMARKET_ACCOUNT_SCREEN,
+    icon: '􁎢',
+  },
 });
 
 type Tab = keyof typeof TABS;
@@ -142,14 +153,14 @@ const SelectedHighlight = memo(function SelectedHighlight({
 const TabButton = ({
   index,
   value,
-  label,
+  labelKey,
   icon,
   onPress,
   selectedIndex,
 }: {
   icon: string;
   index: number;
-  label: string;
+  labelKey: string;
   onPress: (tab: Tab) => void;
   selectedIndex: SharedValue<number>;
   value: Tab;
@@ -194,7 +205,7 @@ const TabButton = ({
           {icon}
         </AnimatedText>
         <AnimatedText align="center" color="label" size="13pt" weight="bold" style={labelStyle}>
-          {label}
+          {i18n.t(labelKey)}
         </AnimatedText>
       </View>
     </GestureHandlerButton>
@@ -202,8 +213,8 @@ const TabButton = ({
 };
 
 const TabButtons = ({ onPress, selectedIndex }: { onPress: (tab: Tab) => void; selectedIndex: SharedValue<number> }) => {
-  return Object.values(TABS).map(({ icon, index, label, value }) => (
-    <TabButton index={index} key={value} label={label} icon={icon} onPress={onPress} selectedIndex={selectedIndex} value={value} />
+  return Object.values(TABS).map(({ icon, index, labelKey, value }) => (
+    <TabButton index={index} key={value} labelKey={labelKey} icon={icon} onPress={onPress} selectedIndex={selectedIndex} value={value} />
   ));
 };
 

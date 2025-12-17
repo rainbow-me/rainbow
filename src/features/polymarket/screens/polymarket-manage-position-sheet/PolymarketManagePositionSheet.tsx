@@ -4,6 +4,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { Box, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
+import * as i18n from '@/languages';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
@@ -53,22 +54,22 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
   const actionButtonLabel = useMemo(() => {
     switch (actionButtonType) {
       case PositionAction.CLAIM:
-        return 'Hold to Claim';
+        return i18n.t(i18n.l.predictions.manage_position.hold_to_claim);
       case PositionAction.BURN:
-        return 'Hold to Burn';
+        return i18n.t(i18n.l.predictions.manage_position.hold_to_burn);
       case PositionAction.CASH_OUT:
-        return 'Hold to Cash Out';
+        return i18n.t(i18n.l.predictions.manage_position.hold_to_cash_out);
     }
   }, [actionButtonType]);
 
   const actionButtonLoadingLabel = useMemo(() => {
     switch (actionButtonType) {
       case PositionAction.CLAIM:
-        return 'Claiming...';
+        return i18n.t(i18n.l.predictions.manage_position.claiming);
       case PositionAction.BURN:
-        return 'Burning...';
+        return i18n.t(i18n.l.predictions.manage_position.burning);
       case PositionAction.CASH_OUT:
-        return 'Cashing Out...';
+        return i18n.t(i18n.l.predictions.manage_position.cashing_out);
     }
   }, [actionButtonType]);
 
@@ -115,7 +116,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
       const error = ensureError(e);
       logger.error(new RainbowError('[PolymarketManagePositionSheet] Error selling position', error));
       setIsProcessing(false);
-      Alert.alert('Error', 'Failed to cash out position. Please try again.');
+      Alert.alert(i18n.t(i18n.l.predictions.errors.title), i18n.t(i18n.l.predictions.errors.failed_to_cash_out));
 
       analytics.track(analytics.event.predictionsPlaceOrderFailed, {
         eventSlug: position.eventSlug,
@@ -136,7 +137,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
     } catch (e) {
       logger.error(new RainbowError('[PolymarketManagePositionSheet] Error claiming position', e));
       setIsProcessing(false);
-      Alert.alert('Error', 'Failed to claim position. Please try again.');
+      Alert.alert(i18n.t(i18n.l.predictions.errors.title), i18n.t(i18n.l.predictions.errors.failed_to_claim));
     }
   }, [position]);
 
@@ -172,7 +173,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
       <Box paddingHorizontal="24px" paddingBottom={'24px'}>
         <Box alignItems="center" gap={18} paddingTop={{ custom: 71 }} paddingBottom={{ custom: 78 }}>
           <Text size="20pt" weight="heavy" color="labelTertiary">
-            {'Position Value'}
+            {i18n.t(i18n.l.predictions.manage_position.position_value)}
           </Text>
           <Text size="44pt" weight="heavy" color="label">
             {formatCurrency(livePositionValue)}

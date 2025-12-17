@@ -1,4 +1,5 @@
 import { Box, Text } from '@/design-system';
+import * as i18n from '@/languages';
 import { memo, useState } from 'react';
 import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
@@ -29,7 +30,7 @@ export const ResolvedMarketsSection = memo(function ResolvedMarketsSection({
         >
           <Box flexDirection="row" alignItems="center" gap={12}>
             <Text size="17pt" weight="heavy" color="label">
-              {showResolved ? 'Hide Resolved' : 'Show Resolved'}
+              {showResolved ? i18n.t(i18n.l.predictions.event.hide_resolved) : i18n.t(i18n.l.predictions.event.show_resolved)}
             </Text>
             <Text size="17pt" weight="heavy" color="labelTertiary">
               {markets.length}

@@ -1,6 +1,7 @@
 import { Box, Separator, Text, TextIcon } from '@/design-system';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
+import * as i18n from '@/languages';
 import { memo } from 'react';
 
 export const OpenPositionsSection = memo(function OpenPositionsSection({ eventId }: { eventId: string }) {
@@ -18,7 +19,7 @@ export const OpenPositionsSection = memo(function OpenPositionsSection({ eventId
             </TextIcon>
           </Box>
           <Text size="20pt" weight="heavy" color="label">
-            {'Open Positions'}
+            {i18n.t(i18n.l.predictions.event.open_positions)}
           </Text>
         </Box>
         <Box gap={12}>

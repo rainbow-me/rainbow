@@ -6,6 +6,7 @@ import { StyleSheet } from 'react-native';
 import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import ImgixImage from '@/components/images/ImgixImage';
 import { formatNumber } from '@/helpers/strings';
+import * as i18n from '@/languages';
 // import { getSolidColorEquivalent } from '@/worklets/colors';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 
@@ -84,7 +85,7 @@ export const ResolvedMarketRow = memo(function ResolvedMarketRow({
               {isWinningOutcome ? '􀆅' : '􀆄'}
             </Text>
             <Text size="15pt" weight="heavy" color="white">
-              {isWinningOutcome ? 'YES' : 'NO'}
+              {isWinningOutcome ? i18n.t(i18n.l.predictions.outcomes.yes_badge) : i18n.t(i18n.l.predictions.outcomes.no_badge)}
             </Text>
           </Box>
         </Box>

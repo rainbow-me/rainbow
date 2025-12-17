@@ -65,7 +65,7 @@ export const PolymarketOpenPositionsSection = function PolymarketOpenPositionsSe
               </Text>
             </TextShadow>
             <Text align="center" size="20pt" weight="heavy" color="labelSecondary">
-              {'No open positions'}
+              {i18n.t(i18n.l.predictions.position.no_open_positions)}
             </Text>
             {/* TODO: Enable once learn more sheet is done */}
             <ButtonPressAnimation
@@ -75,7 +75,7 @@ export const PolymarketOpenPositionsSection = function PolymarketOpenPositionsSe
             >
               <Box flexDirection="row" alignItems="center" gap={4}>
                 <Text align="center" size="15pt" weight="bold" color={'labelTertiary'}>
-                  {'Learn more about Predictions'}
+                  {i18n.t(i18n.l.predictions.position.learn_more)}
                 </Text>
                 <Text align="center" size="icon 11px" weight="heavy" color={'labelQuaternary'} style={{ top: StyleSheet.hairlineWidth }}>
                   {'􀆊'}

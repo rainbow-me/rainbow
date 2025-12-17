@@ -6,6 +6,7 @@ import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations'
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
 import { globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
+import * as i18n from '@/languages';
 // import {
 //   polymarketRecommendationsActions,
 //   usePolymarketRecommendationsStore,
@@ -50,7 +51,7 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
     const activeMarkets = event.markets.filter(m => m.active && !m.closed).slice(0, 2);
 
     if (activeMarkets.length === 0) {
-      return [{ odds: '', title: 'Yes' }];
+      return [{ odds: '', title: i18n.t(i18n.l.predictions.outcomes.yes) }];
     }
 
     return activeMarkets.map(market => ({
