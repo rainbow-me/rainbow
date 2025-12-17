@@ -35,10 +35,6 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   showEventTitle?: boolean;
 }) {
   const { isDarkMode } = useColorMode();
-  const green = useForegroundColor('green');
-  const red = useForegroundColor('red');
-  const wonGreen = isDarkMode ? '#1F9E39' : green;
-  const lostRed = isDarkMode ? '#D53F35' : red;
   const accentColor = getPositionAccentColor(position);
   const accentColors = useMemo(() => {
     return createOpacityPalette(accentColor, [0, 4, 6, 12, 14, 20, 24, 70, 100]);
@@ -120,7 +116,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
       />
-      <Box padding={'16px'}>
+      <Box padding={'12px'}>
         <Box gap={14}>
           {showEventTitle && (
             <GradientBorderView
@@ -150,94 +146,96 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
               </Box>
             </GradientBorderView>
           )}
-          <Box gap={12}>
-            <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-              <Box flexDirection="row" gap={4}>
-                <Text size="15pt" weight="semibold" color="labelQuaternary">
-                  {'Outcome'}
-                </Text>
+          <Box paddingHorizontal={'4px'} gap={12}>
+            <Box gap={12}>
+              <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+                <Box flexDirection="row" gap={4}>
+                  <Text size="15pt" weight="semibold" color="labelQuaternary">
+                    {'Outcome'}
+                  </Text>
+                </Box>
+                {redeemable ? (
+                  <Bleed bottom="16px">
+                    <WinOrLossBadge position={position} height={26} borderWidth={isDarkMode ? 2 : 2 / 3} />
+                  </Bleed>
+                ) : (
+                  <Text size="17pt" weight="bold" color="label">
+                    {formatCurrency(livePositionValue)}
+                  </Text>
+                )}
               </Box>
-              {redeemable ? (
-                <Bleed bottom="16px">
-                  <WinOrLossBadge position={position} height={26} borderWidth={isDarkMode ? 2 : 2 / 3} />
-                </Bleed>
-              ) : (
-                <Text size="17pt" weight="bold" color="label">
-                  {formatCurrency(livePositionValue)}
-                </Text>
-              )}
+              <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={6} style={styles.flex}>
+                <Box flexDirection="row" alignItems="center" gap={6} flexShrink={1}>
+                  {position.marketHasUniqueImage && (
+                    <Bleed vertical="4px">
+                      <ImgixImage
+                        enableFasterImage
+                        resizeMode="cover"
+                        size={16}
+                        source={{ uri: position.icon }}
+                        style={{ height: 16, width: 16, borderRadius: 4 }}
+                      />
+                    </Bleed>
+                  )}
+                  {redeemable && (
+                    <Bleed vertical="4px">
+                      <CheckOrXBadge position={position} size={16} fontSize="icon 8px" />
+                    </Bleed>
+                  )}
+                  <Text size="17pt" weight="bold" color="label" numberOfLines={1} style={styles.flexShrink}>
+                    {outcomeTitle}
+                  </Text>
+                  {position.market.groupItemTitle && (
+                    <Bleed vertical="4px">
+                      <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />
+                    </Bleed>
+                  )}
+                </Box>
+                {!redeemable && (
+                  <Text
+                    size="15pt"
+                    weight="bold"
+                    color={position.cashPnl > 0 ? 'green' : 'red'}
+                    align="right"
+                    numberOfLines={1}
+                    style={styles.flexShrink0}
+                  >
+                    {formatCurrency(livePnl)}
+                  </Text>
+                )}
+              </Box>
             </Box>
-            <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={6} style={styles.flex}>
-              <Box flexDirection="row" alignItems="center" gap={6} flexShrink={1}>
-                {position.marketHasUniqueImage && (
-                  <Bleed vertical="4px">
-                    <ImgixImage
-                      enableFasterImage
-                      resizeMode="cover"
-                      size={16}
-                      source={{ uri: position.icon }}
-                      style={{ height: 16, width: 16, borderRadius: 4 }}
-                    />
-                  </Bleed>
-                )}
-                {redeemable && (
-                  <Bleed vertical="4px">
-                    <CheckOrXBadge position={position} size={16} fontSize="icon 8px" />
-                  </Bleed>
-                )}
-                <Text size="17pt" weight="bold" color="label" numberOfLines={1} style={styles.flexShrink}>
-                  {outcomeTitle}
+            <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
+            <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+              <Box flexDirection="row" alignItems="center" gap={3}>
+                <Text size="15pt" weight="bold" color="labelQuaternary">
+                  {'Odds'}
                 </Text>
-                {position.market.groupItemTitle && (
-                  <Bleed vertical="4px">
-                    <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />
-                  </Bleed>
-                )}
-              </Box>
-              {!redeemable && (
-                <Text
+                <LiveTokenText
                   size="15pt"
                   weight="bold"
-                  color={position.cashPnl > 0 ? 'green' : 'red'}
-                  align="right"
-                  numberOfLines={1}
-                  style={styles.flexShrink0}
-                >
-                  {formatCurrency(livePnl)}
+                  color="labelSecondary"
+                  tokenId={getPolymarketTokenId(outcomeTokenId, 'sell')}
+                  selector={token => `${toPercentageWorklet(token.price)}%`}
+                  initialValue={`${toPercentageWorklet(position.curPrice)}%`}
+                />
+              </Box>
+              <Box flexDirection="row" alignItems="center" gap={3}>
+                <Text size="15pt" weight="bold" color="labelQuaternary">
+                  {'Bet'}
                 </Text>
-              )}
-            </Box>
-          </Box>
-          <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
-          <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-            <Box flexDirection="row" alignItems="center" gap={3}>
-              <Text size="15pt" weight="bold" color="labelQuaternary">
-                {'Odds'}
-              </Text>
-              <LiveTokenText
-                size="15pt"
-                weight="bold"
-                color="labelSecondary"
-                tokenId={getPolymarketTokenId(outcomeTokenId, 'sell')}
-                selector={token => `${toPercentageWorklet(token.price)}%`}
-                initialValue={`${toPercentageWorklet(position.curPrice)}%`}
-              />
-            </Box>
-            <Box flexDirection="row" alignItems="center" gap={3}>
-              <Text size="15pt" weight="bold" color="labelQuaternary">
-                {'Bet'}
-              </Text>
-              <Text size="15pt" weight="bold" color="labelSecondary">
-                {formatNumber(position.initialValue, { useOrderSuffix: true, decimals: 2, style: '$' })}
-              </Text>
-            </Box>
-            <Box flexDirection="row" alignItems="center" gap={3}>
-              <Text size="15pt" weight="bold" color="labelQuaternary">
-                {isWin ? 'Won' : 'To Win'}
-              </Text>
-              <Text size="15pt" weight="bold" color="labelSecondary">
-                {formatNumber(position.size, { useOrderSuffix: true, decimals: 2, style: '$' })}
-              </Text>
+                <Text size="15pt" weight="bold" color="labelSecondary">
+                  {formatNumber(position.initialValue, { useOrderSuffix: true, decimals: 2, style: '$' })}
+                </Text>
+              </Box>
+              <Box flexDirection="row" alignItems="center" gap={3}>
+                <Text size="15pt" weight="bold" color="labelQuaternary">
+                  {isWin ? 'Won' : 'To Win'}
+                </Text>
+                <Text size="15pt" weight="bold" color="labelSecondary">
+                  {formatNumber(position.size, { useOrderSuffix: true, decimals: 2, style: '$' })}
+                </Text>
+              </Box>
             </Box>
           </Box>
           {showActionButton && (

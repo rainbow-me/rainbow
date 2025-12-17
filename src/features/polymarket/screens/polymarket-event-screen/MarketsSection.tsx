@@ -85,13 +85,15 @@ const SKELTON_COUNT = 3;
 
 const MarketRowLoadingSkeleton = memo(function MarketRowLoadingSkeleton() {
   const { isDarkMode } = useColorMode();
+  const fillSecondary = useBackgroundColor('fillSecondary');
   const fillQuaternary = useBackgroundColor('fillQuaternary');
-  const shimmerColor = opacityWorklet(fillQuaternary, isDarkMode ? 0.025 : 0.06);
+  const fillColor = isDarkMode ? fillQuaternary : fillSecondary;
+  const shimmerColor = opacityWorklet(fillColor, isDarkMode ? 0.025 : 0.06);
 
   return (
     <Box gap={8}>
       {Array.from({ length: SKELTON_COUNT }).map((_, index) => (
-        <Box key={index} backgroundColor={fillQuaternary} height={66} width={'full'} borderRadius={26} style={{ overflow: 'hidden' }}>
+        <Box key={index} backgroundColor={fillSecondary} height={66} width={'full'} borderRadius={26} style={{ overflow: 'hidden' }}>
           <ShimmerAnimation color={shimmerColor} gradientColor={shimmerColor} />
         </Box>
       ))}

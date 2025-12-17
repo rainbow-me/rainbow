@@ -61,7 +61,7 @@ export const ResolvedMarketRow = memo(function ResolvedMarketRow({
             </Text>
           </Box>
           {volume && (
-            <Text size="15pt" weight="bold" color="labelSecondary">
+            <Text size="15pt" weight="bold" color="labelSecondary" style={{ opacity: 0.7 }}>
               {formatNumber(volume, { useOrderSuffix: true, decimals: 1, style: '$' })}
             </Text>
           )}

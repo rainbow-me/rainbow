@@ -14,7 +14,7 @@ import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
 export const PolymarketPositionRow = memo(function PolymarketPositionRow({ position }: { position: PolymarketPosition }) {
   const { isDarkMode } = useColorMode();
@@ -34,23 +34,31 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
     >
       <Box paddingHorizontal="20px">
         <GradientBorderView
-          borderGradientColors={[opacityWorklet(accentColor, 0.06), opacityWorklet(accentColor, 0)]}
+          borderGradientColors={
+            isDarkMode
+              ? [opacityWorklet(accentColor, 0.06), opacityWorklet(accentColor, 0)]
+              : [opacityWorklet('#F0F2F5', 0.8), opacityWorklet('#F0F2F5', 0)]
+          }
+          borderWidth={THICKER_BORDER_WIDTH}
+          locations={[0, 0.94]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           borderRadius={24}
-          style={{ overflow: 'hidden' }}
         >
-          <Box height={66} paddingLeft={'16px'} justifyContent="center">
+          <Box height={66} paddingLeft={{ custom: 14 }} justifyContent="center">
             <LinearGradient
-              colors={[opacityWorklet(accentColor, 0.14), opacityWorklet(accentColor, 0)]}
+              colors={
+                isDarkMode
+                  ? [opacityWorklet(accentColor, 0.14), opacityWorklet(accentColor, 0)]
+                  : [opacityWorklet('#F0F2F5', 0.6), opacityWorklet('#F0F2F5', 0)]
+              }
               style={StyleSheet.absoluteFill}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               locations={[0, 0.94]}
-              pointerEvents="none"
             />
             <Box flexDirection="row" alignItems="center">
-              <Box flexDirection="row" alignItems="center" gap={8} style={styles.flex}>
+              <Box flexDirection="row" alignItems="center" gap={12} style={styles.flex}>
                 <ImgixImage
                   resizeMode="cover"
                   size={28}
@@ -60,11 +68,19 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
                 <Box gap={12} style={styles.flex}>
                   <Box flexDirection="row" alignItems="center" gap={6}>
                     <Box flexDirection="row" alignItems="center" gap={4} style={styles.flex}>
-                      {position.redeemable && <CheckOrXBadge position={position} size={16} fontSize="icon 8px" />}
+                      {position.redeemable && (
+                        <Bleed vertical={'4px'}>
+                          <CheckOrXBadge position={position} size={16} fontSize="icon 8px" />
+                        </Bleed>
+                      )}
                       <Text color="label" size="15pt" weight="bold" numberOfLines={1} style={styles.flexShrink}>
                         {outcomeTitle}
                       </Text>
-                      {position.market.groupItemTitle && <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />}
+                      {position.market.groupItemTitle && (
+                        <Bleed vertical={'4px'}>
+                          <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />
+                        </Bleed>
+                      )}
                     </Box>
                     {position.redeemable && (
                       <Bleed vertical={'4px'}>

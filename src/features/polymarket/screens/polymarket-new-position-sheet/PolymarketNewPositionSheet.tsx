@@ -83,10 +83,14 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     <PanelSheet innerBorderWidth={1} enableKeyboardAvoidance>
       <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }]}>
         <LinearGradient
-          colors={[opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)]}
+          colors={
+            isDarkMode
+              ? [opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)]
+              : [opacityWorklet(accentColor, 0), opacityWorklet(accentColor, 0.06)]
+          }
           style={StyleSheet.absoluteFill}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
+          start={isDarkMode ? { x: 0, y: 0 } : { x: 0, y: 0.12 }}
+          end={isDarkMode ? { x: 0, y: 1 } : { x: 0, y: 0.82 }}
           pointerEvents="none"
         />
       </View>
@@ -99,10 +103,10 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
           <Box gap={12}>
             <Box
               padding={'20px'}
-              backgroundColor={opacityWorklet(accentColor, 0.08)}
+              backgroundColor={isDarkMode ? opacityWorklet(accentColor, 0.08) : opacityWorklet(globalColors.white100, 0.9)}
               borderRadius={26}
               borderColor={{ custom: opacityWorklet(accentColor, 0.03) }}
-              borderWidth={2.5}
+              borderWidth={isDarkMode ? 2.5 : 0}
             >
               <Box flexDirection="row" alignItems="flex-start" gap={12}>
                 <ImgixImage
@@ -126,7 +130,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
             <AmountInputCard
               availableBalance={availableBalance}
               accentColor={accentColor}
-              backgroundColor={opacityWorklet(accentColor, 0.08)}
+              backgroundColor={isDarkMode ? opacityWorklet(accentColor, 0.08) : opacityWorklet(globalColors.white100, 0.9)}
               onAmountChange={setBuyAmount}
               title="Amount"
               validation={validation}
@@ -208,7 +212,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
                 borderColor={{ custom: opacityWorklet('#FFFFFF', 0.08) }}
                 borderWidth={2}
               >
-                <Text color="label" size="20pt" weight="black">
+                <Text color="white" size="20pt" weight="black">
                   {'Deposit Funds'}
                 </Text>
               </Box>

@@ -1,5 +1,5 @@
 import { StyleSheet, View } from 'react-native';
-import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
+import { Box, Text, TextShadow, useColorMode } from '@/design-system';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { memo, useMemo } from 'react';
