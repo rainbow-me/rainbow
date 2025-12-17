@@ -137,7 +137,7 @@ export const CATEGORIES = {
       light: '#438DFB',
     },
   },
-  culture: {
+  ['pop-culture']: {
     label: 'Culture',
     icon: '􀫔',
     tagId: 'pop-culture',
