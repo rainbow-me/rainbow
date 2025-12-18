@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, TextInput, View, NativeSyntheticEvent, TextInputChangeEventData } from 'react-native';
-import { Box, Text, useColorMode } from '@/design-system';
+import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { PolymarketNavigation } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
 import Routes from '@/navigation/routesNames';
@@ -115,7 +115,7 @@ export const PolymarketSearchFooter = memo(function PolymarketSearchFooter() {
           returnKeyType="search"
           spellCheck={false}
           selectionColor={textAccentColor}
-          style={[styles.input, { color: textAccentColor }]}
+          style={[styles.input, { color: isDarkMode ? globalColors.white100 : globalColors.grey100 }]}
           textAlign="left"
           textAlignVertical="center"
         />

@@ -1,4 +1,4 @@
-import { Box, Separator, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { Box, globalColors, Separator, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import React, { memo, useMemo, useState } from 'react';
@@ -166,7 +166,7 @@ const LineBasedMarkets = memo(function LineBasedMarket({
       <Box gap={16}>
         {marketsGroup.lines.length > 1 && (
           <ItemSelector
-            accentColor={'#FFFFFF'}
+            accentColor={isDarkMode ? globalColors.white100 : globalColors.grey100}
             backgroundColor={backgroundColor}
             selectedValue={String(selectedLineValue)}
             onSelect={value => setSelectedLineValue(Number(value))}

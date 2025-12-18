@@ -38,6 +38,7 @@ const GRADIENT_CONFIGS = {
   },
 };
 const OPACITIES = deepFreeze([0, 14, 16, 24]);
+const LAST_TRADE_PRICE_THRESHOLDS = [0.05, 0.01];
 
 export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
   event,
@@ -49,30 +50,36 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
   const { isDarkMode } = useColorMode();
 
   const markets = useMemo(() => {
-    const activeMarkets = event.markets.filter(m => m.active && !m.closed).slice(0, 2);
+    const activeMarkets = event.markets.filter(m => m.active && !m.closed);
     const firstMarket = activeMarkets[0];
-    /**
-     * When the first market is a moneyline market the event represents a game
-     * For games, we show the two outcomes of this market as the first and second market (excluding three-way moneyline markets)
-     * i.e. "Eagles" vs. "Giants"
-     */
-    if (
+    const isGame =
       firstMarket &&
       firstMarket.sportsMarketType === POLYMARKET_SPORTS_MARKET_TYPE.MONEYLINE &&
       firstMarket.outcomes[0] !== 'Yes' &&
-      firstMarket.outcomes[1] !== 'No'
-    ) {
+      firstMarket.outcomes[1] !== 'No';
+    const isSingleMarketEvent = activeMarkets.length === 1;
+    /**
+     * When the first market is a moneyline market the event represents a game
+     * For games, we show the two outcomes of this market as the first and second market (excluding three-way moneyline markets)
+     * We also do this when an even has only one market with Yes / No outcomes
+     */
+    if (isGame || isSingleMarketEvent) {
       return [
         { odds: `${roundWorklet(toPercentageWorklet(firstMarket.outcomePrices?.[0] ?? 0))}%`, title: firstMarket.outcomes[0] },
         { odds: `${roundWorklet(toPercentageWorklet(firstMarket.outcomePrices?.[1] ?? 0))}%`, title: firstMarket.outcomes[1] },
       ];
     }
 
-    if (activeMarkets.length === 0) {
+    const marketsAboveThreshold = LAST_TRADE_PRICE_THRESHOLDS.map(threshold =>
+      activeMarkets.filter(m => (m.lastTradePrice ?? 0) >= threshold)
+    ).find(markets => markets.length >= 2);
+    const marketsToShow = (marketsAboveThreshold ?? activeMarkets).slice(0, 2);
+
+    if (marketsToShow.length === 0) {
       return [{ odds: '', title: i18n.t(i18n.l.predictions.outcomes.yes) }];
     }
 
-    return activeMarkets.map(market => ({
+    return marketsToShow.map(market => ({
       odds: `${roundWorklet(toPercentageWorklet(calculateOddsPrice(market)))}%`,
       title: market.groupItemTitle || market.outcomes[0],
     }));
