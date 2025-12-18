@@ -3747,6 +3747,7 @@
         "spread": "Spread",
         "hold_to_place_bet": "Hold to Place Bet",
         "placing_bet": "Placing Bet...",
+        "confirming_order": "Confirming Order...",
         "deposit_funds": "Deposit Funds"
       },
       "manage_position": {
@@ -3756,6 +3757,7 @@
         "claiming": "Claiming...",
         "burning": "Burning...",
         "cashing_out": "Cashing Out...",
+        "confirming_order": "Confirming Order...",
         "position_value": "Position Value"
       },
       "search": {

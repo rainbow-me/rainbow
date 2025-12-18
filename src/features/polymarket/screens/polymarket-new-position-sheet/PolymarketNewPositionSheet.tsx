@@ -34,6 +34,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
 
   const hasBalance = usePolymarketAccountInfo(state => state.hasBalance);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [processingLabel, setProcessingLabel] = useState(i18n.t(i18n.l.predictions.new_position.placing_bet));
 
   const outcome = market.outcomes[outcomeIndex];
   const tokenId = market.clobTokenIds[outcomeIndex];
@@ -74,6 +75,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     const amountToBuy = subWorklet(buyAmount, fee);
     try {
       const orderResult = await marketBuyToken({ tokenId, amount: amountToBuy, price: worstPrice });
+      setProcessingLabel(i18n.t(i18n.l.predictions.new_position.confirming_order));
       const tokensBought = orderResult.takingAmount;
 
       analytics.track(analytics.event.predictionsPlaceOrder, {
@@ -227,7 +229,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
             <HoldToActivateButton
               onLongPress={handleMarketBuyPosition}
               label={i18n.t(i18n.l.predictions.new_position.hold_to_place_bet)}
-              processingLabel={i18n.t(i18n.l.predictions.new_position.placing_bet)}
+              processingLabel={processingLabel}
               isProcessing={isProcessing}
               showBiometryIcon={false}
               backgroundColor={buttonColor}

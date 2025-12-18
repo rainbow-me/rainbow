@@ -73,6 +73,8 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
     }
   }, [actionButtonType]);
 
+  const [processingLabel, setProcessingLabel] = useState(actionButtonLoadingLabel);
+
   const livePrice = useLiveTokenValue({
     tokenId: getPositionTokenId(position),
     initialValue: formatPrice(position.curPrice, position.market.orderPriceMinTickSize),
@@ -91,6 +93,8 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
     try {
       const price = await polymarketClobDataClient.calculateMarketPrice(position.asset, Side.SELL, position.size);
       const orderResult = await marketSellTotalPosition({ position, price });
+
+      setProcessingLabel(i18n.t(i18n.l.predictions.manage_position.confirming_order));
       const tokensSold = orderResult.makingAmount;
       const usdReceived = orderResult.takingAmount;
       const fee = mulWorklet(tokensSold, USD_FEE_PER_TOKEN);
@@ -115,7 +119,6 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
     } catch (e) {
       const error = ensureError(e);
       logger.error(new RainbowError('[PolymarketManagePositionSheet] Error selling position', error));
-      setIsProcessing(false);
       Alert.alert(i18n.t(i18n.l.predictions.errors.title), i18n.t(i18n.l.predictions.errors.failed_to_cash_out));
 
       analytics.track(analytics.event.predictionsPlaceOrderFailed, {
@@ -126,6 +129,8 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
         side: 'sell',
         errorMessage: error.message,
       });
+    } finally {
+      setIsProcessing(false);
     }
   }, [livePrice, position]);
 
@@ -191,12 +196,13 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
             borderWidth={2}
             disabledBackgroundColor={'gray'}
             label={actionButtonLabel}
-            processingLabel={actionButtonLoadingLabel}
+            processingLabel={processingLabel}
             isProcessing={isProcessing}
             onLongPress={onPressActionButton}
             showBiometryIcon={false}
             height={48}
             color={'white'}
+            progressColor={'white'}
           />
         </Box>
       </Box>

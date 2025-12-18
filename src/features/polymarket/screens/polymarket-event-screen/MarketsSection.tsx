@@ -88,7 +88,7 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
           </Box>
         )}
 
-        {(showAllMarkets || allResolved) && (
+        {(showAllMarkets || allResolved) && resolvedMarkets.length > 0 && (
           <>
             {!allResolved && (
               <Box paddingVertical={'20px'}>
