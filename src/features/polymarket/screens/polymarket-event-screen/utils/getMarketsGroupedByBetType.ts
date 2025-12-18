@@ -149,7 +149,6 @@ export function getMarketsGroupedByBetType(event: PolymarketEvent): GroupedSport
   };
 }
 
-
 function getSportsMarketTypeLabels(sportsMarketType: SportsMarketType) {
   return {
     label: SPORTS_MARKET_TYPE_LABELS[sportsMarketType]?.title ?? sportsMarketType,
@@ -188,7 +187,6 @@ function buildLineBasedGroups(map: Map<SportsMarketType, PolymarketMarket[]>, ev
       };
     });
 }
-
 
 function buildMoneylineGroups(map: Map<SportsMarketType, PolymarketMarket[]>): MoneylineGroup[] {
   return Array.from(map.entries())
