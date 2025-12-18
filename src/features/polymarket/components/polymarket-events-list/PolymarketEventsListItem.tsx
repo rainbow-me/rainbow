@@ -18,6 +18,7 @@ import { roundWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { createOpacityPalette } from '@/worklets/colors';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 
 export const HEIGHT = 224;
 
@@ -49,6 +50,23 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
 
   const markets = useMemo(() => {
     const activeMarkets = event.markets.filter(m => m.active && !m.closed).slice(0, 2);
+    const firstMarket = activeMarkets[0];
+    /**
+     * When the first market is a moneyline market the event represents a game
+     * For games, we show the two outcomes of this market as the first and second market (excluding three-way moneyline markets)
+     * i.e. "Eagles" vs. "Giants"
+     */
+    if (
+      firstMarket &&
+      firstMarket.sportsMarketType === POLYMARKET_SPORTS_MARKET_TYPE.MONEYLINE &&
+      firstMarket.outcomes[0] !== 'Yes' &&
+      firstMarket.outcomes[1] !== 'No'
+    ) {
+      return [
+        { odds: `${roundWorklet(toPercentageWorklet(firstMarket.outcomePrices?.[0] ?? 0))}%`, title: firstMarket.outcomes[0] },
+        { odds: `${roundWorklet(toPercentageWorklet(firstMarket.outcomePrices?.[1] ?? 0))}%`, title: firstMarket.outcomes[1] },
+      ];
+    }
 
     if (activeMarkets.length === 0) {
       return [{ odds: '', title: i18n.t(i18n.l.predictions.outcomes.yes) }];
@@ -85,14 +103,17 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
           start={GRADIENT_CONFIGS.card.start}
           style={styles.overflowHidden}
         >
-          {!isDarkMode && <View style={[StyleSheet.absoluteFill, styles.lightModeCardFill]} />}
-          <LinearGradient
-            colors={colors.cardGradient}
-            style={StyleSheet.absoluteFill}
-            start={GRADIENT_CONFIGS.card.start}
-            end={GRADIENT_CONFIGS.card.end}
-            pointerEvents="none"
-          />
+          {isDarkMode ? (
+            <LinearGradient
+              colors={colors.cardGradient}
+              style={StyleSheet.absoluteFill}
+              start={GRADIENT_CONFIGS.card.start}
+              end={GRADIENT_CONFIGS.card.end}
+              pointerEvents="none"
+            />
+          ) : (
+            <View style={styles.lightModeCardFill} />
+          )}
 
           <View style={styles.contentContainer}>
             <View style={styles.headerContainer}>
@@ -258,6 +279,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   lightModeCardFill: {
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: opacityWorklet(globalColors.white100, 0.89),
   },
 });
