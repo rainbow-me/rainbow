@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
@@ -60,16 +60,17 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
     }));
   }, [event]);
 
+  const eventColor = getColorValueForThemeWorklet(event.color, isDarkMode);
   const colors = useMemo(() => {
-    const palette = createOpacityPalette(event.color, OPACITIES);
+    const palette = createOpacityPalette(eventColor, OPACITIES);
     return {
       cardBorderGradient: isDarkMode ? [palette.opacity16, palette.opacity0] : [globalColors.white100, globalColors.white100],
       outcomePillBorderGradient: [palette.opacity16, palette.opacity0],
       cardGradient: isDarkMode ? [palette.opacity24, palette.opacity0] : [palette.opacity14, palette.opacity0],
-      outcomePillGradient: [event.color, palette.opacity0],
-      textColor: { custom: event.color },
+      outcomePillGradient: [eventColor, palette.opacity0],
+      textColor: { custom: eventColor },
     };
-  }, [event.color, isDarkMode]);
+  }, [eventColor, isDarkMode]);
 
   const iconSource = useMemo(() => ({ uri: event.icon ?? event.image }), [event.icon, event.image]);
 

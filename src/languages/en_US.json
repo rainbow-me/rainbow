@@ -3775,7 +3775,10 @@
         "show_resolved": "Show Resolved",
         "open_positions": "Open Positions",
         "market_resolved": "MARKET RESOLVED",
-        "volume_suffix": "VOL"
+        "volume_suffix": "VOL",
+        "show_less": "Show Less",
+        "show_more": "Show More",
+        "resolved": "Resolved"
       },
       "position": {
         "outcome": "Outcome",

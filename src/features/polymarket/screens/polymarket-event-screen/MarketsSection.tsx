@@ -1,16 +1,20 @@
-import { Box, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
+import { Bleed, Box, Separator, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { ShimmerAnimation } from '@/components/animations';
+import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { MarketRow } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
-import { ResolvedMarketsSection } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsSection';
 import { ResolvedMarketsList } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsList';
 import { SingleMarketEventOutcomes } from '@/features/polymarket/screens/polymarket-event-screen/components/SingleMarketEvent';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { getSolidColorEquivalent } from '@/worklets/colors';
+import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
+import useDimensions from '@/hooks/useDimensions';
+import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
 export const MarketsSection = memo(function MarketsSection({ event }: { event: PolymarketEvent | null }) {
   const markets = event?.markets;
@@ -47,37 +51,107 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
   markets: PolymarketMarket[];
   event: PolymarketMarketEvent | PolymarketEvent;
 }) {
+  const { width } = useDimensions();
+  const { isDarkMode } = useColorMode();
   const activeMarkets = markets.filter(market => !market.closed);
   const resolvedMarkets = markets.filter(market => market.closed);
+  const [showAllMarkets, setShowAllMarkets] = useState(markets.length <= 10);
   const showMarketImages = usePolymarketEventStore(state => state.getData()?.showMarketImages ?? false);
   const allResolved = activeMarkets.length === 0;
+  const visibleMarkets = showAllMarkets ? activeMarkets : activeMarkets.slice(0, 10);
+  const eventColor = getColorValueForThemeWorklet(event.color, isDarkMode);
+  const screenBackgroundColor = isDarkMode
+    ? getSolidColorEquivalent({ background: eventColor, foreground: '#000000', opacity: 0.92 })
+    : POLYMARKET_BACKGROUND_LIGHT;
 
   return (
     <>
-      {activeMarkets.length > 0 && (
-        <Box gap={8}>
-          {activeMarkets.map(market => (
-            <MarketRow
-              key={market.id}
-              accentColor={market.color}
-              priceChange={market.oneDayPriceChange}
-              image={showMarketImages ? market.icon : undefined}
-              title={market.groupItemTitle}
-              volume={market.volume}
-              tokenId={market.clobTokenIds[0]}
-              price={market.lastTradePrice ? String(market.lastTradePrice) : '0'}
-              minTickSize={market.orderPriceMinTickSize}
-              onPress={() => {
-                Navigation.handleAction(Routes.POLYMARKET_MARKET_SHEET, { market, event });
-              }}
-            />
-          ))}
-        </Box>
-      )}
-      {resolvedMarkets.length > 0 && allResolved && <ResolvedMarketsList markets={resolvedMarkets} showMarketImages={showMarketImages} />}
-      {resolvedMarkets.length > 0 && !allResolved && (
-        <ResolvedMarketsSection markets={resolvedMarkets} showMarketImages={showMarketImages} />
-      )}
+      <Box>
+        {activeMarkets.length > 0 && (
+          <Box gap={8}>
+            {visibleMarkets.map(market => (
+              <MarketRow
+                key={market.id}
+                accentColor={getColorValueForThemeWorklet(market.color, isDarkMode)}
+                priceChange={market.oneDayPriceChange}
+                image={showMarketImages ? market.icon : undefined}
+                title={market.groupItemTitle}
+                volume={market.volume}
+                tokenId={market.clobTokenIds[0]}
+                price={market.lastTradePrice ? String(market.lastTradePrice) : '0'}
+                minTickSize={market.orderPriceMinTickSize}
+                onPress={() => {
+                  Navigation.handleAction(Routes.POLYMARKET_MARKET_SHEET, { market, event });
+                }}
+              />
+            ))}
+          </Box>
+        )}
+
+        {(showAllMarkets || allResolved) && (
+          <>
+            {!allResolved && (
+              <Box paddingVertical={'20px'}>
+                <Separator color="separatorSecondary" direction="horizontal" thickness={1} />
+              </Box>
+            )}
+            <ResolvedMarketsList markets={resolvedMarkets} showMarketImages={showMarketImages} />
+          </>
+        )}
+        {!allResolved && markets.length > 10 && (
+          <>
+            <Box position="absolute" bottom={{ custom: 0 }} width="full">
+              <EasingGradient
+                startPosition="top"
+                endPosition="bottom"
+                startColor={screenBackgroundColor}
+                endColor={screenBackgroundColor}
+                startOpacity={0}
+                endOpacity={1}
+                style={{ height: 150, width, position: 'absolute', bottom: 0, left: 0, opacity: showAllMarkets ? 0 : 1 }}
+              />
+            </Box>
+            <ButtonPressAnimation onPress={() => setShowAllMarkets(prev => !prev)}>
+              <Bleed top={showAllMarkets ? { custom: -20 } : '10px'}>
+                <Box flexDirection="row" alignItems="center" justifyContent="center" gap={8}>
+                  <Box
+                    height={20}
+                    width={20}
+                    justifyContent="center"
+                    alignItems="center"
+                    backgroundColor={opacityWorklet('#F5F8FF', 0.09)}
+                    borderRadius={10}
+                    style={{ transform: [{ rotate: showAllMarkets ? '180deg' : '0deg' }] }}
+                  >
+                    <TextIcon size="icon 10px" weight="black" color="label">
+                      {'􀆈'}
+                    </TextIcon>
+                  </Box>
+                  <Text size="17pt" weight="bold" color="label">
+                    {showAllMarkets ? i18n.t(i18n.l.predictions.event.show_less) : i18n.t(i18n.l.predictions.event.show_more)}
+                  </Text>
+                  {resolvedMarkets.length > 0 && !showAllMarkets && (
+                    <Box
+                      backgroundColor={opacityWorklet('#F5F8FF', 0.06)}
+                      borderWidth={THICKER_BORDER_WIDTH}
+                      borderColor={{ custom: opacityWorklet('#F5F8FF', 0.03) }}
+                      height={22}
+                      paddingHorizontal={'8px'}
+                      borderRadius={11}
+                      justifyContent="center"
+                      alignItems="center"
+                    >
+                      <Text size="13pt" weight="bold" color="labelQuaternary">
+                        {`${resolvedMarkets.length} ${i18n.t(i18n.l.predictions.event.resolved)}`}
+                      </Text>
+                    </Box>
+                  )}
+                </Box>
+              </Bleed>
+            </ButtonPressAnimation>
+          </>
+        )}
+      </Box>
     </>
   );
 });

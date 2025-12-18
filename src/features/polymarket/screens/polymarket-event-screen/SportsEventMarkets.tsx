@@ -52,7 +52,7 @@ export const SportsEventMarkets = memo(function SportsEventMarkets() {
         <BetTypeSelector
           availableBetTypes={availableBetTypes}
           backgroundColor={backgroundColor}
-          color={'#FFFFFF'}
+          color={isDarkMode ? '#FFFFFF' : '#000000'}
           containerWidth={width - 2 * 24}
           onSelectBetType={setSelectedBetType}
           selectedBetType={selectedBetType}

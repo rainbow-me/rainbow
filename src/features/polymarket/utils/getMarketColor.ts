@@ -1,25 +1,21 @@
+import { getHighContrastColor, ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { PolymarketPosition } from '@/features/polymarket/types';
 import { RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
-import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import colors from '@/styles/colors';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 
 type MarketColors = {
-  color: string;
-  secondaryColor: string | undefined;
+  color: ResponseByTheme<string>;
+  secondaryColor: ResponseByTheme<string> | undefined;
 };
 
-export function getMarketColors(market: RawPolymarketMarket, eventColor: string): MarketColors {
-  // TODO: Imperatively getting this would mean this does not adjust when toggling modes, but a hook would be inconvenient
-  const isDarkMode = true;
-
+export function getMarketColors(market: RawPolymarketMarket, eventColor: ResponseByTheme<string>): MarketColors {
   if (market.seriesColor) {
-    // seriesColor can be either a single color or a primary/secondary color pair
     const [primary, secondary] = market.seriesColor.split(',');
     return {
-      color: getHighContrastColor(primary, isDarkMode),
-      secondaryColor: secondary ? getHighContrastColor(secondary, isDarkMode) : undefined,
+      color: getHighContrastColor(primary),
+      secondaryColor: secondary ? getHighContrastColor(secondary) : undefined,
     };
   }
 
@@ -31,8 +27,9 @@ export function getMarketColors(market: RawPolymarketMarket, eventColor: string)
   }
 
   const colorIndex = addressHashedColorIndex(market.id) ?? 0;
+  const baseColor = colors.avatarBackgrounds[colorIndex];
   return {
-    color: colors.avatarBackgrounds[colorIndex],
+    color: getHighContrastColor(baseColor),
     secondaryColor: undefined,
   };
 }
@@ -41,10 +38,10 @@ function isSingleMarketEvent(market: RawPolymarketMarket) {
   return market.negRisk === false && market.groupItemTitle === '';
 }
 
-export function getPositionAccentColor(position: PolymarketPosition): string {
+export function getPositionAccentColor(position: PolymarketPosition): ResponseByTheme<string> {
   if (position.teams) {
     const team = getOutcomeTeam(position.outcome, position.teams);
-    if (team?.color) return team.color;
+    if (team?.color) return getHighContrastColor(team.color);
   }
   return position.market.color;
 }

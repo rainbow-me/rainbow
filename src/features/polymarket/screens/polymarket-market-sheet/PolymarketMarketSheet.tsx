@@ -10,7 +10,7 @@ import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/feat
 import ImgixImage from '@/components/images/ImgixImage';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Navigation } from '@/navigation';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import LinearGradient from 'react-native-linear-gradient';
 import { PolymarketChart } from '@/features/charts/polymarket/components/PolymarketChart';
 import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
@@ -25,8 +25,8 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   const { isDarkMode } = useColorMode();
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
-  const accentColor = market.color;
-  const lineColors = useMemo(() => getChartLineColors([market]), [market]);
+  const accentColor = getColorValueForThemeWorklet(market.color, isDarkMode);
+  const lineColors = useMemo(() => getChartLineColors([market], isDarkMode), [market, isDarkMode]);
 
   return (
     <PanelSheet innerBorderWidth={THICKER_BORDER_WIDTH} panelStyle={{ backgroundColor: isDarkMode ? '#000000' : '#FFFFFF' }}>

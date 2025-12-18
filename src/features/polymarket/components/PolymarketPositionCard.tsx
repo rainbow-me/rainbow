@@ -1,12 +1,11 @@
 import { StyleSheet } from 'react-native';
-import { Bleed, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Bleed, Box, Separator, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { PolymarketPosition } from '@/features/polymarket/types';
 import { memo, useCallback, useMemo } from 'react';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import ImgixImage from '@/components/images/ImgixImage';
 import { mulWorklet, subWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
-import { SkiaBadge } from '@/components/SkiaBadge';
 import { ButtonPressAnimation } from '@/components/animations';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -25,6 +24,7 @@ import { getPositionTokenId } from '@/features/polymarket/utils/getPositionToken
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 
 export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   position,
@@ -36,7 +36,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   showEventTitle?: boolean;
 }) {
   const { isDarkMode } = useColorMode();
-  const accentColor = getPositionAccentColor(position);
+  const accentColor = getColorValueForThemeWorklet(getPositionAccentColor(position), isDarkMode);
   const accentColors = useMemo(() => {
     return createOpacityPalette(accentColor, [0, 4, 6, 12, 14, 20, 24, 70, 100]);
   }, [accentColor]);

@@ -13,7 +13,7 @@ import { Side } from '@polymarket/clob-client';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import LinearGradient from 'react-native-linear-gradient';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
@@ -40,7 +40,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
   const [isProcessing, setIsProcessing] = useState(false);
 
   const { isDarkMode } = useColorMode();
-  const accentColor = getPositionAccentColor(position);
+  const accentColor = getColorValueForThemeWorklet(getPositionAccentColor(position), isDarkMode);
   const red = useForegroundColor('red');
   const green = useForegroundColor('green');
   const buttonBackgroundColor = getSolidColorEquivalent({

@@ -1,3 +1,4 @@
+import { getHighContrastColor, ResponseByTheme } from '@/__swaps__/utils/swaps';
 import {
   PolymarketEvent,
   PolymarketMarket,
@@ -11,7 +12,7 @@ import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConv
 import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';
 import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
 
-export function processRawPolymarketMarket(market: RawPolymarketMarket, eventColor: string): PolymarketMarket {
+export function processRawPolymarketMarket(market: RawPolymarketMarket, eventColor: ResponseByTheme<string>): PolymarketMarket {
   return {
     ...market,
     clobTokenIds: market.clobTokenIds ? JSON.parse(market.clobTokenIds) : [],
@@ -30,7 +31,8 @@ export function processRawPolymarketMarket(market: RawPolymarketMarket, eventCol
 }
 
 export async function processRawPolymarketEvent(event: RawPolymarketEvent, teams?: PolymarketTeamInfo[]): Promise<PolymarketEvent> {
-  const color = await getImagePrimaryColor(event.icon);
+  const rawColor = await getImagePrimaryColor(event.icon);
+  const color = getHighContrastColor(rawColor);
   const sortedMarkets = sortMarkets(event.markets, event.sortBy);
   const processedMarkets = sortedMarkets.map(market => processRawPolymarketMarket(market, color));
   return {
@@ -48,7 +50,8 @@ export async function processRawPolymarketPosition(
 ): Promise<PolymarketPosition> {
   const event = market.events[0];
   const marketHasUniqueImage = market.icon !== event.icon;
-  const eventColor = await getImagePrimaryColor(event.icon);
+  const rawEventColor = await getImagePrimaryColor(event.icon);
+  const eventColor = getHighContrastColor(rawEventColor);
 
   return {
     ...position,
@@ -66,7 +69,8 @@ export async function processRawPolymarketPosition(
 }
 
 export async function processRawPolymarketOptimizedEvent(event: RawPolymarketOptimizedEvent): Promise<PolymarketOptimizedEvent> {
-  const color = await getImagePrimaryColor(event.image);
+  const rawColor = await getImagePrimaryColor(event.image);
+  const color = getHighContrastColor(rawColor);
   return {
     ...event,
     color,

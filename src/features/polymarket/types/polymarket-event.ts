@@ -1,3 +1,4 @@
+import { ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { PolymarketTeamInfo } from '@/features/polymarket/types';
 
@@ -224,8 +225,8 @@ export type PolymarketMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'outco
   outcomes: string[];
   outcomePrices: string[];
   events: PolymarketMarketEvent[];
-  color: string;
-  secondaryColor: string | undefined;
+  color: ResponseByTheme<string>;
+  secondaryColor: ResponseByTheme<string> | undefined;
 };
 
 type Collection = {
@@ -404,7 +405,7 @@ export type RawPolymarketEvent = {
 
 export type PolymarketEvent = Omit<RawPolymarketEvent, 'markets'> & {
   markets: PolymarketMarket[];
-  color: string;
+  color: ResponseByTheme<string>;
   teams?: PolymarketTeamInfo[];
 };
 
@@ -458,7 +459,7 @@ export type PolymarketMarketEvent = {
   deploying: boolean;
   deployingTimestamp: string;
   gameId?: number;
-  color: string;
+  color: ResponseByTheme<string>;
   ended?: boolean;
   live?: boolean;
   period?: string;
@@ -498,5 +499,5 @@ export type RawPolymarketOptimizedEvent = {
 };
 
 export type PolymarketOptimizedEvent = RawPolymarketOptimizedEvent & {
-  color: string;
+  color: ResponseByTheme<string>;
 };

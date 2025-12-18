@@ -26,6 +26,7 @@ import { GameBoxScore } from '@/features/polymarket/screens/polymarket-event-scr
 import { ResolvedEventHeader } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedEventHeader';
 import { formatTimestamp, toUnixTime } from '@/worklets/dates';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 
 export const EventHeaderSection = memo(function EventHeaderSection({ event }: { event: PolymarketMarketEvent | PolymarketEvent }) {
   const labelQuaternary = useForegroundColor('labelQuaternary');
@@ -101,12 +102,13 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
   const eventData = usePolymarketEventStore(state => state.getData());
   const event = eventData ?? initialEvent;
 
+  const eventColor = getColorValueForThemeWorklet(event.color, isDarkMode);
   const screenBackgroundColor = isDarkMode
-    ? getSolidColorEquivalent({ background: event.color, foreground: '#000000', opacity: 0.92 })
+    ? getSolidColorEquivalent({ background: eventColor, foreground: '#000000', opacity: 0.92 })
     : POLYMARKET_BACKGROUND_LIGHT;
 
   const isSportsEvent = event.gameId !== undefined;
-  const lineColors = useMemo(() => parseLineColors(event, isSportsEvent), [event, isSportsEvent]);
+  const lineColors = useMemo(() => parseLineColors(event, isSportsEvent, isDarkMode), [event, isSportsEvent, isDarkMode]);
   const isEventResolved = event.closed;
   const shouldShowChart = !isEventResolved;
 
@@ -136,9 +138,9 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
           {isEventResolved && <ResolvedEventHeader resolvedAt={event.closedTime} />}
           <EventHeaderSection event={event} />
           {isSportsEvent && <GameBoxScore event={event} />}
-          {shouldShowChart && (
+          {/* {shouldShowChart && (
             <ChartSection backgroundColor={screenBackgroundColor} isSportsEvent={isSportsEvent} lineColors={lineColors} />
-          )}
+          )} */}
           <OpenPositionsSection eventId={eventId} />
           {isSportsEvent ? <SportsEventMarkets /> : <MarketsSection event={eventData} />}
           <Separator color="separatorSecondary" direction="horizontal" thickness={1} />
@@ -169,9 +171,10 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
 
 function parseLineColors(
   event: PolymarketEvent | PolymarketMarketEvent,
-  isSportsEvent: boolean
+  isSportsEvent: boolean,
+  isDarkMode: boolean
 ): readonly [string, string, string, string, string] | undefined {
   if (isSportsEvent) return undefined;
   if (!('markets' in event)) return undefined;
-  return getChartLineColors(event.markets);
+  return getChartLineColors(event.markets, isDarkMode);
 }

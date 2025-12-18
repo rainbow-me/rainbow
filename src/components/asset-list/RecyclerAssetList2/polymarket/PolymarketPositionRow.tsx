@@ -8,7 +8,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import LinearGradient from 'react-native-linear-gradient';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
@@ -18,7 +18,7 @@ import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Sw
 
 export const PolymarketPositionRow = memo(function PolymarketPositionRow({ position }: { position: PolymarketPosition }) {
   const { isDarkMode } = useColorMode();
-  const accentColor = getPositionAccentColor(position);
+  const accentColor = getColorValueForThemeWorklet(getPositionAccentColor(position), isDarkMode);
   const isPositivePnl = position.cashPnl > 0;
   const pnlColor = isPositivePnl ? 'green' : 'red';
 
