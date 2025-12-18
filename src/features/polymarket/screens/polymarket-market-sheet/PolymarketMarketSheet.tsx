@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
-import { Bleed, Box, globalColors, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Bleed, Box, globalColors, Separator, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
 import { PANEL_WIDTH, PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
@@ -16,6 +16,7 @@ import { PolymarketChart } from '@/features/charts/polymarket/components/Polymar
 import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
 import { getChartLineColors } from '@/features/charts/polymarket/utils/getChartLineColors';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { roundWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
 
 export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   const {
@@ -79,12 +80,21 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
                   borderWidth={2.5}
                   borderColor={{ custom: opacityWorklet(buttonColor, 0.06) }}
                   paddingHorizontal="24px"
-                  justifyContent="center"
+                  justifyContent="space-between"
                   alignItems="center"
+                  flexDirection="row"
                 >
-                  <Text size="22pt" weight="heavy" color={{ custom: buttonColor }}>
-                    {i18n.t(i18n.l.predictions.market.buy_outcome, { outcome })}
-                  </Text>
+                  <TextShadow blur={40} shadowOpacity={0.6}>
+                    <Text size="22pt" weight="heavy" color={{ custom: buttonColor }}>
+                      {i18n.t(i18n.l.predictions.market.buy_outcome, { outcome })}
+                    </Text>
+                  </TextShadow>
+
+                  <TextShadow blur={40} shadowOpacity={0.6}>
+                    <Text size="22pt" weight="heavy" color={{ custom: buttonColor }}>
+                      {`${roundWorklet(toPercentageWorklet(market.outcomePrices[index] ?? 0))}%`}
+                    </Text>
+                  </TextShadow>
                 </Box>
               </ButtonPressAnimation>
             );
