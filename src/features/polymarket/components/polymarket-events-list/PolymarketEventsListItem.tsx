@@ -168,8 +168,11 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
 // };
 
 export const LoadingSkeleton = memo(function LoadingSkeleton() {
-  const skeletonColor = useBackgroundColor('fillQuaternary');
-  const shimmerColor = opacityWorklet(useBackgroundColor('fillSecondary'), 0.1);
+  const { isDarkMode } = useColorMode();
+  const fillQuaternary = useBackgroundColor('fillQuaternary');
+  const fillSecondary = useBackgroundColor('fillSecondary');
+  const shimmerColor = opacityWorklet(fillSecondary, 0.1);
+  const skeletonColor = isDarkMode ? fillQuaternary : fillSecondary;
 
   return (
     <View style={[styles.skeleton, { backgroundColor: skeletonColor }]}>
