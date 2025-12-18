@@ -22,7 +22,6 @@ type ListProps = Pick<ComponentProps<typeof FlatList>, 'onEndReached' | 'onEndRe
 type PolymarketEventsListBaseProps = {
   ListHeaderComponent?: ComponentType | ReactElement | null;
   events: PolymarketEvent[];
-  isLoading?: boolean;
   listRef?: React.RefObject<Animated.FlatList<PolymarketEvent> | null>;
   onEndReached?: () => void;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
@@ -31,7 +30,6 @@ type PolymarketEventsListBaseProps = {
 export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
   ListHeaderComponent,
   events,
-  isLoading,
   listRef,
   onEndReached,
   onEndReachedThreshold,
@@ -48,8 +46,6 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
       scrollIndicatorInsets: { bottom: paddingBottom },
     };
   }, [safeAreaInsets.bottom]);
-
-  if (isLoading) return <ListLoadingSkeleton />;
 
   return (
     <Animated.FlatList
@@ -119,8 +115,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: ITEM_GAP / 2,
-    marginTop: ITEM_GAP,
   },
   skeletonItemWrapper: {
     height: ITEM_HEIGHT,

@@ -38,7 +38,7 @@ const SearchResults = memo(function SearchResults() {
     );
   }
 
-  return <PolymarketEventsListBase events={events} isLoading={isLoading} onEndReached={polymarketEventSearchActions.fetchNextPage} />;
+  return <PolymarketEventsListBase events={events} onEndReached={polymarketEventSearchActions.fetchNextPage} />;
 });
 
 const styles = StyleSheet.create({
