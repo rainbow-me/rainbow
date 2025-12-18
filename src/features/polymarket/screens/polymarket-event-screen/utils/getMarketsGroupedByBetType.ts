@@ -1,16 +1,10 @@
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { PolymarketEvent, PolymarketMarket, SportsMarketType } from '@/features/polymarket/types/polymarket-event';
+import { BET_TYPE, getBetType, isThreeWayMoneyline } from '@/features/polymarket/utils/marketClassification';
 
-export const BET_TYPE = {
-  MONEYLINE: 'moneyline',
-  SPREADS: 'spreads',
-  TOTALS: 'totals',
-  OTHER: 'other',
-} as const;
+export { BET_TYPE, type BetType } from '@/features/polymarket/utils/marketClassification';
 
 const SUPPORTED_SPORTS_MARKET_TYPES = new Set(Object.values(POLYMARKET_SPORTS_MARKET_TYPE));
-
-export type BetType = (typeof BET_TYPE)[keyof typeof BET_TYPE];
 
 const SPORTS_MARKET_TYPE_LABELS: Partial<
   Record<
@@ -155,29 +149,6 @@ export function getMarketsGroupedByBetType(event: PolymarketEvent): GroupedSport
   };
 }
 
-function getBetType(sportsMarketType: SportsMarketType): BetType {
-  switch (sportsMarketType) {
-    case POLYMARKET_SPORTS_MARKET_TYPE.SPREADS:
-    case POLYMARKET_SPORTS_MARKET_TYPE.FIRST_HALF_SPREADS:
-      return BET_TYPE.SPREADS;
-
-    case POLYMARKET_SPORTS_MARKET_TYPE.TOTALS:
-    case POLYMARKET_SPORTS_MARKET_TYPE.FIRST_HALF_TOTALS:
-    case POLYMARKET_SPORTS_MARKET_TYPE.TENNIS_MATCH_TOTALS:
-    case POLYMARKET_SPORTS_MARKET_TYPE.TENNIS_SET_HANDICAP:
-    case POLYMARKET_SPORTS_MARKET_TYPE.TENNIS_SET_TOTALS:
-    case POLYMARKET_SPORTS_MARKET_TYPE.TENNIS_FIRST_SET_TOTALS:
-      return BET_TYPE.TOTALS;
-
-    case POLYMARKET_SPORTS_MARKET_TYPE.MONEYLINE:
-    case POLYMARKET_SPORTS_MARKET_TYPE.FIRST_HALF_MONEYLINE:
-    case POLYMARKET_SPORTS_MARKET_TYPE.TENNIS_FIRST_SET_WINNER:
-      return BET_TYPE.MONEYLINE;
-
-    default:
-      return BET_TYPE.OTHER;
-  }
-}
 
 function getSportsMarketTypeLabels(sportsMarketType: SportsMarketType) {
   return {
@@ -218,19 +189,6 @@ function buildLineBasedGroups(map: Map<SportsMarketType, PolymarketMarket[]>, ev
     });
 }
 
-// TODO: confirm this works when there are first half moneyline markets
-function isThreeWayMoneyline(markets: PolymarketMarket[]): boolean {
-  return (
-    markets.length === 3 &&
-    markets.every(
-      m =>
-        m.outcomes.length === 2 &&
-        m.outcomes[0] === 'Yes' &&
-        m.outcomes[1] === 'No' &&
-        m.sportsMarketType === POLYMARKET_SPORTS_MARKET_TYPE.MONEYLINE
-    )
-  );
-}
 
 function buildMoneylineGroups(map: Map<SportsMarketType, PolymarketMarket[]>): MoneylineGroup[] {
   return Array.from(map.entries())

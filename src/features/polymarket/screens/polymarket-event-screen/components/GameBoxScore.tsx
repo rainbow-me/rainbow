@@ -39,8 +39,8 @@ const UpcomingGameBoxScore = memo(function UpcomingGameBoxScore({ gameInfo }: { 
   const teamB = teams?.[1];
 
   return (
-    <Box height={125} flexDirection="row" alignItems="center" justifyContent="center" gap={22}>
-      <Box gap={12} alignItems="center" width={120} height={84}>
+    <Box flexDirection="row" alignItems="center" height={80} justifyContent="center" gap={22}>
+      <Box gap={12} alignItems="center" width={120}>
         {teamA?.logo && (
           <ImgixImage enableFasterImage size={32} source={{ uri: teamA.logo }} style={{ height: 32, width: 32, borderRadius: 8 }} />
         )}
@@ -51,7 +51,7 @@ const UpcomingGameBoxScore = memo(function UpcomingGameBoxScore({ gameInfo }: { 
       <Text size="13pt" weight="bold" color="labelQuaternary">
         {i18n.t(i18n.l.predictions.sports.vs)}
       </Text>
-      <Box gap={12} alignItems="center" width={120} height={84}>
+      <Box gap={12} alignItems="center" width={120}>
         {teamB?.logo && (
           <ImgixImage enableFasterImage size={32} source={{ uri: teamB.logo }} style={{ height: 32, width: 32, borderRadius: 8 }} />
         )}

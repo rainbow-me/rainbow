@@ -24,7 +24,7 @@ import { LineSmoothing } from '../../line/LineSmoothingAlgorithms';
 import { ActiveInteractionData, PolymarketChartConfig, PolymarketChartManager } from '../classes/PolymarketChartManager';
 import { usePolymarketChartStore, usePolymarketMarketChartStore } from '../stores/polymarketChartStore';
 import { usePolymarketStore } from '../stores/polymarketStore';
-import { EntranceAnimation, PolymarketChartData, SeriesPalette } from '../types';
+import { EntranceAnimation, PolymarketChartData, SERIES_PALETTES, SeriesPalette } from '../types';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 
 export type PartialPolymarketChartConfig = DeepPartial<
@@ -56,7 +56,6 @@ type PreparedChartConfig = {
   chartWidth: number;
   config: PolymarketChartConfig;
   initialPicture: SkPicture;
-  initialData: PolymarketChartData;
   initialStatus: ChartStatus;
 };
 
@@ -93,7 +92,7 @@ export const DEFAULT_POLYMARKET_CHART_CONFIG = deepFreeze({
     strokeWidth: 1,
   },
   line: {
-    colors: SeriesPalette.Default,
+    colors: SERIES_PALETTES[SeriesPalette.Default],
     overrideSeriesColors: false,
     strokeWidth: 3.25,
   },
@@ -131,7 +130,6 @@ export const PolymarketChart = memo(function PolymarketChart({
     chartHeight,
     chartWidth: preparedChartWidth,
     config,
-    initialData,
     initialPicture,
     initialStatus,
   } = useStableValue<PreparedChartConfig>(() =>
@@ -167,7 +165,7 @@ export const PolymarketChart = memo(function PolymarketChart({
 
   const chartManager = useWorkletClass(() => {
     'worklet';
-    const manager = new PolymarketChartManager({
+    return new PolymarketChartManager({
       activeInteraction,
       animationProgress,
       buildParagraph,
@@ -183,17 +181,6 @@ export const PolymarketChart = memo(function PolymarketChart({
       isDarkMode,
       smoothingMode,
     });
-    if (initialData) {
-      if (initialData.series.length > 0) {
-        manager.setSeriesData(initialData.series);
-        manager.setInterval(initialData.interval);
-        chartStatus.value = ChartStatus.Loaded;
-      } else {
-        manager.clearData();
-        chartStatus.value = ChartStatus.Empty;
-      }
-    }
-    return manager;
   }, true);
 
   const updateChart = useCallback(
@@ -207,8 +194,7 @@ export const PolymarketChart = memo(function PolymarketChart({
         }
 
         if (newData.series.length > 0) {
-          chartManager.value.setSeriesData(newData.series);
-          chartManager.value.setInterval(newData.interval);
+          chartManager.value.setSeriesData(newData.series, isDarkMode);
           chartStatus.value = ChartStatus.Loaded;
         } else {
           chartManager.value.clearData();
@@ -216,7 +202,7 @@ export const PolymarketChart = memo(function PolymarketChart({
         }
       })();
     },
-    [chartManager, chartStatus]
+    [chartManager, chartStatus, isDarkMode]
   );
 
   useListenerRouteGuard(
@@ -268,7 +254,6 @@ export const PolymarketChart = memo(function PolymarketChart({
   const isLoaded = useDerivedValue(() => chartStatus.value === ChartStatus.Loaded);
 
   const chartOpacity = useAnimatedStyle(() => {
-    // Full opacity when loaded, slight fade when empty, more fade when loading
     const targetOpacity = isLoaded.value ? 1 : isEmpty.value ? 0.5 : 0.2;
     return { opacity: withSpring(targetOpacity, SPRING_CONFIGS.snappyMediumSpringConfig) };
   });
@@ -351,7 +336,6 @@ function prepareChartConfig({
     chartHeight: height,
     chartWidth: width,
     config: mergedConfig,
-    initialData: cachedData ?? null,
     initialPicture: createBlankPicture(width, providedChartHeight),
     initialStatus: status,
   };

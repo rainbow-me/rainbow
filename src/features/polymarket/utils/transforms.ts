@@ -1,4 +1,4 @@
-import { getHighContrastColor, ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { ResponseByTheme } from '@/__swaps__/utils/swaps';
 import {
   PolymarketEvent,
   PolymarketMarket,
@@ -11,6 +11,7 @@ import { PolymarketPosition, PolymarketTeamInfo, RawPolymarketPosition } from '@
 import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
 import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';
 import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
+import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 
 export function processRawPolymarketMarket(market: RawPolymarketMarket, eventColor: ResponseByTheme<string>): PolymarketMarket {
   return {
@@ -32,7 +33,7 @@ export function processRawPolymarketMarket(market: RawPolymarketMarket, eventCol
 
 export async function processRawPolymarketEvent(event: RawPolymarketEvent, teams?: PolymarketTeamInfo[]): Promise<PolymarketEvent> {
   const rawColor = await getImagePrimaryColor(event.icon);
-  const color = getHighContrastColor(rawColor);
+  const color = { dark: getHighContrastColor(rawColor, true), light: getHighContrastColor(rawColor, false) };
   const sortedMarkets = sortMarkets(event.markets, event.sortBy);
   const processedMarkets = sortedMarkets.map(market => processRawPolymarketMarket(market, color));
   return {
@@ -51,7 +52,7 @@ export async function processRawPolymarketPosition(
   const event = market.events[0];
   const marketHasUniqueImage = market.icon !== event.icon;
   const rawEventColor = await getImagePrimaryColor(event.icon);
-  const eventColor = getHighContrastColor(rawEventColor);
+  const eventColor = { dark: getHighContrastColor(rawEventColor, true), light: getHighContrastColor(rawEventColor, false) };
 
   return {
     ...position,
@@ -70,7 +71,7 @@ export async function processRawPolymarketPosition(
 
 export async function processRawPolymarketOptimizedEvent(event: RawPolymarketOptimizedEvent): Promise<PolymarketOptimizedEvent> {
   const rawColor = await getImagePrimaryColor(event.image);
-  const color = getHighContrastColor(rawColor);
+  const color = { dark: getHighContrastColor(rawColor, true), light: getHighContrastColor(rawColor, false) };
   return {
     ...event,
     color,
