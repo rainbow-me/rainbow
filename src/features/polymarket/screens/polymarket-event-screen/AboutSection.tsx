@@ -1,5 +1,5 @@
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Box, globalColors, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
@@ -19,14 +19,15 @@ export const AboutSection = memo(function AboutSection({
   event: PolymarketEvent | PolymarketMarketEvent;
   screenBackgroundColor: string;
 }) {
+  const { isDarkMode } = useColorMode();
+  const eventColor = useMemo(() => getColorValueForThemeWorklet(event?.color, isDarkMode), [event?.color, isDarkMode]);
+
   return (
     <Box gap={24}>
       <Box flexDirection="row" alignItems="center" gap={10}>
-        <Box style={{ opacity: 0.4 }}>
-          <TextIcon size="icon 17px" weight="bold" color="label">
-            {'􀅴'}
-          </TextIcon>
-        </Box>
+        <TextIcon size="icon 17px" weight="bold" color={isDarkMode ? 'label' : { custom: eventColor }} opacity={isDarkMode ? 0.4 : 1}>
+          {'􀅴'}
+        </TextIcon>
         <Text size="20pt" weight="heavy" color="label">
           {i18n.t(i18n.l.predictions.event.about)}
         </Text>

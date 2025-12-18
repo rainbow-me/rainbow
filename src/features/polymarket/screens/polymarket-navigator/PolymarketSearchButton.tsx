@@ -16,7 +16,7 @@ export const PolymarketSearchButton = memo(function PolymarketSearchButton() {
     <ButtonPressAnimation onPress={() => PolymarketNavigation.navigate(Routes.POLYMARKET_SEARCH_SCREEN)}>
       <Box
         borderWidth={2}
-        borderColor={{ custom: opacityWorklet('#DC91F4', 0.06) }}
+        borderColor={{ custom: isDarkMode ? opacityWorklet('#DC91F4', 0.06) : globalColors.white100 }}
         justifyContent="center"
         alignItems="center"
         borderRadius={29}
@@ -24,22 +24,30 @@ export const PolymarketSearchButton = memo(function PolymarketSearchButton() {
         width={58}
       >
         <View style={StyleSheet.absoluteFill}>
-          <LinearGradient
-            colors={[
-              isDarkMode ? '#C863E8' : opacityWorklet('#C863E8', 0.6),
-              opacityWorklet(globalColors[isDarkMode ? 'grey100' : 'white100'], 0),
-            ]}
-            start={{ x: 0, y: isDarkMode ? 0.125 : 0.8 }}
-            end={{ x: 0, y: isDarkMode ? 0.8 : 0.125 }}
-            style={StyleSheet.absoluteFill}
-          />
+          {isDarkMode ? (
+            <LinearGradient
+              style={[StyleSheet.absoluteFill, { opacity: 0.07 }]}
+              colors={['#DC91F4', opacityWorklet('#DC91F4', 0.5)]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+            />
+          ) : (
+            <View style={styles.lightModeFill} />
+          )}
           <BlurView blurIntensity={24} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
-          <InnerShadow borderRadius={29} color={opacityWorklet('#C863E8', 0.2)} blur={5} dx={0} dy={1} />
+          <InnerShadow borderRadius={29} color={opacityWorklet('#DC91F4', 0.14)} blur={5} dx={0} dy={1} />
         </View>
-        <TextIcon size="icon 21px" weight="heavy" color={{ custom: '#C863E8' }}>
+        <TextIcon size="icon 21px" weight="heavy" color={{ custom: isDarkMode ? '#C863E8' : globalColors.grey100 }}>
           {'􀊫'}
         </TextIcon>
       </Box>
     </ButtonPressAnimation>
   );
+});
+
+const styles = StyleSheet.create({
+  lightModeFill: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+  },
 });

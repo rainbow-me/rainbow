@@ -46,12 +46,11 @@ export const ResolvedMarketRow = memo(function ResolvedMarketRow({
       style={styles.container}
     >
       <LinearGradient
-        colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)']}
+        colors={isDarkMode ? ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)'] : ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)']}
         locations={[0.06, 1]}
-        style={[StyleSheet.absoluteFillObject, { opacity: 0.1 }]}
+        style={[StyleSheet.absoluteFill, { opacity: isDarkMode ? 0.1 : 0.89 }]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
-        pointerEvents="none"
       />
       <Box height="full" flexDirection="row" alignItems="center" gap={12} paddingRight={{ custom: 15 }}>
         {image && <ImgixImage enableFasterImage resizeMode="cover" size={40} source={{ uri: image }} style={styles.image} />}

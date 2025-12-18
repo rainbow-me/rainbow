@@ -125,7 +125,6 @@ export const MarketRow = memo(function MarketRow({
                 style={StyleSheet.absoluteFill}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 0, y: 1 }}
-                pointerEvents="none"
               />
             ) : (
               <View style={StyleSheet.absoluteFill}>
