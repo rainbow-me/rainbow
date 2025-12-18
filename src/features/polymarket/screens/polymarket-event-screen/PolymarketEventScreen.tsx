@@ -102,7 +102,7 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
   const eventData = usePolymarketEventStore(state => state.getData());
   const event = eventData ?? initialEvent;
 
-  const eventColor = getColorValueForThemeWorklet(event.color, isDarkMode);
+  const eventColor = useMemo(() => getColorValueForThemeWorklet(event.color, isDarkMode), [event.color, isDarkMode]);
   const screenBackgroundColor = isDarkMode
     ? getSolidColorEquivalent({ background: eventColor, foreground: '#000000', opacity: 0.92 })
     : POLYMARKET_BACKGROUND_LIGHT;
@@ -141,7 +141,7 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
           {/* {shouldShowChart && (
             <ChartSection backgroundColor={screenBackgroundColor} isSportsEvent={isSportsEvent} lineColors={lineColors} />
           )} */}
-          <OpenPositionsSection eventId={eventId} />
+          <OpenPositionsSection eventId={eventId} eventColor={eventColor} />
           {isSportsEvent ? <SportsEventMarkets /> : <MarketsSection event={eventData} />}
           <Separator color="separatorSecondary" direction="horizontal" thickness={1} />
           <AboutSection event={event} screenBackgroundColor={screenBackgroundColor} />

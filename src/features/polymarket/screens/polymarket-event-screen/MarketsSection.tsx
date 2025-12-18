@@ -1,6 +1,6 @@
 import { Bleed, Box, Separator, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
-import { memo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
@@ -17,17 +17,17 @@ import useDimensions from '@/hooks/useDimensions';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
 export const MarketsSection = memo(function MarketsSection({ event }: { event: PolymarketEvent | null }) {
+  const { isDarkMode } = useColorMode();
   const markets = event?.markets;
   const isSingleMarketEvent = markets?.length === 1;
+  const eventColor = useMemo(() => getColorValueForThemeWorklet(event?.color, isDarkMode), [event?.color, isDarkMode]);
 
   return (
     <Box gap={20}>
       <Box flexDirection="row" alignItems="center" gap={10}>
-        <Box style={{ opacity: 0.4 }}>
-          <TextIcon size="icon 17px" weight="bold" color="label">
-            {'􀢊'}
-          </TextIcon>
-        </Box>
+        <TextIcon size="icon 17px" weight="bold" color={isDarkMode ? 'label' : { custom: eventColor }} opacity={isDarkMode ? 0.4 : 1}>
+          {'􀢊'}
+        </TextIcon>
         <Text size="20pt" weight="heavy" color="label">
           {i18n.t(i18n.l.predictions.event.outcomes)}
         </Text>
