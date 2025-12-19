@@ -160,7 +160,7 @@ export function useDepositHandler({
 
       if (config.onSubmit) {
         config.onSubmit(wallet).catch(error => {
-          logger.error(new RainbowError('[useDepositHandler]: onSubmit error'), { error });
+          logger.error(new RainbowError('[useDepositHandler]: onSubmit error', error));
         });
       }
 
@@ -187,8 +187,8 @@ export function useDepositHandler({
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error while processing deposit';
-      logger.error(new RainbowError(`[useDepositHandler]: ${message}`), {
-        data: { error, type: rapTypes.crosschainSwap },
+      logger.error(new RainbowError(`[useDepositHandler]: ${message}`, error), {
+        data: { type: rapTypes.crosschainSwap },
       });
     } finally {
       isSubmittingSharedValue.value = false;
