@@ -1,4 +1,5 @@
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
+import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils';
@@ -18,14 +19,17 @@ import {
   SERIES_COLORS,
 } from '../types';
 import { PolymarketStoreState, usePolymarketStore } from './polymarketStore';
+import { ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { isActiveMoneylineMarket, isThreeWayMoneyline } from '@/features/polymarket/utils/marketClassification';
+import { isDrawMarket } from '@/features/polymarket/screens/polymarket-event-screen/SportsEventMarkets';
 
 // ============ Constants ====================================================== //
 
 export const MAX_POLYMARKET_SERIES = 3;
 
 const EMPTY_SERIES: OutcomeSeries[] = [];
-const YES_COLOR = '#3ECF5B';
-const NO_COLOR = '#FF584D';
+const YES_COLOR: ResponseByTheme<string> = { light: '#3ECF5B', dark: '#3ECF5B' };
+const NO_COLOR: ResponseByTheme<string> = { light: '#FF584D', dark: '#FF584D' };
 
 // ============ Store ========================================================== //
 
@@ -85,7 +89,7 @@ async function fetchMarketFilterChart(
 // ============ Series Building ================================================ //
 
 type SeriesInputs = {
-  colors: string[] | null;
+  colors: ResponseByTheme<string>[] | null;
   labels: string[];
   markets: GammaMarket[] | null;
   tokenIds: string[];
@@ -107,7 +111,12 @@ async function buildChartData(
   return { interval, series };
 }
 
-function buildSeries(tokenIds: string[], labels: string[], histories: (PricePoint[] | null)[], colors: string[] | null): OutcomeSeries[] {
+function buildSeries(
+  tokenIds: string[],
+  labels: string[],
+  histories: (PricePoint[] | null)[],
+  colors: ResponseByTheme<string>[] | null
+): OutcomeSeries[] {
   const useYesNoColors = hasYesAndNo(labels);
   const series: OutcomeSeries[] = [];
 
@@ -133,27 +142,35 @@ function buildSeries(tokenIds: string[], labels: string[], histories: (PricePoin
 const EMPTY_INPUTS: SeriesInputs = Object.freeze({ colors: null, labels: [], markets: null, tokenIds: [] });
 
 async function extractSportsChartInputs(event: GammaEvent): Promise<SeriesInputs> {
-  const moneyline = event.markets.find(isActiveMoneylineMarket);
+  const moneylineMarkets = event.markets.filter(isActiveMoneylineMarket);
+  const moneyline = moneylineMarkets[0];
   if (!moneyline) return EMPTY_INPUTS;
 
   const eventData = await usePolymarketEventStore.getState().fetch({ eventId: event.id });
   const teams = eventData?.teams;
 
-  const colors = teams
-    ? moneyline.outcomes.map(outcome => {
-        const team = teams.find(t => t.alias === outcome);
-        return team?.color ? getHighContrastColor(team.color, true) : null;
-      })
-    : null;
+  let labels: string[];
+  let tokenIds: string[];
+  let markets: GammaMarket[];
 
-  const hasAllColors = colors?.every(c => c !== null);
+  if (isThreeWayMoneyline(moneylineMarkets)) {
+    const teamMarkets = moneylineMarkets.filter(m => !isDrawMarket(m)).slice(0, 2);
+    labels = teamMarkets.map(m => m.groupItemTitle ?? m.question);
+    tokenIds = teamMarkets.map(m => m.clobTokenIds[0]);
+    markets = teamMarkets;
+  } else {
+    labels = moneyline.outcomes;
+    tokenIds = moneyline.clobTokenIds;
+    markets = [moneyline];
+  }
 
-  return {
-    colors: hasAllColors ? colors : null,
-    labels: moneyline.outcomes,
-    markets: [moneyline],
-    tokenIds: moneyline.clobTokenIds,
-  };
+  const colors = labels.map((label, index) => {
+    const team = getOutcomeTeam(label, teams);
+    if (team?.color) return { dark: getHighContrastColor(team.color, true), light: getHighContrastColor(team.color, false) };
+    return index === 0 ? YES_COLOR : NO_COLOR;
+  });
+
+  return { colors, labels, markets, tokenIds };
 }
 
 async function extractTopMarketsInputs(event: GammaEvent): Promise<SeriesInputs> {
@@ -162,7 +179,7 @@ async function extractTopMarketsInputs(event: GammaEvent): Promise<SeriesInputs>
   const selected = selectTopMarketsForChart(markets, MAX_POLYMARKET_SERIES);
 
   return {
-    colors: eventData ? selected.map(m => ('color' in m ? m.color : null)).filter((c): c is string => c !== null) : null,
+    colors: eventData ? selected.map(m => ('color' in m ? m.color : null)).filter((c): c is ResponseByTheme<string> => c !== null) : null,
     labels: selected.map(getMarketLabel),
     markets: event.markets,
     tokenIds: selected.map(m => m.clobTokenIds[0]).filter(Boolean),
@@ -179,10 +196,6 @@ function collapseYesNoFilter(labels: string[], tokenIds: string[]): { labels: st
   const yesIndex = labels.findIndex(l => l?.toLowerCase() === 'yes');
   if (yesIndex < 0) return { labels, tokenIds };
   return { labels: [labels[yesIndex]], tokenIds: [tokenIds[yesIndex]] };
-}
-
-function isActiveMoneylineMarket(m: GammaMarket): boolean {
-  return m.active && !m.closed && m.clobTokenIds.length > 0 && m.sportsMarketType === 'moneyline';
 }
 
 // ============ Selectors ====================================================== //
@@ -227,7 +240,7 @@ function buildSeriesArrays(history: PricePoint[]): { prices: Float32Array; times
   return { prices, timestamps };
 }
 
-function getOutcomeColor(label: string, index: number, enableYesNoColors: boolean): string {
+function getOutcomeColor(label: string, index: number, enableYesNoColors: boolean): ResponseByTheme<string> {
   if (enableYesNoColors) {
     const normalized = label?.toLowerCase();
     if (normalized === 'yes') return YES_COLOR;

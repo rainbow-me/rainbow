@@ -27,7 +27,7 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
   const accentColor = getColorValueForThemeWorklet(market.color, isDarkMode);
-  const lineColors = useMemo(() => getChartLineColors([market], isDarkMode), [market, isDarkMode]);
+  const lineColors = useMemo(() => getChartLineColors([market]), [market]);
 
   return (
     <PanelSheet innerBorderWidth={THICKER_BORDER_WIDTH} panelStyle={{ backgroundColor: isDarkMode ? '#000000' : '#FFFFFF' }}>
@@ -51,8 +51,8 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
               />
               <Bleed horizontal="8px">
                 <PolymarketTimeframeSelector
-                  backgroundColor={isDarkMode ? '#000000' : '#FFFFFF'}
-                  color={lineColors?.[0] ?? globalColors.white100}
+                  backgroundColor={isDarkMode ? globalColors.grey100 : globalColors.white100}
+                  color={accentColor}
                 />
               </Bleed>
             </Box>

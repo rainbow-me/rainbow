@@ -89,10 +89,10 @@ export const usePolymarketEventSearchStore = createQueryStore<
     accumulatedResultsByQuery: {},
 
     setSearchQuery: (searchQuery: string) => {
-      const currentQuery = get().searchQuery;
-      if (currentQuery !== searchQuery) {
-        set({ searchQuery });
-      }
+      set(state => {
+        if (state.searchQuery === searchQuery) return state;
+        return { searchQuery };
+      });
     },
 
     async fetchNextPage() {
@@ -143,8 +143,8 @@ export const usePolymarketEventSearchStore = createQueryStore<
     getEvents: () => {
       const { searchQuery, accumulatedResultsByQuery } = get();
       const trimmedQuery = searchQuery.trim();
-      if (!trimmedQuery) return [];
-      return accumulatedResultsByQuery[trimmedQuery]?.events ?? [];
+      if (!trimmedQuery) return EMPTY_RESULT.events;
+      return accumulatedResultsByQuery[trimmedQuery]?.events ?? EMPTY_RESULT.events;
     },
 
     hasNextPage: () => {
@@ -181,6 +181,6 @@ async function fetchPolymarketEventSearch(
 
   return {
     ...response,
-    events: await Promise.all(response.events?.map(event => processRawPolymarketEvent(event)) ?? []),
+    events: await Promise.all(response.events?.map(event => processRawPolymarketEvent(event)) ?? EMPTY_RESULT.events),
   };
 }

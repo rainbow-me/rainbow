@@ -18,20 +18,22 @@ import { SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { TextSegment } from '@/design-system/components/SkiaText/useSkiaText';
+import { InteractionConfig, LineEffectsConfig } from '@/features/charts/line/LineSeries';
+import { ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { normalizeSpringConfig } from '@/worklets/animations';
 import { createBlankPicture } from '@/worklets/skia';
 import { Animator } from '../../candlestick/classes/Animator';
 import { TimeFormatter } from '../../candlestick/classes/TimeFormatter';
 import { LineSmoothing } from '../../line/LineSmoothingAlgorithms';
-import { InteractionConfig, LineEffectsConfig, LineSeriesBuilder, SeriesDataInput } from '../../line/LineSeriesBuilder';
+import { LineSeriesBuilder, SeriesDataInput } from '../../line/LineSeriesBuilder';
 import { DrawParams } from '../../line/types';
-import { EntranceAnimation, OutcomeSeries, PolymarketInterval, SERIES_COLORS, SERIES_PALETTES, SeriesPalette } from '../types';
+import { EntranceAnimation, OutcomeSeries, SERIES_COLORS, SERIES_PALETTES, SeriesPaletteColors } from '../types';
 
 // ============ Types ========================================================== //
 
 export type OutcomePrice = {
-  color: string;
+  color: ResponseByTheme<string>;
   label: string;
   price: number;
   tokenId: string;
@@ -89,7 +91,7 @@ export type PolymarketChartConfig = {
     strokeWidth: number;
   };
   line: {
-    colors?: SeriesPalette | readonly [string, string, string, string, string];
+    colors?: SeriesPaletteColors;
     overrideSeriesColors?: boolean;
     strokeWidth: number;
   };
@@ -118,10 +120,8 @@ export class PolymarketChartManager {
 
   private backgroundColor: SkColor;
   private buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
-  private interval: PolymarketInterval = '1d';
   private isDarkMode: boolean;
   private readonly smoothingMode: LineSmoothing | undefined;
-  private lastVisibleRange = { startIndex: -1, endIndex: -1 };
   private series: OutcomeSeries[] = [];
   private timeDomain: { endTs: number; startTs: number } | null = null;
   private readonly fallbackTimeDomain = { endTs: 1, startTs: 0 };
@@ -135,7 +135,7 @@ export class PolymarketChartManager {
 
   private interactionIndex: number | null = null;
   private interactionX: number | null = null;
-  private seriesMetadata: { color: string; label: string; tokenId: string }[] = [];
+  private seriesMetadata: { color: ResponseByTheme<string>; label: string; tokenId: string }[] = [];
 
   private readonly activeInteraction: SharedValue<ActiveInteractionData | undefined> | undefined;
   private readonly interactionProgress: SharedValue<number>;
@@ -460,7 +460,7 @@ export class PolymarketChartManager {
     return minPrice + (priceRange * (chartRegionHeight - y)) / chartRegionHeight;
   }
 
-  public setSeriesData(series: OutcomeSeries[]): void {
+  public setSeriesData(series: OutcomeSeries[], isDarkMode: boolean): void {
     const hadData = this.series.length > 0;
 
     const currentKeys = this.lineSeriesBuilder.getSeriesKeys();
@@ -497,7 +497,7 @@ export class PolymarketChartManager {
     }));
 
     this.seriesMetadata = seriesData.map(s => ({ color: s.color, label: s.label, tokenId: s.key }));
-    this.lineSeriesBuilder.setSeriesData(seriesData);
+    this.lineSeriesBuilder.setSeriesData(seriesData, isDarkMode);
     this.timeDomain = nextTimeDomain;
     const newBounds = this.getPriceBounds();
 
@@ -618,15 +618,10 @@ export class PolymarketChartManager {
     };
   }
 
-  public setInterval(interval: PolymarketInterval): void {
-    this.interval = interval;
-  }
-
   public clearData(): void {
     this.series = [];
     this.seriesMetadata = [];
     this.lineSeriesBuilder.clearSeries();
-    this.lastVisibleRange = { startIndex: -1, endIndex: -1 };
     this.timeDomain = null;
 
     this.isAnimating = false;
@@ -787,8 +782,6 @@ export class PolymarketChartManager {
     if (oldPicture !== this.blankPicture) {
       oldPicture.dispose();
     }
-
-    this.lastVisibleRange = { startIndex: bounds.startIndex, endIndex: bounds.endIndex };
   }
 
   private drawHorizontalGridLines(canvas: SkCanvas, lineCount: number, maxPrice: number, minPrice: number): void {
@@ -831,12 +824,10 @@ export class PolymarketChartManager {
 
       if (paragraph) {
         paragraph.layout(this.chartWidth);
-        // Center label on line
         paragraph.paint(canvas, labelX, y - halfLabel);
       }
     }
 
-    // Clean up shader
     this.paints.grid.setShader(null);
     gridShader.dispose();
   }
@@ -1005,12 +996,12 @@ export class PolymarketChartManager {
   public setColorMode(isDarkMode: boolean, backgroundColor: string): void {
     this.isDarkMode = isDarkMode;
     this.backgroundColor = Skia.Color(backgroundColor);
+
     const colorMode = isDarkMode ? 'dark' : 'light';
     this.colors.labelQuinary = Skia.Color(getColorForTheme('labelQuinary', colorMode));
     this.colors.labelSecondary = Skia.Color(getColorForTheme('labelSecondary', colorMode));
     this.colors.crosshairLine = Skia.Color(this.config.crosshair.lineColor);
 
-    // Update shadow paints with new background color
     this.paints.bottomShadow.setColor(this.backgroundColor);
     this.paints.bottomShadow.setAlphaf(0.48);
     this.paints.bottomShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 4, 5, 5, this.backgroundColor, null));
@@ -1019,14 +1010,12 @@ export class PolymarketChartManager {
     this.paints.topShadow.setAlphaf(0.48);
     this.paints.topShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, -4, 5, 5, this.backgroundColor, null));
 
-    // Update end circle shadow paint for light/dark mode
     const lightModeAlphaMultiplier = isDarkMode ? 1 : 0.5;
     if (this.paints.endCircleShadow && this.config.endCircle) {
       this.paints.endCircleShadow.setAlphaf(this.config.endCircle.shadow.alpha * lightModeAlphaMultiplier);
       this.paints.endCircleShadow.setColorFilter(isDarkMode ? Skia.ColorFilter.MakeBlend(this.colors.black, BlendMode.SrcIn) : null);
     }
 
-    // Update crosshair paint color and alpha
     this.paints.crosshairLine.setColor(this.colors.crosshairLine);
     this.paints.crosshairLine.setAlphaf(0.25);
 

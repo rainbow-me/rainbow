@@ -10,10 +10,10 @@ import {
   StrokeCap,
   StrokeJoin,
 } from '@shopify/react-native-skia';
-import { buildSmoothedPath, buildSmoothedPathAnimated, LineSmoothing } from './LineSmoothingAlgorithms';
+import { getColorValueForThemeWorklet, ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { LineSmoothing, buildSmoothedPath, buildSmoothedPathAnimated } from './LineSmoothingAlgorithms';
 import { DrawParams } from './types';
-
-export { LineSmoothing };
+import { ETH_COLOR, ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 
 export type LineEffectsConfig = {
   endCirclePaint?: SkPaint;
@@ -37,8 +37,9 @@ export type InteractionConfig = {
 };
 
 export type LineSeriesConfig = {
-  color: string;
+  color: ResponseByTheme<string>;
   highlighted?: boolean;
+  isDarkMode: boolean;
   key: string;
   label: string;
   lineWidth?: number;
@@ -73,6 +74,7 @@ type SeriesLayout = {
 
 const DEFAULT_SMOOTHING_MODE = LineSmoothing.Makima;
 const DEFAULT_SMOOTHING_TENSION = 1;
+const DEFAULT_SKIA_COLORS: ResponseByTheme<SkColor> = { dark: Skia.Color(ETH_COLOR_DARK), light: Skia.Color(ETH_COLOR) };
 const SAMPLE_COUNT = 90;
 
 export class LineSeries {
@@ -86,9 +88,10 @@ export class LineSeries {
   private readonly smoothingMode: LineSmoothing;
   private readonly smoothingTension: number;
 
-  private color: SkColor;
+  private color: ResponseByTheme<SkColor>;
   private highlighted: boolean;
   private highlightPaint: SkPaint | null = null;
+  private isDarkMode: boolean;
   private prices: Float32Array = new Float32Array(0);
   private timestamps: Float32Array = new Float32Array(0);
 
@@ -112,6 +115,7 @@ export class LineSeries {
     const {
       color,
       highlighted = false,
+      isDarkMode,
       key,
       label,
       lineWidth = 2,
@@ -119,8 +123,9 @@ export class LineSeries {
       smoothingTension = DEFAULT_SMOOTHING_TENSION,
     } = config;
 
-    this.color = Skia.Color(color);
+    this.color = { dark: Skia.Color(color.dark), light: Skia.Color(color.light) };
     this.highlighted = highlighted;
+    this.isDarkMode = isDarkMode;
     this.key = key;
     this.label = label;
     this.lineWidth = lineWidth;
@@ -129,7 +134,7 @@ export class LineSeries {
 
     this.paint = Skia.Paint();
     this.paint.setAntiAlias(true);
-    this.paint.setColor(this.color);
+    this.paint.setColor(getColorValueForThemeWorklet(this.color, isDarkMode, DEFAULT_SKIA_COLORS));
     this.paint.setDither(true);
     this.paint.setStrokeCap(StrokeCap.Round);
     this.paint.setStrokeJoin(StrokeJoin.Round);
@@ -416,7 +421,7 @@ export class LineSeries {
         canvas.save();
         canvas.translate(0, yOffset);
       }
-      effects.lineShadowPaint.setColor(this.color);
+      effects.lineShadowPaint.setColor(this.getColor());
       effects.lineShadowPaint.setAlphaf(effects.lineShadowAlpha);
       canvas.drawPath(path, effects.lineShadowPaint);
       if (yOffset !== 0) {
@@ -440,7 +445,7 @@ export class LineSeries {
 
       // Draw circle shadow first (with optional offset, scaled)
       if (effects.endCircleShadowPaint) {
-        effects.endCircleShadowPaint.setColor(this.color);
+        effects.endCircleShadowPaint.setColor(this.getColor());
         effects.endCircleShadowPaint.setAlphaf(effects.endCircleShadowAlpha);
         const shadowX = endX + (effects.endCircleShadowOffset?.x ?? 0) * circleScale;
         const shadowY = endY + (effects.endCircleShadowOffset?.y ?? 0) * circleScale;
@@ -448,7 +453,7 @@ export class LineSeries {
       }
 
       // Draw circle with line color
-      effects.endCirclePaint.setColor(this.color);
+      effects.endCirclePaint.setColor(this.getColor());
       canvas.drawCircle(endX, endY, scaledRadius, effects.endCirclePaint);
     }
 
@@ -520,10 +525,11 @@ export class LineSeries {
     this.splitRightPath.addPath(path);
     this.splitRightPath.trim(splitT, 1, false);
 
-    this.interpolatedColor[0] = this.color[0] + (interaction.greyColor[0] - this.color[0]) * t;
-    this.interpolatedColor[1] = this.color[1] + (interaction.greyColor[1] - this.color[1]) * t;
-    this.interpolatedColor[2] = this.color[2] + (interaction.greyColor[2] - this.color[2]) * t;
-    this.interpolatedColor[3] = this.color[3] + (interaction.greyColor[3] - this.color[3]) * t;
+    const color = this.getColor();
+    this.interpolatedColor[0] = color[0] + (interaction.greyColor[0] - color[0]) * t;
+    this.interpolatedColor[1] = color[1] + (interaction.greyColor[1] - color[1]) * t;
+    this.interpolatedColor[2] = color[2] + (interaction.greyColor[2] - color[2]) * t;
+    this.interpolatedColor[3] = color[3] + (interaction.greyColor[3] - color[3]) * t;
 
     if (effects?.lineShadowPaint) {
       const yOffset = effects.lineShadowYOffset ?? 0;
@@ -545,7 +551,7 @@ export class LineSeries {
           drawShadow(this.splitRightPath, this.interpolatedColor, shadowAlpha);
         }
       } else {
-        drawShadow(this.splitLeftPath, this.color, effects.lineShadowAlpha);
+        drawShadow(this.splitLeftPath, color, effects.lineShadowAlpha);
 
         const rightShadowAlpha = effects.lineShadowAlpha * (1 - t);
         drawShadow(this.splitRightPath, this.interpolatedColor, rightShadowAlpha);
@@ -556,7 +562,7 @@ export class LineSeries {
       this.paint.setBlendMode(BlendMode.Src);
       this.paint.setColor(this.interpolatedColor);
       canvas.drawPath(this.splitRightPath, this.paint);
-      this.paint.setColor(this.color);
+      this.paint.setColor(color);
       this.paint.setBlendMode(BlendMode.SrcOver);
     } else {
       if (this.highlighted && this.highlightPaint) {
@@ -567,7 +573,7 @@ export class LineSeries {
       this.paint.setBlendMode(BlendMode.Src);
       this.paint.setColor(this.interpolatedColor);
       canvas.drawPath(this.splitRightPath, this.paint);
-      this.paint.setColor(this.color);
+      this.paint.setColor(color);
       this.paint.setBlendMode(BlendMode.SrcOver);
     }
 
@@ -633,6 +639,7 @@ export class LineSeries {
     const endY = lastPt.y;
 
     const circleRadius = effects?.endCircleRadius ?? 0;
+    const color = this.getColor();
 
     if (circleRadius > 0) {
       const endCircleScale = effects?.endCircleScale ?? 1;
@@ -642,7 +649,7 @@ export class LineSeries {
         if (effects?.endCircleShadowPaint) {
           const fadedAlpha = effects.endCircleShadowAlpha * (1 - interactionProgress);
           if (fadedAlpha > 0) {
-            effects.endCircleShadowPaint.setColor(this.color);
+            effects.endCircleShadowPaint.setColor(color);
             effects.endCircleShadowPaint.setAlphaf(fadedAlpha);
             const shadowX = endX + (effects.endCircleShadowOffset?.x ?? 0) * endCircleScale;
             const shadowY = endY + (effects.endCircleShadowOffset?.y ?? 0) * endCircleScale;
@@ -650,10 +657,10 @@ export class LineSeries {
           }
         }
 
-        this.interpolatedColor[0] = this.color[0] + (interaction.greyColor[0] - this.color[0]) * interactionProgress;
-        this.interpolatedColor[1] = this.color[1] + (interaction.greyColor[1] - this.color[1]) * interactionProgress;
-        this.interpolatedColor[2] = this.color[2] + (interaction.greyColor[2] - this.color[2]) * interactionProgress;
-        this.interpolatedColor[3] = this.color[3] + (interaction.greyColor[3] - this.color[3]) * interactionProgress;
+        this.interpolatedColor[0] = color[0] + (interaction.greyColor[0] - color[0]) * interactionProgress;
+        this.interpolatedColor[1] = color[1] + (interaction.greyColor[1] - color[1]) * interactionProgress;
+        this.interpolatedColor[2] = color[2] + (interaction.greyColor[2] - color[2]) * interactionProgress;
+        this.interpolatedColor[3] = color[3] + (interaction.greyColor[3] - color[3]) * interactionProgress;
         interaction.greyCirclePaint.setColor(this.interpolatedColor);
         canvas.drawCircle(endX, endY, scaledRadius, interaction.greyCirclePaint);
       }
@@ -663,14 +670,14 @@ export class LineSeries {
       const scaledRadius = circleRadius * interactionProgress;
 
       if (effects.endCircleShadowPaint) {
-        effects.endCircleShadowPaint.setColor(this.color);
+        effects.endCircleShadowPaint.setColor(color);
         effects.endCircleShadowPaint.setAlphaf(effects.endCircleShadowAlpha);
         const shadowX = clampedSplitX + (effects.endCircleShadowOffset?.x ?? 0) * interactionProgress;
         const shadowY = splitY + (effects.endCircleShadowOffset?.y ?? 0) * interactionProgress;
         canvas.drawCircle(shadowX, shadowY, scaledRadius, effects.endCircleShadowPaint);
       }
 
-      effects.endCirclePaint.setColor(this.color);
+      effects.endCirclePaint.setColor(color);
       canvas.drawCircle(clampedSplitX, splitY, scaledRadius, effects.endCirclePaint);
     }
 
@@ -763,11 +770,12 @@ export class LineSeries {
     }
   }
 
-  public setColor(color: string): void {
-    this.color = Skia.Color(color);
-    this.paint.setColor(this.color);
+  public setColor(colors: ResponseByTheme<string>): void {
+    this.color = { dark: Skia.Color(colors.dark), light: Skia.Color(colors.light) };
+    const newColor = this.getColor();
+    this.paint.setColor(newColor);
     if (this.highlightPaint) {
-      this.highlightPaint.setColor(this.color);
+      this.highlightPaint.setColor(newColor);
     }
   }
 
@@ -776,13 +784,13 @@ export class LineSeries {
   }
 
   public getColor(): SkColor {
-    return this.color;
+    return getColorValueForThemeWorklet(this.color, this.isDarkMode, DEFAULT_SKIA_COLORS);
   }
 
   private createHighlightPaint(): void {
     this.highlightPaint = Skia.Paint();
     this.highlightPaint.setAntiAlias(true);
-    this.highlightPaint.setColor(this.color);
+    this.highlightPaint.setColor(this.getColor());
     this.highlightPaint.setAlphaf(0.5);
     this.highlightPaint.setStrokeCap(StrokeCap.Round);
     this.highlightPaint.setStrokeJoin(StrokeJoin.Round);

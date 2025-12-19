@@ -15,7 +15,6 @@ import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { PolymarketChart } from '@/features/charts/polymarket/components/PolymarketChart';
-import { PolymarketChartLegend } from '@/features/charts/polymarket/components/PolymarketChartLegend';
 import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { SportsEventMarkets } from '@/features/polymarket/screens/polymarket-event-screen/SportsEventMarkets';
@@ -27,6 +26,10 @@ import { ResolvedEventHeader } from '@/features/polymarket/screens/polymarket-ev
 import { formatTimestamp, toUnixTime } from '@/worklets/dates';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { ActiveInteractionData } from '@/features/charts/polymarket/classes/PolymarketChartManager';
+import { useSharedValue } from 'react-native-reanimated';
+import { PolymarketChartHeader } from '@/features/charts/polymarket/components/PolymarketChartHeader';
+import { SeriesPaletteColors } from '@/features/charts/polymarket/types';
 
 export const EventHeaderSection = memo(function EventHeaderSection({ event }: { event: PolymarketMarketEvent | PolymarketEvent }) {
   const labelQuaternary = useForegroundColor('labelQuaternary');
@@ -71,18 +74,32 @@ const ChartSection = memo(function ChartSection({
 }: {
   backgroundColor: string;
   isSportsEvent: boolean;
-  lineColors: readonly [string, string, string, string, string] | undefined;
+  lineColors: SeriesPaletteColors | undefined;
 }) {
+  const { isDarkMode } = useColorMode();
+  const activeInteraction = useSharedValue<ActiveInteractionData | undefined>(undefined);
+  const isChartGestureActive = useSharedValue(false);
   return (
     <Box gap={16}>
-      {isSportsEvent ? null : <PolymarketChartLegend backgroundColor={backgroundColor} colors={lineColors} />}
+      <PolymarketChartHeader
+        activeInteraction={activeInteraction}
+        backgroundColor={backgroundColor}
+        colors={lineColors}
+        isChartGestureActive={isChartGestureActive}
+        isSportsEvent={isSportsEvent}
+      />
       <Bleed horizontal="24px">
         <Box borderRadius={16} gap={8} overflow="hidden" width={DEVICE_WIDTH}>
           <PolymarketChart
+            activeInteraction={activeInteraction}
             backgroundColor={backgroundColor}
             config={lineColors ? { line: { colors: lineColors, overrideSeriesColors: true } } : undefined}
+            isChartGestureActive={isChartGestureActive}
           />
-          <PolymarketTimeframeSelector backgroundColor={backgroundColor} color={globalColors.white100} />
+          <PolymarketTimeframeSelector
+            backgroundColor={backgroundColor}
+            color={isDarkMode ? globalColors.white100 : globalColors.grey100}
+          />
         </Box>
       </Bleed>
     </Box>
@@ -108,7 +125,7 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
     : POLYMARKET_BACKGROUND_LIGHT;
 
   const isSportsEvent = event.gameId !== undefined;
-  const lineColors = useMemo(() => parseLineColors(event, isSportsEvent, isDarkMode), [event, isSportsEvent, isDarkMode]);
+  const lineColors = useMemo(() => parseLineColors(event, isSportsEvent), [event, isSportsEvent]);
   const isEventResolved = event.closed;
   const shouldShowChart = !isEventResolved;
 
@@ -138,9 +155,9 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
           {isEventResolved && <ResolvedEventHeader resolvedAt={event.closedTime} />}
           <EventHeaderSection event={event} />
           {isSportsEvent && <GameBoxScore event={event} />}
-          {/* {shouldShowChart && (
+          {shouldShowChart && (
             <ChartSection backgroundColor={screenBackgroundColor} isSportsEvent={isSportsEvent} lineColors={lineColors} />
-          )} */}
+          )}
           <OpenPositionsSection eventId={eventId} eventColor={eventColor} />
           {isSportsEvent ? <SportsEventMarkets /> : <MarketsSection event={eventData} />}
           <Separator color="separatorSecondary" direction="horizontal" thickness={1} />
@@ -169,12 +186,8 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
   );
 });
 
-function parseLineColors(
-  event: PolymarketEvent | PolymarketMarketEvent,
-  isSportsEvent: boolean,
-  isDarkMode: boolean
-): readonly [string, string, string, string, string] | undefined {
+function parseLineColors(event: PolymarketEvent | PolymarketMarketEvent, isSportsEvent: boolean): SeriesPaletteColors | undefined {
   if (isSportsEvent) return undefined;
   if (!('markets' in event)) return undefined;
-  return getChartLineColors(event.markets, isDarkMode);
+  return getChartLineColors(event.markets);
 }

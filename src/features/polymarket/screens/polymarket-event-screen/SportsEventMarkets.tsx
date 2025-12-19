@@ -21,6 +21,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
+import { GammaMarket } from '@/features/charts/polymarket/types';
 
 export const SportsEventMarkets = memo(function SportsEventMarkets() {
   const { isDarkMode } = useColorMode();
@@ -281,6 +282,6 @@ const StandardMoneylineMarkets = memo(function StandardMoneylineMarkets({
   );
 });
 
-export function isDrawMarket(market: PolymarketMarket): boolean {
+export function isDrawMarket(market: PolymarketMarket | GammaMarket): boolean {
   return market.slug.includes('-draw') || market.question.toLowerCase().includes('draw');
 }
