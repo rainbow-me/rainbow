@@ -12,6 +12,7 @@ import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConv
 import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';
 import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
+import { SPORT_LEAGUES } from '@/features/polymarket/constants';
 
 export function processRawPolymarketMarket(market: RawPolymarketMarket, eventColor: ResponseByTheme<string>): PolymarketMarket {
   return {
@@ -36,11 +37,13 @@ export async function processRawPolymarketEvent(event: RawPolymarketEvent, teams
   const color = { dark: getHighContrastColor(rawColor, true), light: getHighContrastColor(rawColor, false) };
   const sortedMarkets = sortMarkets(event.markets, event.sortBy);
   const processedMarkets = sortedMarkets.map(market => processRawPolymarketMarket(market, color));
+  const league = getLeague(event);
   return {
     ...event,
     markets: processedMarkets,
     color,
     teams,
+    league,
   };
 }
 
@@ -84,5 +87,13 @@ function sortMarkets(markets: RawPolymarketMarket[], sortBy?: 'price') {
       return markets.sort((a, b) => (b.lastTradePrice ?? 0) - (a.lastTradePrice ?? 0));
     default:
       return markets.sort((a, b) => Number(a.groupItemThreshold) - Number(b.groupItemThreshold));
+  }
+}
+
+export function getLeague(event: PolymarketEvent | RawPolymarketEvent) {
+  for (const tag of event.tags) {
+    if (tag.slug in SPORT_LEAGUES) {
+      return SPORT_LEAGUES[tag.slug as keyof typeof SPORT_LEAGUES];
+    }
   }
 }

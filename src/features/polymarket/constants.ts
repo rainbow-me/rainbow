@@ -187,3 +187,22 @@ export const CATEGORIES = {
 export type Category = (typeof CATEGORIES)[keyof typeof CATEGORIES];
 
 export const USD_FEE_PER_TOKEN = '0.01';
+
+export const SPORT_LEAGUES = {
+  nba: {
+    name: 'NBA',
+    slug: 'nba',
+  },
+  nfl: {
+    name: 'NFL',
+    slug: 'nfl',
+  },
+  nhl: {
+    name: 'NHL',
+    slug: 'nhl',
+  },
+  mlb: {
+    name: 'MLB',
+    slug: 'mlb',
+  },
+} as const;

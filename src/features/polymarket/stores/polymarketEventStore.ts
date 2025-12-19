@@ -4,7 +4,7 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { RawPolymarketEvent, PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { RainbowError } from '@/logger';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
-import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
+import { getLeague, processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { PolymarketGameMetadata, PolymarketTeamInfo } from '@/features/polymarket/types';
 import { fetchGameMetadata, fetchTeamsInfo } from '@/features/polymarket/utils/sports';
 
@@ -74,13 +74,13 @@ async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: A
   let teams: PolymarketTeamInfo[] | undefined = undefined;
   let gameMetadata: PolymarketGameMetadata | null = null;
   let league: string | undefined = undefined;
-  let ordering: PolymarketGameMetadata['ordering'] = 'home';
 
   if (event.gameId) {
     gameMetadata = await fetchGameMetadata(event.ticker);
     if (gameMetadata) {
       league = gameMetadata.sport;
-      ordering = gameMetadata.ordering;
+      // The `ordering` field represents the order in which the teams are listed in the game metadata.
+      // This is not indicative of how the teams should be displayed in the event, which is always away @ home.
       if (gameMetadata.ordering === 'home') {
         event.homeTeamName = gameMetadata.teams[0];
         event.awayTeamName = gameMetadata.teams[1];
@@ -92,10 +92,9 @@ async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: A
   }
 
   if (event.homeTeamName && event.awayTeamName) {
-    const teamNames = ordering === 'home' ? [event.awayTeamName, event.homeTeamName] : [event.homeTeamName, event.awayTeamName];
     teams = await fetchTeamsInfo({
-      teamNames,
-      league,
+      teamNames: [event.awayTeamName, event.homeTeamName],
+      league: league ?? getLeague(event)?.slug,
     });
   }
 

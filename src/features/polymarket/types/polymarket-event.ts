@@ -1,5 +1,5 @@
 import { ResponseByTheme } from '@/__swaps__/utils/swaps';
-import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
+import { POLYMARKET_SPORTS_MARKET_TYPE, SPORT_LEAGUES } from '@/features/polymarket/constants';
 import { PolymarketTeamInfo } from '@/features/polymarket/types';
 
 export type SportsMarketType = (typeof POLYMARKET_SPORTS_MARKET_TYPE)[keyof typeof POLYMARKET_SPORTS_MARKET_TYPE];
@@ -407,6 +407,7 @@ export type PolymarketEvent = Omit<RawPolymarketEvent, 'markets'> & {
   markets: PolymarketMarket[];
   color: ResponseByTheme<string>;
   teams?: PolymarketTeamInfo[];
+  league?: (typeof SPORT_LEAGUES)[keyof typeof SPORT_LEAGUES];
 };
 
 /**

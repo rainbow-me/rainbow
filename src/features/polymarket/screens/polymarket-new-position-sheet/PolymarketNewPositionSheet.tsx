@@ -62,13 +62,17 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   const outcomeTitle = event.title || market.question;
   const outcomeSubtitle = useMemo(() => {
     if (market.line) {
-      return `${outcome} ${market.line}`;
+      // Over / under markets are always positive
+      if (market.line > 0) return `${outcome} ${market.line}`;
+      // A spread is always negative
+      const lineValue = Math.abs(market.line);
+      return `${outcome} ${outcomeIndex === 0 ? '-' : '+'}${lineValue}`;
     }
     if (market.groupItemTitle) {
       return market.groupItemTitle;
     }
     return outcome;
-  }, [market.groupItemTitle, outcome, market.line]);
+  }, [market.groupItemTitle, outcome, market.line, outcomeIndex]);
 
   const handleMarketBuyPosition = useCallback(async () => {
     setIsProcessing(true);
