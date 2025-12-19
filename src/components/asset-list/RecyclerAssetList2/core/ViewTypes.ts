@@ -50,11 +50,10 @@ export enum CellType {
 
   TOKENS_HEADER = 'TOKENS_HEADER',
 
-  PERPS_FEATURE_CARD = 'PERPS_FEATURE_CARD',
-
   POLYMARKET_HEADER = 'POLYMARKET_HEADER',
   POLYMARKET_BALANCE = 'POLYMARKET_BALANCE',
   POLYMARKET_POSITION = 'POLYMARKET_POSITION',
+  POLYMARKET_FEATURE_CARD = 'POLYMARKET_FEATURE_CARD',
 
   LOADING_ASSETS = 'LOADING_ASSETS',
   RECEIVE_CARD = 'RECEIVE_CARD',
@@ -138,10 +137,6 @@ export type PerpsPositionExtraData = {
 export type PerpsHeaderExtraData = {
   type: CellType.PERPS_HEADER;
 };
-export type PerpsFeatureCardExtraData = {
-  type: CellType.PERPS_FEATURE_CARD;
-};
-
 export type PolymarketBalanceExtraData = {
   type: CellType.POLYMARKET_BALANCE;
   balance: string;
@@ -150,6 +145,9 @@ export type PolymarketPositionExtraData = {
   type: CellType.POLYMARKET_POSITION;
   position: PolymarketPosition;
   index: number;
+};
+export type PolymarketFeatureCardExtraData = {
+  type: CellType.POLYMARKET_FEATURE_CARD;
 };
 
 export type TokensHeaderExtraData = {
@@ -206,6 +204,7 @@ export type CellExtraData =
   | PerpsFeatureCardExtraData
   | PolymarketBalanceExtraData
   | PolymarketPositionExtraData
+  | PolymarketFeatureCardExtraData
   | TokensHeaderExtraData
   | ProfileActionButtonsRowExtraData
   | SpacerExtraData;

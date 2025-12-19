@@ -3717,6 +3717,10 @@
       }
     },
     "predictions": {
+      "feature_card": {
+        "title": "Predictions",
+        "subtitle": "Bet on real world events"
+      },
       "explain_sheet": {
         "next": "Next",
         "get_started": "Get started",

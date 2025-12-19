@@ -9,7 +9,7 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useClaimablesStore } from '@/state/claimables/claimables';
-import { CLAIMABLES, DEFI_POSITIONS, PERPS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
+import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
 import { analytics } from '@/analytics';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
@@ -22,6 +22,7 @@ import { isDataComplete } from '@/state/nfts/utils';
 import { PerpsPositionsInfo, usePerpsPositionsInfo } from '@/features/perps/stores/derived/usePerpsPositionsInfo';
 import { PerpsWalletListData } from '@/features/perps/types';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
+import { usePolymarketFeatureCard } from '@/features/polymarket/hooks/usePolymarketFeatureCard';
 import { shallowEqual } from '@/worklets/comparisons';
 import { PolymarketAccountInfo, usePolymarketAccountInfo } from '@/features/polymarket/stores/derived/usePolymarketAccountInfo';
 import { PolymarketWalletListData } from '@/features/polymarket/types';
@@ -99,6 +100,7 @@ export default function useWalletSectionsData({
   const { pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
   const { isCoinListEdited } = useCoinListEdited();
   const { isDismissed: isDismissedPerpsFeatureCard } = usePerpsFeatureCard();
+  const { isDismissed: isDismissedPolymarketFeatureCard } = usePolymarketFeatureCard();
 
   useEffect(() => {
     if (isLoadingUserAssets || type !== 'wallet') return;
@@ -140,6 +142,7 @@ export default function useWalletSectionsData({
       isShowcaseDataMigrated,
       isHiddenDataMigrated,
       isDismissedPerpsFeatureCard,
+      isDismissedPolymarketFeatureCard,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(sections);
@@ -180,6 +183,7 @@ export default function useWalletSectionsData({
     isShowcaseDataMigrated,
     isHiddenDataMigrated,
     isDismissedPerpsFeatureCard,
+    isDismissedPolymarketFeatureCard,
   ]);
 }
 

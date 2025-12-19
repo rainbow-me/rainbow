@@ -34,7 +34,7 @@ import { ReceiveAssetsCard } from '@/components/cards/ReceiveAssetsCard';
 import { CardRowWrapper } from '../cards/CardRowWrapper';
 import { DiscoverMoreButton } from './DiscoverMoreButton';
 import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
-import { PerpsFeatureCard } from '../cards/PerpsFeatureCard';
+import { PolymarketFeatureCard } from '../cards/PolymarketFeatureCard';
 import WrappedPosition from '../WrappedPosition';
 import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
@@ -110,10 +110,10 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
           <RotatingLearnCard />
         </CardRowWrapper>
       );
-    case CellType.PERPS_FEATURE_CARD: {
+    case CellType.POLYMARKET_FEATURE_CARD: {
       return (
         <CardRowWrapper>
-          <PerpsFeatureCard />
+          <PolymarketFeatureCard />
         </CardRowWrapper>
       );
     }
