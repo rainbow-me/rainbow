@@ -19,7 +19,8 @@ type CategoryKey = keyof typeof CATEGORIES;
 type CategoryWithKey = Category & { key: CategoryKey };
 type ItemLayout = { x: number; width: number };
 
-const CONTAINER_HEIGHT = 40;
+const VERTICAL_PADDING = 0;
+const CONTAINER_HEIGHT = 40 + VERTICAL_PADDING * 2;
 const HORIZONTAL_PADDING = 16;
 const CATEGORY_ITEMS: CategoryWithKey[] = Object.entries(CATEGORIES).map<CategoryWithKey>(([key, category]) => ({
   ...category,
@@ -174,7 +175,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingLeft: 10,
     paddingRight: 16,
-    paddingVertical: 10,
   },
   scrollView: {
     height: CONTAINER_HEIGHT,
@@ -183,5 +183,6 @@ const styles = StyleSheet.create({
   scrollViewContentContainer: {
     gap: 2,
     paddingHorizontal: HORIZONTAL_PADDING,
+    paddingVertical: VERTICAL_PADDING,
   },
 });
