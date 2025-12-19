@@ -29,9 +29,9 @@ export async function fetchTeamsInfo({ teamNames, league }: { teamNames: string[
     const { data: teams } = await rainbowFetch<PolymarketTeamInfo[]>(url.toString(), { timeout: time.seconds(15) });
     if (!teams) return undefined;
     if (teams.length > teamNames.length) {
-      return filterFetchedTeams(teams);
+      return filterFetchedTeams(teams, teamNames);
     }
-    return teams;
+    return sortTeamsByRequestedNames(teams, teamNames);
   } catch (e) {
     // This can fail unexpectedly, but should not prevent the event from being loaded
     logger.error(new RainbowError('[Polymarket] Error fetching teams info', e));
@@ -50,24 +50,41 @@ export async function fetchTeamsForGame(eventTicker: string): Promise<Polymarket
   return fetchTeamsInfo({ teamNames, league: gameMetadata.sport });
 }
 
-/**
- * We don't always have access to the league, and team names can overlap across leagues
- * This is a hack to filter teams when we receive more than the amount of teams we expect
- * It returns the teams from the league with the most teams in the response
- */
-function filterFetchedTeams(teams: PolymarketTeamInfo[]): PolymarketTeamInfo[] {
-  const leagueCounts = new Map<string, number>();
-  let leagueWithMostTeams = teams[0].league;
+function sortTeamsByRequestedNames(teams: PolymarketTeamInfo[], teamNames: string[]): PolymarketTeamInfo[] {
+  const result: PolymarketTeamInfo[] = [];
+  for (const requestedName of teamNames) {
+    const normalizedRequested = requestedName.trim().toLowerCase();
+    const match = teams.find(team => team.name.trim().toLowerCase() === normalizedRequested);
+    if (match) result.push(match);
+  }
+  return result;
+}
 
+/**
+ * We don't always have access to the league, and team names can overlap across leagues.
+ * Returns exactly one team per requested name, all from the same league.
+ * Picks the league that can satisfy the most requested team names.
+ */
+function filterFetchedTeams(teams: PolymarketTeamInfo[], teamNames: string[]): PolymarketTeamInfo[] {
+  const teamsByLeague = new Map<string, PolymarketTeamInfo[]>();
   for (const team of teams) {
-    leagueCounts.set(team.league, (leagueCounts.get(team.league) ?? 0) + 1);
+    const existing = teamsByLeague.get(team.league) ?? [];
+    existing.push(team);
+    teamsByLeague.set(team.league, existing);
   }
 
-  for (const [league, count] of leagueCounts.entries()) {
-    if (count > (leagueCounts.get(leagueWithMostTeams) ?? 0)) {
-      leagueWithMostTeams = league;
+  const normalizedRequestedNames = teamNames.map(name => name.trim().toLowerCase());
+  let bestLeague = teams[0].league;
+  let bestCoverage = 0;
+  for (const [league, leagueTeams] of teamsByLeague.entries()) {
+    const leagueTeamNames = new Set(leagueTeams.map(t => t.name.trim().toLowerCase()));
+    const coverage = normalizedRequestedNames.filter(name => leagueTeamNames.has(name)).length;
+    if (coverage > bestCoverage) {
+      bestCoverage = coverage;
+      bestLeague = league;
     }
   }
 
-  return teams.filter(team => team.league === leagueWithMostTeams);
+  const bestLeagueTeams = teamsByLeague.get(bestLeague) ?? [];
+  return sortTeamsByRequestedNames(bestLeagueTeams, teamNames);
 }

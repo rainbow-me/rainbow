@@ -60,7 +60,7 @@ export type PolymarketWalletListData = {
 export type PolymarketGameMetadata = {
   teams: string[];
   sport: string;
-  ordering: string;
+  ordering: 'home' | 'away';
   type: string[];
 };
 

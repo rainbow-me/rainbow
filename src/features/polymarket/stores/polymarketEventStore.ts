@@ -5,7 +5,7 @@ import { RawPolymarketEvent, PolymarketEvent, PolymarketMarket } from '@/feature
 import { RainbowError } from '@/logger';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
-import { PolymarketTeamInfo } from '@/features/polymarket/types';
+import { PolymarketGameMetadata, PolymarketTeamInfo } from '@/features/polymarket/types';
 import { fetchGameMetadata, fetchTeamsInfo } from '@/features/polymarket/utils/sports';
 
 type FetchParams = { eventId: string | null };
@@ -72,12 +72,15 @@ async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: A
   const { data: event } = await rainbowFetch<RawPolymarketEvent>(url, { abortController, timeout: time.seconds(15) });
 
   let teams: PolymarketTeamInfo[] | undefined = undefined;
+  let gameMetadata: PolymarketGameMetadata | null = null;
   let league: string | undefined = undefined;
+  let ordering: PolymarketGameMetadata['ordering'] = 'home';
 
   if (event.gameId) {
-    const gameMetadata = await fetchGameMetadata(event.ticker);
+    gameMetadata = await fetchGameMetadata(event.ticker);
     if (gameMetadata) {
       league = gameMetadata.sport;
+      ordering = gameMetadata.ordering;
       if (gameMetadata.ordering === 'home') {
         event.homeTeamName = gameMetadata.teams[0];
         event.awayTeamName = gameMetadata.teams[1];
@@ -89,7 +92,11 @@ async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: A
   }
 
   if (event.homeTeamName && event.awayTeamName) {
-    teams = await fetchTeamsInfo({ teamNames: [event.homeTeamName, event.awayTeamName], league });
+    const teamNames = ordering === 'home' ? [event.awayTeamName, event.homeTeamName] : [event.homeTeamName, event.awayTeamName];
+    teams = await fetchTeamsInfo({
+      teamNames,
+      league,
+    });
   }
 
   const processedEvent = await processRawPolymarketEvent(event, teams);
