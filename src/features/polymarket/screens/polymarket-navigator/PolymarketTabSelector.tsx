@@ -23,6 +23,7 @@ import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-n
 import { PolymarketNavigation, usePolymarketNavigationStore } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
 import Routes from '@/navigation/routesNames';
 import { useListen } from '@/state/internal/hooks/useListen';
+import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 
 const TABS = Object.freeze({
   [Routes.POLYMARKET_BROWSE_EVENTS_SCREEN]: {
@@ -90,6 +91,7 @@ export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
   );
 
   return (
+    // @ts-expect-error shadow prop expects backgroundColor to be defined
     <Box
       flexDirection="row"
       justifyContent="center"
@@ -99,20 +101,24 @@ export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
       borderRadius={64}
       borderWidth={THICKER_BORDER_WIDTH}
       borderColor={isDarkMode ? { custom: opacityWorklet('#DC91F4', 0.03) } : 'white'}
+      backgroundColor={isDarkMode ? undefined : POLYMARKET_BACKGROUND_LIGHT}
+      shadow={isDarkMode ? undefined : '24px'}
     >
       <View style={StyleSheet.absoluteFill}>
-        {isDarkMode ? (
+        {isDarkMode && (
           <LinearGradient
             style={[StyleSheet.absoluteFill, { opacity: 0.07 }]}
             colors={['#DC91F4', opacityWorklet('#DC91F4', 0.5)]}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
           />
-        ) : (
-          <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(255, 255, 255, 0.6)' }]} />
         )}
-        <BlurView blurIntensity={24} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
-        <InnerShadow borderRadius={PILL.borderRadius} color={opacityWorklet('#DC91F4', 0.14)} blur={5} dx={0} dy={1} />
+        {IS_IOS ? (
+          <BlurView blurIntensity={24} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+        ) : (
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: '#190F1C' }]} />
+        )}
+        {isDarkMode && <InnerShadow borderRadius={PILL.borderRadius} color={opacityWorklet('#DC91F4', 0.14)} blur={5} dx={0} dy={1} />}
       </View>
       <SelectedHighlight buttonWidth={buttonWidth} selectedIndex={selectedIndex} paddingHorizontal={PADDING_HORIZONTAL} />
       <TabButtons onPress={onPress} selectedIndex={selectedIndex} />
