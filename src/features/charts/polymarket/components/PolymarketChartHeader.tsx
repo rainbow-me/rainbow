@@ -6,13 +6,14 @@ import { easing, TIMING_CONFIGS } from '@/components/animations/animationConfigs
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { AnimatedText, Text, TextShadow, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { ResponseByTheme, getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { StoreState } from '@/state/internal/queryStore/types';
 import { BaseRainbowStore } from '@/state/internal/types';
+import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ResponseByTheme, getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { FormatTimestampOptions, formatTimestamp } from '@/worklets/dates';
 import { ActiveInteractionData } from '../classes/PolymarketChartManager';
 import { usePolymarketChartStore, usePolymarketMarketChartStore } from '../stores/polymarketChartStore';
 import { OutcomeSeries, PolymarketChartData, SeriesPaletteColors } from '../types';
-import { StoreState } from '@/state/internal/queryStore/types';
 
 // ============ Constants ====================================================== //
 
@@ -284,7 +285,13 @@ const OutcomeBubble = memo(function OutcomeBubble({
 
   return (
     <View style={styles.bubbleContainer}>
-      <Animated.View style={[styles.bubbleBackground, bubbleBackgroundStyle]} />
+      <Animated.View
+        style={[
+          styles.bubbleBackground,
+          bubbleBackgroundStyle,
+          { borderWidth: IS_IOS ? (isDarkMode ? BUBBLE.borderWidth : THICKER_BORDER_WIDTH) : 0 },
+        ]}
+      />
       <LinearGradient
         colors={[opacityWorklet(backgroundColor, 0), backgroundColor]}
         end={{ x: 1, y: 0.5 }}
@@ -370,7 +377,6 @@ const styles = StyleSheet.create({
   bubbleBackground: {
     borderCurve: 'continuous',
     borderRadius: BUBBLE.height / 2,
-    borderWidth: IS_IOS ? BUBBLE.borderWidth : 0,
     bottom: 0,
     left: 0,
     overflow: 'hidden',
