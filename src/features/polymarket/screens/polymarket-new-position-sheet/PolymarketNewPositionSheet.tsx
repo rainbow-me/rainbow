@@ -25,12 +25,14 @@ import { collectTradeFee } from '@/features/polymarket/utils/collectTradeFee';
 import { usePolymarketAccountInfo } from '@/features/polymarket/stores/derived/usePolymarketAccountInfo';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { analytics } from '@/analytics';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
-    params: { market, event, outcomeIndex, outcomeColor },
+    params: { market, event, outcomeIndex, outcomeColor, fromRoute },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
   const { isDarkMode } = useColorMode();
+  const safeAreaInsets = useSafeAreaInsets();
 
   const hasBalance = usePolymarketAccountInfo(state => state.hasBalance);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -99,9 +101,12 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
 
       void collectTradeFee(tokensBought);
       await waitForPositionSizeUpdate(tokenId);
-      Navigation.goBack();
-      // TODO: How do we handle this if there is no PolyMarketMarketSheet in the stack vs. not?
-      // Navigation.goBack();
+      if (fromRoute === Routes.POLYMARKET_EVENT_SCREEN) {
+        Navigation.goBack();
+      } else {
+        Navigation.goBack();
+        Navigation.goBack();
+      }
     } catch (e) {
       const error = ensureError(e);
       logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', error));
@@ -121,14 +126,14 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     } finally {
       setIsProcessing(false);
     }
-  }, [bestPrice, buyAmount, event.slug, fee, market.slug, outcome, spread, tokenId, worstPrice]);
+  }, [bestPrice, buyAmount, event.slug, fee, market.slug, outcome, spread, tokenId, worstPrice, fromRoute]);
 
   const handleDepositFunds = useCallback(() => {
     Navigation.handleAction(Routes.POLYMARKET_DEPOSIT_SCREEN);
   }, []);
 
   return (
-    <PanelSheet innerBorderWidth={1} enableKeyboardAvoidance>
+    <PanelSheet innerBorderWidth={1} enableKeyboardAvoidance keyboardAvoidanceOffset={{ opened: safeAreaInsets.bottom }}>
       <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }]}>
         <LinearGradient
           colors={
@@ -139,7 +144,6 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
           style={StyleSheet.absoluteFill}
           start={isDarkMode ? { x: 0, y: 0 } : { x: 0, y: 0.12 }}
           end={isDarkMode ? { x: 0, y: 1 } : { x: 0, y: 0.82 }}
-          pointerEvents="none"
         />
       </View>
       <Box paddingHorizontal="32px" paddingBottom={'24px'} paddingTop={{ custom: 43 }}>

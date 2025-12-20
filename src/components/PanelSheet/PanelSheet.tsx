@@ -95,6 +95,7 @@ type PanelSheetProps = PanelProps & {
   showTapToDismiss?: boolean;
   panelStyle?: StyleProp<ViewStyle> | AnimatedStyle;
   enableKeyboardAvoidance?: boolean;
+  keyboardAvoidanceOffset?: { closed?: number; opened?: number };
 };
 
 const DEFAULT_HANDLE_TOP = 14;
@@ -116,12 +117,16 @@ export const PanelSheet = ({
   showTapToDismiss = true,
   panelStyle,
   enableKeyboardAvoidance = false,
+  keyboardAvoidanceOffset,
 }: React.PropsWithChildren<PanelSheetProps>) => {
   const { isDarkMode } = useColorMode();
   return (
     <>
       <Box style={[panelSheetStyles.panelContainer, { bottom: bottomOffset }, containerStyle]}>
-        <ConditionalWrap wrap={children => <KeyboardStickyView>{children}</KeyboardStickyView>} condition={enableKeyboardAvoidance}>
+        <ConditionalWrap
+          wrap={children => <KeyboardStickyView offset={keyboardAvoidanceOffset}>{children}</KeyboardStickyView>}
+          condition={enableKeyboardAvoidance}
+        >
           <>
             {showHandle && (
               <SheetHandleFixedToTop

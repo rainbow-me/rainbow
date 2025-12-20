@@ -1,3 +1,4 @@
+import { ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 
 export type RawPolymarketPosition = {
@@ -64,7 +65,7 @@ export type PolymarketGameMetadata = {
   type: string[];
 };
 
-export type PolymarketTeamInfo = {
+export type RawPolymarketTeamInfo = {
   id: number;
   name: string;
   league: string;
@@ -76,4 +77,8 @@ export type PolymarketTeamInfo = {
   updatedAt: string;
   providerId: number;
   color?: string;
+};
+
+export type PolymarketTeamInfo = Omit<RawPolymarketTeamInfo, 'color'> & {
+  color: ResponseByTheme<string>;
 };

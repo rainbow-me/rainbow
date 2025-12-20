@@ -77,8 +77,7 @@ export default function useWalletSectionsData({
   }, [claimablesData, claimablesEnabled]);
 
   const perpsData = usePerpsPositionsInfo(state => selectPerpsData(state, perpsEnabled), shallowEqual);
-  // TESTING:
-  const polymarketData = usePolymarketAccountInfo(state => selectPolymarketData(state, true), shallowEqual);
+  const polymarketData = usePolymarketAccountInfo(state => selectPolymarketData(state, polymarketEnabled), shallowEqual);
 
   const isShowcaseDataMigrated = useMemo(() => isDataComplete(showcaseTokens), [showcaseTokens]);
   const isHiddenDataMigrated = useMemo(() => isDataComplete(hiddenTokens), [hiddenTokens]);

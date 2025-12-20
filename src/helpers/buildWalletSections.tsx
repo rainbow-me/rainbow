@@ -143,12 +143,12 @@ const buildBriefWalletSections = (
   const perpsSection = withPerpsSection(perpsData);
   const polymarketSection = withPolymarketSection(polymarketData);
   const hasPerpsContent = (perpsData?.hasBalance || perpsData?.hasPositions) && perpsData.enabled;
-  // const hasPolymarketContent = (polymarketData?.hasBalance || polymarketData?.hasPositions) && polymarketData.enabled;
+  const hasPolymarketContent = (polymarketData?.hasBalance || polymarketData?.hasPositions) && polymarketData.enabled;
   const shouldShowPolymarketFeatureCard = polymarketData?.enabled && !isDismissedPolymarketFeatureCard;
   const polymarketFeatureCardSection = shouldShowPolymarketFeatureCard ? withPolymarketFeatureCardSection() : [];
   const tokensHeaderSection = withTokensHeaderSection({ contentSection, perpsSection });
 
-  if (hasPerpsContent) {
+  if (hasPerpsContent && hasPolymarketContent) {
     return {
       briefSectionsData: [
         ...headerSection,
@@ -163,13 +163,15 @@ const buildBriefWalletSections = (
       ],
       isEmpty,
     };
-  } else {
+  }
+  if (hasPerpsContent && !hasPolymarketContent) {
     return {
       briefSectionsData: [
         ...headerSection,
         ...polymarketFeatureCardSection,
-        ...contentSection,
         ...perpsSection,
+        ...tokensHeaderSection,
+        ...contentSection,
         ...polymarketSection,
         ...claimablesSection,
         ...positionsSection,
@@ -178,6 +180,19 @@ const buildBriefWalletSections = (
       isEmpty,
     };
   }
+  return {
+    briefSectionsData: [
+      ...headerSection,
+      ...polymarketFeatureCardSection,
+      ...contentSection,
+      ...perpsSection,
+      ...polymarketSection,
+      ...claimablesSection,
+      ...positionsSection,
+      ...uniqueTokenFamiliesSection,
+    ],
+    isEmpty,
+  };
 };
 
 const withPolymarketFeatureCardSection = (): CellTypes[] => {

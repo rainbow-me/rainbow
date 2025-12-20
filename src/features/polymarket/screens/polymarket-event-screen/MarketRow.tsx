@@ -1,5 +1,5 @@
 import { StyleSheet, View } from 'react-native';
-import { Box, Text, TextShadow, useColorMode } from '@/design-system';
+import { Box, Text, TextShadow, useBackgroundColor, useColorMode } from '@/design-system';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { memo, useMemo } from 'react';
@@ -13,6 +13,8 @@ import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { createOpacityPalette } from '@/worklets/colors';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { ShimmerAnimation } from '@/components/animations';
 
 type MarketRowProps = {
   accentColor: string;
@@ -27,6 +29,8 @@ type MarketRowProps = {
 };
 
 const ROW_RIGHT_BLEED = 4;
+const ROW_HEIGHT = 66;
+const ROW_BORDER_RADIUS = 24;
 
 export const MarketRow = memo(function MarketRow({
   accentColor,
@@ -69,15 +73,14 @@ export const MarketRow = memo(function MarketRow({
         borderWidth={isDarkMode ? 2.5 : THICKER_BORDER_WIDTH}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
-        borderRadius={24}
-        style={{ height: 66, marginRight: -ROW_RIGHT_BLEED, overflow: 'hidden' }}
+        borderRadius={ROW_BORDER_RADIUS}
+        style={{ height: ROW_HEIGHT, marginRight: -ROW_RIGHT_BLEED, overflow: 'hidden' }}
       >
         <LinearGradient
           colors={isDarkMode ? [accentColors.opacity0, accentColors.opacity14] : ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.89)']}
           style={StyleSheet.absoluteFill}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          pointerEvents="none"
         />
         <Box flexDirection="row" alignItems="center" height="full" gap={12} paddingRight={'10px'}>
           {image && <ImgixImage enableFasterImage resizeMode="cover" size={40} source={{ uri: image }} style={styles.image} />}
@@ -144,6 +147,24 @@ export const MarketRow = memo(function MarketRow({
   );
 });
 
+export const MarketRowLoadingSkeleton = memo(function MarketRowLoadingSkeleton({ count = 3 }: { count?: number }) {
+  const { isDarkMode } = useColorMode();
+  const fillSecondary = useBackgroundColor('fillSecondary');
+  const fillQuaternary = useBackgroundColor('fillQuaternary');
+  const fillColor = isDarkMode ? fillQuaternary : fillSecondary;
+  const shimmerColor = opacityWorklet(fillColor, isDarkMode ? 0.025 : 0.06);
+
+  return (
+    <View style={styles.skeletonContainer}>
+      {Array.from({ length: count }).map((_, index) => (
+        <View key={index} style={[styles.skeletonRow, { backgroundColor: fillColor }]}>
+          <ShimmerAnimation color={shimmerColor} gradientColor={shimmerColor} />
+        </View>
+      ))}
+    </View>
+  );
+});
+
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
@@ -155,5 +176,15 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 9,
+  },
+  skeletonContainer: {
+    gap: 8,
+    marginRight: -ROW_RIGHT_BLEED,
+  },
+  skeletonRow: {
+    height: ROW_HEIGHT,
+    width: '100%',
+    borderRadius: ROW_BORDER_RADIUS,
+    overflow: 'hidden',
   },
 });

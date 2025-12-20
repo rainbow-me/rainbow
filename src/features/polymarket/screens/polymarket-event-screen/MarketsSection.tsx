@@ -1,12 +1,12 @@
-import { Bleed, Box, Separator, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
+import { Bleed, Box, Separator, Text, TextIcon, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { memo, useMemo, useState } from 'react';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
+import { ButtonPressAnimation } from '@/components/animations';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { MarketRow } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
+import { MarketRow, MarketRowLoadingSkeleton } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
 import { ResolvedMarketsList } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsList';
 import { SingleMarketEventOutcomes } from '@/features/polymarket/screens/polymarket-event-screen/components/SingleMarketEvent';
 import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
@@ -153,25 +153,5 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
         )}
       </Box>
     </>
-  );
-});
-
-const SKELTON_COUNT = 3;
-
-const MarketRowLoadingSkeleton = memo(function MarketRowLoadingSkeleton() {
-  const { isDarkMode } = useColorMode();
-  const fillSecondary = useBackgroundColor('fillSecondary');
-  const fillQuaternary = useBackgroundColor('fillQuaternary');
-  const fillColor = isDarkMode ? fillQuaternary : fillSecondary;
-  const shimmerColor = opacityWorklet(fillColor, isDarkMode ? 0.025 : 0.06);
-
-  return (
-    <Box gap={8}>
-      {Array.from({ length: SKELTON_COUNT }).map((_, index) => (
-        <Box key={index} backgroundColor={fillSecondary} height={66} width={'full'} borderRadius={26} style={{ overflow: 'hidden' }}>
-          <ShimmerAnimation color={shimmerColor} gradientColor={shimmerColor} />
-        </Box>
-      ))}
-    </Box>
   );
 });
