@@ -26,8 +26,11 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
   return (
     <Box gap={8}>
       {market.outcomes.map((outcome, index) => {
-        const outcomeImage = getOutcomeTeam({ outcome, outcomeIndex: index, teams })?.logo;
-        const outcomeColor = getOutcomeColor({ market, outcome, outcomeIndex: index, isDarkMode, teams });
+        const isTeamBased = isTeamBasedOutcome(outcome);
+        const outcomeImage = isTeamBased ? getOutcomeTeam({ outcome, outcomeIndex: index, teams })?.logo : undefined;
+        const outcomeColor = isTeamBased
+          ? getOutcomeColor({ market, outcome, outcomeIndex: index, isDarkMode, teams })
+          : getOutcomeColor({ market, outcome, outcomeIndex: index, isDarkMode });
 
         if (winningOutcomeIndex !== null) {
           return (
@@ -73,4 +76,11 @@ function getWinningOutcomeIndex(market: PolymarketMarket): number | null {
   const winningOutcomeIndex = market.outcomePrices.findIndex(p => p === '1');
 
   return winningOutcomeIndex;
+}
+
+function isTeamBasedOutcome(outcome: string): boolean {
+  const outcomeLowerCase = outcome.toLowerCase();
+  if (outcomeLowerCase === 'yes' || outcomeLowerCase === 'no') return false;
+  if (outcomeLowerCase === 'over' || outcomeLowerCase === 'under') return false;
+  return true;
 }

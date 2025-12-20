@@ -63,14 +63,15 @@ export function getOutcomeColor({
   isDarkMode: boolean;
   teams?: PolymarketTeamInfo[];
 }): string {
+  const green = palettes[isDarkMode ? 'dark' : 'light'].foregroundColors.green;
+  const red = palettes[isDarkMode ? 'dark' : 'light'].foregroundColors.red;
+  if (!teams) return outcomeIndex === 0 ? green : red;
+
   const teamColorTheme = getOutcomeTeamColor({ outcome, outcomeIndex, teams });
   const isDraw = isDrawMarket(market);
   const teamAccentColor = getColorValueForThemeWorklet(teamColorTheme, isDarkMode);
   const drawAccentColor = getColorValueForThemeWorklet(drawColor, isDarkMode);
-  const green = palettes[isDarkMode ? 'dark' : 'light'].foregroundColors.green;
-  const red = palettes[isDarkMode ? 'dark' : 'light'].foregroundColors.red;
-  const outcomeColor = isDraw ? drawAccentColor : teamAccentColor ?? (outcomeIndex === 0 ? green : red);
-  return outcomeColor;
+  return isDraw ? drawAccentColor : teamAccentColor;
 }
 
 function getHighContrastColorTheme(color: string): ResponseByTheme<string> {
