@@ -64,9 +64,9 @@ export const PolymarketChartHeader = memo(function PolymarketChartHeader({
   isSportsEvent,
 }: PolymarketChartHeaderProps) {
   const { isDarkMode } = useColorMode();
-  const store: ChartsStoreType = isMarketChart ? usePolymarketMarketChartStore : usePolymarketChartStore;
-  const series = store(state => state.getData()?.series ?? EMPTY_SERIES, areSeriesEqual);
-  const isInitialLoad = store(state => state.getStatus('isInitialLoad'));
+  const chartsStore: ChartsStoreType = isMarketChart ? usePolymarketMarketChartStore : usePolymarketChartStore;
+  const series = chartsStore(state => state.getData()?.series ?? EMPTY_SERIES, areSeriesEqual);
+  const isInitialLoad = chartsStore(state => state.getStatus('isInitialLoad')) && series === EMPTY_SERIES;
 
   const legendEntries = useMemo(() => buildLegendEntries(series, colors), [series, colors]);
   const hasData = Boolean(legendEntries.length);
@@ -321,6 +321,9 @@ const OutcomePrice = memo(function OutcomePrice({
 
 // ============ Utilities ====================================================== //
 
+/**
+ * Prevents data loss when switching chart timeframes.
+ */
 function areSeriesEqual(prev: OutcomeSeries[], next: OutcomeSeries[]): boolean {
   return (next.length === 0 && prev.length > 0) || prev === next;
 }
@@ -400,7 +403,6 @@ const styles = StyleSheet.create({
     left: 0,
     position: 'absolute',
     right: 0,
-    top: 0,
   },
   gradientOverlay: {
     bottom: -BUBBLE.borderWidth,
@@ -474,7 +476,7 @@ const styles = StyleSheet.create({
   },
   sportsEventContainer: {
     position: 'absolute',
-    top: -76,
+    top: -10,
     width: '100%',
   },
   timestampText: {
