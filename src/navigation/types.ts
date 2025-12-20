@@ -689,6 +689,7 @@ type RouteParams = {
     outcomeIndex: number;
     outcomeColor: string;
     event: PolymarketMarketEvent | PolymarketEvent;
+    fromRoute: typeof Routes.POLYMARKET_EVENT_SCREEN | typeof Routes.POLYMARKET_MARKET_SHEET;
   };
   [Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET]: {
     description: string;

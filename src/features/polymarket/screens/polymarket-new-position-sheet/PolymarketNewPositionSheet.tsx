@@ -28,7 +28,7 @@ import { analytics } from '@/analytics';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
-    params: { market, event, outcomeIndex, outcomeColor },
+    params: { market, event, outcomeIndex, outcomeColor, fromRoute },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
   const { isDarkMode } = useColorMode();
 
@@ -99,9 +99,12 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
 
       void collectTradeFee(tokensBought);
       await waitForPositionSizeUpdate(tokenId);
-      Navigation.goBack();
-      // TODO: How do we handle this if there is no PolyMarketMarketSheet in the stack vs. not?
-      // Navigation.goBack();
+      if (fromRoute === Routes.POLYMARKET_EVENT_SCREEN) {
+        Navigation.goBack();
+      } else {
+        Navigation.goBack();
+        Navigation.goBack();
+      }
     } catch (e) {
       const error = ensureError(e);
       logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', error));
@@ -121,7 +124,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     } finally {
       setIsProcessing(false);
     }
-  }, [bestPrice, buyAmount, event.slug, fee, market.slug, outcome, spread, tokenId, worstPrice]);
+  }, [bestPrice, buyAmount, event.slug, fee, market.slug, outcome, spread, tokenId, worstPrice, fromRoute]);
 
   const handleDepositFunds = useCallback(() => {
     Navigation.handleAction(Routes.POLYMARKET_DEPOSIT_SCREEN);
