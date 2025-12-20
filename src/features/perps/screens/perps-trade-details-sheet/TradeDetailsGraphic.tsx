@@ -39,6 +39,20 @@ const CONFIG = {
     opacity: 0.1,
     blur: 24,
   },
+  topSectionGradients: {
+    loss: {
+      bottomToTop: [opacityWorklet('#FF584D', 0), '#FF655A'],
+      topToBottom: ['#FF584D', opacityWorklet('#FF584D', 0)],
+    },
+    profit: {
+      bottomToTop: [opacityWorklet('#2EDC51', 0), '#31E054'],
+      topToBottom: ['#23D246', opacityWorklet('#26D449', 0)],
+    },
+    info: {
+      bottomToTop: [opacityWorklet('#62DFBC', 0), '#62DFBC'],
+      topToBottom: ['#62DFBC', opacityWorklet('#62DFBC', 0)],
+    },
+  },
 };
 
 export const TradeDetailsGraphic = memo(function TradeDetailsGraphic({ trade }: { trade: HlTrade }) {
@@ -46,6 +60,7 @@ export const TradeDetailsGraphic = memo(function TradeDetailsGraphic({ trade }: 
   const { width } = useDimensions();
   const displayType = getDisplayType(trade);
   const isLoss = displayType === 'loss';
+  const isOpen = displayType === 'info';
   const backgroundColor = isDarkMode ? PANEL_BACKGROUND_DARK : PANEL_BACKGROUND_LIGHT;
   const sheetWidth = width - CONFIG.layout.horizontalInset;
   const graphicHeight = CONFIG.layout.topSectionHeight + CONFIG.layout.gridHeight;
@@ -65,26 +80,28 @@ export const TradeDetailsGraphic = memo(function TradeDetailsGraphic({ trade }: 
           <Group dither antiAlias>
             <Rect x={0} y={0} width={sheetWidth} height={CONFIG.layout.topSectionHeight} opacity={0.2}>
               <LinearGradient
-                colors={[opacityWorklet('#2EDC51', 0), '#31E054']}
+                colors={CONFIG.topSectionGradients[displayType].bottomToTop}
                 start={vec(0, 32)}
                 end={vec(0, CONFIG.layout.topSectionHeight)}
               />
             </Rect>
             <Rect x={0} y={0} width={sheetWidth} height={CONFIG.layout.topSectionHeight} opacity={0.03}>
               <LinearGradient
-                colors={['#23D246', opacityWorklet('#26D449', 0)]}
+                colors={CONFIG.topSectionGradients[displayType].topToBottom}
                 start={vec(0, 0)}
                 end={vec(0, CONFIG.layout.topSectionHeight - 32)}
               />
             </Rect>
           </Group>
         )}
-        <FloatingSparks
-          height={CONFIG.layout.topSectionHeight}
-          width={sheetWidth}
-          sparkColor={accentColor}
-          direction={isLoss ? 'down' : 'up'}
-        />
+        {!isOpen && (
+          <FloatingSparks
+            height={CONFIG.layout.topSectionHeight}
+            width={sheetWidth}
+            sparkColor={accentColor}
+            direction={isLoss ? 'down' : 'up'}
+          />
+        )}
         {/* Solid background to hide sparks behind the grid */}
         <Rect x={0} y={CONFIG.layout.topSectionHeight} width={sheetWidth} height={gridHeight} color={backgroundColor} />
         <Group transform={[{ translateY: CONFIG.layout.topSectionHeight }, { translateX: -gridOverflow / 2 }]}>
@@ -177,7 +194,7 @@ function getGridBackgroundGradient(trade: HlTrade) {
     case 'profit':
       return ['#23D246', opacityWorklet('#23D246', 0)];
     case 'info':
-      return ['#3ECFAD', '#3ECFAD'];
+      return ['#62DFBC', opacityWorklet('#62DFBC', 0)];
   }
 }
 
