@@ -11,6 +11,8 @@ import { getSolidColorEquivalent } from '@/worklets/colors';
 import { format } from 'date-fns';
 import { memo, useMemo } from 'react';
 import Routes from '@/navigation/routesNames';
+import ConditionalWrap from 'conditional-wrap';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 export const AboutSection = memo(function AboutSection({
   event,
@@ -111,6 +113,7 @@ const InfoRows = memo(function InfoRows({ event }: { event: PolymarketEvent | Po
         value: new URL(event.resolutionSource).hostname.replace('www.', ''),
         icon: '􀉣',
         rightIcon: '􀄯',
+        onPress: () => openInBrowser(event.resolutionSource, false),
       });
     }
 
@@ -131,14 +134,24 @@ const InfoRows = memo(function InfoRows({ event }: { event: PolymarketEvent | Po
   return (
     <Box gap={4}>
       {rowItems.map((infoRow, index) => (
-        <InfoRow
-          key={index}
-          title={infoRow.title}
-          value={infoRow.value}
-          icon={infoRow.icon}
-          highlighted={index % 2 === 1}
-          rightIcon={infoRow.rightIcon}
-        />
+        <ConditionalWrap
+          key={infoRow.title}
+          condition={Boolean(infoRow.onPress)}
+          wrap={children => (
+            <ButtonPressAnimation onPress={infoRow.onPress} key={infoRow.title}>
+              {children}
+            </ButtonPressAnimation>
+          )}
+        >
+          <InfoRow
+            key={infoRow.title}
+            title={infoRow.title}
+            value={infoRow.value}
+            icon={infoRow.icon}
+            highlighted={index % 2 === 1}
+            rightIcon={infoRow.rightIcon}
+          />
+        </ConditionalWrap>
       ))}
     </Box>
   );

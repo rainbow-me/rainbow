@@ -103,7 +103,7 @@ export const CATEGORIES = {
   },
   crypto: {
     label: 'Crypto',
-    icon: '􀏻',
+    icon: '􁑞',
     tagId: 'crypto',
     color: {
       dark: '#AA75FF',
