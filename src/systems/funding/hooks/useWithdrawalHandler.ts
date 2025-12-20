@@ -54,6 +54,7 @@ export function useWithdrawalHandler<T extends BalanceQueryStore>({
     // 2. Get recipient address
     const recipient = useWalletsStore.getState().accountAddress;
     if (!recipient) {
+      config.trackFailure?.({ error: 'No wallet connected', stage: 'validation' });
       Alert.alert('Error', 'No wallet connected');
       return;
     }
@@ -70,6 +71,7 @@ export function useWithdrawalHandler<T extends BalanceQueryStore>({
       const route = config.route;
       if (!route) {
         logger.error(new RainbowError('[useWithdrawalHandler]: route context missing config', { id: config.id }));
+        config.trackFailure?.({ amount, error: 'Route context missing config', stage: 'validation' });
         Alert.alert('Error', 'Routing configuration missing');
         return;
       }
@@ -86,6 +88,7 @@ export function useWithdrawalHandler<T extends BalanceQueryStore>({
         let quoteData = context.useQuoteStore.getState().getData();
 
         if (quoteData === WithdrawalQuoteStatus.InsufficientBalance) {
+          config.trackFailure?.({ amount, error: 'Insufficient balance for withdrawal', stage: 'validation', targetChainId });
           Alert.alert('Error', 'Insufficient balance for withdrawal');
           return;
         }
@@ -97,6 +100,7 @@ export function useWithdrawalHandler<T extends BalanceQueryStore>({
 
         if (!isValidWithdrawalSwapQuote(quoteData)) {
           withdrawalActions.setIsSubmitting(false);
+          config.trackFailure?.({ amount, error: 'No valid quote available for withdrawal', stage: 'validation', targetChainId });
           Alert.alert('Error', 'No valid quote available for withdrawal');
           return;
         }
@@ -107,15 +111,17 @@ export function useWithdrawalHandler<T extends BalanceQueryStore>({
 
     // 4. Execute with framework coordination
     withdrawalActions.setIsSubmitting(true);
+    const targetChainId = params.chainInfo?.chainId;
 
+    let prerequisiteCompleted = false;
     try {
-      // Run prerequisite if configured
       if (config.prerequisite) await config.prerequisite();
+      prerequisiteCompleted = true;
 
-      // Execute withdrawal
       const result = await config.executor(params);
 
       if (!result.success) {
+        config.trackFailure?.({ amount, error: result.error, stage: 'execution', targetChainId });
         if (result.error !== 'handled') {
           Alert.alert('Error Withdrawing', result.error);
         }
@@ -123,8 +129,8 @@ export function useWithdrawalHandler<T extends BalanceQueryStore>({
       }
 
       Navigation.goBack();
+      config.trackSuccess?.({ amount, targetChainId });
 
-      // Schedule refreshes (waits for confirmation if provided)
       const refreshConfig = config.refresh;
       if (refreshConfig) {
         if (result.waitForConfirmation) {
@@ -141,6 +147,12 @@ export function useWithdrawalHandler<T extends BalanceQueryStore>({
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error during withdrawal';
       logger.error(new RainbowError(`[useWithdrawalHandler]: ${config.id} failed`), { error });
+      config.trackFailure?.({
+        amount,
+        error: message,
+        stage: prerequisiteCompleted ? 'execution' : 'prerequisite',
+        targetChainId,
+      });
       Alert.alert('Error Withdrawing', message);
     } finally {
       withdrawalActions.setIsSubmitting(false);

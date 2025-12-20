@@ -4,6 +4,10 @@ import { logger, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
 
+export async function refetchPolymarketBalance(): Promise<void> {
+  await usePolymarketBalanceStore.getState().fetch(undefined, { force: true });
+}
+
 export async function refetchPolymarketStores(): Promise<void> {
   await Promise.allSettled([
     polymarketPositionsActions.fetch(undefined, { force: true }),

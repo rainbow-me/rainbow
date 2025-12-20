@@ -44,6 +44,30 @@ export type RefreshConfig = {
  */
 export type OnDepositSubmit = (signer: Signer) => Promise<void>;
 
+export type DepositSuccessMetadata = {
+  /** Amount deposited in source asset units */
+  amount: string;
+  /** Chain of the source asset */
+  assetChainId: ChainId;
+  /** Symbol of the source asset */
+  assetSymbol: string;
+  /** Execution path taken */
+  executionStrategy: 'crosschainSwap' | 'directTransfer' | 'swap';
+};
+
+export type DepositFailureMetadata = {
+  /** Amount attempted, if available */
+  amount?: string;
+  /** Chain of the source asset, if available */
+  assetChainId?: ChainId;
+  /** Symbol of the source asset, if available */
+  assetSymbol?: string;
+  /** Internal error message */
+  error: string;
+  /** Point in the flow where failure occurred */
+  stage: 'execution' | 'validation' | 'wallet';
+};
+
 /**
  * Token the user is depositing into.
  */
@@ -129,6 +153,12 @@ export type DepositConfig = {
 
   /** Store refresh behavior after confirmation */
   refresh?: RefreshConfig;
+
+  /** Track failed deposit attempts */
+  trackFailure?: (metadata: DepositFailureMetadata) => void;
+
+  /** Track successful deposit completions */
+  trackSuccess?: (metadata: DepositSuccessMetadata) => void;
 };
 
 // ============ Quote Status =================================================== //
@@ -499,6 +529,30 @@ export type WithdrawalExecutor = (params: WithdrawalExecutorParams) => Promise<W
  */
 export type WithdrawalPrerequisite = () => Promise<void>;
 
+/**
+ * Metadata passed to the withdrawal success callback.
+ */
+export type WithdrawalSuccessMetadata = {
+  /** Amount withdrawn */
+  amount: string;
+  /** Target chain for routed withdrawals */
+  targetChainId?: ChainId;
+};
+
+/**
+ * Metadata passed to the withdrawal failure callback.
+ */
+export type WithdrawalFailureMetadata = {
+  /** Amount attempted, if available */
+  amount?: string;
+  /** Internal error message */
+  error: string;
+  /** Point in the flow where failure occurred */
+  stage: 'execution' | 'prerequisite' | 'validation';
+  /** Target chain, if available */
+  targetChainId?: ChainId;
+};
+
 // ============ Withdrawal Configuration ======================================= //
 
 /**
@@ -555,14 +609,20 @@ export type WithdrawalConfig<TBalanceStore extends BalanceQueryStore> = {
   /** Submits the withdrawal transaction(s) */
   executor: WithdrawalExecutor;
 
+  /** Info card displayed above the slider */
+  infoCard?: WithdrawalInfoCardConfig;
+
   /** Async setup before execution (e.g., deploy proxy wallet) */
   prerequisite?: WithdrawalPrerequisite;
 
   /** Store refresh after confirmation */
   refresh?: RefreshConfig;
 
-  /** Info card displayed above the slider */
-  infoCard?: WithdrawalInfoCardConfig;
+  /** Track failed withdrawal attempts */
+  trackFailure?: (metadata: WithdrawalFailureMetadata) => void;
+
+  /** Track successful withdrawal completions */
+  trackSuccess?: (metadata: WithdrawalSuccessMetadata) => void;
 };
 
 // ============ Withdrawal Store Types ========================================= //
@@ -587,7 +647,7 @@ export type TokenNetworkInfo = {
 
 /**
  * Token metadata with network addresses, fetched from the metadata API.
- * Networks are keyed by chain ID as string (from API response).
+ * Networks are keyed by chain ID strings (from the API response).
  */
 export type WithdrawalTokenData = {
   iconUrl?: string;

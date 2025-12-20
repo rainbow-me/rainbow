@@ -7,25 +7,17 @@ import { WithdrawalTokenData, WithdrawalTokenStoreType } from '../types';
 
 // ============ Types ========================================================== //
 
-type TokenParams = {
-  address: string;
-  chainId: ChainId;
-};
-
 type ExternalToken = Pick<Token, 'iconUrl' | 'networks' | 'symbol'>;
-
-type NetworkInfo = {
-  address: string;
-  decimals: number;
-};
+type NetworkInfo = { address: string; decimals: number };
+type TokenParams = { address: string; chainId: ChainId };
 
 // ============ Store Factory ================================================== //
 
 export function createTokenNetworksStore({ address, chainId }: TokenParams): WithdrawalTokenStoreType {
   return createQueryStore<WithdrawalTokenData | null, TokenParams>({
-    cacheTime: time.hours(1),
     fetcher: tokenNetworksQueryFunction,
     params: { address, chainId },
+    cacheTime: time.hours(1),
     staleTime: time.minutes(5),
   });
 }
@@ -65,10 +57,10 @@ function formatTokenData(token: ExternalToken): WithdrawalTokenData {
 
 function parseNetworkInfo(value: unknown): NetworkInfo | null {
   if (!value || typeof value !== 'object') return null;
-  const record = value as Record<string, unknown>;
-  const address = record.address;
-  const decimals = record.decimals;
-  if (typeof address !== 'string') return null;
-  if (typeof decimals !== 'number') return null;
-  return { address, decimals };
+  if (!('address' in value) || typeof value.address !== 'string') return null;
+  if (!('decimals' in value) || typeof value.decimals !== 'number') return null;
+  return {
+    address: value.address,
+    decimals: value.decimals,
+  };
 }

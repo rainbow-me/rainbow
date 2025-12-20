@@ -1,6 +1,7 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { OperationType, RelayerTransactionState, SafeTransaction } from '@polymarket/builder-relayer-client';
 import { parseUnits } from 'ethers/lib/utils';
+import { analytics } from '@/analytics';
 import { USD_DECIMALS } from '@/features/perps/constants';
 import { logger, RainbowError } from '@/logger';
 import { USDC_ADDRESS } from '@/references';
@@ -15,7 +16,7 @@ import { usePolymarketBalanceStore } from './stores/polymarketBalanceStore';
 import { awaitPolygonConfirmation } from './utils/confirmation';
 import { erc20Interface } from './utils/erc20Interface';
 import { ensureProxyWalletIsDeployed } from './utils/proxyWallet';
-import { refetchPolymarketStores } from './utils/refetchPolymarketStores';
+import { refetchPolymarketBalance } from './utils/refetchPolymarketStores';
 
 // ============ Config ========================================================= //
 
@@ -49,8 +50,11 @@ export const POLYMARKET_WITHDRAWAL_CONFIG = createWithdrawalConfig({
 
   refresh: {
     delays: [time.seconds(1), time.seconds(3), time.seconds(6)],
-    handler: refetchPolymarketStores,
+    handler: refetchPolymarketBalance,
   },
+
+  trackFailure: metadata => analytics.track(analytics.event.predictionsWithdrawalFailed, metadata),
+  trackSuccess: metadata => analytics.track(analytics.event.predictionsWithdrawal, metadata),
 });
 
 // ============ Prerequisite =================================================== //

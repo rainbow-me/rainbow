@@ -90,7 +90,11 @@ const WithdrawalScreenContent = memo(function WithdrawalScreenContent() {
     inputMethod,
     isAtMax,
     sliderProgress,
-  } = useWithdrawalController(config.balanceStore, config.amountDecimals, amountActions);
+  } = useWithdrawalController({
+    amountActions,
+    balanceStore: config.balanceStore,
+    decimals: config.amountDecimals,
+  });
 
   const handleWithdrawal = useWithdrawalHandler({
     balance,

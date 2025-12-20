@@ -8,6 +8,12 @@ import { CandleResolution, ChartType } from '@/features/charts/types';
 import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 import { TokenLauncherAnalyticsParams } from '@/screens/token-launcher/state/tokenLauncherStore';
 import { ChainId, Network } from '@/state/backendNetworks/types';
+import {
+  DepositFailureMetadata,
+  DepositSuccessMetadata,
+  WithdrawalFailureMetadata,
+  WithdrawalSuccessMetadata,
+} from '@/systems/funding/types';
 import { FavoritedSite } from '@/state/browser/favoriteDappsStore';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
@@ -340,6 +346,10 @@ export const event = {
   predictionsCollectTradeFeeFailed: 'predictions.collect_trade_fee.failed',
   predictionsRedeemPosition: 'predictions.redeem_position',
   predictionsRedeemPositionFailed: 'predictions.redeem_position.failed',
+  predictionsDeposit: 'predictions.deposit',
+  predictionsDepositFailed: 'predictions.deposit.failed',
+  predictionsWithdrawal: 'predictions.withdrawal',
+  predictionsWithdrawalFailed: 'predictions.withdrawal.failed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -1341,4 +1351,8 @@ export type EventProperties = {
     transactionState: string | undefined;
     errorMessage: string;
   };
+  [event.predictionsDeposit]: DepositSuccessMetadata;
+  [event.predictionsDepositFailed]: DepositFailureMetadata;
+  [event.predictionsWithdrawal]: WithdrawalSuccessMetadata;
+  [event.predictionsWithdrawalFailed]: WithdrawalFailureMetadata;
 };

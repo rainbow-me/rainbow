@@ -46,6 +46,10 @@ export function convertSide(side: 'B' | 'A'): OrderSide {
   return side === 'B' ? 'buy' : 'sell';
 }
 
+export async function refetchHyperliquidBalance(): Promise<void> {
+  await hyperliquidAccountActions.fetch(undefined, { force: true });
+}
+
 export async function refetchHyperliquidStores() {
   await Promise.allSettled([
     hlOpenOrdersStoreActions.fetch(undefined, { force: true }),
