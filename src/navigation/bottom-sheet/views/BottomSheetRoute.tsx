@@ -143,7 +143,6 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
         animateOnMount
         backdropComponent={renderBackdropComponent}
         backgroundComponent={null}
-        containerLayoutState={containerLayoutState}
         enableContentPanningGesture={enableContentPanningGesture}
         enableHandlePanningGesture={enableHandlePanningGesture}
         enablePanDownToClose={enablePanDownToClose}
@@ -152,6 +151,8 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
         onClose={handleOnClose}
         ref={ref}
         snapPoints={snapPoints}
+        enableDynamicSizing={false}
+        detached
       >
         <View style={screenContainerStyle}>{render()}</View>
       </BottomSheet>
