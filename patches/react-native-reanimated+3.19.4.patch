@@ -444,7 +444,7 @@ index eaa59a8..d3f2424 100644
  }
  
 +void NativeProxy::endLayoutAnimation(int tag, bool shouldRemove) {
-+  layoutAnimations_->cthis()->endLayoutAnimation(tag, shouldRemove);
++  (*layoutAnimations_)->cthis()->endLayoutAnimation(tag, shouldRemove);
 +}
 +
  PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
