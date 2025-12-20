@@ -16,6 +16,13 @@ export type SeriesDataInput = {
   timestamps: Float32Array;
 };
 
+type SeriesValue = {
+  key: string;
+  label: string;
+  price: number;
+  timestamp: number;
+};
+
 export class LineSeriesBuilder {
   private readonly __workletClass = true;
 
@@ -215,8 +222,8 @@ export class LineSeriesBuilder {
     return this.highlightedKey;
   }
 
-  public getValuesAtIndex(index: number): Array<{ key: string; label: string; price: number; timestamp: number }> {
-    const values: Array<{ key: string; label: string; price: number; timestamp: number }> = [];
+  public getValuesAtIndex(index: number): SeriesValue[] {
+    const values: SeriesValue[] = [];
 
     for (const s of this.series) {
       if (index >= 0 && index < s.getLength()) {
@@ -227,6 +234,22 @@ export class LineSeriesBuilder {
           timestamp: s.getTimestamp(index),
         });
       }
+    }
+
+    return values;
+  }
+
+  public getValuesAtTimestamp(timestamp: number): SeriesValue[] {
+    const values: SeriesValue[] = [];
+
+    for (const s of this.series) {
+      if (!s.getLength()) continue;
+      values.push({
+        key: s.key,
+        label: s.label,
+        price: s.getPriceAtTimestamp(timestamp),
+        timestamp,
+      });
     }
 
     return values;

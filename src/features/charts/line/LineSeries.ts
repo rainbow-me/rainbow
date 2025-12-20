@@ -329,6 +329,10 @@ export class LineSeries {
     return this.prices[index];
   }
 
+  public getPriceAtTimestamp(timestamp: number): number {
+    return this.samplePriceAtTimestamp(timestamp);
+  }
+
   public getMinMaxInRange(endIndex: number, startIndex: number): MinMax {
     if (!this.prices.length || startIndex > endIndex) {
       return { max: 1, min: 0 };
