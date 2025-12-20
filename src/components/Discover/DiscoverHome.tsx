@@ -60,8 +60,7 @@ export default function DiscoverHome() {
   const opRewardsRemoteFlag = op_rewards_enabled;
   const trendingTokensEnabled = (useExperimentalFlag(TRENDING_TOKENS) || trending_tokens_enabled) && !IS_TEST;
   const perpsEnabled = perps_enabled;
-  // TODO: TEMPORARY for public Testflight
-  const polymarketEnabled = (useExperimentalFlag(POLYMARKET) || polymarket_enabled || true) && !IS_TEST;
+  const polymarketEnabled = (useExperimentalFlag(POLYMARKET) || polymarket_enabled) && !IS_TEST;
 
   const { chainId } = useAccountSettings();
   const testNetwork = isTestnetChain({ chainId });
