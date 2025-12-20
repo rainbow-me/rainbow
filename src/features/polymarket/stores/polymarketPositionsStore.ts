@@ -104,18 +104,34 @@ function sortPositions(positions: PolymarketPosition[]): PolymarketPosition[] {
   });
 }
 
+// API limit is 20 markets per request
+const MAX_MARKETS_PER_REQUEST = 20;
+
 async function fetchPolymarketMarkets(marketSlugs: string[], abortController: AbortController | null): Promise<RawPolymarketMarket[]> {
-  const url = new URL(`${POLYMARKET_GAMMA_API_URL}/markets`);
-  marketSlugs.forEach(slug => {
-    url.searchParams.append('slug', slug);
-  });
+  const chunkSize = MAX_MARKETS_PER_REQUEST;
+  const chunks: string[][] = [];
 
-  const { data: response } = await rainbowFetch<RawPolymarketMarket[]>(url.toString(), {
-    abortController,
-    timeout: time.seconds(15),
-  });
+  for (let i = 0; i < marketSlugs.length; i += chunkSize) {
+    chunks.push(marketSlugs.slice(i, i + chunkSize));
+  }
 
-  return response;
+  const responses = await Promise.all(
+    chunks.map(async slugs => {
+      const url = new URL(`${POLYMARKET_GAMMA_API_URL}/markets`);
+      slugs.forEach(slug => {
+        url.searchParams.append('slug', slug);
+      });
+
+      const { data } = await rainbowFetch<RawPolymarketMarket[]>(url.toString(), {
+        abortController,
+        timeout: time.seconds(15),
+      });
+
+      return data;
+    })
+  );
+
+  return responses.flat();
 }
 
 async function fetchTeamsForGameMarkets(markets: RawPolymarketMarket[]): Promise<Map<string, PolymarketTeamInfo[]>> {
