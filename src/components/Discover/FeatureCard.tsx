@@ -24,7 +24,7 @@ export const FeatureCard = memo(function FeatureCard({ accentColor, icon, title,
   return (
     <AccentColorProvider color={accentColor}>
       <View style={styles.container}>
-        <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+        <ButtonPressAnimation onPress={onPress} scaleTo={0.95}>
           <ConditionalWrap
             condition={isDarkMode}
             wrap={children => (
@@ -67,19 +67,19 @@ export const FeatureCard = memo(function FeatureCard({ accentColor, icon, title,
                     end={{ x: 1, y: 1 }}
                   />
 
-                  <TextShadow blur={10} color={accentColor} x={0} y={0} shadowOpacity={0.6}>
-                    <Text size="26pt" weight="heavy" color={{ custom: accentColor }}>
+                  <TextShadow blur={20} color={accentColor} x={0} y={0} shadowOpacity={0.6}>
+                    <Text size="icon 26px" weight="heavy" color={{ custom: accentColor }} align="center">
                       {icon}
                     </Text>
                   </TextShadow>
                 </Box>
                 <Stack space={'12px'}>
                   <Bleed horizontal={'8px'}>
-                    <Inline alignHorizontal="center" alignVertical="center" space="6px">
+                    <Inline alignHorizontal="center" alignVertical="center" space="3px">
                       <Text size="20pt" weight="heavy" color="label" align="center">
                         {title}
                       </Text>
-                      <TextIcon size="icon 13px" weight="heavy" color={'label'} opacity={0.3} align="center">
+                      <TextIcon size="icon 13px" weight="heavy" color={'label'} opacity={0.3} align="center" textStyle={{ top: 1 }}>
                         {'􀯻'}
                       </TextIcon>
                     </Inline>
@@ -105,8 +105,8 @@ const styles = StyleSheet.create({
   gradientBorderView: {
     width: '100%',
     paddingHorizontal: 22,
-    paddingTop: 24,
-    paddingBottom: 16,
+    paddingTop: 16,
+    paddingBottom: 24,
     borderRadius: 32,
   },
 });

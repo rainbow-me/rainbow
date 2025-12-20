@@ -32,6 +32,7 @@ import { DiscoverSeparator } from './DiscoverSeparator';
 import { useWallets } from '@/state/wallets/walletsStore';
 import { FeatureCard } from '@/components/Discover/FeatureCard';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
+import * as i18n from '@/languages';
 
 export const HORIZONTAL_PADDING = 20;
 
@@ -79,8 +80,8 @@ export default function DiscoverHome() {
               <FeatureCard
                 accentColor={'#C863E8'}
                 icon="􀫸"
-                title="Predictions"
-                subtitle="Bet on anything on-chain"
+                title={i18n.t(i18n.l.predictions.feature_card.title)}
+                subtitle={i18n.t(i18n.l.predictions.feature_card.subtitle)}
                 onPress={navigateToPolymarket}
               />
             )}
@@ -88,8 +89,8 @@ export default function DiscoverHome() {
               <FeatureCard
                 accentColor={'#3ECFAD'}
                 icon="􀯠"
-                title="Perps"
-                subtitle={'High risk, high reward trading'}
+                title={i18n.t(i18n.l.perps.feature_card.title)}
+                subtitle={i18n.t(i18n.l.perps.feature_card.subtitle)}
                 onPress={() => {
                   Navigation.handleAction(Routes.PERPS_NAVIGATOR);
                 }}
