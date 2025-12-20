@@ -6,6 +6,8 @@ import { CONTAINER_HEIGHT, DEFAULT_BACKDROP_COLOR, DEFAULT_BACKDROP_OPACITY, DEF
 import { BottomSheetNavigatorContext } from '../contexts/internal';
 import type { BottomSheetDescriptor } from '../types';
 import { IS_ANDROID } from '@/env';
+import { useSharedValue } from 'react-native-reanimated';
+import { ContainerLayoutState } from '@gorhom/bottom-sheet/lib/typescript/types';
 
 interface Props {
   routeKey: string;
@@ -29,6 +31,10 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
   } = options || {};
 
   const ref = useRef<BottomSheet>(null);
+  const containerLayoutState = useSharedValue<ContainerLayoutState>({
+    height: CONTAINER_HEIGHT,
+    offset: { top: 0, bottom: 0, left: 0, right: 0 },
+  });
 
   const removingRef = useRef(false);
   removingRef.current = removing;
@@ -137,7 +143,7 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
         animateOnMount
         backdropComponent={renderBackdropComponent}
         backgroundComponent={null}
-        containerHeight={CONTAINER_HEIGHT}
+        containerLayoutState={containerLayoutState}
         enableContentPanningGesture={enableContentPanningGesture}
         enableHandlePanningGesture={enableHandlePanningGesture}
         enablePanDownToClose={enablePanDownToClose}

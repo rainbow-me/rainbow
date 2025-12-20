@@ -3837,9 +3837,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gorhom/bottom-sheet@npm:4.6.1":
-  version: 4.6.1
-  resolution: "@gorhom/bottom-sheet@npm:4.6.1"
+"@gorhom/bottom-sheet@npm:5.2.8":
+  version: 5.2.8
+  resolution: "@gorhom/bottom-sheet@npm:5.2.8"
   dependencies:
     "@gorhom/portal": "npm:1.0.14"
     invariant: "npm:^2.2.4"
@@ -3848,14 +3848,14 @@ __metadata:
     "@types/react-native": "*"
     react: "*"
     react-native: "*"
-    react-native-gesture-handler: ">=1.10.1"
-    react-native-reanimated: ">=2.2.0"
+    react-native-gesture-handler: ">=2.16.1"
+    react-native-reanimated: "*"
   peerDependenciesMeta:
     "@types/react":
       optional: true
     "@types/react-native":
       optional: true
-  checksum: 10c0/a808d292f073b896e1722433ee982d43c83c89fcb440a5f79a61ed8600966d02a6ceaea647c6ba898736b714bd271a6de0f3de330cdadfe5310c12e333068a84
+  checksum: 10c0/9bb71a375cdcaec650e8c84ab5e3e42f55b3ae19d9e08cf90688cf72706588d211f3aeef28b857a37e9e411efa8fdf038429c90a8855167c7ab3dce5c595dfca
   languageName: node
   linkType: hard
 
@@ -9749,7 +9749,7 @@ __metadata:
     "@ethersproject/units": "npm:5.8.0"
     "@ethersproject/wallet": "npm:5.8.0"
     "@gelatonetwork/relay-sdk": "npm:5.6.0"
-    "@gorhom/bottom-sheet": "npm:4.6.1"
+    "@gorhom/bottom-sheet": "npm:5.2.8"
     "@json-rpc-tools/utils": "npm:1.7.6"
     "@lavamoat/allow-scripts": "npm:3.0.1"
     "@lavamoat/preinstall-always-fail": "npm:2.0.0"
