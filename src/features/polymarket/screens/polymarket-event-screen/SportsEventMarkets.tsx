@@ -1,4 +1,4 @@
-import { Box, globalColors, Separator, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { Box, globalColors, Separator, Text, TextIcon, useColorMode } from '@/design-system';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import React, { memo, useMemo, useState } from 'react';
@@ -22,6 +22,7 @@ import Routes from '@/navigation/routesNames';
 import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
 import { GammaMarket } from '@/features/charts/polymarket/types';
+import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
 
 export const SportsEventMarkets = memo(function SportsEventMarkets() {
   const { isDarkMode } = useColorMode();
@@ -211,10 +212,7 @@ const ThreeWayMoneylineMarkets = memo(function ThreeWayMoneylineMarkets({
   teams?: PolymarketTeamInfo[];
   event: PolymarketEvent;
 }) {
-  const green = useForegroundColor('green');
-  const red = useForegroundColor('red');
-  const drawColor = '#808080';
-
+  const { isDarkMode } = useColorMode();
   return (
     <Box gap={24}>
       <Box flexDirection="row" alignItems="center" gap={10}>
@@ -229,9 +227,8 @@ const ThreeWayMoneylineMarkets = memo(function ThreeWayMoneylineMarkets({
       </Box>
       <Box gap={8}>
         {marketsGroup.markets.map((market, index) => {
-          const team = getOutcomeTeam(market.groupItemTitle, teams);
-          const isDraw = isDrawMarket(market);
-          const outcomeColor = isDraw ? drawColor : team?.color ?? (index === 0 ? green : red);
+          const team = getOutcomeTeam({ outcome: market.groupItemTitle, outcomeIndex: index, teams });
+          const outcomeColor = getOutcomeColor({ market, outcome: market.groupItemTitle, outcomeIndex: index, isDarkMode, teams });
 
           return (
             <MarketRow

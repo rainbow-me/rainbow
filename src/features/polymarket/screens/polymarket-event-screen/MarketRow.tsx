@@ -77,7 +77,6 @@ export const MarketRow = memo(function MarketRow({
           style={StyleSheet.absoluteFill}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          pointerEvents="none"
         />
         <Box flexDirection="row" alignItems="center" height="full" gap={12} paddingRight={'10px'}>
           {image && <ImgixImage enableFasterImage resizeMode="cover" size={40} source={{ uri: image }} style={styles.image} />}

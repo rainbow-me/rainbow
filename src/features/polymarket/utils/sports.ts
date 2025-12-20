@@ -2,7 +2,10 @@ import { rainbowFetch } from '@/rainbow-fetch';
 import { time } from '@/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
-import { PolymarketGameMetadata, PolymarketTeamInfo } from '@/features/polymarket/types';
+import { PolymarketGameMetadata, RawPolymarketTeamInfo, PolymarketTeamInfo } from '@/features/polymarket/types';
+import colors from '@/styles/colors';
+import { addressHashedColorIndex } from '@/utils/profileUtils';
+import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 
 export async function fetchGameMetadata(eventTicker: string) {
   try {
@@ -26,9 +29,10 @@ export async function fetchTeamsInfo({ teamNames, league }: { teamNames: string[
     teamNames.forEach(name => {
       url.searchParams.append('name', name);
     });
-    const { data: teams } = await rainbowFetch<PolymarketTeamInfo[]>(url.toString(), { timeout: time.seconds(15) });
-    if (!teams) return undefined;
-    if (teams.length > teamNames.length) {
+    const { data: rawTeams } = await rainbowFetch<RawPolymarketTeamInfo[]>(url.toString(), { timeout: time.seconds(15) });
+    if (!rawTeams) return undefined;
+    const teams = enrichTeamsWithColor(rawTeams);
+    if (rawTeams.length > teamNames.length) {
       return filterFetchedTeams(teams, teamNames);
     }
     return sortTeamsByRequestedNames(teams, teamNames);
@@ -87,4 +91,15 @@ function filterFetchedTeams(teams: PolymarketTeamInfo[], teamNames: string[]): P
 
   const bestLeagueTeams = teamsByLeague.get(bestLeague) ?? [];
   return sortTeamsByRequestedNames(bestLeagueTeams, teamNames);
+}
+
+function enrichTeamsWithColor(teams: RawPolymarketTeamInfo[]): PolymarketTeamInfo[] {
+  return teams.map(team => {
+    const defaultColor = colors.avatarBackgrounds[addressHashedColorIndex(String(team.id)) ?? 0];
+    const color = team.color ?? defaultColor;
+    return {
+      ...team,
+      color: { light: getHighContrastColor(color, false), dark: getHighContrastColor(color, true) },
+    };
+  });
 }

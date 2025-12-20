@@ -1,12 +1,13 @@
 import { memo } from 'react';
 import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { Box, useForegroundColor } from '@/design-system';
+import { Box, useColorMode } from '@/design-system';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { MarketRow } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
 import { PolymarketTeamInfo } from '@/features/polymarket/types';
 import { ResolvedMarketRow } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketRow';
 import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
+import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
 
 export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes({
   market,
@@ -19,17 +20,14 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
   teams?: PolymarketTeamInfo[];
   event: PolymarketEvent;
 }) {
-  const green = useForegroundColor('green');
-  const red = useForegroundColor('red');
-
+  const { isDarkMode } = useColorMode();
   const winningOutcomeIndex = getWinningOutcomeIndex(market);
 
   return (
     <Box gap={8}>
       {market.outcomes.map((outcome, index) => {
-        const team = getOutcomeTeam(outcome, teams);
-        const outcomeColor = team?.color ?? (index === 0 ? green : red);
-        const outcomeImage = team?.logo;
+        const outcomeImage = getOutcomeTeam({ outcome, outcomeIndex: index, teams })?.logo;
+        const outcomeColor = getOutcomeColor({ market, outcome, outcomeIndex: index, isDarkMode, teams });
 
         if (winningOutcomeIndex !== null) {
           return (

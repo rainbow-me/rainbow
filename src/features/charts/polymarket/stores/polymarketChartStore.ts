@@ -1,6 +1,5 @@
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
-import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
-import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
+import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils';
 import { fetchGammaEvent } from '../api/gammaClient';
@@ -165,9 +164,7 @@ async function extractSportsChartInputs(event: GammaEvent): Promise<SeriesInputs
   }
 
   const colors = labels.map((label, index) => {
-    const team = getOutcomeTeam(label, teams);
-    if (team?.color) return { dark: getHighContrastColor(team.color, true), light: getHighContrastColor(team.color, false) };
-    return index === 0 ? YES_COLOR : NO_COLOR;
+    return getOutcomeTeamColor({ outcome: label, outcomeIndex: index, teams });
   });
 
   return { colors, labels, markets, tokenIds };
