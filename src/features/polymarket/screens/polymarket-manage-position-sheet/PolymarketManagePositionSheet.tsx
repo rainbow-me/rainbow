@@ -17,9 +17,9 @@ import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
-import { divWorklet, mulWorklet, subWorklet } from '@/safe-math/SafeMath';
+import { mulWorklet, subWorklet } from '@/safe-math/SafeMath';
 import { marketSellTotalPosition } from '@/features/polymarket/utils/orders';
-import { collectTradeFee } from '@/features/polymarket/utils/collectTradeFee';
+import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
 import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
 import Navigation from '@/navigation/Navigation';
 import { refetchPolymarketStores, waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
@@ -29,7 +29,6 @@ import { getPositionTokenId } from '@/features/polymarket/utils/getPositionToken
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 import { BlurView } from 'react-native-blur-view';
 import { analytics } from '@/analytics';
-import { USD_FEE_PER_TOKEN } from '@/features/polymarket/constants';
 
 export const PolymarketManagePositionSheet = memo(function PolymarketManagePositionSheet() {
   const {
@@ -90,30 +89,23 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
   }, [livePositionValue, position.initialValue]);
 
   const handleCashOutPosition = useCallback(async () => {
+    let price: number | undefined;
     try {
-      const price = await polymarketClobDataClient.calculateMarketPrice(position.asset, Side.SELL, position.size);
+      price = await polymarketClobDataClient.calculateMarketPrice(position.asset, Side.SELL, position.size);
       const orderResult = await marketSellTotalPosition({ position, price });
-
       setProcessingLabel(i18n.t(i18n.l.predictions.manage_position.confirming_order));
-      const tokensSold = orderResult.makingAmount;
-      const usdReceived = orderResult.takingAmount;
-      const fee = mulWorklet(tokensSold, USD_FEE_PER_TOKEN);
-
-      analytics.track(analytics.event.predictionsPlaceOrder, {
-        eventSlug: position.eventSlug,
-        marketSlug: position.slug,
-        outcome: position.outcome,
-        orderAmountUsd: Number(usdReceived),
-        feeAmountUsd: Number(fee),
-        tokenAmount: Number(tokensSold),
-        tokenId: position.asset,
-        orderPriceUsd: Number(price),
-        bestPriceUsd: Number(livePrice),
-        averagePriceUsd: Number(divWorklet(usdReceived, tokensSold)),
-        side: 'sell',
+      trackPolymarketOrder({
+        orderResult,
+        context: {
+          eventSlug: position.eventSlug,
+          marketSlug: position.slug,
+          outcome: position.outcome,
+          tokenId: position.asset,
+          side: 'sell',
+          orderPriceUsd: price,
+          bestPriceUsd: livePrice,
+        },
       });
-
-      void collectTradeFee(tokensSold);
       await waitForPositionSizeUpdate(position.asset);
       Navigation.goBack();
     } catch (e) {
@@ -128,6 +120,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
         tokenId: position.asset,
         side: 'sell',
         errorMessage: error.message,
+        ...(price ? { orderPriceUsd: Number(price) } : {}),
       });
     } finally {
       setIsProcessing(false);

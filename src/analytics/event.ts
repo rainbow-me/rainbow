@@ -350,6 +350,7 @@ export const event = {
   predictionsDepositFailed: 'predictions.deposit.failed',
   predictionsWithdrawal: 'predictions.withdrawal',
   predictionsWithdrawalFailed: 'predictions.withdrawal.failed',
+  predictionsOrderMatchFailed: 'predictions.order_match.failed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -1355,4 +1356,14 @@ export type EventProperties = {
   [event.predictionsDepositFailed]: DepositFailureMetadata;
   [event.predictionsWithdrawal]: WithdrawalSuccessMetadata;
   [event.predictionsWithdrawalFailed]: WithdrawalFailureMetadata;
+  [event.predictionsOrderMatchFailed]: {
+    orderId: string;
+    eventSlug: string;
+    marketSlug: string;
+    outcome: string;
+    tokenId: string;
+    side: 'buy' | 'sell';
+    reason: string;
+    errorMessage?: string;
+  };
 };

@@ -21,7 +21,7 @@ import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { marketBuyToken } from '@/features/polymarket/utils/orders';
 import { subWorklet } from '@/safe-math/SafeMath';
-import { collectTradeFee } from '@/features/polymarket/utils/collectTradeFee';
+import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
 import { usePolymarketAccountInfo } from '@/features/polymarket/stores/derived/usePolymarketAccountInfo';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { analytics } from '@/analytics';
@@ -82,24 +82,19 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     try {
       const orderResult = await marketBuyToken({ tokenId, amount: amountToBuy, price: worstPrice });
       setProcessingLabel(i18n.t(i18n.l.predictions.new_position.confirming_order));
-      const tokensBought = orderResult.takingAmount;
-
-      analytics.track(analytics.event.predictionsPlaceOrder, {
-        eventSlug: event.slug,
-        marketSlug: market.slug,
-        outcome,
-        orderAmountUsd: Number(orderResult.makingAmount),
-        feeAmountUsd: Number(fee),
-        tokenAmount: Number(tokensBought),
-        tokenId,
-        spread: Number(spread),
-        bestPriceUsd: Number(bestPrice),
-        orderPriceUsd: Number(worstPrice),
-        averagePriceUsd: Number(orderResult.makingAmount) / Number(tokensBought),
-        side: 'buy',
+      trackPolymarketOrder({
+        orderResult,
+        context: {
+          eventSlug: event.slug,
+          marketSlug: market.slug,
+          outcome,
+          tokenId,
+          side: 'buy',
+          spread,
+          bestPriceUsd: bestPrice,
+          orderPriceUsd: worstPrice,
+        },
       });
-
-      void collectTradeFee(tokensBought);
       await waitForPositionSizeUpdate(tokenId);
       if (fromRoute === Routes.POLYMARKET_EVENT_SCREEN) {
         Navigation.goBack();
