@@ -7,6 +7,7 @@ import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam'
 import colors from '@/styles/colors';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
+import { isTeamBasedOutcome } from '@/features/polymarket/utils/marketClassification';
 
 type MarketColors = {
   color: ResponseByTheme<string>;
@@ -42,7 +43,7 @@ function isSingleMarketEvent(market: RawPolymarketMarket) {
 }
 
 export function getPositionAccentColor(position: PolymarketPosition): ResponseByTheme<string> {
-  if (position.teams) {
+  if (isTeamBasedOutcome(position.outcome) && position.teams) {
     return getOutcomeTeamColor({ outcome: position.outcome, outcomeIndex: position.outcomeIndex, teams: position.teams });
   }
   return position.market.color;

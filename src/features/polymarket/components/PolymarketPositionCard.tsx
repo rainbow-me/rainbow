@@ -25,6 +25,7 @@ import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { greaterThan } from '@/helpers/utilities';
 
 export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   position,
@@ -196,7 +197,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                   <Text
                     size="15pt"
                     weight="bold"
-                    color={position.cashPnl > 0 ? 'green' : 'red'}
+                    color={greaterThan(livePnl, 0) ? 'green' : 'red'}
                     align="right"
                     numberOfLines={1}
                     style={styles.flexShrink0}
@@ -240,7 +241,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
             </Box>
           </Box>
           {showActionButton && (
-            <ButtonPressAnimation onPress={onPressActionButton} scaleTo={0.975}>
+            <ButtonPressAnimation onPress={onPressActionButton} scaleTo={0.975} disallowInterruption>
               <Box
                 width="full"
                 height={40}

@@ -67,3 +67,10 @@ type ActiveMarket = {
 export function isActiveMoneylineMarket(m: ActiveMarket): boolean {
   return m.active && !m.closed && m.clobTokenIds.length > 0 && isMoneylineMarketType(m.sportsMarketType);
 }
+
+export function isTeamBasedOutcome(outcome: string): boolean {
+  const outcomeLowerCase = outcome.toLowerCase();
+  if (outcomeLowerCase === 'yes' || outcomeLowerCase === 'no') return false;
+  if (outcomeLowerCase === 'over' || outcomeLowerCase === 'under') return false;
+  return true;
+}

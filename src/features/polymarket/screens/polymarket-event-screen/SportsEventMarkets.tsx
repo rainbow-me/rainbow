@@ -229,12 +229,14 @@ const ThreeWayMoneylineMarkets = memo(function ThreeWayMoneylineMarkets({
         {marketsGroup.markets.map((market, index) => {
           const team = getOutcomeTeam({ outcome: market.groupItemTitle, outcomeIndex: index, teams });
           const outcomeColor = getOutcomeColor({ market, outcome: market.groupItemTitle, outcomeIndex: index, isDarkMode, teams });
+          // The second outcome is the draw outcome, which we currently don't have an image for
+          const image = index !== 1 ? team?.logo : undefined;
 
           return (
             <MarketRow
               key={market.id}
               accentColor={outcomeColor}
-              image={team?.logo}
+              image={image}
               priceChange={0}
               title={market.groupItemTitle}
               tokenId={market.clobTokenIds[0]}
