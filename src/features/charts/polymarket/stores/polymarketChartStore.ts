@@ -1,9 +1,13 @@
+import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
+import { isDrawMarket } from '@/features/polymarket/screens/polymarket-event-screen/SportsEventMarkets';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam';
+import { isThreeWayMoneyline } from '@/features/polymarket/utils/marketClassification';
 import { createQueryStore } from '@/state/internal/createQueryStore';
+import { ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { time } from '@/utils';
-import { fetchGammaEvent } from '../api/gammaClient';
 import { fetchPriceHistory } from '../api/clobClient';
+import { fetchGammaEvent } from '../api/gammaClient';
 import {
   FIDELITY_MAP,
   GammaEvent,
@@ -18,9 +22,6 @@ import {
   SERIES_COLORS,
 } from '../types';
 import { PolymarketStoreState, usePolymarketStore } from './polymarketStore';
-import { ResponseByTheme } from '@/__swaps__/utils/swaps';
-import { isActiveMoneylineMarket, isThreeWayMoneyline } from '@/features/polymarket/utils/marketClassification';
-import { isDrawMarket } from '@/features/polymarket/screens/polymarket-event-screen/SportsEventMarkets';
 
 // ============ Constants ====================================================== //
 
@@ -141,7 +142,7 @@ function buildSeries(
 const EMPTY_INPUTS: SeriesInputs = Object.freeze({ colors: null, labels: [], markets: null, tokenIds: [] });
 
 async function extractSportsChartInputs(event: GammaEvent): Promise<SeriesInputs> {
-  const moneylineMarkets = event.markets.filter(isActiveMoneylineMarket);
+  const moneylineMarkets = event.markets.filter(isFullGameMoneyline);
   const moneyline = moneylineMarkets[0];
   if (!moneyline) return EMPTY_INPUTS;
 
@@ -237,6 +238,13 @@ function buildSeriesArrays(history: PricePoint[]): { prices: Float32Array; times
   return { prices, timestamps };
 }
 
+function getMarketLabel(market: GammaMarket): string {
+  if (market.outcomes.length === 2 && market.outcomes[0] === 'Yes' && market.outcomes[1] === 'No') {
+    return market.groupItemTitle ?? market.question.slice(0, 27) + '…';
+  }
+  return market.outcomes[0] ?? 'Unknown';
+}
+
 function getOutcomeColor(label: string, index: number, enableYesNoColors: boolean): ResponseByTheme<string> {
   if (enableYesNoColors) {
     const normalized = label?.toLowerCase();
@@ -259,11 +267,8 @@ function hasYesAndNo(labels: readonly string[]): boolean {
   return false;
 }
 
-function getMarketLabel(market: GammaMarket): string {
-  if (market.outcomes.length === 2 && market.outcomes[0] === 'Yes' && market.outcomes[1] === 'No') {
-    return market.groupItemTitle ?? market.question.slice(0, 27) + '…';
-  }
-  return market.outcomes[0] ?? 'Unknown';
+function isFullGameMoneyline(m: GammaMarket): boolean {
+  return m.active && !m.closed && m.clobTokenIds.length > 0 && m.sportsMarketType === POLYMARKET_SPORTS_MARKET_TYPE.MONEYLINE;
 }
 
 export function selectTopMarketsForChart<T extends { active: boolean; closed: boolean; clobTokenIds: string[]; outcomePrices: string[] }>(
