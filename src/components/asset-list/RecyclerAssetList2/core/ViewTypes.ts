@@ -201,7 +201,6 @@ export type CellExtraData =
   | PerpsBalanceExtraData
   | PerpsPositionExtraData
   | PerpsHeaderExtraData
-  | PerpsFeatureCardExtraData
   | PolymarketBalanceExtraData
   | PolymarketPositionExtraData
   | PolymarketFeatureCardExtraData
