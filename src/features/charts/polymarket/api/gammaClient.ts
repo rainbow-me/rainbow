@@ -9,7 +9,7 @@ const EMPTY_MARKETS: GammaMarket[] = [];
 
 // ============ Types ========================================================== //
 
-type GammaEndpoint = 'events' | 'markets';
+type GammaEndpoint = 'events' | 'markets' | 'teams';
 
 // ============ Fetch Functions ================================================ //
 
@@ -59,7 +59,7 @@ export async function fetchActiveEvents(
 
 // ============ Helpers ======================================================== //
 
-function buildGammaUrl(endpoint: GammaEndpoint): string {
+export function buildGammaUrl(endpoint: GammaEndpoint): string {
   return `${POLYMARKET_GAMMA_API_URL}/${endpoint}`;
 }
 
