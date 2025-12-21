@@ -6,6 +6,7 @@ import { PolymarketGameMetadata, RawPolymarketTeamInfo, PolymarketTeamInfo } fro
 import colors from '@/styles/colors';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
+import { buildGammaUrl } from '@/features/charts/polymarket/api/gammaClient';
 
 export async function fetchGameMetadata(eventTicker: string) {
   try {
@@ -20,9 +21,26 @@ export async function fetchGameMetadata(eventTicker: string) {
   }
 }
 
-export async function fetchTeamsInfo({ teamNames, league }: { teamNames: string[]; league: string | undefined }) {
+export async function fetchTeamsInfo({
+  abbreviations,
+  league,
+  teamNames,
+}: {
+  abbreviations?: string[];
+  league: string | undefined;
+  teamNames: string[];
+}) {
+  // Try abbreviation-based query first (more reliable - some team names fail Polymarket's validation)
+  if (abbreviations?.length) {
+    const teams = await fetchTeamsByAbbreviations(abbreviations, league);
+    if (teams?.length === abbreviations.length) {
+      return teams;
+    }
+  }
+
+  // Fall back to name-based query
   try {
-    const url = new URL(`${POLYMARKET_GAMMA_API_URL}/teams`);
+    const url = new URL(buildGammaUrl('teams'));
     if (league) {
       url.searchParams.set('league', league);
     }
@@ -37,8 +55,25 @@ export async function fetchTeamsInfo({ teamNames, league }: { teamNames: string[
     }
     return sortTeamsByRequestedNames(teams, teamNames);
   } catch (e) {
-    // This can fail unexpectedly, but should not prevent the event from being loaded
     logger.error(new RainbowError('[Polymarket] Error fetching teams info', e));
+    return undefined;
+  }
+}
+
+async function fetchTeamsByAbbreviations(abbreviations: string[], league: string | undefined): Promise<PolymarketTeamInfo[] | undefined> {
+  try {
+    const url = new URL(buildGammaUrl('teams'));
+    if (league) {
+      url.searchParams.set('league', league);
+    }
+    abbreviations.forEach(abbr => {
+      url.searchParams.append('abbreviation', abbr);
+    });
+    const { data: rawTeams } = await rainbowFetch<RawPolymarketTeamInfo[]>(url.toString(), { timeout: time.seconds(15) });
+    if (!rawTeams) return undefined;
+    const teams = enrichTeamsWithColor(rawTeams);
+    return sortTeamsByAbbreviations(teams, abbreviations);
+  } catch {
     return undefined;
   }
 }
@@ -52,6 +87,22 @@ export async function fetchTeamsForGame(eventTicker: string): Promise<Polymarket
 
   // Field is named 'sport' but it is the league
   return fetchTeamsInfo({ teamNames, league: gameMetadata.sport });
+}
+
+export function parseTeamAbbreviationsFromTicker(ticker: string): { away: string; home: string } | null {
+  const parts = ticker.split('-');
+  if (parts.length < 4) return null;
+  return { away: parts[1], home: parts[2] };
+}
+
+function sortTeamsByAbbreviations(teams: PolymarketTeamInfo[], abbreviations: string[]): PolymarketTeamInfo[] {
+  const result: PolymarketTeamInfo[] = [];
+  for (const abbr of abbreviations) {
+    const normalized = abbr.trim().toLowerCase();
+    const match = teams.find(team => team.abbreviation?.trim().toLowerCase() === normalized);
+    if (match) result.push(match);
+  }
+  return result;
 }
 
 function sortTeamsByRequestedNames(teams: PolymarketTeamInfo[], teamNames: string[]): PolymarketTeamInfo[] {

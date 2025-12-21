@@ -6,7 +6,7 @@ import { RainbowError } from '@/logger';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { getLeague, processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { PolymarketGameMetadata, PolymarketTeamInfo } from '@/features/polymarket/types';
-import { fetchGameMetadata, fetchTeamsInfo } from '@/features/polymarket/utils/sports';
+import { fetchGameMetadata, fetchTeamsInfo, parseTeamAbbreviationsFromTicker } from '@/features/polymarket/utils/sports';
 
 type FetchParams = { eventId: string | null };
 
@@ -34,7 +34,7 @@ export const usePolymarketEventStore = createQueryStore<PolymarketEvent, FetchPa
   },
   (_, get) => ({
     eventId: null,
-    getMarkets: (sortOrder?: MarketSortOrder) => {
+    getMarkets: sortOrder => {
       const event = get().getData();
       const markets = event?.markets;
       const sortBy = sortOrder ?? event?.sortBy ?? MarketSortOrder.DEFAULT;
@@ -92,9 +92,11 @@ async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: A
   }
 
   if (event.homeTeamName && event.awayTeamName) {
+    const tickerAbbreviations = parseTeamAbbreviationsFromTicker(event.ticker);
     teams = await fetchTeamsInfo({
-      teamNames: [event.awayTeamName, event.homeTeamName],
+      abbreviations: tickerAbbreviations ? [tickerAbbreviations.away, tickerAbbreviations.home] : undefined,
       league: league ?? getLeague(event)?.slug,
+      teamNames: [event.awayTeamName, event.homeTeamName],
     });
   }
 
