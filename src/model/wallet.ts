@@ -50,6 +50,7 @@ import { GetOptions, SetOptions } from 'react-native-keychain';
 import { getIsDamagedWallet, getWalletWithAccount, setWalletDamaged } from '@/state/wallets/walletsStore';
 import Routes from '@/navigation/routesNames';
 import Navigation from '@/navigation/Navigation';
+import { IS_IOS } from '@/env';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -1395,4 +1396,69 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (id: RainbowWallet['id']):
     logger.error(new RainbowError('[wallet]: Error in loadSeedPhraseAndMigrateIfNeeded'), { error });
     throw error;
   }
+};
+
+/**
+ * Checks the integrity of keychain encrypted wallets and returns a map of wallet state to be updated.
+ */
+export const checkWalletsDamagedState = async (wallets: AllRainbowWallets): Promise<Map<string, boolean>> => {
+  const updatedWalletDamagedStates = new Map<string, boolean>();
+  const keychainWallets = Object.values(wallets).filter(wallet => wallet.encryptionType === EncryptionType.keychain);
+  if (keychainWallets.length === 0) {
+    logger.debug('[wallet]: No keychain-encrypted wallets found, skipping checks', {}, DebugContext.wallet);
+    return updatedWalletDamagedStates;
+  }
+
+  // Try to detect cases where wallets will be unusable and might need to be re-imported
+  if (IS_IOS) {
+    // Passcode is disabled - the keychain data will be inaccessible until the user re-enables it.
+    const isPasscodeAuthAvailable = await kc.isPasscodeAuthAvailable();
+    if (!isPasscodeAuthAvailable) {
+      logger.debug('[wallet]: Passcode is disabled, marking keychain encrypted wallets as damaged', {}, DebugContext.wallet);
+      keychainWallets.forEach(wallet => {
+        updatedWalletDamagedStates.set(wallet.id, true);
+      });
+    } else {
+      const damagedWallets = keychainWallets.filter(wallet => wallet.damaged);
+      if (damagedWallets.length > 0) {
+        logger.debug('[wallet]: Keychain appears healthy again, repairing damaged wallets', {}, DebugContext.wallet);
+        damagedWallets.forEach(wallet => {
+          updatedWalletDamagedStates.set(wallet.id, false);
+        });
+      }
+
+      // Device migration - the keychain cache will be transferred, but not the keychain data itself.
+      await Promise.all(
+        keychainWallets.map(async wallet => {
+          // It is enough to just check the first address of each wallet.
+          const key = `${wallet.addresses[0].address}_${privateKeyKey}`;
+          let hasKey = false;
+          try {
+            hasKey = await kc.has(key);
+          } catch (e) {
+            logger.debug(
+              `[wallet]: Error checking keychain key existence for wallet ${wallet.id}: ${ensureError(e).message}`,
+              {},
+              DebugContext.wallet
+            );
+          }
+          if (!hasKey) {
+            logger.debug(`[wallet]: No private key found in keychain for wallet ${wallet.id}, marking as damaged`, {}, DebugContext.wallet);
+            updatedWalletDamagedStates.set(wallet.id, true);
+          }
+        })
+      );
+    }
+  } else {
+    // Passcode is disabled - the keychain data will be inaccessible permanently.
+    const isPasscodeAuthAvailable = await kc.isPasscodeAuthAvailable();
+    if (!isPasscodeAuthAvailable) {
+      logger.debug('[wallet]: Passcode is disabled, marking keychain encrypted wallets as damaged', {}, DebugContext.wallet);
+      keychainWallets.forEach(wallet => {
+        updatedWalletDamagedStates.set(wallet.id, true);
+      });
+    }
+  }
+
+  return updatedWalletDamagedStates;
 };

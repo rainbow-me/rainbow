@@ -11,8 +11,8 @@ import Routes from '@/navigation/routesNames';
 import Navigation from '@/navigation/Navigation';
 import {
   AllRainbowWallets,
+  checkWalletsDamagedState,
   cleanUpWalletKeys,
-  EncryptionType,
   generateAccount,
   getAllWallets,
   getSelectedWallet as getSelectedWalletFromKeychain,
@@ -27,7 +27,7 @@ import {
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
 import { isLowerCaseMatch, time, watchingAlert } from '@/utils';
-import { didShowWalletErrorSheetKey, privateKeyKey } from '@/utils/keychainConstants';
+import { didShowWalletErrorSheetKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
 import { shallowEqual } from '@/worklets/comparisons';
 import { captureMessage } from '@sentry/react-native';
@@ -35,7 +35,6 @@ import { dequal } from 'dequal';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { Address } from 'viem';
 import { createRainbowStore } from '../internal/createRainbowStore';
-import { IS_IOS } from '@/env';
 
 interface AccountProfileInfo {
   accountAddress: Address;
@@ -529,7 +528,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     checkKeychainIntegrity: async () => {
       try {
         const startTime = Date.now();
-        let healthyKeychain = true;
         logger.debug('[walletsStore]: Starting keychain integrity checks');
 
         if (!get().walletReady) {
@@ -537,70 +535,14 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           return;
         }
 
-        const keychainWallets = Object.values(get().wallets).filter(wallet => wallet.encryptionType === EncryptionType.keychain);
-        if (keychainWallets.length === 0) {
-          logger.debug('[walletsStore]: No keychain-encrypted wallets found, skipping checks');
-          return;
-        }
-
-        const updatedWalletDamagedStates = new Map<string, boolean>();
-
-        // Try to detect cases where wallets will be unusable and might need to be re-imported
-        if (IS_IOS) {
-          // Passcode is disabled - the keychain data will be inaccessible until the user re-enables it.
-          const isPasscodeAuthAvailable = await kc.isPasscodeAuthAvailable();
-          if (!isPasscodeAuthAvailable) {
-            logger.debug('[walletsStore]: Passcode is disabled, marking keychain encrypted wallets as damaged');
-            healthyKeychain = false;
-            keychainWallets.forEach(wallet => {
-              updatedWalletDamagedStates.set(wallet.id, true);
-            });
-          } else {
-            const damagedWallets = keychainWallets.filter(wallet => wallet.damaged);
-            if (damagedWallets.length > 0) {
-              logger.debug('[walletsStore]: Keychain appears healthy again, repairing damaged wallets');
-              damagedWallets.forEach(wallet => {
-                updatedWalletDamagedStates.set(wallet.id, false);
-              });
-            }
-
-            // Device migration - the keychain cache will be transferred, but not the keychain data itself.
-            await Promise.all(
-              keychainWallets.map(async wallet => {
-                // It is enough to just check the first address of each wallet.
-                const key = `${wallet.addresses[0].address}_${privateKeyKey}`;
-                let hasKey = false;
-                try {
-                  hasKey = await kc.has(key);
-                } catch (e) {
-                  logger.debug(`[walletsStore]: Error checking keychain key existence for wallet ${wallet.id}: ${ensureError(e).message}`);
-                }
-                if (!hasKey) {
-                  logger.debug(`[walletsStore]: No private key found in keychain for wallet ${wallet.id}, marking as damaged`);
-                  healthyKeychain = false;
-                  updatedWalletDamagedStates.set(wallet.id, true);
-                }
-              })
-            );
-          }
-        } else {
-          // Passcode is disabled - the keychain data will be inaccessible permanently.
-          const isPasscodeAuthAvailable = await kc.isPasscodeAuthAvailable();
-          if (!isPasscodeAuthAvailable) {
-            logger.debug('[walletsStore]: Passcode is disabled, marking keychain encrypted wallets as damaged');
-            healthyKeychain = false;
-            keychainWallets.forEach(wallet => {
-              updatedWalletDamagedStates.set(wallet.id, true);
-            });
-          }
-        }
+        const updatedWalletsDamagedState = await checkWalletsDamagedState(get().wallets);
+        const healthyKeychain = updatedWalletsDamagedState.values().every(damaged => !damaged);
 
         set(state => {
-          if (!state.wallets || updatedWalletDamagedStates.size === 0) return state;
-
+          if (!state.wallets || updatedWalletsDamagedState.size === 0) return state;
           const updatedWallets = { ...state.wallets };
 
-          updatedWalletDamagedStates.forEach((damaged, walletId) => {
+          updatedWalletsDamagedState.forEach((damaged, walletId) => {
             const curWallet = updatedWallets[walletId];
             if (curWallet.damaged !== damaged) {
               updatedWallets[walletId] = {
@@ -611,9 +553,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           });
 
           const newSelected =
-            state.selected && updatedWalletDamagedStates.has(state.selected.id) ? updatedWallets[state.selected.id] : state.selected;
-
-          logger.debug('[walletsStore]: done updating wallets');
+            state.selected && updatedWalletsDamagedState.has(state.selected.id) ? updatedWallets[state.selected.id] : state.selected;
 
           return {
             ...state,
