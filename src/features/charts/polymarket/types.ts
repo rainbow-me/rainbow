@@ -104,7 +104,7 @@ export type OutcomeSeries = {
   /** Probability values (0-1) */
   prices: Float32Array;
   /** Unix timestamps in seconds */
-  timestamps: Float32Array;
+  timestamps: Uint32Array;
   /** CLOB token ID */
   tokenId: string;
 };

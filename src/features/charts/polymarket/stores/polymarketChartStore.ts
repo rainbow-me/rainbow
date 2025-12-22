@@ -220,10 +220,10 @@ function shouldEnableMarketChart(state: PolymarketStoreState): boolean {
 
 // ============ Helpers ======================================================== //
 
-function buildSeriesArrays(history: PricePoint[]): { prices: Float32Array; timestamps: Float32Array } {
+function buildSeriesArrays(history: PricePoint[]): { prices: Float32Array; timestamps: Uint32Array } {
   const len = history.length;
   const prices = new Float32Array(len);
-  const timestamps = new Float32Array(len);
+  const timestamps = new Uint32Array(len);
   if (!len) return { prices, timestamps };
 
   const firstTimestamp = history[0].t;

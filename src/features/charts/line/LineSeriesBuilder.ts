@@ -13,7 +13,7 @@ export type SeriesDataInput = {
   smoothingMode?: LineSmoothing;
   /** Smoothing tension [0, 1] where 0 = linear, 1 = maximum smoothing */
   smoothingTension?: number;
-  timestamps: Float32Array;
+  timestamps: Uint32Array;
 };
 
 type SeriesValue = {

@@ -135,7 +135,7 @@ export class PolymarketChartManager {
 
   private interactionIndex: number | null = null;
   private interactionTimestamp: number | null = null;
-  private interactionTimestamps: Float32Array = new Float32Array(0);
+  private interactionTimestamps: Uint32Array = new Uint32Array(0);
   private interactionX: number | null = null;
   private seriesMetadata: { color: ResponseByTheme<string>; label: string; tokenId: string }[] = [];
 
@@ -159,6 +159,7 @@ export class PolymarketChartManager {
     black: SkColor;
     crosshairLine: SkColor;
     labelQuinary: SkColor;
+    labelQuinaryString: string;
     labelSecondary: SkColor;
     white: SkColor;
   };
@@ -237,13 +238,15 @@ export class PolymarketChartManager {
     this.availableWidth = this.chartWidth - this.yAxisWidth;
 
     const colorMode = isDarkMode ? 'dark' : 'light';
-    const labelQuinary = Skia.Color(getColorForTheme('labelQuinary', colorMode));
+    const labelQuinaryString = getColorForTheme('labelQuinary', colorMode);
+    const labelQuinary = Skia.Color(labelQuinaryString);
     const labelSecondary = Skia.Color(getColorForTheme('labelSecondary', colorMode));
 
     this.colors = {
       black: Skia.Color('#000000'),
       crosshairLine: isDarkMode ? Skia.Color(config.crosshair.lineColor) : labelQuinary,
       labelQuinary,
+      labelQuinaryString,
       labelSecondary,
       white: Skia.Color('#FFFFFF'),
     };
@@ -460,7 +463,7 @@ export class PolymarketChartManager {
     return this.timeDomain ?? this.fallbackTimeDomain;
   }
 
-  private buildInteractionTimestamps(series: OutcomeSeries[]): Float32Array {
+  private buildInteractionTimestamps(series: OutcomeSeries[]): Uint32Array {
     const collected: number[] = [];
 
     for (const s of series) {
@@ -470,7 +473,7 @@ export class PolymarketChartManager {
       }
     }
 
-    if (!collected.length) return new Float32Array(0);
+    if (!collected.length) return new Uint32Array(0);
 
     collected.sort((a, b) => a - b);
 
@@ -479,7 +482,7 @@ export class PolymarketChartManager {
       if (collected[i] !== collected[i - 1]) uniqueCount += 1;
     }
 
-    const unique = new Float32Array(uniqueCount);
+    const unique = new Uint32Array(uniqueCount);
     unique[0] = collected[0];
     let index = 1;
     for (let i = 1; i < collected.length; i++) {
@@ -705,7 +708,7 @@ export class PolymarketChartManager {
     if (this.activeInteraction) this.activeInteraction.value = undefined;
     this.interactionIndex = null;
     this.interactionTimestamp = null;
-    this.interactionTimestamps = new Float32Array(0);
+    this.interactionTimestamps = new Uint32Array(0);
     this.interactionX = null;
 
     const oldPicture = this.chartPicture.value;
@@ -842,6 +845,7 @@ export class PolymarketChartManager {
       const interactionConfig: InteractionConfig = {
         greyCirclePaint: this.paints.greyCircle,
         greyColor: this.colors.labelQuinary,
+        greyColorString: this.colors.labelQuinaryString,
         greyLinePaint: this.paints.greyLine,
         normalizedSplitPoint: interactionX,
         progress: interactionProgress,
@@ -949,7 +953,9 @@ export class PolymarketChartManager {
       return;
     }
 
-    const values = this.lineSeriesBuilder.getValuesAtTimestamp(cursorTimestamp);
+    if (nearestTimestamp === this.activeInteraction.value?.timestamp) return;
+
+    const values = this.lineSeriesBuilder.getValuesAtTimestamp(nearestTimestamp);
     if (!values.length) {
       this.activeInteraction.value = undefined;
       return;
@@ -1081,9 +1087,11 @@ export class PolymarketChartManager {
     this.backgroundColor = Skia.Color(backgroundColor);
 
     const colorMode = isDarkMode ? 'dark' : 'light';
-    const labelQuinary = Skia.Color(getColorForTheme('labelQuinary', colorMode));
+    const labelQuinaryString = getColorForTheme('labelQuinary', colorMode);
+    const labelQuinary = Skia.Color(labelQuinaryString);
     const labelSecondary = Skia.Color(getColorForTheme('labelSecondary', colorMode));
     this.colors.labelQuinary = labelQuinary;
+    this.colors.labelQuinaryString = labelQuinaryString;
     this.colors.labelSecondary = labelSecondary;
     this.colors.crosshairLine = isDarkMode ? Skia.Color(this.config.crosshair.lineColor) : labelQuinary;
 

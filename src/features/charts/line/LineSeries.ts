@@ -10,10 +10,11 @@ import {
   StrokeCap,
   StrokeJoin,
 } from '@shopify/react-native-skia';
+import { convertToRGBA, interpolateColor } from 'react-native-reanimated';
+import { ETH_COLOR, ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { getColorValueForThemeWorklet, ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { LineSmoothing, buildSmoothedPath, buildSmoothedPathAnimated } from './LineSmoothingAlgorithms';
 import { DrawParams } from './types';
-import { ETH_COLOR, ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 
 export type LineEffectsConfig = {
   endCirclePaint?: SkPaint;
@@ -31,6 +32,7 @@ export type LineEffectsConfig = {
 export type InteractionConfig = {
   greyCirclePaint: SkPaint;
   greyColor: SkColor;
+  greyColorString: string;
   greyLinePaint: SkPaint;
   normalizedSplitPoint: number;
   progress: number;
@@ -89,11 +91,12 @@ export class LineSeries {
   private readonly smoothingTension: number;
 
   private color: ResponseByTheme<SkColor>;
+  private colorString: ResponseByTheme<string>;
   private highlighted: boolean;
   private highlightPaint: SkPaint | null = null;
   private isDarkMode: boolean;
   private prices: Float32Array = new Float32Array(0);
-  private timestamps: Float32Array = new Float32Array(0);
+  private timestamps: Uint32Array = new Uint32Array(0);
 
   private previousPath: Float32Array | null = null;
   private targetPath: Float32Array | null = null;
@@ -124,6 +127,7 @@ export class LineSeries {
     } = config;
 
     this.color = { dark: Skia.Color(color.dark), light: Skia.Color(color.light) };
+    this.colorString = color;
     this.highlighted = highlighted;
     this.isDarkMode = isDarkMode;
     this.key = key;
@@ -144,7 +148,7 @@ export class LineSeries {
     if (highlighted) this.createHighlightPaint();
   }
 
-  public setData(prices: Float32Array, timestamps: Float32Array): void {
+  public setData(prices: Float32Array, timestamps: Uint32Array): void {
     this.prices = prices;
     this.timestamps = timestamps;
   }
@@ -530,10 +534,12 @@ export class LineSeries {
     this.splitRightPath.trim(splitT, 1, false);
 
     const color = this.getColor();
-    this.interpolatedColor[0] = color[0] + (interaction.greyColor[0] - color[0]) * t;
-    this.interpolatedColor[1] = color[1] + (interaction.greyColor[1] - color[1]) * t;
-    this.interpolatedColor[2] = color[2] + (interaction.greyColor[2] - color[2]) * t;
-    this.interpolatedColor[3] = color[3] + (interaction.greyColor[3] - color[3]) * t;
+    const interpolated = interpolateColor(t, [0, 1], [this.getColorString(), interaction.greyColorString], 'LAB');
+    const rgba = convertToRGBA(interpolated);
+    this.interpolatedColor[0] = rgba[0];
+    this.interpolatedColor[1] = rgba[1];
+    this.interpolatedColor[2] = rgba[2];
+    this.interpolatedColor[3] = rgba[3];
 
     if (effects?.lineShadowPaint) {
       const yOffset = effects.lineShadowYOffset ?? 0;
@@ -661,10 +667,12 @@ export class LineSeries {
           }
         }
 
-        this.interpolatedColor[0] = color[0] + (interaction.greyColor[0] - color[0]) * interactionProgress;
-        this.interpolatedColor[1] = color[1] + (interaction.greyColor[1] - color[1]) * interactionProgress;
-        this.interpolatedColor[2] = color[2] + (interaction.greyColor[2] - color[2]) * interactionProgress;
-        this.interpolatedColor[3] = color[3] + (interaction.greyColor[3] - color[3]) * interactionProgress;
+        const interpolated = interpolateColor(interactionProgress, [0, 1], [this.getColorString(), interaction.greyColorString], 'LAB');
+        const rgba = convertToRGBA(interpolated);
+        this.interpolatedColor[0] = rgba[0];
+        this.interpolatedColor[1] = rgba[1];
+        this.interpolatedColor[2] = rgba[2];
+        this.interpolatedColor[3] = rgba[3];
         interaction.greyCirclePaint.setColor(this.interpolatedColor);
         canvas.drawCircle(endX, endY, scaledRadius, interaction.greyCirclePaint);
       }
@@ -776,6 +784,7 @@ export class LineSeries {
 
   public setColor(colors: ResponseByTheme<string>): void {
     this.color = { dark: Skia.Color(colors.dark), light: Skia.Color(colors.light) };
+    this.colorString = colors;
     const newColor = this.getColor();
     this.paint.setColor(newColor);
     if (this.highlightPaint) {
@@ -789,6 +798,10 @@ export class LineSeries {
 
   public getColor(): SkColor {
     return getColorValueForThemeWorklet(this.color, this.isDarkMode, DEFAULT_SKIA_COLORS);
+  }
+
+  public getColorString(): string {
+    return this.isDarkMode ? this.colorString.dark : this.colorString.light;
   }
 
   private createHighlightPaint(): void {
