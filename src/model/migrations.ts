@@ -844,13 +844,11 @@ export default async function runMigrations() {
       for (const wallet of Object.values(wallets)) {
         if (!wallet.encryptionType) {
           wallet.encryptionType =
-            wallet.type === WalletTypes.readOnly
+            wallet.type === WalletTypes.readOnly || wallet.type === WalletTypes.bluetooth
               ? EncryptionType.none
-              : wallet.type === WalletTypes.bluetooth
-                ? EncryptionType.hardware
-                : hasPasscode
-                  ? EncryptionType.keychain
-                  : EncryptionType.rainbowPin;
+              : hasPasscode
+                ? EncryptionType.keychain
+                : EncryptionType.rainbowPin;
         }
       }
     }
