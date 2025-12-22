@@ -40,6 +40,7 @@ export const POLYMARKET_WITHDRAWAL_CONFIG = createWithdrawalConfig({
         symbol: 'USDC',
       },
       defaultChain: ChainId.base,
+      enableSameChainSwap: true,
       persistSelectedChain: true,
     },
     quote: {
