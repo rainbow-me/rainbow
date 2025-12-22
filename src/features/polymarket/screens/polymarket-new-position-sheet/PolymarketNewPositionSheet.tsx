@@ -26,6 +26,8 @@ import { usePolymarketAccountInfo } from '@/features/polymarket/stores/derived/u
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { analytics } from '@/analytics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
@@ -77,6 +79,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   }, [market.groupItemTitle, outcome, market.line, outcomeIndex]);
 
   const handleMarketBuyPosition = useCallback(async () => {
+    if (checkIfReadOnlyWallet(usePolymarketClients.getState().address)) return;
     setIsProcessing(true);
     const amountToBuy = subWorklet(buyAmount, fee);
     try {

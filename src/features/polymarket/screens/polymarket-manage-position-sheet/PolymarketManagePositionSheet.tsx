@@ -29,6 +29,8 @@ import { getPositionTokenId } from '@/features/polymarket/utils/getPositionToken
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 import { BlurView } from 'react-native-blur-view';
 import { analytics } from '@/analytics';
+import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 
 export const PolymarketManagePositionSheet = memo(function PolymarketManagePositionSheet() {
   const {
@@ -140,6 +142,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
   }, [position]);
 
   const onPressActionButton = useCallback(() => {
+    if (checkIfReadOnlyWallet(usePolymarketClients.getState().address)) return;
     setIsProcessing(true);
     switch (actionButtonType) {
       case PositionAction.CLAIM:
