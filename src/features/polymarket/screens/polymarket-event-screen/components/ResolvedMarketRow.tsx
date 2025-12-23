@@ -7,7 +7,6 @@ import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import ImgixImage from '@/components/images/ImgixImage';
 import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
-// import { getSolidColorEquivalent } from '@/worklets/colors';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 
 type ResolvedMarketRowProps = {

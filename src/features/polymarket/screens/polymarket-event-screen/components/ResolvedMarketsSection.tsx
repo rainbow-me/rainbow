@@ -1,4 +1,4 @@
-import { Box, Text } from '@/design-system';
+import { Box, Separator, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { memo, useState } from 'react';
 import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
@@ -17,6 +17,12 @@ export const ResolvedMarketsSection = memo(function ResolvedMarketsSection({
 
   return (
     <Box gap={24}>
+      {showResolved && (
+        <Box gap={24}>
+          <Separator color="separatorSecondary" direction="horizontal" thickness={1} />
+          <ResolvedMarketsList markets={markets} showMarketImages={showMarketImages} />
+        </Box>
+      )}
       <ButtonPressAnimation onPress={() => setShowResolved(prev => !prev)}>
         <Box
           width={'full'}
@@ -38,7 +44,6 @@ export const ResolvedMarketsSection = memo(function ResolvedMarketsSection({
           </Box>
         </Box>
       </ButtonPressAnimation>
-      {showResolved && <ResolvedMarketsList markets={markets} showMarketImages={showMarketImages} />}
     </Box>
   );
 });

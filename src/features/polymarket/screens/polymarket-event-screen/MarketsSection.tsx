@@ -1,4 +1,4 @@
-import { Bleed, Box, Separator, Text, TextIcon, useColorMode } from '@/design-system';
+import { Bleed, Box, Text, TextIcon, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { memo, useMemo, useState } from 'react';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
@@ -15,6 +15,7 @@ import { getSolidColorEquivalent } from '@/worklets/colors';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import useDimensions from '@/hooks/useDimensions';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ResolvedMarketsSection } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsSection';
 
 export const MarketsSection = memo(function MarketsSection({ event }: { event: PolymarketEvent | null }) {
   const { isDarkMode } = useColorMode();
@@ -87,17 +88,12 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
             ))}
           </Box>
         )}
-
-        {(showAllMarkets || allResolved) && resolvedMarkets.length > 0 && (
-          <>
-            {!allResolved && (
-              <Box paddingVertical={'20px'}>
-                <Separator color="separatorSecondary" direction="horizontal" thickness={1} />
-              </Box>
-            )}
-            <ResolvedMarketsList markets={resolvedMarkets} showMarketImages={showMarketImages} />
-          </>
+        {resolvedMarkets.length > 0 && showAllMarkets && (
+          <Box paddingTop={'20px'}>
+            <ResolvedMarketsSection markets={resolvedMarkets} showMarketImages={showMarketImages} />
+          </Box>
         )}
+        {allResolved && <ResolvedMarketsList markets={resolvedMarkets} showMarketImages={showMarketImages} />}
         {!allResolved && markets.length > 10 && (
           <>
             <Box position="absolute" bottom={{ custom: 0 }} width="full">
