@@ -13,9 +13,9 @@ export type PolymarketPositions = {
 const EMPTY_POSITIONS: PolymarketPosition[] = [];
 
 const EMPTY_RESULT = Object.freeze<PolymarketPositions>({
-  positions: EMPTY_POSITIONS,
-  activePositions: EMPTY_POSITIONS,
-  redeemablePositions: EMPTY_POSITIONS,
+  positions: [],
+  activePositions: [],
+  redeemablePositions: [],
   hasPositions: false,
 });
 

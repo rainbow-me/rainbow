@@ -26,6 +26,8 @@ import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketCol
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
 import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { greaterThan } from '@/helpers/utilities';
+import ConditionalWrap from 'conditional-wrap';
+import { IS_IOS } from '@/env';
 
 export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   position,
@@ -110,176 +112,214 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   }, [livePositionValue, position.initialValue]);
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.975} exclusive>
-      <GradientBorderView
-        borderGradientColors={
-          isDarkMode ? [accentColors.opacity6, accentColors.opacity0] : ['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0)']
-        }
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        locations={[0, 0.94]}
-        borderRadius={24}
-      >
-        <LinearGradient
-          colors={isDarkMode ? [accentColors.opacity14, accentColors.opacity0] : ['rgba(255, 255, 255, 0.8)', 'rgba(255, 255, 255, 0)']}
-          style={StyleSheet.absoluteFill}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-        />
-        <Box padding={'12px'}>
-          <Box gap={14}>
-            {showEventTitle && (
-              <GradientBorderView
-                borderGradientColors={
-                  isDarkMode ? [accentColors.opacity4, accentColors.opacity0] : ['#F0F2F5', opacityWorklet('#F0F2F5', 0)]
-                }
-                borderRadius={12}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0.75, y: 0 }}
+    <ConditionalWrap condition={!IS_IOS} wrap={children => <Box style={styles.container}>{children}</Box>}>
+      <>
+        {!IS_IOS && showActionButton && (
+          <Box style={styles.actionButtonOverlay}>
+            <ButtonPressAnimation onPress={onPressActionButton} scaleTo={0.975} exclusive>
+              <Box
+                width="full"
+                height={40}
+                justifyContent="center"
+                alignItems="center"
+                borderWidth={isDarkMode ? 2 : StyleSheet.hairlineWidth}
+                borderColor={{ custom: 'rgba(255, 255, 255, 0.08)' }}
+                backgroundColor={buttonBackgroundColor}
+                borderRadius={20}
               >
-                <LinearGradient
-                  colors={
-                    isDarkMode
-                      ? [accentColors.opacity6, accentColors.opacity0]
-                      : [opacityWorklet('#F0F2F5', 0.6), opacityWorklet('#F0F2F5', 0)]
-                  }
-                  style={StyleSheet.absoluteFill}
-                  start={{ x: 0.29, y: 0 }}
-                  end={{ x: 0.95, y: 0 }}
-                />
-                <Box flexDirection="row" alignItems="center" gap={7} paddingLeft={'8px'} paddingVertical={'6px'}>
-                  <ImgixImage
-                    enableFasterImage
-                    resizeMode="cover"
-                    size={16}
-                    source={{ uri: position.market.events[0].icon }}
-                    style={{ height: 16, width: 16, borderRadius: 4 }}
-                  />
-                  <Text size="15pt" weight="bold" color="labelSecondary" numberOfLines={1} style={styles.flex}>
-                    {position.market.events[0].title}
-                  </Text>
-                </Box>
-              </GradientBorderView>
-            )}
-            <Box paddingHorizontal={'4px'} gap={12}>
-              <Box gap={12}>
-                <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-                  <Box flexDirection="row" gap={4}>
-                    <Text size="15pt" weight="semibold" color="labelQuaternary">
-                      {i18n.t(i18n.l.predictions.position.outcome)}
-                    </Text>
-                  </Box>
-                  {redeemable ? (
-                    <Bleed bottom="16px">
-                      <WinOrLossBadge position={position} height={26} borderWidth={isDarkMode ? 2 : 2 / 3} />
-                    </Bleed>
-                  ) : (
-                    <Text size="17pt" weight="bold" color="label">
-                      {formatCurrency(livePositionValue)}
-                    </Text>
-                  )}
-                </Box>
-                <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={6} style={styles.flex}>
-                  <Box flexDirection="row" alignItems="center" gap={6} flexShrink={1}>
-                    {position.marketHasUniqueImage && (
-                      <Bleed vertical="4px">
-                        <ImgixImage
-                          enableFasterImage
-                          resizeMode="cover"
-                          size={16}
-                          source={{ uri: position.icon }}
-                          style={{ height: 16, width: 16, borderRadius: 4 }}
-                        />
-                      </Bleed>
-                    )}
-                    {redeemable && (
-                      <Bleed vertical="4px">
-                        <CheckOrXBadge position={position} size={16} fontSize="icon 8px" />
-                      </Bleed>
-                    )}
-                    <Text size="17pt" weight="bold" color="label" numberOfLines={1} style={styles.flexShrink}>
-                      {outcomeTitle}
-                    </Text>
-                    {position.market.groupItemTitle && (
-                      <Bleed vertical="4px">
-                        <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />
-                      </Bleed>
-                    )}
-                  </Box>
-                  {!redeemable && (
-                    <Text
-                      size="15pt"
-                      weight="bold"
-                      color={greaterThan(livePnl, 0) ? 'green' : 'red'}
-                      align="right"
-                      numberOfLines={1}
-                      style={styles.flexShrink0}
-                    >
-                      {formatCurrency(livePnl)}
-                    </Text>
-                  )}
-                </Box>
+                <InnerShadow borderRadius={20} color={'rgba(255, 255, 255, 0.17)'} blur={6} dx={0} dy={1} />
+                <Text size="17pt" weight="heavy" color={'white'}>
+                  {actionButtonLabel}
+                </Text>
               </Box>
-              <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
-              <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-                <Box flexDirection="row" alignItems="center" gap={3}>
-                  <Text size="15pt" weight="bold" color="labelQuaternary">
-                    {i18n.t(i18n.l.predictions.position.odds)}
-                  </Text>
-                  <LiveTokenText
-                    size="15pt"
-                    weight="bold"
-                    color="labelSecondary"
-                    tokenId={getPolymarketTokenId(outcomeTokenId, 'sell')}
-                    selector={token => `${toPercentageWorklet(token.price)}%`}
-                    initialValue={`${toPercentageWorklet(position.curPrice)}%`}
-                  />
+            </ButtonPressAnimation>
+          </Box>
+        )}
+        <ButtonPressAnimation onPress={onPress} scaleTo={onPress ? 0.975 : 1} exclusive>
+          <GradientBorderView
+            borderGradientColors={
+              isDarkMode ? [accentColors.opacity6, accentColors.opacity0] : ['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0)']
+            }
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            locations={[0, 0.94]}
+            borderRadius={24}
+          >
+            <LinearGradient
+              colors={isDarkMode ? [accentColors.opacity14, accentColors.opacity0] : ['rgba(255, 255, 255, 0.8)', 'rgba(255, 255, 255, 0)']}
+              style={StyleSheet.absoluteFill}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+            />
+            <Box padding={'12px'}>
+              <Box gap={14}>
+                {showEventTitle && (
+                  <GradientBorderView
+                    borderGradientColors={
+                      isDarkMode ? [accentColors.opacity4, accentColors.opacity0] : ['#F0F2F5', opacityWorklet('#F0F2F5', 0)]
+                    }
+                    borderRadius={12}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 0.75, y: 0 }}
+                  >
+                    <LinearGradient
+                      colors={
+                        isDarkMode
+                          ? [accentColors.opacity6, accentColors.opacity0]
+                          : [opacityWorklet('#F0F2F5', 0.6), opacityWorklet('#F0F2F5', 0)]
+                      }
+                      style={StyleSheet.absoluteFill}
+                      start={{ x: 0.29, y: 0 }}
+                      end={{ x: 0.95, y: 0 }}
+                    />
+                    <Box flexDirection="row" alignItems="center" gap={7} paddingLeft={'8px'} paddingVertical={'6px'}>
+                      <ImgixImage
+                        enableFasterImage
+                        resizeMode="cover"
+                        size={16}
+                        source={{ uri: position.market.events[0].icon }}
+                        style={{ height: 16, width: 16, borderRadius: 4 }}
+                      />
+                      <Text size="15pt" weight="bold" color="labelSecondary" numberOfLines={1} style={styles.flex}>
+                        {position.market.events[0].title}
+                      </Text>
+                    </Box>
+                  </GradientBorderView>
+                )}
+                <Box paddingHorizontal={'4px'} gap={12}>
+                  <Box gap={12}>
+                    <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+                      <Box flexDirection="row" gap={4}>
+                        <Text size="15pt" weight="semibold" color="labelQuaternary">
+                          {i18n.t(i18n.l.predictions.position.outcome)}
+                        </Text>
+                      </Box>
+                      {redeemable ? (
+                        <Bleed bottom="16px">
+                          <WinOrLossBadge position={position} height={26} borderWidth={isDarkMode ? 2 : 2 / 3} />
+                        </Bleed>
+                      ) : (
+                        <Text size="17pt" weight="bold" color="label">
+                          {formatCurrency(livePositionValue)}
+                        </Text>
+                      )}
+                    </Box>
+                    <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={6} style={styles.flex}>
+                      <Box flexDirection="row" alignItems="center" gap={6} flexShrink={1}>
+                        {position.marketHasUniqueImage && (
+                          <Bleed vertical="4px">
+                            <ImgixImage
+                              enableFasterImage
+                              resizeMode="cover"
+                              size={16}
+                              source={{ uri: position.icon }}
+                              style={{ height: 16, width: 16, borderRadius: 4 }}
+                            />
+                          </Bleed>
+                        )}
+                        {redeemable && (
+                          <Bleed vertical="4px">
+                            <CheckOrXBadge position={position} size={16} fontSize="icon 8px" />
+                          </Bleed>
+                        )}
+                        <Text size="17pt" weight="bold" color="label" numberOfLines={1} style={styles.flexShrink}>
+                          {outcomeTitle}
+                        </Text>
+                        {position.market.groupItemTitle && (
+                          <Bleed vertical="4px">
+                            <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />
+                          </Bleed>
+                        )}
+                      </Box>
+                      {!redeemable && (
+                        <Text
+                          size="15pt"
+                          weight="bold"
+                          color={greaterThan(livePnl, 0) ? 'green' : 'red'}
+                          align="right"
+                          numberOfLines={1}
+                          style={styles.flexShrink0}
+                        >
+                          {formatCurrency(livePnl)}
+                        </Text>
+                      )}
+                    </Box>
+                  </Box>
+                  <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
+                  <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+                    <Box flexDirection="row" alignItems="center" gap={3}>
+                      <Text size="15pt" weight="bold" color="labelQuaternary">
+                        {i18n.t(i18n.l.predictions.position.odds)}
+                      </Text>
+                      <LiveTokenText
+                        size="15pt"
+                        weight="bold"
+                        color="labelSecondary"
+                        tokenId={getPolymarketTokenId(outcomeTokenId, 'sell')}
+                        selector={token => `${toPercentageWorklet(token.price)}%`}
+                        initialValue={`${toPercentageWorklet(position.curPrice)}%`}
+                      />
+                    </Box>
+                    <Box flexDirection="row" alignItems="center" gap={3}>
+                      <Text size="15pt" weight="bold" color="labelQuaternary">
+                        {i18n.t(i18n.l.predictions.position.bet)}
+                      </Text>
+                      <Text size="15pt" weight="bold" color="labelSecondary">
+                        {formatNumber(position.initialValue, { useOrderSuffix: true, decimals: 2, style: '$' })}
+                      </Text>
+                    </Box>
+                    <Box flexDirection="row" alignItems="center" gap={3}>
+                      <Text size="15pt" weight="bold" color="labelQuaternary">
+                        {isWin ? i18n.t(i18n.l.predictions.position.won) : i18n.t(i18n.l.predictions.position.to_win)}
+                      </Text>
+                      <Text size="15pt" weight="bold" color="labelSecondary">
+                        {formatNumber(position.size, { useOrderSuffix: true, decimals: 2, style: '$' })}
+                      </Text>
+                    </Box>
+                  </Box>
                 </Box>
-                <Box flexDirection="row" alignItems="center" gap={3}>
-                  <Text size="15pt" weight="bold" color="labelQuaternary">
-                    {i18n.t(i18n.l.predictions.position.bet)}
-                  </Text>
-                  <Text size="15pt" weight="bold" color="labelSecondary">
-                    {formatNumber(position.initialValue, { useOrderSuffix: true, decimals: 2, style: '$' })}
-                  </Text>
-                </Box>
-                <Box flexDirection="row" alignItems="center" gap={3}>
-                  <Text size="15pt" weight="bold" color="labelQuaternary">
-                    {isWin ? i18n.t(i18n.l.predictions.position.won) : i18n.t(i18n.l.predictions.position.to_win)}
-                  </Text>
-                  <Text size="15pt" weight="bold" color="labelSecondary">
-                    {formatNumber(position.size, { useOrderSuffix: true, decimals: 2, style: '$' })}
-                  </Text>
-                </Box>
+                {showActionButton &&
+                  (IS_IOS ? (
+                    <ButtonPressAnimation onPress={onPressActionButton} scaleTo={0.975} exclusive>
+                      <Box
+                        width="full"
+                        height={40}
+                        justifyContent="center"
+                        alignItems="center"
+                        borderWidth={isDarkMode ? 2 : StyleSheet.hairlineWidth}
+                        borderColor={{ custom: 'rgba(255, 255, 255, 0.08)' }}
+                        backgroundColor={buttonBackgroundColor}
+                        borderRadius={20}
+                      >
+                        <InnerShadow borderRadius={20} color={'rgba(255, 255, 255, 0.17)'} blur={6} dx={0} dy={1} />
+                        <Text size="17pt" weight="heavy" color={'white'}>
+                          {actionButtonLabel}
+                        </Text>
+                      </Box>
+                    </ButtonPressAnimation>
+                  ) : (
+                    <Box width="full" height={40} />
+                  ))}
               </Box>
             </Box>
-            {showActionButton && (
-              <ButtonPressAnimation onPress={onPressActionButton} scaleTo={0.975} exclusive>
-                <Box
-                  width="full"
-                  height={40}
-                  justifyContent="center"
-                  alignItems="center"
-                  borderWidth={isDarkMode ? 2 : StyleSheet.hairlineWidth}
-                  borderColor={{ custom: 'rgba(255, 255, 255, 0.08)' }}
-                  backgroundColor={buttonBackgroundColor}
-                  borderRadius={20}
-                >
-                  <InnerShadow borderRadius={20} color={'rgba(255, 255, 255, 0.17)'} blur={6} dx={0} dy={1} />
-                  <Text size="17pt" weight="heavy" color={'white'}>
-                    {actionButtonLabel}
-                  </Text>
-                </Box>
-              </ButtonPressAnimation>
-            )}
-          </Box>
-        </Box>
-      </GradientBorderView>
-    </ButtonPressAnimation>
+          </GradientBorderView>
+        </ButtonPressAnimation>
+      </>
+    </ConditionalWrap>
   );
 });
 
 const styles = StyleSheet.create({
+  container: {
+    position: 'relative',
+  },
+  actionButtonOverlay: {
+    position: 'absolute',
+    left: 12,
+    right: 12,
+    bottom: 12,
+    zIndex: 1,
+  },
   flex: {
     flex: 1,
   },

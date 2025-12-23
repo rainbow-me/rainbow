@@ -80,8 +80,9 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
   const handleCashOutPosition = useCallback(async () => {
     try {
       if (checkIfReadOnlyWallet(usePolymarketClients.getState().address)) return;
-      const orderResult = await marketSellTotalPosition({ position, price: worstPrice });
+      setIsProcessing(true);
       setProcessingLabel(i18n.t(i18n.l.predictions.manage_position.confirming_order));
+      const orderResult = await marketSellTotalPosition({ position, price: worstPrice });
       trackPolymarketOrder({
         orderResult,
         context: {
