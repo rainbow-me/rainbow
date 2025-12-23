@@ -16,7 +16,9 @@ import { PolymarketChart } from '@/features/charts/polymarket/components/Polymar
 import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
 import { getChartLineColors } from '@/features/charts/polymarket/utils/getChartLineColors';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { roundWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
+import { toPercentageWorklet } from '@/safe-math/SafeMath';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 
 export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   const {
@@ -91,11 +93,17 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
                     </Text>
                   </TextShadow>
 
-                  <TextShadow blur={40} shadowOpacity={0.6}>
-                    <Text size="22pt" weight="heavy" color={{ custom: buttonColor }}>
-                      {`${roundWorklet(toPercentageWorklet(market.outcomePrices[index] ?? 0))}%`}
-                    </Text>
-                  </TextShadow>
+                  {/* TODO: Causing issues */}
+                  {/* <TextShadow blur={40} shadowOpacity={0.6}> */}
+                  <LiveTokenText
+                    size="22pt"
+                    weight="heavy"
+                    color={{ custom: buttonColor }}
+                    tokenId={getPolymarketTokenId(market.clobTokenIds[index], 'sell')}
+                    selector={token => `${toPercentageWorklet(token.price)}%`}
+                    initialValue={`${toPercentageWorklet(market.outcomePrices[index] ?? 0)}%`}
+                  />
+                  {/* </TextShadow> */}
                 </Box>
               </ButtonPressAnimation>
             );
