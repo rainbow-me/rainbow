@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
@@ -7,7 +7,6 @@ import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-syst
 import * as i18n from '@/languages';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { ensureError, logger, RainbowError } from '@/logger';
-import ImgixImage from '@/components/images/ImgixImage';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
@@ -16,11 +15,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { Navigation } from '@/navigation';
 import { getSolidColorEquivalent } from '@/worklets/colors';
-import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { marketBuyToken } from '@/features/polymarket/utils/orders';
-import { subWorklet } from '@/safe-math/SafeMath';
+import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/safe-math/SafeMath';
 import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { analytics } from '@/analytics';
@@ -28,6 +26,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
+import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeTitles';
+import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
@@ -56,27 +56,22 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     validation,
     isValidOrderAmount,
     amountToWin,
-    outcomeOdds,
     fee,
     spread,
     setBuyAmount,
     buyAmount,
+    averagePrice,
   } = useNewPositionForm({ tokenId });
 
-  const outcomeTitle = event.title || market.question;
-  const outcomeSubtitle = useMemo(() => {
-    if (market.line) {
-      // Over / under markets are always positive
-      if (market.line > 0) return `${outcome} ${market.line}`;
-      // A spread is always negative
-      const lineValue = Math.abs(market.line);
-      return `${outcome} ${outcomeIndex === 0 ? '-' : '+'}${lineValue}`;
-    }
-    if (market.groupItemTitle) {
-      return market.groupItemTitle;
-    }
-    return outcome;
-  }, [market.groupItemTitle, outcome, market.line, outcomeIndex]);
+  const { title: outcomeTitle, subtitle: outcomeSubtitle } = getOutcomeDescriptions({
+    eventTitle: event.title,
+    market,
+    outcome,
+    outcomeIndex,
+  });
+
+  const formattedAveragePrice = `${trimTrailingZeros(toFixedWorklet(mulWorklet(averagePrice, 100), 1))}¢`;
+  const formattedSpread = `${trimTrailingZeros(toFixedWorklet(mulWorklet(spread, 100), 1))}¢`;
 
   const handleMarketBuyPosition = useCallback(async () => {
     if (checkIfReadOnlyWallet(usePolymarketClients.getState().address)) return;
@@ -149,34 +144,16 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
           <Text size="26pt" weight="heavy" color="label">
             {i18n.t(i18n.l.predictions.new_position.title)}
           </Text>
-
           <Box gap={12}>
-            <Box
-              padding={'20px'}
-              backgroundColor={isDarkMode ? opacityWorklet(accentColor, 0.08) : opacityWorklet(globalColors.white100, 0.9)}
-              borderRadius={26}
-              borderColor={{ custom: opacityWorklet(accentColor, 0.03) }}
-              borderWidth={isDarkMode ? 2.5 : 0}
-            >
-              <Box flexDirection="row" alignItems="flex-start" gap={12}>
-                <ImgixImage
-                  enableFasterImage
-                  resizeMode="cover"
-                  size={38}
-                  source={{ uri: market.icon }}
-                  style={{ height: 38, width: 38, borderRadius: 10 }}
-                />
-                <Box gap={12} style={{ flex: 1 }}>
-                  <Text size="15pt" weight="semibold" color="labelTertiary" style={{ flex: 1 }} numberOfLines={1}>
-                    {outcomeTitle}
-                  </Text>
-                  <Text size="17pt" weight="bold" color="label">
-                    {outcomeSubtitle}
-                  </Text>
-                </Box>
-                {market.groupItemTitle && <OutcomeBadge outcome={outcome} outcomeIndex={outcomeIndex} />}
-              </Box>
-            </Box>
+            <PolymarketOutcomeCard
+              accentColor={accentColor}
+              icon={market.icon}
+              outcomeTitle={outcomeTitle}
+              outcomeSubtitle={outcomeSubtitle}
+              groupItemTitle={market.groupItemTitle}
+              outcome={outcome}
+              outcomeIndex={outcomeIndex}
+            />
             <AmountInputCard
               availableBalance={availableBalance}
               accentColor={accentColor}
@@ -186,29 +163,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               validation={validation}
             />
           </Box>
-
           <Box gap={24}>
-            <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
-              <Text size="15pt" weight="semibold" color="labelTertiary">
-                {i18n.t(i18n.l.predictions.new_position.chance_of_outcome)}
-              </Text>
-              <TextShadow blur={6} shadowOpacity={0.24}>
-                <Text size="17pt" weight="heavy" color={{ custom: accentColor }}>
-                  {`${outcomeOdds}%`}
-                </Text>
-              </TextShadow>
-            </Box>
-            <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
-              <Text size="15pt" weight="semibold" color="labelTertiary">
-                {i18n.t(i18n.l.predictions.new_position.to_win)}
-              </Text>
-
-              <TextShadow blur={6} shadowOpacity={0.24}>
-                <Text size="17pt" weight="heavy" color="green">
-                  {formatCurrency(amountToWin)}
-                </Text>
-              </TextShadow>
-            </Box>
             {/* For testing purposes */}
             {/* <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
               <Text size="15pt" weight="semibold" color="labelTertiary">
@@ -224,9 +179,27 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               <Text size="15pt" weight="semibold" color="labelTertiary">
                 {i18n.t(i18n.l.predictions.new_position.spread)}
               </Text>
+              <Text size="17pt" weight="bold" color={'label'}>
+                {formattedSpread}
+              </Text>
+            </Box>
+
+            <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
+              <Text size="15pt" weight="semibold" color="labelTertiary">
+                {i18n.t(i18n.l.predictions.new_position.average_price)}
+              </Text>
+              <Text size="17pt" weight="bold" color="label">
+                {formattedAveragePrice}
+              </Text>
+            </Box>
+
+            <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
+              <Text size="15pt" weight="semibold" color="labelTertiary">
+                {i18n.t(i18n.l.predictions.new_position.to_win)}
+              </Text>
               <TextShadow blur={6} shadowOpacity={0.24}>
-                <Text size="17pt" weight="heavy" color={'label'}>
-                  {formatCurrency(spread)}
+                <Text size="17pt" weight="heavy" color="green">
+                  {formatCurrency(amountToWin)}
                 </Text>
               </TextShadow>
             </Box>

@@ -680,6 +680,9 @@ type RouteParams = {
   [Routes.POLYMARKET_MANAGE_POSITION_SHEET]: {
     position: PolymarketPosition;
   };
+  [Routes.POLYMARKET_SELL_POSITION_SHEET]: {
+    position: PolymarketPosition;
+  };
   [Routes.POLYMARKET_MARKET_SHEET]: {
     market: PolymarketMarket;
     event: PolymarketMarketEvent | PolymarketEvent;

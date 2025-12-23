@@ -94,7 +94,13 @@ const PolymarketPositionsList = memo(function PolymarketPositionsList() {
   return (
     <Box gap={12}>
       {positions.map(position => (
-        <PolymarketPositionCard key={position.asset} position={position} />
+        <PolymarketPositionCard
+          key={position.asset}
+          position={position}
+          onPress={() => {
+            Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { eventId: position.eventId, event: position.market.events[0] });
+          }}
+        />
       ))}
     </Box>
   );

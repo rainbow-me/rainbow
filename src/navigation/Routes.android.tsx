@@ -121,6 +121,7 @@ import { PolymarketBrowseEventsScreen } from '@/features/polymarket/screens/poly
 import { PolymarketNavigator } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
 import { PolymarketMarketDescriptionSheet } from '@/features/polymarket/screens/polymarket-market-description-sheet/PolymarketMarketDescriptionSheet';
 import { PolymarketExplainSheet } from '@/features/polymarket/screens/polymarket-learn-sheet/PolymarketExplainSheet';
+import { PolymarketSellPositionSheet } from '@/features/polymarket/screens/polymarket-sell-position-sheet/PolymarketSellPositionSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -301,6 +302,7 @@ function BSNavigator() {
       <BSStack.Screen component={PolymarketNavigator} name={Routes.POLYMARKET_NAVIGATOR} />
       <BSStack.Screen component={PolymarketExplainSheet} name={Routes.POLYMARKET_EXPLAIN_SHEET} />
       <BSStack.Screen component={PolymarketBrowseEventsScreen} name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN} />
+      <BSStack.Screen component={PolymarketSellPositionSheet} name={Routes.POLYMARKET_SELL_POSITION_SHEET} />
     </BSStack.Navigator>
   );
 }

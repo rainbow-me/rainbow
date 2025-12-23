@@ -146,6 +146,7 @@ const Routes = {
   POLYMARKET_NAVIGATOR: 'PolymarketNavigator',
   POLYMARKET_MARKET_DESCRIPTION_SHEET: 'PolymarketMarketDescriptionSheet',
   POLYMARKET_EXPLAIN_SHEET: 'PolymarketExplainSheet',
+  POLYMARKET_SELL_POSITION_SHEET: 'PolymarketSellPositionSheet',
 } as const;
 
 export const NATIVE_ROUTES = new Set<Route>([
