@@ -156,26 +156,26 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
                 <Text size="15pt" weight="bold" color="labelTertiary">
                   {i18n.t(i18n.l.predictions.cash_out.spread)}
                 </Text>
-                <Text size="17pt" weight="bold" color="label">
+                <Text size="17pt" weight="bold" color="labelSecondary">
                   {`${mulWorklet(spread, 100)}¢`}
                 </Text>
               </Box>
             </Box>
             <Box paddingHorizontal="16px">
-              <Separator color="separatorSecondary" thickness={1} />
+              <Separator color="separatorTertiary" thickness={1} />
             </Box>
             <Box gap={12} paddingHorizontal="16px">
               <Box flexDirection="row" justifyContent="space-between">
                 <Text size="15pt" weight="bold" color="labelTertiary">
                   {i18n.t(i18n.l.predictions.cash_out.average_price)}
                 </Text>
-                <Text size="17pt" weight="bold" color="label">
+                <Text size="17pt" weight="bold" color="labelSecondary">
                   {formattedAveragePrice}
                 </Text>
               </Box>
             </Box>
             <Box paddingHorizontal="16px">
-              <Separator color="separatorSecondary" thickness={1} />
+              <Separator color="separatorTertiary" thickness={1} />
             </Box>
             <Box gap={12} paddingHorizontal="16px">
               <Box flexDirection="row" justifyContent="space-between">
@@ -189,7 +189,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
               </Box>
             </Box>
             <Box paddingHorizontal="16px">
-              <Separator color="separatorSecondary" thickness={1} />
+              <Separator color="separatorTertiary" thickness={1} />
             </Box>
             <Box gap={12} paddingHorizontal="16px">
               <Box flexDirection="row" justifyContent="space-between">
