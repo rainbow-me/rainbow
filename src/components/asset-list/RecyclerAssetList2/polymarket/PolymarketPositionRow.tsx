@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { Bleed, Box, Text, useColorMode } from '@/design-system';
 import { PolymarketPosition } from '@/features/polymarket/types';
@@ -14,16 +14,36 @@ import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
-import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
+import { formatPrice } from '@/features/polymarket/utils/formatPrice';
+import { mulWorklet, subWorklet } from '@/safe-math/SafeMath';
 
 export const PolymarketPositionRow = memo(function PolymarketPositionRow({ position }: { position: PolymarketPosition }) {
   const { isDarkMode } = useColorMode();
   const accentColor = getColorValueForThemeWorklet(getPositionAccentColor(position), isDarkMode);
-  const isPositivePnl = position.cashPnl > 0;
+
+  const livePrice = useLiveTokenValue({
+    tokenId: getPositionTokenId(position),
+    initialValue: formatPrice(position.curPrice, position.market.orderPriceMinTickSize),
+    selector: token => formatPrice(token.price, position.market.orderPriceMinTickSize),
+    autoSubscriptionEnabled: !position.redeemable,
+  });
+
+  const livePositionValue = useMemo(() => {
+    return mulWorklet(position.size, livePrice);
+  }, [position.size, livePrice]);
+
+  const livePnl = useMemo(() => {
+    return subWorklet(livePositionValue, position.initialValue);
+  }, [livePositionValue, position.initialValue]);
+
+  const displayPnl = position.redeemable ? position.cashPnl : Number(livePnl);
+  const isPositivePnl = displayPnl > 0;
   const pnlColor = isPositivePnl ? 'green' : 'red';
 
   const outcomeTitle = position.market.groupItemTitle || position.outcome;
-  THICK_BORDER_WIDTH;
 
   return (
     <ButtonPressAnimation
@@ -103,10 +123,10 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
               </Box>
               <Box gap={12} alignItems="flex-end" marginLeft={{ custom: 8 }}>
                 <Text color="label" size="15pt" weight="bold">
-                  {formatCurrency(String(position.currentValue))}
+                  {formatCurrency(livePositionValue)}
                 </Text>
                 <Text color={pnlColor} size="13pt" weight="bold">
-                  {isPositivePnl ? '+' : '-'} {formatCurrency(String(Math.abs(position.cashPnl)))}
+                  {isPositivePnl ? '+' : '-'} {formatCurrency(String(Math.abs(displayPnl)))}
                 </Text>
               </Box>
             </Box>
