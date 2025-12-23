@@ -52,12 +52,21 @@ export function trackPolymarketOrder({ orderResult, context }: { orderResult: Su
     return;
   }
 
-  void pollForMatch({ orderId, context });
+  void pollForMatch({ orderId, initialStatus: status, context });
 }
 
-async function pollForMatch({ orderId, context }: { orderId: string; context: OrderTrackingContext }) {
+async function pollForMatch({
+  orderId,
+  initialStatus,
+  context,
+}: {
+  orderId: string;
+  initialStatus: string;
+  context: OrderTrackingContext;
+}) {
   if (inFlight.has(orderId)) return;
   inFlight.add(orderId);
+  let status = initialStatus;
 
   try {
     const client = await getPolymarketClobClient();
@@ -65,7 +74,7 @@ async function pollForMatch({ orderId, context }: { orderId: string; context: Or
 
     while (Date.now() - startedAt < POLL_TIMEOUT) {
       const order = await client.getOrder(orderId);
-      const status = order?.status?.toLowerCase();
+      status = order?.status?.toLowerCase();
 
       if (status === MATCHED_STATUS) {
         const amounts = getMatchedAmountsFromOrder(order);
@@ -76,16 +85,16 @@ async function pollForMatch({ orderId, context }: { orderId: string; context: Or
       }
 
       if (status && TERMINAL_FAILURE_STATUSES.has(status)) {
-        trackOrderMatchFailed({ orderId, context, reason: status });
+        trackOrderMatchFailed({ orderId, context, reason: status, status });
         return;
       }
 
       await delay(POLL_INTERVAL);
     }
 
-    trackOrderMatchFailed({ orderId, context, reason: 'timeout' });
+    trackOrderMatchFailed({ orderId, context, reason: 'timeout', status });
   } catch (e) {
-    trackOrderMatchFailed({ orderId, context, reason: 'error', errorMessage: ensureError(e).message });
+    trackOrderMatchFailed({ orderId, context, reason: 'error', status, errorMessage: ensureError(e).message });
   } finally {
     inFlight.delete(orderId);
   }
@@ -124,11 +133,13 @@ function trackOrderMatchFailed({
   orderId,
   context,
   reason,
+  status,
   errorMessage,
 }: {
   orderId: string;
   context: OrderTrackingContext;
   reason: string;
+  status: string;
   errorMessage?: string;
 }) {
   analytics.track(analytics.event.predictionsOrderMatchFailed, {
@@ -139,6 +150,7 @@ function trackOrderMatchFailed({
     tokenId: context.tokenId,
     side: context.side,
     reason,
+    status,
     errorMessage,
   });
 }

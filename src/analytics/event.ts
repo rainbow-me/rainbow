@@ -1364,6 +1364,7 @@ export type EventProperties = {
     tokenId: string;
     side: 'buy' | 'sell';
     reason: string;
+    status: string;
     errorMessage?: string;
   };
 };
