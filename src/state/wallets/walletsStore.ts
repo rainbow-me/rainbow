@@ -536,7 +536,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         }
 
         const updatedWalletsDamagedState = await checkWalletsDamagedState(get().wallets);
-        const healthyKeychain = updatedWalletsDamagedState.values().every(damaged => !damaged);
+        const healthyKeychain = Array.from(updatedWalletsDamagedState.values()).every(damaged => !damaged);
 
         set(state => {
           if (!state.wallets || updatedWalletsDamagedState.size === 0) return state;
