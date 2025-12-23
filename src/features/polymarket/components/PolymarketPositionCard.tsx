@@ -92,6 +92,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
     tokenId: getPositionTokenId(position),
     initialValue: formatPrice(position.curPrice, position.market.orderPriceMinTickSize),
     selector: token => formatPrice(token.price, position.market.orderPriceMinTickSize),
+    autoSubscriptionEnabled: !redeemable,
   });
 
   const livePositionValue = useMemo(() => {

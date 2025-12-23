@@ -80,6 +80,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
     tokenId: getPositionTokenId(position),
     initialValue: formatPrice(position.curPrice, position.market.orderPriceMinTickSize),
     selector: token => formatPrice(token.price, position.market.orderPriceMinTickSize),
+    autoSubscriptionEnabled: !position.redeemable,
   });
 
   const livePositionValue = useMemo(() => {
