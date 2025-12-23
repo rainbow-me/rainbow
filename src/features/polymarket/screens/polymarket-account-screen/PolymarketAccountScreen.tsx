@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { RefreshControl, StyleSheet, View } from 'react-native';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -15,11 +15,15 @@ import {
   POLYMARKET_BACKGROUND_DARK,
   POLYMARKET_BACKGROUND_LIGHT,
 } from '@/features/polymarket/constants';
+import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { delay } from '@/utils/delay';
+import { time } from '@/utils/time';
 
 export const PolymarketAccountScreen = function PolymarketAccountScreen() {
   const { isDarkMode } = useColorMode();
   const { accountScrollRef } = usePolymarketContext();
   const safeAreaInsets = useSafeAreaInsets();
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const scrollOffset = useSharedValue(0);
   const onScroll = useScrollFadeHandler(scrollOffset);
@@ -27,12 +31,19 @@ export const PolymarketAccountScreen = function PolymarketAccountScreen() {
   const backgroundColor = isDarkMode ? POLYMARKET_BACKGROUND_DARK : POLYMARKET_BACKGROUND_LIGHT;
   const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
 
+  const onRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await Promise.allSettled([refetchPolymarketStores(), delay(time.seconds(1))]);
+    setIsRefreshing(false);
+  }, []);
+
   return (
     <View style={styles.container}>
       <Animated.ScrollView
         contentContainerStyle={[styles.scrollViewContentContainer, { paddingBottom }]}
         onScroll={onScroll}
         ref={accountScrollRef}
+        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />}
       >
         <Box gap={20} width="full">
           <PolymarketAccountBalanceCard accentColor={'#C55DE7'} />
