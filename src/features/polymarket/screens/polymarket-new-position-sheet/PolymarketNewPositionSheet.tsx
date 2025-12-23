@@ -22,12 +22,12 @@ import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { marketBuyToken } from '@/features/polymarket/utils/orders';
 import { subWorklet } from '@/safe-math/SafeMath';
 import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
-import { usePolymarketAccountInfo } from '@/features/polymarket/stores/derived/usePolymarketAccountInfo';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { analytics } from '@/analytics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
@@ -36,7 +36,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   const { isDarkMode } = useColorMode();
   const safeAreaInsets = useSafeAreaInsets();
 
-  const hasBalance = usePolymarketAccountInfo(state => state.hasBalance);
+  const hasBalance = usePolymarketAccountValueSummary(state => state.hasBalance);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingLabel, setProcessingLabel] = useState(i18n.t(i18n.l.predictions.new_position.placing_bet));
 

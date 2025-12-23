@@ -9,14 +9,14 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { usePolymarketAccountValue } from '@/features/polymarket/stores/derived/usePolymarketAccountValue';
+import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
 import useOpenPolymarket from '@/hooks/useOpenPolymarket';
 
 const HEIGHT = 48;
 
 export const PolymarketHeader = memo(function PolymarketHeader({ isDarkMode }: { isDarkMode: boolean }) {
-  const accountValueNative = usePolymarketAccountValue();
+  const accountValueNative = usePolymarketAccountValueSummary(state => state.totalValueNative);
   const { accentColor: accountColor } = useAccountAccentColor();
   const { isPolymarketOpen, toggleOpenPolymarket } = useOpenPolymarket();
 

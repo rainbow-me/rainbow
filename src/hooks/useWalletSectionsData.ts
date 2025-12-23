@@ -24,8 +24,12 @@ import { PerpsWalletListData } from '@/features/perps/types';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
 import { usePolymarketFeatureCard } from '@/features/polymarket/hooks/usePolymarketFeatureCard';
 import { shallowEqual } from '@/worklets/comparisons';
-import { PolymarketAccountInfo, usePolymarketAccountInfo } from '@/features/polymarket/stores/derived/usePolymarketAccountInfo';
-import { PolymarketWalletListData } from '@/features/polymarket/types';
+import { PolymarketPosition, PolymarketWalletListData } from '@/features/polymarket/types';
+import { usePolymarketPositions } from '@/features/polymarket/stores/derived/usePolymarketPositions';
+import {
+  PolymarketAccountValueSummary,
+  usePolymarketAccountValueSummary,
+} from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -77,7 +81,16 @@ export default function useWalletSectionsData({
   }, [claimablesData, claimablesEnabled]);
 
   const perpsData = usePerpsPositionsInfo(state => selectPerpsData(state, perpsEnabled), shallowEqual);
-  const polymarketData = usePolymarketAccountInfo(state => selectPolymarketData(state, polymarketEnabled), shallowEqual);
+
+  const polymarketPositions = usePolymarketPositions(state => state.activePositions);
+  const polymarketAccountValueSummary = usePolymarketAccountValueSummary();
+  const polymarketData = useMemo(() => {
+    return selectPolymarketData({
+      positions: polymarketPositions,
+      accountValueSummary: polymarketAccountValueSummary,
+      enabled: polymarketEnabled,
+    });
+  }, [polymarketPositions, polymarketAccountValueSummary, polymarketEnabled]);
 
   const isShowcaseDataMigrated = useMemo(() => isDataComplete(showcaseTokens), [showcaseTokens]);
   const isHiddenDataMigrated = useMemo(() => isDataComplete(hiddenTokens), [hiddenTokens]);
@@ -197,13 +210,21 @@ function selectPerpsData(state: PerpsPositionsInfo, perpsEnabled: boolean): Perp
   };
 }
 
-function selectPolymarketData(state: PolymarketAccountInfo, polymarketEnabled: boolean): PolymarketWalletListData {
+function selectPolymarketData({
+  positions,
+  accountValueSummary,
+  enabled,
+}: {
+  positions: PolymarketPosition[];
+  accountValueSummary: PolymarketAccountValueSummary;
+  enabled: boolean;
+}): PolymarketWalletListData {
   return {
-    balance: state.balance,
-    hasBalance: state.hasBalance,
-    hasPositions: state.hasPositions,
-    positions: state.activePositions,
-    value: state.value,
-    enabled: polymarketEnabled,
+    balance: accountValueSummary.balance,
+    hasBalance: accountValueSummary.hasBalance,
+    hasPositions: positions.length > 0,
+    positions: positions,
+    value: accountValueSummary.totalValueNative,
+    enabled: enabled,
   };
 }

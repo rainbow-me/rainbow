@@ -7,6 +7,7 @@ import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { deepEqual } from '@/worklets/comparisons';
+import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
 
 export const useLiveWalletBalance = createDerivedStore(
   $ => {
@@ -19,6 +20,7 @@ export const useLiveWalletBalance = createDerivedStore(
     const perpsBalanceNative = $(useHyperliquidBalance);
     const claimablesBalance = $(useClaimablesStore, state => state.getBalance());
     const positionsBalance = $(usePositionsStore, state => state.getBalance());
+    const polymarketAccountValue = $(usePolymarketAccountValueSummary, state => state.totalValueNative);
 
     let valueDifference = '0';
     if (liveTokens) {
@@ -41,7 +43,7 @@ export const useLiveWalletBalance = createDerivedStore(
     }
 
     const liveAssetBalance = initialBalance ? add(initialBalance, valueDifference) : '0';
-    const otherBalances = add(add(positionsBalance, claimablesBalance), perpsBalanceNative);
+    const otherBalances = add(add(add(positionsBalance, claimablesBalance), perpsBalanceNative), polymarketAccountValue);
     const totalBalanceAmount = add(liveAssetBalance, otherBalances);
     const isLoading = initialBalance === 0 && isFetching;
 
