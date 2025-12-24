@@ -116,7 +116,7 @@ export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
         {IS_IOS ? (
           <BlurView blurIntensity={24} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
         ) : (
-          <View style={[StyleSheet.absoluteFill, { backgroundColor: '#190F1C' }]} />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? '#190F1C' : POLYMARKET_BACKGROUND_LIGHT }]} />
         )}
         {isDarkMode && <InnerShadow borderRadius={PILL.borderRadius} color={opacityWorklet('#DC91F4', 0.14)} blur={5} dx={0} dy={1} />}
       </View>

@@ -185,7 +185,7 @@ export function HoldToActivateButton({
           borderColor={borderColor}
           borderWidth={borderWidth}
         >
-          {!IS_ANDROID && !disabled && <HoldToAuthorizeButtonIcon sharedValue={longPressProgress} progressColor={progressColor} />}
+          {!disabled && <HoldToAuthorizeButtonIcon sharedValue={longPressProgress} progressColor={progressColor} />}
           {isProcessing && (
             <Animated.View exiting={SPINNER_EXIT_ANIMATION} entering={SPINNER_ENTER_ANIMATION} style={styles.spinnerContainer}>
               <AnimatedSpinner isLoading size={25} color={progressColor} />

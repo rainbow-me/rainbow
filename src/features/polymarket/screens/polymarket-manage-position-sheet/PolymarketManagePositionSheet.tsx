@@ -22,6 +22,7 @@ import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketCol
 import { BlurView } from 'react-native-blur-view';
 import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 
 export const PolymarketManagePositionSheet = memo(function PolymarketManagePositionSheet() {
   const {
@@ -92,10 +93,7 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
     : [opacityWorklet(accentColor, 0), opacityWorklet(accentColor, 0.06)];
 
   return (
-    <PanelSheet
-      innerBorderWidth={1}
-      panelStyle={{ backgroundColor: isDarkMode ? globalColors.grey100 : opacityWorklet(globalColors.white100, 0.92) }}
-    >
+    <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }}>
       <View style={StyleSheet.absoluteFill}>
         <LinearGradient colors={gradientFillColors} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} />
         {!isDarkMode && <BlurView style={StyleSheet.absoluteFill} blurIntensity={42} />}

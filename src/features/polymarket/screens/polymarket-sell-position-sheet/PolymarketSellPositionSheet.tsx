@@ -27,6 +27,7 @@ import { createSellExecutionStore } from '@/features/polymarket/screens/polymark
 import { usePolymarketOrderBookStore } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeTitles';
 import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
+import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 
 export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionSheet() {
   const {
@@ -117,10 +118,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
   }, [position, worstPrice, bestPrice]);
 
   return (
-    <PanelSheet
-      innerBorderWidth={1}
-      panelStyle={{ backgroundColor: isDarkMode ? globalColors.grey100 : opacityWorklet(globalColors.white100, 0.92) }}
-    >
+    <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }}>
       <View style={StyleSheet.absoluteFill}>
         <LinearGradient colors={gradientFillColors} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} />
         {!isDarkMode && <BlurView style={StyleSheet.absoluteFill} blurIntensity={42} />}
