@@ -73,8 +73,8 @@ export const FeatureCard = memo(function FeatureCard({ accentColor, icon, title,
                     </Text>
                   </TextShadow>
                 </Box>
-                <Stack space={'12px'}>
-                  <Bleed horizontal={'8px'}>
+                <Bleed horizontal={'8px'}>
+                  <Stack space={'12px'}>
                     <Inline alignHorizontal="center" alignVertical="center" space="3px">
                       <Text size="20pt" weight="heavy" color="label" align="center">
                         {title}
@@ -83,12 +83,12 @@ export const FeatureCard = memo(function FeatureCard({ accentColor, icon, title,
                         {'􀯻'}
                       </TextIcon>
                     </Inline>
-                  </Bleed>
 
-                  <Text size="15pt" weight="semibold" color="labelTertiary" align="center">
-                    {subtitle}
-                  </Text>
-                </Stack>
+                    <Text size="15pt" weight="semibold" color="labelTertiary" align="center" numberOfLines={2}>
+                      {subtitle}
+                    </Text>
+                  </Stack>
+                </Bleed>
               </Box>
             </ConditionalWrap>
           </ConditionalWrap>
