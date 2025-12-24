@@ -33,7 +33,7 @@ const EMPTY_VALUE: PolymarketPositionsSummary = {
 
 export const usePolymarketPositionsSummary = createDerivedStore<PolymarketPositionsSummary>(
   $ => {
-    const { positions, activePositions, redeemablePositions } = $(usePolymarketPositions);
+    const { positions } = $(usePolymarketPositions);
     const liveTokens = $(useLiveTokensStore, state => state.tokens);
 
     if (!positions.length) return EMPTY_VALUE;
@@ -41,18 +41,15 @@ export const usePolymarketPositionsSummary = createDerivedStore<PolymarketPositi
     let totalLiveValue = '0';
     let totalInitialValue = '0';
 
-    activePositions.forEach(position => {
-      const tokenId = getPositionTokenId(position);
-      const liveToken = liveTokens[tokenId];
-
-      const positionValue = liveToken?.price ? multiply(position.size, liveToken.price) : position.currentValue;
-
-      totalLiveValue = add(totalLiveValue, positionValue);
-      totalInitialValue = add(totalInitialValue, position.initialValue);
-    });
-
-    redeemablePositions.forEach(position => {
-      totalLiveValue = add(totalLiveValue, position.currentValue);
+    positions.forEach(position => {
+      if (position.redeemable) {
+        totalLiveValue = add(totalLiveValue, position.currentValue);
+      } else {
+        const tokenId = getPositionTokenId(position);
+        const liveToken = liveTokens[tokenId];
+        const positionValue = liveToken?.price ? multiply(position.size, liveToken.price) : position.currentValue;
+        totalLiveValue = add(totalLiveValue, positionValue);
+      }
       totalInitialValue = add(totalInitialValue, position.initialValue);
     });
 
