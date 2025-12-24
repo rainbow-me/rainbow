@@ -1,4 +1,5 @@
 import { IMessageSender } from '@rainbow-me/provider';
+import { RefObject } from 'react';
 import WebView from 'react-native-webview';
 
 export type CallbackOptions = {
@@ -72,7 +73,7 @@ export function isValidReply<TResponse>({ id, topic, message }: { id?: number | 
   return true;
 }
 
-export const appMessenger = (webViewRef: WebView, tabId: string, url: string) => {
+export const appMessenger = (webViewRef: RefObject<WebView | null>, tabId: string, url: string) => {
   const listeners: { [topic: string]: (event: MessageEvent) => void } = {};
 
   return {
@@ -81,7 +82,7 @@ export const appMessenger = (webViewRef: WebView, tabId: string, url: string) =>
       name: 'appMessenger',
       async send(topic, payload, { id } = {}) {
         const data = { topic: `> ${topic}`, payload, id };
-        webViewRef.injectJavaScript(`window.postMessage(${JSON.stringify(data)})`);
+        webViewRef.current?.injectJavaScript(`window.postMessage(${JSON.stringify(data)})`);
         // ... and also set up an event listener to listen for the response ('< {topic}').
         return new Promise((resolve, reject) => {
           const listener = (event: MessageEvent) => {
@@ -125,7 +126,7 @@ export const appMessenger = (webViewRef: WebView, tabId: string, url: string) =>
             payload: { error, response },
             id: event.data.id,
           };
-          webViewRef.injectJavaScript(`window.postMessage(${JSON.stringify(data)})`);
+          webViewRef.current?.injectJavaScript(`window.postMessage(${JSON.stringify(data)})`);
         };
         listeners[topic] = listener as (event: MessageEvent) => void;
 

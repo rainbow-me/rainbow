@@ -166,7 +166,6 @@ const FreezableWebViewComponent = ({
   const {
     handleNavigationStateChange,
     handleOnContentProcessDidTerminate,
-    handleOnLoad,
     handleOnLoadProgress,
     handleOnMessage,
     handleOnOpenWindow,
@@ -214,7 +213,6 @@ const FreezableWebViewComponent = ({
       <TabWebView
         key={renderKey}
         onContentProcessDidTerminate={handleOnContentProcessDidTerminate}
-        onLoad={handleOnLoad}
         onLoadProgress={handleOnLoadProgress}
         onMessage={handleOnMessage}
         onNavigationStateChange={handleNavigationStateChange}
