@@ -20,7 +20,7 @@ export type PolymarketPositionsSummary = {
   unrealizedPnlPercent: `${string}%`;
 };
 
-const EMPTY_VALUE = Object.freeze<PolymarketPositionsSummary>({
+const EMPTY_VALUE: PolymarketPositionsSummary = {
   value: '0',
   valueFormatted: formatCurrency('0'),
   hasPositions: false,
@@ -29,7 +29,7 @@ const EMPTY_VALUE = Object.freeze<PolymarketPositionsSummary>({
   textColor: 'labelTertiary',
   unrealizedPnl: formatCurrency('0'),
   unrealizedPnlPercent: `${toFixedWorklet('0', 2)}%`,
-});
+};
 
 export const usePolymarketPositionsSummary = createDerivedStore<PolymarketPositionsSummary>(
   $ => {

@@ -12,12 +12,12 @@ export type PolymarketPositions = {
 
 const EMPTY_POSITIONS: PolymarketPosition[] = [];
 
-const EMPTY_RESULT = Object.freeze<PolymarketPositions>({
+const EMPTY_RESULT: PolymarketPositions = {
   positions: [],
   activePositions: [],
   redeemablePositions: [],
   hasPositions: false,
-});
+};
 
 export const usePolymarketPositions = createDerivedStore<PolymarketPositions>(
   $ => {
