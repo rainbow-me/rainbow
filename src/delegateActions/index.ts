@@ -7,7 +7,9 @@ import {
   Quote,
   QuoteError,
 } from '@rainbow-me/swaps';
-import { encodeFunctionData, Address, erc20Abi } from 'viem';
+import { encodeFunctionData, Address, erc20Abi, WalletClient, PublicClient } from 'viem';
+import { RapSwapActionParameters } from '@/raps/references';
+import { TransactionGasParamAmounts } from '@/entities/gas';
 import { ParsedAsset } from '@/__swaps__/types/assets';
 import { metadataPOSTClient } from '@/graphql';
 import { assetNeedsUnlocking } from '@/raps/actions/unlock';
@@ -16,7 +18,65 @@ import { loadWallet } from '@/model/wallet';
 import { Signer } from '@ethersproject/abstract-signer';
 import { ATOMIC_SWAPS, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { encodeDelegateCalldata, getCanDelegate } from '@rainbow-me/delegation';
+import { encodeDelegateCalldata, executeBatchedTransaction, getCanDelegate, getIsDelegated } from '@rainbow-me/delegation';
+
+export type DelegateExecutionResult = {
+  hash: `0x${string}` | null;
+  error: string | null;
+};
+
+export const walletExecuteWithDelegate = async ({
+  walletClient,
+  publicClient,
+  type,
+  parameters,
+}: {
+  walletClient: WalletClient;
+  publicClient: PublicClient;
+  type: 'swap' | 'crosschainSwap';
+  parameters: Omit<RapSwapActionParameters<typeof type>, 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
+}): Promise<DelegateExecutionResult> => {
+  try {
+    const { quote, chainId } = parameters;
+
+    const targetAddress = getTargetAddress(quote);
+    if (!targetAddress) {
+      throw new Error('Target address not found');
+    }
+
+    const isAllowedTarget = isAllowedTargetContract(targetAddress, chainId as number);
+    if (!isAllowedTarget) {
+      throw new Error('Target address not allowed');
+    }
+
+    // Check if already delegated before the transaction
+    const wasAlreadyDelegated = await getIsDelegated({
+      address: quote.from as Address,
+      chainId,
+      publicClient,
+    });
+
+    const calls = await getApproveAndSwapCalls(quote);
+
+    // EIP-1559 is required for EIP-7702 delegation
+    const gasParams = parameters.gasParams as TransactionGasParamAmounts;
+
+    const tx = await executeBatchedTransaction({
+      walletClient,
+      publicClient: publicClient,
+      calls,
+      transactionOptions: {
+        maxFeePerGas: BigInt(gasParams.maxFeePerGas),
+        maxPriorityFeePerGas: BigInt(gasParams.maxPriorityFeePerGas),
+        gasLimit: BigInt((await estimateDelegatedApproveAndSwapGasLimit(quote)) || '0'),
+      },
+    });
+
+    return { hash: tx.txHash as `0x${string}`, error: null };
+  } catch (error) {
+    return { hash: null, error: error instanceof Error ? error.message : String(error) };
+  }
+};
 
 export const getShouldDelegate = async (chainId: number, quote: Quote | CrosschainQuote | QuoteError, assetToSell?: ParsedAsset | null) => {
   if (!assetToSell || 'error' in quote) return false;
