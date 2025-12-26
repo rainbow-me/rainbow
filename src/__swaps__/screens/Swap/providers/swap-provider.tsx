@@ -35,12 +35,12 @@ import { SwapAssetType, InputKeys } from '@/__swaps__/types/swap';
 import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend, trimTrailingZeros } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { getProvider } from '@/handlers/web3';
+import { getProvider, getProviderViem } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
+import { loadWallet, loadWalletViem } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { walletExecuteRap } from '@/raps/execute';
@@ -59,11 +59,13 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
-import { LedgerSigner } from '@/handlers/LedgerSigner';
 import showWalletErrorAlert from '@/helpers/support';
-import { getRemoteConfig } from '@/model/remoteConfig';
+import { getRemoteConfig, useRemoteConfig } from '@/model/remoteConfig';
 import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
 import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
+import { useIsHardwareWallet } from '@/state/wallets/walletsStore';
+import { getShouldDelegate, walletExecuteWithDelegate } from '@/delegateActions';
+import { ATOMIC_SWAPS, useExperimentalFlag } from '@/config';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -175,6 +177,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     initialValues: getSwapsNavigationParams(),
     nativeChainAssets: useBackendNetworksStore.getState().getChainsNativeAsset(),
   }));
+  const isHardwareWallet = useIsHardwareWallet();
 
   const inputSearchRef = useAnimatedRef<TextInput>();
   const outputSearchRef = useAnimatedRef<TextInput>();
@@ -244,6 +247,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     slippage,
   });
 
+  const atomicSwapsExperimentalFlag = useExperimentalFlag(ATOMIC_SWAPS);
+  const config = useRemoteConfig();
+
   const { degenMode } = SwapSettings;
 
   const getNonceAndPerformSwap = async ({
@@ -254,47 +260,27 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
   }) => {
     try {
-      const NotificationManager = IS_IOS ? NativeModules.NotificationManager : null;
-      NotificationManager?.postNotification('rapInProgress');
-
-      const provider = getProvider({ chainId: parameters.chainId });
-      const connectedToAnvil = useConnectedToAnvilStore.getState().connectedToAnvil;
-
+      const degenMode = swapsStore.getState().degenMode;
+      const atomicSwapsEnabled =
+        (atomicSwapsExperimentalFlag || config.atomic_swaps_enabled) &&
+        (await getShouldDelegate(parameters.chainId, parameters.quote as Quote | CrosschainQuote, parameters.assetToSell));
+      const shouldDelegate = atomicSwapsEnabled && (await getShouldDelegate(parameters.chainId, parameters.quote, parameters.assetToSell));
       const selectedGas = getSelectedGas(parameters.chainId);
+
+      const connectedToAnvil = useConnectedToAnvilStore.getState().connectedToAnvil;
+      const chainId = connectedToAnvil ? ChainId.anvil : parameters.chainId;
+      const nonce = await getNextNonce({ address: parameters.quote.from, chainId });
+
+      const NotificationManager = IS_IOS ? NativeModules.NotificationManager : null;
+
       if (!selectedGas) {
         isSwapping.value = false;
         Alert.alert(i18n.t(i18n.l.gas.unable_to_determine_selected_gas));
         return;
       }
 
-      const degenMode = swapsStore.getState().degenMode;
-
-      const wallet = await executeFn(loadWallet, {
-        screen: Screens.SWAPS,
-        operation: TimeToSignOperation.KeychainRead,
-        metadata: { degenMode },
-      })({
-        address: parameters.quote.from,
-        showErrorIfNotLoaded: false,
-        provider,
-        timeTracking: {
-          screen: Screens.SWAPS,
-          operation: TimeToSignOperation.Authentication,
-          metadata: { degenMode },
-        },
-      });
-      const isHardwareWallet = wallet instanceof LedgerSigner;
-
-      if (!wallet) {
-        isSwapping.value = false;
-        triggerHaptics('notificationError');
-        showWalletErrorAlert();
-        return;
-      }
-
       const gasFeeParamsBySpeed = getGasSettingsBySpeed(parameters.chainId);
       let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
-
       if (selectedGas.isEIP1559) {
         gasParams = {
           maxFeePerGas: sumWorklet(selectedGas.maxBaseFee, selectedGas.maxPriorityFee),
@@ -304,24 +290,69 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         gasParams = { gasPrice: selectedGas.gasPrice };
       }
 
-      const chainId = connectedToAnvil ? ChainId.anvil : parameters.chainId;
-      const nonce = await executeFn(getNextNonce, {
-        screen: Screens.SWAPS,
-        operation: TimeToSignOperation.GetNonce,
-        metadata: { degenMode, chainId },
-      })({ address: parameters.quote.from, chainId });
+      NotificationManager?.postNotification('rapInProgress');
 
-      const { errorMessage } = await executeFn(walletExecuteRap, {
-        screen: Screens.SWAPS,
-        operation: TimeToSignOperation.SignTransaction,
-        metadata: { degenMode },
-      })(wallet, type, {
-        ...parameters,
-        nonce,
-        chainId,
-        gasParams,
-        gasFeeParamsBySpeed,
-      });
+      let errorMessage: string | null;
+
+      if (shouldDelegate) {
+        const publicClient = getProviderViem({ chainId: parameters.chainId });
+        const walletViem = await loadWalletViem({
+          address: parameters.quote.from as `0x${string}`,
+          publicClient: publicClient,
+          timeTracking: {
+            screen: Screens.SWAPS,
+            operation: TimeToSignOperation.Authentication,
+            metadata: { degenMode },
+          },
+        });
+        if (!walletViem) {
+          isSwapping.value = false;
+          triggerHaptics('notificationError');
+          showWalletErrorAlert();
+          return;
+        }
+        const { error, hash } = await walletExecuteWithDelegate({
+          walletClient: walletViem,
+          publicClient,
+          type,
+          parameters: { ...parameters, gasParams },
+        });
+        errorMessage = error;
+      } else {
+        const provider = getProvider({ chainId: parameters.chainId });
+        const wallet = await executeFn(loadWallet, {
+          screen: Screens.SWAPS,
+          operation: TimeToSignOperation.KeychainRead,
+          metadata: { degenMode },
+        })({
+          address: parameters.quote.from,
+          showErrorIfNotLoaded: false,
+          provider,
+          timeTracking: {
+            screen: Screens.SWAPS,
+            operation: TimeToSignOperation.Authentication,
+            metadata: { degenMode },
+          },
+        });
+        if (!wallet) {
+          isSwapping.value = false;
+          triggerHaptics('notificationError');
+          showWalletErrorAlert();
+          return;
+        }
+        const { errorMessage: errorMessageFromWallet } = await executeFn(walletExecuteRap, {
+          screen: Screens.SWAPS,
+          operation: TimeToSignOperation.SignTransaction,
+          metadata: { degenMode },
+        })(wallet, type, {
+          ...parameters,
+          nonce,
+          chainId,
+          gasParams,
+          gasFeeParamsBySpeed,
+        });
+        errorMessage = errorMessageFromWallet;
+      }
 
       isSwapping.value = false;
 
