@@ -1,12 +1,11 @@
-import { CrosschainQuote, ETH_ADDRESS, Quote } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import { getProvider } from '@/handlers/web3';
 import { Address } from 'viem';
 import { metadataPOSTClient } from '@/graphql';
 import { ChainId } from '@/state/backendNetworks/types';
-import { add, convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
+import { add } from '@/helpers/utilities';
 import { populateSwap } from '@/raps/utils';
-import { estimateApprove, getAssetRawAllowance, populateApprove } from '@/raps/actions/unlock';
-import { isNativeAsset } from '@/handlers/assets';
+import { estimateApprove, populateApprove } from '@/raps/actions/unlock';
 import { logger, RainbowError } from '@/logger';
 import { estimateSwapGasLimit } from '@/raps/actions/swap';
 
@@ -29,8 +28,6 @@ export const estimateClaimUnlockSwapGasLimit = async ({
     value: '0x0',
   }));
 
-  let swapAssetNeedsUnlocking = false;
-
   if (quote) {
     const { from: accountAddress, sellTokenAddress, allowanceNeeded, allowanceTarget, sellTokenAsset, sellAmount } = quote;
 
@@ -39,26 +36,15 @@ export const estimateClaimUnlockSwapGasLimit = async ({
       return undefined;
     }
 
-    if (allowanceNeeded && !(isNativeAsset(sellTokenAddress, chainId) || sellTokenAddress === ETH_ADDRESS)) {
-      const allowance = await getAssetRawAllowance({
-        owner: accountAddress as Address,
-        assetAddress: sellTokenAddress as Address,
-        spender: allowanceTarget as Address,
-        chainId,
-      });
-
-      const rawAmount = convertAmountToRawAmount(sellAmount.toString(), sellTokenAsset.decimals);
-      swapAssetNeedsUnlocking = !greaterThan(allowance, rawAmount);
-    }
-
     const provider = getProvider({ chainId });
 
-    if (swapAssetNeedsUnlocking) {
+    if (allowanceNeeded) {
       const approveTransaction = await populateApprove({
         owner: accountAddress as Address,
         tokenAddress: sellTokenAddress as Address,
         spender: allowanceTarget as Address,
         chainId,
+        amount: sellAmount.toString(),
       });
 
       if (approveTransaction?.to && approveTransaction?.data && approveTransaction?.from) {
@@ -102,7 +88,7 @@ export const estimateClaimUnlockSwapGasLimit = async ({
         let step;
         if (index === 0) {
           step = 'claim';
-        } else if (index === 1 && swapAssetNeedsUnlocking) {
+        } else if (index === 1 && quote?.allowanceNeeded) {
           step = 'approval';
         } else {
           step = 'swap';
@@ -126,7 +112,7 @@ export const estimateClaimUnlockSwapGasLimit = async ({
             } else if (step === 'swap') {
               gasEstimate = await estimateSwapGasLimit({
                 chainId,
-                requiresApprove: swapAssetNeedsUnlocking,
+                requiresApprove: quote.allowanceNeeded,
                 quote,
               });
             }

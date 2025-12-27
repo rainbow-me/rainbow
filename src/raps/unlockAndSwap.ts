@@ -1,6 +1,5 @@
 import { getTargetAddress, isAllowedTargetContract } from '@rainbow-me/swaps';
 import { Address } from 'viem';
-import { assetNeedsUnlocking } from './actions';
 import { createNewAction, createNewRap } from './common';
 import { RapAction, RapSwapActionParameters, RapUnlockActionParameters } from './references';
 
@@ -8,23 +7,11 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
   let actions: RapAction<'swap' | 'unlock'>[] = [];
 
   const { sellAmount, quote, chainId, assetToSell, assetToBuy } = swapParameters;
+  const { allowanceNeeded } = quote;
   const targetAddress = getTargetAddress(quote);
-
-  const { from: accountAddress, allowanceNeeded } = quote;
-
-  let swapAssetNeedsUnlocking = false;
+  const accountAddress = quote.from as Address;
 
   if (allowanceNeeded) {
-    swapAssetNeedsUnlocking = await assetNeedsUnlocking({
-      owner: accountAddress as Address,
-      amount: sellAmount,
-      assetToUnlock: assetToSell,
-      spender: targetAddress as Address,
-      chainId,
-    });
-  }
-
-  if (swapAssetNeedsUnlocking) {
     if (!targetAddress) {
       throw new Error('Target address not found');
     }
@@ -47,7 +34,7 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
     chainId,
     sellAmount,
     permit: false,
-    requiresApprove: swapAssetNeedsUnlocking,
+    requiresApprove: allowanceNeeded,
     quote,
     meta: swapParameters.meta,
     assetToSell,
