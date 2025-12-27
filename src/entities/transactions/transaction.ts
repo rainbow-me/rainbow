@@ -82,7 +82,7 @@ export interface RainbowTransaction {
   nft?: UniqueAsset;
   nonce?: number | null;
   protocol?: ProtocolType | null;
-  approvalAmount?: 'UNLIMITED' | (string & Record<string, never>);
+  approvalAmount?: 'UNLIMITED' | string;
   ensCommitRegistrationName?: string;
   ensRegistration?: boolean;
   sourceAmount?: string; // for purchases
