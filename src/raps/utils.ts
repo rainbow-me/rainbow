@@ -17,9 +17,9 @@ import { gasUnits } from '@/references';
 import { toHexNoLeadingZeros } from '@/handlers/web3';
 import { BigNumber } from '@ethersproject/bignumber';
 import { SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
-import { metadataPOSTClient } from '@/graphql';
 import type { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { logger, RainbowError } from '@/logger';
+import { simulateTransactions } from '@/resources/transactions/transactionSimulation';
 
 export const CHAIN_IDS_WITH_TRACE_SUPPORT: ChainId[] = [mainnet.id];
 export const SWAP_GAS_PADDING = 1.1;
@@ -247,13 +247,13 @@ export async function estimateTransactionsGasLimit({
   const transactions = activeSteps.map(step => step.transaction);
 
   try {
-    const response = await metadataPOSTClient.simulateTransactions({
+    const results = await simulateTransactions({
       chainId,
       transactions,
     });
 
     const gasEstimates = await Promise.all(
-      response.simulateTransactions?.map(async (res, index) => {
+      results?.map(async (res, index) => {
         const step = activeSteps[index];
         let gasEstimate = res?.gas?.estimate;
 
