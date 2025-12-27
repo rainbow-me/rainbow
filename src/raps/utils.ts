@@ -12,6 +12,9 @@ import { gasUnits } from '@/references';
 import { toHexNoLeadingZeros } from '@/handlers/web3';
 import { BigNumber } from '@ethersproject/bignumber';
 import { SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
+import { metadataPOSTClient } from '@/graphql';
+import type { Transaction } from '@/graphql/__generated__/metadataPOST';
+import { logger, RainbowError } from '@/logger';
 
 export const CHAIN_IDS_WITH_TRACE_SUPPORT: ChainId[] = [mainnet.id];
 export const SWAP_GAS_PADDING = 1.1;
@@ -217,3 +220,61 @@ export const populateSwap = async ({
     }
   }
 };
+
+export async function estimateTransactionsGasLimit({
+  chainId,
+  steps,
+}: {
+  chainId: ChainId;
+  steps: {
+    transaction: Transaction | null;
+    label: string;
+    fallbackEstimate?: () => Promise<string | undefined>;
+  }[];
+}): Promise<string | undefined> {
+  // Filter to only steps with valid transactions
+  const activeSteps = steps.filter((step): step is (typeof steps)[number] & { transaction: Transaction } => step.transaction !== null);
+
+  if (activeSteps.length === 0) {
+    return undefined;
+  }
+
+  const transactions = activeSteps.map(step => step.transaction);
+
+  try {
+    const response = await metadataPOSTClient.simulateTransactions({
+      chainId,
+      transactions,
+    });
+
+    const gasEstimates = await Promise.all(
+      response.simulateTransactions?.map(async (res, index) => {
+        const step = activeSteps[index];
+        let gasEstimate = res?.gas?.estimate;
+
+        if (!gasEstimate) {
+          logger.warn(`[estimateTransactionsGasLimit]: Simulation failed for ${step.label}`, {
+            message: res?.error?.message,
+          });
+
+          if (step.fallbackEstimate) {
+            gasEstimate = await step.fallbackEstimate();
+          }
+        }
+
+        if (!gasEstimate) {
+          throw new Error(`Failed to estimate gas for ${step.label}`);
+        }
+
+        return gasEstimate;
+      }) || []
+    );
+
+    return gasEstimates.reduce((acc, limit) => add(acc, limit), '0');
+  } catch (e) {
+    logger.error(new RainbowError('[estimateTransactionsGasLimit]: Failed to estimate'), {
+      message: (e as Error)?.message,
+    });
+    return undefined;
+  }
+}
