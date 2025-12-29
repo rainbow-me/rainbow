@@ -40,24 +40,11 @@ type WithdrawalControllerReturn = {
 
 // ============ Controller Hook ================================================ //
 
-export function useWithdrawalController(
-  balanceStore: BalanceStore,
-  decimals: number,
-  amountActions?: StoreActions<AmountStoreType>
-): WithdrawalControllerReturn;
-export function useWithdrawalController(options: WithdrawalControllerOptions): WithdrawalControllerReturn;
-export function useWithdrawalController(
-  balanceStoreOrOptions: BalanceStore | WithdrawalControllerOptions,
-  decimalsArg?: number,
-  amountActionsArg?: StoreActions<AmountStoreType>
-): WithdrawalControllerReturn {
-  // Handle both call signatures
-  const isOptionsObject = typeof (balanceStoreOrOptions as WithdrawalControllerOptions).balanceStore !== 'undefined';
-  const balanceStore = isOptionsObject
-    ? (balanceStoreOrOptions as WithdrawalControllerOptions).balanceStore
-    : (balanceStoreOrOptions as BalanceStore);
-  const decimals = isOptionsObject ? (balanceStoreOrOptions as WithdrawalControllerOptions).decimals : (decimalsArg as number);
-  const amountActions = isOptionsObject ? (balanceStoreOrOptions as WithdrawalControllerOptions).amountActions : amountActionsArg;
+export function useWithdrawalController({
+  amountActions,
+  balanceStore,
+  decimals,
+}: WithdrawalControllerOptions): WithdrawalControllerReturn {
   const balance = useStoreSharedValue(balanceStore, state => state.getBalance());
   const initial = getInitialValues(balanceStore, decimals);
 

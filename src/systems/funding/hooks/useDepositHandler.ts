@@ -3,9 +3,7 @@ import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
 import { ParsedAsset } from '@/__swaps__/types/assets';
-import { analytics } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
@@ -74,6 +72,13 @@ export function useDepositHandler({
 
     if (config.to.recipient && !recipient) {
       logger.error(new RainbowError('[useDepositHandler]: missing recipient'));
+      config.trackFailure?.({
+        amount: quote.sellAmount?.toString(),
+        assetChainId,
+        assetSymbol: asset.symbol,
+        error: 'Missing recipient',
+        stage: 'validation',
+      });
       Alert.alert(i18n.t(i18n.l.perps.deposit.quote_error), 'Missing recipient address');
       return;
     }
@@ -103,6 +108,13 @@ export function useDepositHandler({
 
       if (!wallet) {
         triggerHaptics('notificationError');
+        config.trackFailure?.({
+          amount: quote.sellAmount?.toString(),
+          assetChainId,
+          assetSymbol: asset.symbol,
+          error: 'Wallet load failed',
+          stage: 'wallet',
+        });
         return;
       }
 
@@ -125,6 +137,13 @@ export function useDepositHandler({
           recipient,
           routes: quote.routes,
         });
+        config.trackFailure?.({
+          amount: quote.sellAmount?.toString(),
+          assetChainId,
+          assetSymbol: asset.symbol,
+          error: 'Crosschain quote not targeting recipient',
+          stage: 'validation',
+        });
         Alert.alert(i18n.t(i18n.l.perps.deposit.quote_error), 'Bridge route is not targeting your account. Please retry.');
         return;
       }
@@ -136,7 +155,7 @@ export function useDepositHandler({
         assetToBuy: targetAsset,
         assetToSell: asset,
         buyAmount: quote.buyAmount?.toString(),
-        chainId: assetChainId as ChainId,
+        chainId: assetChainId,
         quote,
         sellAmount: quote.sellAmount?.toString(),
       };
@@ -152,6 +171,13 @@ export function useDepositHandler({
       });
 
       if (!result.success) {
+        config.trackFailure?.({
+          amount: quote.sellAmount?.toString(),
+          assetChainId,
+          assetSymbol: asset.symbol,
+          error: result.error ?? 'Transaction failed',
+          stage: 'execution',
+        });
         if (result.error && result.error !== 'handled') {
           Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), result.error);
         }
@@ -160,7 +186,7 @@ export function useDepositHandler({
 
       if (config.onSubmit) {
         config.onSubmit(wallet).catch(error => {
-          logger.error(new RainbowError('[useDepositHandler]: onSubmit error'), { error });
+          logger.error(new RainbowError('[useDepositHandler]: onSubmit error', error));
         });
       }
 
@@ -180,15 +206,23 @@ export function useDepositHandler({
         screen: Screens.PERPS_DEPOSIT,
       })();
 
-      trackSwapEvent(analytics.event.swapsSubmitted, {
-        isHardwareWallet,
-        parameters,
-        type: strategy.type === 'swap' ? strategy.rapType : rapTypes.swap,
+      config.trackSuccess?.({
+        amount: quote.sellAmount?.toString() ?? '',
+        assetChainId,
+        assetSymbol: asset.symbol ?? '',
+        executionStrategy: strategy.type === 'directTransfer' ? 'directTransfer' : strategy.rapType,
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error while processing deposit';
-      logger.error(new RainbowError(`[useDepositHandler]: ${message}`), {
-        data: { error, type: rapTypes.crosschainSwap },
+      logger.error(new RainbowError(`[useDepositHandler]: ${message}`, error), {
+        data: { type: rapTypes.crosschainSwap },
+      });
+      config.trackFailure?.({
+        amount: quote.sellAmount?.toString(),
+        assetChainId,
+        assetSymbol: asset.symbol,
+        error: message,
+        stage: 'execution',
       });
     } finally {
       isSubmittingSharedValue.value = false;
@@ -239,15 +273,6 @@ async function executeSwap(params: ExecutionParams, rapType: 'crosschainSwap' | 
   });
 
   if (errorMessage || !hash) {
-    if (errorMessage) {
-      trackSwapEvent(analytics.event.swapsFailed, {
-        errorMessage,
-        isHardwareWallet: params.isHardwareWallet,
-        parameters: params.parameters,
-        type: rapType === 'crosschainSwap' ? rapTypes.crosschainSwap : rapTypes.swap,
-      });
-    }
-
     if (errorMessage && errorMessage !== 'handled') {
       const extractedError = errorMessage.split('[')[0];
       return { error: extractedError, success: false };
@@ -319,7 +344,7 @@ function buildTargetParsedAsset(token: DepositToken, chainId: ChainId): ParsedAs
   const chainNames = useBackendNetworksStore.getState().getChainsName();
   return {
     address: token.address,
-    chainId: chainId as ChainId,
+    chainId,
     chainName: chainNames[chainId],
     colors: {
       fallback: '#FFFFFF',

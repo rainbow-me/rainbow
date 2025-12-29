@@ -57,9 +57,12 @@ export async function getPolymarketClobClient(): Promise<ClobClient> {
 function createLazyWallet(address: Address): () => Promise<Wallet | null> {
   let walletPromise: Promise<Wallet | null> | null = null;
 
-  return () => {
+  return async () => {
     if (!walletPromise) {
-      walletPromise = loadWalletForAddress(address);
+      walletPromise = loadWalletForAddress(address).catch(error => {
+        walletPromise = null;
+        throw error;
+      });
     }
     return walletPromise;
   };
@@ -92,9 +95,12 @@ async function loadWalletForAddress(address: Address): Promise<Wallet | null> {
 function createLazyRelayClient(getWallet: () => Promise<Wallet | null>): () => Promise<RelayClient | null> {
   let clientPromise: Promise<RelayClient | null> | null = null;
 
-  return () => {
+  return async () => {
     if (!clientPromise) {
-      clientPromise = createRelayClientFromWallet(getWallet);
+      clientPromise = createRelayClientFromWallet(getWallet).catch(error => {
+        clientPromise = null;
+        throw error;
+      });
     }
     return clientPromise;
   };
@@ -111,9 +117,12 @@ async function createRelayClientFromWallet(getWallet: () => Promise<Wallet | nul
 function createLazyClobClient(getWallet: () => Promise<Wallet | null>, proxyAddress: Address | null): () => Promise<ClobClient | null> {
   let clientPromise: Promise<ClobClient | null> | null = null;
 
-  return () => {
+  return async () => {
     if (!clientPromise) {
-      clientPromise = createClobClientFromWallet(getWallet, proxyAddress);
+      clientPromise = createClobClientFromWallet(getWallet, proxyAddress).catch(error => {
+        clientPromise = null;
+        throw error;
+      });
     }
     return clientPromise;
   };

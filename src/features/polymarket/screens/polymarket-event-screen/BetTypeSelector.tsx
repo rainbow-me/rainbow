@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import { AnimatedText, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
+import * as i18n from '@/languages';
 import { ItemSelector, Item, RenderItemProps } from './ItemSelector';
 import { BET_TYPE, BetType } from './utils/getMarketsGroupedByBetType';
 
@@ -13,11 +14,11 @@ const PILL_GAP = 8;
 
 const BET_TYPE_ORDER: BetType[] = [BET_TYPE.MONEYLINE, BET_TYPE.SPREADS, BET_TYPE.TOTALS, BET_TYPE.OTHER];
 
-const BET_TYPE_CONFIG: Record<BetType, { label: string; icon: string }> = {
-  [BET_TYPE.MONEYLINE]: { label: 'Winner', icon: '􀢊' },
-  [BET_TYPE.SPREADS]: { label: 'Spreads', icon: '􀄭' },
-  [BET_TYPE.TOTALS]: { label: 'Totals', icon: '􂝔' },
-  [BET_TYPE.OTHER]: { label: 'Other', icon: '􀬎' },
+const BET_TYPE_CONFIG: Record<BetType, { labelKey: string; icon: string }> = {
+  [BET_TYPE.MONEYLINE]: { labelKey: i18n.l.predictions.bet_types.winner, icon: '􀢊' },
+  [BET_TYPE.SPREADS]: { labelKey: i18n.l.predictions.bet_types.spreads, icon: '􀄭' },
+  [BET_TYPE.TOTALS]: { labelKey: i18n.l.predictions.bet_types.totals, icon: '􂝔' },
+  [BET_TYPE.OTHER]: { labelKey: i18n.l.predictions.bet_types.other, icon: '􀬎' },
 };
 
 // ============ Types ========================================================== //
@@ -45,7 +46,7 @@ export const BetTypeSelector = memo(function BetTypeSelector({
     () =>
       BET_TYPE_ORDER.filter(type => availableBetTypes.includes(type)).map(type => ({
         value: type,
-        label: BET_TYPE_CONFIG[type].label,
+        label: i18n.t(BET_TYPE_CONFIG[type].labelKey),
       })),
     [availableBetTypes]
   );

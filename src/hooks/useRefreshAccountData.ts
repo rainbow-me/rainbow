@@ -35,7 +35,7 @@ export const refreshAccountData = async () => {
     refreshWalletInfo({ addresses: [accountAddress] }),
     hyperliquidAccountActions.fetch(undefined, { force: true }),
     useUserAssetsStore.getState().fetch(undefined, { staleTime: 0 }),
-    usePolymarketPositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
+    usePolymarketPositionsStore.getState().fetch(undefined, { staleTime: time.seconds(2) }),
     usePolymarketBalanceStore.getState().fetch(undefined, { staleTime: 0 }),
     useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) }),
     usePositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),

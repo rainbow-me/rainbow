@@ -3,7 +3,7 @@ import { PLATFORM_API_KEY } from 'react-native-dotenv';
 import { Address } from 'viem';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
-export const RAINBOW_POLYMARKET_FEE_ADDRESS: Address = '0x83e3057f7b619ffe340bb8157356e3eb4aecc40f';
+export const RAINBOW_POLYMARKET_FEE_ADDRESS: Address = '0x757758506d6a4F8a433F8BECaFd52545f9Cb050a';
 
 export const POLYGON_USDC_ADDRESS: Address = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
 export const POLYGON_USDC_DECIMALS = 6;
@@ -30,7 +30,7 @@ export const BUILDER_CONFIG = new BuilderConfig({
 
 export const POLYMARKET_ACCENT_COLOR = '#C55DE7';
 export const POLYMARKET_BACKGROUND_DARK = getSolidColorEquivalent({ background: '#000000', foreground: '#1D0E20', opacity: 0.4 });
-export const POLYMARKET_BACKGROUND_LIGHT = '#FFFFFF';
+export const POLYMARKET_BACKGROUND_LIGHT = '#F5F5F7';
 
 export const POLYMARKET_TOKEN_ID_SUFFIX = 'polymarket';
 
@@ -46,6 +46,11 @@ export const POLYMARKET_SPORTS_MARKET_TYPE = {
   BOTH_TEAMS_TO_SCORE: 'both_teams_to_score',
   UFC_METHOD_OF_VICTORY: 'ufc_method_of_victory',
   UFC_GO_THE_DISTANCE: 'ufc_go_the_distance',
+  TENNIS_MATCH_TOTALS: 'tennis_match_totals',
+  TENNIS_SET_HANDICAP: 'tennis_set_handicap',
+  TENNIS_SET_TOTALS: 'tennis_set_totals',
+  TENNIS_FIRST_SET_WINNER: 'tennis_first_set_winner',
+  TENNIS_FIRST_SET_TOTALS: 'tennis_first_set_totals',
   // Known unsupported market types
   // TEAM_TOTALS: 'team_totals',
   // POINTS: 'points',
@@ -57,6 +62,7 @@ export const NAVIGATOR_FOOTER_HEIGHT = 66;
 // padding distance between bottom most content and the navigator footer
 export const NAVIGATOR_FOOTER_CLEARANCE = 12;
 
+export const DEFAULT_CATEGORY_KEY = 'trending';
 export const CATEGORIES = {
   trending: {
     label: 'Trending',
@@ -97,7 +103,7 @@ export const CATEGORIES = {
   },
   crypto: {
     label: 'Crypto',
-    icon: '􀏻',
+    icon: '􁑞',
     tagId: 'crypto',
     color: {
       dark: '#AA75FF',
@@ -131,7 +137,7 @@ export const CATEGORIES = {
       light: '#438DFB',
     },
   },
-  culture: {
+  ['pop-culture']: {
     label: 'Culture',
     icon: '􀫔',
     tagId: 'pop-culture',
@@ -167,7 +173,7 @@ export const CATEGORIES = {
       light: '#479DE4',
     },
   },
-  mentions: {
+  ['mention-markets']: {
     label: 'Mentions',
     icon: '􀿋',
     tagId: 'mention-markets',
@@ -181,3 +187,22 @@ export const CATEGORIES = {
 export type Category = (typeof CATEGORIES)[keyof typeof CATEGORIES];
 
 export const USD_FEE_PER_TOKEN = '0.01';
+
+export const SPORT_LEAGUES = {
+  nba: {
+    name: 'NBA',
+    slug: 'nba',
+  },
+  nfl: {
+    name: 'NFL',
+    slug: 'nfl',
+  },
+  nhl: {
+    name: 'NHL',
+    slug: 'nhl',
+  },
+  mlb: {
+    name: 'MLB',
+    slug: 'mlb',
+  },
+} as const;

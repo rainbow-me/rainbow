@@ -1,12 +1,11 @@
 import { SkCanvas, SkPath, Skia } from '@shopify/react-native-skia';
-import { InteractionConfig, LineEffectsConfig, LineSeries, LineSeriesConfig, LineSmoothing, MinMax } from './LineSeries';
+import { ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { InteractionConfig, LineEffectsConfig, LineSeries, LineSeriesConfig, MinMax } from './LineSeries';
+import { LineSmoothing } from './LineSmoothingAlgorithms';
 import { DrawParams } from './types';
 
-export { LineSmoothing };
-export type { InteractionConfig, LineEffectsConfig };
-
 export type SeriesDataInput = {
-  color: string;
+  color: ResponseByTheme<string>;
   key: string;
   label: string;
   prices: Float32Array;
@@ -14,7 +13,14 @@ export type SeriesDataInput = {
   smoothingMode?: LineSmoothing;
   /** Smoothing tension [0, 1] where 0 = linear, 1 = maximum smoothing */
   smoothingTension?: number;
-  timestamps: Float32Array;
+  timestamps: Uint32Array;
+};
+
+type SeriesValue = {
+  key: string;
+  label: string;
+  price: number;
+  timestamp: number;
 };
 
 export class LineSeriesBuilder {
@@ -74,7 +80,7 @@ export class LineSeriesBuilder {
     }
   }
 
-  public setSeriesData(seriesData: SeriesDataInput[]): void {
+  public setSeriesData(seriesData: SeriesDataInput[], isDarkMode: boolean): void {
     const newKeys = seriesData.map(d => d.key);
     const keysMatch = this.previousSeriesKeys.length === newKeys.length && this.previousSeriesKeys.every((k, i) => k === newKeys[i]);
 
@@ -93,6 +99,7 @@ export class LineSeriesBuilder {
         const config: LineSeriesConfig = {
           color: data.color,
           highlighted: data.key === this.highlightedKey,
+          isDarkMode,
           key: data.key,
           label: data.label,
           lineWidth: this.lineWidth,
@@ -215,8 +222,8 @@ export class LineSeriesBuilder {
     return this.highlightedKey;
   }
 
-  public getValuesAtIndex(index: number): Array<{ key: string; label: string; price: number; timestamp: number }> {
-    const values: Array<{ key: string; label: string; price: number; timestamp: number }> = [];
+  public getValuesAtIndex(index: number): SeriesValue[] {
+    const values: SeriesValue[] = [];
 
     for (const s of this.series) {
       if (index >= 0 && index < s.getLength()) {
@@ -227,6 +234,22 @@ export class LineSeriesBuilder {
           timestamp: s.getTimestamp(index),
         });
       }
+    }
+
+    return values;
+  }
+
+  public getValuesAtTimestamp(timestamp: number): SeriesValue[] {
+    const values: SeriesValue[] = [];
+
+    for (const s of this.series) {
+      if (!s.getLength()) continue;
+      values.push({
+        key: s.key,
+        label: s.label,
+        price: s.getPriceAtTimestamp(timestamp),
+        timestamp,
+      });
     }
 
     return values;

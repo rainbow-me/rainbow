@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from '@/design-system';
+import * as i18n from '@/languages';
 import { polymarketEventSearchActions, usePolymarketEventSearchStore } from '@/features/polymarket/stores/polymarketEventSearchStore';
 import { PolymarketEventsListBase } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListBase';
 
@@ -21,7 +22,7 @@ const SearchResults = memo(function SearchResults() {
     return (
       <View style={styles.emptyStateContainer}>
         <Text size="17pt" weight="bold" color="labelSecondary" align="center">
-          {'Search for prediction markets'}
+          {i18n.t(i18n.l.predictions.search.placeholder)}
         </Text>
       </View>
     );
@@ -31,13 +32,13 @@ const SearchResults = memo(function SearchResults() {
     return (
       <View style={styles.emptyStateContainer}>
         <Text size="17pt" weight="bold" color="labelSecondary" align="center">
-          {'No results found'}
+          {i18n.t(i18n.l.predictions.search.no_results)}
         </Text>
       </View>
     );
   }
 
-  return <PolymarketEventsListBase events={events} isLoading={isLoading} onEndReached={polymarketEventSearchActions.fetchNextPage} />;
+  return <PolymarketEventsListBase events={events} onEndReached={polymarketEventSearchActions.fetchNextPage} />;
 });
 
 const styles = StyleSheet.create({

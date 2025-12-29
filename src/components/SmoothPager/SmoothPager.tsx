@@ -102,6 +102,7 @@ type SmoothPagerProps = {
   pageGap?: number;
   scaleTo?: number;
   verticalPageAlignment?: AlignVertical;
+  waitFor?: React.RefObject<unknown> | React.RefObject<unknown>[];
 } & (
   | { springConfig?: WithSpringConfig; springVelocityFactor?: number; timingConfig?: undefined }
   | { springConfig?: undefined; springVelocityFactor?: undefined; timingConfig?: WithTimingConfig }
@@ -121,6 +122,7 @@ const SmoothPagerComponent = (
     springVelocityFactor = 1,
     timingConfig,
     verticalPageAlignment = 'bottom',
+    waitFor,
   }: SmoothPagerProps,
   ref: ForwardedRef<SmoothPagerRef>
 ) => {
@@ -328,6 +330,7 @@ const SmoothPagerComponent = (
       enabled={enableSwipeToGoBack || enableSwipeToGoForward !== false}
       failOffsetY={[-12, 12]}
       onGestureEvent={swipeGestureHandler}
+      waitFor={waitFor}
     >
       <Animated.View style={styles.pagerContainer}>
         <Animated.View

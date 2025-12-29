@@ -43,6 +43,7 @@ export function useNewPositionForm({ tokenId }: UseNewPositionFormParams) {
     spread,
     amountToWin: tokensBought,
     outcomeOdds,
+    bestPrice,
     fee,
     setBuyAmount,
     buyAmount,

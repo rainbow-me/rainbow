@@ -5,9 +5,9 @@ import { time } from '@/utils';
 
 const CONFIRMATION_TIMEOUT = time.minutes(1);
 
-export async function awaitPolygonConfirmation(hash: string): Promise<void> {
+export async function awaitPolygonConfirmation(hash: string, confirmations = 1): Promise<void> {
   const provider = getProvider({ chainId: ChainId.polygon });
-  const receipt = await provider.waitForTransaction(hash, 1, CONFIRMATION_TIMEOUT);
+  const receipt = await provider.waitForTransaction(hash, confirmations, CONFIRMATION_TIMEOUT);
 
   if (receipt.status === 0) {
     throw new RainbowError('[polymarket]: Transaction reverted', { hash });

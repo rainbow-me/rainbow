@@ -18,15 +18,31 @@ import { SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { TextSegment } from '@/design-system/components/SkiaText/useSkiaText';
+import { InteractionConfig, LineEffectsConfig } from '@/features/charts/line/LineSeries';
+import { ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { normalizeSpringConfig } from '@/worklets/animations';
 import { createBlankPicture } from '@/worklets/skia';
 import { Animator } from '../../candlestick/classes/Animator';
 import { TimeFormatter } from '../../candlestick/classes/TimeFormatter';
 import { LineSmoothing } from '../../line/LineSmoothingAlgorithms';
-import { InteractionConfig, LineEffectsConfig, LineSeriesBuilder, SeriesDataInput } from '../../line/LineSeriesBuilder';
+import { LineSeriesBuilder, SeriesDataInput } from '../../line/LineSeriesBuilder';
 import { DrawParams } from '../../line/types';
-import { EntranceAnimation, OutcomeSeries, PolymarketInterval, SERIES_COLORS, SERIES_PALETTES, SeriesPalette } from '../types';
+import { EntranceAnimation, OutcomeSeries, SERIES_COLORS, SERIES_PALETTES, SeriesPaletteColors } from '../types';
+
+// ============ Types ========================================================== //
+
+export type OutcomePrice = {
+  color: ResponseByTheme<string>;
+  label: string;
+  price: number;
+  tokenId: string;
+};
+
+export type ActiveInteractionData = {
+  outcomes: OutcomePrice[];
+  timestamp: number;
+};
 
 const MAX_PROGRESS = 100;
 const MIN_PROGRESS = 0;
@@ -75,7 +91,7 @@ export type PolymarketChartConfig = {
     strokeWidth: number;
   };
   line: {
-    colors?: SeriesPalette | readonly [string, string, string, string, string];
+    colors?: SeriesPaletteColors;
     overrideSeriesColors?: boolean;
     strokeWidth: number;
   };
@@ -104,10 +120,8 @@ export class PolymarketChartManager {
 
   private backgroundColor: SkColor;
   private buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
-  private interval: PolymarketInterval = '1d';
   private isDarkMode: boolean;
   private readonly smoothingMode: LineSmoothing | undefined;
-  private lastVisibleRange = { startIndex: -1, endIndex: -1 };
   private series: OutcomeSeries[] = [];
   private timeDomain: { endTs: number; startTs: number } | null = null;
   private readonly fallbackTimeDomain = { endTs: 1, startTs: 0 };
@@ -120,8 +134,12 @@ export class PolymarketChartManager {
   private targetBounds: { max: number; min: number } | null = null;
 
   private interactionIndex: number | null = null;
+  private interactionTimestamp: number | null = null;
+  private interactionTimestamps: Uint32Array = new Uint32Array(0);
   private interactionX: number | null = null;
-  private isInteractionAnimating = false;
+  private seriesMetadata: { color: ResponseByTheme<string>; label: string; tokenId: string }[] = [];
+
+  private readonly activeInteraction: SharedValue<ActiveInteractionData | undefined> | undefined;
   private readonly interactionProgress: SharedValue<number>;
 
   private readonly animationProgress: SharedValue<number>;
@@ -141,6 +159,7 @@ export class PolymarketChartManager {
     black: SkColor;
     crosshairLine: SkColor;
     labelQuinary: SkColor;
+    labelQuinaryString: string;
     labelSecondary: SkColor;
     white: SkColor;
   };
@@ -164,6 +183,7 @@ export class PolymarketChartManager {
   private gridTopY = 0;
 
   constructor({
+    activeInteraction,
     animationProgress,
     buildParagraph,
     chartHeight,
@@ -178,6 +198,7 @@ export class PolymarketChartManager {
     isDarkMode,
     smoothingMode,
   }: {
+    activeInteraction: SharedValue<ActiveInteractionData | undefined> | undefined;
     animationProgress: SharedValue<number>;
     buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
     chartHeight: number;
@@ -192,6 +213,7 @@ export class PolymarketChartManager {
     isDarkMode: boolean;
     smoothingMode?: LineSmoothing;
   }) {
+    if (activeInteraction) this.activeInteraction = activeInteraction;
     this.animationProgress = animationProgress;
     this.backgroundColor = Skia.Color(config.chart.backgroundColor);
     this.buildParagraph = buildParagraph;
@@ -216,11 +238,16 @@ export class PolymarketChartManager {
     this.availableWidth = this.chartWidth - this.yAxisWidth;
 
     const colorMode = isDarkMode ? 'dark' : 'light';
+    const labelQuinaryString = getColorForTheme('labelQuinary', colorMode);
+    const labelQuinary = Skia.Color(labelQuinaryString);
+    const labelSecondary = Skia.Color(getColorForTheme('labelSecondary', colorMode));
+
     this.colors = {
       black: Skia.Color('#000000'),
-      crosshairLine: Skia.Color(config.crosshair.lineColor),
-      labelQuinary: Skia.Color(getColorForTheme('labelQuinary', colorMode)),
-      labelSecondary: Skia.Color(getColorForTheme('labelSecondary', colorMode)),
+      crosshairLine: isDarkMode ? Skia.Color(config.crosshair.lineColor) : labelQuinary,
+      labelQuinary,
+      labelQuinaryString,
+      labelSecondary,
       white: Skia.Color('#FFFFFF'),
     };
 
@@ -262,9 +289,11 @@ export class PolymarketChartManager {
       const lightModeAlphaMultiplier = this.isDarkMode ? 1 : 0.5;
       const shadowPaint = Skia.Paint();
       shadowPaint.setAntiAlias(true);
-      shadowPaint.setColor(this.colors.black);
       shadowPaint.setAlphaf(endCircle.shadow.alpha * lightModeAlphaMultiplier);
       shadowPaint.setMaskFilter(Skia.MaskFilter.MakeBlur(BlurStyle.Normal, endCircle.shadow.blur / 2, true));
+      if (this.isDarkMode) {
+        shadowPaint.setColorFilter(Skia.ColorFilter.MakeBlend(this.colors.black, BlendMode.SrcIn));
+      }
       this.paints.endCircleShadow = shadowPaint;
     }
 
@@ -279,22 +308,31 @@ export class PolymarketChartManager {
       return;
     }
 
-    const lightModeAlphaMultiplier = this.isDarkMode ? 1 : 0.5;
-
-    const shadowOffset =
-      endCircle?.enabled && (endCircle.shadow.x || endCircle.shadow.y)
-        ? { x: endCircle.shadow.x ?? 0, y: endCircle.shadow.y ?? 0 }
-        : undefined;
-
-    this.lineEffectsConfig = {
+    let config: LineEffectsConfig = {
       endCirclePaint: this.paints.endCircle ?? undefined,
       endCircleRadius: endCircle?.enabled ? endCircle.radius + (endCircle.shadow.spread ?? 0) : undefined,
-      endCircleShadowOffset: shadowOffset,
-      endCircleShadowPaint: this.paints.endCircleShadow ?? undefined,
-      lineShadowAlpha: lineShadow?.enabled ? lineShadow.alpha * lightModeAlphaMultiplier : undefined,
-      lineShadowPaint: this.paints.lineShadow ?? undefined,
-      lineShadowYOffset: lineShadow?.enabled ? lineShadow.y : undefined,
     };
+
+    if (endCircle?.enabled && this.paints.endCircleShadow) {
+      const circleShadowAlphaMultiplier = this.isDarkMode ? 1 : 0.3;
+      config = Object.assign(config, {
+        endCircleShadowPaint: this.paints.endCircleShadow,
+        endCircleShadowAlpha: endCircle.shadow.alpha * circleShadowAlphaMultiplier,
+        endCircleShadowOffset:
+          endCircle.shadow.x || endCircle.shadow.y ? { x: endCircle.shadow.x ?? 0, y: endCircle.shadow.y ?? 0 } : undefined,
+      });
+    }
+
+    if (lineShadow?.enabled && this.paints.lineShadow) {
+      const lightModeAlphaMultiplier = this.isDarkMode ? 1 : 0.5;
+      config = Object.assign(config, {
+        lineShadowPaint: this.paints.lineShadow,
+        lineShadowAlpha: lineShadow.alpha * lightModeAlphaMultiplier,
+        lineShadowYOffset: lineShadow.y,
+      });
+    }
+
+    this.lineEffectsConfig = config;
   }
 
   private createBubbleFillPaint(): SkPaint {
@@ -425,12 +463,79 @@ export class PolymarketChartManager {
     return this.timeDomain ?? this.fallbackTimeDomain;
   }
 
+  private buildInteractionTimestamps(series: OutcomeSeries[]): Uint32Array {
+    const collected: number[] = [];
+
+    for (const s of series) {
+      const timestamps = s.timestamps;
+      for (let i = 0; i < timestamps.length; i++) {
+        collected.push(timestamps[i]);
+      }
+    }
+
+    if (!collected.length) return new Uint32Array(0);
+
+    collected.sort((a, b) => a - b);
+
+    let uniqueCount = 1;
+    for (let i = 1; i < collected.length; i++) {
+      if (collected[i] !== collected[i - 1]) uniqueCount += 1;
+    }
+
+    const unique = new Uint32Array(uniqueCount);
+    unique[0] = collected[0];
+    let index = 1;
+    for (let i = 1; i < collected.length; i++) {
+      const value = collected[i];
+      if (value !== collected[i - 1]) {
+        unique[index] = value;
+        index += 1;
+      }
+    }
+
+    return unique;
+  }
+
+  private getNearestInteractionTimestampIndex(targetTimestamp: number): number | null {
+    const timestamps = this.interactionTimestamps;
+    const count = timestamps.length;
+    if (!count) return null;
+
+    if (targetTimestamp <= timestamps[0]) return 0;
+    if (targetTimestamp >= timestamps[count - 1]) return count - 1;
+
+    let low = 0;
+    let high = count - 1;
+
+    while (high - low > 1) {
+      const mid = Math.floor((low + high) / 2);
+      const value = timestamps[mid];
+      if (value === targetTimestamp) return mid;
+      if (value < targetTimestamp) {
+        low = mid;
+      } else {
+        high = mid;
+      }
+    }
+
+    const lowValue = timestamps[low];
+    const highValue = timestamps[high];
+    return targetTimestamp - lowValue <= highValue - targetTimestamp ? low : high;
+  }
+
+  private getTimestampAtNormalizedX(normalizedX: number): number {
+    const { endTs, startTs } = this.getTimeDomain();
+    const clampedX = Math.max(0, Math.min(1, normalizedX));
+    const range = endTs - startTs;
+    return range === 0 ? startTs : startTs + clampedX * range;
+  }
+
   private yToPrice(chartRegionHeight: number, maxPrice: number, minPrice: number, y: number): number {
     const priceRange = maxPrice - minPrice;
     return minPrice + (priceRange * (chartRegionHeight - y)) / chartRegionHeight;
   }
 
-  public setSeriesData(series: OutcomeSeries[]): void {
+  public setSeriesData(series: OutcomeSeries[], isDarkMode: boolean): void {
     const hadData = this.series.length > 0;
 
     const currentKeys = this.lineSeriesBuilder.getSeriesKeys();
@@ -438,6 +543,7 @@ export class PolymarketChartManager {
     const isMarketSwitch = currentKeys.length !== newKeys.length || !currentKeys.every((k, i) => k === newKeys[i]);
 
     this.series = series;
+    this.interactionTimestamps = this.buildInteractionTimestamps(series);
     const nextTimeDomain = this.computeTimeDomain(series);
     const shouldAnimate = hadData && !isMarketSwitch && !this.isEntranceAnimating;
 
@@ -466,7 +572,8 @@ export class PolymarketChartManager {
       timestamps: s.timestamps,
     }));
 
-    this.lineSeriesBuilder.setSeriesData(seriesData);
+    this.seriesMetadata = seriesData.map(s => ({ color: s.color, label: s.label, tokenId: s.key }));
+    this.lineSeriesBuilder.setSeriesData(seriesData, isDarkMode);
     this.timeDomain = nextTimeDomain;
     const newBounds = this.getPriceBounds();
 
@@ -587,14 +694,10 @@ export class PolymarketChartManager {
     };
   }
 
-  public setInterval(interval: PolymarketInterval): void {
-    this.interval = interval;
-  }
-
   public clearData(): void {
     this.series = [];
+    this.seriesMetadata = [];
     this.lineSeriesBuilder.clearSeries();
-    this.lastVisibleRange = { startIndex: -1, endIndex: -1 };
     this.timeDomain = null;
 
     this.isAnimating = false;
@@ -602,7 +705,10 @@ export class PolymarketChartManager {
     this.previousBounds = null;
     this.targetBounds = null;
 
+    if (this.activeInteraction) this.activeInteraction.value = undefined;
     this.interactionIndex = null;
+    this.interactionTimestamp = null;
+    this.interactionTimestamps = new Uint32Array(0);
     this.interactionX = null;
 
     const oldPicture = this.chartPicture.value;
@@ -739,6 +845,7 @@ export class PolymarketChartManager {
       const interactionConfig: InteractionConfig = {
         greyCirclePaint: this.paints.greyCircle,
         greyColor: this.colors.labelQuinary,
+        greyColorString: this.colors.labelQuinaryString,
         greyLinePaint: this.paints.greyLine,
         normalizedSplitPoint: interactionX,
         progress: interactionProgress,
@@ -754,8 +861,6 @@ export class PolymarketChartManager {
     if (oldPicture !== this.blankPicture) {
       oldPicture.dispose();
     }
-
-    this.lastVisibleRange = { startIndex: bounds.startIndex, endIndex: bounds.endIndex };
   }
 
   private drawHorizontalGridLines(canvas: SkCanvas, lineCount: number, maxPrice: number, minPrice: number): void {
@@ -773,9 +878,9 @@ export class PolymarketChartManager {
     const halfLabel = labelHeight / 2;
     this.gridTopY = halfLabel || halfStroke;
 
-    const endAlpha = this.isDarkMode ? 0.05 : 0.03;
-    const startAlpha = this.isDarkMode ? 0.02 : 0.01;
-    const gridColor = this.colors.white;
+    const endAlpha = this.isDarkMode ? 0.05 : 0.0435;
+    const startAlpha = this.isDarkMode ? 0.02 : 0.0175;
+    const gridColor = this.isDarkMode ? this.colors.white : this.colors.labelQuinary;
     const startColor = Float32Array.from([gridColor[0], gridColor[1], gridColor[2], startAlpha]);
     const endColor = Float32Array.from([gridColor[0], gridColor[1], gridColor[2], endAlpha]);
 
@@ -798,12 +903,10 @@ export class PolymarketChartManager {
 
       if (paragraph) {
         paragraph.layout(this.chartWidth);
-        // Center label on line
         paragraph.paint(canvas, labelX, y - halfLabel);
       }
     }
 
-    // Clean up shader
     this.paints.grid.setShader(null);
     gridShader.dispose();
   }
@@ -843,10 +946,42 @@ export class PolymarketChartManager {
     }
   }
 
+  private updateActiveInteraction(cursorTimestamp: number, nearestTimestamp: number | null): void {
+    if (!this.activeInteraction) return;
+    if (nearestTimestamp === null) {
+      this.activeInteraction.value = undefined;
+      return;
+    }
+
+    if (nearestTimestamp === this.activeInteraction.value?.timestamp) return;
+
+    const values = this.lineSeriesBuilder.getValuesAtTimestamp(nearestTimestamp);
+    if (!values.length) {
+      this.activeInteraction.value = undefined;
+      return;
+    }
+
+    const outcomes: OutcomePrice[] = values.map(v => {
+      const metadata = this.seriesMetadata.find(m => m.tokenId === v.key);
+      return {
+        color: metadata?.color ?? SERIES_COLORS[0],
+        label: v.label,
+        price: v.price,
+        tokenId: v.key,
+      };
+    });
+
+    this.activeInteraction.value = {
+      outcomes,
+      timestamp: nearestTimestamp,
+    };
+  }
+
   private buildCrosshairPicture(x: number, active: boolean): void {
     if (!active || !this.getDataLength()) {
       this.isChartGestureActive.value = false;
       this.interactionIndex = null;
+      this.interactionTimestamp = null;
       this.interactionX = null;
       if (this.crosshairPicture.value !== this.blankPicture) {
         this.crosshairPicture.value = this.blankPicture;
@@ -854,13 +989,13 @@ export class PolymarketChartManager {
       return;
     }
 
-    const length = this.getDataLength();
     const offsetX = this.getOffsetX();
     const normalizedX = this.availableWidth > 0 ? Math.max(0, Math.min(1, (x - offsetX) / this.availableWidth)) : 0;
-
-    const index = this.lineSeriesBuilder.getNearestIndex(offsetX, this.getStride(length), x);
-    if (index < 0) {
+    const cursorTimestamp = this.getTimestampAtNormalizedX(normalizedX);
+    const nearestIndex = this.getNearestInteractionTimestampIndex(cursorTimestamp);
+    if (nearestIndex === null) {
       this.interactionIndex = null;
+      this.interactionTimestamp = null;
       this.interactionX = null;
       if (this.crosshairPicture.value !== this.blankPicture) {
         this.crosshairPicture.value = this.blankPicture;
@@ -868,14 +1003,17 @@ export class PolymarketChartManager {
       return;
     }
 
-    const indexChanged = this.interactionIndex !== index;
-    this.interactionIndex = index;
+    const nearestTimestamp = this.interactionTimestamps[nearestIndex];
+    const timestampChanged = this.interactionTimestamp !== nearestTimestamp;
+    this.interactionIndex = nearestIndex;
+    this.interactionTimestamp = nearestTimestamp;
     this.interactionX = normalizedX;
 
-    if (indexChanged) {
+    if (timestampChanged) {
       triggerHaptics('selection');
     }
 
+    this.updateActiveInteraction(cursorTimestamp, nearestTimestamp);
     this.rebuildChart();
 
     if (this.crosshairPicture.value !== this.blankPicture) {
@@ -895,15 +1033,10 @@ export class PolymarketChartManager {
     this.isChartGestureActive.value = true;
     triggerHaptics('soft');
 
-    this.isInteractionAnimating = true;
     this.interactionProgress.value = 0;
     this.buildCrosshairPicture(x, true);
 
-    this.animator.spring(this.interactionProgress, 1, normalizeSpringConfig(0, 1, this.config.animation.springConfig), finished => {
-      if (finished) {
-        this.isInteractionAnimating = false;
-      }
-    });
+    this.animator.spring(this.interactionProgress, 1, normalizeSpringConfig(0, 1, this.config.animation.springConfig));
   }
 
   public onLongPressMove(x: number, state: GestureState): void {
@@ -930,9 +1063,10 @@ export class PolymarketChartManager {
       normalizeSpringConfig(this.interactionProgress.value, 0, this.config.animation.springConfig),
       finished => {
         if (finished) {
-          this.isInteractionAnimating = false;
           this.interactionIndex = null;
+          this.interactionTimestamp = null;
           this.interactionX = null;
+          if (this.activeInteraction) this.activeInteraction.value = undefined;
           this.rebuildChart();
         }
       }
@@ -951,12 +1085,16 @@ export class PolymarketChartManager {
   public setColorMode(isDarkMode: boolean, backgroundColor: string): void {
     this.isDarkMode = isDarkMode;
     this.backgroundColor = Skia.Color(backgroundColor);
-    const colorMode = isDarkMode ? 'dark' : 'light';
-    this.colors.labelQuinary = Skia.Color(getColorForTheme('labelQuinary', colorMode));
-    this.colors.labelSecondary = Skia.Color(getColorForTheme('labelSecondary', colorMode));
-    this.colors.crosshairLine = Skia.Color(this.config.crosshair.lineColor);
 
-    // Update shadow paints with new background color
+    const colorMode = isDarkMode ? 'dark' : 'light';
+    const labelQuinaryString = getColorForTheme('labelQuinary', colorMode);
+    const labelQuinary = Skia.Color(labelQuinaryString);
+    const labelSecondary = Skia.Color(getColorForTheme('labelSecondary', colorMode));
+    this.colors.labelQuinary = labelQuinary;
+    this.colors.labelQuinaryString = labelQuinaryString;
+    this.colors.labelSecondary = labelSecondary;
+    this.colors.crosshairLine = isDarkMode ? Skia.Color(this.config.crosshair.lineColor) : labelQuinary;
+
     this.paints.bottomShadow.setColor(this.backgroundColor);
     this.paints.bottomShadow.setAlphaf(0.48);
     this.paints.bottomShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 4, 5, 5, this.backgroundColor, null));
@@ -965,13 +1103,14 @@ export class PolymarketChartManager {
     this.paints.topShadow.setAlphaf(0.48);
     this.paints.topShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, -4, 5, 5, this.backgroundColor, null));
 
-    // Update end circle shadow paint alpha for light/dark mode
     const lightModeAlphaMultiplier = isDarkMode ? 1 : 0.5;
     if (this.paints.endCircleShadow && this.config.endCircle) {
       this.paints.endCircleShadow.setAlphaf(this.config.endCircle.shadow.alpha * lightModeAlphaMultiplier);
+      this.paints.endCircleShadow.setColorFilter(isDarkMode ? Skia.ColorFilter.MakeBlend(this.colors.black, BlendMode.SrcIn) : null);
     }
 
-    // Update crosshair paint color and alpha
+    this.paints.greyCircle.setColor(labelQuinary);
+    this.paints.greyLine.setColor(labelQuinary);
     this.paints.crosshairLine.setColor(this.colors.crosshairLine);
     this.paints.crosshairLine.setAlphaf(0.25);
 

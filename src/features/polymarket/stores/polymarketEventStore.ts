@@ -2,10 +2,11 @@ import { rainbowFetch } from '@/rainbow-fetch';
 import { time } from '@/utils/time';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { RawPolymarketEvent, PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { logger, RainbowError } from '@/logger';
+import { RainbowError } from '@/logger';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
-import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
+import { getLeague, processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { PolymarketGameMetadata, PolymarketTeamInfo } from '@/features/polymarket/types';
+import { fetchGameMetadata, fetchTeamsInfo, parseTeamAbbreviationsFromTicker } from '@/features/polymarket/utils/sports';
 
 type FetchParams = { eventId: string | null };
 
@@ -33,7 +34,7 @@ export const usePolymarketEventStore = createQueryStore<PolymarketEvent, FetchPa
   },
   (_, get) => ({
     eventId: null,
-    getMarkets: (sortOrder?: MarketSortOrder) => {
+    getMarkets: sortOrder => {
       const event = get().getData();
       const markets = event?.markets;
       const sortBy = sortOrder ?? event?.sortBy ?? MarketSortOrder.DEFAULT;
@@ -42,10 +43,6 @@ export const usePolymarketEventStore = createQueryStore<PolymarketEvent, FetchPa
     },
   })
 );
-
-function filterMarkets(markets: PolymarketMarket[]) {
-  return markets.filter(market => market.active);
-}
 
 function sortMarkets(markets: PolymarketMarket[], sortOrder: MarketSortOrder) {
   return markets.sort((a, b) => {
@@ -72,12 +69,18 @@ async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: A
   if (!eventId) throw new RainbowError('[PolymarketEventStore] eventId is required');
 
   const url = `${POLYMARKET_GAMMA_API_URL}/events/${eventId}`;
-  const { data: event } = await rainbowFetch<RawPolymarketEvent>(url, { abortController, timeout: 30000 });
+  const { data: event } = await rainbowFetch<RawPolymarketEvent>(url, { abortController, timeout: time.seconds(15) });
 
-  if (event.gameId && (!event.homeTeamName || !event.awayTeamName)) {
-    const gameMetadata = await fetchGameMetadata(event.slug);
+  let teams: PolymarketTeamInfo[] | undefined = undefined;
+  let gameMetadata: PolymarketGameMetadata | null = null;
+  let league: string | undefined = undefined;
 
-    if (gameMetadata)
+  if (event.gameId) {
+    gameMetadata = await fetchGameMetadata(event.ticker);
+    if (gameMetadata) {
+      league = gameMetadata.sport;
+      // The `ordering` field represents the order in which the teams are listed in the game metadata.
+      // This is not indicative of how the teams should be displayed in the event, which is always away @ home.
       if (gameMetadata.ordering === 'home') {
         event.homeTeamName = gameMetadata.teams[0];
         event.awayTeamName = gameMetadata.teams[1];
@@ -85,46 +88,26 @@ async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: A
         event.homeTeamName = gameMetadata.teams[1];
         event.awayTeamName = gameMetadata.teams[0];
       }
+    }
   }
 
-  let teams: PolymarketTeamInfo[] | undefined = undefined;
-
   if (event.homeTeamName && event.awayTeamName) {
-    teams = await fetchTeamsInfo([event.homeTeamName, event.awayTeamName]);
+    const tickerAbbreviations = parseTeamAbbreviationsFromTicker(event.ticker);
+    teams = await fetchTeamsInfo({
+      abbreviations: tickerAbbreviations ? [tickerAbbreviations.away, tickerAbbreviations.home] : undefined,
+      league: league ?? getLeague(event)?.slug,
+      teamNames: [event.awayTeamName, event.homeTeamName],
+    });
   }
 
   const processedEvent = await processRawPolymarketEvent(event, teams);
+  const sortBy = processedEvent?.sortBy ?? MarketSortOrder.DEFAULT;
 
   return {
     ...processedEvent,
-    markets: filterMarkets(processedEvent.markets),
+    markets: sortMarkets(
+      processedEvent.markets.filter(market => market.active),
+      sortBy
+    ),
   };
-}
-
-async function fetchGameMetadata(eventSlug: string) {
-  try {
-    const url = new URL(`${POLYMARKET_GAMMA_API_URL}/games`);
-    url.searchParams.set('ticker', eventSlug);
-    const { data } = await rainbowFetch<PolymarketGameMetadata>(url.toString(), { timeout: time.seconds(15) });
-    return data;
-  } catch (e) {
-    // For some game types this information is not available and returns an error
-    // There is no way to know which game types and this is expected behavior, so we do not log an error
-    return null;
-  }
-}
-
-async function fetchTeamsInfo(teamNames: string[]) {
-  try {
-    const url = new URL(`${POLYMARKET_GAMMA_API_URL}/teams`);
-    teamNames.forEach(name => {
-      url.searchParams.append('name', name);
-    });
-    const { data } = await rainbowFetch<PolymarketTeamInfo[]>(url.toString(), { timeout: time.seconds(15) });
-    return data;
-  } catch (e) {
-    // This can fail unexpectedly, but should not prevent the event from being loaded
-    logger.error(new RainbowError('[PolymarketEventStore] Error fetching teams info', e));
-    return undefined;
-  }
 }

@@ -1,10 +1,9 @@
 import React, { ComponentProps, ReactNode } from 'react';
-import { Box, BoxProps, useColorMode } from '@/design-system';
+import { Box, BoxProps, globalColors, useColorMode } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import LinearGradient from 'react-native-linear-gradient';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { POLYMARKET_ACCENT_COLOR } from '@/features/polymarket/constants';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 
 type ButtonPressAnimationProps = ComponentProps<typeof ButtonPressAnimation>;
 
@@ -15,18 +14,17 @@ type PolymarketButtonProps = BoxProps & {
   buttonProps?: Omit<ButtonPressAnimationProps, 'children' | 'onPress'>;
 };
 
-const GRADIENT = ['#3B62D6', '#DC5CEA', '#8BCAF2'];
-
 export const PolymarketButton = function PolymarketButton({ children, onPress, buttonProps, ...boxProps }: PolymarketButtonProps) {
   const { isDarkMode } = useColorMode();
-  const accentColor = POLYMARKET_ACCENT_COLOR;
+  const fillColor = isDarkMode ? '#C863E8' : '#E445D3';
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
     <ButtonPressAnimation {...buttonProps} onPress={onPress}>
       <Box
-        borderColor={{ custom: opacityWorklet('#ffffff', 0.16) }}
-        borderWidth={isDarkMode ? 2 : 0}
+        borderColor={{ custom: opacityWorklet(globalColors.white100, 0.08) }}
+        borderWidth={isDarkMode ? StyleSheet.hairlineWidth : 0}
+        backgroundColor={fillColor}
         justifyContent="center"
         alignItems="center"
         height={48}
@@ -34,23 +32,9 @@ export const PolymarketButton = function PolymarketButton({ children, onPress, b
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...boxProps}
       >
-        {isDarkMode && (
-          <>
-            <LinearGradient colors={GRADIENT} style={StyleSheet.absoluteFillObject} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
-            <View style={styles.darkModeOverlay} />
-          </>
-        )}
-        {!isDarkMode && <View style={[StyleSheet.absoluteFillObject, { backgroundColor: accentColor }]} />}
+        <InnerShadow borderRadius={24} color={opacityWorklet(globalColors.white100, 0.17)} blur={3} dx={0} dy={3} />
         {children}
       </Box>
     </ButtonPressAnimation>
   );
 };
-
-const styles = StyleSheet.create({
-  darkModeOverlay: {
-    backgroundColor: '#000000',
-    opacity: 0.12,
-    ...StyleSheet.absoluteFillObject,
-  },
-});

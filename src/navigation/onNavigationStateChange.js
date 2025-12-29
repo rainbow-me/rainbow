@@ -68,7 +68,19 @@ export function onHandleStatusBar(currentState, prevState) {
     case Routes.PERPS_SEARCH_SCREEN:
     case Routes.PERPS_DETAIL_SCREEN:
     case Routes.PERPS_NEW_POSITION_SCREEN:
-    case Routes.PERPS_NEW_POSITION_SEARCH_SCREEN: {
+    case Routes.PERPS_NEW_POSITION_SEARCH_SCREEN:
+    case Routes.POLYMARKET_ACCOUNT_SCREEN:
+    case Routes.POLYMARKET_BROWSE_EVENTS_SCREEN:
+    case Routes.POLYMARKET_DEPOSIT_SCREEN:
+    case Routes.POLYMARKET_EVENT_SCREEN:
+    case Routes.POLYMARKET_EXPLAIN_SHEET:
+    case Routes.POLYMARKET_MANAGE_POSITION_SHEET:
+    case Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET:
+    case Routes.POLYMARKET_MARKET_SHEET:
+    case Routes.POLYMARKET_NAVIGATOR:
+    case Routes.POLYMARKET_NEW_POSITION_SHEET:
+    case Routes.POLYMARKET_SEARCH_SCREEN:
+    case Routes.POLYMARKET_WITHDRAWAL_SCREEN: {
       SystemBars.setStyle('dark');
       break;
     }

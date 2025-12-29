@@ -72,6 +72,7 @@ export type WalletSectionsState = {
   isShowcaseDataMigrated: boolean;
   isHiddenDataMigrated: boolean;
   isDismissedPerpsFeatureCard?: boolean;
+  isDismissedPolymarketFeatureCard?: boolean;
 };
 
 const sortedAssetsSelector = (state: WalletSectionsState) => state.sortedAssets;
@@ -98,6 +99,7 @@ const isHiddenDataMigratedSelector = (state: WalletSectionsState) => state.isHid
 const listTypeSelector = (state: WalletSectionsState) => state.listType;
 const isReadOnlyWalletSelector = (state: WalletSectionsState) => state.isReadOnlyWallet;
 const isDismissedPerpsFeatureCardSelector = (state: WalletSectionsState) => state.isDismissedPerpsFeatureCard;
+const isDismissedPolymarketFeatureCardSelector = (state: WalletSectionsState) => state.isDismissedPolymarketFeatureCard;
 
 interface BalanceSectionData {
   headerSection: CellTypes[];
@@ -130,7 +132,8 @@ const buildBriefWalletSections = (
   positions: RainbowPositions | null,
   perpsData: PerpsWalletListData,
   polymarketData: PolymarketWalletListData,
-  isDismissedPerpsFeatureCard?: boolean
+  isDismissedPerpsFeatureCard?: boolean,
+  isDismissedPolymarketFeatureCard?: boolean
 ): BriefWalletSectionsResult => {
   const { isEmpty, headerSection, contentSection, isLoadingUserAssets } = balanceSectionData;
 
@@ -140,16 +143,16 @@ const buildBriefWalletSections = (
   const perpsSection = withPerpsSection(perpsData);
   const polymarketSection = withPolymarketSection(polymarketData);
   const hasPerpsContent = (perpsData?.hasBalance || perpsData?.hasPositions) && perpsData.enabled;
-  // const hasPolymarketContent = (polymarketData?.hasBalance || polymarketData?.hasPositions) && polymarketData.enabled;
-  const shouldShowPerpsFeatureCard = perpsData?.enabled && !isDismissedPerpsFeatureCard;
-  const perpsFeatureCardSection = shouldShowPerpsFeatureCard ? withPerpsFeatureCardSection() : [];
+  const hasPolymarketContent = (polymarketData?.hasBalance || polymarketData?.hasPositions) && polymarketData.enabled;
+  const shouldShowPolymarketFeatureCard = polymarketData?.enabled && !isDismissedPolymarketFeatureCard;
+  const polymarketFeatureCardSection = shouldShowPolymarketFeatureCard ? withPolymarketFeatureCardSection() : [];
   const tokensHeaderSection = withTokensHeaderSection({ contentSection, perpsSection });
 
-  if (hasPerpsContent) {
+  if (hasPerpsContent && hasPolymarketContent) {
     return {
       briefSectionsData: [
         ...headerSection,
-        ...perpsFeatureCardSection,
+        ...polymarketFeatureCardSection,
         ...perpsSection,
         ...polymarketSection,
         ...tokensHeaderSection,
@@ -160,13 +163,16 @@ const buildBriefWalletSections = (
       ],
       isEmpty,
     };
-  } else {
+  }
+  if (hasPerpsContent && !hasPolymarketContent) {
     return {
       briefSectionsData: [
         ...headerSection,
-        ...perpsFeatureCardSection,
-        ...contentSection,
+        ...polymarketFeatureCardSection,
         ...perpsSection,
+        ...tokensHeaderSection,
+        ...contentSection,
+        ...polymarketSection,
         ...claimablesSection,
         ...positionsSection,
         ...uniqueTokenFamiliesSection,
@@ -174,17 +180,30 @@ const buildBriefWalletSections = (
       isEmpty,
     };
   }
+  return {
+    briefSectionsData: [
+      ...headerSection,
+      ...polymarketFeatureCardSection,
+      ...contentSection,
+      ...perpsSection,
+      ...polymarketSection,
+      ...claimablesSection,
+      ...positionsSection,
+      ...uniqueTokenFamiliesSection,
+    ],
+    isEmpty,
+  };
 };
 
-const withPerpsFeatureCardSection = (): CellTypes[] => {
+const withPolymarketFeatureCardSection = (): CellTypes[] => {
   return [
     {
-      type: CellType.PERPS_FEATURE_CARD,
-      uid: 'perps-feature-card',
+      type: CellType.POLYMARKET_FEATURE_CARD,
+      uid: 'polymarket-feature-card',
     },
     {
       type: CellType.SPACER,
-      uid: 'perps-feature-card-after-spacer',
+      uid: 'polymarket-feature-card-after-spacer',
       height: 24,
     },
   ];
@@ -536,6 +555,7 @@ export const buildBriefWalletSectionsSelector = createSelector(
     perpsDataSelector,
     polymarketDataSelector,
     isDismissedPerpsFeatureCardSelector,
+    isDismissedPolymarketFeatureCardSelector,
   ],
   buildBriefWalletSections
 );

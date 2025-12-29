@@ -1,4 +1,5 @@
-import { FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
+import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { ComponentProps, ComponentType, ReactElement, memo, useMemo } from 'react';
@@ -7,22 +8,20 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   PolymarketEventsListItem,
   HEIGHT as ITEM_HEIGHT,
+  LoadingSkeleton,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { safeAreaInsetValues } from '@/utils';
-import Skeleton from '@/components/skeleton/Skeleton';
-import { useBackgroundColor } from '@/design-system';
-import { Grid } from '@/screens/token-launcher/components/Grid';
 
 const ITEM_GAP = 12;
 const ROW_HEIGHT = ITEM_HEIGHT + ITEM_GAP;
+const ITEM_WIDTH = (DEVICE_WIDTH - ITEM_GAP * 3) / 2;
 
 type ListProps = Pick<ComponentProps<typeof FlatList>, 'onEndReached' | 'onEndReachedThreshold' | 'onRefresh' | 'refreshing'>;
 
 type PolymarketEventsListBaseProps = {
   ListHeaderComponent?: ComponentType | ReactElement | null;
   events: PolymarketEvent[];
-  isLoading?: boolean;
   listRef?: React.RefObject<Animated.FlatList<PolymarketEvent> | null>;
   onEndReached?: () => void;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
@@ -31,7 +30,6 @@ type PolymarketEventsListBaseProps = {
 export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
   ListHeaderComponent,
   events,
-  isLoading,
   listRef,
   onEndReached,
   onEndReachedThreshold,
@@ -41,21 +39,19 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
 }: PolymarketEventsListBaseProps) {
   const safeAreaInsets = useSafeAreaInsets();
 
-  const { contentContainerStyle, scrollIndicatorInsets } = useMemo(() => {
+  const listStyles = useMemo(() => {
     const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
     return {
-      contentContainerStyle: { minHeight: DEVICE_HEIGHT, paddingBottom, paddingHorizontal: ITEM_GAP / 2, paddingTop: 12 },
+      contentContainerStyle: { minHeight: DEVICE_HEIGHT, paddingBottom, paddingHorizontal: ITEM_GAP / 2, paddingTop: ITEM_GAP },
       scrollIndicatorInsets: { bottom: paddingBottom },
     };
   }, [safeAreaInsets.bottom]);
-
-  if (isLoading) return <ListLoadingSkeleton />;
 
   return (
     <Animated.FlatList
       ListEmptyComponent={<ListLoadingSkeleton />}
       ListHeaderComponent={ListHeaderComponent}
-      contentContainerStyle={contentContainerStyle}
+      contentContainerStyle={listStyles.contentContainerStyle}
       data={events}
       getItemLayout={getItemLayout}
       initialNumToRender={6}
@@ -69,7 +65,7 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
       ref={listRef}
       refreshing={refreshing}
       renderItem={renderItem}
-      scrollIndicatorInsets={scrollIndicatorInsets}
+      scrollIndicatorInsets={listStyles.scrollIndicatorInsets}
       style={styles.list}
       windowSize={12}
     />
@@ -77,20 +73,13 @@ export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
 });
 
 const ListLoadingSkeleton = memo(function ListLoadingSkeleton() {
-  const skeletonColor = useBackgroundColor('fillQuaternary');
-  const shimmerColor = useBackgroundColor('fillQuaternary');
-
   return (
     <View style={styles.skeletonContainer}>
-      <Grid columns={2} spacing={ITEM_GAP}>
-        {Array.from({ length: 6 }).map((_, index) => (
-          <View key={index} style={styles.skeletonItemWrapper}>
-            <Skeleton skeletonColor={skeletonColor} shimmerColor={shimmerColor}>
-              <View style={styles.skeletonCard} />
-            </Skeleton>
-          </View>
-        ))}
-      </Grid>
+      {Array.from({ length: 6 }).map((_, index) => (
+        <View key={index} style={styles.skeletonItemWrapper}>
+          <LoadingSkeleton />
+        </View>
+      ))}
     </View>
   );
 });
@@ -120,14 +109,17 @@ const styles = StyleSheet.create({
   },
   itemWrapper: {
     margin: ITEM_GAP / 2,
-    width: (DEVICE_WIDTH - ITEM_GAP * 3) / 2,
+    width: ITEM_WIDTH,
   },
   skeletonContainer: {
-    marginTop: ITEM_GAP / 2,
-    paddingHorizontal: ITEM_GAP / 2,
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   skeletonItemWrapper: {
     height: ITEM_HEIGHT,
+    width: ITEM_WIDTH,
+    margin: ITEM_GAP / 2,
   },
   skeletonCard: {
     backgroundColor: 'black',

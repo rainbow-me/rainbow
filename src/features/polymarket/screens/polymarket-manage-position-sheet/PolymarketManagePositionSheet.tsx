@@ -1,42 +1,39 @@
 import { memo, useCallback, useMemo, useState } from 'react';
-import { Alert, StyleSheet } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
-import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Box, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
+import * as i18n from '@/languages';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
-import { Side } from '@polymarket/clob-client';
-import { ensureError, logger, RainbowError } from '@/logger';
-import { PolymarketPosition } from '@/features/polymarket/types';
+import { logger, RainbowError } from '@/logger';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import LinearGradient from 'react-native-linear-gradient';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { getSolidColorEquivalent } from '@/worklets/colors';
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
-import { formatPrice } from '@/features/polymarket/utils/formatPrice';
-import { mulWorklet, subWorklet } from '@/safe-math/SafeMath';
-import { marketSellTotalPosition } from '@/features/polymarket/utils/orders';
-import { collectTradeFee } from '@/features/polymarket/utils/collectTradeFee';
 import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
 import Navigation from '@/navigation/Navigation';
 import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { redeemPosition } from '@/features/polymarket/utils/redeemPosition';
-import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
+import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
+import { BlurView } from 'react-native-blur-view';
+import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 
 export const PolymarketManagePositionSheet = memo(function PolymarketManagePositionSheet() {
   const {
     params: { position: initialPosition },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_MANAGE_POSITION_SHEET>>();
 
-  const position = usePolymarketPositionsStore(state => state.getPosition(initialPosition.conditionId) ?? initialPosition);
+  const position = usePolymarketPositionsStore(state => state.getPosition(initialPosition.asset) ?? initialPosition);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const { isDarkMode } = useColorMode();
-  const accentColor = position.market.color;
+  const accentColor = getColorValueForThemeWorklet(getPositionAccentColor(position), isDarkMode);
   const red = useForegroundColor('red');
   const green = useForegroundColor('green');
   const buttonBackgroundColor = getSolidColorEquivalent({
@@ -50,97 +47,64 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
   const actionButtonLabel = useMemo(() => {
     switch (actionButtonType) {
       case PositionAction.CLAIM:
-        return 'Hold to Claim';
+        return i18n.t(i18n.l.predictions.manage_position.hold_to_claim);
       case PositionAction.BURN:
-        return 'Hold to Burn';
-      case PositionAction.CASH_OUT:
-        return 'Hold to Cash Out';
+        return i18n.t(i18n.l.predictions.manage_position.hold_to_burn);
+      default:
+        return i18n.t(i18n.l.predictions.manage_position.hold_to_claim);
     }
   }, [actionButtonType]);
 
   const actionButtonLoadingLabel = useMemo(() => {
     switch (actionButtonType) {
       case PositionAction.CLAIM:
-        return 'Claiming...';
+        return i18n.t(i18n.l.predictions.manage_position.claiming);
       case PositionAction.BURN:
-        return 'Burning...';
-      case PositionAction.CASH_OUT:
-        return 'Cashing Out...';
+        return i18n.t(i18n.l.predictions.manage_position.burning);
+      default:
+        return i18n.t(i18n.l.predictions.manage_position.claiming);
     }
   }, [actionButtonType]);
 
-  const livePrice = useLiveTokenValue({
-    tokenId: getPositionTokenId(position),
-    initialValue: formatPrice(position.curPrice, position.market.orderPriceMinTickSize),
-    selector: token => formatPrice(token.price, position.market.orderPriceMinTickSize),
-  });
-
-  const livePositionValue = useMemo(() => {
-    return mulWorklet(position.size, livePrice);
-  }, [position.size, livePrice]);
-
-  const livePnl = useMemo(() => {
-    return subWorklet(livePositionValue, position.initialValue);
-  }, [livePositionValue, position.initialValue]);
-
-  const handleCashOutPosition = useCallback(async () => {
-    try {
-      const price = await polymarketClobDataClient.calculateMarketPrice(position.asset, Side.SELL, position.size);
-      const orderResult = await marketSellTotalPosition({ position, price });
-      const tokensSold = orderResult.makingAmount;
-      collectTradeFee(tokensSold);
-      refetchPolymarketStores();
-      Navigation.goBack();
-    } catch (e) {
-      logger.error(new RainbowError('[PolymarketManagePositionSheet] Error selling position', ensureError(e)));
-      setIsProcessing(false);
-      Alert.alert('Error', 'Failed to cash out position. Please try again.');
-    }
-  }, [position]);
+  const [processingLabel, setProcessingLabel] = useState(actionButtonLoadingLabel);
 
   const handleClaimPosition = useCallback(async () => {
+    if (checkIfReadOnlyWallet(usePolymarketClients.getState().address)) return;
+    setIsProcessing(true);
+    setProcessingLabel(actionButtonLoadingLabel);
     try {
       await redeemPosition(position);
       refetchPolymarketStores();
       Navigation.goBack();
     } catch (e) {
-      logger.error(new RainbowError('[PolymarketManagePositionSheet] Error claiming position', ensureError(e)));
+      logger.error(new RainbowError('[PolymarketManagePositionSheet] Error claiming position', e));
       setIsProcessing(false);
-      Alert.alert('Error', 'Failed to claim position. Please try again.');
+      Alert.alert(i18n.t(i18n.l.predictions.errors.title), i18n.t(i18n.l.predictions.errors.failed_to_claim));
     }
-  }, [position]);
+  }, [position, actionButtonLoadingLabel]);
 
-  const onPressActionButton = useCallback(() => {
-    setIsProcessing(true);
-    switch (actionButtonType) {
-      case PositionAction.CLAIM:
-        return handleClaimPosition();
-      case PositionAction.BURN:
-        return handleClaimPosition();
-      case PositionAction.CASH_OUT:
-        return handleCashOutPosition();
-    }
-  }, [actionButtonType, handleCashOutPosition, handleClaimPosition]);
+  const pnl = position.cashPnl;
+  const pnlColor = pnl >= 0 ? green : red;
+  const pnlSign = pnl >= 0 ? '+' : '-';
+  const absPnl = Math.abs(pnl);
 
-  const pnlColor = Number(livePnl) >= 0 ? green : red;
-  const pnlSign = Number(livePnl) >= 0 ? '+' : '-';
-  const absPnl = Math.abs(Number(livePnl));
+  const gradientFillColors = isDarkMode
+    ? [opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)]
+    : [opacityWorklet(accentColor, 0), opacityWorklet(accentColor, 0.06)];
 
   return (
-    <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? '#000000' : '#FFFFFF' }}>
-      <LinearGradient
-        colors={[opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)]}
-        style={StyleSheet.absoluteFillObject}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-      />
+    <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }}>
+      <View style={StyleSheet.absoluteFill}>
+        <LinearGradient colors={gradientFillColors} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} />
+        {!isDarkMode && <BlurView style={StyleSheet.absoluteFill} blurIntensity={42} />}
+      </View>
       <Box paddingHorizontal="24px" paddingBottom={'24px'}>
         <Box alignItems="center" gap={18} paddingTop={{ custom: 71 }} paddingBottom={{ custom: 78 }}>
           <Text size="20pt" weight="heavy" color="labelTertiary">
-            {'Position Value'}
+            {i18n.t(i18n.l.predictions.manage_position.position_value)}
           </Text>
           <Text size="44pt" weight="heavy" color="label">
-            {formatCurrency(livePositionValue)}
+            {formatCurrency(String(position.currentValue))}
           </Text>
           <Text size="20pt" weight="bold" color={{ custom: pnlColor }}>
             {pnlSign}
@@ -151,20 +115,20 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
           <PolymarketPositionCard position={position} showActionButton={false} />
           <HoldToActivateButton
             backgroundColor={buttonBackgroundColor}
+            borderColor={{ custom: opacityWorklet('#FFFFFF', 0.08) }}
+            borderWidth={2}
             disabledBackgroundColor={'gray'}
             label={actionButtonLabel}
-            processingLabel={actionButtonLoadingLabel}
+            processingLabel={processingLabel}
             isProcessing={isProcessing}
-            onLongPress={onPressActionButton}
+            onLongPress={handleClaimPosition}
             showBiometryIcon={false}
+            height={48}
+            color={'white'}
+            progressColor={'white'}
           />
         </Box>
       </Box>
     </PanelSheet>
   );
 });
-
-function getPositionTokenId(position: PolymarketPosition): string {
-  const outcomeIndex = position.outcomes.indexOf(position.outcome);
-  return getPolymarketTokenId(position.market.clobTokenIds[outcomeIndex], 'buy');
-}

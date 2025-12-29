@@ -1,5 +1,7 @@
 // ============ Animation Types ================================================ //
 
+import { ResponseByTheme } from '@/__swaps__/utils/swaps';
+
 export enum EntranceAnimation {
   /** Lines draw in from left to right, revealing with round cap at leading edge */
   Draw = 'draw',
@@ -96,13 +98,13 @@ export type GammaEvent = GammaEventBase & { markets: GammaMarket[] };
  */
 export type OutcomeSeries = {
   /** Hex color for rendering */
-  color: string;
+  color: ResponseByTheme<string>;
   /** Display label (e.g., "Trump", "Harris") */
   label: string;
   /** Probability values (0-1) */
   prices: Float32Array;
   /** Unix timestamps in seconds */
-  timestamps: Float32Array;
+  timestamps: Uint32Array;
   /** CLOB token ID */
   tokenId: string;
 };
@@ -140,17 +142,10 @@ export type PolymarketMarketChartParams = {
   marketFilter: MarketFilter | null;
 };
 
+export type SeriesPaletteColors = readonly [ResponseByTheme<string>, ResponseByTheme<string>, ResponseByTheme<string>];
+
 // ============ Constants ====================================================== //
 
-/**
- * Available color palettes for chart series, optimized for dark mode.
- *
- * - **Vivid**: Balanced, modern palette with excellent contrast. The professional default.
- * - **Neon**: Electric, high-saturation colors with a futuristic synthwave aesthetic.
- * - **Jewel**: Rich gemstone-inspired tones for a luxurious, premium feel.
- * - **Midnight**: Cool-toned and sophisticated, elegant and calming.
- * - **Sunset**: Warm golden-hour palette, inviting and approachable.
- */
 export enum SeriesPalette {
   Default = 'default',
   Jewel = 'jewel',
@@ -160,14 +155,25 @@ export enum SeriesPalette {
   Vivid = 'vivid',
 }
 
-export const SERIES_PALETTES: Readonly<Record<SeriesPalette, readonly [string, string, string, string, string]>> = {
-  [SeriesPalette.Default]: ['#8BCAF2', '#DC5CEA', '#3666F4', '#34D399', '#F472B6'],
-  [SeriesPalette.Jewel]: ['#3B82F6', '#EF4444', '#8B5CF6', '#10B981', '#F59E0B'],
-  [SeriesPalette.Midnight]: ['#60A5FA', '#F87171', '#C084FC', '#2DD4BF', '#FBBF24'],
-  [SeriesPalette.Neon]: ['#00E5FF', '#FF2D92', '#BF5AF2', '#30D158', '#FF9F0A'],
-  [SeriesPalette.Sunset]: ['#F97316', '#FBBF24', '#F472B6', '#A78BFA', '#22D3EE'],
-  [SeriesPalette.Vivid]: ['#22D3EE', '#FB923C', '#A78BFA', '#34D399', '#F472B6'],
+export const SERIES_PALETTES: Readonly<Record<SeriesPalette, SeriesPaletteColors>> = {
+  [SeriesPalette.Default]: toResponseByTheme(['#8BCAF2', '#DC5CEA', '#3666F4']),
+  [SeriesPalette.Jewel]: toResponseByTheme(['#3B82F6', '#EF4444', '#8B5CF6']),
+  [SeriesPalette.Midnight]: toResponseByTheme(['#60A5FA', '#F87171', '#C084FC']),
+  [SeriesPalette.Neon]: toResponseByTheme(['#00E5FF', '#FF2D92', '#BF5AF2']),
+  [SeriesPalette.Sunset]: toResponseByTheme(['#F97316', '#FBBF24', '#F472B6']),
+  [SeriesPalette.Vivid]: toResponseByTheme(['#22D3EE', '#FB923C', '#A78BFA']),
 };
 
 export const DEFAULT_SERIES_PALETTE = SeriesPalette.Default;
-export const SERIES_COLORS: readonly string[] = SERIES_PALETTES[DEFAULT_SERIES_PALETTE];
+export const SERIES_COLORS: readonly [ResponseByTheme<string>, ResponseByTheme<string>, ResponseByTheme<string>] =
+  SERIES_PALETTES[DEFAULT_SERIES_PALETTE];
+
+// ============ Utilities ====================================================== //
+
+function toResponseByTheme(colors: [string, string, string]): SeriesPaletteColors {
+  return [
+    { light: colors[0], dark: colors[0] },
+    { light: colors[1], dark: colors[1] },
+    { light: colors[2], dark: colors[2] },
+  ];
+}

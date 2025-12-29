@@ -403,8 +403,8 @@ export const AmountInputCard = memo(function AmountInputCard({
   );
 
   useOnChange(() => {
-    resetToInitial(availableBalance);
-  }, [availableBalance, resetKey, resetToInitial]);
+    resetToInitial();
+  }, [resetKey]);
 
   useOnChange(() => {
     revalidateAmount(availableBalance);

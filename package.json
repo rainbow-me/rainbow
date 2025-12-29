@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "2.0.15-1",
+  "version": "2.0.16-1",
   "private": true,
   "scripts": {
     "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn graphql-codegen && yarn fetch:networks",
@@ -95,7 +95,7 @@
     "@ethersproject/units": "5.8.0",
     "@ethersproject/wallet": "5.8.0",
     "@gelatonetwork/relay-sdk": "5.6.0",
-    "@gorhom/bottom-sheet": "4.6.1",
+    "@gorhom/bottom-sheet": "5.2.8",
     "@json-rpc-tools/utils": "1.7.6",
     "@lavamoat/preinstall-always-fail": "2.0.0",
     "@ledgerhq/hw-app-eth": "6.39.0",

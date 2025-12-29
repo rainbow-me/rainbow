@@ -7,7 +7,7 @@ import { time } from '@/utils/time';
 import { USD_DECIMALS } from './constants';
 import { getHyperliquidExchangeClient } from './services';
 import { useHyperliquidAccountStore } from './stores/hyperliquidAccountStore';
-import { refetchHyperliquidStores } from './utils';
+import { refetchHyperliquidBalance } from './utils';
 
 // ============ Config ========================================================= //
 
@@ -27,7 +27,7 @@ export const PERPS_WITHDRAWAL_CONFIG = createWithdrawalConfig({
 
   refresh: {
     delays: [time.seconds(1), time.seconds(3), time.seconds(6)],
-    handler: refetchHyperliquidStores,
+    handler: refetchHyperliquidBalance,
   },
 });
 

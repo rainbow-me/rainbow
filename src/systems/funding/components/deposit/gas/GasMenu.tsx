@@ -16,26 +16,6 @@ import { gasUtils } from '@/utils';
 const GAS_BUTTON_HIT_SLOP = 16;
 const SWAP_GAS_ICONS = gasUtils.SWAP_GAS_ICONS;
 
-function keys<const T extends string>(obj: Record<T, unknown> | undefined): T[] {
-  if (!obj) return [];
-  return Object.keys(obj) as T[];
-}
-
-function getEstimatedFeeRangeInGwei(gasSettings: GasSettings | undefined, currentBaseFee: string | undefined) {
-  if (!gasSettings) return undefined;
-
-  if (!gasSettings.isEIP1559) return `${formatNumber(weiToGwei(gasSettings.gasPrice))} Gwei`;
-
-  const { maxBaseFee, maxPriorityFee } = gasSettings;
-  const maxFee = formatNumber(weiToGwei(add(maxBaseFee, maxPriorityFee)));
-
-  if (!currentBaseFee) return `${maxFee} Gwei`;
-
-  const minFee = formatNumber(weiToGwei(add(currentBaseFee, maxPriorityFee)));
-
-  return `${minFee} - ${maxFee} Gwei`;
-}
-
 export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; onSelectGasSpeed: (speed: GasSpeed) => void }) {
   const { gasStores } = useDepositContext();
   const metereologySuggestions = gasStores.useMeteorologyStore(state => state.getGasSuggestions());
@@ -109,4 +89,29 @@ export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; o
       )}
     </Box>
   );
+}
+
+function keys<const T extends string>(obj: Record<T, unknown> | undefined): T[] {
+  const keys: T[] = [];
+  if (!obj) return keys;
+  for (const key in obj) {
+    if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
+    keys.push(key);
+  }
+  return keys;
+}
+
+function getEstimatedFeeRangeInGwei(gasSettings: GasSettings | undefined, currentBaseFee: string | undefined) {
+  if (!gasSettings) return undefined;
+
+  if (!gasSettings.isEIP1559) return `${formatNumber(weiToGwei(gasSettings.gasPrice))} Gwei`;
+
+  const { maxBaseFee, maxPriorityFee } = gasSettings;
+  const maxFee = formatNumber(weiToGwei(add(maxBaseFee, maxPriorityFee)));
+
+  if (!currentBaseFee) return `${maxFee} Gwei`;
+
+  const minFee = formatNumber(weiToGwei(add(currentBaseFee, maxPriorityFee)));
+
+  return `${minFee} - ${maxFee} Gwei`;
 }

@@ -3,31 +3,32 @@ import { StyleSheet } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
-import { Bleed, Box, globalColors, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Bleed, Box, globalColors, Separator, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
+import * as i18n from '@/languages';
 import { PANEL_WIDTH, PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import ImgixImage from '@/components/images/ImgixImage';
-import { formatNumber } from '@/helpers/strings';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Navigation } from '@/navigation';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import LinearGradient from 'react-native-linear-gradient';
 import { PolymarketChart } from '@/features/charts/polymarket/components/PolymarketChart';
 import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
 import { getChartLineColors } from '@/features/charts/polymarket/utils/getChartLineColors';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-
-const CHART_HEIGHT = 280;
+import { toPercentageWorklet } from '@/safe-math/SafeMath';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 
 export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   const {
-    params: { market },
+    params: { market, event },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_MARKET_SHEET>>();
 
   const { isDarkMode } = useColorMode();
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
-  const accentColor = market.color;
+  const accentColor = getColorValueForThemeWorklet(market.color, isDarkMode);
   const lineColors = useMemo(() => getChartLineColors([market]), [market]);
 
   return (
@@ -40,21 +41,20 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
       />
       <Box paddingHorizontal="24px" paddingBottom={'24px'} paddingTop={{ custom: 33 }}>
         <Box gap={20}>
-          <Header market={market} />
+          <Header market={market} event={event} />
           <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
           <Bleed horizontal="24px">
             <Box borderRadius={16} gap={8} justifyContent="center" overflow="hidden" width={PANEL_WIDTH}>
               <PolymarketChart
                 backgroundColor={isDarkMode ? '#000000' : '#FFFFFF'}
-                chartHeight={CHART_HEIGHT}
                 chartWidth={PANEL_WIDTH}
                 config={lineColors ? { line: { colors: lineColors, overrideSeriesColors: true } } : undefined}
                 isMarketChart
               />
               <Bleed horizontal="8px">
                 <PolymarketTimeframeSelector
-                  backgroundColor={isDarkMode ? '#000000' : '#FFFFFF'}
-                  color={lineColors?.[0] ?? globalColors.white100}
+                  backgroundColor={isDarkMode ? globalColors.grey100 : globalColors.white100}
+                  color={accentColor}
                 />
               </Bleed>
             </Box>
@@ -62,30 +62,48 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
         </Box>
         <Box paddingTop={'24px'} gap={12}>
           {market.outcomes.map((outcome, index) => {
-            const accentColor = index === 0 ? green : red;
+            const buttonColor = index === 0 ? green : red;
             return (
               <ButtonPressAnimation
                 key={outcome}
                 onPress={() =>
                   Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, {
                     market,
+                    event,
                     outcomeIndex: index,
+                    outcomeColor: accentColor,
+                    fromRoute: Routes.POLYMARKET_MARKET_SHEET,
                   })
                 }
               >
                 <Box
                   height={56}
-                  backgroundColor={opacityWorklet(accentColor, 0.16)}
+                  backgroundColor={opacityWorklet(buttonColor, 0.16)}
                   borderRadius={28}
                   borderWidth={2.5}
-                  borderColor={{ custom: opacityWorklet(accentColor, 0.06) }}
+                  borderColor={{ custom: opacityWorklet(buttonColor, 0.06) }}
                   paddingHorizontal="24px"
-                  justifyContent="center"
+                  justifyContent="space-between"
                   alignItems="center"
+                  flexDirection="row"
                 >
-                  <Text size="22pt" weight="heavy" color={{ custom: accentColor }}>
-                    {`Buy ${outcome}`}
-                  </Text>
+                  <TextShadow blur={40} shadowOpacity={0.6}>
+                    <Text size="22pt" weight="heavy" color={{ custom: buttonColor }}>
+                      {i18n.t(i18n.l.predictions.market.buy_outcome, { outcome })}
+                    </Text>
+                  </TextShadow>
+
+                  {/* TODO: Causing issues */}
+                  {/* <TextShadow blur={40} shadowOpacity={0.6}> */}
+                  <LiveTokenText
+                    size="22pt"
+                    weight="heavy"
+                    color={{ custom: buttonColor }}
+                    tokenId={getPolymarketTokenId(market.clobTokenIds[index], 'sell')}
+                    selector={token => `${toPercentageWorklet(token.price)}%`}
+                    initialValue={`${toPercentageWorklet(market.outcomePrices[index] ?? 0)}%`}
+                  />
+                  {/* </TextShadow> */}
                 </Box>
               </ButtonPressAnimation>
             );
@@ -96,25 +114,25 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   );
 });
 
-const Header = memo(function Header({ market }: { market: PolymarketMarket }) {
+const Header = memo(function Header({ market, event }: { market: PolymarketMarket; event: PolymarketEvent | PolymarketMarketEvent }) {
+  const isLongGroupItemTitle = market.groupItemTitle?.length > 20;
+
   return (
-    <Box>
-      <Box flexDirection="row" alignItems="center" gap={14}>
-        <ImgixImage
-          enableFasterImage
-          resizeMode="cover"
-          size={56}
-          source={{ uri: market.icon }}
-          style={{ height: 56, width: 56, borderRadius: 12 }}
-        />
-        <Box gap={14}>
-          <Text size="26pt" weight="heavy" color="label">
-            {market.groupItemTitle}
-          </Text>
-          <Text size="15pt" weight="bold" color="labelQuaternary">
-            {formatNumber(market.volume, { useOrderSuffix: true, decimals: 1, style: '$' })}
-          </Text>
-        </Box>
+    <Box flexDirection="row" alignItems="flex-start" gap={16}>
+      <ImgixImage
+        enableFasterImage
+        resizeMode="cover"
+        size={52}
+        source={{ uri: market.icon }}
+        style={{ height: 52, width: 52, borderRadius: 12 }}
+      />
+      <Box gap={12} style={{ flex: 1 }}>
+        <Text size="15pt" weight="bold" color="labelQuaternary" numberOfLines={1}>
+          {event.title}
+        </Text>
+        <Text size={isLongGroupItemTitle ? '22pt' : '26pt'} weight="heavy" color="label">
+          {market.groupItemTitle}
+        </Text>
       </Box>
     </Box>
   );

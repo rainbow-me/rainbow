@@ -680,12 +680,25 @@ type RouteParams = {
   [Routes.POLYMARKET_MANAGE_POSITION_SHEET]: {
     position: PolymarketPosition;
   };
+  [Routes.POLYMARKET_SELL_POSITION_SHEET]: {
+    position: PolymarketPosition;
+  };
   [Routes.POLYMARKET_MARKET_SHEET]: {
     market: PolymarketMarket;
+    event: PolymarketMarketEvent | PolymarketEvent;
   };
   [Routes.POLYMARKET_NEW_POSITION_SHEET]: {
     market: PolymarketMarket;
     outcomeIndex: number;
+    outcomeColor: string;
+    event: PolymarketMarketEvent | PolymarketEvent;
+    fromRoute: typeof Routes.POLYMARKET_EVENT_SCREEN | typeof Routes.POLYMARKET_MARKET_SHEET;
+  };
+  [Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET]: {
+    description: string;
+  };
+  [Routes.POLYMARKET_EXPLAIN_SHEET]: {
+    onDismiss?: () => void;
   };
 };
 

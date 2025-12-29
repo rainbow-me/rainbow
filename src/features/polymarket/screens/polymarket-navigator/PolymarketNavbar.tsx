@@ -27,7 +27,7 @@ export const PolymarketNavbar = function PolymarketNavbar() {
                 </Text>
               </TextShadow>
               <Text size="20pt" weight="heavy" color="label" align="center">
-                {'Predictions'}
+                {i18n.t(i18n.l.predictions.navbar.title)}
               </Text>
             </Box>
           </Animated.View>
