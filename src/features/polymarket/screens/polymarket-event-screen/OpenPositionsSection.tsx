@@ -1,9 +1,11 @@
-import { Box, Separator, Text, TextIcon } from '@/design-system';
+import { Box, Separator, Text, TextIcon, useColorMode } from '@/design-system';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
+import * as i18n from '@/languages';
 import { memo } from 'react';
 
-export const OpenPositionsSection = memo(function OpenPositionsSection({ eventId }: { eventId: string }) {
+export const OpenPositionsSection = memo(function OpenPositionsSection({ eventId, eventColor }: { eventId: string; eventColor: string }) {
+  const { isDarkMode } = useColorMode();
   const positions = usePolymarketPositionsStore(state => state.getEventPositions(eventId));
 
   if (positions.length === 0) return null;
@@ -12,13 +14,11 @@ export const OpenPositionsSection = memo(function OpenPositionsSection({ eventId
     <Box gap={28}>
       <Box gap={20}>
         <Box flexDirection="row" alignItems="center" gap={10}>
-          <Box style={{ opacity: 0.4 }}>
-            <TextIcon size="icon 17px" weight="bold" color="label">
-              {'􁎢'}
-            </TextIcon>
-          </Box>
+          <TextIcon size="icon 17px" weight="bold" color={isDarkMode ? 'label' : { custom: eventColor }} opacity={isDarkMode ? 0.4 : 1}>
+            {'􁎢'}
+          </TextIcon>
           <Text size="20pt" weight="heavy" color="label">
-            {'Open Positions'}
+            {i18n.t(i18n.l.predictions.event.open_positions)}
           </Text>
         </Box>
         <Box gap={12}>

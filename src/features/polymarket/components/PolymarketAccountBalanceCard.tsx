@@ -10,7 +10,7 @@ import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import * as i18n from '@/languages';
-import { checkIfReadOnlyWallet, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { PolymarketButton } from '@/features/polymarket/components/PolymarketButton';
@@ -20,7 +20,6 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
   const isBalanceZero = usePolymarketBalanceStore(state => state.isBalanceZero());
   const balance = usePolymarketBalanceStore(state => state.getBalance());
   const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
-  const accountAddress = useWalletsStore(state => state.accountAddress);
 
   return (
     <Box
@@ -41,7 +40,7 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
             </Text>
             <View style={{ opacity: isBalanceZero ? 0.4 : 1 }}>
               <TextShadow blur={16} color={accentColor} shadowOpacity={0.24}>
-                <Text color={{ custom: accentColor }} size="17pt" weight="heavy">
+                <Text color={'label'} size="17pt" weight="heavy">
                   {formatCurrency(balance)}
                 </Text>
               </TextShadow>
@@ -52,8 +51,8 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
           <Box flexDirection="row" gap={10}>
             <ButtonPressAnimation
               onPress={() => {
-                if (checkIfReadOnlyWallet(accountAddress)) return;
-                Navigation.handleAction(Routes.PERPS_WITHDRAWAL_SCREEN);
+                if (getIsReadOnlyWallet()) return;
+                Navigation.handleAction(Routes.POLYMARKET_WITHDRAWAL_SCREEN);
               }}
             >
               <Box
@@ -73,8 +72,8 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
             </ButtonPressAnimation>
             <PolymarketButton
               onPress={() => {
-                if (checkIfReadOnlyWallet(accountAddress)) return;
-                Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
+                if (getIsReadOnlyWallet()) return;
+                Navigation.handleAction(Routes.POLYMARKET_DEPOSIT_SCREEN);
               }}
               height={40}
               width={52}
@@ -92,11 +91,11 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
         {isBalanceZero && (
           <PolymarketButton
             onPress={() => {
-              if (checkIfReadOnlyWallet(accountAddress)) return;
+              if (getIsReadOnlyWallet()) return;
               if (hasNoAssets) {
                 Navigation.handleAction(Routes.ADD_CASH_SHEET);
               } else {
-                Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
+                Navigation.handleAction(Routes.POLYMARKET_DEPOSIT_SCREEN);
               }
             }}
             paddingHorizontal={'16px'}

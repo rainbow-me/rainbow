@@ -1,6 +1,8 @@
-import { FlatList, StyleSheet, View } from 'react-native';
+import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { memo, useCallback, ComponentProps } from 'react';
+import { ComponentProps, ComponentType, ReactElement, memo, useMemo } from 'react';
 import { NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -8,69 +10,81 @@ import {
   HEIGHT as ITEM_HEIGHT,
   LoadingSkeleton,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
-import { Grid } from '@/screens/token-launcher/components/Grid';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { safeAreaInsetValues } from '@/utils';
 
 const ITEM_GAP = 12;
-const PADDING_HORIZONTAL = 12;
 const ROW_HEIGHT = ITEM_HEIGHT + ITEM_GAP;
-const ITEM_WIDTH = (DEVICE_WIDTH - PADDING_HORIZONTAL * 2 - ITEM_GAP) / 2;
+const ITEM_WIDTH = (DEVICE_WIDTH - ITEM_GAP * 3) / 2;
 
-type ListProps = Pick<ComponentProps<typeof FlatList>, 'onEndReached' | 'onEndReachedThreshold' | 'onRefresh' | 'refreshing' | 'onRefresh'>;
+type ListProps = Pick<ComponentProps<typeof FlatList>, 'onEndReached' | 'onEndReachedThreshold' | 'onRefresh' | 'refreshing'>;
 
 type PolymarketEventsListBaseProps = {
+  ListHeaderComponent?: ComponentType | ReactElement | null;
   events: PolymarketEvent[];
-  isLoading?: boolean;
-  listRef?: React.RefObject<FlatList<PolymarketEvent> | null>;
+  listRef?: React.RefObject<Animated.FlatList<PolymarketEvent> | null>;
+  onEndReached?: () => void;
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 } & ListProps;
 
 export const PolymarketEventsListBase = memo(function PolymarketEventsListBase({
+  ListHeaderComponent,
   events,
-  isLoading,
   listRef,
-  ...listProps
+  onEndReached,
+  onEndReachedThreshold,
+  onRefresh,
+  onScroll,
+  refreshing,
 }: PolymarketEventsListBaseProps) {
   const safeAreaInsets = useSafeAreaInsets();
-  const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
 
-  const renderItem = useCallback(({ item }: { item: PolymarketEvent }) => {
-    return (
-      <View style={styles.itemWrapper}>
-        <PolymarketEventsListItem event={item} />
-      </View>
-    );
-  }, []);
-
-  if (isLoading) {
-    return <ListLoadingSkeleton />;
-  }
+  const listStyles = useMemo(() => {
+    const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
+    return {
+      contentContainerStyle: { minHeight: DEVICE_HEIGHT, paddingBottom, paddingHorizontal: ITEM_GAP / 2, paddingTop: ITEM_GAP },
+      scrollIndicatorInsets: { bottom: paddingBottom },
+    };
+  }, [safeAreaInsets.bottom]);
 
   return (
-    <FlatList
+    <Animated.FlatList
+      ListEmptyComponent={<ListLoadingSkeleton />}
+      ListHeaderComponent={ListHeaderComponent}
+      contentContainerStyle={listStyles.contentContainerStyle}
       data={events}
-      numColumns={2}
-      ref={listRef}
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
-      contentContainerStyle={[styles.contentContainer, { paddingBottom }]}
-      columnWrapperStyle={styles.columnWrapper}
-      scrollIndicatorInsets={{ bottom: paddingBottom }}
-      style={styles.list}
       getItemLayout={getItemLayout}
-      maintainVisibleContentPosition={{
-        minIndexForVisible: 0,
-      }}
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...listProps}
+      initialNumToRender={6}
+      keyExtractor={keyExtractor}
+      maxToRenderPerBatch={6}
+      numColumns={2}
+      onEndReached={onEndReached}
+      onEndReachedThreshold={onEndReachedThreshold}
+      onRefresh={onRefresh}
+      onScroll={onScroll}
+      ref={listRef}
+      refreshing={refreshing}
+      renderItem={renderItem}
+      scrollIndicatorInsets={listStyles.scrollIndicatorInsets}
+      style={styles.list}
+      windowSize={12}
     />
   );
 });
 
-function keyExtractor(item: PolymarketEvent): string {
-  return item.id;
-}
+const ListLoadingSkeleton = memo(function ListLoadingSkeleton() {
+  return (
+    <View style={styles.skeletonContainer}>
+      {Array.from({ length: 6 }).map((_, index) => (
+        <View key={index} style={styles.skeletonItemWrapper}>
+          <LoadingSkeleton />
+        </View>
+      ))}
+    </View>
+  );
+});
 
-function getItemLayout(_: unknown, index: number) {
+function getItemLayout(data: unknown, index: number) {
   return {
     length: ITEM_HEIGHT,
     offset: Math.floor(index / 2) * ROW_HEIGHT,
@@ -78,35 +92,39 @@ function getItemLayout(_: unknown, index: number) {
   };
 }
 
-const ListLoadingSkeleton = memo(function ListLoadingSkeleton() {
-  return (
-    <View style={styles.skeletonContainer}>
-      <Grid columns={2} spacing={ITEM_GAP}>
-        {Array.from({ length: 6 }).map((_, index) => (
-          <LoadingSkeleton key={index} />
-        ))}
-      </Grid>
-    </View>
-  );
-});
+function keyExtractor(item: PolymarketEvent): string {
+  return item ? item.id : '';
+}
+
+function renderItem({ item }: { item: PolymarketEvent }) {
+  return item ? <PolymarketEventsListItem event={item} style={styles.itemWrapper} /> : null;
+}
 
 const styles = StyleSheet.create({
   list: {
     flex: 1,
   },
-  contentContainer: {
-    gap: ITEM_GAP,
-    // ITEM_GAP / 2 is added because LegendList does not account for row gap for calculating available item width.
-    // paddingHorizontal: ITEM_GAP / 2 + PADDING_HORIZONTAL,
-    paddingHorizontal: PADDING_HORIZONTAL,
-  },
-  columnWrapper: {
-    gap: ITEM_GAP,
+  listFooter: {
+    height: safeAreaInsetValues.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE,
   },
   itemWrapper: {
+    margin: ITEM_GAP / 2,
     width: ITEM_WIDTH,
   },
   skeletonContainer: {
-    paddingHorizontal: PADDING_HORIZONTAL,
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  skeletonItemWrapper: {
+    height: ITEM_HEIGHT,
+    width: ITEM_WIDTH,
+    margin: ITEM_GAP / 2,
+  },
+  skeletonCard: {
+    backgroundColor: 'black',
+    borderCurve: 'continuous',
+    borderRadius: 26,
+    height: ITEM_HEIGHT,
   },
 });

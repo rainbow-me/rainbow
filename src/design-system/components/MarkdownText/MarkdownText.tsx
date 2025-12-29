@@ -88,6 +88,7 @@ export type MarkdownTextProps = {
   paragraphSpace: Space;
   listSpace: Space;
   handleLinkPress?: (url: string) => void;
+  paragraphWeight?: Extract<TextProps['weight'], 'regular' | 'medium'>;
 };
 
 /**
@@ -102,6 +103,7 @@ export const MarkdownText = memo(function MarkdownText({
   heading2Color: heading2ColorProp,
   listSpace = defaultProps.listSpace,
   paragraphSpace = defaultProps.paragraphSpace,
+  paragraphWeight = 'regular',
   size = defaultProps.size,
 }: MarkdownTextProps) {
   const heading1Color = heading1ColorProp ?? color;
@@ -230,7 +232,7 @@ export const MarkdownText = memo(function MarkdownText({
       ),
       paragraph: ({ key }, children) => (
         <MarkdownStackItem key={key}>
-          <Text color={color} size={size}>
+          <Text color={color} size={size} weight={paragraphWeight}>
             {children}
           </Text>
         </MarkdownStackItem>

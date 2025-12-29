@@ -1,4 +1,5 @@
-import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
+import { ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { POLYMARKET_SPORTS_MARKET_TYPE, SPORT_LEAGUES } from '@/features/polymarket/constants';
 import { PolymarketTeamInfo } from '@/features/polymarket/types';
 
 export type SportsMarketType = (typeof POLYMARKET_SPORTS_MARKET_TYPE)[keyof typeof POLYMARKET_SPORTS_MARKET_TYPE];
@@ -224,8 +225,8 @@ export type PolymarketMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'outco
   outcomes: string[];
   outcomePrices: string[];
   events: PolymarketMarketEvent[];
-  color: string;
-  secondaryColor: string | undefined;
+  color: ResponseByTheme<string>;
+  secondaryColor: ResponseByTheme<string> | undefined;
 };
 
 type Collection = {
@@ -371,9 +372,9 @@ export type RawPolymarketEvent = {
   startTime: string;
   eventWeek: number;
   seriesSlug: string;
-  score: string;
-  elapsed: string;
-  period: string;
+  score?: string;
+  elapsed?: string;
+  period?: string;
   live: boolean;
   ended?: boolean;
   finishedTimestamp: string;
@@ -404,9 +405,9 @@ export type RawPolymarketEvent = {
 
 export type PolymarketEvent = Omit<RawPolymarketEvent, 'markets'> & {
   markets: PolymarketMarket[];
-  uniqueMarketImages: boolean;
-  color: string;
+  color: ResponseByTheme<string>;
   teams?: PolymarketTeamInfo[];
+  league?: (typeof SPORT_LEAGUES)[keyof typeof SPORT_LEAGUES];
 };
 
 /**
@@ -427,6 +428,7 @@ export type PolymarketMarketEvent = {
   icon: string;
   active: boolean;
   closed: boolean;
+  closedTime?: string;
   archived: boolean;
   new: boolean;
   featured: boolean;
@@ -450,6 +452,7 @@ export type PolymarketMarketEvent = {
   cyom: boolean;
   showAllOutcomes: boolean;
   showMarketImages: boolean;
+  startTime?: string;
   enableNegRisk: boolean;
   gmpChartMode: string;
   negRiskAugmented: boolean;
@@ -457,7 +460,13 @@ export type PolymarketMarketEvent = {
   deploying: boolean;
   deployingTimestamp: string;
   gameId?: number;
-  color: string;
+  color: ResponseByTheme<string>;
+  ended?: boolean;
+  live?: boolean;
+  period?: string;
+  score?: string;
+  elapsed?: string;
+  teams?: PolymarketTeamInfo[];
 };
 
 export type RawPolymarketOptimizedMarket = {
@@ -491,5 +500,5 @@ export type RawPolymarketOptimizedEvent = {
 };
 
 export type PolymarketOptimizedEvent = RawPolymarketOptimizedEvent & {
-  color: string;
+  color: ResponseByTheme<string>;
 };

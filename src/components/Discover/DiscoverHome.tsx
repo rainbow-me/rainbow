@@ -4,10 +4,9 @@ import useExperimentalFlag, {
   PROFILES,
   HARDWARE_WALLETS,
   MINTS,
-  NFT_OFFERS,
   FEATURED_RESULTS,
   TRENDING_TOKENS,
-  PERPS,
+  POLYMARKET,
 } from '@rainbow-me/config/experimentalHooks';
 import { Inline, Inset, Stack, Box } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
@@ -19,7 +18,6 @@ import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
 import { LedgerCard } from '@/components/cards/LedgerCard';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import walletTypes from '@/helpers/walletTypes';
-import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
 import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
 import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
 import { IS_TEST } from '@/env';
@@ -32,7 +30,9 @@ import Routes from '@/navigation/routesNames';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
 import { DiscoverSeparator } from './DiscoverSeparator';
 import { useWallets } from '@/state/wallets/walletsStore';
-import { PerpsFeatureCard } from '@/components/asset-list/RecyclerAssetList2/cards/PerpsFeatureCard';
+import { FeatureCard } from '@/components/Discover/FeatureCard';
+import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
+import * as i18n from '@/languages';
 
 export const HORIZONTAL_PADDING = 20;
 
@@ -43,8 +43,15 @@ function onNavigate(url: string): void {
 }
 
 export default function DiscoverHome() {
-  const { profiles_enabled, mints_enabled, op_rewards_enabled, featured_results, trending_tokens_enabled, perps_enabled } =
-    useRemoteConfig();
+  const {
+    profiles_enabled,
+    mints_enabled,
+    op_rewards_enabled,
+    featured_results,
+    trending_tokens_enabled,
+    perps_enabled,
+    polymarket_enabled,
+  } = useRemoteConfig();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
@@ -54,6 +61,7 @@ export default function DiscoverHome() {
   const opRewardsRemoteFlag = op_rewards_enabled;
   const trendingTokensEnabled = (useExperimentalFlag(TRENDING_TOKENS) || trending_tokens_enabled) && !IS_TEST;
   const perpsEnabled = perps_enabled;
+  const polymarketEnabled = (useExperimentalFlag(POLYMARKET) || polymarket_enabled) && !IS_TEST;
 
   const { chainId } = useAccountSettings();
   const testNetwork = isTestnetChain({ chainId });
@@ -67,7 +75,28 @@ export default function DiscoverHome() {
     <Inset top="12px" bottom={{ custom: 200 }} horizontal={{ custom: HORIZONTAL_PADDING }}>
       {!testNetwork ? (
         <Box gap={20}>
-          {perpsEnabled && <PerpsFeatureCard brightenDarkModeBackground isDismissable={false} />}
+          <Box flexDirection="row" gap={11}>
+            {polymarketEnabled && (
+              <FeatureCard
+                accentColor={'#C863E8'}
+                icon="􀫸"
+                title={i18n.t(i18n.l.predictions.feature_card.title)}
+                subtitle={i18n.t(i18n.l.predictions.feature_card.subtitle)}
+                onPress={navigateToPolymarket}
+              />
+            )}
+            {perpsEnabled && (
+              <FeatureCard
+                accentColor={'#3ECFAD'}
+                icon="􀯠"
+                title={i18n.t(i18n.l.perps.feature_card.title)}
+                subtitle={i18n.t(i18n.l.perps.feature_card.subtitle)}
+                onPress={() => {
+                  Navigation.handleAction(Routes.PERPS_NAVIGATOR);
+                }}
+              />
+            )}
+          </Box>
           <DiscoverSeparator />
           {trendingTokensEnabled && <TrendingTokens />}
           <RemoteCardCarousel />

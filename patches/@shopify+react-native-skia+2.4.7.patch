@@ -1,0 +1,37 @@
+diff --git a/node_modules/@shopify/react-native-skia/apple/MetalWindowContext.mm b/node_modules/@shopify/react-native-skia/apple/MetalWindowContext.mm
+index 9da1458..7ee5ed9 100644
+--- a/node_modules/@shopify/react-native-skia/apple/MetalWindowContext.mm
++++ b/node_modules/@shopify/react-native-skia/apple/MetalWindowContext.mm
+@@ -25,22 +25,20 @@
+   _layer.contentsGravity = kCAGravityBottomLeft;
+   _layer.drawableSize = CGSizeMake(width, height);
+   BOOL supportsWideColor = NO;
+-  if (useP3ColorSpace) {
+ #if !TARGET_OS_OSX
+-    if (@available(iOS 10.0, *)) {
+-      supportsWideColor = [UIScreen mainScreen].traitCollection.displayGamut ==
+-                          UIDisplayGamutP3;
+-    }
++  if (@available(iOS 10.0, *)) {
++    supportsWideColor = [UIScreen mainScreen].traitCollection.displayGamut ==
++                        UIDisplayGamutP3;
++  }
+ #else
+-    if (@available(macOS 10.12, *)) {
+-      NSScreen *screen = [NSScreen mainScreen];
+-      NSColorSpace *displayP3 = [NSColorSpace displayP3ColorSpace];
+-      if (screen.colorSpace && displayP3) {
+-        supportsWideColor = [screen.colorSpace isEqual:displayP3];
+-      }
++  if (@available(macOS 10.12, *)) {
++    NSScreen *screen = [NSScreen mainScreen];
++    NSColorSpace *displayP3 = [NSColorSpace displayP3ColorSpace];
++    if (screen.colorSpace && displayP3) {
++      supportsWideColor = [screen.colorSpace isEqual:displayP3];
+     }
+-#endif // !TARGET_OS_OSX
+   }
++#endif // !TARGET_OS_OSX
+   if (supportsWideColor) {
+     CGColorSpaceRef colorSpace =
+         CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);

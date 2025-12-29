@@ -1,3 +1,4 @@
+import { ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 
 export type RawPolymarketPosition = {
@@ -45,6 +46,7 @@ export type PolymarketPosition = RawPolymarketPosition & {
    * For those that do not have unique images, we do not show the image when displaying the market.
    */
   marketHasUniqueImage: boolean;
+  teams?: PolymarketTeamInfo[];
 };
 
 export type PolymarketWalletListData = {
@@ -59,20 +61,24 @@ export type PolymarketWalletListData = {
 export type PolymarketGameMetadata = {
   teams: string[];
   sport: string;
-  ordering: string;
+  ordering: 'home' | 'away';
   type: string[];
 };
 
-export type PolymarketTeamInfo = {
+export type RawPolymarketTeamInfo = {
   id: number;
   name: string;
   league: string;
   record: string;
   logo: string;
   abbreviation: string;
-  alias: string;
+  alias: string | null;
   createdAt: string;
   updatedAt: string;
   providerId: number;
-  color: string;
+  color?: string;
+};
+
+export type PolymarketTeamInfo = Omit<RawPolymarketTeamInfo, 'color'> & {
+  color: ResponseByTheme<string>;
 };

@@ -1,5 +1,6 @@
-import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/usePolymarketClobClient';
+import { getPolymarketClobClient, usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { PolymarketPosition } from '@/features/polymarket/types';
+import { ensureTradingApprovals } from '@/features/polymarket/utils/proxyWallet';
 import { RainbowError } from '@/logger';
 import { OrderType, Side } from '@polymarket/clob-client';
 
@@ -22,19 +23,26 @@ type OrderResult = SuccessfulOrderResult | ErrorOrderResult;
 
 export async function marketBuyToken({
   tokenId,
-  amountUsd,
+  amount,
   price,
 }: {
-  tokenId: string;
-  amountUsd: string | number;
+  amount: string | number;
   price: string | number;
+  tokenId: string;
 }): Promise<SuccessfulOrderResult> {
+  const proxyAddress = usePolymarketClients.getState().proxyAddress;
+  if (!proxyAddress) {
+    throw new RainbowError('[marketBuyToken] No Polymarket proxy address available');
+  }
+
+  await ensureTradingApprovals(proxyAddress);
   const client = await getPolymarketClobClient();
+
   const order = await client.createMarketOrder({
     side: Side.BUY,
     tokenID: tokenId,
-    amount: Number(amountUsd),
-    price: Number(price),
+    amount: typeof amount === 'number' ? amount : Number(amount),
+    price: typeof price === 'number' ? price : Number(price),
   });
 
   const result = (await client.postOrder(order, OrderType.FOK)) as OrderResult;
@@ -66,21 +74,19 @@ async function marketSellToken({
   price: string | number;
 }): Promise<SuccessfulOrderResult> {
   const client = await getPolymarketClobClient();
-  const order = await client.createMarketOrder(
-    {
-      side: Side.SELL,
-      tokenID: tokenId,
-      amount: Number(amount),
-      price: Number(price),
-    }
-    // {
-    //   /**
-    //    * TODO: Docs imply these options are required, but the types are optional
-    //    */
-    //   tickSize: String(position.market.orderPriceMinTickSize) as TickSize,
-    //   negRisk: position.negativeRisk,
-    // }
-  );
+  const order = await client.createMarketOrder({
+    side: Side.SELL,
+    tokenID: tokenId,
+    amount: Number(amount),
+    price: Number(price),
+  });
 
-  return await client.postOrder(order, OrderType.FOK);
+  const result = (await client.postOrder(order, OrderType.FOK)) as OrderResult;
+
+  if ('error' in result || ('errorMsg' in result && result.errorMsg !== '')) {
+    const error = 'error' in result ? result.error : result.errorMsg;
+    throw new RainbowError(error);
+  }
+
+  return result;
 }

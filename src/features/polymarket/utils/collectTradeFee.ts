@@ -1,15 +1,17 @@
 import { GelatoRelay, SponsoredCallRequest, TaskState } from '@gelatonetwork/relay-sdk';
-import { Address, erc20Abi, encodeFunctionData, parseUnits, zeroAddress } from 'viem';
 import { ChainId } from '@rainbow-me/swaps';
+import { Address, erc20Abi, encodeFunctionData, parseUnits, zeroAddress } from 'viem';
+import { GELATO_API_KEY } from 'react-native-dotenv';
+import { getPolymarketClobClient, usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { getProvider } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { usePolymarketProxyAddress } from '@/features/polymarket/stores/derived/usePolymarketProxyAddress';
-import { POLYGON_USDC_ADDRESS, RAINBOW_POLYMARKET_FEE_ADDRESS, USD_FEE_PER_TOKEN } from '../constants';
 import { mulWorklet } from '@/safe-math/SafeMath';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
-import { getPolymarketClobClient } from '@/features/polymarket/stores/derived/usePolymarketClobClient';
-import { GELATO_API_KEY } from 'react-native-dotenv';
+import { POLYGON_USDC_ADDRESS, RAINBOW_POLYMARKET_FEE_ADDRESS, USD_FEE_PER_TOKEN } from '../constants';
+import { analytics } from '@/analytics';
+import ethereumUtils from '@/utils/ethereumUtils';
+import { ChainId as BackendChainId } from '@/state/backendNetworks/types';
 
 const POLLING_INTERVAL = time.seconds(1);
 const ZERO_BN = 0n;
@@ -60,11 +62,16 @@ type CollectTradeFeeResult = {
   taskId: string;
   transactionHash?: string;
   errorMessage?: string;
+  gasUsed?: string;
+  effectiveGasPrice?: string;
 };
 
 // TODO: Figure out if there are transient error cases and implement retry logic
 export async function collectTradeFee(tokenAmount: string): Promise<CollectTradeFeeResult | undefined> {
-  const safeAddress = usePolymarketProxyAddress.getState().proxyAddress as Address;
+  const safeAddress = usePolymarketClients.getState().proxyAddress;
+  if (!safeAddress) {
+    throw new RainbowError('[collectTradeFee] No proxy address available');
+  }
   const feeAmount = mulWorklet(tokenAmount, USD_FEE_PER_TOKEN);
 
   try {
@@ -138,6 +145,14 @@ export async function collectTradeFee(tokenAmount: string): Promise<CollectTrade
       throw new RainbowError(`[collectTradeFee] Failed to collect trade fee: ${result.errorMessage}`);
     }
 
+    const gasCostUsd = getGasCostUsd(result);
+
+    analytics.track(analytics.event.predictionsCollectTradeFee, {
+      feeAmountUsd: Number(feeAmount),
+      netFeeAmountUsd: Number(feeAmount) - (gasCostUsd ?? 0),
+      gasCostUsd: gasCostUsd ?? 0,
+    });
+
     return result;
   } catch (e) {
     const error = ensureError(e);
@@ -145,6 +160,11 @@ export async function collectTradeFee(tokenAmount: string): Promise<CollectTrade
       safeAddress,
       tokenAmount,
       feeAmount,
+    });
+    analytics.track(analytics.event.predictionsCollectTradeFeeFailed, {
+      tokenAmount: Number(tokenAmount),
+      feeAmountUsd: Number(feeAmount),
+      errorMessage: error.message,
     });
   }
 }
@@ -171,6 +191,8 @@ async function pollTaskStatus(relay: GelatoRelay, taskId: string): Promise<Colle
         success: true,
         taskId,
         transactionHash: status?.transactionHash,
+        gasUsed: status?.gasUsed,
+        effectiveGasPrice: status?.effectiveGasPrice,
       };
     }
 
@@ -185,4 +207,20 @@ async function pollTaskStatus(relay: GelatoRelay, taskId: string): Promise<Colle
 
     await delay(POLLING_INTERVAL);
   }
+}
+
+function getGasCostUsd(result: CollectTradeFeeResult): number | undefined {
+  if (!result.gasUsed || !result.effectiveGasPrice) {
+    return undefined;
+  }
+
+  const gasCostWei = BigInt(result.gasUsed) * BigInt(result.effectiveGasPrice);
+  const gasCostMatic = Number(gasCostWei) / 1e18;
+  const maticPriceUsd = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: BackendChainId.polygon });
+
+  if (!maticPriceUsd) {
+    return undefined;
+  }
+
+  return gasCostMatic * maticPriceUsd;
 }

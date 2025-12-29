@@ -8,7 +8,7 @@ export type Order = {
   size: string;
 };
 
-type RawOrderBook = {
+export type OrderBook = {
   market: string;
   asset_id: string;
   timestamp: string;
@@ -20,15 +20,15 @@ type RawOrderBook = {
   neg_risk: boolean;
 };
 
-export type OrderBook = Omit<RawOrderBook, 'hash' | 'timestamp'>;
-
 const EMPTY_ORDER_BOOK: OrderBook = {
   market: '',
   asset_id: '',
+  hash: '',
   bids: [],
   asks: [],
   min_order_size: '',
   tick_size: '',
+  timestamp: '',
   neg_risk: false,
 };
 
@@ -45,6 +45,7 @@ export const usePolymarketOrderBookStore = createQueryStore<OrderBook, FetchPara
   {
     fetcher: fetchPolymarketOrderBook,
     params: { tokenId: ($, store) => $(store).tokenId },
+    cacheTime: time.minutes(1),
     staleTime: time.seconds(1),
   },
   set => ({
@@ -55,14 +56,10 @@ export const usePolymarketOrderBookStore = createQueryStore<OrderBook, FetchPara
 
 async function fetchPolymarketOrderBook({ tokenId }: FetchParams): Promise<OrderBook> {
   if (!tokenId) return EMPTY_ORDER_BOOK;
-  const { data } = await rainbowFetch<RawOrderBook>(`${POLYMARKET_CLOB_PROXY_URL}/book?token_id=${tokenId}`, {
+  const { data } = await rainbowFetch<OrderBook>(`${POLYMARKET_CLOB_PROXY_URL}/book?token_id=${tokenId}`, {
     headers: {
       'Content-Type': 'application/json',
     },
   });
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { hash, timestamp, ...orderBook } = data;
-
-  return orderBook;
+  return data;
 }

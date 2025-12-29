@@ -1,13 +1,14 @@
-import { RainbowError } from '@/logger';
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { usePolymarketProxyAddress } from '@/features/polymarket/stores/derived/usePolymarketProxyAddress';
-import { POLYGON_USDC_ADDRESS } from '@/features/polymarket/constants';
-import { erc20ABI } from '@/references';
-import { getProvider } from '@/handlers/web3';
 import { ChainId } from '@rainbow-me/swaps';
 import { BigNumber, ethers } from 'ethers';
-import { truncateToDecimals } from '@/safe-math/SafeMath';
 import { USD_DECIMALS } from '@/features/perps/constants';
+import { POLYGON_USDC_ADDRESS } from '@/features/polymarket/constants';
+import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { getProvider } from '@/handlers/web3';
+import { RainbowError } from '@/logger';
+import { erc20ABI } from '@/references';
+import { truncateToDecimals } from '@/safe-math/SafeMath';
+import { createQueryStore } from '@/state/internal/createQueryStore';
+import { time } from '@/utils/time';
 
 type PolymarketBalanceStoreActions = {
   getBalance: () => string;
@@ -28,8 +29,10 @@ export const usePolymarketBalanceStore = createQueryStore<
   PolymarketBalanceStoreActions
 >(
   {
+    cacheTime: time.days(2),
     fetcher: fetchPolymarketBalance,
-    params: { address: $ => $(usePolymarketProxyAddress).proxyAddress },
+    params: { address: $ => $(usePolymarketClients).proxyAddress },
+    staleTime: time.seconds(10),
   },
 
   (_, get) => ({

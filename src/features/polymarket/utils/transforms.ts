@@ -1,3 +1,4 @@
+import { ResponseByTheme } from '@/__swaps__/utils/swaps';
 import {
   PolymarketEvent,
   PolymarketMarket,
@@ -10,13 +11,15 @@ import { PolymarketPosition, PolymarketTeamInfo, RawPolymarketPosition } from '@
 import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
 import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';
 import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
+import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
+import { SPORT_LEAGUES } from '@/features/polymarket/constants';
 
-export function processRawPolymarketMarket(market: RawPolymarketMarket, eventColor: string): PolymarketMarket {
+export function processRawPolymarketMarket(market: RawPolymarketMarket, eventColor: ResponseByTheme<string>): PolymarketMarket {
   return {
     ...market,
-    clobTokenIds: market.clobTokenIds ? (JSON.parse(market.clobTokenIds) as string[]) : [],
-    outcomes: market.outcomes ? (JSON.parse(market.outcomes) as string[]) : [],
-    outcomePrices: market.outcomePrices ? (JSON.parse(market.outcomePrices) as string[]) : [],
+    clobTokenIds: market.clobTokenIds ? JSON.parse(market.clobTokenIds) : [],
+    outcomes: market.outcomes ? JSON.parse(market.outcomes) : [],
+    outcomePrices: market.outcomePrices ? JSON.parse(market.outcomePrices) : [],
     ...(market.events
       ? {
           events: market.events.map(event => ({
@@ -30,42 +33,48 @@ export function processRawPolymarketMarket(market: RawPolymarketMarket, eventCol
 }
 
 export async function processRawPolymarketEvent(event: RawPolymarketEvent, teams?: PolymarketTeamInfo[]): Promise<PolymarketEvent> {
-  const color = await getImagePrimaryColor(event.icon);
+  const rawColor = await getImagePrimaryColor(event.icon);
+  const color = { dark: getHighContrastColor(rawColor, true), light: getHighContrastColor(rawColor, false) };
   const sortedMarkets = sortMarkets(event.markets, event.sortBy);
   const processedMarkets = sortedMarkets.map(market => processRawPolymarketMarket(market, color));
+  const league = getLeague(event);
   return {
     ...event,
     markets: processedMarkets,
-    uniqueMarketImages: event.markets.some(market => market.icon !== event.icon),
     color,
     teams,
+    league,
   };
 }
 
 export async function processRawPolymarketPosition(
   position: RawPolymarketPosition,
-  market: RawPolymarketMarket
+  market: RawPolymarketMarket,
+  teams?: PolymarketTeamInfo[]
 ): Promise<PolymarketPosition> {
   const event = market.events[0];
   const marketHasUniqueImage = market.icon !== event.icon;
-  const eventColor = await getImagePrimaryColor(event.icon);
+  const rawEventColor = await getImagePrimaryColor(event.icon);
+  const eventColor = { dark: getHighContrastColor(rawEventColor, true), light: getHighContrastColor(rawEventColor, false) };
 
   return {
     ...position,
-    clobTokenIds: market.clobTokenIds ? (JSON.parse(market.clobTokenIds) as string[]) : [],
-    outcomes: market.outcomes ? (JSON.parse(market.outcomes) as string[]) : [],
-    outcomePrices: market.outcomePrices ? (JSON.parse(market.outcomePrices) as string[]) : [],
+    clobTokenIds: market.clobTokenIds ? JSON.parse(market.clobTokenIds) : [],
+    outcomes: market.outcomes ? JSON.parse(market.outcomes) : [],
+    outcomePrices: market.outcomePrices ? JSON.parse(market.outcomePrices) : [],
     nativeCurrency: {
       currentValue: useCurrencyConversionStore.getState().convertToNativeCurrency(position.currentValue),
       cashPnl: useCurrencyConversionStore.getState().convertToNativeCurrency(position.cashPnl),
     },
     market: processRawPolymarketMarket(market, eventColor),
     marketHasUniqueImage,
+    teams,
   };
 }
 
 export async function processRawPolymarketOptimizedEvent(event: RawPolymarketOptimizedEvent): Promise<PolymarketOptimizedEvent> {
-  const color = await getImagePrimaryColor(event.image);
+  const rawColor = await getImagePrimaryColor(event.image);
+  const color = { dark: getHighContrastColor(rawColor, true), light: getHighContrastColor(rawColor, false) };
   return {
     ...event,
     color,
@@ -78,5 +87,13 @@ function sortMarkets(markets: RawPolymarketMarket[], sortBy?: 'price') {
       return markets.sort((a, b) => (b.lastTradePrice ?? 0) - (a.lastTradePrice ?? 0));
     default:
       return markets.sort((a, b) => Number(a.groupItemThreshold) - Number(b.groupItemThreshold));
+  }
+}
+
+export function getLeague(event: PolymarketEvent | RawPolymarketEvent) {
+  for (const tag of event.tags) {
+    if (tag.slug in SPORT_LEAGUES) {
+      return SPORT_LEAGUES[tag.slug as keyof typeof SPORT_LEAGUES];
+    }
   }
 }

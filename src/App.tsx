@@ -40,6 +40,7 @@ import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } fr
 import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
 import { RainbowToastDisplay } from '@/components/rainbow-toast/RainbowToast';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { ReducedMotionConfig, ReduceMotion } from 'react-native-reanimated';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -125,6 +126,7 @@ function Root() {
                         <ErrorBoundary>
                           <App />
                           <RainbowToastDisplay />
+                          <ReducedMotionConfig mode={ReduceMotion.Never} />
                         </ErrorBoundary>
                       </RainbowContextWrapper>
                     </GestureHandlerRootView>

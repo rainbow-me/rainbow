@@ -2,29 +2,30 @@ import { rainbowFetch } from '@/rainbow-fetch';
 import { time } from '@/utils/time';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { RawPolymarketEvent, PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
+import { DEFAULT_CATEGORY_KEY, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 
 type PolymarketEventsParams = {
-  tagId: string | null;
+  tagId: string;
 };
 
 type PolymarketEventsStoreState = {
-  tagId: string | null;
-  setTagId: (tagId: string | null) => void;
+  tagId: string;
+  setTagId: (tagId: string) => void;
 };
 
 export const usePolymarketEventsStore = createQueryStore<PolymarketEvent[], PolymarketEventsParams, PolymarketEventsStoreState>(
   {
     fetcher: fetchPolymarketEvents,
     staleTime: time.minutes(2),
-    cacheTime: time.minutes(10),
+    cacheTime: time.minutes(20),
     params: { tagId: ($, store) => $(store).tagId },
   },
   set => ({
-    tagId: null,
-    setTagId: (tagId: string | null) => set({ tagId }),
-  })
+    tagId: DEFAULT_CATEGORY_KEY,
+    setTagId: (tagId: string) => set({ tagId }),
+  }),
+  { storageKey: 'polymarketEventsStore' }
 );
 
 export function prefetchPolymarketEvents() {
@@ -43,12 +44,14 @@ async function fetchPolymarketEvents(
   url.searchParams.set('order', 'volume24hr');
   url.searchParams.set('ascending', 'false');
 
-  if (tagId) {
+  if (tagId && tagId !== DEFAULT_CATEGORY_KEY) {
     url.searchParams.set('tag_slug', tagId);
   }
 
-  const { data } = await rainbowFetch(url.toString(), { abortController, timeout: 30000 });
-  const events = data as RawPolymarketEvent[];
+  const { data: events }: { data: RawPolymarketEvent[] } = await rainbowFetch(url.toString(), {
+    abortController,
+    timeout: time.seconds(30),
+  });
 
   const filteredEvents = events.filter(event => event.ended !== true);
 

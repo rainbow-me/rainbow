@@ -1,17 +1,15 @@
 import { PolymarketPosition } from '@/features/polymarket/types';
 
 export const PositionAction = {
-  CLAIM: 'claim',
   BURN: 'burn',
   CASH_OUT: 'cash_out',
+  CLAIM: 'claim',
 } as const;
 
 export function getPositionAction(position: PolymarketPosition) {
-  const redeemable = position.redeemable;
-  const isWin = redeemable && position.size === position.currentValue;
-  if (redeemable) {
-    if (isWin) return PositionAction.CLAIM;
-    return PositionAction.BURN;
+  if (position.redeemable) {
+    const isWin = position.size === position.currentValue;
+    return isWin ? PositionAction.CLAIM : PositionAction.BURN;
   }
   return PositionAction.CASH_OUT;
 }

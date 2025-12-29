@@ -21,13 +21,13 @@ export const PolymarketNavbar = function PolymarketNavbar() {
         titleComponent={
           <Animated.View key={title} entering={FadeIn.duration(150)} exiting={FadeOut.duration(100)}>
             <Box flexDirection="row" alignItems="center" gap={12} justifyContent="center">
-              <TextShadow blur={11} color={'#C75DE7'} shadowOpacity={0.9}>
+              <TextShadow blur={20} color={'#C75DE7'} shadowOpacity={0.9}>
                 <Text size="17pt" weight="bold" color={{ custom: '#C863E8' }}>
                   {'􀫸'}
                 </Text>
               </TextShadow>
               <Text size="20pt" weight="heavy" color="label" align="center">
-                {'Predictions'}
+                {i18n.t(i18n.l.predictions.navbar.title)}
               </Text>
             </Box>
           </Animated.View>

@@ -2769,10 +2769,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/shims@npm:5.7.0":
-  version: 5.7.0
-  resolution: "@ethersproject/shims@npm:5.7.0"
-  checksum: 10c0/d550494c882278131beb72e0a358859f0398edd5535bed0e0355c2c2016aec59596a2603d06f46469a1768408d739247fef02c320dcd994d893ea771b61c762b
+"@ethersproject/shims@npm:5.8.0":
+  version: 5.8.0
+  resolution: "@ethersproject/shims@npm:5.8.0"
+  checksum: 10c0/4cb851dd366928694cfe186c782bf19015f5650758ba88541e0e50ec8188f82d6d5dfb7e22813989f1f46ebb2b19c30407b83639bba0aae9e9e131d2e046ea3e
   languageName: node
   linkType: hard
 
@@ -3837,9 +3837,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gorhom/bottom-sheet@npm:4.6.1":
-  version: 4.6.1
-  resolution: "@gorhom/bottom-sheet@npm:4.6.1"
+"@gorhom/bottom-sheet@npm:5.2.8":
+  version: 5.2.8
+  resolution: "@gorhom/bottom-sheet@npm:5.2.8"
   dependencies:
     "@gorhom/portal": "npm:1.0.14"
     invariant: "npm:^2.2.4"
@@ -3848,14 +3848,14 @@ __metadata:
     "@types/react-native": "*"
     react: "*"
     react-native: "*"
-    react-native-gesture-handler: ">=1.10.1"
-    react-native-reanimated: ">=2.2.0"
+    react-native-gesture-handler: ">=2.16.1"
+    react-native-reanimated: "*"
   peerDependenciesMeta:
     "@types/react":
       optional: true
     "@types/react-native":
       optional: true
-  checksum: 10c0/a808d292f073b896e1722433ee982d43c83c89fcb440a5f79a61ed8600966d02a6ceaea647c6ba898736b714bd271a6de0f3de330cdadfe5310c12e333068a84
+  checksum: 10c0/9bb71a375cdcaec650e8c84ab5e3e42f55b3ae19d9e08cf90688cf72706588d211f3aeef28b857a37e9e411efa8fdf038429c90a8855167c7ab3dce5c595dfca
   languageName: node
   linkType: hard
 
@@ -5981,9 +5981,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/swaps@npm:0.39.0":
-  version: 0.39.0
-  resolution: "@rainbow-me/swaps@npm:0.39.0"
+"@rainbow-me/swaps@npm:0.40.0":
+  version: 0.40.0
+  resolution: "@rainbow-me/swaps@npm:0.40.0"
   dependencies:
     "@ethereumjs/util": "npm:9.0.0"
     "@ethersproject/abi": "npm:5.7.0"
@@ -5998,7 +5998,7 @@ __metadata:
     "@ethersproject/transactions": "npm:5.7.0"
     "@ethersproject/wallet": "npm:5.7.0"
     "@metamask/eth-sig-util": "npm:7.0.0"
-  checksum: 10c0/a21f6934276578c0165b2dd34a78fcf1d58a210090a6865738f8f9a83ba592b76846d94a28a5b81bbb8ad593a3c3d94611aa0c20f08e24c304bea2bb0b20bce0
+  checksum: 10c0/1589f275a67d89651d868775450d98d8ff76df9867f038d92cbfa4632949291d831c372d589d27554e21e05403f9c28b75f4cc918183c09618fe017961bea845
   languageName: node
   linkType: hard
 
@@ -7468,16 +7468,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/react-native-skia@npm:2.0.7":
-  version: 2.0.7
-  resolution: "@shopify/react-native-skia@npm:2.0.7"
+"@shopify/react-native-skia@npm:2.4.7":
+  version: 2.4.7
+  resolution: "@shopify/react-native-skia@npm:2.4.7"
   dependencies:
     canvaskit-wasm: "npm:0.40.0"
     react-reconciler: "npm:0.31.0"
   peerDependencies:
     react: ">=19.0"
     react-native: ">=0.78"
-    react-native-reanimated: ^3.0
+    react-native-reanimated: ">=3.19.1"
   peerDependenciesMeta:
     react-native:
       optional: true
@@ -7485,7 +7485,7 @@ __metadata:
       optional: true
   bin:
     setup-skia-web: scripts/setup-canvaskit.js
-  checksum: 10c0/c08015e2702448de53cac47d645f54e743c659874276ce49b310edf702a086469c5e56ea2ab89a3f98c9e3d5af9105d0bdce6b77e3667bd386eaabc4428ecce4
+  checksum: 10c0/5a60d01c47bd65c6dc2c54392e6bb76a60f9710285cfb702ca00cce2277fdca9800d719712c67990af484bbf85c55ccc7aacd7f0922bebbed57f18f35f58103b
   languageName: node
   linkType: hard
 
@@ -9727,29 +9727,29 @@ __metadata:
     "@ensdomains/address-encoder": "npm:0.2.16"
     "@ensdomains/content-hash": "npm:2.5.7"
     "@ensdomains/eth-ens-namehash": "npm:2.0.15"
-    "@ethersproject/abi": "npm:5.7.0"
-    "@ethersproject/abstract-provider": "npm:5.7.0"
-    "@ethersproject/abstract-signer": "npm:5.7.0"
-    "@ethersproject/address": "npm:5.7.0"
-    "@ethersproject/bignumber": "npm:5.7.0"
-    "@ethersproject/bytes": "npm:5.7.0"
-    "@ethersproject/constants": "npm:5.7.0"
-    "@ethersproject/contracts": "npm:5.7.0"
-    "@ethersproject/hdnode": "npm:5.7.0"
-    "@ethersproject/keccak256": "npm:5.7.0"
-    "@ethersproject/logger": "npm:5.7.0"
-    "@ethersproject/properties": "npm:5.7.0"
-    "@ethersproject/providers": "npm:5.7.2"
-    "@ethersproject/random": "npm:5.7.0"
-    "@ethersproject/sha2": "npm:5.7.0"
-    "@ethersproject/shims": "npm:5.7.0"
-    "@ethersproject/solidity": "npm:5.7.0"
-    "@ethersproject/strings": "npm:5.7.0"
-    "@ethersproject/transactions": "npm:5.7.0"
-    "@ethersproject/units": "npm:5.7.0"
-    "@ethersproject/wallet": "npm:5.7.0"
+    "@ethersproject/abi": "npm:5.8.0"
+    "@ethersproject/abstract-provider": "npm:5.8.0"
+    "@ethersproject/abstract-signer": "npm:5.8.0"
+    "@ethersproject/address": "npm:5.8.0"
+    "@ethersproject/bignumber": "npm:5.8.0"
+    "@ethersproject/bytes": "npm:5.8.0"
+    "@ethersproject/constants": "npm:5.8.0"
+    "@ethersproject/contracts": "npm:5.8.0"
+    "@ethersproject/hdnode": "npm:5.8.0"
+    "@ethersproject/keccak256": "npm:5.8.0"
+    "@ethersproject/logger": "npm:5.8.0"
+    "@ethersproject/properties": "npm:5.8.0"
+    "@ethersproject/providers": "npm:5.8.0"
+    "@ethersproject/random": "npm:5.8.0"
+    "@ethersproject/sha2": "npm:5.8.0"
+    "@ethersproject/shims": "npm:5.8.0"
+    "@ethersproject/solidity": "npm:5.8.0"
+    "@ethersproject/strings": "npm:5.8.0"
+    "@ethersproject/transactions": "npm:5.8.0"
+    "@ethersproject/units": "npm:5.8.0"
+    "@ethersproject/wallet": "npm:5.8.0"
     "@gelatonetwork/relay-sdk": "npm:5.6.0"
-    "@gorhom/bottom-sheet": "npm:4.6.1"
+    "@gorhom/bottom-sheet": "npm:5.2.8"
     "@json-rpc-tools/utils": "npm:1.7.6"
     "@lavamoat/allow-scripts": "npm:3.0.1"
     "@lavamoat/preinstall-always-fail": "npm:2.0.0"
@@ -9763,7 +9763,7 @@ __metadata:
     "@polymarket/clob-client": "npm:4.22.8"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
-    "@rainbow-me/swaps": "npm:0.39.0"
+    "@rainbow-me/swaps": "npm:0.40.0"
     "@rainbow-me/token-launcher": "npm:0.2.0"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-native-camera-roll/camera-roll": "npm:7.10.0"
@@ -9793,7 +9793,7 @@ __metadata:
     "@sentry/react-native": "npm:6.15.1"
     "@shopify/flash-list": "npm:1.8.2"
     "@shopify/react-native-performance": "npm:4.1.2"
-    "@shopify/react-native-skia": "npm:2.0.7"
+    "@shopify/react-native-skia": "npm:2.4.7"
     "@tanstack/react-query": "npm:4.2.1"
     "@tanstack/react-query-persist-client": "npm:4.2.1"
     "@testing-library/react-native": "npm:11.2.0"
@@ -9954,7 +9954,7 @@ __metadata:
     react-native-quick-md5: "npm:3.0.6"
     react-native-radial-gradient: "rainbow-me/react-native-radial-gradient#b99ab59d27dba70364ef516bd5193c37657ba95c"
     react-native-randombytes: "npm:3.5.3"
-    react-native-reanimated: "npm:3.18.0"
+    react-native-reanimated: "npm:3.19.4"
     react-native-redash: "npm:16.3.0"
     react-native-restart: "npm:0.0.22"
     react-native-safe-area-context: "npm:5.4.0"
@@ -24507,9 +24507,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:3.18.0":
-  version: 3.18.0
-  resolution: "react-native-reanimated@npm:3.18.0"
+"react-native-reanimated@npm:3.19.4":
+  version: 3.19.4
+  resolution: "react-native-reanimated@npm:3.19.4"
   dependencies:
     "@babel/plugin-transform-arrow-functions": "npm:^7.0.0-0"
     "@babel/plugin-transform-class-properties": "npm:^7.0.0-0"
@@ -24527,7 +24527,7 @@ __metadata:
     "@babel/core": ^7.0.0-0
     react: "*"
     react-native: "*"
-  checksum: 10c0/7420f410a76b2a46f1a0a7df41f8b2508aade8de26fd00eb7305bf25b3ab27e7c06f52ec76d221d8c7317ca3e2bdf842c51216f2adba7fbb60ce321c171d1437
+  checksum: 10c0/265946c8056812685874cfd502e340ffc289128b90b897f274068608b624a757045686c987403f4557c9bf92753864b205e895dbc8111c7fc995b0943c7c5879
   languageName: node
   linkType: hard
 

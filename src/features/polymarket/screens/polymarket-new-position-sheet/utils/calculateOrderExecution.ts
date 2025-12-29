@@ -1,9 +1,9 @@
 import { OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import {
+  ceilWorklet,
   divWorklet,
   greaterThanOrEqualToWorklet,
   greaterThanWorklet,
-  maxWorklet,
   mulWorklet,
   subWorklet,
   sumWorklet,
@@ -76,7 +76,13 @@ export function calculateOrderExecution({
   const bestBidPrice = orderBook.bids.at(-1)?.price ?? '0';
   const spread = subWorklet(bestAskPrice, bestBidPrice);
 
-  const minBuyAmountUsd = maxWorklet(orderBook?.min_order_size ?? '1', '1');
+  // There is an orderBook.min_order_size, but in practice it is always $1
+  const polymarketMinOrderSize = '1';
+  const rawMinBuyAmountUsd = greaterThanWorklet(bestAskPrice, '0')
+    ? mulWorklet(polymarketMinOrderSize, divWorklet(sumWorklet(bestAskPrice, feePerToken), bestAskPrice))
+    : polymarketMinOrderSize;
+  // Round up to nearest cent
+  const minBuyAmountUsd = divWorklet(ceilWorklet(mulWorklet(rawMinBuyAmountUsd, '100')), '100');
 
   return {
     averagePrice,

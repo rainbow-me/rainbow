@@ -1823,7 +1823,7 @@ PODS:
     - React-Core
   - react-native-screen-corner-radius (0.2.2):
     - React
-  - react-native-skia (2.0.7):
+  - react-native-skia (2.4.7):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2420,7 +2420,7 @@ PODS:
     - React-Core
   - RNReactNativeHapticFeedback (2.2.0):
     - React-Core
-  - RNReanimated (3.18.0):
+  - RNReanimated (3.19.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2443,10 +2443,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 3.18.0)
-    - RNReanimated/worklets (= 3.18.0)
+    - RNReanimated/reanimated (= 3.19.4)
+    - RNReanimated/worklets (= 3.19.4)
     - Yoga
-  - RNReanimated/reanimated (3.18.0):
+  - RNReanimated/reanimated (3.19.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2469,9 +2469,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 3.18.0)
+    - RNReanimated/reanimated/apple (= 3.19.4)
     - Yoga
-  - RNReanimated/reanimated/apple (3.18.0):
+  - RNReanimated/reanimated/apple (3.19.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2495,7 +2495,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated/worklets (3.18.0):
+  - RNReanimated/worklets (3.19.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2518,9 +2518,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/worklets/apple (= 3.18.0)
+    - RNReanimated/worklets/apple (= 3.19.4)
     - Yoga
-  - RNReanimated/worklets/apple (3.18.0):
+  - RNReanimated/worklets/apple (3.19.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3311,7 +3311,7 @@ SPEC CHECKSUMS:
   react-native-restart: f6f591aeb40194c41b9b5013901f00e6cf7d0f29
   react-native-safe-area-context: 9d72abf6d8473da73033b597090a80b709c0b2f1
   react-native-screen-corner-radius: 81229df69e6f990502b813b92a0e8267c64d9dd9
-  react-native-skia: 502953ed0a4983dc805feeecc186ff3624eded0a
+  react-native-skia: 3467bce4be38029a4af437022b88a45e68f4210e
   react-native-text-input-mask: b83b8b571cba4bf18fb9b7a0bb8319a14201db9e
   react-native-udp: 33844c2b4a0430271e46cd069a6152cc4c482095
   react-native-version-number: 3d74b5224ca4e1032b1593937d86d3f3c94bf95c
@@ -3372,7 +3372,7 @@ SPEC CHECKSUMS:
   RNOS: 5589ece6158813d4a9b7e098c8cbd35162f63fae
   RNPermissions: bd0d9ca7969ff7b999aa605ee2e5919c12522bfe
   RNReactNativeHapticFeedback: a6fb5b7a981683bf58af43e3fb827d4b7ed87f83
-  RNReanimated: 0719175a224f57c0e6bd16e0a420806816bc9b17
+  RNReanimated: 3e727b205ad6d3d48f9f5b07887ebefb4b20e9a4
   RNRudderSdk: cea1f6a95ceab29ceaf75bdadccba5f78121a4ce
   RNScreens: 586139d98cad59cc4c56443b9bd5c8b9b0b6da0e
   RNSentry: 4ebc4a48794b704751504d654f5e1ac98f08a819

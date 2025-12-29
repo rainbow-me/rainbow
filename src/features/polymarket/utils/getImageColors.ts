@@ -13,14 +13,16 @@ export async function getImageColors(imageUrl: string) {
 }
 
 export async function getImagePrimaryColor(imageUrl: string) {
-  const colors = await getImageColors(imageUrl);
   let primaryColor = '#000000';
-  if (colors.platform === 'ios') {
-    primaryColor = colors.primary;
-  } else if (colors.platform === 'android') {
-    primaryColor = colors.dominant;
-  } else {
-    primaryColor = colors.dominant;
+  try {
+    const colors = await getImageColors(imageUrl);
+    if (colors.platform === 'ios') {
+      primaryColor = colors.primary;
+    } else {
+      primaryColor = colors.dominant;
+    }
+  } catch {
+    primaryColor = '#000000';
   }
   return makeColorMoreChill(primaryColor, '#333333');
 }

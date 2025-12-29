@@ -22,11 +22,11 @@ export const TapToDismiss = memo(function TapToDismiss() {
   );
 });
 
-const PANEL_INSET = 8;
-const PANEL_WIDTH = DEVICE_WIDTH - PANEL_INSET * 2;
-export const PANEL_BACKGROUND_LIGHT = globalColors.white100;
 export const PANEL_BACKGROUND_DARK = '#191A1C';
+export const PANEL_BACKGROUND_LIGHT = globalColors.white100;
 export const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
+export const PANEL_INSET = 8;
+export const PANEL_WIDTH = DEVICE_WIDTH - PANEL_INSET * 2;
 
 const PANEL_BORDER_RADIUS = 42;
 
@@ -95,6 +95,7 @@ type PanelSheetProps = PanelProps & {
   showTapToDismiss?: boolean;
   panelStyle?: StyleProp<ViewStyle> | AnimatedStyle;
   enableKeyboardAvoidance?: boolean;
+  keyboardAvoidanceOffset?: { closed?: number; opened?: number };
 };
 
 const DEFAULT_HANDLE_TOP = 14;
@@ -116,22 +117,24 @@ export const PanelSheet = ({
   showTapToDismiss = true,
   panelStyle,
   enableKeyboardAvoidance = false,
+  keyboardAvoidanceOffset,
 }: React.PropsWithChildren<PanelSheetProps>) => {
   const { isDarkMode } = useColorMode();
-
-  const resolvedHandleProps = {
-    showBlur: handleProps?.showBlur ?? DEFAULT_HANDLE_SHOW_BLUR,
-    color: handleProps?.color ?? (isDarkMode ? DEFAULT_HANDLE_COLOR_DARK : DEFAULT_HANDLE_COLOR_LIGHT),
-    top: handleProps?.top ?? DEFAULT_HANDLE_TOP,
-  } satisfies ComponentProps<typeof SheetHandleFixedToTop>;
-
   return (
     <>
       <Box style={[panelSheetStyles.panelContainer, { bottom: bottomOffset }, containerStyle]}>
-        <ConditionalWrap wrap={children => <KeyboardStickyView>{children}</KeyboardStickyView>} condition={enableKeyboardAvoidance}>
+        <ConditionalWrap
+          wrap={children => <KeyboardStickyView offset={keyboardAvoidanceOffset}>{children}</KeyboardStickyView>}
+          condition={enableKeyboardAvoidance}
+        >
           <>
-            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-            {showHandle && <SheetHandleFixedToTop {...resolvedHandleProps} />}
+            {showHandle && (
+              <SheetHandleFixedToTop
+                color={handleProps?.color ?? (isDarkMode ? DEFAULT_HANDLE_COLOR_DARK : DEFAULT_HANDLE_COLOR_LIGHT)}
+                showBlur={handleProps?.showBlur ?? DEFAULT_HANDLE_SHOW_BLUR}
+                top={handleProps?.top ?? DEFAULT_HANDLE_TOP}
+              />
+            )}
             <Panel
               height={height}
               innerBorderColor={innerBorderColor}
