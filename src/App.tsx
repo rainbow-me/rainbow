@@ -41,6 +41,10 @@ import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
 import { RainbowToastDisplay } from '@/components/rainbow-toast/RainbowToast';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { ReducedMotionConfig, ReduceMotion } from 'react-native-reanimated';
+import { configure as configureDelegationClient } from '@rainbow-me/delegation';
+import { getPlatformClient } from '@/resources/platform/client';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -174,6 +178,12 @@ async function initializeApplication() {
     initializeRemoteConfig(),
     migrate(),
     loadSettingsData(), // load i18n early for first-render
+    configureDelegationClient({
+      platformClient: getPlatformClient(),
+      logger: logger,
+      chains: useBackendNetworksStore.getState().getSupportedChains(),
+      currentAddress: $ => $(useWalletsStore).accountAddress || null,
+    }),
   ]);
 
   const isReturningUser = ls.device.get(['isReturningUser']);
