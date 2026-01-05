@@ -1,0 +1,1 @@
+/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86

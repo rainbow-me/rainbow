@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "TurboHapticsSpec_autolinked_build",
+		"source" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-turbo-haptics/android/build/generated/source/codegen/jni"
+	}
+}

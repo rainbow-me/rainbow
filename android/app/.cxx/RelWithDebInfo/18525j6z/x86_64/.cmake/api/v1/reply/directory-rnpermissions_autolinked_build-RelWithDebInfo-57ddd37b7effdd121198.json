@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "rnpermissions_autolinked_build",
+		"source" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-permissions/android/build/generated/source/codegen/jni"
+	}
+}

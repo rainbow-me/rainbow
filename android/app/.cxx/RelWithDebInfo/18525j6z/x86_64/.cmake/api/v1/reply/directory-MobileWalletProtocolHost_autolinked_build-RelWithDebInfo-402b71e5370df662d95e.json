@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "MobileWalletProtocolHost_autolinked_build",
+		"source" : "/Users/ibrahim/repos/rainbow/node_modules/@coinbase/mobile-wallet-protocol-host/android/build/generated/source/codegen/jni"
+	}
+}

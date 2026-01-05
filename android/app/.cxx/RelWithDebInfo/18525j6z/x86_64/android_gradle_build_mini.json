@@ -1,0 +1,247 @@
+{
+  "buildFiles": [
+    "/Users/ibrahim/repos/rainbow/node_modules/@candlefinance/faster-image/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/@coinbase/mobile-wallet-protocol-host/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/@react-native-camera-roll/camera-roll/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/@react-native-clipboard/clipboard/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/@react-native-masked-view/masked-view/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/@react-native-menu/menu/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/@sentry/react-native/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/@shopify/flash-list/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/@shopify/react-native-skia/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/@walletconnect/react-native-compat/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-advanced-input-mask/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-animateable-text/android/src/main/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-ble-plx/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-bootsplash/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-change-icon/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-edge-to-edge/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-gesture-handler/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-haptic-feedback/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-keyboard-controller/android/src/main/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-keychain/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-nitro-modules/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-pager-view/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-permissions/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-svg/android/src/main/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-turbo-haptics/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-view-shot/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-webview/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/ibrahim/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/ibrahim/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "react_codegen_rnviewshot::@0ba03d237e60b9258a87": {
+      "artifactName": "react_codegen_rnviewshot",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_RNChangeIconSpec::@6272506424d9e5670bff": {
+      "artifactName": "react_codegen_RNChangeIconSpec",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_rnflashlist::@c1d6cf6af84cbabf418f": {
+      "artifactName": "react_codegen_rnflashlist",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_rngesturehandler_codegen::@39f233abcd2c728bc6ec": {
+      "artifactName": "react_codegen_rngesturehandler_codegen",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_rnskia::@376d8504f62839611b97": {
+      "artifactName": "react_codegen_rnskia",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_rnsvg::@4f40eb209d0c0b4a3b65": {
+      "artifactName": "react_codegen_rnsvg",
+      "abi": "x86_64",
+      "output": "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86_64/libreact_codegen_rnsvg.so",
+      "runtimeFiles": [
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/reactnative/libs/android.x86_64/libreactnative.so",
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/jsi/libs/android.x86_64/libjsi.so",
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/8de6167c72ac0bd5380ea812ff95d421/transformed/jetified-fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86_64/libfbjni.so"
+      ]
+    },
+    "react_codegen_reactnativekeyboardcontroller::@dc50c79f19fba14eeefd": {
+      "artifactName": "react_codegen_reactnativekeyboardcontroller",
+      "abi": "x86_64",
+      "output": "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86_64/libreact_codegen_reactnativekeyboardcontroller.so",
+      "runtimeFiles": [
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/reactnative/libs/android.x86_64/libreactnative.so",
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/jsi/libs/android.x86_64/libjsi.so",
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/8de6167c72ac0bd5380ea812ff95d421/transformed/jetified-fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86_64/libfbjni.so"
+      ]
+    },
+    "react_codegen_JBAnimatedText::@fdcf9a339fda6a007711": {
+      "artifactName": "react_codegen_JBAnimatedText",
+      "abi": "x86_64",
+      "output": "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86_64/libreact_codegen_JBAnimatedText.so",
+      "runtimeFiles": [
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/8de6167c72ac0bd5380ea812ff95d421/transformed/jetified-fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86_64/libfbjni.so",
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/jsi/libs/android.x86_64/libjsi.so",
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/reactnative/libs/android.x86_64/libreactnative.so"
+      ]
+    },
+    "react_codegen_rnreanimated::@8afabad14bfffa3f8b9a": {
+      "artifactName": "react_codegen_rnreanimated",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_pagerview::@7032a8921530ec438d60": {
+      "artifactName": "react_codegen_pagerview",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_maskedtextinput::@7233eac344d4afadcfbb": {
+      "artifactName": "react_codegen_maskedtextinput",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_RNMenuViewSpec::@8c49e93dd4e1930e04c8": {
+      "artifactName": "react_codegen_RNMenuViewSpec",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_rnscreens::@25bcbd507e98d3a854ad": {
+      "artifactName": "react_codegen_rnscreens",
+      "abi": "x86_64",
+      "output": "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86_64/libreact_codegen_rnscreens.so",
+      "runtimeFiles": [
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/reactnative/libs/android.x86_64/libreactnative.so",
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/jsi/libs/android.x86_64/libjsi.so",
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/8de6167c72ac0bd5380ea812ff95d421/transformed/jetified-fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86_64/libfbjni.so"
+      ]
+    },
+    "react_codegen_FasterImageView::@89f4bbee0bbfd71273a3": {
+      "artifactName": "react_codegen_FasterImageView",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_BlePlx::@0d03ad0a4a63aefc401b": {
+      "artifactName": "react_codegen_BlePlx",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_NitroModulesSpec::@472a82f9c57d3d3b8644": {
+      "artifactName": "react_codegen_NitroModulesSpec",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_RNEdgeToEdge::@668218a48b60eb28aa9e": {
+      "artifactName": "react_codegen_RNEdgeToEdge",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_RNKeychainSpec::@f9a2cb36ebca2de4baf9": {
+      "artifactName": "react_codegen_RNKeychainSpec",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_rncameraroll::@60139d220751b3dabc04": {
+      "artifactName": "react_codegen_rncameraroll",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_rnpermissions::@a6cee3b0c143951a216c": {
+      "artifactName": "react_codegen_rnpermissions",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_safeareacontext::@7984cd80db47aa7b952a": {
+      "artifactName": "react_codegen_safeareacontext",
+      "abi": "x86_64",
+      "output": "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86_64/libreact_codegen_safeareacontext.so",
+      "runtimeFiles": [
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/8de6167c72ac0bd5380ea812ff95d421/transformed/jetified-fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86_64/libfbjni.so",
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/jsi/libs/android.x86_64/libjsi.so",
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/reactnative/libs/android.x86_64/libreactnative.so"
+      ]
+    },
+    "react_codegen_RNMaskedViewSpec::@93082e38ad1a9a2f30a9": {
+      "artifactName": "react_codegen_RNMaskedViewSpec",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_RNCWebViewSpec::@eb48929f9f7453740a6c": {
+      "artifactName": "react_codegen_RNCWebViewSpec",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "appmodules::@6890427a1f51a3e7e1df": {
+      "artifactName": "appmodules",
+      "abi": "x86_64",
+      "output": "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86_64/libappmodules.so",
+      "runtimeFiles": [
+        "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86_64/libreact_codegen_JBAnimatedText.so",
+        "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86_64/libreact_codegen_reactnativekeyboardcontroller.so",
+        "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86_64/libreact_codegen_safeareacontext.so",
+        "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86_64/libreact_codegen_rnscreens.so",
+        "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86_64/libreact_codegen_rnsvg.so",
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/8de6167c72ac0bd5380ea812ff95d421/transformed/jetified-fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86_64/libfbjni.so",
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/jsi/libs/android.x86_64/libjsi.so",
+        "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/reactnative/libs/android.x86_64/libreactnative.so"
+      ]
+    },
+    "react_codegen_MobileWalletProtocolHost::@95007d97a6cf5f99132d": {
+      "artifactName": "react_codegen_MobileWalletProtocolHost",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_RNHapticFeedbackSpec::@a83561f277f6afbb326c": {
+      "artifactName": "react_codegen_RNHapticFeedbackSpec",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_RNBootSplashSpec::@05d5bd8b08339ce1ebaa": {
+      "artifactName": "react_codegen_RNBootSplashSpec",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_rnasyncstorage::@1596841e19ec5b9eeffe": {
+      "artifactName": "react_codegen_rnasyncstorage",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_RNRNWalletConnectModuleSpec::@acebefbf8c28c0faa0c6": {
+      "artifactName": "react_codegen_RNRNWalletConnectModuleSpec",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_rnclipboard::@6385240493dfcaf22ab7": {
+      "artifactName": "react_codegen_rnclipboard",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_RNSentrySpec::@b85314237d91cb2ada57": {
+      "artifactName": "react_codegen_RNSentrySpec",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "react_codegen_TurboHapticsSpec::@863bee5bc63535087f94": {
+      "artifactName": "react_codegen_TurboHapticsSpec",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    }
+  }
+}

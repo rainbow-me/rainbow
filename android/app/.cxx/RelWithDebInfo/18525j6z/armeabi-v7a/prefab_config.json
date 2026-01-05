@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "prefabPath": "/Users/ibrahim/.gradle/caches/modules-2/files-2.1/com.google.prefab/cli/2.1.0/aa32fec809c44fa531f01dcfb739b5b3304d3050/cli-2.1.0-all.jar",
+  "packages": [
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-nitro-modules/android/build/intermediates/prefab_package/release/prefab",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-vision-camera/android/build/intermediates/prefab_package/release/prefab",
+    "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab",
+    "/Users/ibrahim/repos/rainbow/node_modules/@shopify/react-native-skia/android/build/intermediates/prefab_package/release/prefab",
+    "/Users/ibrahim/repos/rainbow/node_modules/react-native-reanimated/android/build/intermediates/prefab_package/release/prefab",
+    "/Users/ibrahim/.gradle/caches/8.14.3/transforms/01e8334d9e54f6826a911f8316b1c400/transformed/jetified-hermes-android-0.81.5-release/prefab",
+    "/Users/ibrahim/.gradle/caches/8.14.3/transforms/8de6167c72ac0bd5380ea812ff95d421/transformed/jetified-fbjni-0.7.0/prefab"
+  ]
+}

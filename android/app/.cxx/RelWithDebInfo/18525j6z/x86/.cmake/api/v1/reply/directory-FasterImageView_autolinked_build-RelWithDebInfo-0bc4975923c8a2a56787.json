@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "FasterImageView_autolinked_build",
+		"source" : "/Users/ibrahim/repos/rainbow/node_modules/@candlefinance/faster-image/android/build/generated/source/codegen/jni"
+	}
+}

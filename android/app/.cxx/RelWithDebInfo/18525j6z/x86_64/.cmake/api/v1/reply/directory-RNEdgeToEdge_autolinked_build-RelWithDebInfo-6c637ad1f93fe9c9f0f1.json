@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "RNEdgeToEdge_autolinked_build",
+		"source" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-edge-to-edge/android/build/generated/source/codegen/jni"
+	}
+}

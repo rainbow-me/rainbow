@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "rnskia_autolinked_build",
+		"source" : "/Users/ibrahim/repos/rainbow/node_modules/@shopify/react-native-skia/android/build/generated/source/codegen/jni"
+	}
+}

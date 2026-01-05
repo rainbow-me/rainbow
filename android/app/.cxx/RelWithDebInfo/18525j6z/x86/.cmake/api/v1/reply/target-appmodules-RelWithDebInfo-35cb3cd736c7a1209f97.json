@@ -1,0 +1,2066 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86/libappmodules.so"
+		}
+	],
+	"backtrace" : 3,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"include",
+			"target_link_libraries",
+			"target_compile_options",
+			"target_compile_reactnative_options",
+			"target_compile_definitions",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"/Users/ibrahim/repos/rainbow/node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake",
+			"CMakeLists.txt",
+			"/Users/ibrahim/repos/rainbow/node_modules/react-native/ReactCommon/cmake-utils/react-native-flags.cmake",
+			"/Users/ibrahim/repos/rainbow/node_modules/react-native-animateable-text/android/src/main/jni/CMakeLists.txt",
+			"/Users/ibrahim/repos/rainbow/node_modules/react-native-keyboard-controller/android/src/main/jni/CMakeLists.txt",
+			"/Users/ibrahim/repos/rainbow/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt",
+			"/Users/ibrahim/repos/rainbow/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt",
+			"/Users/ibrahim/repos/rainbow/node_modules/react-native-svg/android/src/main/jni/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 31,
+				"parent" : 0
+			},
+			{
+				"file" : 0,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 64,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 95,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 81,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 71,
+				"parent" : 2
+			},
+			{
+				"command" : 3,
+				"file" : 2,
+				"line" : 30,
+				"parent" : 6
+			},
+			{
+				"command" : 5,
+				"file" : 2,
+				"line" : 33,
+				"parent" : 6
+			},
+			{
+				"command" : 6,
+				"file" : 0,
+				"line" : 66,
+				"parent" : 2
+			},
+			{
+				"file" : 3
+			},
+			{
+				"command" : 6,
+				"file" : 3,
+				"line" : 92,
+				"parent" : 10
+			},
+			{
+				"file" : 4
+			},
+			{
+				"command" : 6,
+				"file" : 4,
+				"line" : 85,
+				"parent" : 12
+			},
+			{
+				"file" : 5
+			},
+			{
+				"command" : 6,
+				"file" : 5,
+				"line" : 62,
+				"parent" : 14
+			},
+			{
+				"file" : 6
+			},
+			{
+				"command" : 6,
+				"file" : 6,
+				"line" : 85,
+				"parent" : 16
+			},
+			{
+				"file" : 7
+			},
+			{
+				"command" : 6,
+				"file" : 7,
+				"line" : 65,
+				"parent" : 18
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D__BIONIC_NO_PAGE_SIZE_MACRO -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -O2 -g -DNDEBUG -fPIC"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-Werror"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-fexceptions"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-frtti"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-std=c++20"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-DFOLLY_NO_CONFIG=1"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-DLOG_TAG=\\\"ReactNative\\\""
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DFOLLY_HAVE_CLOCK_GETTIME=1"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DFOLLY_USE_LIBCPP=1"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DFOLLY_CFG_NO_COROUTINES=1"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DFOLLY_MOBILE=1"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DFOLLY_HAVE_RECVMMSG=1"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DFOLLY_HAVE_PTHREAD=1"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DFOLLY_HAVE_XSI_STRERROR_R=1"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 8,
+					"define" : "RN_SERIALIZABLE_STATE"
+				},
+				{
+					"define" : "appmodules_EXPORTS"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 9,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "/Users/ibrahim/repos/rainbow/android/app/build/generated/autolinking/src/main/jni"
+				},
+				{
+					"backtrace" : 11,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-animateable-text/android/src/main/jni"
+				},
+				{
+					"backtrace" : 13,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-keyboard-controller/android/src/main/jni"
+				},
+				{
+					"backtrace" : 15,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-safe-area-context/android/src/main/jni"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-screens/android/src/main/jni"
+				},
+				{
+					"backtrace" : 19,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-svg/android/src/main/jni"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@candlefinance/faster-image/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@candlefinance/faster-image/android/build/generated/source/codegen/jni/react/renderer/components/FasterImageView"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@coinbase/mobile-wallet-protocol-host/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@coinbase/mobile-wallet-protocol-host/android/build/generated/source/codegen/jni/react/renderer/components/MobileWalletProtocolHost"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/react/renderer/components/rnasyncstorage"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@react-native-camera-roll/camera-roll/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@react-native-camera-roll/camera-roll/android/build/generated/source/codegen/jni/react/renderer/components/rncameraroll"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@react-native-clipboard/clipboard/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@react-native-clipboard/clipboard/android/build/generated/source/codegen/jni/react/renderer/components/rnclipboard"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@react-native-masked-view/masked-view/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@react-native-masked-view/masked-view/android/build/generated/source/codegen/jni/react/renderer/components/RNMaskedViewSpec"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@react-native-menu/menu/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@react-native-menu/menu/android/build/generated/source/codegen/jni/react/renderer/components/RNMenuViewSpec"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@sentry/react-native/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@sentry/react-native/android/build/generated/source/codegen/jni/react/renderer/components/RNSentrySpec"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@shopify/flash-list/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@shopify/flash-list/android/build/generated/source/codegen/jni/react/renderer/components/rnflashlist"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@shopify/react-native-skia/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@shopify/react-native-skia/android/build/generated/source/codegen/jni/react/renderer/components/rnskia"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@walletconnect/react-native-compat/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/@walletconnect/react-native-compat/android/build/generated/source/codegen/jni/react/renderer/components/RNRNWalletConnectModuleSpec"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-advanced-input-mask/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-advanced-input-mask/android/build/generated/source/codegen/jni/react/renderer/components/maskedtextinput"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-animateable-text/android/src/main/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-animateable-text/android/src/main/jni/../../../build/generated/source/codegen/jni"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-animateable-text/android/src/main/jni/../../../build/generated/source/codegen/jni/react/renderer/components/JBAnimatedText"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-animateable-text/android/src/main/jni/../../../../cpp"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/reactnative/include/react/renderer/components/text/platform/android"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/reactnative/include/react/renderer/components/text/platform/cxx"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-ble-plx/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-ble-plx/android/build/generated/source/codegen/jni/react/renderer/components/BlePlx"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-bootsplash/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-bootsplash/android/build/generated/source/codegen/jni/react/renderer/components/RNBootSplashSpec"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-change-icon/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-change-icon/android/build/generated/source/codegen/jni/react/renderer/components/RNChangeIconSpec"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-edge-to-edge/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-edge-to-edge/android/build/generated/source/codegen/jni/react/renderer/components/RNEdgeToEdge"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-gesture-handler/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-gesture-handler/android/build/generated/source/codegen/jni/react/renderer/components/rngesturehandler_codegen"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-haptic-feedback/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-haptic-feedback/android/build/generated/source/codegen/jni/react/renderer/components/RNHapticFeedbackSpec"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-keyboard-controller/android/src/main/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-keyboard-controller/android/src/main/jni/../../../../common/cpp"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-keyboard-controller/android/src/main/jni/../../../build/generated/source/codegen/jni"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-keyboard-controller/android/src/main/jni/../../../build/generated/source/codegen/jni/react/renderer/components/reactnativekeyboardcontroller"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-keychain/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-keychain/android/build/generated/source/codegen/jni/react/renderer/components/RNKeychainSpec"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-nitro-modules/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-nitro-modules/android/build/generated/source/codegen/jni/react/renderer/components/NitroModulesSpec"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-pager-view/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-pager-view/android/build/generated/source/codegen/jni/react/renderer/components/pagerview"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-permissions/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-permissions/android/build/generated/source/codegen/jni/react/renderer/components/rnpermissions"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/react/renderer/components/rnreanimated"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-safe-area-context/android/src/main/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-safe-area-context/android/src/main/jni/../../../../common/cpp"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-safe-area-context/android/src/main/jni/../../../build/generated/source/codegen/jni"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-safe-area-context/android/src/main/jni/../../../build/generated/source/codegen/jni/react/renderer/components/safeareacontext"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-screens/android/src/main/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-screens/android/src/main/jni/../../../build/generated/source/codegen/jni"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-screens/android/src/main/jni/../../../build/generated/source/codegen/jni/react/renderer/components/rnscreens"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-svg/android/src/main/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-svg/android/src/main/jni/../../../../common/cpp"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-svg/android/src/main/jni/../../../build/generated/source/codegen/jni"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-svg/android/src/main/jni/../../../build/generated/source/codegen/jni/react/renderer/components/rnsvg"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-turbo-haptics/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-turbo-haptics/android/build/generated/source/codegen/jni/react/renderer/components/TurboHapticsSpec"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-view-shot/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-view-shot/android/build/generated/source/codegen/jni/react/renderer/components/rnviewshot"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-webview/android/build/generated/source/codegen/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/Users/ibrahim/repos/rainbow/node_modules/react-native-webview/android/build/generated/source/codegen/jni/react/renderer/components/RNCWebViewSpec"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "/Users/ibrahim/.gradle/caches/8.14.3/transforms/8de6167c72ac0bd5380ea812ff95d421/transformed/jetified-fbjni-0.7.0/prefab/modules/fbjni/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/jsi/include"
+				},
+				{
+					"backtrace" : 5,
+					"isSystem" : true,
+					"path" : "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/reactnative/include"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0,
+				1
+			],
+			"sysroot" : 
+			{
+				"path" : "/Users/ibrahim/Library/Android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/darwin-x86_64/sysroot"
+			}
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_FasterImageView::@89f4bbee0bbfd71273a3"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_MobileWalletProtocolHost::@95007d97a6cf5f99132d"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rnasyncstorage::@1596841e19ec5b9eeffe"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rncameraroll::@60139d220751b3dabc04"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rnclipboard::@6385240493dfcaf22ab7"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNMaskedViewSpec::@93082e38ad1a9a2f30a9"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNMenuViewSpec::@8c49e93dd4e1930e04c8"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNSentrySpec::@b85314237d91cb2ada57"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rnflashlist::@c1d6cf6af84cbabf418f"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rnskia::@376d8504f62839611b97"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNRNWalletConnectModuleSpec::@acebefbf8c28c0faa0c6"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_maskedtextinput::@7233eac344d4afadcfbb"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_JBAnimatedText::@fdcf9a339fda6a007711"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_BlePlx::@0d03ad0a4a63aefc401b"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNBootSplashSpec::@05d5bd8b08339ce1ebaa"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNChangeIconSpec::@6272506424d9e5670bff"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNEdgeToEdge::@668218a48b60eb28aa9e"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rngesturehandler_codegen::@39f233abcd2c728bc6ec"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNHapticFeedbackSpec::@a83561f277f6afbb326c"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_reactnativekeyboardcontroller::@dc50c79f19fba14eeefd"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNKeychainSpec::@f9a2cb36ebca2de4baf9"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_NitroModulesSpec::@472a82f9c57d3d3b8644"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_pagerview::@7032a8921530ec438d60"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rnpermissions::@a6cee3b0c143951a216c"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rnreanimated::@8afabad14bfffa3f8b9a"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_safeareacontext::@7984cd80db47aa7b952a"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rnscreens::@25bcbd507e98d3a854ad"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rnsvg::@4f40eb209d0c0b4a3b65"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_TurboHapticsSpec::@863bee5bc63535087f94"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rnviewshot::@0ba03d237e60b9258a87"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_RNCWebViewSpec::@eb48929f9f7453740a6c"
+		}
+	],
+	"id" : "appmodules::@6890427a1f51a3e7e1df",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-Wl,--build-id=sha1 -Wl,--no-rosegment -Wl,--no-undefined-version -Wl,--fatal-warnings -Wl,--no-undefined -Qunused-arguments  -Wl,--gc-sections",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86/libreact_codegen_JBAnimatedText.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86/libreact_codegen_reactnativekeyboardcontroller.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86/libreact_codegen_safeareacontext.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86/libreact_codegen_rnscreens.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "/Users/ibrahim/repos/rainbow/android/app/build/intermediates/cxx/RelWithDebInfo/18525j6z/obj/x86/libreact_codegen_rnsvg.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "/Users/ibrahim/.gradle/caches/8.14.3/transforms/8de6167c72ac0bd5380ea812ff95d421/transformed/jetified-fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86/libfbjni.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/jsi/libs/android.x86/libjsi.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "/Users/ibrahim/.gradle/caches/8.14.3/transforms/88d52a113a896667ab874c61eeb859d3/transformed/jetified-react-android-0.81.5-release/prefab/modules/reactnative/libs/android.x86/libreactnative.so",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-latomic -lm",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX",
+		"sysroot" : 
+		{
+			"path" : "/Users/ibrahim/Library/Android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/darwin-x86_64/sysroot"
+		}
+	},
+	"name" : "appmodules",
+	"nameOnDisk" : "libappmodules.so",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1
+			]
+		},
+		{
+			"name" : "Object Libraries",
+			"sourceIndexes" : 
+			[
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29,
+				30,
+				31,
+				32,
+				33,
+				34,
+				35,
+				36,
+				37,
+				38,
+				39,
+				40,
+				41,
+				42,
+				43,
+				44,
+				45,
+				46,
+				47,
+				48,
+				49,
+				50,
+				51,
+				52,
+				53,
+				54,
+				55,
+				56,
+				57,
+				58,
+				59,
+				60,
+				61,
+				62,
+				63,
+				64,
+				65,
+				66,
+				67,
+				68,
+				69,
+				70,
+				71,
+				72,
+				73,
+				74,
+				75,
+				76,
+				77,
+				78,
+				79,
+				80,
+				81,
+				82,
+				83,
+				84,
+				85,
+				86,
+				87,
+				88,
+				89,
+				90,
+				91,
+				92,
+				93,
+				94,
+				95,
+				96,
+				97,
+				98,
+				99,
+				100,
+				101,
+				102,
+				103,
+				104,
+				105,
+				106,
+				107,
+				108,
+				109,
+				110,
+				111,
+				112,
+				113,
+				114,
+				115,
+				116,
+				117,
+				118,
+				119,
+				120,
+				121,
+				122,
+				123,
+				124,
+				125,
+				126,
+				127,
+				128,
+				129,
+				130,
+				131,
+				132,
+				133,
+				134,
+				135,
+				136,
+				137,
+				138,
+				139,
+				140,
+				141,
+				142,
+				143,
+				144,
+				145,
+				146,
+				147,
+				148,
+				149,
+				150,
+				151,
+				152,
+				153,
+				154,
+				155,
+				156,
+				157,
+				158,
+				159,
+				160,
+				161,
+				162,
+				163,
+				164,
+				165,
+				166,
+				167,
+				168,
+				169,
+				170,
+				171,
+				172,
+				173,
+				174,
+				175,
+				176,
+				177,
+				178,
+				179,
+				180,
+				181,
+				182,
+				183
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/build/generated/autolinking/src/main/jni/autolinking.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "OnLoad.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/FasterImageView_autolinked_build/CMakeFiles/react_codegen_FasterImageView.dir/FasterImageView-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/FasterImageView_autolinked_build/CMakeFiles/react_codegen_FasterImageView.dir/react/renderer/components/FasterImageView/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/FasterImageView_autolinked_build/CMakeFiles/react_codegen_FasterImageView.dir/react/renderer/components/FasterImageView/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/FasterImageView_autolinked_build/CMakeFiles/react_codegen_FasterImageView.dir/react/renderer/components/FasterImageView/FasterImageViewJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/FasterImageView_autolinked_build/CMakeFiles/react_codegen_FasterImageView.dir/react/renderer/components/FasterImageView/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/FasterImageView_autolinked_build/CMakeFiles/react_codegen_FasterImageView.dir/react/renderer/components/FasterImageView/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/FasterImageView_autolinked_build/CMakeFiles/react_codegen_FasterImageView.dir/react/renderer/components/FasterImageView/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/MobileWalletProtocolHost_autolinked_build/CMakeFiles/react_codegen_MobileWalletProtocolHost.dir/MobileWalletProtocolHost-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/MobileWalletProtocolHost_autolinked_build/CMakeFiles/react_codegen_MobileWalletProtocolHost.dir/react/renderer/components/MobileWalletProtocolHost/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/MobileWalletProtocolHost_autolinked_build/CMakeFiles/react_codegen_MobileWalletProtocolHost.dir/react/renderer/components/MobileWalletProtocolHost/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/MobileWalletProtocolHost_autolinked_build/CMakeFiles/react_codegen_MobileWalletProtocolHost.dir/react/renderer/components/MobileWalletProtocolHost/MobileWalletProtocolHostJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/MobileWalletProtocolHost_autolinked_build/CMakeFiles/react_codegen_MobileWalletProtocolHost.dir/react/renderer/components/MobileWalletProtocolHost/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/MobileWalletProtocolHost_autolinked_build/CMakeFiles/react_codegen_MobileWalletProtocolHost.dir/react/renderer/components/MobileWalletProtocolHost/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/MobileWalletProtocolHost_autolinked_build/CMakeFiles/react_codegen_MobileWalletProtocolHost.dir/react/renderer/components/MobileWalletProtocolHost/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/react/renderer/components/rnasyncstorage/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/react/renderer/components/rnasyncstorage/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/react/renderer/components/rnasyncstorage/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/react/renderer/components/rnasyncstorage/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/react/renderer/components/rnasyncstorage/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/react/renderer/components/rnasyncstorage/rnasyncstorageJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/rnasyncstorage-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rncameraroll_autolinked_build/CMakeFiles/react_codegen_rncameraroll.dir/react/renderer/components/rncameraroll/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rncameraroll_autolinked_build/CMakeFiles/react_codegen_rncameraroll.dir/react/renderer/components/rncameraroll/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rncameraroll_autolinked_build/CMakeFiles/react_codegen_rncameraroll.dir/react/renderer/components/rncameraroll/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rncameraroll_autolinked_build/CMakeFiles/react_codegen_rncameraroll.dir/react/renderer/components/rncameraroll/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rncameraroll_autolinked_build/CMakeFiles/react_codegen_rncameraroll.dir/react/renderer/components/rncameraroll/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rncameraroll_autolinked_build/CMakeFiles/react_codegen_rncameraroll.dir/react/renderer/components/rncameraroll/rncamerarollJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rncameraroll_autolinked_build/CMakeFiles/react_codegen_rncameraroll.dir/rncameraroll-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnclipboard_autolinked_build/CMakeFiles/react_codegen_rnclipboard.dir/react/renderer/components/rnclipboard/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnclipboard_autolinked_build/CMakeFiles/react_codegen_rnclipboard.dir/react/renderer/components/rnclipboard/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnclipboard_autolinked_build/CMakeFiles/react_codegen_rnclipboard.dir/react/renderer/components/rnclipboard/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnclipboard_autolinked_build/CMakeFiles/react_codegen_rnclipboard.dir/react/renderer/components/rnclipboard/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnclipboard_autolinked_build/CMakeFiles/react_codegen_rnclipboard.dir/react/renderer/components/rnclipboard/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnclipboard_autolinked_build/CMakeFiles/react_codegen_rnclipboard.dir/react/renderer/components/rnclipboard/rnclipboardJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnclipboard_autolinked_build/CMakeFiles/react_codegen_rnclipboard.dir/rnclipboard-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNMaskedViewSpec_autolinked_build/CMakeFiles/react_codegen_RNMaskedViewSpec.dir/RNMaskedViewSpec-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNMaskedViewSpec_autolinked_build/CMakeFiles/react_codegen_RNMaskedViewSpec.dir/react/renderer/components/RNMaskedViewSpec/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNMaskedViewSpec_autolinked_build/CMakeFiles/react_codegen_RNMaskedViewSpec.dir/react/renderer/components/RNMaskedViewSpec/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNMaskedViewSpec_autolinked_build/CMakeFiles/react_codegen_RNMaskedViewSpec.dir/react/renderer/components/RNMaskedViewSpec/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNMaskedViewSpec_autolinked_build/CMakeFiles/react_codegen_RNMaskedViewSpec.dir/react/renderer/components/RNMaskedViewSpec/RNMaskedViewSpecJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNMaskedViewSpec_autolinked_build/CMakeFiles/react_codegen_RNMaskedViewSpec.dir/react/renderer/components/RNMaskedViewSpec/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNMaskedViewSpec_autolinked_build/CMakeFiles/react_codegen_RNMaskedViewSpec.dir/react/renderer/components/RNMaskedViewSpec/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNMenuViewSpec_autolinked_build/CMakeFiles/react_codegen_RNMenuViewSpec.dir/RNMenuViewSpec-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNMenuViewSpec_autolinked_build/CMakeFiles/react_codegen_RNMenuViewSpec.dir/react/renderer/components/RNMenuViewSpec/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNMenuViewSpec_autolinked_build/CMakeFiles/react_codegen_RNMenuViewSpec.dir/react/renderer/components/RNMenuViewSpec/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNMenuViewSpec_autolinked_build/CMakeFiles/react_codegen_RNMenuViewSpec.dir/react/renderer/components/RNMenuViewSpec/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNMenuViewSpec_autolinked_build/CMakeFiles/react_codegen_RNMenuViewSpec.dir/react/renderer/components/RNMenuViewSpec/RNMenuViewSpecJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNMenuViewSpec_autolinked_build/CMakeFiles/react_codegen_RNMenuViewSpec.dir/react/renderer/components/RNMenuViewSpec/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNMenuViewSpec_autolinked_build/CMakeFiles/react_codegen_RNMenuViewSpec.dir/react/renderer/components/RNMenuViewSpec/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNSentrySpec_autolinked_build/CMakeFiles/react_codegen_RNSentrySpec.dir/RNSentrySpec-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNSentrySpec_autolinked_build/CMakeFiles/react_codegen_RNSentrySpec.dir/react/renderer/components/RNSentrySpec/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNSentrySpec_autolinked_build/CMakeFiles/react_codegen_RNSentrySpec.dir/react/renderer/components/RNSentrySpec/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNSentrySpec_autolinked_build/CMakeFiles/react_codegen_RNSentrySpec.dir/react/renderer/components/RNSentrySpec/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNSentrySpec_autolinked_build/CMakeFiles/react_codegen_RNSentrySpec.dir/react/renderer/components/RNSentrySpec/RNSentrySpecJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNSentrySpec_autolinked_build/CMakeFiles/react_codegen_RNSentrySpec.dir/react/renderer/components/RNSentrySpec/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNSentrySpec_autolinked_build/CMakeFiles/react_codegen_RNSentrySpec.dir/react/renderer/components/RNSentrySpec/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnflashlist_autolinked_build/CMakeFiles/react_codegen_rnflashlist.dir/react/renderer/components/rnflashlist/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnflashlist_autolinked_build/CMakeFiles/react_codegen_rnflashlist.dir/react/renderer/components/rnflashlist/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnflashlist_autolinked_build/CMakeFiles/react_codegen_rnflashlist.dir/react/renderer/components/rnflashlist/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnflashlist_autolinked_build/CMakeFiles/react_codegen_rnflashlist.dir/react/renderer/components/rnflashlist/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnflashlist_autolinked_build/CMakeFiles/react_codegen_rnflashlist.dir/react/renderer/components/rnflashlist/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnflashlist_autolinked_build/CMakeFiles/react_codegen_rnflashlist.dir/react/renderer/components/rnflashlist/rnflashlistJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnflashlist_autolinked_build/CMakeFiles/react_codegen_rnflashlist.dir/rnflashlist-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnskia_autolinked_build/CMakeFiles/react_codegen_rnskia.dir/react/renderer/components/rnskia/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnskia_autolinked_build/CMakeFiles/react_codegen_rnskia.dir/react/renderer/components/rnskia/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnskia_autolinked_build/CMakeFiles/react_codegen_rnskia.dir/react/renderer/components/rnskia/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnskia_autolinked_build/CMakeFiles/react_codegen_rnskia.dir/react/renderer/components/rnskia/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnskia_autolinked_build/CMakeFiles/react_codegen_rnskia.dir/react/renderer/components/rnskia/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnskia_autolinked_build/CMakeFiles/react_codegen_rnskia.dir/react/renderer/components/rnskia/rnskiaJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnskia_autolinked_build/CMakeFiles/react_codegen_rnskia.dir/rnskia-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNRNWalletConnectModuleSpec_autolinked_build/CMakeFiles/react_codegen_RNRNWalletConnectModuleSpec.dir/RNRNWalletConnectModuleSpec-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNRNWalletConnectModuleSpec_autolinked_build/CMakeFiles/react_codegen_RNRNWalletConnectModuleSpec.dir/react/renderer/components/RNRNWalletConnectModuleSpec/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNRNWalletConnectModuleSpec_autolinked_build/CMakeFiles/react_codegen_RNRNWalletConnectModuleSpec.dir/react/renderer/components/RNRNWalletConnectModuleSpec/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNRNWalletConnectModuleSpec_autolinked_build/CMakeFiles/react_codegen_RNRNWalletConnectModuleSpec.dir/react/renderer/components/RNRNWalletConnectModuleSpec/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNRNWalletConnectModuleSpec_autolinked_build/CMakeFiles/react_codegen_RNRNWalletConnectModuleSpec.dir/react/renderer/components/RNRNWalletConnectModuleSpec/RNRNWalletConnectModuleSpecJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNRNWalletConnectModuleSpec_autolinked_build/CMakeFiles/react_codegen_RNRNWalletConnectModuleSpec.dir/react/renderer/components/RNRNWalletConnectModuleSpec/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNRNWalletConnectModuleSpec_autolinked_build/CMakeFiles/react_codegen_RNRNWalletConnectModuleSpec.dir/react/renderer/components/RNRNWalletConnectModuleSpec/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/maskedtextinput_autolinked_build/CMakeFiles/react_codegen_maskedtextinput.dir/maskedtextinput-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/maskedtextinput_autolinked_build/CMakeFiles/react_codegen_maskedtextinput.dir/react/renderer/components/maskedtextinput/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/maskedtextinput_autolinked_build/CMakeFiles/react_codegen_maskedtextinput.dir/react/renderer/components/maskedtextinput/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/maskedtextinput_autolinked_build/CMakeFiles/react_codegen_maskedtextinput.dir/react/renderer/components/maskedtextinput/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/maskedtextinput_autolinked_build/CMakeFiles/react_codegen_maskedtextinput.dir/react/renderer/components/maskedtextinput/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/maskedtextinput_autolinked_build/CMakeFiles/react_codegen_maskedtextinput.dir/react/renderer/components/maskedtextinput/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/maskedtextinput_autolinked_build/CMakeFiles/react_codegen_maskedtextinput.dir/react/renderer/components/maskedtextinput/maskedtextinputJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/BlePlx_autolinked_build/CMakeFiles/react_codegen_BlePlx.dir/BlePlx-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/BlePlx_autolinked_build/CMakeFiles/react_codegen_BlePlx.dir/react/renderer/components/BlePlx/BlePlxJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/BlePlx_autolinked_build/CMakeFiles/react_codegen_BlePlx.dir/react/renderer/components/BlePlx/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/BlePlx_autolinked_build/CMakeFiles/react_codegen_BlePlx.dir/react/renderer/components/BlePlx/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/BlePlx_autolinked_build/CMakeFiles/react_codegen_BlePlx.dir/react/renderer/components/BlePlx/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/BlePlx_autolinked_build/CMakeFiles/react_codegen_BlePlx.dir/react/renderer/components/BlePlx/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/BlePlx_autolinked_build/CMakeFiles/react_codegen_BlePlx.dir/react/renderer/components/BlePlx/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNBootSplashSpec_autolinked_build/CMakeFiles/react_codegen_RNBootSplashSpec.dir/RNBootSplashSpec-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNBootSplashSpec_autolinked_build/CMakeFiles/react_codegen_RNBootSplashSpec.dir/react/renderer/components/RNBootSplashSpec/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNBootSplashSpec_autolinked_build/CMakeFiles/react_codegen_RNBootSplashSpec.dir/react/renderer/components/RNBootSplashSpec/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNBootSplashSpec_autolinked_build/CMakeFiles/react_codegen_RNBootSplashSpec.dir/react/renderer/components/RNBootSplashSpec/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNBootSplashSpec_autolinked_build/CMakeFiles/react_codegen_RNBootSplashSpec.dir/react/renderer/components/RNBootSplashSpec/RNBootSplashSpecJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNBootSplashSpec_autolinked_build/CMakeFiles/react_codegen_RNBootSplashSpec.dir/react/renderer/components/RNBootSplashSpec/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNBootSplashSpec_autolinked_build/CMakeFiles/react_codegen_RNBootSplashSpec.dir/react/renderer/components/RNBootSplashSpec/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNChangeIconSpec_autolinked_build/CMakeFiles/react_codegen_RNChangeIconSpec.dir/RNChangeIconSpec-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNChangeIconSpec_autolinked_build/CMakeFiles/react_codegen_RNChangeIconSpec.dir/react/renderer/components/RNChangeIconSpec/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNChangeIconSpec_autolinked_build/CMakeFiles/react_codegen_RNChangeIconSpec.dir/react/renderer/components/RNChangeIconSpec/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNChangeIconSpec_autolinked_build/CMakeFiles/react_codegen_RNChangeIconSpec.dir/react/renderer/components/RNChangeIconSpec/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNChangeIconSpec_autolinked_build/CMakeFiles/react_codegen_RNChangeIconSpec.dir/react/renderer/components/RNChangeIconSpec/RNChangeIconSpecJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNChangeIconSpec_autolinked_build/CMakeFiles/react_codegen_RNChangeIconSpec.dir/react/renderer/components/RNChangeIconSpec/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNChangeIconSpec_autolinked_build/CMakeFiles/react_codegen_RNChangeIconSpec.dir/react/renderer/components/RNChangeIconSpec/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNEdgeToEdge_autolinked_build/CMakeFiles/react_codegen_RNEdgeToEdge.dir/RNEdgeToEdge-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNEdgeToEdge_autolinked_build/CMakeFiles/react_codegen_RNEdgeToEdge.dir/react/renderer/components/RNEdgeToEdge/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNEdgeToEdge_autolinked_build/CMakeFiles/react_codegen_RNEdgeToEdge.dir/react/renderer/components/RNEdgeToEdge/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNEdgeToEdge_autolinked_build/CMakeFiles/react_codegen_RNEdgeToEdge.dir/react/renderer/components/RNEdgeToEdge/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNEdgeToEdge_autolinked_build/CMakeFiles/react_codegen_RNEdgeToEdge.dir/react/renderer/components/RNEdgeToEdge/RNEdgeToEdgeJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNEdgeToEdge_autolinked_build/CMakeFiles/react_codegen_RNEdgeToEdge.dir/react/renderer/components/RNEdgeToEdge/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNEdgeToEdge_autolinked_build/CMakeFiles/react_codegen_RNEdgeToEdge.dir/react/renderer/components/RNEdgeToEdge/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/rngesturehandler_codegenJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/rngesturehandler_codegen-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNHapticFeedbackSpec_autolinked_build/CMakeFiles/react_codegen_RNHapticFeedbackSpec.dir/RNHapticFeedbackSpec-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNHapticFeedbackSpec_autolinked_build/CMakeFiles/react_codegen_RNHapticFeedbackSpec.dir/react/renderer/components/RNHapticFeedbackSpec/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNHapticFeedbackSpec_autolinked_build/CMakeFiles/react_codegen_RNHapticFeedbackSpec.dir/react/renderer/components/RNHapticFeedbackSpec/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNHapticFeedbackSpec_autolinked_build/CMakeFiles/react_codegen_RNHapticFeedbackSpec.dir/react/renderer/components/RNHapticFeedbackSpec/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNHapticFeedbackSpec_autolinked_build/CMakeFiles/react_codegen_RNHapticFeedbackSpec.dir/react/renderer/components/RNHapticFeedbackSpec/RNHapticFeedbackSpecJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNHapticFeedbackSpec_autolinked_build/CMakeFiles/react_codegen_RNHapticFeedbackSpec.dir/react/renderer/components/RNHapticFeedbackSpec/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNHapticFeedbackSpec_autolinked_build/CMakeFiles/react_codegen_RNHapticFeedbackSpec.dir/react/renderer/components/RNHapticFeedbackSpec/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNKeychainSpec_autolinked_build/CMakeFiles/react_codegen_RNKeychainSpec.dir/RNKeychainSpec-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNKeychainSpec_autolinked_build/CMakeFiles/react_codegen_RNKeychainSpec.dir/react/renderer/components/RNKeychainSpec/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNKeychainSpec_autolinked_build/CMakeFiles/react_codegen_RNKeychainSpec.dir/react/renderer/components/RNKeychainSpec/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNKeychainSpec_autolinked_build/CMakeFiles/react_codegen_RNKeychainSpec.dir/react/renderer/components/RNKeychainSpec/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNKeychainSpec_autolinked_build/CMakeFiles/react_codegen_RNKeychainSpec.dir/react/renderer/components/RNKeychainSpec/RNKeychainSpecJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNKeychainSpec_autolinked_build/CMakeFiles/react_codegen_RNKeychainSpec.dir/react/renderer/components/RNKeychainSpec/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNKeychainSpec_autolinked_build/CMakeFiles/react_codegen_RNKeychainSpec.dir/react/renderer/components/RNKeychainSpec/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/NitroModulesSpec_autolinked_build/CMakeFiles/react_codegen_NitroModulesSpec.dir/NitroModulesSpec-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/NitroModulesSpec_autolinked_build/CMakeFiles/react_codegen_NitroModulesSpec.dir/react/renderer/components/NitroModulesSpec/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/NitroModulesSpec_autolinked_build/CMakeFiles/react_codegen_NitroModulesSpec.dir/react/renderer/components/NitroModulesSpec/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/NitroModulesSpec_autolinked_build/CMakeFiles/react_codegen_NitroModulesSpec.dir/react/renderer/components/NitroModulesSpec/NitroModulesSpecJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/NitroModulesSpec_autolinked_build/CMakeFiles/react_codegen_NitroModulesSpec.dir/react/renderer/components/NitroModulesSpec/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/NitroModulesSpec_autolinked_build/CMakeFiles/react_codegen_NitroModulesSpec.dir/react/renderer/components/NitroModulesSpec/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/NitroModulesSpec_autolinked_build/CMakeFiles/react_codegen_NitroModulesSpec.dir/react/renderer/components/NitroModulesSpec/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/pagerview_autolinked_build/CMakeFiles/react_codegen_pagerview.dir/pagerview-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/pagerview_autolinked_build/CMakeFiles/react_codegen_pagerview.dir/react/renderer/components/pagerview/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/pagerview_autolinked_build/CMakeFiles/react_codegen_pagerview.dir/react/renderer/components/pagerview/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/pagerview_autolinked_build/CMakeFiles/react_codegen_pagerview.dir/react/renderer/components/pagerview/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/pagerview_autolinked_build/CMakeFiles/react_codegen_pagerview.dir/react/renderer/components/pagerview/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/pagerview_autolinked_build/CMakeFiles/react_codegen_pagerview.dir/react/renderer/components/pagerview/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/pagerview_autolinked_build/CMakeFiles/react_codegen_pagerview.dir/react/renderer/components/pagerview/pagerviewJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnpermissions_autolinked_build/CMakeFiles/react_codegen_rnpermissions.dir/react/renderer/components/rnpermissions/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnpermissions_autolinked_build/CMakeFiles/react_codegen_rnpermissions.dir/react/renderer/components/rnpermissions/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnpermissions_autolinked_build/CMakeFiles/react_codegen_rnpermissions.dir/react/renderer/components/rnpermissions/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnpermissions_autolinked_build/CMakeFiles/react_codegen_rnpermissions.dir/react/renderer/components/rnpermissions/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnpermissions_autolinked_build/CMakeFiles/react_codegen_rnpermissions.dir/react/renderer/components/rnpermissions/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnpermissions_autolinked_build/CMakeFiles/react_codegen_rnpermissions.dir/react/renderer/components/rnpermissions/rnpermissionsJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnpermissions_autolinked_build/CMakeFiles/react_codegen_rnpermissions.dir/rnpermissions-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/react/renderer/components/rnreanimated/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/react/renderer/components/rnreanimated/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/react/renderer/components/rnreanimated/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/react/renderer/components/rnreanimated/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/react/renderer/components/rnreanimated/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/react/renderer/components/rnreanimated/rnreanimatedJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/rnreanimated-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/TurboHapticsSpec_autolinked_build/CMakeFiles/react_codegen_TurboHapticsSpec.dir/TurboHapticsSpec-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/TurboHapticsSpec_autolinked_build/CMakeFiles/react_codegen_TurboHapticsSpec.dir/react/renderer/components/TurboHapticsSpec/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/TurboHapticsSpec_autolinked_build/CMakeFiles/react_codegen_TurboHapticsSpec.dir/react/renderer/components/TurboHapticsSpec/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/TurboHapticsSpec_autolinked_build/CMakeFiles/react_codegen_TurboHapticsSpec.dir/react/renderer/components/TurboHapticsSpec/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/TurboHapticsSpec_autolinked_build/CMakeFiles/react_codegen_TurboHapticsSpec.dir/react/renderer/components/TurboHapticsSpec/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/TurboHapticsSpec_autolinked_build/CMakeFiles/react_codegen_TurboHapticsSpec.dir/react/renderer/components/TurboHapticsSpec/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/TurboHapticsSpec_autolinked_build/CMakeFiles/react_codegen_TurboHapticsSpec.dir/react/renderer/components/TurboHapticsSpec/TurboHapticsSpecJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnviewshot_autolinked_build/CMakeFiles/react_codegen_rnviewshot.dir/react/renderer/components/rnviewshot/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnviewshot_autolinked_build/CMakeFiles/react_codegen_rnviewshot.dir/react/renderer/components/rnviewshot/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnviewshot_autolinked_build/CMakeFiles/react_codegen_rnviewshot.dir/react/renderer/components/rnviewshot/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnviewshot_autolinked_build/CMakeFiles/react_codegen_rnviewshot.dir/react/renderer/components/rnviewshot/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnviewshot_autolinked_build/CMakeFiles/react_codegen_rnviewshot.dir/react/renderer/components/rnviewshot/States.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnviewshot_autolinked_build/CMakeFiles/react_codegen_rnviewshot.dir/react/renderer/components/rnviewshot/rnviewshotJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/rnviewshot_autolinked_build/CMakeFiles/react_codegen_rnviewshot.dir/rnviewshot-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNCWebViewSpec_autolinked_build/CMakeFiles/react_codegen_RNCWebViewSpec.dir/RNCWebViewSpec-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNCWebViewSpec_autolinked_build/CMakeFiles/react_codegen_RNCWebViewSpec.dir/react/renderer/components/RNCWebViewSpec/ComponentDescriptors.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNCWebViewSpec_autolinked_build/CMakeFiles/react_codegen_RNCWebViewSpec.dir/react/renderer/components/RNCWebViewSpec/EventEmitters.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNCWebViewSpec_autolinked_build/CMakeFiles/react_codegen_RNCWebViewSpec.dir/react/renderer/components/RNCWebViewSpec/Props.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNCWebViewSpec_autolinked_build/CMakeFiles/react_codegen_RNCWebViewSpec.dir/react/renderer/components/RNCWebViewSpec/RNCWebViewSpecJSI-generated.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNCWebViewSpec_autolinked_build/CMakeFiles/react_codegen_RNCWebViewSpec.dir/react/renderer/components/RNCWebViewSpec/ShadowNodes.cpp.o",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "/Users/ibrahim/repos/rainbow/android/app/.cxx/RelWithDebInfo/18525j6z/x86/RNCWebViewSpec_autolinked_build/CMakeFiles/react_codegen_RNCWebViewSpec.dir/react/renderer/components/RNCWebViewSpec/States.cpp.o",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "SHARED_LIBRARY"
+}
