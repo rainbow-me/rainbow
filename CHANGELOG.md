@@ -25,13 +25,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Added
 
-- Polymarket fixes and Android implementation
+- Polymarket fixes and Android implementation (https://github.com/rainbow-me/rainbow/pull/6961)
 
 ## [2.0.15](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.15)
 
 ### Added
 
-- Polymarket on iOS
+- Polymarket on iOS (https://github.com/rainbow-me/rainbow/pull/6961)
 
 ## [2.0.14](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.14)
 
