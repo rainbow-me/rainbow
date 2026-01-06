@@ -2,6 +2,7 @@ import { memo, useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Text, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarketLiveGame';
@@ -16,6 +17,7 @@ import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { roundWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
+import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { formatTimestamp, toUnixTime } from '@/worklets/dates';
 import { ImgixImage } from '@/components/images';
 
@@ -27,6 +29,7 @@ export const HEIGHT = 176;
 type BetCellData = {
   label: string;
   odds: string;
+  outcomeTokenId?: string;
 };
 
 type BetRow = {
@@ -125,6 +128,7 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
 const BetCell = memo(function BetCell({ data, backgroundColor }: { data: BetCellData; backgroundColor?: string }) {
   const fillTertiary = useBackgroundColor('fillTertiary');
   const hasLabel = Boolean(data.label);
+  const tokenId = data.outcomeTokenId ? getPolymarketTokenId(data.outcomeTokenId, 'sell') : undefined;
   return (
     <View style={[styles.betCell, { backgroundColor: backgroundColor ?? fillTertiary }]}>
       {hasLabel ? (
@@ -132,9 +136,22 @@ const BetCell = memo(function BetCell({ data, backgroundColor }: { data: BetCell
           {data.label}
         </Text>
       ) : null}
-      <Text align="center" color="label" size="12pt" weight="heavy" numberOfLines={1}>
-        {data.odds}
-      </Text>
+      {tokenId ? (
+        <LiveTokenText
+          align="center"
+          color="label"
+          size="12pt"
+          weight="heavy"
+          numberOfLines={1}
+          tokenId={tokenId}
+          initialValue={data.odds}
+          selector={token => formatOdds(token.price)}
+        />
+      ) : (
+        <Text align="center" color="label" size="12pt" weight="heavy" numberOfLines={1}>
+          {data.odds}
+        </Text>
+      )}
     </View>
   );
 });
@@ -213,6 +230,11 @@ function buildBetRows(event: PolymarketEvent, teamLabels: [string, string]): { t
   const spreadBottomOdds = getOutcomePrice(spreadLine?.market, spreadOutcomeIndexes.bottom);
   const totalsTopOdds = getOutcomePrice(totalsLine?.market, 0);
   const totalsBottomOdds = getOutcomePrice(totalsLine?.market, 1);
+  const moneylineTokenIds = getMoneylineTokenIds(moneylineGroup, teamLabels);
+  const spreadTopTokenId = getOutcomeTokenId(spreadLine?.market, spreadOutcomeIndexes.top);
+  const spreadBottomTokenId = getOutcomeTokenId(spreadLine?.market, spreadOutcomeIndexes.bottom);
+  const totalsTopTokenId = getOutcomeTokenId(totalsLine?.market, 0);
+  const totalsBottomTokenId = getOutcomeTokenId(totalsLine?.market, 1);
 
   const hasSpread = Boolean(spreadLine && (spreadTopOdds || spreadBottomOdds));
   const hasMoneyline = Boolean(moneyline.top || moneyline.bottom);
@@ -225,10 +247,12 @@ function buildBetRows(event: PolymarketEvent, teamLabels: [string, string]): { t
     top.spread = {
       label: formatSpreadLine(spreadLineValue, spreadOutcomeIndexes.top),
       odds: formatOdds(spreadTopOdds),
+      outcomeTokenId: spreadTopTokenId,
     };
     bottom.spread = {
       label: formatSpreadLine(spreadLineValue, spreadOutcomeIndexes.bottom),
       odds: formatOdds(spreadBottomOdds),
+      outcomeTokenId: spreadBottomTokenId,
     };
   }
 
@@ -236,10 +260,12 @@ function buildBetRows(event: PolymarketEvent, teamLabels: [string, string]): { t
     top.moneyline = {
       label: '',
       odds: formatOdds(moneyline.top),
+      outcomeTokenId: moneylineTokenIds.top,
     };
     bottom.moneyline = {
       label: '',
       odds: formatOdds(moneyline.bottom),
+      outcomeTokenId: moneylineTokenIds.bottom,
     };
   }
 
@@ -247,10 +273,12 @@ function buildBetRows(event: PolymarketEvent, teamLabels: [string, string]): { t
     top.total = {
       label: formatTotalLabel(totalsLineValue, true),
       odds: formatOdds(totalsTopOdds),
+      outcomeTokenId: totalsTopTokenId,
     };
     bottom.total = {
       label: formatTotalLabel(totalsLineValue, false),
       odds: formatOdds(totalsBottomOdds),
+      outcomeTokenId: totalsBottomTokenId,
     };
   }
 
@@ -303,6 +331,34 @@ function normalize(value: string) {
 function getOutcomePrice(market: PolymarketMarket | undefined, outcomeIndex: number): string | undefined {
   if (!market) return undefined;
   return market.outcomePrices?.[outcomeIndex];
+}
+
+function getOutcomeTokenId(market: PolymarketMarket | undefined, outcomeIndex: number): string | undefined {
+  if (!market) return undefined;
+  return market.clobTokenIds?.[outcomeIndex];
+}
+
+function getMoneylineTokenIds(group: MoneylineGroup | undefined, teamLabels: [string, string]) {
+  if (!group || !group.markets.length) return { top: undefined, bottom: undefined };
+  if (!group.isThreeWay) {
+    const market = group.markets[0];
+    const indexes = getOutcomeIndexes(market, teamLabels);
+    return {
+      top: getOutcomeTokenId(market, indexes.top),
+      bottom: getOutcomeTokenId(market, indexes.bottom),
+    };
+  }
+
+  const teamMarkets = group.markets.filter(market => !isDrawMarket(market));
+  if (!teamMarkets.length) return { top: undefined, bottom: undefined };
+
+  const topMarket = matchMarketToTeam(teamMarkets, teamLabels[0]) ?? teamMarkets[0];
+  const bottomMarket = matchMarketToTeam(teamMarkets, teamLabels[1]) ?? teamMarkets[1] ?? teamMarkets[0];
+
+  return {
+    top: getOutcomeTokenId(topMarket, 0),
+    bottom: getOutcomeTokenId(bottomMarket, 0),
+  };
 }
 
 function getOutcomeIndexes(market: PolymarketMarket | undefined, teamLabels: [string, string]) {
