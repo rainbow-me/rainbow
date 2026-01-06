@@ -24,6 +24,7 @@
       "tab_savings": "बचत",
       "tab_showcase": "शोकेस",
       "tab_perps": "परप्स",
+      "tab_polymarket": "Predictions",
       "tab_points": "अंक",
       "tab_positions": "पोजीशन्स",
       "tab_rewards": "इनाम",
@@ -757,9 +758,9 @@
         },
         "about": {
           "title": "के बारे में",
-          "created_by": "Creator",
-          "protocol": "Protocol",
-          "created_via": "Created Via",
+          "created_by": "निर्माता",
+          "protocol": "प्रोटोकॉल",
+          "created_via": "के माध्यम से बनाया गया",
           "what_is": "%{assetName} क्या है?"
         },
         "details": {
@@ -1618,7 +1619,7 @@
       },
       "feature_card": {
         "title": "परप्स",
-        "subtitle": "उच्च जोखिम, उच्च इनाम ट्रेडिंग"
+        "subtitle": "High risk, high reward trading"
       },
       "actions": {
         "fund_wallet": "वॉलेट फंड करें",
@@ -1647,7 +1648,8 @@
         "confirm_button_over_balance_text": "अपर्याप्त धन",
         "confirm_button_error_text": "कोट त्रुटि",
         "quote_error": "􀇿 कोई भाव उपलब्ध नहीं है",
-        "insufficient_balance": "􀫲 अपर्याप्त धन"
+        "insufficient_balance": "􀫲 अपर्याप्त धन",
+        "insufficient_gas": "Insufficient Gas"
       },
       "withdraw": {
         "title": "निकासी",
@@ -3744,6 +3746,136 @@
             ]
           }
         }
+      }
+    },
+    "predictions": {
+      "feature_card": {
+        "title": "Predictions",
+        "subtitle": "Bet on real-world events"
+      },
+      "explain_sheet": {
+        "next": "अगला",
+        "get_started": "Get started",
+        "title": "Predictions",
+        "steps": {
+          "step_1": {
+            "title": "Predictions",
+            "subtitle_parts": [
+              "Try a new way to follow what's happening in the markets. Powered by Polymarket"
+            ]
+          },
+          "step_2": {
+            "title": "Bet on Almost Anything",
+            "subtitle_parts": [
+              "Pick a market you like, place your position, and see where it goes."
+            ]
+          },
+          "step_3": {
+            "title": "Choose Your Outcome",
+            "subtitle_parts": [
+              "Each market has clear options. Pick the one you believe in and track how it performs."
+            ]
+          }
+        }
+      },
+      "navbar": {
+        "title": "Predictions"
+      },
+      "new_position": {
+        "title": "Place Bet",
+        "amount": "राशि",
+        "chance_of_outcome": "Chance of Outcome",
+        "to_win": "To Win",
+        "spread": "Spread",
+        "hold_to_place_bet": "Hold to Place Bet",
+        "placing_bet": "Placing Bet...",
+        "confirming_order": "Confirming Order...",
+        "deposit_funds": "Deposit Funds",
+        "average_price": "Average Price"
+      },
+      "manage_position": {
+        "hold_to_claim": "दावे के लिए दबाए रखें",
+        "hold_to_burn": "Hold to Burn",
+        "hold_to_cash_out": "Hold to Cash Out",
+        "claiming": "Claiming...",
+        "burning": "Burning...",
+        "cashing_out": "Cashing Out...",
+        "confirming_order": "Confirming Order...",
+        "position_value": "स्थिति का मूल्य"
+      },
+      "cash_out": {
+        "title": "Cash Out Bet",
+        "current_price": "वर्तमान मूल्य",
+        "average_price": "Average Price",
+        "profit_loss": "Profit / Loss",
+        "receive": "प्राप्त करें",
+        "spread": "Spread",
+        "cash_out": "Cash Out"
+      },
+      "search": {
+        "placeholder": "Search for prediction markets",
+        "input_placeholder": "बाज़ार खोजें",
+        "no_results": "No results found"
+      },
+      "event": {
+        "outcomes": "Outcomes",
+        "about": "के बारे में",
+        "show_rules": "Show Rules",
+        "rules": "Rules",
+        "end_date": "End Date",
+        "resolution_source": "Res. Source",
+        "category": "Category",
+        "hide_resolved": "Hide Resolved",
+        "show_resolved": "Show Resolved",
+        "open_positions": "खुली स्थितियां",
+        "market_resolved": "MARKET RESOLVED",
+        "volume_suffix": "वॉल्यूम",
+        "show_less": "कम दिखाएँ",
+        "show_more": "Show More",
+        "resolved": "Resolved"
+      },
+      "position": {
+        "outcome": "Outcome",
+        "odds": "Odds",
+        "bet": "Bet",
+        "won": "Won",
+        "to_win": "To Win",
+        "claim": "दावा करें",
+        "burn": "Burn",
+        "cash_out": "Cash Out",
+        "no_open_positions": "No open positions",
+        "won_badge": "WON",
+        "lost_badge": "LOST",
+        "learn_more": "Learn more about Predictions"
+      },
+      "tabs": {
+        "browse": "Browse",
+        "portfolio": "Portfolio"
+      },
+      "market": {
+        "buy_outcome": "Buy %{outcome}"
+      },
+      "bet_types": {
+        "winner": "Winner",
+        "spreads": "Spreads",
+        "totals": "Totals",
+        "other": "अन्य"
+      },
+      "sports": {
+        "vs": "VS",
+        "live": "LIVE",
+        "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}"
+      },
+      "outcomes": {
+        "yes": "हां",
+        "yes_badge": "YES",
+        "no_badge": "NO"
+      },
+      "errors": {
+        "title": "त्रुटि",
+        "failed_to_place_bet": "Failed to place bet. Please try again.",
+        "failed_to_cash_out": "Failed to cash out position. Please try again.",
+        "failed_to_claim": "Failed to claim position. Please try again."
       }
     }
   }
