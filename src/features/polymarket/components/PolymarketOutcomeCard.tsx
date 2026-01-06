@@ -48,7 +48,7 @@ export const PolymarketOutcomeCard = memo(function PolymarketOutcomeCard({
             {outcomeSubtitle}
           </Text>
         </Box>
-        {groupItemTitle && <OutcomeBadge outcome={outcome} outcomeIndex={outcomeIndex} />}
+        {groupItemTitle && <OutcomeBadge outcome={outcome} outcomeIndex={outcomeIndex} color={accentColor} />}
       </Box>
     </Box>
   );
