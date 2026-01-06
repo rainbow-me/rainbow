@@ -73,6 +73,7 @@ export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap' | '
   quote: QuoteTypeMap[T];
   address?: Address;
   additionalParams?: AdditionalParamsMap[T];
+  atomic?: boolean;
 }
 
 export interface RapUnlockActionParameters {
