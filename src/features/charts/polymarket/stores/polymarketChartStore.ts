@@ -1,5 +1,5 @@
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
-import { isDrawMarket } from '@/features/polymarket/screens/polymarket-event-screen/SportsEventMarkets';
+import { isDrawMarket } from '@/features/polymarket/utils/sports';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam';
 import { isThreeWayMoneyline } from '@/features/polymarket/utils/marketClassification';
