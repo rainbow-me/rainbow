@@ -164,6 +164,13 @@ export interface ActionProps<T extends RapActionTypes> {
   gasFeeParamsBySpeed: SwapsGasFeeParamsBySpeed | GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
 }
 
+export interface PrepareActionProps<T extends RapActionTypes> {
+  parameters: RapActionParameterMap[T];
+  wallet: Signer;
+  chainId: ChainId;
+  quote: Quote | CrosschainQuote;
+}
+
 export interface WalletExecuteRapProps {
   rapActionParameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimBridge' | 'claimClaimable'>;
   type: RapTypes;

@@ -2,7 +2,8 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
-import { erc20Abi, erc721Abi, type Hash, type Address } from 'viem';
+import { erc20Abi, erc721Abi, type Hash, type Address, type Hex } from 'viem';
+import type { BatchCall } from '@rainbow-me/delegation';
 
 import { getProvider, toHex } from '@/handlers/web3';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -12,7 +13,7 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
 import { ETH_ADDRESS, gasUnits } from '@/references';
-import { ActionProps, RapActionResult } from '../references';
+import { ActionProps, PrepareActionProps, RapActionResult, RapUnlockActionParameters } from '../references';
 
 import { overrideWithFastSpeedIfNeeded } from './../utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
@@ -102,6 +103,53 @@ export const populateApprove = async ({
   }
 };
 
+export const prepareUnlock = async ({ parameters }: PrepareActionProps<'unlock'>): Promise<{ call: BatchCall | null }> => {
+  const tx = await populateApprove({
+    owner: parameters.fromAddress,
+    tokenAddress: parameters.assetToUnlock.address as Address,
+    spender: parameters.contractAddress,
+    chainId: parameters.chainId,
+    amount: parameters.amount,
+  });
+  if (!tx?.data) return { call: null };
+  return {
+    call: {
+      to: parameters.assetToUnlock.address as Address,
+      value: toHex(tx?.value ?? 0),
+      data: tx.data as Hex,
+    },
+  };
+};
+
+function buildUnlockTransaction(
+  parameters: RapUnlockActionParameters & { data: string; value?: string },
+  gasParams: TransactionGasParams | TransactionLegacyGasParams,
+  nonce?: number
+): Omit<NewTransaction, 'hash'> {
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
+  const { assetToUnlock, chainId, data, value } = parameters;
+
+  return {
+    asset: {
+      ...assetToUnlock,
+      network: chainsName[assetToUnlock.chainId],
+      colors: assetToUnlock.colors as TokenColors,
+    } as ParsedAsset,
+    data,
+    value,
+    changes: [],
+    from: parameters.fromAddress,
+    to: assetToUnlock.address,
+    network: chainsName[chainId],
+    chainId,
+    nonce,
+    status: TransactionStatus.pending,
+    type: 'approve',
+    approvalAmount: parameters.amount,
+    ...gasParams,
+  } as Omit<NewTransaction, 'hash'>;
+}
+
 export const estimateERC721Approval = async ({
   owner,
   tokenAddress,
@@ -178,7 +226,7 @@ export const executeApprove = async ({
     // EIP-1559 like networks
     maxFeePerGas: gasParams.maxFeePerGas,
     maxPriorityFeePerGas: gasParams.maxPriorityFeePerGas,
-    nonce: nonce ? toHex(nonce.toString()) : undefined,
+    nonce: nonce ? toHex(nonce) : undefined,
   });
 };
 
@@ -242,31 +290,13 @@ export const unlock = async ({
 
   if (!approval) throw new RainbowError('[raps/unlock]: error executeApprove');
 
-  const chainsName = useBackendNetworksStore.getState().getChainsName();
-
-  const transaction = {
-    asset: {
-      ...assetToUnlock,
-      network: chainsName[assetToUnlock.chainId],
-      colors: assetToUnlock.colors as TokenColors,
-    } as ParsedAsset,
-    data: approval.data,
-    value: approval.value?.toString(),
-    changes: [],
-    from: parameters.fromAddress,
-    to: assetAddress,
+  const transaction: NewTransaction = {
+    ...buildUnlockTransaction({ ...parameters, data: approval.data, value: approval.value }, gasParamsToUse, approval.nonce),
     hash: approval.hash as Hash,
-    network: chainsName[chainId],
-    chainId: approval.chainId,
-    nonce: approval.nonce,
-    status: TransactionStatus.pending,
-    type: 'approve',
-    approvalAmount: parameters.amount,
-    ...gasParams,
-  } satisfies NewTransaction;
+  };
 
   addNewTransaction({
-    address: parameters.fromAddress as Address,
+    address: parameters.fromAddress,
     chainId: approval.chainId,
     transaction,
   });
