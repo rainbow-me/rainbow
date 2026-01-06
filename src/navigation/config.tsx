@@ -654,7 +654,7 @@ export const tokenLauncherConfig: PartialNavigatorConfigOptions = {
   }),
 };
 
-export const kingOfTheHillExplainSheetConfig = {
+export const learnSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,

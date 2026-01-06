@@ -1,11 +1,11 @@
 import { debounce } from 'lodash';
-import { PersistStorage, persist, subscribeWithSelector } from 'zustand/middleware';
+import { PersistOptions, PersistStorage, persist, subscribeWithSelector } from 'zustand/middleware';
 import { createWithEqualityFn } from 'zustand/traditional';
 import { IS_IOS, IS_TEST } from '@/env';
 import { RainbowError, logger } from '@/logger';
 import { time } from '@/utils/time';
 import { rainbowStorage } from './rainbowStorage';
-import { LazyPersistParams, RainbowPersistConfig, RainbowStateCreator, RainbowStore } from './types';
+import { LazyPersistParams, OptionallyPersistedRainbowStore, RainbowPersistConfig, RainbowStateCreator, RainbowStore } from './types';
 import { defaultDeserializeState, defaultSerializeState, omitStoreMethods } from './utils/persistUtils';
 
 /**
@@ -35,23 +35,42 @@ export function createRainbowStore<S, PersistedState extends Partial<S> = Partia
 export function createRainbowStore<S, PersistedState extends Partial<S> = Partial<S>>(
   createState: RainbowStateCreator<S>,
   persistConfig?: RainbowPersistConfig<S, PersistedState>
+): OptionallyPersistedRainbowStore<S, PersistedState>;
+
+/**
+ * Creates a Rainbow store with optional persistence functionality.
+ * @param createState - The state creator function for the Rainbow store.
+ * @param persistConfig - The configuration options for the persistable Rainbow store.
+ * @returns A Zustand store with the specified state and optional persistence.
+ */
+export function createRainbowStore<S, PersistedState extends Partial<S> = Partial<S>>(
+  createState: RainbowStateCreator<S>,
+  persistConfig?: RainbowPersistConfig<S, PersistedState>
 ): RainbowStore<S> | RainbowStore<S, PersistedState> {
   if (!persistConfig) return createWithEqualityFn<S>()(subscribeWithSelector(createState), Object.is);
 
-  const { persistStorage, version } = createPersistStorage<S, PersistedState>(persistConfig);
+  const storageConfig = createPersistStorage<S, PersistedState>(persistConfig);
 
   return createWithEqualityFn<S>()(
-    subscribeWithSelector(
-      persist(createState, {
-        migrate: persistConfig.migrate,
-        name: persistConfig.storageKey,
-        onRehydrateStorage: persistConfig.onRehydrateStorage,
-        storage: persistStorage,
-        version,
-      })
-    ),
+    subscribeWithSelector(persist(createState, buildPersistOptions(persistConfig, storageConfig))),
     Object.is
   );
+}
+
+function buildPersistOptions<S, PersistedState extends Partial<S>>(
+  options: RainbowPersistConfig<S, PersistedState> & { storageKey: string },
+  storageConfig: ReturnType<typeof createPersistStorage<S, PersistedState>>
+): PersistOptions<S, PersistedState> {
+  const persistConfig: PersistOptions<S, PersistedState> = {
+    name: options.storageKey,
+    onRehydrateStorage: options.onRehydrateStorage,
+    storage: storageConfig.persistStorage,
+    version: storageConfig.version,
+  };
+
+  if (options.migrate !== undefined) persistConfig.migrate = options.migrate;
+
+  return persistConfig;
 }
 
 const DEFAULT_PERSIST_THROTTLE_MS = IS_TEST ? 0 : IS_IOS ? time.seconds(3) : time.seconds(5);

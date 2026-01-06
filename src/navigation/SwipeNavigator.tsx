@@ -672,7 +672,7 @@ export function SwipeNavigator() {
         </MainListProvider>
       </BrowserTabBarContextProvider>
 
-      <TestnetToast chainId={chainId} />
+      {/* <TestnetToast chainId={chainId} /> */}
       <PendingTransactionWatcher />
       <MinedTransactionWatcher />
     </FlexItem>

@@ -6,6 +6,7 @@ import { CONTAINER_HEIGHT, DEFAULT_BACKDROP_COLOR, DEFAULT_BACKDROP_OPACITY, DEF
 import { BottomSheetNavigatorContext } from '../contexts/internal';
 import type { BottomSheetDescriptor } from '../types';
 import { IS_ANDROID } from '@/env';
+import { useSharedValue } from 'react-native-reanimated';
 
 interface Props {
   routeKey: string;
@@ -29,6 +30,10 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
   } = options || {};
 
   const ref = useRef<BottomSheet>(null);
+  const containerLayoutState = useSharedValue({
+    height: CONTAINER_HEIGHT,
+    offset: { top: 0, bottom: 0, left: 0, right: 0 },
+  });
 
   const removingRef = useRef(false);
   removingRef.current = removing;
@@ -137,7 +142,6 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
         animateOnMount
         backdropComponent={renderBackdropComponent}
         backgroundComponent={null}
-        containerHeight={CONTAINER_HEIGHT}
         enableContentPanningGesture={enableContentPanningGesture}
         enableHandlePanningGesture={enableHandlePanningGesture}
         enablePanDownToClose={enablePanDownToClose}
@@ -146,6 +150,9 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
         onClose={handleOnClose}
         ref={ref}
         snapPoints={snapPoints}
+        containerLayoutState={containerLayoutState}
+        enableDynamicSizing={false}
+        detached
       >
         <View style={screenContainerStyle}>{render()}</View>
       </BottomSheet>

@@ -7,11 +7,11 @@ import { ETH_ADDRESS, SupportedCurrencyKey, WETH_ADDRESS } from '@/references';
 import { getPlatformClient } from '@/resources/platform/client';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, greaterThan, multiply } from '@/helpers/utilities';
 import { fetchHyperliquidPrices } from './hyperliquidPriceService';
-import { HYPERLIQUID_TOKEN_ID_SUFFIX } from '@/features/perps/constants';
 import Routes, { Route } from '@/navigation/routesNames';
+import { isHyperliquidToken, parseHyperliquidTokenId } from './hyperliquidAdapter';
+import { isPolymarketToken, fetchPolymarketPrices } from '@/state/liveTokens/polymarketAdapter';
 
 const ETH_MAINNET_TOKEN_ID = `${ETH_ADDRESS}:1`;
-const HYPERLIQUID_TOKEN_SUFFIX = `:${HYPERLIQUID_TOKEN_ID_SUFFIX}`;
 
 function convertLegacyTokenIdToTokenId(tokenId: string): string {
   const [tokenAddress, chainId] = tokenId.split('_');
@@ -21,23 +21,6 @@ function convertLegacyTokenIdToTokenId(tokenId: string): string {
 function convertTokenIdToLegacyTokenId(tokenId: string): string {
   const [tokenAddress, chainId] = tokenId.split(':');
   return `${tokenAddress}_${chainId}`;
-}
-
-export function isHyperliquidToken(tokenId: string): boolean {
-  return tokenId.endsWith(HYPERLIQUID_TOKEN_SUFFIX);
-}
-
-/**
- * Parses a Hyperliquid token ID to extract the symbol
- * @param tokenId Hyperliquid token ID (e.g., "ETH:hl")
- * @returns The symbol or null if not a valid Hyperliquid token ID
- */
-export function parseHyperliquidTokenId(tokenId: string): { symbol: string } | null {
-  if (!isHyperliquidToken(tokenId)) {
-    return null;
-  }
-  const symbol = tokenId.slice(0, -HYPERLIQUID_TOKEN_SUFFIX.length);
-  return { symbol };
 }
 
 // Only works for tokens the user owns
@@ -140,10 +123,13 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute, currency 
   const ethVariants: string[] = [];
   const hyperliquidTokens: string[] = [];
   const regularTokens: string[] = [];
+  const polymarketTokens: string[] = [];
 
   tokenIds.forEach(tokenId => {
     if (isHyperliquidToken(tokenId)) {
       hyperliquidTokens.push(tokenId);
+    } else if (isPolymarketToken(tokenId)) {
+      polymarketTokens.push(tokenId);
     } else if (isEthVariant(tokenId)) {
       ethVariants.push(tokenId);
     } else {
@@ -154,7 +140,7 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute, currency 
   // Only subscribe to mainnet ETH if we have any ETH variants
   if (ethVariants.length > 0) regularTokens.push(ETH_MAINNET_TOKEN_ID);
 
-  const [regularTokensResponse, hyperliquidPrices] = await Promise.all([
+  const regularTokensPromise =
     regularTokens.length > 0
       ? getPlatformClient().get<LiveTokensResponse>('/prices/GetCurrentPrices', {
           params: {
@@ -162,7 +148,9 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute, currency 
             currency,
           },
         })
-      : null,
+      : null;
+
+  const hyperliquidPricesPromise =
     hyperliquidTokens.length > 0
       ? fetchHyperliquidPrices(
           hyperliquidTokens
@@ -172,7 +160,14 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute, currency 
             })
             .filter(Boolean)
         )
-      : null,
+      : null;
+
+  const polymarketPricesPromise = polymarketTokens.length > 0 ? fetchPolymarketPrices(polymarketTokens) : null;
+
+  const [regularTokensResponse, hyperliquidPrices, polymarketPrices] = await Promise.all([
+    regularTokensPromise,
+    hyperliquidPricesPromise,
+    polymarketPricesPromise,
   ]);
 
   const result: LiveTokensData = {};
@@ -200,6 +195,12 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute, currency 
   // Add Hyperliquid prices to result
   if (hyperliquidPrices) {
     Object.assign(result, hyperliquidPrices);
+    hasResult = true;
+  }
+
+  // Add Polymarket prices to result
+  if (polymarketPrices) {
+    Object.assign(result, polymarketPrices);
     hasResult = true;
   }
 

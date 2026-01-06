@@ -133,7 +133,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
   wallet: Signer,
   type: T,
   parameters: RapSwapActionParameters<T>
-): Promise<{ nonce: number | undefined; errorMessage: string | null }> => {
+): Promise<{ errorMessage: string | null; hash: string | null; nonce: number | undefined }> => {
   // NOTE: We don't care to track claimBridge raps
   const rap = PERF_TRACKING_EXEMPTIONS.includes(type)
     ? await createSwapRapByType(type, parameters)
@@ -148,7 +148,9 @@ export const walletExecuteRap = async <T extends RapTypes>(
   const { actions } = rap;
   const rapName = getRapFullName(rap.actions);
   let nonce = parameters?.nonce;
-  let errorMessage = null;
+  let errorMessage: string | null = null;
+  let hash: string | null = null;
+
   if (actions.length) {
     const firstAction = actions[0];
     const actionParams = {
@@ -165,10 +167,11 @@ export const walletExecuteRap = async <T extends RapTypes>(
     const { baseNonce, errorMessage: error, hash: firstHash } = await executeAction(actionParams);
     const shouldDelayForNodeAck = parameters.chainId !== ChainId.mainnet || IS_TEST;
 
+    hash = firstHash ?? null;
+
     if (typeof baseNonce === 'number') {
-      let latestHash = firstHash;
       for (let index = 1; index < actions.length; index++) {
-        latestHash && shouldDelayForNodeAck && (await delay(getNodeAckDelay(parameters.chainId)));
+        hash && shouldDelayForNodeAck && (await delay(getNodeAckDelay(parameters.chainId)));
 
         const action = actions[index];
         const actionParams = {
@@ -186,12 +189,13 @@ export const walletExecuteRap = async <T extends RapTypes>(
         if (!errorMessage && error) {
           errorMessage = error;
         }
-        latestHash = nextHash;
+        hash = nextHash ?? hash;
       }
       nonce = baseNonce + actions.length - 1;
     } else {
       errorMessage = error;
+      hash = null;
     }
   }
-  return { nonce, errorMessage };
+  return { errorMessage, hash, nonce };
 };
