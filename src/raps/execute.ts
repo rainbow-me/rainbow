@@ -1,9 +1,9 @@
 /* eslint-disable no-async-promise-executor */
 /* eslint-disable no-promise-executor-return */
 import { Signer } from '@ethersproject/abstract-signer';
+
 import { ChainId } from '@/state/backendNetworks/types';
 import { RainbowError, logger } from '@/logger';
-
 import { claim, swap, unlock } from './actions';
 import { crosschainSwap } from './actions/crosschainSwap';
 import { claimBridge } from './actions/claimBridge';
@@ -147,6 +147,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
 
   const { actions } = rap;
   const rapName = getRapFullName(rap.actions);
+
   let nonce = parameters?.nonce;
   let errorMessage: string | null = null;
   let hash: string | null = null;
