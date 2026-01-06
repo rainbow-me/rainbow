@@ -175,6 +175,18 @@ export const SPORT_LEAGUES = {
     sportId: 'tennis',
     color: SPORTS.tennis.color,
   },
+  scop: {
+    name: 'SCOP',
+    fullName: 'SCOP',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
+  acn: {
+    name: 'ACN',
+    fullName: 'ACN',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
 } as const;
 
 export const LEAGUE_SELECTOR_ORDER: LeagueId[] = ['nfl', 'nba', 'cfb', 'cbb', 'epl', 'nhl', 'atp', 'ufc', 'cs2', 'crint'];

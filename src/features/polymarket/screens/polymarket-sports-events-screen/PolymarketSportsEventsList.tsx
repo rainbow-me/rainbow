@@ -25,6 +25,7 @@ import Routes from '@/navigation/routesNames';
 
 const ITEM_GAP = 8;
 const EMPTY_EVENTS: PolymarketEvent[] = [];
+const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 50, minimumViewTime: 100 };
 
 type SportsEventsListProps = {
   listRef?: RefObject<Animated.FlatList<SportsListItem> | null>;
@@ -56,14 +57,18 @@ type SectionSeparatorItem = {
   key: string;
 };
 
-export type SportsListItem = EventItem | SectionHeaderItem | LeagueHeaderItem | SectionSeparatorItem;
+type LeagueSeparatorItem = {
+  type: 'league-separator';
+  key: string;
+};
+
+export type SportsListItem = EventItem | SectionHeaderItem | LeagueHeaderItem | SectionSeparatorItem | LeagueSeparatorItem;
 
 export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsList({ listRef, onScroll }: SportsEventsListProps) {
   const safeAreaInsets = useSafeAreaInsets();
   const events = usePolymarketSportsEventsStore(state => state.getData() ?? EMPTY_EVENTS);
   const selectedLeagueId = usePolymarketSportsEventsStore(state => state.selectedLeagueId);
   const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading'));
-  const viewabilityConfigRef = useRef<ViewabilityConfig>({ itemVisiblePercentThreshold: 50, minimumViewTime: 100 });
 
   const filteredEvents = useMemo(() => {
     if (!selectedLeagueId || selectedLeagueId === DEFAULT_SPORTS_LEAGUE_KEY) return events;
@@ -76,7 +81,7 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
   const listStyles = useMemo(() => {
     const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
     return {
-      contentContainerStyle: { minHeight: DEVICE_HEIGHT, paddingBottom, paddingHorizontal: 12, paddingTop: ITEM_GAP },
+      contentContainerStyle: { minHeight: DEVICE_HEIGHT, paddingBottom, paddingHorizontal: 12, paddingTop: 28 },
       scrollIndicatorInsets: { bottom: paddingBottom },
     };
   }, [safeAreaInsets.bottom]);
@@ -110,16 +115,17 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
       ListEmptyComponent={isLoading ? <ListLoadingSkeleton /> : <EmptyState />}
       contentContainerStyle={listStyles.contentContainerStyle}
       data={listData}
-      initialNumToRender={6}
+      scrollEnabled={listData.length > 0 && !isLoading}
+      initialNumToRender={10}
       keyExtractor={keyExtractor}
-      maxToRenderPerBatch={6}
+      maxToRenderPerBatch={10}
       onScroll={onScroll}
       onViewableItemsChanged={handleViewableItemsChanged}
       ref={listRef}
       renderItem={renderItem}
       scrollIndicatorInsets={listStyles.scrollIndicatorInsets}
       style={styles.list}
-      viewabilityConfig={viewabilityConfigRef.current}
+      viewabilityConfig={VIEWABILITY_CONFIG}
       windowSize={12}
     />
   );
@@ -141,18 +147,17 @@ const EmptyState = memo(function EmptyState() {
   return (
     <View style={styles.emptyStateContainer}>
       <Text align="center" color="labelSecondary" size="17pt" weight="bold">
-        {i18n.t(i18n.l.predictions.search.no_results)}
+        {i18n.t(i18n.l.predictions.sports.no_games)}
       </Text>
     </View>
   );
 });
 
 const SectionHeader = memo(function SectionHeader({ title, isLive }: { title: string; isLive?: boolean }) {
-  const liveIndicatorColor = useForegroundColor('red');
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderContent}>
-        {isLive ? <View style={[styles.liveIndicator, { backgroundColor: liveIndicatorColor }]} /> : null}
+        {isLive ? <View style={[styles.liveIndicator, { backgroundColor: '#FF584D' }]} /> : null}
         <Text align="left" color="label" size="20pt" weight="heavy">
           {title}
         </Text>
@@ -181,6 +186,15 @@ const SectionSeparator = memo(function SectionSeparator() {
   );
 });
 
+const LeagueSeparator = memo(function LeagueSeparator() {
+  const separatorColor = useForegroundColor('separatorSecondary');
+  return (
+    <View style={styles.leagueSeparatorContainer}>
+      <View style={[styles.sectionSeparatorLine, { backgroundColor: separatorColor }]} />
+    </View>
+  );
+});
+
 function renderItem({ item }: { item: SportsListItem }) {
   if (item.type === 'header') {
     return <SectionHeader isLive={item.isLive} title={item.title} />;
@@ -190,6 +204,9 @@ function renderItem({ item }: { item: SportsListItem }) {
   }
   if (item.type === 'separator') {
     return <SectionSeparator />;
+  }
+  if (item.type === 'league-separator') {
+    return <LeagueSeparator />;
   }
   return <PolymarketSportEventListItem event={item.event} style={styles.eventItemWrapper} />;
 }
@@ -293,8 +310,12 @@ function pushSection({
   if (!events.length) return;
   items.push({ type: 'header', key: `header-${sectionKey}`, title, isLive: sectionKey === 'live' });
   const leagueGroups = groupEventsByLeague(events);
-  for (const group of leagueGroups) {
+  for (let i = 0; i < leagueGroups.length; i++) {
+    const group = leagueGroups[i];
     if (showLeagueHeaders) {
+      if (i > 0) {
+        items.push({ type: 'league-separator', key: `league-separator-${sectionKey}-${group.key}` });
+      }
       items.push({ type: 'league-header', key: `league-${sectionKey}-${group.key}`, title: group.title, eventSlug: group.events[0].slug });
     }
     items.push(...buildEventItems(group.events, `${sectionKey}-${group.key}`));
@@ -368,10 +389,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   eventItemWrapper: {
-    marginBottom: 8,
+    marginBottom: ITEM_GAP,
   },
   sectionHeader: {
     paddingLeft: 12,
+    marginBottom: 16,
   },
   sectionHeaderContent: {
     flexDirection: 'row',
@@ -386,9 +408,9 @@ const styles = StyleSheet.create({
   leagueHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    paddingTop: 16 - ITEM_GAP + 8,
-    paddingBottom: 16,
+    gap: 4,
+    marginBottom: 12,
+    height: 24,
     paddingLeft: 12,
   },
   skeletonContainer: {
@@ -397,7 +419,6 @@ const styles = StyleSheet.create({
   },
   emptyStateContainer: {
     alignItems: 'center',
-    flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 24,
     paddingVertical: 24,
@@ -409,6 +430,11 @@ const styles = StyleSheet.create({
   sectionSeparatorContainer: {
     paddingTop: 20 - ITEM_GAP,
     paddingBottom: 20,
+    paddingHorizontal: 12,
+  },
+  leagueSeparatorContainer: {
+    paddingTop: 12 - ITEM_GAP / 2,
+    paddingBottom: 12,
     paddingHorizontal: 12,
   },
   sectionSeparatorLine: {

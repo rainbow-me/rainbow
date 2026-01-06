@@ -105,7 +105,7 @@ const LiveGameBoxScore = memo(function LiveGameBoxScore({ gameInfo }: { gameInfo
           <Box width={8} height={8} backgroundColor={'#FF584D'} borderRadius={4} />
           <TextShadow blur={14} shadowOpacity={0.5}>
             <Text align="center" size="15pt" style={{ letterSpacing: 0.8 }} weight="heavy" color={{ custom: '#FF584D' }}>
-              {i18n.t(i18n.l.predictions.sports.live)}
+              {i18n.t(i18n.l.predictions.sports.live).toUpperCase()}
             </Text>
           </TextShadow>
         </Box>

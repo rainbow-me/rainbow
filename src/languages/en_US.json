@@ -3825,9 +3825,10 @@
       },
       "sports": {
         "vs": "VS",
-        "live": "LIVE",
+        "live": "Live",
         "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}",
-        "final": "Final"
+        "final": "Final",
+        "no_games": "No games today or tomorrow"
       },
       "outcomes": {
         "yes": "Yes",

@@ -47,7 +47,7 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
         : undefined,
     [isLive, gameInfo.period, gameInfo.elapsed, gameInfo.score]
   );
-  const subtitle = useMemo(() => (isLive ? undefined : getSubtitle({ event, gameInfo, isLive })), [event, gameInfo, isLive]);
+  const subtitle = useMemo(() => (isLive ? undefined : getSubtitle({ event, gameInfo })), [event, gameInfo, isLive]);
   const betRows = useMemo(() => buildBetRows(event, teamLabels), [event, teamLabels]);
   const showScores = isLive || gameInfo.ended;
 
@@ -66,7 +66,7 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
                 <View style={styles.liveDot} />
                 <TextShadow blur={10} shadowOpacity={0.5}>
                   <Text align="center" size="10pt" style={{ letterSpacing: 0.6 }} weight="heavy" color={{ custom: '#FF584D' }}>
-                    {i18n.t(i18n.l.predictions.sports.live)}
+                    {i18n.t(i18n.l.predictions.sports.live).toUpperCase()}
                   </Text>
                 </TextShadow>
               </View>
@@ -181,16 +181,7 @@ function navigateToEvent(event: PolymarketEvent): void {
   Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { event, eventId: event.id });
 }
 
-function getSubtitle({ event, gameInfo, isLive }: { event: PolymarketEvent; gameInfo: PolymarketEventGameInfo; isLive: boolean }) {
-  if (isLive) {
-    const periodTitle = getPeriodTitle({
-      period: gameInfo.period ?? '',
-      elapsed: gameInfo.elapsed,
-      score: gameInfo.score ?? '',
-    });
-    return `${i18n.t(i18n.l.predictions.sports.live)} • ${periodTitle}`;
-  }
-
+function getSubtitle({ event, gameInfo }: { event: PolymarketEvent; gameInfo: PolymarketEventGameInfo }) {
   if (gameInfo.ended) {
     return i18n.t(i18n.l.predictions.sports.final).toUpperCase();
   }
