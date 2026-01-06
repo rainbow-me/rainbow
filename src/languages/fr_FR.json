@@ -24,6 +24,7 @@
       "tab_savings": "Économies",
       "tab_showcase": "Showcase",
       "tab_perps": "Perps",
+      "tab_polymarket": "Prédictions",
       "tab_points": "Points",
       "tab_positions": "Positions",
       "tab_rewards": "Récompenses",
@@ -1618,7 +1619,7 @@
       },
       "feature_card": {
         "title": "Perps",
-        "subtitle": "Trading à haut risque et haute récompense"
+        "subtitle": "Trading à haut risque, haute récompense"
       },
       "actions": {
         "fund_wallet": "Financer mon portefeuille",
@@ -1647,7 +1648,8 @@
         "confirm_button_over_balance_text": "Fonds insuffisants",
         "confirm_button_error_text": "Erreur de Devis",
         "quote_error": "􀇿 Aucun devis disponible",
-        "insufficient_balance": "􀫲 Fonds insuffisants"
+        "insufficient_balance": "􀫲 Fonds insuffisants",
+        "insufficient_gas": "Gaz insuffisant"
       },
       "withdraw": {
         "title": "Retirer",
@@ -3744,6 +3746,136 @@
             ]
           }
         }
+      }
+    },
+    "predictions": {
+      "feature_card": {
+        "title": "Prédictions",
+        "subtitle": "Bet on real-world events"
+      },
+      "explain_sheet": {
+        "next": "Suivant",
+        "get_started": "Get started",
+        "title": "Prédictions",
+        "steps": {
+          "step_1": {
+            "title": "Prédictions",
+            "subtitle_parts": [
+              "Try a new way to follow what's happening in the markets. Powered by Polymarket"
+            ]
+          },
+          "step_2": {
+            "title": "Bet on Almost Anything",
+            "subtitle_parts": [
+              "Pick a market you like, place your position, and see where it goes."
+            ]
+          },
+          "step_3": {
+            "title": "Choose Your Outcome",
+            "subtitle_parts": [
+              "Each market has clear options. Pick the one you believe in and track how it performs."
+            ]
+          }
+        }
+      },
+      "navbar": {
+        "title": "Prédictions"
+      },
+      "new_position": {
+        "title": "Place Bet",
+        "amount": "Montant",
+        "chance_of_outcome": "Chance of Outcome",
+        "to_win": "To Win",
+        "spread": "Spread",
+        "hold_to_place_bet": "Hold to Place Bet",
+        "placing_bet": "Placing Bet...",
+        "confirming_order": "Confirming Order...",
+        "deposit_funds": "Deposit Funds",
+        "average_price": "Average Price"
+      },
+      "manage_position": {
+        "hold_to_claim": "Tenir pour Réclamer",
+        "hold_to_burn": "Hold to Burn",
+        "hold_to_cash_out": "Hold to Cash Out",
+        "claiming": "Claiming...",
+        "burning": "Burning...",
+        "cashing_out": "Cashing Out...",
+        "confirming_order": "Confirming Order...",
+        "position_value": "Valeur de la position"
+      },
+      "cash_out": {
+        "title": "Cash Out Bet",
+        "current_price": "Prix actuel",
+        "average_price": "Average Price",
+        "profit_loss": "Profit / Loss",
+        "receive": "Recevoir",
+        "spread": "Spread",
+        "cash_out": "Cash Out"
+      },
+      "search": {
+        "placeholder": "Search for prediction markets",
+        "input_placeholder": "Rechercher des marchés",
+        "no_results": "No results found"
+      },
+      "event": {
+        "outcomes": "Outcomes",
+        "about": "À propos",
+        "show_rules": "Show Rules",
+        "rules": "Rules",
+        "end_date": "End Date",
+        "resolution_source": "Res. Source",
+        "category": "Category",
+        "hide_resolved": "Hide Resolved",
+        "show_resolved": "Show Resolved",
+        "open_positions": "Positions ouvertes",
+        "market_resolved": "MARKET RESOLVED",
+        "volume_suffix": "VOL",
+        "show_less": "Afficher moins",
+        "show_more": "Show More",
+        "resolved": "Resolved"
+      },
+      "position": {
+        "outcome": "Outcome",
+        "odds": "Odds",
+        "bet": "Bet",
+        "won": "Won",
+        "to_win": "To Win",
+        "claim": "Réclamer",
+        "burn": "Burn",
+        "cash_out": "Cash Out",
+        "no_open_positions": "No open positions",
+        "won_badge": "WON",
+        "lost_badge": "LOST",
+        "learn_more": "Learn more about Predictions"
+      },
+      "tabs": {
+        "browse": "Browse",
+        "portfolio": "Portfolio"
+      },
+      "market": {
+        "buy_outcome": "Buy %{outcome}"
+      },
+      "bet_types": {
+        "winner": "Winner",
+        "spreads": "Spreads",
+        "totals": "Totals",
+        "other": "Autre"
+      },
+      "sports": {
+        "vs": "VS",
+        "live": "LIVE",
+        "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}"
+      },
+      "outcomes": {
+        "yes": "Yes :)",
+        "yes_badge": "YES",
+        "no_badge": "NO"
+      },
+      "errors": {
+        "title": "Erreur",
+        "failed_to_place_bet": "Failed to place bet. Please try again.",
+        "failed_to_cash_out": "Failed to cash out position. Please try again.",
+        "failed_to_claim": "Failed to claim position. Please try again."
       }
     }
   }
