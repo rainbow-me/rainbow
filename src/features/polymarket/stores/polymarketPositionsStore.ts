@@ -4,10 +4,10 @@ import { time } from '@/utils/time';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { POLYMARKET_DATA_API_URL, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
-import { PolymarketPosition, RawPolymarketPosition, PolymarketTeamInfo } from '@/features/polymarket/types';
+import { PolymarketPosition, RawPolymarketPosition } from '@/features/polymarket/types';
 import { RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketPosition } from '@/features/polymarket/utils/transforms';
-import { fetchTeamsForGame } from '@/features/polymarket/utils/sports';
+import { fetchTeamsForGameMarkets } from '@/features/polymarket/utils/sports';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
 type PolymarketPositionsStoreActions = {
@@ -132,27 +132,4 @@ async function fetchPolymarketMarkets(marketSlugs: string[], abortController: Ab
   );
 
   return responses.flat();
-}
-
-async function fetchTeamsForGameMarkets(markets: RawPolymarketMarket[]): Promise<Map<string, PolymarketTeamInfo[]>> {
-  const teamsMap = new Map<string, PolymarketTeamInfo[]>();
-
-  const gameEventTickers = new Set<string>();
-  for (const market of markets) {
-    const event = market.events[0];
-    if (event.gameId && event.ticker) {
-      gameEventTickers.add(event.ticker);
-    }
-  }
-
-  await Promise.all(
-    Array.from(gameEventTickers).map(async ticker => {
-      const teams = await fetchTeamsForGame(ticker);
-      if (teams) {
-        teamsMap.set(ticker, teams);
-      }
-    })
-  );
-
-  return teamsMap;
 }
