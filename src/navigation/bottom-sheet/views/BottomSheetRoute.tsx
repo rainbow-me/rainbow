@@ -7,7 +7,6 @@ import { BottomSheetNavigatorContext } from '../contexts/internal';
 import type { BottomSheetDescriptor } from '../types';
 import { IS_ANDROID } from '@/env';
 import { useSharedValue } from 'react-native-reanimated';
-import { ContainerLayoutState } from '@gorhom/bottom-sheet/lib/typescript/types';
 
 interface Props {
   routeKey: string;
@@ -31,7 +30,7 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
   } = options || {};
 
   const ref = useRef<BottomSheet>(null);
-  const containerLayoutState = useSharedValue<ContainerLayoutState>({
+  const containerLayoutState = useSharedValue({
     height: CONTAINER_HEIGHT,
     offset: { top: 0, bottom: 0, left: 0, right: 0 },
   });
@@ -151,6 +150,7 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
         onClose={handleOnClose}
         ref={ref}
         snapPoints={snapPoints}
+        containerLayoutState={containerLayoutState}
         enableDynamicSizing={false}
         detached
       >
