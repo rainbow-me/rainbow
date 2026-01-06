@@ -8,6 +8,8 @@ export const RAINBOW_POLYMARKET_FEE_ADDRESS: Address = '0x757758506d6a4F8a433F8B
 export const POLYGON_USDC_ADDRESS: Address = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
 export const POLYGON_USDC_DECIMALS = 6;
 
+export const USD_FEE_PER_TOKEN = '0.01';
+
 export const POLYMARKET_CTF_ADDRESS: Address = '0x4D97DCd97eC945f40cF65F87097ACe5EA0476045';
 export const POLYMARKET_NEG_RISK_ADAPTER_ADDRESS: Address = '0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296';
 
@@ -34,6 +36,10 @@ export const POLYMARKET_BACKGROUND_LIGHT = '#F5F5F7';
 
 export const POLYMARKET_TOKEN_ID_SUFFIX = 'polymarket';
 
+export const NAVIGATOR_FOOTER_HEIGHT = 66;
+// padding distance between bottom most content and the navigator footer
+export const NAVIGATOR_FOOTER_CLEARANCE = 36;
+
 export const POLYMARKET_SPORTS_MARKET_TYPE = {
   SPREADS: 'spreads',
   TOTALS: 'totals',
@@ -51,18 +57,10 @@ export const POLYMARKET_SPORTS_MARKET_TYPE = {
   TENNIS_SET_TOTALS: 'tennis_set_totals',
   TENNIS_FIRST_SET_WINNER: 'tennis_first_set_winner',
   TENNIS_FIRST_SET_TOTALS: 'tennis_first_set_totals',
-  // Known unsupported market types
-  // TEAM_TOTALS: 'team_totals',
-  // POINTS: 'points',
-  // REBOUNDS: 'rebounds',
-  // ASSISTS: 'assists',
 } as const;
 
-export const NAVIGATOR_FOOTER_HEIGHT = 66;
-// padding distance between bottom most content and the navigator footer
-export const NAVIGATOR_FOOTER_CLEARANCE = 12;
-
 export const DEFAULT_CATEGORY_KEY = 'trending';
+export const DEFAULT_SPORTS_LEAGUE_KEY = 'all' as const;
 export const CATEGORIES = {
   trending: {
     label: 'Trending',
@@ -186,23 +184,161 @@ export const CATEGORIES = {
 
 export type Category = (typeof CATEGORIES)[keyof typeof CATEGORIES];
 
-export const USD_FEE_PER_TOKEN = '0.01';
+const SPORTS = {
+  baseball: {
+    name: 'Baseball',
+    color: {
+      dark: '#1E77F4',
+      light: '#1E77F4',
+    },
+  },
+  basketball: {
+    name: 'Basketball',
+    color: {
+      dark: '#E75C29',
+      light: '#E75C29',
+    },
+  },
+  tennis: {
+    name: 'Tennis',
+    color: {
+      dark: '#D6FE51',
+      light: '#94BD0D',
+    },
+  },
+  hockey: {
+    name: 'Hockey',
+    color: {
+      dark: '#36A0EE',
+      light: '#36A0EE',
+    },
+  },
+  soccer: {
+    name: 'Soccer',
+    color: {
+      dark: '#FFFFFF',
+      light: '#000000',
+    },
+  },
+  cricket: {
+    name: 'Cricket',
+    color: {
+      dark: '#DA2924',
+      light: '#AF403D',
+    },
+  },
+};
 
 export const SPORT_LEAGUES = {
-  nba: {
-    name: 'NBA',
-    slug: 'nba',
-  },
   nfl: {
     name: 'NFL',
-    slug: 'nfl',
+    fullName: 'National Football League',
+    sportId: 'football',
+    color: {
+      dark: '#A2EEFF',
+      light: '#FFFFFF',
+    },
+  },
+  nba: {
+    name: 'NBA',
+    fullName: 'National Basketball Association',
+    sportId: 'basketball',
+    color: {
+      dark: '#E75C29',
+      light: '#E75C29',
+    },
+  },
+  cfb: {
+    name: 'CFB',
+    fullName: 'College Football',
+    sportId: 'football',
+    color: {
+      dark: '#52D35E',
+      light: '#FFFFFF',
+    },
+  },
+  ufc: {
+    name: 'UFC',
+    fullName: 'Ultimate Fighting Championship',
+    sportId: 'mixed-martial-arts',
+    color: {
+      dark: '#E64D45',
+      light: '#E64D45',
+    },
+  },
+  cs2: {
+    name: 'CS2',
+    fullName: 'Counter-Strike 2',
+    sportId: 'esports',
+    color: {
+      dark: '#D8A73A',
+      light: '#C19D4D',
+    },
+  },
+  dota2: {
+    name: 'Dota 2',
+    fullName: 'Dota 2',
+    sportId: 'esports',
+    color: {
+      dark: '#FA3426',
+      light: '#FA3426',
+    },
+  },
+  valorant: {
+    name: 'Valorant',
+    fullName: 'Valorant',
+    sportId: 'esports',
+    color: {
+      dark: '#FF4655',
+      light: '#FF4655',
+    },
+  },
+  cbb: {
+    name: 'NCAAB',
+    fullName: 'NCAA Basketball',
+    sportId: 'basketball',
+    color: SPORTS.basketball.color,
   },
   nhl: {
     name: 'NHL',
-    slug: 'nhl',
+    fullName: 'National Hockey League',
+    sportId: 'hockey',
+    color: SPORTS.hockey.color,
   },
   mlb: {
     name: 'MLB',
-    slug: 'mlb',
+    fullName: 'Major League Baseball',
+    sportId: 'baseball',
+    color: SPORTS.baseball.color,
+  },
+  epl: {
+    name: 'Premier League',
+    fullName: 'English Premier League',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
+  lal: {
+    name: 'La Liga',
+    fullName: 'Spanish La Liga',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
+  sea: {
+    name: 'SEA',
+    fullName: 'SEA',
+    sportId: 'soccer',
+    color: SPORTS.soccer.color,
+  },
+  crint: {
+    name: 'Cricket',
+    fullName: 'International Cricket',
+    sportId: 'cricket',
+    color: SPORTS.cricket.color,
+  },
+  atp: {
+    name: 'ATP',
+    fullName: 'Association of Tennis Professionals',
+    sportId: 'tennis',
+    color: SPORTS.tennis.color,
   },
 } as const;
