@@ -155,5 +155,9 @@ async function getOrCreateApiCredentials(client: ClobClient) {
   if (derived.key && derived.secret && derived.passphrase) {
     return derived;
   }
-  return client.createApiKey();
+  const created = await client.createApiKey();
+  if (!created.key || !created.secret || !created.passphrase) {
+    throw new RainbowError('[Polymarket] Failed to obtain valid API credentials');
+  }
+  return created;
 }
