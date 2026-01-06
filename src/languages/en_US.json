@@ -3757,10 +3757,10 @@
       },
       "manage_position": {
         "hold_to_claim": "Hold to Claim",
-        "hold_to_burn": "Hold to Burn",
+        "hold_to_clear": "Hold to Clear",
         "hold_to_cash_out": "Hold to Cash Out",
         "claiming": "Claiming...",
-        "burning": "Burning...",
+        "clearing": "Clearing...",
         "cashing_out": "Cashing Out...",
         "confirming_order": "Confirming Order...",
         "position_value": "Position Value"
@@ -3803,7 +3803,7 @@
         "won": "Won",
         "to_win": "To Win",
         "claim": "Claim",
-        "burn": "Burn",
+        "clear": "Clear",
         "cash_out": "Cash Out",
         "no_open_positions": "No open positions",
         "won_badge": "WON",
@@ -3838,6 +3838,11 @@
         "failed_to_place_bet": "Failed to place bet. Please try again.",
         "failed_to_cash_out": "Failed to cash out position. Please try again.",
         "failed_to_claim": "Failed to claim position. Please try again."
+      },
+      "account": {
+        "hide_lost_bets": "Hide Lost Bets",
+        "show_lost_bets": "Show Lost Bets",
+        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
       }
     }
   }

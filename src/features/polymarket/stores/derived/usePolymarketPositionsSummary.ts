@@ -12,7 +12,7 @@ import { USD_DECIMALS } from '@/features/perps/constants';
 export type PolymarketPositionsSummary = {
   value: string;
   valueFormatted: string;
-  hasPositions: boolean;
+  hasActivePositions: boolean;
   isNeutralPnl: boolean;
   isPositivePnl: boolean;
   textColor: TextColor;
@@ -23,7 +23,7 @@ export type PolymarketPositionsSummary = {
 const EMPTY_VALUE: PolymarketPositionsSummary = {
   value: '0',
   valueFormatted: formatCurrency('0'),
-  hasPositions: false,
+  hasActivePositions: false,
   isNeutralPnl: true,
   isPositivePnl: false,
   textColor: 'labelTertiary',
@@ -33,15 +33,15 @@ const EMPTY_VALUE: PolymarketPositionsSummary = {
 
 export const usePolymarketPositionsSummary = createDerivedStore<PolymarketPositionsSummary>(
   $ => {
-    const { positions } = $(usePolymarketPositions);
+    const { activePositions } = $(usePolymarketPositions);
     const liveTokens = $(useLiveTokensStore, state => state.tokens);
 
-    if (!positions.length) return EMPTY_VALUE;
+    if (!activePositions.length) return EMPTY_VALUE;
 
     let totalLiveValue = '0';
     let totalInitialValue = '0';
 
-    positions.forEach(position => {
+    activePositions.forEach(position => {
       if (position.redeemable) {
         totalLiveValue = add(totalLiveValue, position.currentValue);
       } else {
@@ -63,7 +63,7 @@ export const usePolymarketPositionsSummary = createDerivedStore<PolymarketPositi
     return {
       value: truncateToDecimals(totalLiveValue, USD_DECIMALS),
       valueFormatted: formatCurrency(totalLiveValue),
-      hasPositions: true,
+      hasActivePositions: true,
       isNeutralPnl,
       isPositivePnl,
       textColor,
