@@ -1,0 +1,176 @@
+diff --git a/node_modules/react-native-blur-view/ios/util/BlurViewAppStateObserver.swift b/node_modules/react-native-blur-view/ios/util/BlurViewAppStateObserver.swift
+new file mode 100644
+index 0000000..b2ea830
+--- /dev/null
++++ b/node_modules/react-native-blur-view/ios/util/BlurViewAppStateObserver.swift
+@@ -0,0 +1,43 @@
++// MARK: - BlurViewAppStateObserver.swift
++
++import UIKit
++
++final class BlurViewAppStateObserver {
++  
++  static let shared = BlurViewAppStateObserver()
++  
++  private let blurViews = NSHashTable<BaseBlurView>.weakObjects()
++  private let notificationCenter: NotificationCenter
++  private var didBecomeActiveObserver: NSObjectProtocol?
++  
++  private init(notificationCenter: NotificationCenter = .default) {
++    self.notificationCenter = notificationCenter
++    didBecomeActiveObserver = notificationCenter.addObserver(
++      forName: UIApplication.didBecomeActiveNotification,
++      object: nil,
++      queue: .main
++    ) { [weak self] _ in
++      self?.refreshBlurViews()
++    }
++  }
++  
++  deinit {
++    if let didBecomeActiveObserver {
++      notificationCenter.removeObserver(didBecomeActiveObserver)
++    }
++  }
++  
++  func register(_ view: BaseBlurView) {
++    blurViews.add(view)
++  }
++  
++  func unregister(_ view: BaseBlurView) {
++    blurViews.remove(view)
++  }
++  
++  private func refreshBlurViews() {
++    for view in blurViews.allObjects {
++      view.refreshView(true)
++    }
++  }
++}
+diff --git a/node_modules/react-native-blur-view/ios/view/BaseBlurView.swift b/node_modules/react-native-blur-view/ios/view/BaseBlurView.swift
+index ca152e4..0fa1567 100644
+--- a/node_modules/react-native-blur-view/ios/view/BaseBlurView.swift
++++ b/node_modules/react-native-blur-view/ios/view/BaseBlurView.swift
+@@ -18,7 +18,7 @@ class BaseBlurView: UIView {
+   
+   private var currentSaturationIntensity: CGFloat
+   private var backdropLayer: CALayer?
+-  private var needsRefresh = false
++  private var lastAppliedBackdropScale: CGFloat?
+   
+   // MARK: - Init
+   
+@@ -39,7 +39,7 @@ class BaseBlurView: UIView {
+     effectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+     if let ev = effectView {
+       addSubview(ev)
+-      backdropLayer = ev.subviews.first?.layer
++      backdropLayer = findBackdropLayer(in: ev)
+     }
+     effectView?.clipsToBounds = false
+     
+@@ -53,6 +53,10 @@ class BaseBlurView: UIView {
+     fatalError("init(coder:) has not been implemented")
+   }
+   
++  deinit {
++    BlurViewAppStateObserver.shared.unregister(self)
++  }
++  
+   // MARK: - Lifecycle
+   
+   override func tintColorDidChange() {
+@@ -62,7 +66,15 @@ class BaseBlurView: UIView {
+   
+   override func didMoveToWindow() {
+     super.didMoveToWindow()
+-    backdropLayer?.setValue(window?.screen.scale, forKey: "scale")
++    
++    if window == nil {
++      BlurViewAppStateObserver.shared.unregister(self)
++      lastAppliedBackdropScale = nil
++      return
++    }
++    
++    BlurViewAppStateObserver.shared.register(self)
++    refreshView(true)
+   }
+   
+   // MARK: - Public Methods
+@@ -88,7 +100,10 @@ class BaseBlurView: UIView {
+   
+   // MARK: - Refresh Logic
+   
+-  func refreshView() {
++  func refreshView(_ force: Bool = false) {
++    updateBackdropLayerIfNeeded(force)
++    applyBackdropLayerScaleIfNeeded()
++    
+     // Re-apply the blur and saturation filters
+     blurFilter?.setValue(currentBlurIntensity, forKey: radiusKeyStr.base64Decoded())
+     saturationFilter?.setValue(currentSaturationIntensity, forKey: satKeyStr.base64Decoded())
+@@ -101,6 +116,58 @@ class BaseBlurView: UIView {
+   
+   // MARK: - Private Helpers
+   
++  private func updateBackdropLayerIfNeeded(_ force: Bool) {
++    if !force, let backdropLayer, backdropLayer.superlayer != nil {
++      return
++    }
++    
++    let previousBackdropLayerIdentifier = backdropLayer.map(ObjectIdentifier.init)
++    
++    guard let effectView else {
++      backdropLayer = nil
++      lastAppliedBackdropScale = nil
++      return
++    }
++    
++    backdropLayer = findBackdropLayer(in: effectView)
++    if previousBackdropLayerIdentifier != backdropLayer.map(ObjectIdentifier.init) {
++      lastAppliedBackdropScale = nil
++    }
++  }
++  
++  private func findBackdropLayer(in effectView: UIVisualEffectView) -> CALayer? {
++    guard let backdropLayerClass = NSClassFromString(backdropLayerClassStr.base64Decoded()) else {
++      return effectView.subviews.first?.layer
++    }
++    
++    var queue = effectView.subviews
++    var index = 0
++    
++    while index < queue.count {
++      let view = queue[index]
++      index += 1
++      
++      if view.layer.isKind(of: backdropLayerClass) {
++        return view.layer
++      }
++      
++      queue.append(contentsOf: view.subviews)
++    }
++    
++    return nil
++  }
++  
++  private func applyBackdropLayerScaleIfNeeded() {
++    guard let backdropLayer else { return }
++    guard let windowScale = window?.screen.scale else { return }
++    if let lastAppliedBackdropScale, abs(windowScale - lastAppliedBackdropScale) <= 0.0001 {
++      return
++    }
++    
++    backdropLayer.setValue(windowScale, forKey: backdropScaleKeyStr.base64Decoded())
++    lastAppliedBackdropScale = windowScale
++  }
++  
+   private func createFilter(type: FilterType) -> NSObject? {
+     guard let obj = NSClassFromString(filterStr.base64Decoded()) as? NSObject.Type else {
+       return .none
+@@ -125,3 +192,5 @@ let propStr = "ZmlsdGVyV2l0aFR5cGU6"
+ let radiusKeyStr = "aW5wdXRSYWRpdXM="
+ let satKeyStr = "aW5wdXRBbW91bnQ="
+ let normalizeKeyStr = "aW5wdXROb3JtYWxpemVFZGdlcw=="
++let backdropLayerClassStr = "Q0FCYWNrZHJvcExheWVy"
++let backdropScaleKeyStr = "c2NhbGU="

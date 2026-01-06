@@ -110,6 +110,18 @@ import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePosition
 import { PerpsExplainSheet } from '@/features/perps/screens/perps-explain-sheet/PerpsExplainSheet';
 import { PerpsAddToPositionSheet } from '@/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet';
 import { PerpsTradeDetailsSheet } from '@/features/perps/screens/perps-trade-details-sheet/PerpsTradeDetailsSheet';
+import { PolymarketDepositScreen } from '@/features/polymarket/funding/screens/PolymarketDepositScreen';
+import { PolymarketWithdrawalScreen } from '@/features/polymarket/funding/screens/PolymarketWithdrawalScreen';
+import { PolymarketEventScreen } from '@/features/polymarket/screens/polymarket-event-screen/PolymarketEventScreen';
+import { PolymarketManagePositionSheet } from '@/features/polymarket/screens/polymarket-manage-position-sheet/PolymarketManagePositionSheet';
+import { PolymarketMarketSheet } from '@/features/polymarket/screens/polymarket-market-sheet/PolymarketMarketSheet';
+import { PolymarketNewPositionSheet } from '@/features/polymarket/screens/polymarket-new-position-sheet/PolymarketNewPositionSheet';
+import { PolymarketAccountScreen } from '@/features/polymarket/screens/polymarket-account-screen/PolymarketAccountScreen';
+import { PolymarketBrowseEventsScreen } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketBrowseEventsScreen';
+import { PolymarketNavigator } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
+import { PolymarketMarketDescriptionSheet } from '@/features/polymarket/screens/polymarket-market-description-sheet/PolymarketMarketDescriptionSheet';
+import { PolymarketExplainSheet } from '@/features/polymarket/screens/polymarket-learn-sheet/PolymarketExplainSheet';
+import { PolymarketSellPositionSheet } from '@/features/polymarket/screens/polymarket-sell-position-sheet/PolymarketSellPositionSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -263,7 +275,9 @@ function BSNavigator() {
       <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
       <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
       <BSStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} {...swapSheetPreset} />
+      <BSStack.Screen component={PolymarketDepositScreen} name={Routes.POLYMARKET_DEPOSIT_SCREEN} {...swapSheetPreset} />
       <BSStack.Screen component={PerpsWithdrawalScreen} name={Routes.PERPS_WITHDRAWAL_SCREEN} {...swapSheetPreset} />
+      <BSStack.Screen component={PolymarketWithdrawalScreen} name={Routes.POLYMARKET_WITHDRAWAL_SCREEN} {...swapSheetPreset} />
       <BSStack.Screen component={SendSheet} name={Routes.SEND_SHEET_NAVIGATOR} options={expandedPresetWithSmallGestureResponseDistance} />
       <BSStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} />
       <BSStack.Screen component={PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} />
@@ -279,6 +293,16 @@ function BSNavigator() {
       <BSStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} />
       <BSStack.Screen component={PerpsAddToPositionSheet} name={Routes.PERPS_ADD_TO_POSITION_SHEET} />
       <BSStack.Screen component={PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} />
+      <BSStack.Screen component={PolymarketEventScreen} name={Routes.POLYMARKET_EVENT_SCREEN} />
+      <BSStack.Screen component={PolymarketManagePositionSheet} name={Routes.POLYMARKET_MANAGE_POSITION_SHEET} />
+      <BSStack.Screen component={PolymarketMarketSheet} name={Routes.POLYMARKET_MARKET_SHEET} />
+      <BSStack.Screen component={PolymarketMarketDescriptionSheet} name={Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET} />
+      <BSStack.Screen component={PolymarketNewPositionSheet} name={Routes.POLYMARKET_NEW_POSITION_SHEET} />
+      <BSStack.Screen component={PolymarketAccountScreen} name={Routes.POLYMARKET_ACCOUNT_SCREEN} />
+      <BSStack.Screen component={PolymarketNavigator} name={Routes.POLYMARKET_NAVIGATOR} />
+      <BSStack.Screen component={PolymarketExplainSheet} name={Routes.POLYMARKET_EXPLAIN_SHEET} />
+      <BSStack.Screen component={PolymarketBrowseEventsScreen} name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN} />
+      <BSStack.Screen component={PolymarketSellPositionSheet} name={Routes.POLYMARKET_SELL_POSITION_SHEET} />
     </BSStack.Navigator>
   );
 }

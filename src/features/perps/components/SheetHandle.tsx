@@ -5,12 +5,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HANDLE_COLOR, LIGHT_HANDLE_COLOR, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 
 export type SheetHandleProps = {
-  extraPaddingTop?: number;
   backgroundColor?: string;
+  extraPaddingTop?: number;
+  gradientColors?: { start?: string; end?: string };
   withoutGradient?: boolean;
 };
 
-export const SheetHandle = ({ extraPaddingTop, backgroundColor, withoutGradient }: SheetHandleProps) => {
+export const SheetHandle = ({ backgroundColor, extraPaddingTop, gradientColors, withoutGradient }: SheetHandleProps) => {
   const { isDarkMode } = useColorMode();
   const screenBackgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
   const safeAreaInsets = useSafeAreaInsets();
@@ -28,8 +29,8 @@ export const SheetHandle = ({ extraPaddingTop, backgroundColor, withoutGradient 
       </Box>
       {!withoutGradient && (
         <EasingGradient
-          endColor={screenBackgroundColor}
-          startColor={screenBackgroundColor}
+          endColor={gradientColors?.end ?? screenBackgroundColor}
+          startColor={gradientColors?.start ?? screenBackgroundColor}
           endOpacity={0}
           startOpacity={1}
           style={{ height: 32, width: '100%', pointerEvents: 'none' }}

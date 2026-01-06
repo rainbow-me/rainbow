@@ -1,19 +1,15 @@
 import { LegendList } from '@legendapp/list';
 import React, { memo, useCallback } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { PerpMarketDisabledRow } from '@/features/perps/components/PerpMarketDisabledRow';
 import { PerpMarketRow } from '@/features/perps/components/PerpMarketRow';
-import { FOOTER_HEIGHT, FOOTER_HEIGHT_WITH_SAFE_AREA, HYPERLIQUID_COLORS } from '@/features/perps/constants';
+import { FOOTER_HEIGHT, FOOTER_HEIGHT_WITH_SAFE_AREA } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useHasPositionCheck } from '@/features/perps/stores/derived/useHasPositionCheck';
 import { useFilteredHyperliquidMarkets } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { PerpMarket } from '@/features/perps/types';
 import { Box, Text } from '@/design-system';
 import * as i18n from '@/languages';
-import { ButtonPressAnimation } from '@/components/animations';
-import { Navigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import infinityIcon from '@/assets/infinity.png';
 
 type PerpMarketsListProps = {
   onPressMarket?: (market: PerpMarket) => void;

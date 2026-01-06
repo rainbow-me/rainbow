@@ -8,7 +8,7 @@ import {
   TextAlign as SkiaTextAlign,
 } from '@shopify/react-native-skia';
 import { Platform } from '@shopify/react-native-skia/src/Platform';
-import { Dispatch, MutableRefObject, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, RefObject, SetStateAction, useEffect, useState } from 'react';
 import { TextAlign } from '@/components/text/types';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { IS_DEV, IS_IOS } from '@/env';
@@ -47,11 +47,11 @@ const FONT_LOADERS: Record<TextWeight, () => DataModule> = {
  * @param additionalWeights - Any extra weights needed
  * @returns An object containing a fontManager and paragraphBuilder
  */
-export function useSkiaFontManager(align: TextAlign, weight: TextWeight, additionalWeights?: TextWeight[]): FontManager {
+export function useSkiaFontManager(align: TextAlign, weight: TextWeight, additionalWeights?: TextWeight | TextWeight[]): FontManager {
   const [manager, setManager] = useState<FontManager>(() => getInitialFontManager(align));
 
   const fontInfoRef = useLazyRef<FontInfo>(() => ({
-    prevWeights: IS_IOS ? new Set(additionalWeights ? [weight, ...additionalWeights] : [weight]) : new Set(),
+    prevWeights: IS_IOS ? new Set(Array.isArray(additionalWeights) ? [weight, ...additionalWeights] : [weight]) : new Set(),
     textAlign: align,
   }));
 
@@ -108,9 +108,9 @@ function handleAndroidFontChanges({
   setManager,
   weight,
 }: {
-  additionalWeights: TextWeight[] | undefined;
+  additionalWeights: TextWeight | TextWeight[] | undefined;
   align: TextAlign;
-  fontInfoRef: MutableRefObject<{
+  fontInfoRef: RefObject<{
     prevWeights: Set<TextWeight>;
     textAlign: TextAlign;
   }>;
@@ -119,7 +119,9 @@ function handleAndroidFontChanges({
   weight: TextWeight;
 }) {
   const prevWeights = fontInfoRef.current.prevWeights;
-  const nextWeights = new Set(additionalWeights ? [weight, ...additionalWeights] : [weight]);
+  const nextWeights = new Set(
+    Array.isArray(additionalWeights) ? [weight, ...additionalWeights] : additionalWeights ? [weight, additionalWeights] : [weight]
+  );
   const addedWeights = new Set([...nextWeights].filter(w => !prevWeights.has(w)));
 
   fontInfoRef.current.prevWeights = nextWeights;
@@ -271,7 +273,7 @@ function getParagraphBuilder(textAlign: TextAlign): SkParagraphBuilder {
  * If the count drops to zero, the builder is disposed and removed from the cache.
  * @param fontInfoRef - The font info ref to release the paragraph builder for
  */
-function releaseParagraphBuilder(fontInfoRef: MutableRefObject<FontInfo>): void {
+function releaseParagraphBuilder(fontInfoRef: RefObject<FontInfo>): void {
   if (!IS_IOS) return;
   const existing = getParagraphBuilders().get(fontInfoRef.current.textAlign);
   if (existing) {
