@@ -3,30 +3,21 @@ import { ImgixImage } from '@/components/images';
 import { Box, globalColors, Separator, Text, TextShadow } from '@/design-system';
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { PolymarketTeamInfo } from '@/features/polymarket/types';
 import * as i18n from '@/languages';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import Animated from 'react-native-reanimated';
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
 import { View } from 'react-native';
 import { time } from '@/utils/time';
-
-type PolymarketEventGameInfo = {
-  score: string;
-  period: string;
-  elapsed: string;
-  teams?: PolymarketTeamInfo[];
-};
+import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarketLiveGame';
+import { formatTimestampParts, toUnixTime } from '@/worklets/dates';
+import { parsePeriod, parseScore, selectGameInfo, type PolymarketEventGameInfo } from '@/features/polymarket/utils/sports';
 
 export const GameBoxScore = memo(function GameBoxScore({ event }: { event: PolymarketMarketEvent | PolymarketEvent }) {
   const [showPlaceholder, setShowPlaceholder] = useState(true);
-  const gameStatus = getGameStatus(event);
-  const gameInfo: PolymarketEventGameInfo = {
-    score: event.score ?? '',
-    period: event.period ?? '',
-    elapsed: event.elapsed ?? '',
-    teams: event.teams,
-  };
+  const liveGame = usePolymarketLiveGame(event.gameId);
+  const gameInfo = selectGameInfo({ event, liveGame });
+  const gameStatus = getGameStatus(gameInfo);
   const teamsLoaded = Boolean(gameInfo.teams?.[0]?.name && gameInfo.teams?.[1]?.name);
 
   useEffect(() => {
@@ -63,6 +54,10 @@ const UpcomingGameBoxScore = memo(function UpcomingGameBoxScore({ gameInfo }: { 
   const teamA = teams?.[0];
   const teamB = teams?.[1];
 
+  const startTimeParts = gameInfo.startTime
+    ? formatTimestampParts(toUnixTime(gameInfo.startTime), { case: 'uppercase', prefixSingleDigitsWithZero: false })
+    : undefined;
+
   return (
     <Box flexDirection="row" alignItems="center" height={80} justifyContent="center" gap={22}>
       <Box gap={12} alignItems="center" width={120}>
@@ -73,9 +68,20 @@ const UpcomingGameBoxScore = memo(function UpcomingGameBoxScore({ gameInfo }: { 
           {teamA?.alias ?? teamA?.name}
         </Text>
       </Box>
-      <Text size="13pt" weight="bold" color="labelQuaternary">
-        {i18n.t(i18n.l.predictions.sports.vs)}
-      </Text>
+      {startTimeParts ? (
+        <Box gap={12} alignItems="center">
+          <Text size="15pt" weight="bold" color="labelQuaternary">
+            {startTimeParts.date}
+          </Text>
+          <Text size="15pt" weight="bold" color="labelQuaternary">
+            {startTimeParts.time}
+          </Text>
+        </Box>
+      ) : (
+        <Text size="15pt" weight="bold" color="labelQuaternary">
+          {i18n.t(i18n.l.predictions.sports.vs)}
+        </Text>
+      )}
       <Box gap={12} alignItems="center" width={120}>
         {teamB?.logo && (
           <ImgixImage enableFasterImage size={32} source={{ uri: teamB.logo }} style={{ height: 32, width: 32, borderRadius: 8 }} />
@@ -168,8 +174,8 @@ const TeamScores = memo(function TeamScores({ gameInfo }: { gameInfo: Polymarket
   );
 });
 
-function getGameStatus(event: PolymarketMarketEvent | PolymarketEvent) {
-  const { live, ended } = event;
+function getGameStatus(gameInfo: PolymarketEventGameInfo) {
+  const { live, ended } = gameInfo;
   if (live) return 'live';
   if (ended) return 'ended';
   return 'upcoming';
@@ -188,41 +194,5 @@ function getGameBoxScore({ score, period, elapsed }: { score: string; period: st
     teamAScore: parsedScore.teamAScore,
     teamBScore: parsedScore.teamBScore,
     periodTitle,
-  };
-}
-
-function parsePeriod(string: string) {
-  const [currentPeriod, totalPeriods] = string.split('/');
-  return {
-    currentPeriod,
-    totalPeriods,
-  };
-}
-
-function parseScore(string: string) {
-  if (string.includes('|')) {
-    return parseBestOfScore(string);
-  }
-  return parseRegularScore(string);
-}
-
-function parseRegularScore(string: string) {
-  const [teamAScore, teamBScore] = string.split('-');
-  return {
-    teamAScore,
-    teamBScore,
-  };
-}
-
-// Example: "000-000|1-1|Bo3",
-// TODO: Handle UFC format "0-1|KO/TKO"
-function parseBestOfScore(string: string) {
-  const [_, scorePart, bestOfPart] = string.split('|');
-  const [teamAScore, teamBScore] = scorePart.split('-');
-  const bestOf = bestOfPart ? parseInt(bestOfPart.split('Bo')[1]) : undefined;
-  return {
-    teamAScore,
-    teamBScore,
-    bestOf,
   };
 }
