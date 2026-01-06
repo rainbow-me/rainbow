@@ -24,6 +24,7 @@
       "tab_savings": "储蓄",
       "tab_showcase": "展示",
       "tab_perps": "Perps",
+      "tab_polymarket": "Predictions",
       "tab_points": "积分",
       "tab_positions": "持仓",
       "tab_rewards": "奖励",
@@ -757,9 +758,9 @@
         },
         "about": {
           "title": "关于",
-          "created_by": "Creator",
-          "protocol": "Protocol",
-          "created_via": "Created Via",
+          "created_by": "创建者",
+          "protocol": "协议",
+          "created_via": "创建方式",
           "what_is": "%{assetName} 是什么？"
         },
         "details": {
@@ -1618,7 +1619,7 @@
       },
       "feature_card": {
         "title": "Perps",
-        "subtitle": "高风险，高回报交易"
+        "subtitle": "High risk, high reward trading"
       },
       "actions": {
         "fund_wallet": "为我的钱包充值",
@@ -1647,7 +1648,8 @@
         "confirm_button_over_balance_text": "资金不足",
         "confirm_button_error_text": "报价错误",
         "quote_error": "􀇿 没有报价可用",
-        "insufficient_balance": "􀫲 资金不足"
+        "insufficient_balance": "􀫲 资金不足",
+        "insufficient_gas": "Insufficient Gas"
       },
       "withdraw": {
         "title": "提款",
@@ -3744,6 +3746,136 @@
             ]
           }
         }
+      }
+    },
+    "predictions": {
+      "feature_card": {
+        "title": "Predictions",
+        "subtitle": "Bet on real-world events"
+      },
+      "explain_sheet": {
+        "next": "下一步",
+        "get_started": "Get started",
+        "title": "Predictions",
+        "steps": {
+          "step_1": {
+            "title": "Predictions",
+            "subtitle_parts": [
+              "Try a new way to follow what's happening in the markets. Powered by Polymarket"
+            ]
+          },
+          "step_2": {
+            "title": "Bet on Almost Anything",
+            "subtitle_parts": [
+              "Pick a market you like, place your position, and see where it goes."
+            ]
+          },
+          "step_3": {
+            "title": "Choose Your Outcome",
+            "subtitle_parts": [
+              "Each market has clear options. Pick the one you believe in and track how it performs."
+            ]
+          }
+        }
+      },
+      "navbar": {
+        "title": "Predictions"
+      },
+      "new_position": {
+        "title": "Place Bet",
+        "amount": "金额",
+        "chance_of_outcome": "Chance of Outcome",
+        "to_win": "To Win",
+        "spread": "Spread",
+        "hold_to_place_bet": "Hold to Place Bet",
+        "placing_bet": "Placing Bet...",
+        "confirming_order": "Confirming Order...",
+        "deposit_funds": "Deposit Funds",
+        "average_price": "Average Price"
+      },
+      "manage_position": {
+        "hold_to_claim": "长按领取",
+        "hold_to_burn": "Hold to Burn",
+        "hold_to_cash_out": "Hold to Cash Out",
+        "claiming": "Claiming...",
+        "burning": "Burning...",
+        "cashing_out": "Cashing Out...",
+        "confirming_order": "Confirming Order...",
+        "position_value": "仓位价值"
+      },
+      "cash_out": {
+        "title": "Cash Out Bet",
+        "current_price": "当前价格",
+        "average_price": "Average Price",
+        "profit_loss": "Profit / Loss",
+        "receive": "接收",
+        "spread": "Spread",
+        "cash_out": "Cash Out"
+      },
+      "search": {
+        "placeholder": "Search for prediction markets",
+        "input_placeholder": "搜索市场",
+        "no_results": "No results found"
+      },
+      "event": {
+        "outcomes": "Outcomes",
+        "about": "关于",
+        "show_rules": "Show Rules",
+        "rules": "Rules",
+        "end_date": "End Date",
+        "resolution_source": "Res. Source",
+        "category": "Category",
+        "hide_resolved": "Hide Resolved",
+        "show_resolved": "Show Resolved",
+        "open_positions": "持仓",
+        "market_resolved": "MARKET RESOLVED",
+        "volume_suffix": "交易量",
+        "show_less": "显示较少",
+        "show_more": "Show More",
+        "resolved": "Resolved"
+      },
+      "position": {
+        "outcome": "Outcome",
+        "odds": "Odds",
+        "bet": "Bet",
+        "won": "Won",
+        "to_win": "To Win",
+        "claim": "领取",
+        "burn": "Burn",
+        "cash_out": "Cash Out",
+        "no_open_positions": "No open positions",
+        "won_badge": "WON",
+        "lost_badge": "LOST",
+        "learn_more": "Learn more about Predictions"
+      },
+      "tabs": {
+        "browse": "Browse",
+        "portfolio": "Portfolio"
+      },
+      "market": {
+        "buy_outcome": "Buy %{outcome}"
+      },
+      "bet_types": {
+        "winner": "Winner",
+        "spreads": "Spreads",
+        "totals": "Totals",
+        "other": "其他"
+      },
+      "sports": {
+        "vs": "VS",
+        "live": "LIVE",
+        "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}"
+      },
+      "outcomes": {
+        "yes": "是",
+        "yes_badge": "YES",
+        "no_badge": "NO"
+      },
+      "errors": {
+        "title": "错误",
+        "failed_to_place_bet": "Failed to place bet. Please try again.",
+        "failed_to_cash_out": "Failed to cash out position. Please try again.",
+        "failed_to_claim": "Failed to claim position. Please try again."
       }
     }
   }
