@@ -1,13 +1,13 @@
 import { Signer } from '@ethersproject/abstract-signer';
 import { CrosschainQuote, fillCrosschainQuote, SwapType } from '@rainbow-me/swaps';
-import { Address } from 'viem';
+import type { Address, Hash } from 'viem';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { add } from '@/helpers/utilities';
 import { estimateApprove } from './unlock';
 
 import { REFERRER, gasUnits, ReferrerType } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
-import { NewTransaction, TransactionDirection, TransactionStatus, TxHash } from '@/entities/transactions';
+import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, ensureError, logger } from '@/logger';
 
@@ -271,7 +271,7 @@ export const crosschainSwap = async ({
       },
     ],
     gasLimit,
-    hash: swap.hash as TxHash,
+    hash: swap.hash as Hash,
     network: chainsName[parameters.chainId],
     nonce: swap.nonce,
     status: TransactionStatus.pending,

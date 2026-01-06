@@ -11,11 +11,11 @@ import {
   unwrapNativeAsset,
   wrapNativeAsset,
 } from '@rainbow-me/swaps';
-import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
-import { Address } from 'viem';
+import type { Address, Hash } from 'viem';
 
+import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { ChainId } from '@/state/backendNetworks/types';
-import { NewTransaction, TxHash, TransactionStatus, TransactionDirection } from '@/entities/transactions';
+import { NewTransaction, TransactionStatus, TransactionDirection } from '@/entities/transactions';
 import { add } from '@/helpers/utilities';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, ensureError, logger } from '@/logger';
@@ -366,7 +366,7 @@ export const swap = async ({
       },
     ],
     gasLimit,
-    hash: swap.hash as TxHash,
+    hash: swap.hash as Hash,
     network: chainsName[parameters.chainId],
     nonce: swap.nonce,
     status: TransactionStatus.pending,

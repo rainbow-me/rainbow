@@ -2,13 +2,13 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
-import { getProvider, toHex } from '@/handlers/web3';
-import { Address, erc20Abi, erc721Abi } from 'viem';
+import { erc20Abi, erc721Abi, type Hash, type Address } from 'viem';
 import { supportsDelegation } from '@rainbow-me/delegation';
 
+import { getProvider, toHex } from '@/handlers/web3';
 import { ChainId } from '@/state/backendNetworks/types';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { NewTransaction, TransactionStatus, TxHash } from '@/entities/transactions';
+import { NewTransaction, TransactionStatus } from '@/entities/transactions';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
@@ -287,7 +287,7 @@ export const unlock = async ({
     changes: [],
     from: parameters.fromAddress,
     to: assetAddress,
-    hash: approval.hash as TxHash,
+    hash: approval.hash as Hash,
     network: chainsName[chainId],
     chainId: approval.chainId,
     nonce: approval.nonce,
