@@ -1,22 +1,25 @@
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarketLiveGame';
-import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { parsePeriod, parseScore, selectGameInfo, type PolymarketEventGameInfo } from '@/features/polymarket/utils/sports';
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { formatTimestamp, toUnixTime } from '@/worklets/dates';
-import { ImgixImage } from '@/components/images';
 import { buildBetRows, formatOdds, getTeamDisplayInfo, type BetCellData } from '@/features/polymarket/utils/getSportsEventTokenIds';
+import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
+import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 
 const BET_ROW_HEIGHT = 38;
 const BET_ROW_WIDTH = 60;
+const BET_CELL_GAP = 6;
+const LOGO_SIZE = 28;
 
 export const HEIGHT = 176;
 
@@ -27,9 +30,10 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
   event: PolymarketEvent;
   style?: StyleProp<ViewStyle>;
 }) {
-  const cardBackground = useBackgroundColor('fillSecondary');
+  const cardBackground = useBackgroundColor('fillQuaternary');
   const fillTertiary = useBackgroundColor('fillTertiary');
   const borderColor = useForegroundColor('separatorSecondary');
+  const { isDarkMode } = useColorMode();
 
   const liveGame = usePolymarketLiveGame(event.live && !event.ended ? event.gameId : undefined);
   const gameInfo = useMemo(() => selectGameInfo({ event, liveGame }), [event, liveGame]);
@@ -50,8 +54,54 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
   const subtitle = useMemo(() => (isLive ? undefined : getSubtitle({ event, gameInfo })), [event, gameInfo, isLive]);
   const betRows = useMemo(() => buildBetRows(event, teamLabels), [event, teamLabels]);
   const showScores = isLive || gameInfo.ended;
+  const topMoneylineOutcome = getOutcomeInfoForTokenId(event.markets, betRows.top.moneyline?.outcomeTokenId);
+  const bottomMoneylineOutcome = getOutcomeInfoForTokenId(event.markets, betRows.bottom.moneyline?.outcomeTokenId);
+  const topMoneylineColor = topMoneylineOutcome
+    ? getOutcomeColor({
+        market: topMoneylineOutcome.market,
+        outcome: topMoneylineOutcome.outcome,
+        outcomeIndex: topMoneylineOutcome.outcomeIndex,
+        isDarkMode,
+        teams: event.teams,
+      })
+    : undefined;
+  const bottomMoneylineColor = bottomMoneylineOutcome
+    ? getOutcomeColor({
+        market: bottomMoneylineOutcome.market,
+        outcome: bottomMoneylineOutcome.outcome,
+        outcomeIndex: bottomMoneylineOutcome.outcomeIndex,
+        isDarkMode,
+        teams: event.teams,
+      })
+    : undefined;
 
   const teamLabelFontSize = useMemo(() => (teamLabels[0].length > 14 || teamLabels[1].length > 14 ? '10pt' : '13pt'), [teamLabels]);
+
+  const createBetCellPressHandler = useCallback(
+    (outcomeTokenId?: string) => {
+      if (!outcomeTokenId) return undefined;
+      const outcomeInfo = getOutcomeInfoForTokenId(event.markets, outcomeTokenId);
+      if (!outcomeInfo) return undefined;
+
+      return () => {
+        const outcomeColor = getOutcomeColor({
+          market: outcomeInfo.market,
+          outcome: outcomeInfo.outcome,
+          outcomeIndex: outcomeInfo.outcomeIndex,
+          isDarkMode,
+          teams: event.teams,
+        });
+        Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, {
+          market: outcomeInfo.market,
+          event,
+          outcomeIndex: outcomeInfo.outcomeIndex,
+          outcomeColor,
+          fromRoute: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN,
+        });
+      };
+    },
+    [event, isDarkMode]
+  );
 
   return (
     <ButtonPressAnimation onPress={() => navigateToEvent(event)} scaleTo={0.98} style={style}>
@@ -85,13 +135,13 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
         <View style={styles.body}>
           <View style={styles.teamColumn}>
             <View style={styles.teamRow}>
-              <ImgixImage source={{ uri: event.teams?.[0]?.logo }} size={24} style={{ width: 24, height: 24, borderRadius: 4 }} />
+              {event.teams?.[0] && <TeamLogo team={event.teams?.[0]} size={LOGO_SIZE} borderRadius={4} />}
               <Text align="left" color="label" size={teamLabelFontSize} weight="bold" numberOfLines={1}>
                 {teamLabels[0]}
               </Text>
             </View>
             <View style={styles.teamRow}>
-              <ImgixImage source={{ uri: event.teams?.[1]?.logo }} size={24} style={{ width: 24, height: 24, borderRadius: 4 }} />
+              {event.teams?.[1] && <TeamLogo team={event.teams?.[1]} size={LOGO_SIZE} borderRadius={4} />}
               <Text align="left" color="label" size={teamLabelFontSize} weight="bold" numberOfLines={1}>
                 {teamLabels[1]}
               </Text>
@@ -114,14 +164,34 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
             ) : null}
             <View style={styles.betsColumn}>
               <View style={styles.betRow}>
-                {betRows.top.spread && <BetCell data={betRows.top.spread} />}
-                {betRows.top.moneyline && <BetCell data={betRows.top.moneyline} />}
-                {betRows.top.total && <BetCell data={betRows.top.total} />}
+                {betRows.top.spread && (
+                  <BetCell data={betRows.top.spread} onPress={createBetCellPressHandler(betRows.top.spread.outcomeTokenId)} />
+                )}
+                {betRows.top.total && (
+                  <BetCell data={betRows.top.total} onPress={createBetCellPressHandler(betRows.top.total.outcomeTokenId)} />
+                )}
+                {betRows.top.moneyline && (
+                  <BetCell
+                    data={betRows.top.moneyline}
+                    backgroundColor={topMoneylineColor}
+                    onPress={createBetCellPressHandler(betRows.top.moneyline.outcomeTokenId)}
+                  />
+                )}
               </View>
               <View style={styles.betRow}>
-                {betRows.bottom.spread && <BetCell data={betRows.bottom.spread} />}
-                {betRows.bottom.moneyline && <BetCell data={betRows.bottom.moneyline} />}
-                {betRows.bottom.total && <BetCell data={betRows.bottom.total} />}
+                {betRows.bottom.spread && (
+                  <BetCell data={betRows.bottom.spread} onPress={createBetCellPressHandler(betRows.bottom.spread.outcomeTokenId)} />
+                )}
+                {betRows.bottom.total && (
+                  <BetCell data={betRows.bottom.total} onPress={createBetCellPressHandler(betRows.bottom.total.outcomeTokenId)} />
+                )}
+                {betRows.bottom.moneyline && (
+                  <BetCell
+                    data={betRows.bottom.moneyline}
+                    backgroundColor={bottomMoneylineColor}
+                    onPress={createBetCellPressHandler(betRows.bottom.moneyline.outcomeTokenId)}
+                  />
+                )}
               </View>
             </View>
           </View>
@@ -131,11 +201,20 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
   );
 });
 
-const BetCell = memo(function BetCell({ data, backgroundColor }: { data: BetCellData; backgroundColor?: string }) {
+const BetCell = memo(function BetCell({
+  data,
+  backgroundColor,
+  onPress,
+}: {
+  data: BetCellData;
+  backgroundColor?: string;
+  onPress?: () => void;
+}) {
   const fillTertiary = useBackgroundColor('fillTertiary');
   const hasLabel = Boolean(data.label);
   const tokenId = data.outcomeTokenId ? getPolymarketTokenId(data.outcomeTokenId, 'sell') : undefined;
-  return (
+
+  const content = (
     <View style={[styles.betCell, { backgroundColor: backgroundColor ?? fillTertiary }]}>
       {hasLabel ? (
         <Text align="center" color="labelSecondary" size="12pt" weight="bold" numberOfLines={1}>
@@ -145,8 +224,8 @@ const BetCell = memo(function BetCell({ data, backgroundColor }: { data: BetCell
       {tokenId ? (
         <LiveTokenText
           align="center"
-          color="label"
-          size="12pt"
+          color={backgroundColor ? 'white' : 'label'}
+          size={hasLabel ? '12pt' : '15pt'}
           weight="heavy"
           numberOfLines={1}
           tokenId={tokenId}
@@ -155,12 +234,22 @@ const BetCell = memo(function BetCell({ data, backgroundColor }: { data: BetCell
           autoSubscriptionEnabled={false}
         />
       ) : (
-        <Text align="center" color="label" size="12pt" weight="heavy" numberOfLines={1}>
+        <Text align="center" color={backgroundColor ? 'white' : 'label'} size={hasLabel ? '12pt' : '15pt'} weight="heavy" numberOfLines={1}>
           {data.odds}
         </Text>
       )}
     </View>
   );
+
+  if (onPress) {
+    return (
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.92}>
+        {content}
+      </ButtonPressAnimation>
+    );
+  }
+
+  return content;
 });
 
 export const LoadingSkeleton = memo(function LoadingSkeleton() {
@@ -201,6 +290,18 @@ function getPeriodTitle({ score, period, elapsed }: { score: string; period: str
   return elapsed ?? '';
 }
 
+function getOutcomeInfoForTokenId(markets: PolymarketMarket[], outcomeTokenId?: string) {
+  if (!outcomeTokenId) return null;
+  for (const market of markets) {
+    const index = market.clobTokenIds.indexOf(outcomeTokenId);
+    if (index >= 0) {
+      const outcome = market.groupItemTitle || market.outcomes[index] || '';
+      return { market, outcomeIndex: index, outcome };
+    }
+  }
+  return null;
+}
+
 const styles = StyleSheet.create({
   betCell: {
     alignItems: 'center',
@@ -235,7 +336,7 @@ const styles = StyleSheet.create({
   },
   betRow: {
     flexDirection: 'row',
-    gap: 6,
+    gap: BET_CELL_GAP,
     justifyContent: 'flex-end',
   },
   betsColumn: {
@@ -250,8 +351,8 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     borderWidth: 1,
     overflow: 'hidden',
-    paddingHorizontal: 10,
-    paddingVertical: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
   },
   header: {
     gap: 8,

@@ -94,10 +94,10 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
         },
       });
       await waitForPositionSizeUpdate(tokenId);
-      if (fromRoute === Routes.POLYMARKET_EVENT_SCREEN) {
+      if (fromRoute === Routes.POLYMARKET_MARKET_SHEET) {
+        Navigation.goBack();
         Navigation.goBack();
       } else {
-        Navigation.goBack();
         Navigation.goBack();
       }
     } catch (e) {

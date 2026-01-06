@@ -1,5 +1,5 @@
-import { memo, useCallback, useMemo, useRef, RefObject } from 'react';
-import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View, ViewToken, ViewabilityConfig } from 'react-native';
+import { memo, useCallback, useMemo, RefObject } from 'react';
+import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View, ViewToken } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { format } from 'date-fns';
@@ -110,6 +110,22 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
     [debouncedAddSubscribedTokens]
   );
 
+  const renderItem = useCallback(({ item }: { item: SportsListItem }) => {
+    if (item.type === 'header') {
+      return <SectionHeader isLive={item.isLive} title={item.title} />;
+    }
+    if (item.type === 'league-header') {
+      return <LeagueHeader title={item.title} eventSlug={item.eventSlug} />;
+    }
+    if (item.type === 'separator') {
+      return <SectionSeparator />;
+    }
+    if (item.type === 'league-separator') {
+      return <LeagueSeparator />;
+    }
+    return <PolymarketSportEventListItem event={item.event} style={styles.eventItemWrapper} />;
+  }, []);
+
   return (
     <Animated.FlatList
       ListEmptyComponent={isLoading ? <ListLoadingSkeleton /> : <EmptyState />}
@@ -194,22 +210,6 @@ const LeagueSeparator = memo(function LeagueSeparator() {
     </View>
   );
 });
-
-function renderItem({ item }: { item: SportsListItem }) {
-  if (item.type === 'header') {
-    return <SectionHeader isLive={item.isLive} title={item.title} />;
-  }
-  if (item.type === 'league-header') {
-    return <LeagueHeader title={item.title} eventSlug={item.eventSlug} />;
-  }
-  if (item.type === 'separator') {
-    return <SectionSeparator />;
-  }
-  if (item.type === 'league-separator') {
-    return <LeagueSeparator />;
-  }
-  return <PolymarketSportEventListItem event={item.event} style={styles.eventItemWrapper} />;
-}
 
 function keyExtractor(item: SportsListItem): string {
   return item.key;

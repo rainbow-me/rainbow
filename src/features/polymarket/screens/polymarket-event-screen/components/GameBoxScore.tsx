@@ -1,5 +1,4 @@
 import React, { memo, useEffect, useState } from 'react';
-import { ImgixImage } from '@/components/images';
 import { Box, globalColors, Separator, Text, TextShadow } from '@/design-system';
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -12,6 +11,7 @@ import { time } from '@/utils/time';
 import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarketLiveGame';
 import { formatTimestampParts, toUnixTime } from '@/worklets/dates';
 import { parsePeriod, parseScore, selectGameInfo, type PolymarketEventGameInfo } from '@/features/polymarket/utils/sports';
+import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 
 export const GameBoxScore = memo(function GameBoxScore({ event }: { event: PolymarketMarketEvent | PolymarketEvent }) {
   const [showPlaceholder, setShowPlaceholder] = useState(true);
@@ -61,9 +61,7 @@ const UpcomingGameBoxScore = memo(function UpcomingGameBoxScore({ gameInfo }: { 
   return (
     <Box flexDirection="row" alignItems="center" height={80} justifyContent="center" gap={22}>
       <Box gap={12} alignItems="center" width={120}>
-        {teamA?.logo && (
-          <ImgixImage enableFasterImage size={32} source={{ uri: teamA.logo }} style={{ height: 32, width: 32, borderRadius: 8 }} />
-        )}
+        {teamA && <TeamLogo team={teamA} size={32} borderRadius={8} />}
         <Text size="17pt" weight="bold" color="label" align="center">
           {teamA?.alias ?? teamA?.name}
         </Text>
@@ -83,9 +81,7 @@ const UpcomingGameBoxScore = memo(function UpcomingGameBoxScore({ gameInfo }: { 
         </Text>
       )}
       <Box gap={12} alignItems="center" width={120}>
-        {teamB?.logo && (
-          <ImgixImage enableFasterImage size={32} source={{ uri: teamB.logo }} style={{ height: 32, width: 32, borderRadius: 8 }} />
-        )}
+        {teamB && <TeamLogo team={teamB} size={32} borderRadius={8} />}
         <Text size="17pt" weight="bold" color="label" align="center">
           {teamB?.alias ?? teamB?.name}
         </Text>
@@ -150,9 +146,7 @@ const TeamScores = memo(function TeamScores({ gameInfo }: { gameInfo: Polymarket
       paddingVertical={'12px'}
     >
       <Box flexDirection="row" alignItems="center" gap={10} height={28}>
-        {teamA?.logo && (
-          <ImgixImage enableFasterImage size={24} source={{ uri: teamA.logo }} style={{ height: 24, width: 24, borderRadius: 8 }} />
-        )}
+        {teamA && <TeamLogo team={teamA} size={24} borderRadius={4} />}
         <Text size="17pt" weight="bold" color="label" style={{ flex: 1 }}>
           {teamA?.name}
         </Text>
@@ -162,7 +156,7 @@ const TeamScores = memo(function TeamScores({ gameInfo }: { gameInfo: Polymarket
       </Box>
       <Separator color="separatorSecondary" direction="horizontal" thickness={1} />
       <Box flexDirection="row" alignItems="center" gap={10} height={28}>
-        {teamB?.logo && <ImgixImage size={24} source={{ uri: teamB.logo }} style={{ height: 24, width: 24, borderRadius: 8 }} />}
+        {teamB && <TeamLogo team={teamB} size={24} borderRadius={4} />}
         <Text size="17pt" weight="bold" color="label" style={{ flex: 1 }}>
           {teamB?.name}
         </Text>

@@ -275,7 +275,8 @@ export function parseScore(value: string): { teamAScore?: string; teamBScore?: s
     return parseBestOfScore(value);
   }
   if (value.includes(',')) {
-    return parseTennisScore(value);
+    return { teamAScore: '', teamBScore: '' };
+    // return parseTennisScore(value);
   }
   return parseRegularScore(value);
 }
@@ -285,25 +286,26 @@ function parseRegularScore(value: string) {
   return { teamAScore, teamBScore };
 }
 
-function parseTennisScore(value: string) {
-  const setScores = value
-    .split(',')
-    .map(setScore => setScore.trim())
-    .filter(Boolean);
-  const teamAScores: string[] = [];
-  const teamBScores: string[] = [];
+// TODO: This has other considerations, current implementation is not correct
+// function parseTennisScore(value: string) {
+//   const setScores = value
+//     .split(',')
+//     .map(setScore => setScore.trim())
+//     .filter(Boolean);
+//   const teamAScores: string[] = [];
+//   const teamBScores: string[] = [];
 
-  for (const setScore of setScores) {
-    const [teamAScore, teamBScore] = setScore.split('-').map(part => part.trim());
-    if (teamAScore) teamAScores.push(teamAScore);
-    if (teamBScore) teamBScores.push(teamBScore);
-  }
+//   for (const setScore of setScores) {
+//     const [teamAScore, teamBScore] = setScore.split('-').map(part => part.trim());
+//     if (teamAScore) teamAScores.push(teamAScore);
+//     if (teamBScore) teamBScores.push(teamBScore);
+//   }
 
-  return {
-    teamAScore: teamAScores.join(', '),
-    teamBScore: teamBScores.join(', '),
-  };
-}
+//   return {
+//     teamAScore: teamAScores.join(', '),
+//     teamBScore: teamBScores.join(', '),
+//   };
+// }
 
 // Example: "000-000|1-1|Bo3"
 // TODO: Handle UFC format "0-1|KO/TKO"

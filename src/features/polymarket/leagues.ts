@@ -57,7 +57,7 @@ export const SPORT_LEAGUES = {
     sportId: 'football',
     color: {
       dark: '#A2EEFF',
-      light: '#FFFFFF',
+      light: '#25BEE1',
     },
   },
   nba: {
@@ -75,7 +75,7 @@ export const SPORT_LEAGUES = {
     sportId: 'football',
     color: {
       dark: '#52D35E',
-      light: '#FFFFFF',
+      light: '#21A82D',
     },
   },
   ufc: {

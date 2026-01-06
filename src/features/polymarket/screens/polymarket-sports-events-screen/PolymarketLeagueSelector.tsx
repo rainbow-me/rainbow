@@ -4,7 +4,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { SharedValue, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Border, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Border, globalColors, Text, useColorMode } from '@/design-system';
 import { DEFAULT_SPORTS_LEAGUE_KEY } from '@/features/polymarket/constants';
 import { LEAGUE_SELECTOR_ORDER, SPORT_LEAGUES } from '@/features/polymarket/leagues';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
@@ -21,7 +21,7 @@ type LeagueItemKey = LeagueKey | typeof DEFAULT_SPORTS_LEAGUE_KEY;
 type LeagueItem = {
   key: LeagueItemKey;
   label: string;
-  color?: { dark: string; light: string };
+  color: { dark: string; light: string };
 };
 type ItemLayout = { x: number; width: number };
 
@@ -30,7 +30,11 @@ const CONTAINER_HEIGHT = 40 + VERTICAL_PADDING * 2;
 const CONTAINER_WIDTH = DEVICE_WIDTH - 40;
 const HORIZONTAL_PADDING = 4;
 const LEAGUE_ITEMS: LeagueItem[] = [
-  { key: DEFAULT_SPORTS_LEAGUE_KEY, label: 'All' },
+  {
+    key: DEFAULT_SPORTS_LEAGUE_KEY,
+    label: 'All',
+    color: { dark: opacityWorklet(globalColors.white100, 0.1), light: opacityWorklet(globalColors.white100, 0.5) },
+  },
   ...LEAGUE_SELECTOR_ORDER.map<LeagueItem>(key => ({
     key,
     label: SPORT_LEAGUES[key].name,
@@ -89,6 +93,9 @@ export const PolymarketLeagueSelector = memo(function PolymarketLeagueSelector()
         borderColor={{ custom: isDarkMode ? opacityWorklet('#F5F8FF', 0.08) : opacityWorklet(globalColors.grey100, 0.02) }}
         borderWidth={THICK_BORDER_WIDTH}
       />
+      {!isDarkMode && (
+        <InnerShadow blur={6} borderRadius={CONTAINER_HEIGHT / 2} color={opacityWorklet(globalColors.grey100, 0.03)} dx={0} dy={2} />
+      )}
       <ScrollView
         contentContainerStyle={styles.scrollViewContentContainer}
         horizontal
@@ -116,18 +123,18 @@ type LeagueItemProps = {
 
 const LeagueItemComponent = memo(function LeagueItemComponent({ league, onPress, selectedLeagueKey }: LeagueItemProps) {
   const { isDarkMode } = useColorMode();
-  const labelColor = useForegroundColor('label');
-  const selectedColor = league.color ? (isDarkMode ? league.color.dark : league.color.light) : labelColor;
+  const selectedColor = isDarkMode ? league.color.dark : opacityWorklet(globalColors.white100, 0.5);
 
   const leagueKey = league.key;
   const accentColors = useMemo(() => createOpacityPalette(selectedColor, PALETTE_OPACITIES), [selectedColor]);
+  const backgroundColor = isDarkMode ? accentColors.opacity8 : opacityWorklet(globalColors.white100, 0.5);
 
   const backgroundFillStyle = useMemo(
     () => ({
-      backgroundColor: accentColors.opacity8,
+      backgroundColor: backgroundColor,
       borderRadius: CONTAINER_HEIGHT / 2,
     }),
-    [accentColors]
+    [backgroundColor]
   );
 
   const borderContainerStyle = useAnimatedStyle(() => ({
