@@ -7,6 +7,8 @@ import { processRawPolymarketEvent } from '@/features/polymarket/utils/transform
 import { getSportsEventsStartTimeRange } from '@/features/polymarket/utils/getSportsEventsDateRange';
 import { fetchTeamsForGameEvents } from '@/features/polymarket/utils/sports';
 
+const VOLUME_MIN = '1000';
+
 type PolymarketSportsEventsStoreState = {
   selectedLeagueId: string;
   setSelectedLeagueId: (leagueId: string) => void;
@@ -41,6 +43,7 @@ async function fetchPolymarketSportsEvents(_: Record<string, never>, abortContro
   url.searchParams.set('ascending', 'false');
   url.searchParams.set('start_time_min', minStartTime);
   url.searchParams.set('start_time_max', maxStartTime);
+  url.searchParams.set('volume_min', VOLUME_MIN);
 
   const { data: events }: { data: RawPolymarketEvent[] } = await rainbowFetch(url.toString(), {
     abortController,
