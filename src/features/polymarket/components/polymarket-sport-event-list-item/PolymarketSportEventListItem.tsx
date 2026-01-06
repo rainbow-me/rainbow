@@ -3,7 +3,7 @@ import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
-import { Text, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
+import { Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarketLiveGame';
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { parsePeriod, parseScore, selectGameInfo, type PolymarketEventGameInfo } from '@/features/polymarket/utils/sports';
@@ -28,6 +28,7 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
   style?: StyleProp<ViewStyle>;
 }) {
   const cardBackground = useBackgroundColor('fillSecondary');
+  const fillTertiary = useBackgroundColor('fillTertiary');
   const borderColor = useForegroundColor('separatorSecondary');
 
   const liveGame = usePolymarketLiveGame(event.live && !event.ended ? event.gameId : undefined);
@@ -35,7 +36,18 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
   const isLive = gameInfo.live && !gameInfo.ended;
   const { labels: teamLabels, title } = useMemo(() => getTeamDisplayInfo(event), [event]);
   const scores = useMemo(() => (isLive ? (gameInfo.score ? parseScore(gameInfo.score) : null) : null), [gameInfo.score, isLive]);
-  const subtitle = useMemo(() => getSubtitle({ event, gameInfo, isLive }), [event, gameInfo, isLive]);
+  const periodTitle = useMemo(
+    () =>
+      isLive
+        ? getPeriodTitle({
+            period: gameInfo.period ?? '',
+            elapsed: gameInfo.elapsed,
+            score: gameInfo.score ?? '',
+          })
+        : undefined,
+    [isLive, gameInfo.period, gameInfo.elapsed, gameInfo.score]
+  );
+  const subtitle = useMemo(() => (isLive ? undefined : getSubtitle({ event, gameInfo, isLive })), [event, gameInfo, isLive]);
   const betRows = useMemo(() => buildBetRows(event, teamLabels), [event, teamLabels]);
   const showScores = isLive || gameInfo.ended;
 
@@ -48,7 +60,23 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
           <Text align="left" color="label" size="13pt" weight="heavy" numberOfLines={2}>
             {title}
           </Text>
-          {subtitle ? (
+          {isLive ? (
+            <View style={styles.liveIndicator}>
+              <View style={styles.liveIndicatorLeft}>
+                <View style={styles.liveDot} />
+                <TextShadow blur={10} shadowOpacity={0.5}>
+                  <Text align="center" size="10pt" style={{ letterSpacing: 0.6 }} weight="heavy" color={{ custom: '#FF584D' }}>
+                    {i18n.t(i18n.l.predictions.sports.live)}
+                  </Text>
+                </TextShadow>
+              </View>
+              <View style={[styles.periodPill, { backgroundColor: fillTertiary, borderColor }]}>
+                <Text align="right" size="10pt" weight="bold" color="labelTertiary">
+                  {periodTitle}
+                </Text>
+              </View>
+            </View>
+          ) : subtitle ? (
             <Text align="left" color="labelSecondary" size="10pt" weight="bold" numberOfLines={1}>
               {subtitle}
             </Text>
@@ -190,6 +218,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: BET_ROW_HEIGHT,
     width: BET_ROW_WIDTH,
+  },
+  liveDot: {
+    backgroundColor: '#FF584D',
+    borderRadius: 3,
+    height: 6,
+    width: 6,
+  },
+  liveIndicator: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  liveIndicatorLeft: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 5,
+  },
+  periodPill: {
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 20,
+    justifyContent: 'center',
+    paddingHorizontal: 5,
   },
   betRow: {
     flexDirection: 'row',
