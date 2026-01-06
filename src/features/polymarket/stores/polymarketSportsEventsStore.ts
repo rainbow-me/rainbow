@@ -14,7 +14,7 @@ type PolymarketSportsEventsStoreState = {
   setSelectedLeagueId: (leagueId: string) => void;
 };
 
-export const usePolymarketSportsEventsStore = createQueryStore<PolymarketEvent[], Record<string, never>, PolymarketSportsEventsStoreState>(
+export const usePolymarketSportsEventsStore = createQueryStore<PolymarketEvent[], never, PolymarketSportsEventsStoreState>(
   {
     fetcher: fetchPolymarketSportsEvents,
     staleTime: time.minutes(2),
@@ -23,15 +23,14 @@ export const usePolymarketSportsEventsStore = createQueryStore<PolymarketEvent[]
   set => ({
     selectedLeagueId: DEFAULT_SPORTS_LEAGUE_KEY,
     setSelectedLeagueId: (leagueId: string) => set({ selectedLeagueId: leagueId }),
-  }),
-  { storageKey: 'polymarketSportsEventsStore' }
+  })
 );
 
 export function prefetchPolymarketSportsEvents() {
   usePolymarketSportsEventsStore.getState().fetch();
 }
 
-async function fetchPolymarketSportsEvents(_: Record<string, never>, abortController: AbortController | null): Promise<PolymarketEvent[]> {
+async function fetchPolymarketSportsEvents(_: never, abortController: AbortController | null): Promise<PolymarketEvent[]> {
   const { minStartTime, maxStartTime } = getSportsEventsStartTimeRange();
   const url = new URL(`${POLYMARKET_GAMMA_API_URL}/events`);
   url.searchParams.set('limit', '500');
