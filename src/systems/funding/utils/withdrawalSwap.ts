@@ -1,3 +1,4 @@
+import type { Address } from 'viem';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
 
@@ -13,7 +14,7 @@ export type WithdrawalSwapRequirement = {
 };
 
 type DetermineSwapKindParams = {
-  buyTokenAddress: string | null;
+  buyTokenAddress: AddressOrEth | null;
   route: RouteConfig;
   targetChainId: ChainId | undefined;
 };
@@ -35,7 +36,7 @@ function isSameAddress(a: AddressOrEth, b: string): boolean {
 /**
  * Resolves the token address for a specific chain from token network data.
  */
-export function resolveTokenAddressForChain(tokenData: WithdrawalTokenData | null, chainId: ChainId | undefined): string | null {
+export function resolveTokenAddressForChain(tokenData: WithdrawalTokenData | null, chainId: ChainId | undefined): AddressOrEth | null {
   if (!tokenData || !chainId) return null;
   return tokenData.networks[String(chainId)]?.address ?? null;
 }
