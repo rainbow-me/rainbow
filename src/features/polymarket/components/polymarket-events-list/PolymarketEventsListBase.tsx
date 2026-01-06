@@ -2,7 +2,7 @@ import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react
 import { FlatList } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { ComponentProps, ComponentType, ReactElement, memo, useMemo } from 'react';
+import { ComponentProps, ComponentType, ReactElement, RefObject, memo, useMemo } from 'react';
 import { NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -22,7 +22,7 @@ type ListProps = Pick<ComponentProps<typeof FlatList>, 'onEndReached' | 'onEndRe
 type PolymarketEventsListBaseProps = {
   ListHeaderComponent?: ComponentType | ReactElement | null;
   events: PolymarketEvent[];
-  listRef?: React.RefObject<Animated.FlatList<PolymarketEvent> | null>;
+  listRef?: RefObject<Animated.FlatList<any> | null>;
   onEndReached?: () => void;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 } & ListProps;

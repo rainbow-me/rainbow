@@ -19,6 +19,7 @@ export const usePolymarketEventsStore = createQueryStore<PolymarketEvent[], Poly
     fetcher: fetchPolymarketEvents,
     staleTime: time.minutes(2),
     cacheTime: time.minutes(20),
+    enabled: ($, store) => $(store, state => state.tagId !== 'sports'),
     params: { tagId: ($, store) => $(store).tagId },
   },
   set => ({

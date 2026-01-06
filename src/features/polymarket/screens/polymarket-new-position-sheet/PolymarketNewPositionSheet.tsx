@@ -26,7 +26,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
-import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeTitles';
+import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
@@ -103,7 +103,14 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     } catch (e) {
       const error = ensureError(e);
       logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', error));
-      Alert.alert(i18n.t(i18n.l.predictions.errors.title), i18n.t(i18n.l.predictions.errors.failed_to_place_bet));
+
+      if (error.message === "order couldn't be fully filled. FOK orders are fully filled or killed.") {
+        Alert.alert('Not enough liquidity to place full order.', 'Please lower the amount and try again.');
+      } else if (error.message === 'no match') {
+        Alert.alert('No liquidity at this price. Please try a different price.');
+      } else {
+        Alert.alert(i18n.t(i18n.l.predictions.errors.title), i18n.t(i18n.l.predictions.errors.failed_to_place_bet));
+      }
 
       analytics.track(analytics.event.predictionsPlaceOrderFailed, {
         eventSlug: event.slug,

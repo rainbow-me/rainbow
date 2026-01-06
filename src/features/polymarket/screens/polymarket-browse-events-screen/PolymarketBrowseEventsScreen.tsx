@@ -7,10 +7,12 @@ import { useColorMode } from '@/design-system';
 import { POLYMARKET_BACKGROUND_DARK, POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { PolymarketEventsListBase } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListBase';
 import { PolymarketEventCategorySelector } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketEventCategorySelector';
+import { PolymarketSportsEventsScreen } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketSportsEventsScreen';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { LEAGUE_SELECTOR_HEIGHT } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketLeagueSelector';
 
 export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEventsScreen() {
   return (
@@ -26,6 +28,7 @@ const EMPTY_EVENTS: PolymarketEvent[] = [];
 const PolymarketBrowseEventsList = () => {
   const { isDarkMode } = useColorMode();
   const { eventsListRef } = usePolymarketContext();
+  const isSportsCategory = usePolymarketEventsStore(state => state.tagId === 'sports');
 
   const scrollOffset = useSharedValue(0);
   const onScroll = useScrollFadeHandler(scrollOffset);
@@ -42,8 +45,8 @@ const PolymarketBrowseEventsList = () => {
 
   return (
     <View style={styles.listContainer}>
-      <EventsList onScroll={onScroll} />
-      <ScrollHeaderFade color={backgroundColor} scrollOffset={scrollOffset} />
+      {isSportsCategory ? <PolymarketSportsEventsScreen listRef={eventsListRef} onScroll={onScroll} /> : <EventsList onScroll={onScroll} />}
+      <ScrollHeaderFade color={backgroundColor} scrollOffset={scrollOffset} topInset={isSportsCategory ? LEAGUE_SELECTOR_HEIGHT + 16 : 0} />
     </View>
   );
 };

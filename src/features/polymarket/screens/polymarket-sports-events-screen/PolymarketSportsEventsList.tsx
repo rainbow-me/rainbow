@@ -1,0 +1,373 @@
+import { memo, useMemo, RefObject } from 'react';
+import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { format } from 'date-fns';
+import { Text, useForegroundColor } from '@/design-system';
+import * as i18n from '@/languages';
+import { DEFAULT_SPORTS_LEAGUE_KEY, NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
+import {
+  PolymarketSportEventListItem,
+  HEIGHT as ITEM_HEIGHT,
+  LoadingSkeleton,
+} from '@/features/polymarket/components/polymarket-sport-event-list-item/PolymarketSportEventListItem';
+import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
+import { getSportsEventsDayBoundaries } from '@/features/polymarket/utils/getSportsEventsDateRange';
+import { getLeague, getLeagueId, getLeagueSlugId, LEAGUE_LIST_ORDER } from '@/features/polymarket/leagues';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
+
+const ITEM_GAP = 8;
+const EMPTY_EVENTS: PolymarketEvent[] = [];
+
+type SportsEventsListProps = {
+  listRef?: RefObject<Animated.FlatList<SportsListItem> | null>;
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+};
+
+type EventItem = {
+  type: 'event';
+  key: string;
+  event: PolymarketEvent;
+};
+
+type SectionHeaderItem = {
+  type: 'header';
+  key: string;
+  title: string;
+  isLive?: boolean;
+};
+
+type LeagueHeaderItem = {
+  type: 'league-header';
+  key: string;
+  title: string;
+  eventSlug: string;
+};
+
+type SectionSeparatorItem = {
+  type: 'separator';
+  key: string;
+};
+
+export type SportsListItem = EventItem | SectionHeaderItem | LeagueHeaderItem | SectionSeparatorItem;
+
+export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsList({ listRef, onScroll }: SportsEventsListProps) {
+  const safeAreaInsets = useSafeAreaInsets();
+  const events = usePolymarketSportsEventsStore(state => state.getData() ?? EMPTY_EVENTS);
+  const selectedLeagueId = usePolymarketSportsEventsStore(state => state.selectedLeagueId);
+  const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading'));
+
+  const filteredEvents = useMemo(() => {
+    if (!selectedLeagueId || selectedLeagueId === DEFAULT_SPORTS_LEAGUE_KEY) return events;
+    return events.filter(event => getLeagueId(event.slug) === selectedLeagueId);
+  }, [events, selectedLeagueId]);
+
+  const showLeagueHeaders = !selectedLeagueId || selectedLeagueId === DEFAULT_SPORTS_LEAGUE_KEY;
+  const listData = useMemo(() => buildListData(filteredEvents, showLeagueHeaders), [filteredEvents, showLeagueHeaders]);
+
+  const listStyles = useMemo(() => {
+    const paddingBottom = safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT + NAVIGATOR_FOOTER_CLEARANCE;
+    return {
+      contentContainerStyle: { minHeight: DEVICE_HEIGHT, paddingBottom, paddingHorizontal: 12, paddingTop: ITEM_GAP },
+      scrollIndicatorInsets: { bottom: paddingBottom },
+    };
+  }, [safeAreaInsets.bottom]);
+
+  return (
+    <Animated.FlatList
+      ListEmptyComponent={isLoading ? <ListLoadingSkeleton /> : <EmptyState />}
+      contentContainerStyle={listStyles.contentContainerStyle}
+      data={listData}
+      initialNumToRender={6}
+      keyExtractor={keyExtractor}
+      maxToRenderPerBatch={6}
+      onScroll={onScroll}
+      ref={listRef}
+      renderItem={renderItem}
+      scrollIndicatorInsets={listStyles.scrollIndicatorInsets}
+      style={styles.list}
+      windowSize={12}
+    />
+  );
+});
+
+const ListLoadingSkeleton = memo(function ListLoadingSkeleton() {
+  return (
+    <View style={styles.skeletonContainer}>
+      {Array.from({ length: 6 }).map((_, index) => (
+        <View key={index} style={styles.skeletonItemWrapper}>
+          <LoadingSkeleton />
+        </View>
+      ))}
+    </View>
+  );
+});
+
+const EmptyState = memo(function EmptyState() {
+  return (
+    <View style={styles.emptyStateContainer}>
+      <Text align="center" color="labelSecondary" size="17pt" weight="bold">
+        {i18n.t(i18n.l.predictions.search.no_results)}
+      </Text>
+    </View>
+  );
+});
+
+const SectionHeader = memo(function SectionHeader({ title, isLive }: { title: string; isLive?: boolean }) {
+  const liveIndicatorColor = useForegroundColor('red');
+  return (
+    <View style={styles.sectionHeader}>
+      <View style={styles.sectionHeaderContent}>
+        {isLive ? <View style={[styles.liveIndicator, { backgroundColor: liveIndicatorColor }]} /> : null}
+        <Text align="left" color="label" size="20pt" weight="heavy">
+          {title}
+        </Text>
+      </View>
+    </View>
+  );
+});
+
+const LeagueHeader = memo(function LeagueHeader({ title, eventSlug }: { title: string; eventSlug: string }) {
+  return (
+    <View style={styles.leagueHeader}>
+      <LeagueIcon eventSlug={eventSlug} size={28} />
+      <Text align="left" color="label" size="22pt" weight="heavy">
+        {title}
+      </Text>
+    </View>
+  );
+});
+
+const SectionSeparator = memo(function SectionSeparator() {
+  const separatorColor = useForegroundColor('separatorSecondary');
+  return (
+    <View style={styles.sectionSeparatorContainer}>
+      <View style={[styles.sectionSeparatorLine, { backgroundColor: separatorColor }]} />
+    </View>
+  );
+});
+
+function renderItem({ item }: { item: SportsListItem }) {
+  if (item.type === 'header') {
+    return <SectionHeader isLive={item.isLive} title={item.title} />;
+  }
+  if (item.type === 'league-header') {
+    return <LeagueHeader title={item.title} eventSlug={item.eventSlug} />;
+  }
+  if (item.type === 'separator') {
+    return <SectionSeparator />;
+  }
+  return <PolymarketSportEventListItem event={item.event} style={styles.eventItemWrapper} />;
+}
+
+function keyExtractor(item: SportsListItem): string {
+  return item.key;
+}
+
+function buildListData(events: PolymarketEvent[], showLeagueHeaders: boolean): SportsListItem[] {
+  if (!events.length) return [];
+
+  const { startOfToday, startOfTomorrow, startOfDayAfterTomorrow } = getSportsEventsDayBoundaries();
+  const startOfTodayMs = startOfToday.getTime();
+  const startOfTomorrowMs = startOfTomorrow.getTime();
+  const startOfDayAfterTomorrowMs = startOfDayAfterTomorrow.getTime();
+
+  const liveEvents: PolymarketEvent[] = [];
+  const todayEvents: PolymarketEvent[] = [];
+  const tomorrowEvents: PolymarketEvent[] = [];
+
+  for (const event of events) {
+    if (event.live && !event.ended) {
+      liveEvents.push(event);
+      continue;
+    }
+
+    const startTime = getTimestamp(event.startTime);
+    const endTime = getTimestamp(event.endDate);
+    const bucket = getTimeBucket({
+      timestamp: startTime ?? endTime ?? startOfTodayMs,
+      startOfTodayMs,
+      startOfTomorrowMs,
+      startOfDayAfterTomorrowMs,
+    });
+
+    if (bucket === 'today') {
+      todayEvents.push(event);
+      continue;
+    }
+    if (bucket === 'tomorrow') {
+      tomorrowEvents.push(event);
+      continue;
+    }
+
+    if (startTime != null && endTime != null && startTime !== endTime) {
+      const fallbackBucket = getTimeBucket({ timestamp: endTime, startOfTodayMs, startOfTomorrowMs, startOfDayAfterTomorrowMs });
+      if (fallbackBucket === 'today') {
+        todayEvents.push(event);
+      } else if (fallbackBucket === 'tomorrow') {
+        tomorrowEvents.push(event);
+      }
+    }
+  }
+
+  const items: SportsListItem[] = [];
+  const tomorrowLabel = format(startOfTomorrow, 'EEE, MMM d', { locale: i18n.getDateFnsLocale() });
+
+  const sections = [
+    { key: 'live', title: i18n.t(i18n.l.predictions.sports.live), events: liveEvents },
+    { key: 'today', title: i18n.t(i18n.l.time.today_caps), events: todayEvents },
+    { key: 'tomorrow', title: tomorrowLabel, events: tomorrowEvents },
+  ];
+
+  for (const section of sections) {
+    if (!section.events.length) continue;
+    if (items.length) {
+      items.push({ type: 'separator', key: `separator-${section.key}` });
+    }
+    pushSection({ items, title: section.title, events: section.events, sectionKey: section.key, showLeagueHeaders });
+  }
+
+  return items;
+}
+
+function pushSection({
+  items,
+  title,
+  events,
+  sectionKey,
+  showLeagueHeaders,
+}: {
+  items: SportsListItem[];
+  title: string;
+  events: PolymarketEvent[];
+  sectionKey: string;
+  showLeagueHeaders: boolean;
+}) {
+  if (!events.length) return;
+  items.push({ type: 'header', key: `header-${sectionKey}`, title, isLive: sectionKey === 'live' });
+  const leagueGroups = groupEventsByLeague(events);
+  for (const group of leagueGroups) {
+    if (showLeagueHeaders) {
+      items.push({ type: 'league-header', key: `league-${sectionKey}-${group.key}`, title: group.title, eventSlug: group.events[0].slug });
+    }
+    items.push(...buildEventItems(group.events, `${sectionKey}-${group.key}`));
+  }
+}
+
+function buildEventItems(events: PolymarketEvent[], sectionKey: string): EventItem[] {
+  return events.map((event, index) => ({
+    type: 'event',
+    key: `event-${sectionKey}-${event.id}-${index}`,
+    event,
+  }));
+}
+
+function groupEventsByLeague(events: PolymarketEvent[]) {
+  const groups = new Map<string, { key: string; title: string; events: PolymarketEvent[] }>();
+  for (const event of events) {
+    const leagueId = getLeagueId(event.slug);
+    const league = getLeague(event.slug);
+    const leagueSlugId = getLeagueSlugId(event.slug);
+    const key = leagueId ?? leagueSlugId ?? 'unknown';
+    const title = league?.name ?? (leagueSlugId ? leagueSlugId.toUpperCase() : i18n.t(i18n.l.predictions.bet_types.other));
+    const existing = groups.get(key) ?? { key, title, events: [] };
+    existing.events.push(event);
+    groups.set(key, existing);
+  }
+
+  // Sort events within each group by earliest start time
+  for (const group of groups.values()) {
+    group.events.sort((a, b) => {
+      const aTime = getTimestamp(a.startTime) ?? Infinity;
+      const bTime = getTimestamp(b.startTime) ?? Infinity;
+      return aTime - bTime;
+    });
+  }
+
+  return Array.from(groups.values()).sort((a, b) => {
+    const aIndex = LEAGUE_LIST_ORDER.indexOf(a.key as (typeof LEAGUE_LIST_ORDER)[number]);
+    const bIndex = LEAGUE_LIST_ORDER.indexOf(b.key as (typeof LEAGUE_LIST_ORDER)[number]);
+    if (aIndex === -1 && bIndex === -1) return 0;
+    if (aIndex === -1) return 1;
+    if (bIndex === -1) return -1;
+    return aIndex - bIndex;
+  });
+}
+
+function getTimestamp(value?: string): number | null {
+  if (!value) return null;
+  const timestamp = new Date(value).getTime();
+  return Number.isNaN(timestamp) ? null : timestamp;
+}
+
+function getTimeBucket({
+  timestamp,
+  startOfTodayMs,
+  startOfTomorrowMs,
+  startOfDayAfterTomorrowMs,
+}: {
+  timestamp: number;
+  startOfTodayMs: number;
+  startOfTomorrowMs: number;
+  startOfDayAfterTomorrowMs: number;
+}) {
+  if (timestamp >= startOfTodayMs && timestamp < startOfTomorrowMs) return 'today';
+  if (timestamp >= startOfTomorrowMs && timestamp < startOfDayAfterTomorrowMs) return 'tomorrow';
+  return null;
+}
+
+const styles = StyleSheet.create({
+  list: {
+    flex: 1,
+  },
+  eventItemWrapper: {
+    marginBottom: 8,
+  },
+  sectionHeader: {
+    paddingLeft: 12,
+  },
+  sectionHeaderContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  liveIndicator: {
+    height: 8,
+    width: 8,
+    borderRadius: 4,
+  },
+  leagueHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingTop: 16 - ITEM_GAP + 8,
+    paddingBottom: 16,
+    paddingLeft: 12,
+  },
+  skeletonContainer: {
+    flex: 1,
+    gap: ITEM_GAP,
+  },
+  emptyStateContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 24,
+  },
+  skeletonItemWrapper: {
+    height: ITEM_HEIGHT,
+    width: '100%',
+  },
+  sectionSeparatorContainer: {
+    paddingTop: 20 - ITEM_GAP,
+    paddingBottom: 20,
+    paddingHorizontal: 12,
+  },
+  sectionSeparatorLine: {
+    height: 1,
+    width: '100%',
+  },
+});
