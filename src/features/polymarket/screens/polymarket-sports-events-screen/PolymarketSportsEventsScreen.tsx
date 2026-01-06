@@ -6,6 +6,8 @@ import {
 } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketSportsEventsList';
 import Animated from 'react-native-reanimated';
 import { PolymarketLeagueSelector } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketLeagueSelector';
+import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
+import { useListen } from '@/state/internal/hooks/useListen';
 
 type PolymarketSportsEventsScreenProps = {
   listRef?: RefObject<Animated.FlatList<SportsListItem> | null>;
@@ -16,6 +18,14 @@ export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEvents
   listRef,
   onScroll,
 }: PolymarketSportsEventsScreenProps) {
+  useListen(
+    usePolymarketSportsEventsStore,
+    state => state.selectedLeagueId,
+    () => {
+      listRef?.current?.scrollToOffset({ offset: 0, animated: true });
+    }
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.leagueSelectorContainer}>
