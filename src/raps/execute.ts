@@ -1,14 +1,19 @@
 /* eslint-disable no-async-promise-executor */
 /* eslint-disable no-promise-executor-return */
 import { Signer } from '@ethersproject/abstract-signer';
+import { Wallet } from '@ethersproject/wallet';
+import { type BatchCall, executeBatchedTransaction, supportsDelegation } from '@rainbow-me/delegation';
 
 import { ChainId } from '@/state/backendNetworks/types';
 import { RainbowError, logger } from '@/logger';
 import { claim, swap, unlock } from './actions';
-import { crosschainSwap } from './actions/crosschainSwap';
+import { crosschainSwap, prepareCrosschainSwap } from './actions/crosschainSwap';
 import { claimBridge } from './actions/claimBridge';
+import { prepareUnlock } from './actions/unlock';
+import { prepareSwap } from './actions/swap';
 import {
   ActionProps,
+  PrepareActionProps,
   Rap,
   RapAction,
   RapActionResponse,
@@ -21,11 +26,15 @@ import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
 import { createClaimAndBridgeRap } from './claimAndBridge';
 import { createUnlockAndSwapRap } from './unlockAndSwap';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
+import type { NewTransaction } from '@/entities/transactions';
 import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { createClaimClaimableRap } from './claimClaimable';
 import { claimClaimable } from './actions/claimClaimable';
 import { IS_TEST } from '@/env';
+import { getProvider } from '@/handlers/web3';
+import { Address } from 'viem';
+import { addNewTransaction } from '@/state/pendingTransactions';
 
 const PERF_TRACKING_EXEMPTIONS: RapTypes[] = ['claimBridge', 'claimClaimable'];
 
@@ -64,6 +73,21 @@ function typeAction<T extends RapActionTypes>(type: T, props: ActionProps<T>) {
     default:
       // eslint-disable-next-line react/display-name
       return () => null;
+  }
+}
+
+type PrepareActionResult = { call: BatchCall | null } | { call: BatchCall; transaction: Omit<NewTransaction, 'hash'> };
+
+function typePrepareAction<T extends RapActionTypes>(type: T, props: PrepareActionProps<T>): () => Promise<PrepareActionResult> {
+  switch (type) {
+    case 'unlock':
+      return () => prepareUnlock(props as PrepareActionProps<'unlock'>);
+    case 'swap':
+      return () => prepareSwap(props as PrepareActionProps<'swap'>);
+    case 'crosschainSwap':
+      return () => prepareCrosschainSwap(props as PrepareActionProps<'crosschainSwap'>);
+    default:
+      throw new Error(`Action type "${type}" does not support atomic execution`);
   }
 }
 
@@ -148,6 +172,86 @@ export const walletExecuteRap = async <T extends RapTypes>(
   const { actions } = rap;
   const rapName = getRapFullName(rap.actions);
 
+  // Atomic execution path
+  if (parameters.atomic && (type === 'swap' || type === 'crosschainSwap') && getCanDelegate({ chainId: parameters.chainId })) {
+    const swapParams = parameters as RapSwapActionParameters<'swap' | 'crosschainSwap'>;
+    const { chainId, quote, gasParams } = swapParams;
+    const provider = getProvider({ chainId });
+    const eip1559 = gasParams as TransactionGasParamAmounts;
+
+    if (!quote) {
+      return { nonce: undefined, hash: null, errorMessage: 'Quote is required for atomic execution' };
+    }
+
+    try {
+      const calls: BatchCall[] = [];
+      let pendingTransaction: Omit<NewTransaction, 'hash'> | null = null;
+
+      for (const action of actions) {
+        const prepareResult = await typePrepareAction(action.type, {
+          parameters: action.parameters,
+          wallet,
+          chainId,
+          quote,
+        } as PrepareActionProps<typeof action.type>)();
+
+        if (prepareResult.call) {
+          calls.push(prepareResult.call);
+        }
+        if ('transaction' in prepareResult) {
+          pendingTransaction = prepareResult.transaction;
+        }
+      }
+
+      if (!calls.length) {
+        return { nonce: undefined, hash: null, errorMessage: 'No calls to execute' };
+      }
+
+      const result = await executeFn(executeBatchedTransaction, {
+        screen: Screens.SWAPS,
+        operation: TimeToSignOperation.BroadcastTransaction,
+        metadata: { degenMode: swapsStore.getState().degenMode },
+      })({
+        signer: wallet as Wallet,
+        address: quote.from as Address,
+        chainId,
+        provider,
+        calls,
+        value: BigInt(quote.value?.toString() ?? '0'),
+        transactionOptions: {
+          maxFeePerGas: BigInt(eip1559.maxFeePerGas),
+          maxPriorityFeePerGas: BigInt(eip1559.maxPriorityFeePerGas),
+          gasLimit: null,
+        },
+      });
+
+      if (!result.hash) {
+        return { nonce: undefined, hash: null, errorMessage: 'Transaction failed - no hash returned' };
+      }
+
+      if (pendingTransaction) {
+        const transaction: NewTransaction = {
+          ...pendingTransaction,
+          hash: result.hash,
+        };
+        addNewTransaction({
+          address: quote.from,
+          chainId,
+          transaction,
+        });
+      }
+
+      logger.debug(`[${rapName}] executed atomically`, { hash: result.hash });
+      return { nonce: swapParams.nonce, hash: result.hash, errorMessage: null };
+    } catch (error) {
+      logger.error(new RainbowError(`[raps/execute]: ${rapName} - atomic execution failed`), {
+        message: (error as Error)?.message,
+      });
+      return { nonce: undefined, hash: null, errorMessage: (error as Error)?.message ?? 'Unknown error' };
+    }
+  }
+
+  // Sequential execution path
   let nonce = parameters?.nonce;
   let errorMessage: string | null = null;
   let hash: string | null = null;
