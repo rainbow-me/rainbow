@@ -1,5 +1,4 @@
 import { Canvas, DrawingNodeProps, Fill, Group, LinearGradient, Path, Rect, Shadow, SkiaProps, vec } from '@shopify/react-native-skia';
-import { getSvgPath } from 'figma-squircle';
 import React, { ReactElement, ReactNode, memo, useMemo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { convertToRGBA } from 'react-native-reanimated';
@@ -10,6 +9,7 @@ import { BackgroundColor, globalColors } from '@/design-system/color/palettes';
 import { IS_IOS } from '@/env';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { getSquirclePath } from '@/design-system/layout/shapes';
 
 type ValueByTheme<T extends string | number | boolean | null | undefined> = { dark: T; light: T } | T;
 
@@ -145,25 +145,6 @@ const CardHighlights = memo(function CardHighlights({
     </>
   );
 });
-
-export function getSquirclePath({
-  borderRadius,
-  cornerSmoothing = IS_IOS ? 0.6 : 0,
-  height,
-  width,
-}: {
-  borderRadius: number;
-  cornerSmoothing?: number;
-  height: number;
-  width: number;
-}): string {
-  return getSvgPath({
-    cornerRadius: borderRadius,
-    cornerSmoothing,
-    height,
-    width,
-  });
-}
 
 function getStrokeGradientConfig(strokeOpacity: { start: number; end: number }) {
   return {

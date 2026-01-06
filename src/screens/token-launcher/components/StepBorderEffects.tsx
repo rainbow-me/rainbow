@@ -5,7 +5,7 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import Animated, { interpolate, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { useForegroundColor } from '@/design-system';
-import { getSquirclePath } from '@/components/cards/skia-cards/SkiaCard';
+import { getSquirclePath } from '@/design-system/layout/shapes';
 
 export const StepBorderEffects = memo(function StepBorderEffects({ width, height }: { width: number; height: number }) {
   const separatorSecondaryColor = useForegroundColor('separatorSecondary');
