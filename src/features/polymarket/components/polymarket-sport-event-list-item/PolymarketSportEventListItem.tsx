@@ -37,6 +37,7 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
   const scores = useMemo(() => (isLive ? (gameInfo.score ? parseScore(gameInfo.score) : null) : null), [gameInfo.score, isLive]);
   const subtitle = useMemo(() => getSubtitle({ event, gameInfo, isLive }), [event, gameInfo, isLive]);
   const betRows = useMemo(() => buildBetRows(event, teamLabels), [event, teamLabels]);
+  const showScores = isLive || gameInfo.ended;
 
   const teamLabelFontSize = useMemo(() => (teamLabels[0].length > 14 || teamLabels[1].length > 14 ? '10pt' : '13pt'), [teamLabels]);
 
@@ -69,7 +70,7 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
             </View>
           </View>
           <View style={styles.rightColumn}>
-            {isLive ? (
+            {showScores ? (
               <View style={styles.scoreColumn}>
                 <View style={styles.scoreRow}>
                   <Text align="right" color="label" size="13pt" weight="heavy" numberOfLines={1}>
@@ -160,6 +161,10 @@ function getSubtitle({ event, gameInfo, isLive }: { event: PolymarketEvent; game
       score: gameInfo.score ?? '',
     });
     return `${i18n.t(i18n.l.predictions.sports.live)} • ${periodTitle}`;
+  }
+
+  if (gameInfo.ended) {
+    return i18n.t(i18n.l.predictions.sports.final).toUpperCase();
   }
 
   const startTime = gameInfo.startTime ?? event.startDate;

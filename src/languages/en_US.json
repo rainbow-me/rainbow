@@ -3826,7 +3826,8 @@
       "sports": {
         "vs": "VS",
         "live": "LIVE",
-        "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}"
+        "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}",
+        "final": "Final"
       },
       "outcomes": {
         "yes": "Yes",
