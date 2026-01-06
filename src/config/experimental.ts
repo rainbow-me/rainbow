@@ -42,6 +42,7 @@ export const CANDLESTICK_DATA_MONITOR = 'Candlestick Data Monitor';
 export const KING_OF_THE_HILL_TAB = 'King of the Hill Tab';
 export const RAINBOW_TOASTS = 'Rainbow Toasts';
 export const PERPS = 'Perps';
+export const POLYMARKET = 'Polymarket';
 export const DEFI_POSITIONS_THRESHOLD_FILTER = 'DeFi Minimum Value Filter';
 
 /**
@@ -94,6 +95,7 @@ const config = {
   [RAINBOW_TOASTS]: { settings: true, value: false },
   [PERPS]: { settings: true, value: false },
   [DEFI_POSITIONS_THRESHOLD_FILTER]: { settings: true, value: true },
+  [POLYMARKET]: { settings: true, value: false },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */

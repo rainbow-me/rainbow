@@ -38,6 +38,8 @@ import { ChartTime } from '@/hooks/charts/useChartInfo';
 import { AreAllKeysOptional, ExtractOptionalKeys } from '@/types/objects';
 import { ScrollView } from 'react-native';
 import { HlTrade, PerpMarket, PerpsPosition, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
+import { PolymarketPosition } from '@/features/polymarket/types';
+import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 
 export type PortalSheetProps = {
   children: React.FC;
@@ -139,6 +141,10 @@ export const gasTrendToTrendType: Record<GasTrend, keyof CurrentBaseFeeTypes> = 
 export type CurrentBaseFeeTypeKey = keyof CurrentBaseFeeTypes;
 
 export type PerpsRoute = typeof Routes.PERPS_ACCOUNT_SCREEN | typeof Routes.PERPS_SEARCH_SCREEN | typeof Routes.PERPS_NEW_POSITION_SCREEN;
+export type PolymarketRoute =
+  | typeof Routes.POLYMARKET_ACCOUNT_SCREEN
+  | typeof Routes.POLYMARKET_BROWSE_EVENTS_SCREEN
+  | typeof Routes.POLYMARKET_SEARCH_SCREEN;
 
 export interface ExplainSheetParameterMap extends CurrentBaseFeeTypes {
   network: { chainId: ChainId };
@@ -666,6 +672,33 @@ type RouteParams = {
   };
   [Routes.PERPS_TRADE_DETAILS_SHEET]: {
     trade: HlTrade;
+  };
+  [Routes.POLYMARKET_EVENT_SCREEN]: {
+    eventId: string;
+    event: PolymarketMarketEvent | PolymarketEvent;
+  };
+  [Routes.POLYMARKET_MANAGE_POSITION_SHEET]: {
+    position: PolymarketPosition;
+  };
+  [Routes.POLYMARKET_SELL_POSITION_SHEET]: {
+    position: PolymarketPosition;
+  };
+  [Routes.POLYMARKET_MARKET_SHEET]: {
+    market: PolymarketMarket;
+    event: PolymarketMarketEvent | PolymarketEvent;
+  };
+  [Routes.POLYMARKET_NEW_POSITION_SHEET]: {
+    market: PolymarketMarket;
+    outcomeIndex: number;
+    outcomeColor: string;
+    event: PolymarketMarketEvent | PolymarketEvent;
+    fromRoute: typeof Routes.POLYMARKET_EVENT_SCREEN | typeof Routes.POLYMARKET_MARKET_SHEET;
+  };
+  [Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET]: {
+    description: string;
+  };
+  [Routes.POLYMARKET_EXPLAIN_SHEET]: {
+    onDismiss?: () => void;
   };
 };
 

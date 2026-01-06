@@ -153,8 +153,8 @@ async function createTriggerOrder({ symbol, triggerOrder }: { symbol: string; tr
   await refetchHyperliquidStores();
 }
 
-export async function withdraw(amount: string): Promise<boolean> {
-  return await getHyperliquidExchangeClient().withdraw(amount);
+export async function withdraw(amount: string): Promise<void> {
+  await getHyperliquidExchangeClient().withdraw(amount);
 }
 
 function getMarket(symbol: string): PerpMarketWithMetadata {

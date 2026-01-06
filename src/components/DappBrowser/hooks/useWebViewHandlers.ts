@@ -29,7 +29,7 @@ interface UseWebViewHandlersParams {
   webViewRef: MutableRefObject<WebView | null>;
 }
 
-type MessengerWithUrl = Messenger & { url?: string };
+type MessengerWithUrl = Messenger & { url: string; tabId: string };
 
 export function useWebViewHandlers({
   addRecent,
@@ -46,6 +46,16 @@ export function useWebViewHandlers({
 
   const currentMessengerRef = useRef<MessengerWithUrl | null>(null);
   const logoRef = useRef<string | null>(null);
+
+  const getCurrentMessenger = useCallback(
+    (tabId: string, url: string) => {
+      if (!currentMessengerRef.current || currentMessengerRef.current.tabId !== tabId || currentMessengerRef.current.url !== url) {
+        currentMessengerRef.current = appMessenger(webViewRef, tabId, url);
+      }
+      return currentMessengerRef.current;
+    },
+    [webViewRef]
+  );
 
   const handleOnMessage = useCallback(
     (event: Partial<WebViewMessageEvent>) => {
@@ -97,8 +107,9 @@ export function useWebViewHandlers({
             });
           }
         } else {
-          const m = currentMessengerRef.current;
-          if (!m) return;
+          if (!event.nativeEvent?.url) return;
+          const { origin } = new URL(event.nativeEvent.url);
+          const m = getCurrentMessenger(tabId, origin);
 
           handleProviderRequestApp({
             messenger: m,
@@ -119,23 +130,7 @@ export function useWebViewHandlers({
         console.error('Error parsing message', e);
       }
     },
-    [addRecent, backgroundColor, setLogo, setTitle, tabId, titleRef]
-  );
-
-  const handleOnLoad = useCallback(
-    (event: WebViewEvent) => {
-      if (event.nativeEvent.loading) return;
-      const { origin } = new URL(event.nativeEvent.url);
-
-      if (typeof webViewRef !== 'function' && webViewRef.current) {
-        if (!webViewRef.current) {
-          return;
-        }
-        const messenger = appMessenger(webViewRef.current, tabId, origin);
-        currentMessengerRef.current = messenger;
-      }
-    },
-    [tabId, webViewRef]
+    [addRecent, backgroundColor, setLogo, setTitle, tabId, titleRef, getCurrentMessenger]
   );
 
   const handleShouldStartLoadWithRequest = useCallback(
@@ -202,7 +197,6 @@ export function useWebViewHandlers({
   return {
     handleNavigationStateChange,
     handleOnContentProcessDidTerminate,
-    handleOnLoad,
     handleOnLoadProgress,
     handleOnMessage,
     handleOnOpenWindow,

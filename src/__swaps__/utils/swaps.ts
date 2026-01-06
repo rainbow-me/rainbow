@@ -62,14 +62,23 @@ export type ResponseByTheme<T> = {
   dark: T;
 };
 
-export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean) => {
+export function getColorValueForThemeWorklet(values: ResponseByTheme<string> | undefined, isDarkMode: boolean): string;
+export function getColorValueForThemeWorklet<T>(
+  values: ResponseByTheme<T> | undefined,
+  isDarkMode: boolean,
+  fallbackColors: ResponseByTheme<T>
+): T;
+export function getColorValueForThemeWorklet<T>(
+  values: ResponseByTheme<string> | ResponseByTheme<T> | undefined,
+  isDarkMode: boolean,
+  fallbackColors?: ResponseByTheme<T>
+): T | string {
   'worklet';
-
   if (!values) {
-    return isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
+    return isDarkMode ? fallbackColors?.dark ?? ETH_COLOR_DARK : fallbackColors?.light ?? ETH_COLOR;
   }
   return isDarkMode ? values.dark : values.light;
-};
+}
 
 export const getHighContrastColor = (color: string): ResponseByTheme<string> => {
   if (color === ETH_COLOR) {

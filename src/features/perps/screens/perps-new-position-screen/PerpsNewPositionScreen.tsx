@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { Keyboard, ScrollView } from 'react-native';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import { Box, Separator, Stack, useColorMode } from '@/design-system';
-import { AmountInputCard } from '@/features/perps/components/AmountInputCard/AmountInputCard';
+import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
 import { LeverageInputCard } from './LeverageInputCard';
 import { POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING, PositionSideSelector } from './PositionSideSelector';
 import { DetailsSection } from './DetailsSection';
@@ -19,9 +19,11 @@ import { PerpMarket } from '@/features/perps/types';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 
 export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
   const { isDarkMode } = useColorMode();
+  const { accentColors } = usePerpsAccentColorContext();
   const market = useHlNewPositionStore(state => state.market);
   const availableBalance = useHyperliquidAccountStore(state => state.getBalance());
   const marketResetSignal = useHlNewPositionStore(state => state.marketResetSignal);
@@ -59,6 +61,8 @@ export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
               <Box gap={20}>
                 <AmountInputCard
                   availableBalance={availableBalance}
+                  accentColor={accentColors.opacity100}
+                  backgroundColor={accentColors.opacity8}
                   onAmountChange={hlNewPositionStoreActions.setAmount}
                   resetKey={resetKey}
                 />

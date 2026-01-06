@@ -12,6 +12,7 @@ import { ClaimablesStore } from '@/state/claimables/claimables';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { Collection, CollectionId } from '@/state/nfts/types';
 import { PerpsWalletListData } from '@/features/perps/types';
+import { PolymarketWalletListData } from '@/features/polymarket/types';
 
 const CONTENT_PLACEHOLDER: CellTypes[] = [
   { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-1' },
@@ -65,11 +66,13 @@ export type WalletSectionsState = {
   positions: RainbowPositions | null;
   claimables: ClaimablesStore | null;
   perpsData: PerpsWalletListData;
+  polymarketData: PolymarketWalletListData;
   remoteCards: string[];
   hasMoreCollections: boolean;
   isShowcaseDataMigrated: boolean;
   isHiddenDataMigrated: boolean;
   isDismissedPerpsFeatureCard?: boolean;
+  isDismissedPolymarketFeatureCard?: boolean;
 };
 
 const sortedAssetsSelector = (state: WalletSectionsState) => state.sortedAssets;
@@ -88,6 +91,7 @@ const isFetchingNftsSelector = (state: WalletSectionsState) => state.isFetchingN
 const positionsSelector = (state: WalletSectionsState) => state.positions;
 const claimablesSelector = (state: WalletSectionsState) => state.claimables;
 const perpsDataSelector = (state: WalletSectionsState) => state.perpsData;
+const polymarketDataSelector = (state: WalletSectionsState) => state.polymarketData;
 const remoteCardsSelector = (state: WalletSectionsState) => state.remoteCards;
 const hasMoreCollectionsSelector = (state: WalletSectionsState) => state.hasMoreCollections;
 const isShowcaseDataMigratedSelector = (state: WalletSectionsState) => state.isShowcaseDataMigrated;
@@ -95,6 +99,7 @@ const isHiddenDataMigratedSelector = (state: WalletSectionsState) => state.isHid
 const listTypeSelector = (state: WalletSectionsState) => state.listType;
 const isReadOnlyWalletSelector = (state: WalletSectionsState) => state.isReadOnlyWallet;
 const isDismissedPerpsFeatureCardSelector = (state: WalletSectionsState) => state.isDismissedPerpsFeatureCard;
+const isDismissedPolymarketFeatureCardSelector = (state: WalletSectionsState) => state.isDismissedPolymarketFeatureCard;
 
 interface BalanceSectionData {
   headerSection: CellTypes[];
@@ -126,24 +131,30 @@ const buildBriefWalletSections = (
   claimables: ClaimablesStore | null,
   positions: RainbowPositions | null,
   perpsData: PerpsWalletListData,
-  isDismissedPerpsFeatureCard?: boolean
+  polymarketData: PolymarketWalletListData,
+  isDismissedPerpsFeatureCard?: boolean,
+  isDismissedPolymarketFeatureCard?: boolean
 ): BriefWalletSectionsResult => {
   const { isEmpty, headerSection, contentSection, isLoadingUserAssets } = balanceSectionData;
 
+  // TODO: How to deal with this now that we have perps and polymarket similar data types? Should wait for Christian's wallet list refactor?
   const positionsSection = withPositionsSection(positions, isLoadingUserAssets);
   const claimablesSection = withClaimablesSection(claimables, isLoadingUserAssets);
   const perpsSection = withPerpsSection(perpsData);
+  const polymarketSection = withPolymarketSection(polymarketData);
   const hasPerpsContent = (perpsData?.hasBalance || perpsData?.hasPositions) && perpsData.enabled;
-  const shouldShowPerpsFeatureCard = perpsData?.enabled && !isDismissedPerpsFeatureCard;
-  const perpsFeatureCardSection = shouldShowPerpsFeatureCard ? withPerpsFeatureCardSection() : [];
+  const hasPolymarketContent = (polymarketData?.hasBalance || polymarketData?.hasPositions) && polymarketData.enabled;
+  const shouldShowPolymarketFeatureCard = polymarketData?.enabled && !isDismissedPolymarketFeatureCard;
+  const polymarketFeatureCardSection = shouldShowPolymarketFeatureCard ? withPolymarketFeatureCardSection() : [];
   const tokensHeaderSection = withTokensHeaderSection({ contentSection, perpsSection });
 
-  if (hasPerpsContent) {
+  if (hasPerpsContent && hasPolymarketContent) {
     return {
       briefSectionsData: [
         ...headerSection,
-        ...perpsFeatureCardSection,
+        ...polymarketFeatureCardSection,
         ...perpsSection,
+        ...polymarketSection,
         ...tokensHeaderSection,
         ...contentSection,
         ...claimablesSection,
@@ -152,13 +163,16 @@ const buildBriefWalletSections = (
       ],
       isEmpty,
     };
-  } else {
+  }
+  if (hasPerpsContent && !hasPolymarketContent) {
     return {
       briefSectionsData: [
         ...headerSection,
-        ...perpsFeatureCardSection,
-        ...contentSection,
+        ...polymarketFeatureCardSection,
         ...perpsSection,
+        ...tokensHeaderSection,
+        ...contentSection,
+        ...polymarketSection,
         ...claimablesSection,
         ...positionsSection,
         ...uniqueTokenFamiliesSection,
@@ -166,17 +180,30 @@ const buildBriefWalletSections = (
       isEmpty,
     };
   }
+  return {
+    briefSectionsData: [
+      ...headerSection,
+      ...polymarketFeatureCardSection,
+      ...contentSection,
+      ...perpsSection,
+      ...polymarketSection,
+      ...claimablesSection,
+      ...positionsSection,
+      ...uniqueTokenFamiliesSection,
+    ],
+    isEmpty,
+  };
 };
 
-const withPerpsFeatureCardSection = (): CellTypes[] => {
+const withPolymarketFeatureCardSection = (): CellTypes[] => {
   return [
     {
-      type: CellType.PERPS_FEATURE_CARD,
-      uid: 'perps-feature-card',
+      type: CellType.POLYMARKET_FEATURE_CARD,
+      uid: 'polymarket-feature-card',
     },
     {
       type: CellType.SPACER,
-      uid: 'perps-feature-card-after-spacer',
+      uid: 'polymarket-feature-card-after-spacer',
       height: 24,
     },
   ];
@@ -280,6 +307,53 @@ const withPerpsSection = (perpsData: PerpsWalletListData): CellTypes[] => {
         {
           type: CellType.PERPS_HEADER,
           uid: 'perps-header',
+        },
+      ];
+};
+
+const withPolymarketSection = (polymarketData: PolymarketWalletListData): CellTypes[] => {
+  if (!polymarketData.enabled) return [];
+
+  const polymarketSectionItems: CellTypes[] = [];
+  const hasPolymarketContent = polymarketData.hasBalance || polymarketData.hasPositions;
+
+  // Always show the balance if there are positions even if balance is zero
+  if (hasPolymarketContent) {
+    polymarketSectionItems.push({
+      type: CellType.POLYMARKET_BALANCE,
+      balance: polymarketData.balance,
+      uid: 'polymarket-balance',
+    });
+  }
+
+  if (polymarketData.hasPositions) {
+    polymarketData.positions.forEach((position, index) => {
+      polymarketSectionItems.push({
+        type: CellType.POLYMARKET_POSITION,
+        position,
+        uid: `polymarket-position-${position.slug}-${index}`,
+        index,
+      });
+    });
+  }
+
+  return hasPolymarketContent
+    ? [
+        {
+          type: CellType.POLYMARKET_HEADER,
+          uid: 'polymarket-header',
+        },
+        ...polymarketSectionItems,
+      ]
+    : [
+        {
+          type: CellType.SPACER,
+          uid: 'perps-header-spacer',
+          height: 8,
+        },
+        {
+          type: CellType.POLYMARKET_HEADER,
+          uid: 'polymarket-header',
         },
       ];
 };
@@ -479,7 +553,9 @@ export const buildBriefWalletSectionsSelector = createSelector(
     claimablesSelector,
     positionsSelector,
     perpsDataSelector,
+    polymarketDataSelector,
     isDismissedPerpsFeatureCardSelector,
+    isDismissedPolymarketFeatureCardSelector,
   ],
   buildBriefWalletSections
 );

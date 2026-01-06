@@ -102,6 +102,7 @@ type SmoothPagerProps = {
   pageGap?: number;
   scaleTo?: number;
   verticalPageAlignment?: AlignVertical;
+  waitFor?: React.RefObject<unknown> | React.RefObject<unknown>[];
 } & (
   | { springConfig?: WithSpringConfig; springVelocityFactor?: number; timingConfig?: undefined }
   | { springConfig?: undefined; springVelocityFactor?: undefined; timingConfig?: WithTimingConfig }
@@ -121,6 +122,7 @@ const SmoothPagerComponent = (
     springVelocityFactor = 1,
     timingConfig,
     verticalPageAlignment = 'bottom',
+    waitFor,
   }: SmoothPagerProps,
   ref: ForwardedRef<SmoothPagerRef>
 ) => {
@@ -161,7 +163,7 @@ const SmoothPagerComponent = (
           const currentPageIndexValue = Math.round(downscalePagerIndex(currentPageIndex.value));
           if (currentPageIndexValue > 0) {
             const targetIndex = currentPageIndexValue - 1;
-            requestAnimationFrame(() => animateIndex(targetIndex));
+            animateIndex(targetIndex);
             if (!onNewIndex || lastTargetIndex.value === targetIndex) return;
             runOnJS(onNewIndex)(targetIndex);
           }
@@ -173,7 +175,7 @@ const SmoothPagerComponent = (
           const currentPageIndexValue = Math.round(downscalePagerIndex(currentPageIndex.value));
           if (currentPageIndexValue < numberOfPages - 1) {
             const targetIndex = currentPageIndexValue + 1;
-            requestAnimationFrame(() => animateIndex(targetIndex));
+            animateIndex(targetIndex);
             if (!onNewIndex || lastTargetIndex.value === targetIndex) return;
             runOnJS(onNewIndex)(targetIndex);
           }
@@ -184,7 +186,7 @@ const SmoothPagerComponent = (
         runOnUI(() => {
           const targetIndex = pageIdToIndex[id];
           if (targetIndex !== undefined) {
-            requestAnimationFrame(() => animateIndex(targetIndex));
+            animateIndex(targetIndex);
             currentPageId.value = id;
             if (!onNewIndex || lastTargetIndex.value === targetIndex) return;
             runOnJS(onNewIndex)(targetIndex);
@@ -328,6 +330,7 @@ const SmoothPagerComponent = (
       enabled={enableSwipeToGoBack || enableSwipeToGoForward !== false}
       failOffsetY={[-12, 12]}
       onGestureEvent={swipeGestureHandler}
+      waitFor={waitFor}
     >
       <Animated.View style={styles.pagerContainer}>
         <Animated.View

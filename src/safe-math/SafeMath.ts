@@ -532,6 +532,25 @@ export function trimTrailingZeros(value: string): string {
   return `${integerPart}.${trimmedFractional}`;
 }
 
+/**
+ * Converts a decimal to percentage value (multiplies by 100) and trims trailing zeros
+ * Examples: 0.01 -> "1", 0.001 -> "0.1", 1 -> "100", 0.1 -> "10"
+ * With threshold: 0.00001 (threshold: 0.0001) -> "< 0.01"
+ */
+export function toPercentageWorklet(value: string | number, threshold?: string | number): string {
+  'worklet';
+
+  // If threshold is provided and value is less than threshold, return "< threshold*100"
+  if (threshold !== undefined && lessThanWorklet(value, threshold)) {
+    const thresholdPercent = mulWorklet(threshold, 100);
+    const trimmedThreshold = trimTrailingZeros(thresholdPercent);
+    return `< ${trimmedThreshold}`;
+  }
+
+  const result = mulWorklet(value, 100);
+  return trimTrailingZeros(result);
+}
+
 export function isPositive(num: string) {
   'worklet';
   return greaterThanWorklet(num, '0');

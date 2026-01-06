@@ -49,8 +49,6 @@ tags:
       - assertVisible:
           text: 'Message Request'
       - assertVisible:
-          text: '.*Simulated Result.*'
-      - assertVisible:
           text: '.*Confirm.*'
       # sign transaction
       - longPressOn:

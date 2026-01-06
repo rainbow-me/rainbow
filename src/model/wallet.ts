@@ -210,7 +210,7 @@ export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWa
   }
 }
 
-const isHardwareWalletKey = (key: string | null) => {
+export const isHardwareWalletKey = (key: string | null) => {
   const data = key?.split('/');
   if (data && data.length > 1) {
     return true;
