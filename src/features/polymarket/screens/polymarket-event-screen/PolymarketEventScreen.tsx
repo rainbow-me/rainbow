@@ -31,7 +31,7 @@ import { ActiveInteractionData } from '@/features/charts/polymarket/classes/Poly
 import { useSharedValue } from 'react-native-reanimated';
 import { PolymarketChartHeader } from '@/features/charts/polymarket/components/PolymarketChartHeader';
 import { SeriesPaletteColors } from '@/features/charts/polymarket/types';
-import { getLeague } from '@/features/polymarket/utils/sports';
+import { getLeague } from '@/features/polymarket/leagues';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 
 export const EventHeaderSection = memo(function EventHeaderSection({ event }: { event: PolymarketMarketEvent | PolymarketEvent }) {

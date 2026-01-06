@@ -1,8 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { useColorMode } from '@/design-system';
-import { SPORT_LEAGUES } from '@/features/polymarket/constants';
+import { SPORT_LEAGUES, getLeagueId } from '@/features/polymarket/leagues';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { getLeagueId } from '@/features/polymarket/utils/sports';
 import { CfbIcon } from './icons/CfbIcon';
 import { Cs2Icon } from './icons/Cs2Icon';
 import { CricketIcon } from './icons/CricketIcon';
@@ -29,7 +28,7 @@ const LEAGUE_ICONS: Partial<Record<LeagueId, IconComponent>> = {
   nba: NbaIcon,
   nhl: NhlIcon,
   ufc: UfcIcon,
-  valorant: ValorantIcon,
+  val: ValorantIcon,
   nfl: NflIcon,
 };
 
@@ -47,8 +46,8 @@ export function getIconByLeagueId(leagueId: LeagueId): IconComponent | undefined
 }
 
 export function hasLeagueIcon(eventSlug: string): boolean {
-  const leagueId = getLeagueId(eventSlug) as LeagueId;
-  return getIconByLeagueId(leagueId) !== undefined;
+  const leagueId = getLeagueId(eventSlug);
+  return leagueId ? getIconByLeagueId(leagueId) !== undefined : false;
 }
 
 type LeagueIconProps =
@@ -68,10 +67,10 @@ type LeagueIconProps =
 export const LeagueIcon = memo(function LeagueIcon({ leagueId, eventSlug, color, size = 24 }: LeagueIconProps) {
   const { isDarkMode } = useColorMode();
 
-  const resolvedLeagueId = leagueId ?? (getLeagueId(eventSlug) as LeagueId);
-  const league = useMemo(() => SPORT_LEAGUES[resolvedLeagueId], [resolvedLeagueId]);
+  const resolvedLeagueId = leagueId ?? getLeagueId(eventSlug);
+  const league = useMemo(() => (resolvedLeagueId ? SPORT_LEAGUES[resolvedLeagueId] : undefined), [resolvedLeagueId]);
 
-  const IconComponent = useMemo(() => getIconByLeagueId(resolvedLeagueId), [resolvedLeagueId]);
+  const IconComponent = useMemo(() => (resolvedLeagueId ? getIconByLeagueId(resolvedLeagueId) : undefined), [resolvedLeagueId]);
   if (!IconComponent) return null;
 
   const fillColor = color ?? getColorValueForThemeWorklet(league?.color, isDarkMode);

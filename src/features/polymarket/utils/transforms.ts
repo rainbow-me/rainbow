@@ -12,7 +12,7 @@ import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConv
 import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';
 import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
-import { getLeague } from '@/features/polymarket/utils/sports';
+import { getLeague } from '@/features/polymarket/leagues';
 
 export function processRawPolymarketMarket(market: RawPolymarketMarket, eventColor: ResponseByTheme<string>): PolymarketMarket {
   return {

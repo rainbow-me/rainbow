@@ -1,7 +1,8 @@
 import { rainbowFetch } from '@/rainbow-fetch';
 import { time } from '@/utils/time';
 import { logger, RainbowError } from '@/logger';
-import { POLYMARKET_GAMMA_API_URL, SPORT_LEAGUES } from '@/features/polymarket/constants';
+import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
+import { getGammaLeagueId } from '@/features/polymarket/leagues';
 import { PolymarketGameMetadata, RawPolymarketTeamInfo, PolymarketTeamInfo } from '@/features/polymarket/types';
 import colors from '@/styles/colors';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
@@ -67,21 +68,16 @@ export async function fetchTeamsForEvent(event: GameTeamsSource): Promise<Polyma
   if (!event.ticker) return undefined;
 
   const tickerAbbreviations = parseTeamAbbreviationsFromTicker(event.ticker);
-  let leagueId = getLeagueId(event.ticker);
-  // These are the only two known exceptions where the real league ID is different from the slug
-  if (leagueId === 'cs2') leagueId = 'csgo';
-  if (leagueId === 'ufc') leagueId = 'mma';
+  const gammaLeagueId = getGammaLeagueId(event.ticker);
 
   // Try abbreviation-based query first (more reliable - some team names fail Polymarket's validation)
   if (tickerAbbreviations) {
     const abbreviations = [tickerAbbreviations.away, tickerAbbreviations.home];
-    const teams = await fetchTeamsByAbbreviations(abbreviations, leagueId);
+    const teams = await fetchTeamsByAbbreviations(abbreviations, gammaLeagueId);
     if (teams?.length === abbreviations.length) {
       return teams;
     }
   }
-
-  console.log('falling back to fetch by names', event.ticker);
 
   let homeTeamName = event.homeTeamName;
   let awayTeamName = event.awayTeamName;
@@ -101,7 +97,7 @@ export async function fetchTeamsForEvent(event: GameTeamsSource): Promise<Polyma
   }
 
   if (homeTeamName && awayTeamName) {
-    const teams = await fetchTeamsByNames([awayTeamName, homeTeamName], leagueId);
+    const teams = await fetchTeamsByNames([awayTeamName, homeTeamName], gammaLeagueId);
     if (teams?.length === 2) {
       console.log('fetched teams for event', event.ticker, teams);
       return teams;
@@ -224,15 +220,6 @@ function enrichTeamsWithColor(teams: RawPolymarketTeamInfo[]): PolymarketTeamInf
       color: { light: getHighContrastColor(color, false), dark: getHighContrastColor(color, true) },
     };
   });
-}
-
-export function getLeagueId(eventSlug: string) {
-  const parts = eventSlug.split('-');
-  return parts[0];
-}
-
-export function getLeague(eventSlug: string) {
-  return SPORT_LEAGUES[getLeagueId(eventSlug) as keyof typeof SPORT_LEAGUES] ?? undefined;
 }
 
 export type PolymarketEventGameInfo = {
