@@ -9,7 +9,7 @@ import { Border, globalColors, Text, useColorMode, useForegroundColor } from '@/
 import { CATEGORIES, Category } from '@/features/polymarket/constants';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
-import { usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
+import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createOpacityPalette } from '@/worklets/colors';
@@ -35,7 +35,7 @@ export const PolymarketEventCategorySelector = memo(function PolymarketEventCate
   const itemLayouts = useRef<ItemLayout[]>([]);
   const didInitialScroll = useRef(false);
 
-  const selectedCategoryKey = useSharedValue<CategoryKey>(usePolymarketEventsStore.getState().tagId as CategoryKey);
+  const selectedCategoryKey = useSharedValue<CategoryKey>(usePolymarketCategoryStore.getState().tagId as CategoryKey);
 
   const scrollToSelectedCategory = useCallback(() => {
     const index = CATEGORY_ITEMS.findIndex(category => category.key === selectedCategoryKey.value);
@@ -57,7 +57,7 @@ export const PolymarketEventCategorySelector = memo(function PolymarketEventCate
   const onPress = useCallback(
     (category: CategoryWithKey) => {
       selectedCategoryKey.value = category.key;
-      usePolymarketEventsStore.getState().setTagId(category.key);
+      usePolymarketCategoryStore.getState().setTagId(category.key);
     },
     [selectedCategoryKey]
   );

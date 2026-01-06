@@ -4,28 +4,20 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { RawPolymarketEvent, PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { DEFAULT_CATEGORY_KEY, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
+import { usePolymarketCategoryStore } from './usePolymarketCategoryStore';
 
 type PolymarketEventsParams = {
   tagId: string;
 };
 
-type PolymarketEventsStoreState = {
-  tagId: string;
-  setTagId: (tagId: string) => void;
-};
-
-export const usePolymarketEventsStore = createQueryStore<PolymarketEvent[], PolymarketEventsParams, PolymarketEventsStoreState>(
+export const usePolymarketEventsStore = createQueryStore<PolymarketEvent[], PolymarketEventsParams>(
   {
     fetcher: fetchPolymarketEvents,
     staleTime: time.minutes(2),
     cacheTime: time.minutes(20),
-    enabled: ($, store) => $(store, state => state.tagId !== 'sports'),
-    params: { tagId: ($, store) => $(store).tagId },
+    enabled: $ => $(usePolymarketCategoryStore, state => state.tagId !== 'sports'),
+    params: { tagId: $ => $(usePolymarketCategoryStore).tagId },
   },
-  set => ({
-    tagId: DEFAULT_CATEGORY_KEY,
-    setTagId: (tagId: string) => set({ tagId }),
-  }),
   { storageKey: 'polymarketEventsStore' }
 );
 
