@@ -24,7 +24,7 @@ import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 
-export const PolymarketManagePositionSheet = memo(function PolymarketManagePositionSheet() {
+export const PolymarketRedeemPositionSheet = memo(function PolymarketRedeemPositionSheet() {
   const {
     params: { position: initialPosition },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_MANAGE_POSITION_SHEET>>();
@@ -48,8 +48,8 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
     switch (actionButtonType) {
       case PositionAction.CLAIM:
         return i18n.t(i18n.l.predictions.manage_position.hold_to_claim);
-      case PositionAction.BURN:
-        return i18n.t(i18n.l.predictions.manage_position.hold_to_burn);
+      case PositionAction.CLEAR:
+        return i18n.t(i18n.l.predictions.manage_position.hold_to_clear);
       default:
         return i18n.t(i18n.l.predictions.manage_position.hold_to_claim);
     }
@@ -59,8 +59,8 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
     switch (actionButtonType) {
       case PositionAction.CLAIM:
         return i18n.t(i18n.l.predictions.manage_position.claiming);
-      case PositionAction.BURN:
-        return i18n.t(i18n.l.predictions.manage_position.burning);
+      case PositionAction.CLEAR:
+        return i18n.t(i18n.l.predictions.manage_position.clearing);
       default:
         return i18n.t(i18n.l.predictions.manage_position.claiming);
     }
