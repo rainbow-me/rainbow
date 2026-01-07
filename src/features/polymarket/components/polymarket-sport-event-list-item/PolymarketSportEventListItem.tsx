@@ -12,7 +12,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { formatTimestamp, toUnixTime } from '@/worklets/dates';
-import { buildBetRows, formatOdds, getTeamDisplayInfo, type BetCellData } from '@/features/polymarket/utils/getSportsEventTokenIds';
+import { buildBetRows, formatOdds, getTeamDisplayInfo, BetCellData } from '@/features/polymarket/utils/sportsEventBetData';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 
@@ -39,7 +39,6 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
   const gameInfo = useMemo(() => selectGameInfo({ event, liveGame }), [event, liveGame]);
   const isLive = gameInfo.live && !gameInfo.ended;
   const { labels: teamLabels, title } = useMemo(() => getTeamDisplayInfo(event), [event]);
-  const scores = useMemo(() => (isLive ? (gameInfo.score ? parseScore(gameInfo.score) : null) : null), [gameInfo.score, isLive]);
   const periodTitle = useMemo(
     () =>
       isLive
@@ -52,8 +51,9 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
     [isLive, gameInfo.period, gameInfo.elapsed, gameInfo.score]
   );
   const subtitle = useMemo(() => (isLive ? undefined : getSubtitle({ event, gameInfo })), [event, gameInfo, isLive]);
-  const betRows = useMemo(() => buildBetRows(event, teamLabels), [event, teamLabels]);
+  const betRows = useMemo(() => buildBetRows(event), [event]);
   const showScores = isLive || gameInfo.ended;
+  const scores = useMemo(() => (showScores ? (gameInfo.score ? parseScore(gameInfo.score) : null) : null), [gameInfo.score, showScores]);
   const topMoneylineOutcome = getOutcomeInfoForTokenId(event.markets, betRows.top.moneyline?.outcomeTokenId);
   const bottomMoneylineOutcome = getOutcomeInfoForTokenId(event.markets, betRows.bottom.moneyline?.outcomeTokenId);
   const topMoneylineColor = topMoneylineOutcome

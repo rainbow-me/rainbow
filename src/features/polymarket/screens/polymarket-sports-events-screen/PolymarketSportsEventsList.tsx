@@ -20,7 +20,7 @@ import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { useStableValue } from '@/hooks/useStableValue';
-import { getSportsEventTokenIds } from '@/features/polymarket/utils/getSportsEventTokenIds';
+import { getSportsEventTokenIds } from '@/features/polymarket/utils/sportsEventBetData';
 import Routes from '@/navigation/routesNames';
 
 const ITEM_GAP = 8;
