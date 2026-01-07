@@ -213,10 +213,8 @@ export function CopyButton() {
 
   return (
     <>
-      <CopyFloatingEmojis textToCopy={accountAddress} onPress={handlePressCopy} disabled={isDamagedWallet}>
-        <ActionButton icon="􀐅" testID="receive-button">
-          {i18n.t(i18n.l.wallet.copy)}
-        </ActionButton>
+      <CopyFloatingEmojis textToCopy={accountAddress} onPress={handlePressCopy} disabled={isDamagedWallet} testID="receive-button">
+        <ActionButton icon="􀐅">{i18n.t(i18n.l.wallet.copy)}</ActionButton>
       </CopyFloatingEmojis>
     </>
   );
