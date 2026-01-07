@@ -16,8 +16,10 @@ import { ValorantIcon } from './icons/ValorantIcon';
 import { NflIcon } from './icons/NflIcon';
 import { BaseballIcon } from './icons/BaseballIcon';
 
-type IconComponent = React.ComponentType<{ fill?: string; width?: number; height?: number }>;
+export const DEFAULT_SIZE = 24;
 
+export type IconProps = { color: string; width?: number; height?: number };
+type IconComponent = React.ComponentType<IconProps>;
 type LeagueId = keyof typeof SPORT_LEAGUES;
 type SportId = (typeof SPORT_LEAGUES)[LeagueId]['sportId'];
 
@@ -73,7 +75,7 @@ export const LeagueIcon = memo(function LeagueIcon({ leagueId, eventSlug, color,
   const IconComponent = useMemo(() => (resolvedLeagueId ? getIconByLeagueId(resolvedLeagueId) : undefined), [resolvedLeagueId]);
   if (!IconComponent) return null;
 
-  const fillColor = color ?? getColorValueForThemeWorklet(league?.color, isDarkMode);
+  const resolvedColor = color ?? getColorValueForThemeWorklet(league?.color, isDarkMode);
 
-  return <IconComponent fill={fillColor} width={size} height={size} />;
+  return <IconComponent color={resolvedColor} width={size} height={size} />;
 });

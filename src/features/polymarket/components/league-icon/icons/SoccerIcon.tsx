@@ -1,10 +1,11 @@
 import * as React from 'react';
-import Svg, { Path, SvgProps } from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
+import { IconProps, DEFAULT_SIZE } from '../LeagueIcon';
 
-export const SoccerIcon = ({ fill = '#fff', ...props }: SvgProps) => (
-  <Svg viewBox="0 0 24 24" width={24} height={24} fill="none" {...props}>
+export const SoccerIcon = ({ color, width = DEFAULT_SIZE, height = DEFAULT_SIZE }: IconProps) => (
+  <Svg viewBox="0 0 24 24" width={width} height={height} fill="none">
     <Path
-      fill={fill}
+      fill={color}
       d="M5.06 13.276c1.307-1.306 3.647-1.113 5.187.427s1.753 3.82.42 5.153a3.03 3.03 0 0 1-1.82.82 8 8 0 0 1-4.527-5.1c.129-.49.384-.939.74-1.3m8.727.4c1.547-1.513 3.847-1.706 5.153-.447a2.9 2.9 0 0 1 .734 1.334 8 8 0 0 1-4.527 5.113 3 3 0 0 1-1.787-.846c-1.307-1.307-1.113-3.614.427-5.154m2.426-8.126A8 8 0 0 1 20 12.343q0 .57-.087 1.133a13 13 0 0 1-2.953-3.8 6.05 6.05 0 0 1-.747-4.126m-8.44.006a6 6 0 0 1-.746 4.12 13 13 0 0 1-2.94 3.76A7.4 7.4 0 0 1 4 12.344a8 8 0 0 1 3.774-6.787M12 6.343c2.18 0 3.94 1.493 3.94 3.333S14.18 13.01 12 13.01s-3.94-1.493-3.94-3.333S9.82 6.343 12 6.343m0-2c1.129 0 2.245.24 3.273.707-.22.14-1.146.626-3.273.626-2.126 0-3.053-.486-3.273-.626A7.9 7.9 0 0 1 12 4.343"
     />
   </Svg>
