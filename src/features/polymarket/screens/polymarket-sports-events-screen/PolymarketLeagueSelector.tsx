@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useRef } from 'react';
+import { Fragment, memo, useCallback, useMemo, useRef } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { SharedValue, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
@@ -104,9 +104,14 @@ export const PolymarketLeagueSelector = memo(function PolymarketLeagueSelector()
         style={styles.scrollView}
       >
         {LEAGUE_ITEMS.map((league, index) => (
-          <View key={league.key} onLayout={event => onItemLayout(event, index)}>
-            <LeagueItemComponent league={league} onPress={onPress} selectedLeagueKey={selectedLeagueKey} />
-          </View>
+          <Fragment key={league.key}>
+            <View onLayout={event => onItemLayout(event, index)}>
+              <LeagueItemComponent league={league} onPress={onPress} selectedLeagueKey={selectedLeagueKey} />
+            </View>
+            {index < LEAGUE_ITEMS.length - 1 && (
+              <View style={[styles.separator, { backgroundColor: opacityWorklet('#1A1A1A', isDarkMode ? 1 : 0.04) }]} />
+            )}
+          </Fragment>
         ))}
       </ScrollView>
     </View>
@@ -211,8 +216,13 @@ const styles = StyleSheet.create({
     width: CONTAINER_WIDTH,
   },
   scrollViewContentContainer: {
-    gap: 2,
+    alignItems: 'center',
+    gap: 3,
     paddingHorizontal: HORIZONTAL_PADDING,
     paddingVertical: VERTICAL_PADDING,
+  },
+  separator: {
+    height: 20,
+    width: 1,
   },
 });
