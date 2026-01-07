@@ -1,9 +1,5 @@
 import { time } from '@/utils/time';
-import {
-  usePolymarketLiveGameStore,
-  PolymarketLiveGameUpdate,
-  polymarketLiveGameActions,
-} from '@/features/polymarket/stores/polymarketLiveGameStore';
+import { PolymarketLiveGameUpdate, polymarketLiveGameActions } from '@/features/polymarket/stores/polymarketLiveGameStore';
 
 const POLYMARKET_SPORTS_WS_URL = 'wss://sports-api.polymarket.com/ws';
 const MAX_RECONNECT_DELAY_MS = time.seconds(30);
@@ -52,22 +48,32 @@ class PolymarketSportsWsClient {
         polymarketLiveGameActions.updateGame(update);
       };
 
-      socket.onerror = event => {
-        console.log('error', event);
+      socket.onerror = () => {
         polymarketLiveGameActions.setConnectionStatus('error');
+        if (this.socket && this.socket.readyState !== WebSocket.CLOSING && this.socket.readyState !== WebSocket.CLOSED) {
+          this.socket.close();
+        }
       };
 
       socket.onclose = () => {
         this.socket = null;
         this.isConnecting = false;
 
-        if (this.requestedClose || this.activeListeners === 0) {
+        if (this.activeListeners === 0) {
           polymarketLiveGameActions.setConnectionStatus('idle');
           return;
         }
 
-        polymarketLiveGameActions.setConnectionStatus('error');
-        this.scheduleReconnect();
+        // Still have active listeners - need to reconnect
+        if (this.requestedClose) {
+          // Close was requested but new listeners appeared, reconnect immediately
+          this.requestedClose = false;
+          this.connect();
+        } else {
+          // Unexpected close, reconnect with backoff
+          polymarketLiveGameActions.setConnectionStatus('error');
+          this.scheduleReconnect();
+        }
       };
     } catch {
       this.isConnecting = false;
@@ -86,7 +92,8 @@ class PolymarketSportsWsClient {
       this.socket.close();
       this.socket = null;
     }
-    usePolymarketLiveGameStore.getState().setConnectionStatus('idle');
+    this.reconnectAttempts = 0;
+    polymarketLiveGameActions.setConnectionStatus('idle');
   }
 
   private scheduleReconnect() {
@@ -102,9 +109,11 @@ class PolymarketSportsWsClient {
   private parseMessage(message: unknown): PolymarketLiveGameUpdate | null {
     if (typeof message !== 'string') return null;
     try {
-      const data: PolymarketLiveGameUpdate = JSON.parse(message);
-      if (!data?.gameId) return null;
-      return data;
+      const data: unknown = JSON.parse(message);
+      if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
+      const gameId = (data as { gameId?: unknown }).gameId;
+      if (typeof gameId !== 'number') return null;
+      return data as PolymarketLiveGameUpdate;
     } catch {
       return null;
     }
