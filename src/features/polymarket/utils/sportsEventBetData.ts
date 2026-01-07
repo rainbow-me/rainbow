@@ -5,12 +5,11 @@ import {
   MoneylineGroup,
 } from '@/features/polymarket/screens/polymarket-event-screen/utils/getMarketsGroupedByBetType';
 import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { PolymarketTeamInfo } from '@/features/polymarket/types';
 import { isDrawMarket } from '@/features/polymarket/utils/sports';
+import { getEventTeams, TeamSide } from '@/features/polymarket/utils/sportsEventTeams';
 import { roundWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
-
-// Team abbreviations are used when either team name exceeds this length
-const MAX_TEAM_NAME_LENGTH = 14;
 
 export type BetCellData = {
   label: string;
@@ -18,48 +17,43 @@ export type BetCellData = {
   outcomeTokenId: string;
 };
 
-export type BetRow = {
-  spread?: BetCellData;
-  moneyline?: BetCellData;
-  total?: BetCellData;
+export type TeamBetRow = Record<
+  TeamSide,
+  {
+    spread?: BetCellData;
+    moneyline?: BetCellData;
+  }
+>;
+
+export type TotalsRow = {
+  over?: BetCellData;
+  under?: BetCellData;
 };
 
-export type TeamDisplayInfo = {
-  labels: [string, string];
-  title: string;
+export type EventBetGrid = {
+  teamBets: TeamBetRow;
+  totals: TotalsRow;
 };
 
-export function getTeamDisplayInfo(event: PolymarketEvent): TeamDisplayInfo {
-  let title = event.title;
-  if (event.teams?.length && event.teams.length >= 2) {
-    const teamA = event.teams[0];
-    const teamB = event.teams[1];
-    let labels: [string, string] = [teamA.name, teamB.name];
-    if (
-      (teamA.name.length > MAX_TEAM_NAME_LENGTH || teamB.name.length > MAX_TEAM_NAME_LENGTH) &&
-      teamA.abbreviation &&
-      teamB.abbreviation
-    ) {
-      labels = [teamA.abbreviation.toUpperCase(), teamB.abbreviation.toUpperCase()];
-    }
-    title = `${teamA.name} vs. ${teamB.name}`;
-    return { labels, title };
-  }
-  if (event.awayTeamName && event.homeTeamName) {
-    const labels: [string, string] = [event.awayTeamName, event.homeTeamName];
-    title = `${event.awayTeamName} vs. ${event.homeTeamName}`;
-    return { labels, title };
-  }
-  return { labels: ['', ''], title: event.title };
-}
+type MoneylineOutcome = { price: string | undefined; tokenId: string | undefined };
 
-export function buildBetRows(event: PolymarketEvent): { top: BetRow; bottom: BetRow } {
+type TeamReference = {
+  team?: PolymarketTeamInfo;
+  label?: string;
+};
+
+export function buildEventBetGrid(event: PolymarketEvent): EventBetGrid {
   const grouped = getMarketsGroupedByBetType({
     ...event,
     markets: event.markets.filter(market => market.active && !market.closed),
   });
 
-  const matchLabels = getTeamMatchLabels(event);
+  const eventTeams = getEventTeams(event);
+  const teamReferences: Record<TeamSide, TeamReference> = {
+    away: { team: eventTeams.away, label: eventTeams.names[0] },
+    home: { team: eventTeams.home, label: eventTeams.names[1] },
+  };
+
   const spreadGroup = grouped.spreads.find(group => group.sportsMarketType === POLYMARKET_SPORTS_MARKET_TYPE.SPREADS) ?? grouped.spreads[0];
   const totalsGroup = grouped.totals.find(group => group.sportsMarketType === POLYMARKET_SPORTS_MARKET_TYPE.TOTALS) ?? grouped.totals[0];
   const moneylineGroup =
@@ -67,69 +61,69 @@ export function buildBetRows(event: PolymarketEvent): { top: BetRow; bottom: Bet
 
   const spreadLine = getPrimaryLine(spreadGroup);
   const totalsLine = getPrimaryLine(totalsGroup);
-  const moneyline = getMoneylineData(moneylineGroup, matchLabels);
+  const moneyline = getMoneylineData(moneylineGroup, teamReferences);
 
   const spreadLineValue = spreadLine?.value;
   const totalsLineValue = totalsLine?.value;
-  const spreadOutcomeIndexes = getOutcomeIndexes(spreadLine?.market, matchLabels);
-  const spreadTopOdds = getOutcomePrice(spreadLine?.market, spreadOutcomeIndexes.top);
-  const spreadBottomOdds = getOutcomePrice(spreadLine?.market, spreadOutcomeIndexes.bottom);
-  const totalsTopOdds = getOutcomePrice(totalsLine?.market, 0);
-  const totalsBottomOdds = getOutcomePrice(totalsLine?.market, 1);
-  const spreadTopTokenId = getOutcomeTokenId(spreadLine?.market, spreadOutcomeIndexes.top);
-  const spreadBottomTokenId = getOutcomeTokenId(spreadLine?.market, spreadOutcomeIndexes.bottom);
-  const totalsTopTokenId = getOutcomeTokenId(totalsLine?.market, 0);
-  const totalsBottomTokenId = getOutcomeTokenId(totalsLine?.market, 1);
+  const spreadOutcomeIndexes = getTeamOutcomeIndexes(spreadLine?.market, teamReferences);
+  const spreadAwayOdds = getOutcomePrice(spreadLine?.market, spreadOutcomeIndexes.away);
+  const spreadHomeOdds = getOutcomePrice(spreadLine?.market, spreadOutcomeIndexes.home);
+  const totalsOverOdds = getOutcomePrice(totalsLine?.market, 0);
+  const totalsUnderOdds = getOutcomePrice(totalsLine?.market, 1);
+  const spreadAwayTokenId = getOutcomeTokenId(spreadLine?.market, spreadOutcomeIndexes.away);
+  const spreadHomeTokenId = getOutcomeTokenId(spreadLine?.market, spreadOutcomeIndexes.home);
+  const totalsOverTokenId = getOutcomeTokenId(totalsLine?.market, 0);
+  const totalsUnderTokenId = getOutcomeTokenId(totalsLine?.market, 1);
 
-  const top: BetRow = {};
-  const bottom: BetRow = {};
+  const teamBets: TeamBetRow = { away: {}, home: {} };
+  const totals: TotalsRow = {};
 
-  if (spreadTopOdds != null && spreadTopOdds !== '' && spreadTopTokenId) {
-    top.spread = {
-      label: formatSpreadLine({ value: spreadLineValue, outcomeIndex: spreadOutcomeIndexes.top }),
-      odds: formatOdds(spreadTopOdds),
-      outcomeTokenId: spreadTopTokenId,
+  if (spreadAwayOdds != null && spreadAwayOdds !== '' && spreadAwayTokenId) {
+    teamBets.away.spread = {
+      label: formatSpreadLine({ value: spreadLineValue, outcomeIndex: spreadOutcomeIndexes.away }),
+      odds: formatOdds(spreadAwayOdds),
+      outcomeTokenId: spreadAwayTokenId,
     };
   }
-  if (spreadBottomOdds != null && spreadBottomOdds !== '' && spreadBottomTokenId) {
-    bottom.spread = {
-      label: formatSpreadLine({ value: spreadLineValue, outcomeIndex: spreadOutcomeIndexes.bottom }),
-      odds: formatOdds(spreadBottomOdds),
-      outcomeTokenId: spreadBottomTokenId,
+  if (spreadHomeOdds != null && spreadHomeOdds !== '' && spreadHomeTokenId) {
+    teamBets.home.spread = {
+      label: formatSpreadLine({ value: spreadLineValue, outcomeIndex: spreadOutcomeIndexes.home }),
+      odds: formatOdds(spreadHomeOdds),
+      outcomeTokenId: spreadHomeTokenId,
     };
   }
 
-  if (moneyline.top.price != null && moneyline.top.price !== '' && moneyline.top.tokenId) {
-    top.moneyline = {
+  if (moneyline.away.price != null && moneyline.away.price !== '' && moneyline.away.tokenId) {
+    teamBets.away.moneyline = {
       label: '',
-      odds: formatOdds(moneyline.top.price),
-      outcomeTokenId: moneyline.top.tokenId,
+      odds: formatOdds(moneyline.away.price),
+      outcomeTokenId: moneyline.away.tokenId,
     };
   }
-  if (moneyline.bottom.price != null && moneyline.bottom.price !== '' && moneyline.bottom.tokenId) {
-    bottom.moneyline = {
+  if (moneyline.home.price != null && moneyline.home.price !== '' && moneyline.home.tokenId) {
+    teamBets.home.moneyline = {
       label: '',
-      odds: formatOdds(moneyline.bottom.price),
-      outcomeTokenId: moneyline.bottom.tokenId,
+      odds: formatOdds(moneyline.home.price),
+      outcomeTokenId: moneyline.home.tokenId,
     };
   }
 
-  if (totalsTopOdds != null && totalsTopOdds !== '' && totalsTopTokenId) {
-    top.total = {
+  if (totalsOverOdds != null && totalsOverOdds !== '' && totalsOverTokenId) {
+    totals.over = {
       label: formatTotalLabel({ value: totalsLineValue, isOver: true }),
-      odds: formatOdds(totalsTopOdds),
-      outcomeTokenId: totalsTopTokenId,
+      odds: formatOdds(totalsOverOdds),
+      outcomeTokenId: totalsOverTokenId,
     };
   }
-  if (totalsBottomOdds != null && totalsBottomOdds !== '' && totalsBottomTokenId) {
-    bottom.total = {
+  if (totalsUnderOdds != null && totalsUnderOdds !== '' && totalsUnderTokenId) {
+    totals.under = {
       label: formatTotalLabel({ value: totalsLineValue, isOver: false }),
-      odds: formatOdds(totalsBottomOdds),
-      outcomeTokenId: totalsBottomTokenId,
+      odds: formatOdds(totalsUnderOdds),
+      outcomeTokenId: totalsUnderTokenId,
     };
   }
 
-  return { top, bottom };
+  return { teamBets, totals };
 }
 
 export function formatOdds(value?: string) {
@@ -138,14 +132,14 @@ export function formatOdds(value?: string) {
 }
 
 export function getSportsEventTokenIds(event: PolymarketEvent): string[] {
-  const betRows = buildBetRows(event);
+  const betGrid = buildEventBetGrid(event);
   const outcomeTokenIds = [
-    betRows.top.spread?.outcomeTokenId,
-    betRows.top.moneyline?.outcomeTokenId,
-    betRows.top.total?.outcomeTokenId,
-    betRows.bottom.spread?.outcomeTokenId,
-    betRows.bottom.moneyline?.outcomeTokenId,
-    betRows.bottom.total?.outcomeTokenId,
+    betGrid.teamBets.away.spread?.outcomeTokenId,
+    betGrid.teamBets.away.moneyline?.outcomeTokenId,
+    betGrid.totals.over?.outcomeTokenId,
+    betGrid.teamBets.home.spread?.outcomeTokenId,
+    betGrid.teamBets.home.moneyline?.outcomeTokenId,
+    betGrid.totals.under?.outcomeTokenId,
   ].filter(Boolean) as string[];
 
   const tokenIds = outcomeTokenIds.map(tokenId => getPolymarketTokenId(tokenId, 'sell'));
@@ -158,58 +152,74 @@ function getPrimaryLine(group?: LineBasedGroup) {
   return group.lines.find(line => Math.abs(line.value) === targetLine) ?? group.lines[0];
 }
 
-function getTeamMatchLabels(event: PolymarketEvent): [string, string] {
-  if (event.teams?.length && event.teams.length >= 2) {
-    return [event.teams[0].name, event.teams[1].name];
-  }
-  if (event.awayTeamName && event.homeTeamName) {
-    return [event.awayTeamName, event.homeTeamName];
-  }
-  return ['', ''];
+function getTeamOutcomeIndexes(
+  market: PolymarketMarket | undefined,
+  teamReferences: Record<TeamSide, TeamReference>
+): Record<TeamSide, number> {
+  if (!market) return { away: 0, home: 1 };
+  const awayMatch = getOutcomeIndexForTeam(market, teamReferences.away);
+  const homeMatch = getOutcomeIndexForTeam(market, teamReferences.home);
+  return resolveOutcomeIndexes(awayMatch, homeMatch);
 }
 
-type MoneylineOutcome = { price: string | undefined; tokenId: string | undefined };
+function getOutcomeIndexForTeam(market: PolymarketMarket, reference: TeamReference) {
+  if (!market.outcomes?.length) return null;
+  const labels = getNormalizedTeamLabels(reference);
+  if (labels.size === 0) return null;
+  const index = market.outcomes.findIndex(outcome => labels.has(normalizeTeamLabel(outcome)));
+  return index === -1 ? null : index;
+}
 
 function getMoneylineData(
   group: MoneylineGroup | undefined,
-  teamLabels: [string, string]
-): { top: MoneylineOutcome; bottom: MoneylineOutcome } {
+  teamReferences: Record<TeamSide, TeamReference>
+): { away: MoneylineOutcome; home: MoneylineOutcome } {
   const empty = { price: undefined, tokenId: undefined };
-  if (!group || !group.markets.length) return { top: empty, bottom: empty };
+  if (!group || !group.markets.length) return { away: empty, home: empty };
 
   if (!group.isThreeWay) {
     const market = group.markets[0];
-    const indexes = getOutcomeIndexes(market, teamLabels);
+    const indexes = getTeamOutcomeIndexes(market, teamReferences);
     return {
-      top: { price: getOutcomePrice(market, indexes.top), tokenId: getOutcomeTokenId(market, indexes.top) },
-      bottom: { price: getOutcomePrice(market, indexes.bottom), tokenId: getOutcomeTokenId(market, indexes.bottom) },
+      away: { price: getOutcomePrice(market, indexes.away), tokenId: getOutcomeTokenId(market, indexes.away) },
+      home: { price: getOutcomePrice(market, indexes.home), tokenId: getOutcomeTokenId(market, indexes.home) },
     };
   }
 
   const teamMarkets = group.markets.filter(market => !isDrawMarket(market));
-  if (!teamMarkets.length) return { top: empty, bottom: empty };
+  if (!teamMarkets.length) return { away: empty, home: empty };
 
-  const topMarket = matchMarketToTeam(teamMarkets, teamLabels[0]) ?? teamMarkets[0];
-  const bottomMarket = matchMarketToTeam(teamMarkets, teamLabels[1]) ?? teamMarkets[1] ?? teamMarkets[0];
+  const awayMarket = findMarketForTeam(teamMarkets, teamReferences.away) ?? teamMarkets[0];
+  const homeMarket =
+    findMarketForTeam(teamMarkets, teamReferences.home) ??
+    teamMarkets.find(market => market !== awayMarket) ??
+    teamMarkets[1] ??
+    teamMarkets[0];
 
   return {
-    top: { price: getOutcomePrice(topMarket, 0), tokenId: getOutcomeTokenId(topMarket, 0) },
-    bottom: { price: getOutcomePrice(bottomMarket, 0), tokenId: getOutcomeTokenId(bottomMarket, 0) },
+    away: { price: getOutcomePrice(awayMarket, 0), tokenId: getOutcomeTokenId(awayMarket, 0) },
+    home: { price: getOutcomePrice(homeMarket, 0), tokenId: getOutcomeTokenId(homeMarket, 0) },
   };
 }
 
-function matchMarketToTeam(markets: PolymarketMarket[], teamLabel: string) {
-  const normalized = normalize(teamLabel);
-  if (!normalized) return undefined;
-  return markets.find(market => {
-    const groupTitle = normalize(market.groupItemTitle ?? '');
-    const question = normalize(market.question ?? '');
-    return groupTitle.includes(normalized) || question.includes(normalized);
-  });
+function findMarketForTeam(markets: PolymarketMarket[], reference: TeamReference) {
+  const labels = getNormalizedTeamLabels(reference);
+  if (labels.size === 0) return undefined;
+  return markets.find(market => labels.has(normalizeTeamLabel(market.groupItemTitle ?? '')));
 }
 
-function normalize(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, '');
+function getNormalizedTeamLabels(reference: TeamReference): Set<string> {
+  const labels = new Set<string>();
+  if (reference.team?.alias) labels.add(normalizeTeamLabel(reference.team.alias));
+  if (reference.team?.name) labels.add(normalizeTeamLabel(reference.team.name));
+  if (reference.team?.abbreviation) labels.add(normalizeTeamLabel(reference.team.abbreviation));
+  if (reference.label) labels.add(normalizeTeamLabel(reference.label));
+  labels.delete('');
+  return labels;
+}
+
+function normalizeTeamLabel(value: string) {
+  return value.trim().toLowerCase();
 }
 
 function getOutcomePrice(market: PolymarketMarket | undefined, outcomeIndex: number): string | undefined {
@@ -222,29 +232,12 @@ function getOutcomeTokenId(market: PolymarketMarket | undefined, outcomeIndex: n
   return market.clobTokenIds?.[outcomeIndex];
 }
 
-function getOutcomeIndexes(market: PolymarketMarket | undefined, teamLabels: [string, string]) {
-  if (!market) return { top: 0, bottom: 1 };
-  const topMatch = getOutcomeIndexByTeam(market, teamLabels[0]);
-  const bottomMatch = getOutcomeIndexByTeam(market, teamLabels[1]);
-  return resolveOutcomeIndexes(topMatch, bottomMatch);
-}
-
-function getOutcomeIndexByTeam(market: PolymarketMarket, teamLabel: string) {
-  const normalized = normalize(teamLabel);
-  if (!normalized || !market.outcomes?.length) return null;
-  const index = market.outcomes.findIndex(outcome => {
-    const normalizedOutcome = normalize(outcome);
-    return normalizedOutcome.includes(normalized) || normalized.includes(normalizedOutcome);
-  });
-  return index === -1 ? null : index;
-}
-
-function resolveOutcomeIndexes(topMatch: number | null, bottomMatch: number | null) {
-  if (topMatch == null && bottomMatch == null) return { top: 0, bottom: 1 };
-  if (topMatch == null && bottomMatch != null) return { top: bottomMatch === 0 ? 1 : 0, bottom: bottomMatch };
-  if (topMatch != null && bottomMatch == null) return { top: topMatch, bottom: topMatch === 0 ? 1 : 0 };
-  if (topMatch === bottomMatch) return { top: topMatch ?? 0, bottom: topMatch === 0 ? 1 : 0 };
-  return { top: topMatch ?? 0, bottom: bottomMatch ?? 1 };
+function resolveOutcomeIndexes(awayMatch: number | null, homeMatch: number | null) {
+  if (awayMatch == null && homeMatch == null) return { away: 0, home: 1 };
+  if (awayMatch == null && homeMatch != null) return { away: homeMatch === 0 ? 1 : 0, home: homeMatch };
+  if (awayMatch != null && homeMatch == null) return { away: awayMatch, home: awayMatch === 0 ? 1 : 0 };
+  if (awayMatch === homeMatch) return { away: awayMatch ?? 0, home: awayMatch === 0 ? 1 : 0 };
+  return { away: awayMatch ?? 0, home: homeMatch ?? 1 };
 }
 
 function formatSpreadLine({ value, outcomeIndex }: { value: number | undefined; outcomeIndex: number }) {
