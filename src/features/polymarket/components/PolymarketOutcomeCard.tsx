@@ -1,4 +1,5 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
+import { StyleSheet } from 'react-native';
 import { Box, Text, useColorMode, globalColors } from '@/design-system';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import ImgixImage from '@/components/images/ImgixImage';
@@ -24,6 +25,7 @@ export const PolymarketOutcomeCard = memo(function PolymarketOutcomeCard({
   outcomeIndex,
 }: OutcomeCardProps) {
   const { isDarkMode } = useColorMode();
+  const isOutcomeBadgeRepetitive = useMemo(() => outcomeSubtitle.toLowerCase().includes(outcome.toLowerCase()), [outcomeSubtitle, outcome]);
   return (
     <Box
       padding={'20px'}
@@ -32,24 +34,33 @@ export const PolymarketOutcomeCard = memo(function PolymarketOutcomeCard({
       borderColor={{ custom: opacityWorklet(accentColor, 0.03) }}
       borderWidth={isDarkMode ? 2.5 : 0}
     >
-      <Box flexDirection="row" alignItems="flex-start" gap={12}>
-        <ImgixImage
-          enableFasterImage
-          resizeMode="cover"
-          size={38}
-          source={{ uri: icon }}
-          style={{ height: 38, width: 38, borderRadius: 10 }}
-        />
-        <Box gap={12} style={{ flex: 1 }}>
-          <Text size="15pt" weight="semibold" color="labelTertiary" style={{ flex: 1 }} numberOfLines={1}>
-            {outcomeTitle}
-          </Text>
+      <Box flexDirection="row" alignItems="center" gap={12}>
+        <ImgixImage enableFasterImage resizeMode="cover" size={38} source={{ uri: icon }} style={styles.image} />
+        <Box gap={12} style={styles.flex}>
+          <Box flexDirection="row" alignItems="center" gap={6} style={styles.flex}>
+            <Text size="15pt" weight="semibold" color="labelTertiary" numberOfLines={1} style={styles.flex}>
+              {outcomeTitle}
+            </Text>
+            {groupItemTitle && !isOutcomeBadgeRepetitive && (
+              <OutcomeBadge outcome={outcome} outcomeIndex={outcomeIndex} color={accentColor} />
+            )}
+          </Box>
           <Text size="17pt" weight="bold" color="label">
             {outcomeSubtitle}
           </Text>
         </Box>
-        {groupItemTitle && <OutcomeBadge outcome={outcome} outcomeIndex={outcomeIndex} color={accentColor} />}
       </Box>
     </Box>
   );
+});
+
+const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
+  image: {
+    height: 38,
+    width: 38,
+    borderRadius: 10,
+  },
 });
