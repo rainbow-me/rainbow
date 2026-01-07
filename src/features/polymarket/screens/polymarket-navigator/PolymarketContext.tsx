@@ -6,7 +6,7 @@ type PolymarketContextType = {
   accountScrollRef: RefObject<Animated.ScrollView | null>;
   categorySelectorRef: RefObject<ScrollView | null>;
   leagueSelectorRef: RefObject<ScrollView | null>;
-  eventsListRef: RefObject<Animated.FlatList<any> | null>;
+  eventsListRef: RefObject<Animated.FlatList<unknown> | null>;
 };
 
 const PolymarketContext = createContext<PolymarketContextType | null>(null);
@@ -15,7 +15,7 @@ export function PolymarketProvider({ children }: { children: ReactNode }) {
   const accountScrollRef = useRef<Animated.ScrollView>(null);
   const categorySelectorRef = useRef<ScrollView>(null);
   const leagueSelectorRef = useRef<ScrollView>(null);
-  const eventsListRef = useRef<Animated.FlatList<any>>(null);
+  const eventsListRef = useRef<Animated.FlatList<unknown>>(null);
 
   const value = useMemo(() => ({ accountScrollRef, categorySelectorRef, leagueSelectorRef, eventsListRef }), []);
 

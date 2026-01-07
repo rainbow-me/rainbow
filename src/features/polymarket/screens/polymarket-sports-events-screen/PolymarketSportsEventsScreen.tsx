@@ -1,23 +1,18 @@
-import { memo, RefObject } from 'react';
+import { memo } from 'react';
 import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
-import {
-  PolymarketSportsEventsList,
-  SportsListItem,
-} from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketSportsEventsList';
-import Animated from 'react-native-reanimated';
+import { PolymarketSportsEventsList } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketSportsEventsList';
 import { PolymarketLeagueSelector } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketLeagueSelector';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { useListen } from '@/state/internal/hooks/useListen';
+import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 
 type PolymarketSportsEventsScreenProps = {
-  listRef?: RefObject<Animated.FlatList<SportsListItem> | null>;
   onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 };
 
-export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEventsScreen({
-  listRef,
-  onScroll,
-}: PolymarketSportsEventsScreenProps) {
+export const PolymarketSportsEventsScreen = memo(function PolymarketSportsEventsScreen({ onScroll }: PolymarketSportsEventsScreenProps) {
+  const { eventsListRef: listRef } = usePolymarketContext();
+
   useListen(
     usePolymarketSportsEventsStore,
     state => state.selectedLeagueId,

@@ -46,7 +46,7 @@ const PolymarketBrowseEventsList = () => {
 
   return (
     <View style={styles.listContainer}>
-      {isSportsCategory ? <PolymarketSportsEventsScreen listRef={eventsListRef} onScroll={onScroll} /> : <EventsList onScroll={onScroll} />}
+      {isSportsCategory ? <PolymarketSportsEventsScreen onScroll={onScroll} /> : <EventsList onScroll={onScroll} />}
       <ScrollHeaderFade color={backgroundColor} scrollOffset={scrollOffset} topInset={isSportsCategory ? LEAGUE_SELECTOR_HEIGHT + 16 : 0} />
     </View>
   );

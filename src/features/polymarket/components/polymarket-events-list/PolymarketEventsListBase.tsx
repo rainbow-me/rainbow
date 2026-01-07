@@ -22,7 +22,7 @@ type ListProps = Pick<ComponentProps<typeof FlatList>, 'onEndReached' | 'onEndRe
 type PolymarketEventsListBaseProps = {
   ListHeaderComponent?: ComponentType | ReactElement | null;
   events: PolymarketEvent[];
-  listRef?: RefObject<Animated.FlatList<any> | null>;
+  listRef?: RefObject<Animated.FlatList<unknown> | null>;
   onEndReached?: () => void;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 } & ListProps;

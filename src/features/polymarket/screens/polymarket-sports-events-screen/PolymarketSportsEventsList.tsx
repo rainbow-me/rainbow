@@ -28,7 +28,7 @@ const EMPTY_EVENTS: PolymarketEvent[] = [];
 const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 50, minimumViewTime: 100 };
 
 type SportsEventsListProps = {
-  listRef?: RefObject<Animated.FlatList<SportsListItem> | null>;
+  listRef?: RefObject<Animated.FlatList<unknown> | null>;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 };
 
