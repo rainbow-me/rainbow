@@ -105,9 +105,15 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
       logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', error));
 
       if (error.message === "order couldn't be fully filled. FOK orders are fully filled or killed.") {
-        Alert.alert('Not enough liquidity to place full order.', 'Please lower the amount and try again.');
+        Alert.alert(
+          i18n.t(i18n.l.predictions.new_position.errors.not_enough_liquidity),
+          i18n.t(i18n.l.predictions.new_position.errors.please_lower_amount)
+        );
       } else if (error.message === 'no match') {
-        Alert.alert('No liquidity at this price. Please try a different price.');
+        Alert.alert(
+          i18n.t(i18n.l.predictions.new_position.errors.no_liquidity_at_price),
+          i18n.t(i18n.l.predictions.new_position.errors.please_lower_amount)
+        );
       } else {
         Alert.alert(i18n.t(i18n.l.predictions.errors.title), i18n.t(i18n.l.predictions.errors.failed_to_place_bet));
       }
