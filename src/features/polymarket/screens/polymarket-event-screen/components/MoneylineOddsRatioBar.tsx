@@ -120,7 +120,7 @@ const MoneylineOddsRatioBarContent = memo(function MoneylineOddsRatioBarContent(
       <Box height={41} flexDirection="row" justifyContent="space-between" alignItems="center">
         <TextShadow key={`${outcomesNoDraw[0].id}-percent`} blur={20} shadowOpacity={0.4} color={outcomesNoDraw[0].color}>
           <Text size="34pt" weight="heavy" color={{ custom: outcomesNoDraw[0].color }}>
-            {`${toPercentageWorklet(outcomesNoDraw[0].price, 0.001)}%`}
+            {`${toPercentageWorklet(outcomesNoDraw[0].price)}%`}
           </Text>
         </TextShadow>
         <Text color="labelQuaternary" size="15pt" weight="bold">
@@ -128,7 +128,7 @@ const MoneylineOddsRatioBarContent = memo(function MoneylineOddsRatioBarContent(
         </Text>
         <TextShadow key={`${outcomesNoDraw[1].id}-percent`} blur={20} shadowOpacity={0.4} color={outcomesNoDraw[1].color}>
           <Text size="34pt" weight="heavy" color={{ custom: outcomesNoDraw[1].color }}>
-            {`${toPercentageWorklet(outcomesNoDraw[1].price, 0.001)}%`}
+            {`${toPercentageWorklet(outcomesNoDraw[1].price)}%`}
           </Text>
         </TextShadow>
       </Box>
