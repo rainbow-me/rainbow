@@ -12,7 +12,7 @@ import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 export type BetCellData = {
   label: string;
   odds: string;
-  outcomeTokenId?: string;
+  outcomeTokenId: string;
 };
 
 export type BetRow = {
@@ -74,19 +74,17 @@ export function buildBetRows(event: PolymarketEvent, teamLabels: [string, string
   const totalsTopTokenId = getOutcomeTokenId(totalsLine?.market, 0);
   const totalsBottomTokenId = getOutcomeTokenId(totalsLine?.market, 1);
 
-  const hasSpread = Boolean(spreadLine && (spreadTopOdds || spreadBottomOdds));
-  const hasMoneyline = Boolean(moneyline.top || moneyline.bottom);
-  const hasTotals = Boolean(totalsLine && (totalsTopOdds || totalsBottomOdds));
-
   const top: BetRow = {};
   const bottom: BetRow = {};
 
-  if (hasSpread) {
+  if (spreadTopOdds && spreadTopTokenId) {
     top.spread = {
       label: formatSpreadLine(spreadLineValue, spreadOutcomeIndexes.top),
       odds: formatOdds(spreadTopOdds),
       outcomeTokenId: spreadTopTokenId,
     };
+  }
+  if (spreadBottomOdds && spreadBottomTokenId) {
     bottom.spread = {
       label: formatSpreadLine(spreadLineValue, spreadOutcomeIndexes.bottom),
       odds: formatOdds(spreadBottomOdds),
@@ -94,12 +92,14 @@ export function buildBetRows(event: PolymarketEvent, teamLabels: [string, string
     };
   }
 
-  if (hasMoneyline) {
+  if (moneyline.top && moneylineTokenIds.top) {
     top.moneyline = {
       label: '',
       odds: formatOdds(moneyline.top),
       outcomeTokenId: moneylineTokenIds.top,
     };
+  }
+  if (moneyline.bottom && moneylineTokenIds.bottom) {
     bottom.moneyline = {
       label: '',
       odds: formatOdds(moneyline.bottom),
@@ -107,12 +107,14 @@ export function buildBetRows(event: PolymarketEvent, teamLabels: [string, string
     };
   }
 
-  if (hasTotals) {
+  if (totalsTopOdds && totalsTopTokenId) {
     top.total = {
       label: formatTotalLabel(totalsLineValue, true),
       odds: formatOdds(totalsTopOdds),
       outcomeTokenId: totalsTopTokenId,
     };
+  }
+  if (totalsBottomOdds && totalsBottomTokenId) {
     bottom.total = {
       label: formatTotalLabel(totalsLineValue, false),
       odds: formatOdds(totalsBottomOdds),

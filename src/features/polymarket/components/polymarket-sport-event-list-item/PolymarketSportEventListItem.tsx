@@ -78,8 +78,7 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
   const teamLabelFontSize = useMemo(() => (teamLabels[0].length > 14 || teamLabels[1].length > 14 ? '10pt' : '13pt'), [teamLabels]);
 
   const createBetCellPressHandler = useCallback(
-    (outcomeTokenId?: string) => {
-      if (!outcomeTokenId) return undefined;
+    (outcomeTokenId: string) => {
       const outcomeInfo = getOutcomeInfoForTokenId(event.markets, outcomeTokenId);
       if (!outcomeInfo) return undefined;
 
@@ -212,7 +211,7 @@ const BetCell = memo(function BetCell({
 }) {
   const fillTertiary = useBackgroundColor('fillTertiary');
   const hasLabel = Boolean(data.label);
-  const tokenId = data.outcomeTokenId ? getPolymarketTokenId(data.outcomeTokenId, 'sell') : undefined;
+  const tokenId = getPolymarketTokenId(data.outcomeTokenId, 'sell');
 
   const content = (
     <View style={[styles.betCell, { backgroundColor: backgroundColor ?? fillTertiary }]}>
@@ -221,23 +220,17 @@ const BetCell = memo(function BetCell({
           {data.label}
         </Text>
       ) : null}
-      {tokenId ? (
-        <LiveTokenText
-          align="center"
-          color={backgroundColor ? 'white' : 'label'}
-          size={hasLabel ? '12pt' : '15pt'}
-          weight="heavy"
-          numberOfLines={1}
-          tokenId={tokenId}
-          initialValue={data.odds}
-          selector={token => formatOdds(token.price)}
-          autoSubscriptionEnabled={false}
-        />
-      ) : (
-        <Text align="center" color={backgroundColor ? 'white' : 'label'} size={hasLabel ? '12pt' : '15pt'} weight="heavy" numberOfLines={1}>
-          {data.odds}
-        </Text>
-      )}
+      <LiveTokenText
+        align="center"
+        color={backgroundColor ? 'white' : 'label'}
+        size={hasLabel ? '12pt' : '15pt'}
+        weight="heavy"
+        numberOfLines={1}
+        tokenId={tokenId}
+        initialValue={data.odds}
+        selector={token => formatOdds(token.price)}
+        autoSubscriptionEnabled={false}
+      />
     </View>
   );
 
