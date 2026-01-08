@@ -88,14 +88,16 @@ export const PolymarketLeagueSelector = memo(function PolymarketLeagueSelector()
         },
       ]}
     >
-      <Border
-        borderRadius={CONTAINER_HEIGHT / 2}
-        borderColor={{ custom: isDarkMode ? opacityWorklet('#F5F8FF', 0.08) : opacityWorklet(globalColors.grey100, 0.02) }}
-        borderWidth={THICK_BORDER_WIDTH}
-      />
-      {!isDarkMode && (
-        <InnerShadow blur={6} borderRadius={CONTAINER_HEIGHT / 2} color={opacityWorklet(globalColors.grey100, 0.03)} dx={0} dy={2} />
-      )}
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <Border
+          borderRadius={CONTAINER_HEIGHT / 2}
+          borderColor={{ custom: isDarkMode ? opacityWorklet('#F5F8FF', 0.08) : opacityWorklet(globalColors.grey100, 0.02) }}
+          borderWidth={THICK_BORDER_WIDTH}
+        />
+        {!isDarkMode && (
+          <InnerShadow blur={6} borderRadius={CONTAINER_HEIGHT / 2} color={opacityWorklet(globalColors.grey100, 0.03)} dx={0} dy={2} />
+        )}
+      </View>
       <ScrollView
         contentContainerStyle={styles.scrollViewContentContainer}
         horizontal
