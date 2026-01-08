@@ -159,6 +159,7 @@ jobs:
         id: simulator
         with:
           model: "iPhone 16"
+          os_version: "18.5"
 
       - name: Ensure Simulator is fully booted
         run: |
