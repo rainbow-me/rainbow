@@ -13,7 +13,8 @@ import ConditionalWrap from 'conditional-wrap';
 import { address } from '@/utils/abbreviations';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
-import { IS_IOS } from '@/env';
+import { IS_DEV, IS_IOS } from '@/env';
+import isTestFlight from '@/helpers/isTestFlight';
 import { useTheme } from '@/theme';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { StyleSheet } from 'react-native';
@@ -55,10 +56,11 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
   }, [walletItems.length]);
 
   // the draggable context should only layout its children when the number of children changes
+  // but we also need to update when isDelegated changes
   const draggableItems = useMemo(() => {
     return walletItems;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletItems.length]);
+  }, [walletItems.length, walletItems.map(item => item.isDelegated).join(',')]);
 
   const avatarSize = useMemo(
     () =>
@@ -201,6 +203,11 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                     {account.isReadOnly && (
                       <Text color="labelTertiary" size="icon 10px">
                         􀋮
+                      </Text>
+                    )}
+                    {(IS_DEV || isTestFlight) && !account.isReadOnly && (
+                      <Text color={account.isDelegated ? 'green' : 'red'} size="icon 10px">
+                        􀋦
                       </Text>
                     )}
                     <Text numberOfLines={1} ellipsizeMode="middle" color="label" size="13pt" weight="bold">

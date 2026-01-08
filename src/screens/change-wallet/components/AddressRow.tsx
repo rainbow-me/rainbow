@@ -4,7 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '@/theme/ThemeContext';
 import { ButtonPressAnimation } from '@/components/animations';
 import ConditionalWrap from 'conditional-wrap';
-import { Box, Inline, Stack, Text, useForegroundColor, useColorMode, TextIcon } from '@/design-system';
+import { Box, Inline, Stack, Text, useForegroundColor, useColorMode, TextIcon, globalColors } from '@/design-system';
 import { AddressItem, AddressMenuAction } from '@/screens/change-wallet/ChangeWalletSheet';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { TextWeight } from '@/design-system/components/Text/Text';
@@ -16,6 +16,8 @@ import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 import { Icon } from '@/components/icons';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
+import { IS_DEV } from '@/env';
+import isTestFlight from '@/helpers/isTestFlight';
 
 const ROW_HEIGHT_WITH_PADDING = 64;
 const BUTTON_SIZE = 28;
@@ -74,7 +76,7 @@ interface AddressRowProps {
 }
 
 export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem }: AddressRowProps) {
-  const { address, color, emoji, balance, isSelected, isReadOnly, isLedger, label, image } = data;
+  const { address, color, emoji, balance, isSelected, isReadOnly, isLedger, isDelegated, label, image } = data;
 
   const walletName = useMemo(() => {
     return removeFirstEmojiFromString(label) || abbreviateAddress(address, 4, 6);
@@ -194,6 +196,22 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
                   </TextIcon>
                 )}
               </>
+            )}
+            {(IS_DEV || isTestFlight) && !isReadOnly && !editMode && (
+              <Box
+                paddingHorizontal="8px"
+                paddingVertical="6px"
+                borderRadius={22}
+                style={{
+                  backgroundColor: isDelegated ? globalColors.green60 : globalColors.red60,
+                  borderWidth: 1,
+                  borderColor: opacity('#F5F8FF', 0.03),
+                }}
+              >
+                <Text color={{ custom: globalColors.white100 }} size="13pt" weight="bold">
+                  {isDelegated ? i18n.t(i18n.l.wallet.change_wallet.delegated) : i18n.t(i18n.l.wallet.change_wallet.not_delegated)}
+                </Text>
+              </Box>
             )}
             {!editMode && isSelected && <SelectedAddressBadge shadow="12px blue" />}
             {editMode && (
