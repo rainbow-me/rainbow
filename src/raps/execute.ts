@@ -34,6 +34,7 @@ import { IS_TEST } from '@/env';
 import { getProvider } from '@/handlers/web3';
 import { Address } from 'viem';
 import { addNewTransaction } from '@/state/pendingTransactions';
+import { DELEGATION, getExperimentalFlag } from '@/config/experimental';
 
 const PERF_TRACKING_EXEMPTIONS: RapTypes[] = ['claimBridge', 'claimClaimable'];
 
@@ -171,8 +172,13 @@ export const walletExecuteRap = async <T extends RapTypes>(
   const { actions } = rap;
   const rapName = getRapFullName(rap.actions);
 
-  // Atomic execution path
-  if (parameters.atomic && (type === 'swap' || type === 'crosschainSwap') && getCanDelegate({ chainId: parameters.chainId })) {
+  // Atomic execution if atomic flow is allowed (user preference) and supported for a chainId
+  const { supported: delegationEnabled } = await supportsDelegation({
+    address: parameters.quote?.from as Address,
+    chainId: parameters.chainId,
+  });
+  const supportsBatching = getExperimentalFlag(DELEGATION) && delegationEnabled;
+  if (supportsBatching && parameters.atomic && (type === 'swap' || type === 'crosschainSwap')) {
     const swapParams = parameters as RapSwapActionParameters<'swap' | 'crosschainSwap'>;
     const { chainId, quote, gasParams } = swapParams;
     const provider = getProvider({ chainId });
