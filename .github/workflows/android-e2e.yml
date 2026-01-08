@@ -170,7 +170,7 @@ jobs:
           rm -rf rainbow-env
 
       - name: Install Maestro
-        run: export MAESTRO_VERSION=2.0.3; curl -fsSL "https://get.maestro.mobile.dev" | bash
+        run: export MAESTRO_VERSION=2.0.10; curl -fsSL "https://get.maestro.mobile.dev" | bash
 
       - name: Install Anvil
         uses: foundry-rs/foundry-toolchain@82dee4ba654bd2146511f85f0d013af94670c4de

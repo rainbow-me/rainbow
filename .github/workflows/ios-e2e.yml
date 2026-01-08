@@ -138,7 +138,7 @@ jobs:
           rm -rf rainbow-env
 
       - name: Install Maestro
-        run: export MAESTRO_VERSION=2.0.3; curl -fsSL "https://get.maestro.mobile.dev" | bash
+        run: export MAESTRO_VERSION=2.0.10; curl -fsSL "https://get.maestro.mobile.dev" | bash
 
       - name: Install Anvil
         uses: foundry-rs/foundry-toolchain@82dee4ba654bd2146511f85f0d013af94670c4de
@@ -162,17 +162,21 @@ jobs:
 
       - name: Ensure Simulator is fully booted
         run: |
-          echo "Waiting for simulator to be fully booted..."
-          timeout=0
-          while [[ "$(xcrun simctl list | grep "${{ steps.simulator.outputs.udid }}" | grep -o 'Booted')" != "Booted" ]]; do
-            sleep 5
-            timeout=$((timeout+5))
-            echo "Still waiting... ($timeout seconds)"
-            if [ $timeout -ge 120 ]; then
-              echo "Timed out waiting for simulator"
-              exit 1
-            fi
-          done
+          set -euo pipefail
+
+          UDID="${{ steps.simulator.outputs.udid }}"
+          echo "Ensuring simulator is booted and ready: $UDID"
+
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+
+          echo "== Open Simulator UI (optional but helps flakiness) =="
+          open -a Simulator --args -CurrentDeviceUDID "$UDID" || true
+
+          echo "== Sanity: simulator responds to a command =="
+          # Touch a command that requires the sim to be responsive
+          xcrun simctl getenv "$UDID" HOME >/dev/null
+
           echo "Simulator is ready."
 
       - name: Run Tests
