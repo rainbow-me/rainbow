@@ -83,13 +83,13 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
 
   const teamLabelFontSize = useMemo(() => (teamLabels[0].length > 14 || teamLabels[1].length > 14 ? '10pt' : '13pt'), [teamLabels]);
 
-  // Calculate placeholder dimensions for Android (to maintain layout without rendering actual BetCells)
+  // Calculate placeholder dimensions for Android to hack around no nested button support.
   const betCellsPlaceholder = useMemo(() => {
     const awayRowCellCount = [awayBets.spread, totals.over, awayBets.moneyline].filter(Boolean).length;
     const homeRowCellCount = [homeBets.spread, totals.under, homeBets.moneyline].filter(Boolean).length;
     const maxCellCount = Math.max(awayRowCellCount, homeRowCellCount);
     const width = maxCellCount > 0 ? maxCellCount * BET_ROW_WIDTH + (maxCellCount - 1) * BET_CELL_GAP : 0;
-    const height = 2 * BET_ROW_HEIGHT + 8; // 2 rows + betsColumn gap
+    const height = 2 * BET_ROW_HEIGHT + 8;
     return { width, height };
   }, [awayBets.spread, awayBets.moneyline, homeBets.spread, homeBets.moneyline, totals.over, totals.under]);
 
