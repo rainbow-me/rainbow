@@ -6,7 +6,7 @@ import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Sw
 import { ButtonPressAnimation } from '@/components/animations';
 import { Border, globalColors, Text, useColorMode } from '@/design-system';
 import { DEFAULT_SPORTS_LEAGUE_KEY } from '@/features/polymarket/constants';
-import { LEAGUE_SELECTOR_ORDER, SPORT_LEAGUES } from '@/features/polymarket/leagues';
+import { LEAGUE_SELECTOR_ORDER, SPORT_LEAGUES, LeagueId } from '@/features/polymarket/leagues';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { getIconByLeagueId, LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
@@ -16,8 +16,7 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createOpacityPalette } from '@/worklets/colors';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
-type LeagueKey = keyof typeof SPORT_LEAGUES;
-type LeagueItemKey = LeagueKey | typeof DEFAULT_SPORTS_LEAGUE_KEY;
+type LeagueItemKey = LeagueId | typeof DEFAULT_SPORTS_LEAGUE_KEY;
 type LeagueItem = {
   key: LeagueItemKey;
   label: string;
@@ -160,7 +159,7 @@ const LeagueItemComponent = memo(function LeagueItemComponent({ league, onPress,
         </Animated.View>
         {hasIcon && (
           <View style={styles.iconContainer}>
-            <LeagueIcon leagueId={league.key as LeagueKey} size={24} />
+            <LeagueIcon leagueId={league.key as LeagueId} size={24} />
           </View>
         )}
         <Text align="center" color="label" size="17pt" weight="heavy">

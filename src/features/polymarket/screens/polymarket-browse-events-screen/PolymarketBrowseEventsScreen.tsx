@@ -4,7 +4,7 @@ import { useSharedValue } from 'react-native-reanimated';
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { useColorMode } from '@/design-system';
-import { POLYMARKET_BACKGROUND_DARK, POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
+import { CATEGORIES, POLYMARKET_BACKGROUND_DARK, POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { PolymarketEventsListBase } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListBase';
 import { PolymarketEventCategorySelector } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketEventCategorySelector';
 import { PolymarketSportsEventsScreen } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketSportsEventsScreen';
@@ -29,7 +29,7 @@ const EMPTY_EVENTS: PolymarketEvent[] = [];
 const PolymarketBrowseEventsList = () => {
   const { isDarkMode } = useColorMode();
   const { eventsListRef } = usePolymarketContext();
-  const isSportsCategory = usePolymarketCategoryStore(state => state.tagId === 'sports');
+  const isSportsCategory = usePolymarketCategoryStore(state => state.tagId === CATEGORIES.sports.tagId);
 
   const scrollOffset = useSharedValue(0);
   const onScroll = useScrollFadeHandler(scrollOffset);

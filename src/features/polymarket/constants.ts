@@ -25,6 +25,7 @@ export const POLYMARKET_SIGNING_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/sig
 export const POLYMARKET_CLOB_URL = 'https://clob.polymarket.com';
 export const POLYMARKET_GAMMA_API_URL = 'https://gamma-api.polymarket.com';
 export const POLYMARKET_DATA_API_URL = 'https://data-api.polymarket.com';
+export const POLYMARKET_SPORTS_WS_URL = 'wss://sports-api.polymarket.com/ws';
 
 export const BUILDER_CONFIG = new BuilderConfig({
   remoteBuilderConfig: { url: POLYMARKET_SIGNING_PROXY_URL, token: PLATFORM_API_KEY },

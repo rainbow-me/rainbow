@@ -1,7 +1,7 @@
 import { memo, useCallback, useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import ConditionalWrap from 'conditional-wrap';
-import { IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
@@ -119,9 +119,9 @@ export const PolymarketSportEventListItem = memo(function PolymarketSportEventLi
   );
 
   return (
-    <ConditionalWrap condition={!IS_IOS} wrap={children => <View style={[styles.container, style]}>{children}</View>}>
+    <ConditionalWrap condition={IS_ANDROID} wrap={children => <View style={[styles.container, style]}>{children}</View>}>
       <>
-        {!IS_IOS && (
+        {IS_ANDROID && (
           <View style={styles.betCellsOverlay}>
             <View style={styles.betsColumn}>
               <View style={styles.betRow}>

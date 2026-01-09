@@ -69,13 +69,13 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
   const events = usePolymarketSportsEventsStore(state => state.getData() ?? EMPTY_EVENTS);
   const selectedLeagueId = usePolymarketSportsEventsStore(state => state.selectedLeagueId);
   const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading'));
+  const showLeagueHeaders = !selectedLeagueId || selectedLeagueId === DEFAULT_SPORTS_LEAGUE_KEY;
 
   const filteredEvents = useMemo(() => {
-    if (!selectedLeagueId || selectedLeagueId === DEFAULT_SPORTS_LEAGUE_KEY) return events;
+    if (showLeagueHeaders) return events;
     return events.filter(event => getLeagueId(event.slug) === selectedLeagueId);
-  }, [events, selectedLeagueId]);
+  }, [events, showLeagueHeaders, selectedLeagueId]);
 
-  const showLeagueHeaders = !selectedLeagueId || selectedLeagueId === DEFAULT_SPORTS_LEAGUE_KEY;
   const listData = useMemo(() => buildListData(filteredEvents, showLeagueHeaders), [filteredEvents, showLeagueHeaders]);
 
   const listStyles = useMemo(() => {

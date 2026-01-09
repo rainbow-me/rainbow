@@ -21,6 +21,7 @@ import { marketBuyToken } from '@/features/polymarket/utils/orders';
 import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/safe-math/SafeMath';
 import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
+import { POLYMARKET_CLOB_API_ERRORS } from '@/features/polymarket/errors';
 import { analytics } from '@/analytics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
@@ -104,12 +105,12 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
       const error = ensureError(e);
       logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', error));
 
-      if (error.message === "order couldn't be fully filled. FOK orders are fully filled or killed.") {
+      if (error.message === POLYMARKET_CLOB_API_ERRORS.FOK_ORDER_NOT_FILLED) {
         Alert.alert(
           i18n.t(i18n.l.predictions.new_position.errors.not_enough_liquidity),
           i18n.t(i18n.l.predictions.new_position.errors.please_lower_amount)
         );
-      } else if (error.message === 'no match') {
+      } else if (error.message === POLYMARKET_CLOB_API_ERRORS.NO_MATCH) {
         Alert.alert(
           i18n.t(i18n.l.predictions.new_position.errors.no_liquidity_at_price),
           i18n.t(i18n.l.predictions.new_position.errors.please_lower_amount)

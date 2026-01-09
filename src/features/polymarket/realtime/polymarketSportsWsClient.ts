@@ -1,7 +1,7 @@
 import { time } from '@/utils/time';
 import { PolymarketLiveGameUpdate, polymarketLiveGameActions } from '@/features/polymarket/stores/polymarketLiveGameStore';
+import { POLYMARKET_SPORTS_WS_URL } from '@/features/polymarket/constants';
 
-const POLYMARKET_SPORTS_WS_URL = 'wss://sports-api.polymarket.com/ws';
 const MAX_RECONNECT_DELAY_MS = time.seconds(30);
 
 class PolymarketSportsWsClient {
