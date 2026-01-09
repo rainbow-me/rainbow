@@ -258,7 +258,6 @@
     "react-native-redash": "16.3.0",
     "react-native-restart": "0.0.22",
     "react-native-safe-area-context": "5.4.0",
-    "react-native-safe-area-view": "rainbow-me/react-native-safe-area-view",
     "react-native-screen-corner-radius": "0.2.2",
     "react-native-screens": "4.10.0",
     "react-native-section-list-get-item-layout": "2.2.3",
