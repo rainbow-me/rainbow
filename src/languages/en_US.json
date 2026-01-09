@@ -2946,7 +2946,7 @@
         "cloud_backup_link": "Learn more…",
         "view_secret_phrase": "View Secret Phrase",
         "view_private_key": "View Private Key",
-        "copy_wallet_address": "Copy wallet address"
+        "copy_wallet_address": "Copy Address",
       },
       "balance_title": "Balance",
       "buy": "Buy",
