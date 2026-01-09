@@ -163,88 +163,18 @@ jobs:
 
       - name: Ensure Simulator is fully booted
         run: |
-          set -euo pipefail
-
-          UDID="${{ steps.simulator.outputs.udid }}"
-          MAX_SECONDS=240
-          POLL_SECONDS=5
-
-          ts() { date +"%H:%M:%S"; }
-          log() { echo "[$(ts)] $*"; }
-
-          sim_line() {
-            # Return the line that contains the UDID (or empty).
-            xcrun simctl list devices 2>/dev/null | grep "$UDID" || true
-          }
-
-          sim_state() {
-            # Extract Booted/Shutdown/etc from the line.
-            # Example line contains "(Booted)" or "(Shutdown)".
-            local line
-            line="$(sim_line)"
-            if [[ -z "$line" ]]; then
-              echo ""
-              return 0
+          echo "Waiting for simulator to be fully booted..."
+          timeout=0
+          while [[ "$(xcrun simctl list | grep "${{ steps.simulator.outputs.udid }}" | grep -o 'Booted')" != "Booted" ]]; do
+            sleep 5
+            timeout=$((timeout+5))
+            echo "Still waiting... ($timeout seconds)"
+            if [ $timeout -ge 120 ]; then
+              echo "Timed out waiting for simulator"
+              exit 1
             fi
-            # Pull whatever is inside the final parentheses
-            echo "$line" | sed -E 's/.*\(([^()]*)\)[[:space:]]*$/\1/'
-          }
-
-          run_with_watchdog() {
-            # Usage: run_with_watchdog "label" cmd arg...
-            local label="$1"; shift
-            local elapsed=0
-
-            log "$label: starting: $*"
-            ( "$@" ) &
-            local pid=$!
-
-            while kill -0 "$pid" 2>/dev/null; do
-              sleep "$POLL_SECONDS"
-              elapsed=$((elapsed+POLL_SECONDS))
-              log "$label: still running... (${elapsed}s) state='$(sim_state)' line='$(sim_line)'"
-              if [[ "$elapsed" -ge "$MAX_SECONDS" ]]; then
-                log "$label: TIMEOUT after ${MAX_SECONDS}s"
-                log "$label: dumping diagnostics..."
-                xcrun simctl list devices | grep -n "$UDID" || true
-                xcrun simctl diagnose -b || true
-                kill -9 "$pid" 2>/dev/null || true
-                return 1
-              fi
-            done
-
-            wait "$pid"
-            log "$label: done"
-          }
-
-          log "Ensuring simulator is booted and ready: $UDID"
-          log "Current: state='$(sim_state)' line='$(sim_line)'"
-
-          if [[ "$(sim_state)" != "Booted" ]]; then
-            # Boot (guarded). If a race makes it booted mid-flight, we accept that.
-            run_with_watchdog "simctl boot" xcrun simctl boot "$UDID" || {
-              # If boot failed because it became Booted, tolerate; otherwise fail.
-              if [[ "$(sim_state)" == "Booted" ]]; then
-                log "simctl boot failed but simulator is Booted now; continuing."
-              else
-                log "simctl boot failed and simulator is not Booted; failing."
-                exit 1
-              fi
-            }
-          else
-            log "Simulator already Booted; skipping simctl boot."
-          fi
-
-          # This is the important readiness gate; but it can hang -> watchdog.
-          run_with_watchdog "simctl bootstatus -b" xcrun simctl bootstatus "$UDID" -b
-
-          log "Opening Simulator UI (optional but helps flakiness)..."
-          open -a Simulator --args -CurrentDeviceUDID "$UDID" || true
-
-          log "Sanity: simulator responds to getenv..."
-          run_with_watchdog "simctl getenv HOME" xcrun simctl getenv "$UDID" HOME >/dev/null
-
-          log "Simulator is ready."
+          done
+          echo "Simulator is ready."
 
       - name: Run Tests
         run: ./scripts/e2e-ios-ci.sh
