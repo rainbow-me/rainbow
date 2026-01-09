@@ -1,9 +1,8 @@
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { PolymarketTeamInfo } from '@/features/polymarket/types';
+import * as i18n from '@/languages';
 
 const MAX_TEAM_NAME_LENGTH = 14;
-
-export type TeamSide = 'away' | 'home';
 
 export type TeamDisplayInfo = {
   labels: [string, string];
@@ -35,7 +34,7 @@ export function getEventTeams(event: PolymarketEvent): EventTeams {
     labels = [awayTeam.abbreviation.toUpperCase(), homeTeam.abbreviation.toUpperCase()];
   }
 
-  const title = awayName && homeName ? `${awayName} vs. ${homeName}` : event.title;
+  const title = awayName && homeName ? `${awayName} ${i18n.t(i18n.l.predictions.sports.vs)}. ${homeName}` : event.title;
 
   return { away: awayTeam, home: homeTeam, names, labels, title };
 }

@@ -2,7 +2,7 @@ import { rainbowFetch } from '@/rainbow-fetch';
 import { time } from '@/utils/time';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { RawPolymarketEvent, PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { DEFAULT_CATEGORY_KEY, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
+import { CATEGORIES, DEFAULT_CATEGORY_KEY, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { usePolymarketCategoryStore } from './usePolymarketCategoryStore';
 
@@ -15,7 +15,7 @@ export const usePolymarketEventsStore = createQueryStore<PolymarketEvent[], Poly
     fetcher: fetchPolymarketEvents,
     staleTime: time.minutes(2),
     cacheTime: time.minutes(20),
-    enabled: $ => $(usePolymarketCategoryStore, state => state.tagId !== 'sports'),
+    enabled: $ => $(usePolymarketCategoryStore, state => state.tagId !== CATEGORIES.sports.tagId),
     params: { tagId: $ => $(usePolymarketCategoryStore).tagId },
   },
   { storageKey: 'polymarketEventsStore' }

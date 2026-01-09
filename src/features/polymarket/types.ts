@@ -61,7 +61,7 @@ export type PolymarketWalletListData = {
 export type PolymarketGameMetadata = {
   teams: string[];
   sport: string;
-  ordering: 'home' | 'away';
+  ordering: TeamSide;
   type: string[];
 };
 
@@ -82,3 +82,5 @@ export type RawPolymarketTeamInfo = {
 export type PolymarketTeamInfo = Omit<RawPolymarketTeamInfo, 'color'> & {
   color: ResponseByTheme<string>;
 };
+
+export type TeamSide = 'away' | 'home';

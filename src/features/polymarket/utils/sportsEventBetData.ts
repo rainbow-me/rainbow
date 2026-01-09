@@ -5,9 +5,9 @@ import {
   MoneylineGroup,
 } from '@/features/polymarket/screens/polymarket-event-screen/utils/getMarketsGroupedByBetType';
 import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { PolymarketTeamInfo } from '@/features/polymarket/types';
+import { PolymarketTeamInfo, TeamSide } from '@/features/polymarket/types';
 import { isDrawMarket } from '@/features/polymarket/utils/sports';
-import { getEventTeams, TeamSide } from '@/features/polymarket/utils/sportsEventTeams';
+import { getEventTeams } from '@/features/polymarket/utils/sportsEventTeams';
 import { roundWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 

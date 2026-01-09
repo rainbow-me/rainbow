@@ -77,7 +77,7 @@ const UpcomingGameBoxScore = memo(function UpcomingGameBoxScore({ gameInfo }: { 
         </Box>
       ) : (
         <Text size="15pt" weight="bold" color="labelQuaternary">
-          {i18n.t(i18n.l.predictions.sports.vs)}
+          {i18n.t(i18n.l.predictions.sports.vs).toUpperCase()}
         </Text>
       )}
       <Box gap={12} alignItems="center" width={120}>

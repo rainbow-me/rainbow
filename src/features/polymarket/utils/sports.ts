@@ -99,12 +99,9 @@ export async function fetchTeamsForEvent(event: GameTeamsSource): Promise<Polyma
   if (homeTeamName && awayTeamName) {
     const teams = await fetchTeamsByNames([awayTeamName, homeTeamName], gammaLeagueId);
     if (teams?.length === 2) {
-      console.log('fetched teams for event', event.ticker, teams);
       return teams;
     }
   }
-
-  console.log('failed to fetch teams for event', event.ticker);
 }
 
 type GameTeamsSource = {
