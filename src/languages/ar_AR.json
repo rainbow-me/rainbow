@@ -3751,29 +3751,29 @@
     "predictions": {
       "feature_card": {
         "title": "التنبؤات",
-        "subtitle": "Bet on real-world events"
+        "subtitle": "المراهنة على الأحداث الواقعية"
       },
       "explain_sheet": {
         "next": "التالي",
-        "get_started": "Get started",
+        "get_started": "ابدأ الآن",
         "title": "التنبؤات",
         "steps": {
           "step_1": {
             "title": "التنبؤات",
             "subtitle_parts": [
-              "Try a new way to follow what's happening in the markets. Powered by Polymarket"
+              "جرب طريقة جديدة لمتابعة ما يحدث في الأسواق. مدعوم من Polymarket"
             ]
           },
           "step_2": {
-            "title": "Bet on Almost Anything",
+            "title": "المراهنة على كل شيء تقريبًا",
             "subtitle_parts": [
-              "Pick a market you like, place your position, and see where it goes."
+              "اختر السوق الذي تفضله، ضع رهانك، وشاهد إلى أين يتجه."
             ]
           },
           "step_3": {
-            "title": "Choose Your Outcome",
+            "title": "اختر نتيجتك",
             "subtitle_parts": [
-              "Each market has clear options. Pick the one you believe in and track how it performs."
+              "كل سوق لديه خيارات واضحة. اختر الذي تؤمن به وتتبع أدائه."
             ]
           }
         }
@@ -3782,100 +3782,100 @@
         "title": "التنبؤات"
       },
       "new_position": {
-        "title": "Place Bet",
+        "title": "ضع الرهان",
         "amount": "الكمية",
-        "chance_of_outcome": "Chance of Outcome",
-        "to_win": "To Win",
-        "spread": "Spread",
-        "hold_to_place_bet": "Hold to Place Bet",
-        "placing_bet": "Placing Bet...",
-        "confirming_order": "Confirming Order...",
-        "deposit_funds": "Deposit Funds",
-        "average_price": "Average Price"
+        "chance_of_outcome": "فرصة النتيجة",
+        "to_win": "للفوز",
+        "spread": "الانتشار",
+        "hold_to_place_bet": "اضغط للاستمرار في الرهان",
+        "placing_bet": "جارٍ وضع الرهان...",
+        "confirming_order": "جارٍ تأكيد الطلب...",
+        "deposit_funds": "إيداع الأموال",
+        "average_price": "السعر المتوسط"
       },
       "manage_position": {
         "hold_to_claim": "اضغط للمطالبة",
-        "hold_to_burn": "Hold to Burn",
-        "hold_to_cash_out": "Hold to Cash Out",
-        "claiming": "Claiming...",
-        "burning": "Burning...",
-        "cashing_out": "Cashing Out...",
-        "confirming_order": "Confirming Order...",
+        "hold_to_burn": "اضغط للحرق",
+        "hold_to_cash_out": "اضغط لسحب الأموال",
+        "claiming": "جارٍ المطالبة...",
+        "burning": "حرق...",
+        "cashing_out": "سحب الأموال...",
+        "confirming_order": "جارٍ تأكيد الطلب...",
         "position_value": "قيمة الموقع"
       },
       "cash_out": {
-        "title": "Cash Out Bet",
+        "title": "سحب الرهان",
         "current_price": "السعر الحالي",
-        "average_price": "Average Price",
-        "profit_loss": "Profit / Loss",
+        "average_price": "السعر المتوسط",
+        "profit_loss": "الربح / الخسارة",
         "receive": "استلم",
-        "spread": "Spread",
-        "cash_out": "Cash Out"
+        "spread": "الانتشار",
+        "cash_out": "سحب النقد"
       },
       "search": {
-        "placeholder": "Search for prediction markets",
+        "placeholder": "ابحث عن أسواق التنبؤ",
         "input_placeholder": "البحث في الأسواق",
-        "no_results": "No results found"
+        "no_results": "لم يتم العثور على نتائج"
       },
       "event": {
-        "outcomes": "Outcomes",
+        "outcomes": "النتائج",
         "about": "حول",
-        "show_rules": "Show Rules",
-        "rules": "Rules",
-        "end_date": "End Date",
-        "resolution_source": "Res. Source",
-        "category": "Category",
-        "hide_resolved": "Hide Resolved",
-        "show_resolved": "Show Resolved",
+        "show_rules": "عرض القواعد",
+        "rules": "القواعد",
+        "end_date": "تاريخ الانتهاء",
+        "resolution_source": "مصدر الحل",
+        "category": "الفئة",
+        "hide_resolved": "إخفاء المحلولين",
+        "show_resolved": "عرض المحلولين",
         "open_positions": "المواقع المفتوحة",
-        "market_resolved": "MARKET RESOLVED",
+        "market_resolved": "السوق محلول",
         "volume_suffix": "الحجم",
         "show_less": "اعرض أقل",
-        "show_more": "Show More",
-        "resolved": "Resolved"
+        "show_more": "أظهر المزيد",
+        "resolved": "محلول"
       },
       "position": {
-        "outcome": "Outcome",
-        "odds": "Odds",
-        "bet": "Bet",
-        "won": "Won",
-        "to_win": "To Win",
+        "outcome": "النتيجة",
+        "odds": "الاحتمالات",
+        "bet": "الرهان",
+        "won": "فاز",
+        "to_win": "للفوز",
         "claim": "المطالبة",
-        "burn": "Burn",
-        "cash_out": "Cash Out",
-        "no_open_positions": "No open positions",
-        "won_badge": "WON",
-        "lost_badge": "LOST",
-        "learn_more": "Learn more about Predictions"
+        "burn": "حرق",
+        "cash_out": "سحب النقد",
+        "no_open_positions": "لا توجد مواقف مفتوحة",
+        "won_badge": "فاز",
+        "lost_badge": "خسر",
+        "learn_more": "تعرف على المزيد عن التنبؤات"
       },
       "tabs": {
-        "browse": "Browse",
-        "portfolio": "Portfolio"
+        "browse": "تصفح",
+        "portfolio": "المحفظة"
       },
       "market": {
-        "buy_outcome": "Buy %{outcome}"
+        "buy_outcome": "اشتري %{outcome}"
       },
       "bet_types": {
-        "winner": "Winner",
-        "spreads": "Spreads",
-        "totals": "Totals",
+        "winner": "الفائز",
+        "spreads": "الانتشارات",
+        "totals": "الإجماليات",
         "other": "آخر"
       },
       "sports": {
-        "vs": "VS",
-        "live": "LIVE",
-        "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}"
+        "vs": "ضد",
+        "live": "مباشر",
+        "game_best_of": "اللعبة %{currentPeriod} - الأفضل من %{bestOf}"
       },
       "outcomes": {
         "yes": "نعم",
-        "yes_badge": "YES",
-        "no_badge": "NO"
+        "yes_badge": "نعم",
+        "no_badge": "لا"
       },
       "errors": {
         "title": "خطأ",
-        "failed_to_place_bet": "Failed to place bet. Please try again.",
-        "failed_to_cash_out": "Failed to cash out position. Please try again.",
-        "failed_to_claim": "Failed to claim position. Please try again."
+        "failed_to_place_bet": "فشل في وضع الرهان. يرجى المحاولة مرة أخرى.",
+        "failed_to_cash_out": "فشل في سحب الموقف. يرجى المحاولة مرة أخرى.",
+        "failed_to_claim": "فشل في المطالبة بالموقف. يرجى المحاولة مرة أخرى."
       }
     }
   }
