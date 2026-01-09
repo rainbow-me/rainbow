@@ -52,19 +52,13 @@ export function hasLeagueIcon(eventSlug: string): boolean {
   return leagueId ? getIconByLeagueId(leagueId) !== undefined : false;
 }
 
-type LeagueIconProps =
-  | {
-      leagueId?: never;
-      eventSlug: string;
-      color?: string;
-      size?: number;
-    }
-  | {
-      leagueId: LeagueId;
-      eventSlug?: never;
-      color?: string;
-      size?: number;
-    };
+type LeagueIconProps = {
+    color?: string;
+    size?: number;
+  } & (
+    | { leagueId: LeagueId; eventSlug?: never }
+    | { leagueId?: never; eventSlug: string }
+  );
 
 export const LeagueIcon = memo(function LeagueIcon({ leagueId, eventSlug, color, size = 24 }: LeagueIconProps) {
   const { isDarkMode } = useColorMode();
