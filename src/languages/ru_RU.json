@@ -24,7 +24,7 @@
       "tab_savings": "Сбережения",
       "tab_showcase": "Витрина",
       "tab_perps": "Perps",
-      "tab_polymarket": "Predictions",
+      "tab_polymarket": "Прогнозы",
       "tab_points": "Очки",
       "tab_positions": "Позиции",
       "tab_rewards": "Награды",
@@ -1619,7 +1619,7 @@
       },
       "feature_card": {
         "title": "Perps",
-        "subtitle": "High risk, high reward trading"
+        "subtitle": "Торговля с высоким риском и высокой наградой"
       },
       "actions": {
         "fund_wallet": "Пополнить мой кошелек",
@@ -1649,7 +1649,7 @@
         "confirm_button_error_text": "Ошибка котировки",
         "quote_error": "􀇿 Нет доступной цитаты",
         "insufficient_balance": "􀫲 Недостаточно средств",
-        "insufficient_gas": "Insufficient Gas"
+        "insufficient_gas": "Недостаточно газа"
       },
       "withdraw": {
         "title": "Вывести",
@@ -3750,132 +3750,132 @@
     },
     "predictions": {
       "feature_card": {
-        "title": "Predictions",
-        "subtitle": "Bet on real-world events"
+        "title": "Прогнозы",
+        "subtitle": "Ставьте на события в реальном мире"
       },
       "explain_sheet": {
         "next": "Далее",
-        "get_started": "Get started",
-        "title": "Predictions",
+        "get_started": "Начать",
+        "title": "Прогнозы",
         "steps": {
           "step_1": {
-            "title": "Predictions",
+            "title": "Прогнозы",
             "subtitle_parts": [
-              "Try a new way to follow what's happening in the markets. Powered by Polymarket"
+              "Попробуйте новый способ следить за рыночными событиями. Работает на Polymarket"
             ]
           },
           "step_2": {
-            "title": "Bet on Almost Anything",
+            "title": "Делайте ставки на почти что угодно",
             "subtitle_parts": [
-              "Pick a market you like, place your position, and see where it goes."
+              "Выберите рынок, который нравится, разместите свою позицию и следите за изменениями."
             ]
           },
           "step_3": {
-            "title": "Choose Your Outcome",
+            "title": "Выберите результат",
             "subtitle_parts": [
-              "Each market has clear options. Pick the one you believe in and track how it performs."
+              "Каждый рынок имеет четкие варианты. Выберите тот, в который вы верите, и следите за его результатами."
             ]
           }
         }
       },
       "navbar": {
-        "title": "Predictions"
+        "title": "Прогнозы"
       },
       "new_position": {
-        "title": "Place Bet",
+        "title": "Сделать ставку",
         "amount": "Сумма",
-        "chance_of_outcome": "Chance of Outcome",
-        "to_win": "To Win",
-        "spread": "Spread",
-        "hold_to_place_bet": "Hold to Place Bet",
-        "placing_bet": "Placing Bet...",
-        "confirming_order": "Confirming Order...",
-        "deposit_funds": "Deposit Funds",
-        "average_price": "Average Price"
+        "chance_of_outcome": "Вероятность исхода",
+        "to_win": "Чтобы выиграть",
+        "spread": "Спред",
+        "hold_to_place_bet": "Удерживайте, чтобы сделать ставку",
+        "placing_bet": "Размещение ставки...",
+        "confirming_order": "Подтверждение заказа...",
+        "deposit_funds": "Пополнить средства",
+        "average_price": "Средняя цена"
       },
       "manage_position": {
         "hold_to_claim": "Удерживайте, чтобы получить",
-        "hold_to_burn": "Hold to Burn",
-        "hold_to_cash_out": "Hold to Cash Out",
-        "claiming": "Claiming...",
-        "burning": "Burning...",
-        "cashing_out": "Cashing Out...",
-        "confirming_order": "Confirming Order...",
+        "hold_to_burn": "Удерживайте, чтобы сжечь",
+        "hold_to_cash_out": "Удерживайте, чтобы вывести",
+        "claiming": "Получение...",
+        "burning": "Сжигание...",
+        "cashing_out": "Вывод средств...",
+        "confirming_order": "Подтверждение заказа...",
         "position_value": "Стоимость позиции"
       },
       "cash_out": {
-        "title": "Cash Out Bet",
+        "title": "Вывести ставку",
         "current_price": "Текущая цена",
-        "average_price": "Average Price",
-        "profit_loss": "Profit / Loss",
+        "average_price": "Средняя цена",
+        "profit_loss": "Прибыль / Убыток",
         "receive": "Получить",
-        "spread": "Spread",
-        "cash_out": "Cash Out"
+        "spread": "Спред",
+        "cash_out": "Вывод средств"
       },
       "search": {
-        "placeholder": "Search for prediction markets",
+        "placeholder": "Искать рынки предсказаний",
         "input_placeholder": "Поиск рынков",
-        "no_results": "No results found"
+        "no_results": "Результаты не найдены"
       },
       "event": {
-        "outcomes": "Outcomes",
+        "outcomes": "Итоги",
         "about": "О компании",
-        "show_rules": "Show Rules",
-        "rules": "Rules",
-        "end_date": "End Date",
-        "resolution_source": "Res. Source",
-        "category": "Category",
-        "hide_resolved": "Hide Resolved",
-        "show_resolved": "Show Resolved",
+        "show_rules": "Показать правила",
+        "rules": "Правила",
+        "end_date": "Дата окончания",
+        "resolution_source": "Источник резолюции",
+        "category": "Категория",
+        "hide_resolved": "Скрыть решенные",
+        "show_resolved": "Показать решенные",
         "open_positions": "Открытые позиции",
-        "market_resolved": "MARKET RESOLVED",
+        "market_resolved": "РЫНОК РЕШЕН",
         "volume_suffix": "ОБЪЕМ",
         "show_less": "Показать меньше",
-        "show_more": "Show More",
-        "resolved": "Resolved"
+        "show_more": "Показать больше",
+        "resolved": "Решено"
       },
       "position": {
-        "outcome": "Outcome",
-        "odds": "Odds",
-        "bet": "Bet",
-        "won": "Won",
-        "to_win": "To Win",
+        "outcome": "Исход",
+        "odds": "Коэффициенты",
+        "bet": "Ставка",
+        "won": "Выиграл",
+        "to_win": "Чтобы выиграть",
         "claim": "Получить",
-        "burn": "Burn",
-        "cash_out": "Cash Out",
-        "no_open_positions": "No open positions",
-        "won_badge": "WON",
-        "lost_badge": "LOST",
-        "learn_more": "Learn more about Predictions"
+        "burn": "Сожечь",
+        "cash_out": "Вывод средств",
+        "no_open_positions": "Нет открытых позиций",
+        "won_badge": "ВЫИГРАЛ",
+        "lost_badge": "ПРОИГРАЛ",
+        "learn_more": "Узнайте больше о предсказаниях"
       },
       "tabs": {
-        "browse": "Browse",
-        "portfolio": "Portfolio"
+        "browse": "Обзор",
+        "portfolio": "Портфель"
       },
       "market": {
-        "buy_outcome": "Buy %{outcome}"
+        "buy_outcome": "Купить %{outcome}"
       },
       "bet_types": {
-        "winner": "Winner",
-        "spreads": "Spreads",
-        "totals": "Totals",
+        "winner": "Победитель",
+        "spreads": "Спреды",
+        "totals": "Всего",
         "other": "Другие"
       },
       "sports": {
         "vs": "VS",
         "live": "LIVE",
-        "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}"
+        "game_best_of": "Игра %{currentPeriod} - Лучший из %{bestOf}"
       },
       "outcomes": {
         "yes": "Да",
-        "yes_badge": "YES",
-        "no_badge": "NO"
+        "yes_badge": "ДА",
+        "no_badge": "НЕТ"
       },
       "errors": {
         "title": "Ошибка",
-        "failed_to_place_bet": "Failed to place bet. Please try again.",
-        "failed_to_cash_out": "Failed to cash out position. Please try again.",
-        "failed_to_claim": "Failed to claim position. Please try again."
+        "failed_to_place_bet": "Не удалось сделать ставку. Пожалуйста, попробуйте еще раз.",
+        "failed_to_cash_out": "Не удалось вывести позицию. Пожалуйста, попробуйте еще раз.",
+        "failed_to_claim": "Не удалось получить позицию. Пожалуйста, попробуйте еще раз."
       }
     }
   }
