@@ -24,7 +24,7 @@
       "tab_savings": "Tabungan",
       "tab_showcase": "Pameran",
       "tab_perps": "Perps",
-      "tab_polymarket": "Predictions",
+      "tab_polymarket": "Prediksi",
       "tab_points": "Poin",
       "tab_positions": "Posisi",
       "tab_rewards": "Hadiah",
@@ -1619,7 +1619,7 @@
       },
       "feature_card": {
         "title": "Perps",
-        "subtitle": "High risk, high reward trading"
+        "subtitle": "Perdagangan berisiko tinggi, imbalan tinggi"
       },
       "actions": {
         "fund_wallet": "Isi Saldo Dompet Saya",
@@ -1649,7 +1649,7 @@
         "confirm_button_error_text": "Kesalahan Kutipan",
         "quote_error": "􀇿 Tidak ada penawaran yang tersedia",
         "insufficient_balance": "􀫲 Dana Tidak Cukup",
-        "insufficient_gas": "Insufficient Gas"
+        "insufficient_gas": "Gas Tidak Cukup"
       },
       "withdraw": {
         "title": "Tarik",
@@ -3750,132 +3750,132 @@
     },
     "predictions": {
       "feature_card": {
-        "title": "Predictions",
-        "subtitle": "Bet on real-world events"
+        "title": "Prediksi",
+        "subtitle": "Taruhan pada acara di dunia nyata"
       },
       "explain_sheet": {
         "next": "Selanjutnya",
-        "get_started": "Get started",
-        "title": "Predictions",
+        "get_started": "Mulai",
+        "title": "Prediksi",
         "steps": {
           "step_1": {
-            "title": "Predictions",
+            "title": "Prediksi",
             "subtitle_parts": [
-              "Try a new way to follow what's happening in the markets. Powered by Polymarket"
+              "Coba cara baru untuk mengikuti apa yang terjadi di pasar. Didukung oleh Polymarket"
             ]
           },
           "step_2": {
-            "title": "Bet on Almost Anything",
+            "title": "Taruhan pada Hampir Apa Saja",
             "subtitle_parts": [
-              "Pick a market you like, place your position, and see where it goes."
+              "Pilih pasar yang Anda suka, tempatkan posisi Anda, dan lihat perkembangannya."
             ]
           },
           "step_3": {
-            "title": "Choose Your Outcome",
+            "title": "Pilih Hasil Anda",
             "subtitle_parts": [
-              "Each market has clear options. Pick the one you believe in and track how it performs."
+              "Setiap pasar memiliki opsi yang jelas. Pilih yang Anda yakin dan pantau kinerja."
             ]
           }
         }
       },
       "navbar": {
-        "title": "Predictions"
+        "title": "Prediksi"
       },
       "new_position": {
-        "title": "Place Bet",
+        "title": "Pasang Taruhan",
         "amount": "Jumlah",
-        "chance_of_outcome": "Chance of Outcome",
-        "to_win": "To Win",
-        "spread": "Spread",
-        "hold_to_place_bet": "Hold to Place Bet",
-        "placing_bet": "Placing Bet...",
-        "confirming_order": "Confirming Order...",
-        "deposit_funds": "Deposit Funds",
-        "average_price": "Average Price"
+        "chance_of_outcome": "Kemungkinan Hasil",
+        "to_win": "Untuk Menang",
+        "spread": "Penyebaran",
+        "hold_to_place_bet": "Tahan untuk Pasang Taruhan",
+        "placing_bet": "Memasang Taruhan...",
+        "confirming_order": "Mengonfirmasi Pesanan...",
+        "deposit_funds": "Deposit Dana",
+        "average_price": "Harga Rata-rata"
       },
       "manage_position": {
         "hold_to_claim": "Tahan untuk Mengklaim",
-        "hold_to_burn": "Hold to Burn",
-        "hold_to_cash_out": "Hold to Cash Out",
-        "claiming": "Claiming...",
-        "burning": "Burning...",
-        "cashing_out": "Cashing Out...",
-        "confirming_order": "Confirming Order...",
+        "hold_to_burn": "Tahan untuk Hanguskan",
+        "hold_to_cash_out": "Tahan untuk Mencairkan",
+        "claiming": "Mengklaim...",
+        "burning": "Membakar...",
+        "cashing_out": "Mencairkan...",
+        "confirming_order": "Mengonfirmasi Pesanan...",
         "position_value": "Nilai Posisi"
       },
       "cash_out": {
-        "title": "Cash Out Bet",
+        "title": "Cairkan Taruhan",
         "current_price": "Harga Saat Ini",
-        "average_price": "Average Price",
-        "profit_loss": "Profit / Loss",
+        "average_price": "Harga Rata-rata",
+        "profit_loss": "Keuntungan / Kerugian",
         "receive": "Terima",
-        "spread": "Spread",
-        "cash_out": "Cash Out"
+        "spread": "Penyebaran",
+        "cash_out": "Cairkan"
       },
       "search": {
-        "placeholder": "Search for prediction markets",
+        "placeholder": "Cari pasar prediksi",
         "input_placeholder": "Cari pasar",
-        "no_results": "No results found"
+        "no_results": "Tidak ada hasil ditemukan"
       },
       "event": {
-        "outcomes": "Outcomes",
+        "outcomes": "Hasil",
         "about": "Tentang",
-        "show_rules": "Show Rules",
-        "rules": "Rules",
-        "end_date": "End Date",
-        "resolution_source": "Res. Source",
-        "category": "Category",
-        "hide_resolved": "Hide Resolved",
-        "show_resolved": "Show Resolved",
+        "show_rules": "Tampilkan Aturan",
+        "rules": "Aturan",
+        "end_date": "Tanggal Berakhir",
+        "resolution_source": "Sumber Resolusi",
+        "category": "Kategori",
+        "hide_resolved": "Sembunyikan yang Terjawab",
+        "show_resolved": "Tampilkan yang Terjawab",
         "open_positions": "Posisi Terbuka",
-        "market_resolved": "MARKET RESOLVED",
+        "market_resolved": "PASAR YANG TERJAWAB",
         "volume_suffix": "VOL",
         "show_less": "Tampilkan Lebih Sedikit",
-        "show_more": "Show More",
-        "resolved": "Resolved"
+        "show_more": "Tampilkan Lebih Banyak",
+        "resolved": "Terjawab"
       },
       "position": {
-        "outcome": "Outcome",
-        "odds": "Odds",
-        "bet": "Bet",
-        "won": "Won",
-        "to_win": "To Win",
+        "outcome": "Hasil",
+        "odds": "Peluang",
+        "bet": "Taruhan",
+        "won": "Menang",
+        "to_win": "Untuk Menang",
         "claim": "Klaim",
-        "burn": "Burn",
-        "cash_out": "Cash Out",
-        "no_open_positions": "No open positions",
-        "won_badge": "WON",
-        "lost_badge": "LOST",
-        "learn_more": "Learn more about Predictions"
+        "burn": "Hanguskan",
+        "cash_out": "Cairkan",
+        "no_open_positions": "Tidak ada posisi terbuka",
+        "won_badge": "MENANG",
+        "lost_badge": "KALAH",
+        "learn_more": "Pelajari lebih lanjut tentang Prediksi"
       },
       "tabs": {
-        "browse": "Browse",
-        "portfolio": "Portfolio"
+        "browse": "Jelajahi",
+        "portfolio": "Portofolio"
       },
       "market": {
-        "buy_outcome": "Buy %{outcome}"
+        "buy_outcome": "Beli %{outcome}"
       },
       "bet_types": {
-        "winner": "Winner",
-        "spreads": "Spreads",
-        "totals": "Totals",
+        "winner": "Pemenang",
+        "spreads": "Penyebaran",
+        "totals": "Jumlah Total",
         "other": "Lainnya"
       },
       "sports": {
         "vs": "VS",
         "live": "LIVE",
-        "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}"
+        "game_best_of": "Permainan %{currentPeriod} - Terbaik dari %{bestOf}"
       },
       "outcomes": {
         "yes": "Ya",
-        "yes_badge": "YES",
-        "no_badge": "NO"
+        "yes_badge": "YA",
+        "no_badge": "TIDAK"
       },
       "errors": {
         "title": "Kesalahan",
-        "failed_to_place_bet": "Failed to place bet. Please try again.",
-        "failed_to_cash_out": "Failed to cash out position. Please try again.",
-        "failed_to_claim": "Failed to claim position. Please try again."
+        "failed_to_place_bet": "Gagal memasang taruhan. Silakan coba lagi.",
+        "failed_to_cash_out": "Gagal mencairkan posisi. Silakan coba lagi.",
+        "failed_to_claim": "Gagal mengklaim posisi. Silakan coba lagi."
       }
     }
   }
