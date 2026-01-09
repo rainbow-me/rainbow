@@ -24,7 +24,7 @@
       "tab_savings": "Tasarruflar",
       "tab_showcase": "Vitrin",
       "tab_perps": "Vadeli İşlemler",
-      "tab_polymarket": "Predictions",
+      "tab_polymarket": "Tahminler",
       "tab_points": "Noktalar",
       "tab_positions": "Pozisyonlar",
       "tab_rewards": "Ödüller",
@@ -1619,7 +1619,7 @@
       },
       "feature_card": {
         "title": "Vadeli İşlemler",
-        "subtitle": "High risk, high reward trading"
+        "subtitle": "Yüksek risk, yüksek ödüllü ticaret"
       },
       "actions": {
         "fund_wallet": "Cüzdanı Fonla",
@@ -1649,7 +1649,7 @@
         "confirm_button_error_text": "Teklif Hatası",
         "quote_error": "􀇿 Alıntı bulunamadı",
         "insufficient_balance": "􀫲 Yetersiz Bakiye",
-        "insufficient_gas": "Insufficient Gas"
+        "insufficient_gas": "Yetersiz Gaz"
       },
       "withdraw": {
         "title": "Çekme",
@@ -3750,132 +3750,132 @@
     },
     "predictions": {
       "feature_card": {
-        "title": "Predictions",
-        "subtitle": "Bet on real-world events"
+        "title": "Tahminler",
+        "subtitle": "Gerçek dünya olaylarına bahis yapın"
       },
       "explain_sheet": {
         "next": "Sonraki",
-        "get_started": "Get started",
-        "title": "Predictions",
+        "get_started": "Başlayın",
+        "title": "Tahminler",
         "steps": {
           "step_1": {
-            "title": "Predictions",
+            "title": "Tahminler",
             "subtitle_parts": [
-              "Try a new way to follow what's happening in the markets. Powered by Polymarket"
+              "Piyasalarda neler olduğunu takip etmenin yeni bir yolunu deneyin. Polymarket tarafından desteklenmektedir"
             ]
           },
           "step_2": {
-            "title": "Bet on Almost Anything",
+            "title": "Neredeyse Her Şeye Bahis",
             "subtitle_parts": [
-              "Pick a market you like, place your position, and see where it goes."
+              "Sevdiğiniz bir pazarı seçin, konumunuzu belirleyin ve nasıl ilerlediğini görün."
             ]
           },
           "step_3": {
-            "title": "Choose Your Outcome",
+            "title": "Sonucunuzu Seçin",
             "subtitle_parts": [
-              "Each market has clear options. Pick the one you believe in and track how it performs."
+              "Her piyasada net seçenekler mevcuttur. İnandığınız seçeneği seçin ve nasıl performans gösterdiğini takip edin."
             ]
           }
         }
       },
       "navbar": {
-        "title": "Predictions"
+        "title": "Tahminler"
       },
       "new_position": {
-        "title": "Place Bet",
+        "title": "Bahis Yap",
         "amount": "Miktar",
-        "chance_of_outcome": "Chance of Outcome",
-        "to_win": "To Win",
+        "chance_of_outcome": "Sonuç Şansı",
+        "to_win": "Kazanmak İçin",
         "spread": "Spread",
-        "hold_to_place_bet": "Hold to Place Bet",
-        "placing_bet": "Placing Bet...",
-        "confirming_order": "Confirming Order...",
-        "deposit_funds": "Deposit Funds",
-        "average_price": "Average Price"
+        "hold_to_place_bet": "Bahis Yapmak İçin Basılı Tutun",
+        "placing_bet": "Bahis Yapılıyor...",
+        "confirming_order": "Sipariş Onaylanıyor...",
+        "deposit_funds": "Fon Yatırma",
+        "average_price": "Ortalama Fiyat"
       },
       "manage_position": {
         "hold_to_claim": "Talep Etmek İçin Basılı Tutun",
-        "hold_to_burn": "Hold to Burn",
-        "hold_to_cash_out": "Hold to Cash Out",
-        "claiming": "Claiming...",
-        "burning": "Burning...",
-        "cashing_out": "Cashing Out...",
-        "confirming_order": "Confirming Order...",
+        "hold_to_burn": "Yakmak İçin Basılı Tutun",
+        "hold_to_cash_out": "Nakit Çıkışı İçin Basılı Tutun",
+        "claiming": "Talep Ediliyor...",
+        "burning": "Yanıyor...",
+        "cashing_out": "Nakit Çıkışı Yapılıyor...",
+        "confirming_order": "Sipariş Onaylanıyor...",
         "position_value": "Pozisyon Değeri"
       },
       "cash_out": {
-        "title": "Cash Out Bet",
+        "title": "Bahisten Nakit Çıkışı",
         "current_price": "Mevcut Fiyat",
-        "average_price": "Average Price",
-        "profit_loss": "Profit / Loss",
+        "average_price": "Ortalama Fiyat",
+        "profit_loss": "Kâr / Zarar",
         "receive": "Al",
         "spread": "Spread",
-        "cash_out": "Cash Out"
+        "cash_out": "Nakit Çıkışı"
       },
       "search": {
-        "placeholder": "Search for prediction markets",
+        "placeholder": "Tahmin Pazarlarını Ara",
         "input_placeholder": "Piyasaları ara",
-        "no_results": "No results found"
+        "no_results": "Sonuç bulunamadı"
       },
       "event": {
-        "outcomes": "Outcomes",
+        "outcomes": "Sonuçlar",
         "about": "Hakkında",
-        "show_rules": "Show Rules",
-        "rules": "Rules",
-        "end_date": "End Date",
-        "resolution_source": "Res. Source",
-        "category": "Category",
-        "hide_resolved": "Hide Resolved",
-        "show_resolved": "Show Resolved",
+        "show_rules": "Kuralları Göster",
+        "rules": "Kurallar",
+        "end_date": "Bitiş Tarihi",
+        "resolution_source": "Çözüm Kaynağı",
+        "category": "Kategori",
+        "hide_resolved": "Çözümlenmişi Gizle",
+        "show_resolved": "Çözümlenmişi Göster",
         "open_positions": "Açık Pozisyonlar",
-        "market_resolved": "MARKET RESOLVED",
+        "market_resolved": "PAZAR ÇÖZÜLDÜ",
         "volume_suffix": "HACİM",
         "show_less": "Daha Az Göster",
-        "show_more": "Show More",
-        "resolved": "Resolved"
+        "show_more": "Daha Fazla Göster",
+        "resolved": "Çözüldü"
       },
       "position": {
-        "outcome": "Outcome",
-        "odds": "Odds",
-        "bet": "Bet",
-        "won": "Won",
-        "to_win": "To Win",
+        "outcome": "Sonuç",
+        "odds": "Katsayılar",
+        "bet": "Bahis",
+        "won": "Kazandı",
+        "to_win": "Kazanmak İçin",
         "claim": "Talep Et",
-        "burn": "Burn",
-        "cash_out": "Cash Out",
-        "no_open_positions": "No open positions",
-        "won_badge": "WON",
-        "lost_badge": "LOST",
-        "learn_more": "Learn more about Predictions"
+        "burn": "Yak",
+        "cash_out": "Nakit Çıkışı",
+        "no_open_positions": "Açık Pozisyon Yok",
+        "won_badge": "KAZANDI",
+        "lost_badge": "KAYBETTİ",
+        "learn_more": "Tahminler Hakkında Daha Fazla Bilgi Edinin"
       },
       "tabs": {
-        "browse": "Browse",
-        "portfolio": "Portfolio"
+        "browse": "Göz At",
+        "portfolio": "Portföy"
       },
       "market": {
-        "buy_outcome": "Buy %{outcome}"
+        "buy_outcome": "%{outcome} Satın Alın"
       },
       "bet_types": {
-        "winner": "Winner",
-        "spreads": "Spreads",
-        "totals": "Totals",
+        "winner": "Kazanan",
+        "spreads": "Spreadler",
+        "totals": "Toplamlar",
         "other": "Diğer"
       },
       "sports": {
         "vs": "VS",
-        "live": "LIVE",
-        "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}"
+        "live": "CANLI",
+        "game_best_of": "Oyun %{currentPeriod} - %{bestOf} En İyi"
       },
       "outcomes": {
         "yes": "Evet",
-        "yes_badge": "YES",
-        "no_badge": "NO"
+        "yes_badge": "EVET",
+        "no_badge": "HAYIR"
       },
       "errors": {
         "title": "Hata",
-        "failed_to_place_bet": "Failed to place bet. Please try again.",
-        "failed_to_cash_out": "Failed to cash out position. Please try again.",
-        "failed_to_claim": "Failed to claim position. Please try again."
+        "failed_to_place_bet": "Bahis yapılamadı. Lütfen tekrar deneyin.",
+        "failed_to_cash_out": "Pozisyondan nakit çıkışı yapılamadı. Lütfen tekrar deneyin.",
+        "failed_to_claim": "Pozisyon talep edilemedi. Lütfen tekrar deneyin."
       }
     }
   }
