@@ -3751,29 +3751,29 @@
     "predictions": {
       "feature_card": {
         "title": "予測",
-        "subtitle": "Bet on real-world events"
+        "subtitle": "現実の出来事に賭ける"
       },
       "explain_sheet": {
         "next": "次へ",
-        "get_started": "Get started",
+        "get_started": "始める",
         "title": "予測",
         "steps": {
           "step_1": {
             "title": "予測",
             "subtitle_parts": [
-              "Try a new way to follow what's happening in the markets. Powered by Polymarket"
+              "市場での動向を新しい方法で追う。Polymarketによってパワーアップ"
             ]
           },
           "step_2": {
-            "title": "Bet on Almost Anything",
+            "title": "ほとんど何にでも賭ける",
             "subtitle_parts": [
-              "Pick a market you like, place your position, and see where it goes."
+              "好きな市場を選び、ポジションを決め、追跡しましょう。"
             ]
           },
           "step_3": {
-            "title": "Choose Your Outcome",
+            "title": "結果を選択",
             "subtitle_parts": [
-              "Each market has clear options. Pick the one you believe in and track how it performs."
+              "各市場には明確な選択肢があります。信じるオプションを選び、その結果を追跡しましょう。"
             ]
           }
         }
@@ -3782,100 +3782,100 @@
         "title": "予測"
       },
       "new_position": {
-        "title": "Place Bet",
+        "title": "賭けを行う",
         "amount": "金額",
-        "chance_of_outcome": "Chance of Outcome",
-        "to_win": "To Win",
-        "spread": "Spread",
-        "hold_to_place_bet": "Hold to Place Bet",
-        "placing_bet": "Placing Bet...",
-        "confirming_order": "Confirming Order...",
-        "deposit_funds": "Deposit Funds",
-        "average_price": "Average Price"
+        "chance_of_outcome": "結果の確率",
+        "to_win": "勝つために",
+        "spread": "スプレッド",
+        "hold_to_place_bet": "賭けを行うために保持",
+        "placing_bet": "賭けを行っています...",
+        "confirming_order": "注文確認中...",
+        "deposit_funds": "資金の預け入れ",
+        "average_price": "平均価格"
       },
       "manage_position": {
         "hold_to_claim": "主張するまでホールド",
-        "hold_to_burn": "Hold to Burn",
-        "hold_to_cash_out": "Hold to Cash Out",
-        "claiming": "Claiming...",
-        "burning": "Burning...",
-        "cashing_out": "Cashing Out...",
-        "confirming_order": "Confirming Order...",
+        "hold_to_burn": "バーンするために保持",
+        "hold_to_cash_out": "キャッシュアウトするために保持",
+        "claiming": "請求中...",
+        "burning": "焼却中...",
+        "cashing_out": "キャッシュアウト中...",
+        "confirming_order": "注文確認中...",
         "position_value": "ポジションバリュー"
       },
       "cash_out": {
-        "title": "Cash Out Bet",
+        "title": "ベットのキャッシュアウト",
         "current_price": "現在の価格",
-        "average_price": "Average Price",
-        "profit_loss": "Profit / Loss",
+        "average_price": "平均価格",
+        "profit_loss": "利益 / 損失",
         "receive": "受け取る",
-        "spread": "Spread",
-        "cash_out": "Cash Out"
+        "spread": "スプレッド",
+        "cash_out": "キャッシュアウト"
       },
       "search": {
-        "placeholder": "Search for prediction markets",
+        "placeholder": "予測市場を検索",
         "input_placeholder": "マーケットを検索",
-        "no_results": "No results found"
+        "no_results": "結果が見つかりません"
       },
       "event": {
-        "outcomes": "Outcomes",
+        "outcomes": "結果",
         "about": "概要",
-        "show_rules": "Show Rules",
-        "rules": "Rules",
-        "end_date": "End Date",
-        "resolution_source": "Res. Source",
-        "category": "Category",
-        "hide_resolved": "Hide Resolved",
-        "show_resolved": "Show Resolved",
+        "show_rules": "ルールを表示する",
+        "rules": "ルール",
+        "end_date": "終了日",
+        "resolution_source": "解決元",
+        "category": "カテゴリー",
+        "hide_resolved": "解決済みを隠す",
+        "show_resolved": "解決済みを表示する",
         "open_positions": "オープンポジション",
-        "market_resolved": "MARKET RESOLVED",
+        "market_resolved": "市場が解決済み",
         "volume_suffix": "ボリューム",
         "show_less": "表示を減らす",
-        "show_more": "Show More",
-        "resolved": "Resolved"
+        "show_more": "さらに表示",
+        "resolved": "解決済み"
       },
       "position": {
-        "outcome": "Outcome",
-        "odds": "Odds",
-        "bet": "Bet",
-        "won": "Won",
-        "to_win": "To Win",
+        "outcome": "結果",
+        "odds": "オッズ",
+        "bet": "賭け",
+        "won": "勝利",
+        "to_win": "勝つために",
         "claim": "請求",
-        "burn": "Burn",
-        "cash_out": "Cash Out",
-        "no_open_positions": "No open positions",
-        "won_badge": "WON",
-        "lost_badge": "LOST",
-        "learn_more": "Learn more about Predictions"
+        "burn": "焼却",
+        "cash_out": "キャッシュアウト",
+        "no_open_positions": "オープンポジションなし",
+        "won_badge": "勝利",
+        "lost_badge": "敗北",
+        "learn_more": "予測についてもっと学ぶ"
       },
       "tabs": {
-        "browse": "Browse",
-        "portfolio": "Portfolio"
+        "browse": "ブラウズ",
+        "portfolio": "ポートフォリオ"
       },
       "market": {
-        "buy_outcome": "Buy %{outcome}"
+        "buy_outcome": "購入します %{outcome}"
       },
       "bet_types": {
-        "winner": "Winner",
-        "spreads": "Spreads",
-        "totals": "Totals",
+        "winner": "勝者",
+        "spreads": "スプレッズ",
+        "totals": "合計",
         "other": "その他"
       },
       "sports": {
         "vs": "VS",
-        "live": "LIVE",
-        "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}"
+        "live": "ライブ",
+        "game_best_of": "ゲーム %{currentPeriod} - ベストオブ %{bestOf}"
       },
       "outcomes": {
         "yes": "はい",
-        "yes_badge": "YES",
-        "no_badge": "NO"
+        "yes_badge": "はい",
+        "no_badge": "いいえ"
       },
       "errors": {
         "title": "エラー",
-        "failed_to_place_bet": "Failed to place bet. Please try again.",
-        "failed_to_cash_out": "Failed to cash out position. Please try again.",
-        "failed_to_claim": "Failed to claim position. Please try again."
+        "failed_to_place_bet": "賭けの配置に失敗しました。もう一度お試しください。",
+        "failed_to_cash_out": "ポジションのキャッシュアウトに失敗しました。もう一度試してください。",
+        "failed_to_claim": "ポジションの請求に失敗しました。もう一度試してください。"
       }
     }
   }
