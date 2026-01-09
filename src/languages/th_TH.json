@@ -24,7 +24,7 @@
       "tab_savings": "เงินออม",
       "tab_showcase": "โชว์เคส",
       "tab_perps": "Perps",
-      "tab_polymarket": "Predictions",
+      "tab_polymarket": "การพยากรณ์",
       "tab_points": "แต้ม",
       "tab_positions": "ตำแหน่ง",
       "tab_rewards": "รางวัล",
@@ -1619,7 +1619,7 @@
       },
       "feature_card": {
         "title": "Perps",
-        "subtitle": "High risk, high reward trading"
+        "subtitle": "การซื้อขายที่มีความเสี่ยงสูง ได้ผลตอบแทนสูง"
       },
       "actions": {
         "fund_wallet": "เติมเงินในกระเป๋าของฉัน",
@@ -1649,7 +1649,7 @@
         "confirm_button_error_text": "ข้อผิดพลาดของราคาที่เสนอ",
         "quote_error": "􀇿 ไม่มีใบเสนอราคา",
         "insufficient_balance": "􀫲 เงินทุนไม่เพียงพอ",
-        "insufficient_gas": "Insufficient Gas"
+        "insufficient_gas": "แก๊สไม่เพียงพอ"
       },
       "withdraw": {
         "title": "ถอน",
@@ -3750,132 +3750,132 @@
     },
     "predictions": {
       "feature_card": {
-        "title": "Predictions",
-        "subtitle": "Bet on real-world events"
+        "title": "การพยากรณ์",
+        "subtitle": "เดิมพันกับเหตุการณ์ในโลกจริง"
       },
       "explain_sheet": {
         "next": "ถัดไป",
-        "get_started": "Get started",
-        "title": "Predictions",
+        "get_started": "เริ่มต้นใช้งาน",
+        "title": "การพยากรณ์",
         "steps": {
           "step_1": {
-            "title": "Predictions",
+            "title": "การพยากรณ์",
             "subtitle_parts": [
-              "Try a new way to follow what's happening in the markets. Powered by Polymarket"
+              "ลองวิธีใหม่ในการติดตามเหตุการณ์ในตลาด ขับเคลื่อนโดย Polymarket"
             ]
           },
           "step_2": {
-            "title": "Bet on Almost Anything",
+            "title": "เดิมพันได้ทุกอย่าง",
             "subtitle_parts": [
-              "Pick a market you like, place your position, and see where it goes."
+              "เลือกตลาดที่คุณชอบ วางตำแหน่งของคุณ และดูว่ามันไปทางไหน"
             ]
           },
           "step_3": {
-            "title": "Choose Your Outcome",
+            "title": "เลือกผลลัพธ์ของคุณ",
             "subtitle_parts": [
-              "Each market has clear options. Pick the one you believe in and track how it performs."
+              "แต่ละตลาดมีตัวเลือกที่ชัดเจน เลือกสิ่งที่คุณเชื่อและติดตามความคืบหน้า"
             ]
           }
         }
       },
       "navbar": {
-        "title": "Predictions"
+        "title": "การพยากรณ์"
       },
       "new_position": {
-        "title": "Place Bet",
+        "title": "วางเดิมพัน",
         "amount": "จำนวน",
-        "chance_of_outcome": "Chance of Outcome",
-        "to_win": "To Win",
-        "spread": "Spread",
-        "hold_to_place_bet": "Hold to Place Bet",
-        "placing_bet": "Placing Bet...",
-        "confirming_order": "Confirming Order...",
-        "deposit_funds": "Deposit Funds",
-        "average_price": "Average Price"
+        "chance_of_outcome": "โอกาสของผลลัพธ์",
+        "to_win": "เพื่อชนะ",
+        "spread": "สเปรด",
+        "hold_to_place_bet": "กดค้างเพื่อวางเดิมพัน",
+        "placing_bet": "กำลังวางเดิมพัน...",
+        "confirming_order": "กำลังยืนยันคำสั่ง...",
+        "deposit_funds": "ฝากเงิน",
+        "average_price": "ราคาเฉลี่ย"
       },
       "manage_position": {
         "hold_to_claim": "กดค้างเพื่อรับแบบอัตโนมัติ",
-        "hold_to_burn": "Hold to Burn",
-        "hold_to_cash_out": "Hold to Cash Out",
-        "claiming": "Claiming...",
-        "burning": "Burning...",
-        "cashing_out": "Cashing Out...",
-        "confirming_order": "Confirming Order...",
+        "hold_to_burn": "กดค้างเพื่อเผา",
+        "hold_to_cash_out": "กดค้างเพื่อขึ้นเงินออก",
+        "claiming": "กำลังเรียกร้อง...",
+        "burning": "กำลังทำลาย...",
+        "cashing_out": "กำลังขึ้นเงินออก...",
+        "confirming_order": "กำลังยืนยันคำสั่ง...",
         "position_value": "ค่าตำแหน่ง"
       },
       "cash_out": {
-        "title": "Cash Out Bet",
+        "title": "ขึ้นเงินออกเดิมพัน",
         "current_price": "ราคาปัจจุบัน",
-        "average_price": "Average Price",
-        "profit_loss": "Profit / Loss",
+        "average_price": "ราคาเฉลี่ย",
+        "profit_loss": "กำไร / ขาดทุน",
         "receive": "รับ",
-        "spread": "Spread",
-        "cash_out": "Cash Out"
+        "spread": "สเปรด",
+        "cash_out": "ขึ้นเงินออก"
       },
       "search": {
-        "placeholder": "Search for prediction markets",
+        "placeholder": "ค้นหาตลาดการพยากรณ์",
         "input_placeholder": "ค้นหาตลาด",
-        "no_results": "No results found"
+        "no_results": "ไม่พบผลลัพธ์"
       },
       "event": {
-        "outcomes": "Outcomes",
+        "outcomes": "ผลลัพธ์",
         "about": "เกี่ยวกับ",
-        "show_rules": "Show Rules",
-        "rules": "Rules",
-        "end_date": "End Date",
-        "resolution_source": "Res. Source",
-        "category": "Category",
-        "hide_resolved": "Hide Resolved",
-        "show_resolved": "Show Resolved",
+        "show_rules": "แสดงกฎ",
+        "rules": "กฎ",
+        "end_date": "วันที่สิ้นสุด",
+        "resolution_source": "ที่มาของการแก้ไข",
+        "category": "หมวดหมู่",
+        "hide_resolved": "ซ่อนไอเทมที่แก้ไขแล้ว",
+        "show_resolved": "แสดงไอเทมที่แก้ไขแล้ว",
         "open_positions": "ตำแหน่งที่เปิดอยู่",
-        "market_resolved": "MARKET RESOLVED",
+        "market_resolved": "ตลาดที่แก้ไขแล้ว",
         "volume_suffix": "VOL",
         "show_less": "แสดงน้อยลง",
-        "show_more": "Show More",
-        "resolved": "Resolved"
+        "show_more": "แสดงเพิ่มเติม",
+        "resolved": "แก้ไขแล้ว"
       },
       "position": {
-        "outcome": "Outcome",
-        "odds": "Odds",
-        "bet": "Bet",
-        "won": "Won",
-        "to_win": "To Win",
+        "outcome": "ผลลัพธ์",
+        "odds": "อัตราต่อรอง",
+        "bet": "เดิมพัน",
+        "won": "ชนะ",
+        "to_win": "เพื่อชนะ",
         "claim": "เคลม",
-        "burn": "Burn",
-        "cash_out": "Cash Out",
-        "no_open_positions": "No open positions",
-        "won_badge": "WON",
-        "lost_badge": "LOST",
-        "learn_more": "Learn more about Predictions"
+        "burn": "เผา",
+        "cash_out": "ขึ้นเงินออก",
+        "no_open_positions": "ไม่มีตำแหน่งเปิด",
+        "won_badge": "ชนะ",
+        "lost_badge": "แพ้",
+        "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับการพยากรณ์"
       },
       "tabs": {
-        "browse": "Browse",
-        "portfolio": "Portfolio"
+        "browse": "เรียกดู",
+        "portfolio": "พอร์ตโฟลิโอ"
       },
       "market": {
-        "buy_outcome": "Buy %{outcome}"
+        "buy_outcome": "ซื้อ %{outcome}"
       },
       "bet_types": {
-        "winner": "Winner",
-        "spreads": "Spreads",
-        "totals": "Totals",
+        "winner": "ผู้ชนะ",
+        "spreads": "สเปรด",
+        "totals": "ทั้งหมด",
         "other": "อื่น ๆ"
       },
       "sports": {
         "vs": "VS",
-        "live": "LIVE",
-        "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}"
+        "live": "สด",
+        "game_best_of": "เกม %{currentPeriod} - ดีที่สุดจาก %{bestOf}"
       },
       "outcomes": {
         "yes": "ใช่",
-        "yes_badge": "YES",
-        "no_badge": "NO"
+        "yes_badge": "ใช่",
+        "no_badge": "ไม่"
       },
       "errors": {
         "title": "ข้อผิดพลาด",
-        "failed_to_place_bet": "Failed to place bet. Please try again.",
-        "failed_to_cash_out": "Failed to cash out position. Please try again.",
-        "failed_to_claim": "Failed to claim position. Please try again."
+        "failed_to_place_bet": "การวางเดิมพันไม่สำเร็จ กรุณาลองอีกครั้ง",
+        "failed_to_cash_out": "การขึ้นเงินออกไม่สำเร็จ กรุณาลองอีกครั้ง",
+        "failed_to_claim": "การเรียกร้องตำแหน่งไม่สำเร็จ กรุณาลองอีกครั้ง"
       }
     }
   }
