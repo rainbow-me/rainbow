@@ -3751,29 +3751,29 @@
     "predictions": {
       "feature_card": {
         "title": "예측",
-        "subtitle": "Bet on real-world events"
+        "subtitle": "실제 세계의 사건에 베팅하기"
       },
       "explain_sheet": {
         "next": "다음",
-        "get_started": "Get started",
+        "get_started": "시작하기",
         "title": "예측",
         "steps": {
           "step_1": {
             "title": "예측",
             "subtitle_parts": [
-              "Try a new way to follow what's happening in the markets. Powered by Polymarket"
+              "시장의 동향을 따르는 새로운 방법을 시도하세요. 파워드 바이 폴리마켓"
             ]
           },
           "step_2": {
-            "title": "Bet on Almost Anything",
+            "title": "거의 모든 것에 베팅하기",
             "subtitle_parts": [
-              "Pick a market you like, place your position, and see where it goes."
+              "좋아하는 시장을 선택하고, 입장을 정하고, 그 결과를 지켜보세요."
             ]
           },
           "step_3": {
-            "title": "Choose Your Outcome",
+            "title": "결과 선택하기",
             "subtitle_parts": [
-              "Each market has clear options. Pick the one you believe in and track how it performs."
+              "각 시장에는 명확한 옵션이 있습니다. 믿는 것을 선택하고 그것이 어떻게 수행되는지 추적하세요."
             ]
           }
         }
@@ -3782,100 +3782,100 @@
         "title": "예측"
       },
       "new_position": {
-        "title": "Place Bet",
+        "title": "베팅하기",
         "amount": "금액",
-        "chance_of_outcome": "Chance of Outcome",
-        "to_win": "To Win",
-        "spread": "Spread",
-        "hold_to_place_bet": "Hold to Place Bet",
-        "placing_bet": "Placing Bet...",
-        "confirming_order": "Confirming Order...",
-        "deposit_funds": "Deposit Funds",
-        "average_price": "Average Price"
+        "chance_of_outcome": "결과 확률",
+        "to_win": "승리에 대해",
+        "spread": "스프레드",
+        "hold_to_place_bet": "베팅하기 위해 계속 누르세요",
+        "placing_bet": "베팅 중...",
+        "confirming_order": "주문 확인 중...",
+        "deposit_funds": "자금 입금",
+        "average_price": "평균 가격"
       },
       "manage_position": {
         "hold_to_claim": "청구하려면 유지",
-        "hold_to_burn": "Hold to Burn",
-        "hold_to_cash_out": "Hold to Cash Out",
-        "claiming": "Claiming...",
-        "burning": "Burning...",
-        "cashing_out": "Cashing Out...",
-        "confirming_order": "Confirming Order...",
+        "hold_to_burn": "소각하기 위해 계속 누르세요",
+        "hold_to_cash_out": "현금화 하려면 계속 누르세요",
+        "claiming": "청구 중...",
+        "burning": "소각 중...",
+        "cashing_out": "현금화 중...",
+        "confirming_order": "주문 확인 중...",
         "position_value": "포지션 가치"
       },
       "cash_out": {
-        "title": "Cash Out Bet",
+        "title": "베팅 현금화",
         "current_price": "현재 가격",
-        "average_price": "Average Price",
-        "profit_loss": "Profit / Loss",
+        "average_price": "평균 가격",
+        "profit_loss": "이익 / 손실",
         "receive": "받기",
-        "spread": "Spread",
-        "cash_out": "Cash Out"
+        "spread": "스프레드",
+        "cash_out": "현금화"
       },
       "search": {
-        "placeholder": "Search for prediction markets",
+        "placeholder": "예측 시장 검색하기",
         "input_placeholder": "시장 검색",
-        "no_results": "No results found"
+        "no_results": "결과가 없습니다"
       },
       "event": {
-        "outcomes": "Outcomes",
+        "outcomes": "결과들",
         "about": "정보",
-        "show_rules": "Show Rules",
-        "rules": "Rules",
-        "end_date": "End Date",
-        "resolution_source": "Res. Source",
-        "category": "Category",
-        "hide_resolved": "Hide Resolved",
-        "show_resolved": "Show Resolved",
+        "show_rules": "규칙 보기",
+        "rules": "규칙",
+        "end_date": "종료 날짜",
+        "resolution_source": "해결 출처",
+        "category": "카테고리",
+        "hide_resolved": "해결 숨기기",
+        "show_resolved": "해결 보기",
         "open_positions": "열린 포지션",
-        "market_resolved": "MARKET RESOLVED",
+        "market_resolved": "시장 해결됨",
         "volume_suffix": "VOL",
         "show_less": "줄이기",
-        "show_more": "Show More",
-        "resolved": "Resolved"
+        "show_more": "더 보기",
+        "resolved": "해결됨"
       },
       "position": {
-        "outcome": "Outcome",
-        "odds": "Odds",
-        "bet": "Bet",
-        "won": "Won",
-        "to_win": "To Win",
+        "outcome": "결과",
+        "odds": "배당률",
+        "bet": "베팅",
+        "won": "승리함",
+        "to_win": "승리에 대해",
         "claim": "청구",
-        "burn": "Burn",
-        "cash_out": "Cash Out",
-        "no_open_positions": "No open positions",
-        "won_badge": "WON",
-        "lost_badge": "LOST",
-        "learn_more": "Learn more about Predictions"
+        "burn": "소각",
+        "cash_out": "현금화",
+        "no_open_positions": "열려 있는 포지션이 없습니다",
+        "won_badge": "승리함",
+        "lost_badge": "패배함",
+        "learn_more": "예측에 대해 더 알아보기"
       },
       "tabs": {
-        "browse": "Browse",
-        "portfolio": "Portfolio"
+        "browse": "둘러보기",
+        "portfolio": "포트폴리오"
       },
       "market": {
-        "buy_outcome": "Buy %{outcome}"
+        "buy_outcome": "%{outcome} 구매"
       },
       "bet_types": {
-        "winner": "Winner",
-        "spreads": "Spreads",
-        "totals": "Totals",
+        "winner": "승자",
+        "spreads": "스프레드",
+        "totals": "총계",
         "other": "기타"
       },
       "sports": {
         "vs": "VS",
-        "live": "LIVE",
-        "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}"
+        "live": "라이브",
+        "game_best_of": "게임 %{currentPeriod} - %{bestOf} 중 최고"
       },
       "outcomes": {
         "yes": "예",
-        "yes_badge": "YES",
-        "no_badge": "NO"
+        "yes_badge": "예",
+        "no_badge": "아니요"
       },
       "errors": {
         "title": "오류",
-        "failed_to_place_bet": "Failed to place bet. Please try again.",
-        "failed_to_cash_out": "Failed to cash out position. Please try again.",
-        "failed_to_claim": "Failed to claim position. Please try again."
+        "failed_to_place_bet": "베팅하는 데 실패했습니다. 다시 시도해 주세요.",
+        "failed_to_cash_out": "포지션 현금화에 실패했습니다. 다시 시도해 주세요.",
+        "failed_to_claim": "포지션 청구에 실패했습니다. 다시 시도해 주세요."
       }
     }
   }
