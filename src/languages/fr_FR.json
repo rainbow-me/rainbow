@@ -3751,29 +3751,29 @@
     "predictions": {
       "feature_card": {
         "title": "Prédictions",
-        "subtitle": "Bet on real-world events"
+        "subtitle": "Parier sur des événements du monde réel"
       },
       "explain_sheet": {
         "next": "Suivant",
-        "get_started": "Get started",
+        "get_started": "Commencer",
         "title": "Prédictions",
         "steps": {
           "step_1": {
             "title": "Prédictions",
             "subtitle_parts": [
-              "Try a new way to follow what's happening in the markets. Powered by Polymarket"
+              "Essayez une nouvelle façon de suivre ce qui se passe sur les marchés. Alimenté par Polymarket"
             ]
           },
           "step_2": {
-            "title": "Bet on Almost Anything",
+            "title": "Pariez sur presque tout",
             "subtitle_parts": [
-              "Pick a market you like, place your position, and see where it goes."
+              "Choisissez un marché qui vous plaît, prenez votre position et voyez où elle va."
             ]
           },
           "step_3": {
-            "title": "Choose Your Outcome",
+            "title": "Choisissez votre résultat",
             "subtitle_parts": [
-              "Each market has clear options. Pick the one you believe in and track how it performs."
+              "Chaque marché a des options claires. Choisissez celle à laquelle vous croyez et suivez sa performance."
             ]
           }
         }
@@ -3782,100 +3782,100 @@
         "title": "Prédictions"
       },
       "new_position": {
-        "title": "Place Bet",
+        "title": "Placer un pari",
         "amount": "Montant",
-        "chance_of_outcome": "Chance of Outcome",
-        "to_win": "To Win",
-        "spread": "Spread",
-        "hold_to_place_bet": "Hold to Place Bet",
-        "placing_bet": "Placing Bet...",
-        "confirming_order": "Confirming Order...",
-        "deposit_funds": "Deposit Funds",
-        "average_price": "Average Price"
+        "chance_of_outcome": "Chance de résultat",
+        "to_win": "Pour gagner",
+        "spread": "Écart",
+        "hold_to_place_bet": "Maintenir pour placer un pari",
+        "placing_bet": "Placement de pari...",
+        "confirming_order": "Confirmation de commande...",
+        "deposit_funds": "Déposer des fonds",
+        "average_price": "Prix moyen"
       },
       "manage_position": {
         "hold_to_claim": "Tenir pour Réclamer",
-        "hold_to_burn": "Hold to Burn",
-        "hold_to_cash_out": "Hold to Cash Out",
-        "claiming": "Claiming...",
-        "burning": "Burning...",
-        "cashing_out": "Cashing Out...",
-        "confirming_order": "Confirming Order...",
+        "hold_to_burn": "Maintenir pour brûler",
+        "hold_to_cash_out": "Maintenir pour encaisser",
+        "claiming": "Réclamation...",
+        "burning": "Brûlage en cours...",
+        "cashing_out": "Encaissement en cours...",
+        "confirming_order": "Confirmation de commande...",
         "position_value": "Valeur de la position"
       },
       "cash_out": {
-        "title": "Cash Out Bet",
+        "title": "Encaisser le pari",
         "current_price": "Prix actuel",
-        "average_price": "Average Price",
-        "profit_loss": "Profit / Loss",
+        "average_price": "Prix moyen",
+        "profit_loss": "Profit / Perte",
         "receive": "Recevoir",
-        "spread": "Spread",
-        "cash_out": "Cash Out"
+        "spread": "Écart",
+        "cash_out": "Encaisser"
       },
       "search": {
-        "placeholder": "Search for prediction markets",
+        "placeholder": "Rechercher des marchés de prédiction",
         "input_placeholder": "Rechercher des marchés",
-        "no_results": "No results found"
+        "no_results": "Aucun résultat trouvé"
       },
       "event": {
-        "outcomes": "Outcomes",
+        "outcomes": "Résultats",
         "about": "À propos",
-        "show_rules": "Show Rules",
-        "rules": "Rules",
-        "end_date": "End Date",
-        "resolution_source": "Res. Source",
-        "category": "Category",
-        "hide_resolved": "Hide Resolved",
-        "show_resolved": "Show Resolved",
+        "show_rules": "Afficher les règles",
+        "rules": "Règles",
+        "end_date": "Date de fin",
+        "resolution_source": "Source de résolution",
+        "category": "Catégorie",
+        "hide_resolved": "Cacher résolu",
+        "show_resolved": "Afficher résolu",
         "open_positions": "Positions ouvertes",
-        "market_resolved": "MARKET RESOLVED",
+        "market_resolved": "MARCHÉ RÉSOLU",
         "volume_suffix": "VOL",
         "show_less": "Afficher moins",
-        "show_more": "Show More",
-        "resolved": "Resolved"
+        "show_more": "En voir plus",
+        "resolved": "Résolu"
       },
       "position": {
-        "outcome": "Outcome",
-        "odds": "Odds",
-        "bet": "Bet",
-        "won": "Won",
-        "to_win": "To Win",
+        "outcome": "Résultat",
+        "odds": "Cotes",
+        "bet": "Pari",
+        "won": "Gagné",
+        "to_win": "Pour gagner",
         "claim": "Réclamer",
-        "burn": "Burn",
-        "cash_out": "Cash Out",
-        "no_open_positions": "No open positions",
-        "won_badge": "WON",
-        "lost_badge": "LOST",
-        "learn_more": "Learn more about Predictions"
+        "burn": "Brûler",
+        "cash_out": "Encaisser",
+        "no_open_positions": "Aucune position ouverte",
+        "won_badge": "GAGNÉ",
+        "lost_badge": "PERDU",
+        "learn_more": "En savoir plus sur les prévisions"
       },
       "tabs": {
-        "browse": "Browse",
-        "portfolio": "Portfolio"
+        "browse": "Parcourir",
+        "portfolio": "Portefeuille"
       },
       "market": {
-        "buy_outcome": "Buy %{outcome}"
+        "buy_outcome": "Acheter %{outcome}"
       },
       "bet_types": {
-        "winner": "Winner",
-        "spreads": "Spreads",
-        "totals": "Totals",
+        "winner": "Gagnant",
+        "spreads": "Écarts",
+        "totals": "Totaux",
         "other": "Autre"
       },
       "sports": {
         "vs": "VS",
-        "live": "LIVE",
-        "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}"
+        "live": "EN DIRECT",
+        "game_best_of": "Jeu %{currentPeriod} - Meilleur de %{bestOf}"
       },
       "outcomes": {
         "yes": "Yes :)",
-        "yes_badge": "YES",
-        "no_badge": "NO"
+        "yes_badge": "OUI",
+        "no_badge": "NON"
       },
       "errors": {
         "title": "Erreur",
-        "failed_to_place_bet": "Failed to place bet. Please try again.",
-        "failed_to_cash_out": "Failed to cash out position. Please try again.",
-        "failed_to_claim": "Failed to claim position. Please try again."
+        "failed_to_place_bet": "Échec du placement du pari. Veuillez réessayer.",
+        "failed_to_cash_out": "Échec de l'encaissement de la position. Veuillez réessayer.",
+        "failed_to_claim": "Échec de la réclamation de la position. Veuillez réessayer."
       }
     }
   }
