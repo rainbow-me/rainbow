@@ -9958,7 +9958,6 @@ __metadata:
     react-native-redash: "npm:16.3.0"
     react-native-restart: "npm:0.0.22"
     react-native-safe-area-context: "npm:5.4.0"
-    react-native-safe-area-view: rainbow-me/react-native-safe-area-view
     react-native-screen-corner-radius: "npm:0.2.2"
     react-native-screens: "npm:4.10.0"
     react-native-section-list-get-item-layout: "npm:2.2.3"
@@ -17456,13 +17455,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hoist-non-react-statics@npm:^2.3.1":
-  version: 2.5.5
-  resolution: "hoist-non-react-statics@npm:2.5.5"
-  checksum: 10c0/79c204446a61ad490cc9342b2deeedea5a17f03a5fc091f367b6c08f29387c8d5578634ebfb8733043422a5e1182b372893d63f8737ac4b75da3a2ec4a316162
-  languageName: node
-  linkType: hard
-
 "hoist-non-react-statics@npm:^3.0.0, hoist-non-react-statics@npm:^3.3.0, hoist-non-react-statics@npm:^3.3.2":
   version: 3.3.2
   resolution: "hoist-non-react-statics@npm:3.3.2"
@@ -24564,18 +24556,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/729fef1f768d57b905f51882374aa93b209d54576b8a0cf328e0a349c8dc9705ae8f9032e572fd7a7c9e94b588105f44760c0bb15ab9911b7977073d6754b54d
-  languageName: node
-  linkType: hard
-
-react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
-  version: 0.11.0
-  resolution: "react-native-safe-area-view@https://github.com/rainbow-me/react-native-safe-area-view.git#commit=a543897214519c700fab160a03388cef5a70ec3c"
-  dependencies:
-    hoist-non-react-statics: "npm:^2.3.1"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/ebf8c0e261450dd2b6d113399384bd3577d1869fb4a6299ecbf689383ab5c19decfa2c6a3cf275297b69dd5ae2f0be9ff8837f74a1e40a059260092bd6f2ec95
   languageName: node
   linkType: hard
 
