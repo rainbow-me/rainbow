@@ -19,7 +19,7 @@ const sx = StyleSheet.create({
 });
 
 type Descriptor = {
-  key: string;
+  key?: string;
   options: Record<string, any>;
   render: () => React.ReactNode;
 };
@@ -84,9 +84,15 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }: N
 
   const context = useMemo(
     () => ({
-      jumpToLong: () => {},
-      jumpToShort: () => {},
-      layout: () => {},
+      jumpToLong: () => {
+        // not implemented
+      },
+      jumpToShort: () => {
+        // not implemented
+      },
+      layout: () => {
+        // not implemented
+      },
     }),
     []
   );
@@ -135,12 +141,6 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }: N
             target: state.key,
           });
         }}
-        onFinishTransitioning={() => {
-          navigation?.emit?.({
-            target: route.key,
-            type: 'finishTransitioning',
-          });
-        }}
         onTouchTop={onTouchTop}
         onWillDismiss={onWillDismiss}
         ref={ref}
@@ -186,7 +186,15 @@ export default function NativeStackView({ state, navigation, descriptors }: Nati
   }).length;
 
   return (
-    <Components.ScreenStack style={sx.container}>
+    <Components.ScreenStack
+      style={sx.container}
+      onFinishTransitioning={() => {
+        navigation?.emit?.({
+          target: state.key,
+          type: 'finishTransitioning',
+        });
+      }}
+    >
       {state.routes.map((route, i) => {
         const { options = {} } = descriptors[route.key] ?? {};
         const { limitActiveModals } = options;

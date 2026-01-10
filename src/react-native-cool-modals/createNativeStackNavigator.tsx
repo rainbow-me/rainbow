@@ -5,6 +5,7 @@ import {
   useNavigationBuilder,
   type NavigationState,
   type ParamListBase,
+  type StackNavigationState,
 } from '@react-navigation/native';
 import * as React from 'react';
 
@@ -21,7 +22,7 @@ const StackRouter = (...args: Parameters<typeof OldStackRouter>) => {
   const oldRouter = OldStackRouter(...args);
   return {
     ...oldRouter,
-    getStateForAction(state: NavigationState, action: any, options: any) {
+    getStateForAction(state: StackNavigationState<ParamListBase>, action: any, options: any) {
       if (action.type === 'PUSH') {
         if (state.routes[state.routes.length - 1].name === action.payload.name) {
           logger.debug(`[NativeStackNavigator]: pushing twice the same name is not allowed`);
@@ -35,15 +36,18 @@ const StackRouter = (...args: Parameters<typeof OldStackRouter>) => {
 
 function NativeStackNavigator(props: NavigatorProps) {
   const { children, initialRouteName, screenOptions, ...rest } = props;
-  const { descriptors, navigation, state } = useNavigationBuilder<ParamListBase, any, any, any, any>(StackRouter as any, {
-    children,
-    initialRouteName,
-    screenOptions,
-  });
+  const { descriptors, navigation, state } = useNavigationBuilder<StackNavigationState<ParamListBase>, any, any, any, any>(
+    StackRouter as any,
+    {
+      children,
+      initialRouteName,
+      screenOptions,
+    }
+  );
 
   React.useEffect(() => {
     if (navigation.addListener) {
-      navigation.addListener('tabPress', e => {
+      navigation.addListener('tabPress', (e: any) => {
         const isFocused = navigation.isFocused();
 
         // Run the operation in the next frame so we're sure all listeners have been run
