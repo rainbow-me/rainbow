@@ -4,6 +4,8 @@ on: [pull_request]
 jobs:
   lint-and-unit-test:
     runs-on: blacksmith-2vcpu-ubuntu-2204
+    env:
+      NODE_OPTIONS: '--max-old-space-size=6144'
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true

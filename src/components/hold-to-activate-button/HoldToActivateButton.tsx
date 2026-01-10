@@ -1,23 +1,43 @@
 import { ShimmerAnimation } from '@/components/animations';
+import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBiometryIconString } from '@/components/buttons/BiometricButtonContent';
 import HoldToAuthorizeButtonIcon from '@/components/buttons/hold-to-authorize/HoldToAuthorizeButtonIcon';
 import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
-import { Box, Text, TextProps, useColorMode } from '@/design-system';
+import { Box, BoxProps, Text, TextProps, useColorMode } from '@/design-system';
+import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { IS_ANDROID } from '@/env';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { useTheme } from '@/theme';
+import { time } from '@/utils/time';
 import React, { useCallback, useMemo } from 'react';
-import { StyleProp, TextStyle, ViewStyle } from 'react-native';
+import { StyleProp, TextStyle, ViewStyle, StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 
 const BUTTON_HEIGHT = 56;
 
-const BUTTON_SCALE_DURATION_IN_MS = 150;
-const LONG_PRESS_DURATION_IN_MS = 500;
+const BUTTON_SCALE_DURATION_IN_MS = time.ms(150);
+const LONG_PRESS_DURATION_IN_MS = time.ms(500);
+
+const LAYOUT_ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
+const LAYOUT_ANIMATION = LinearTransition.springify()
+  .mass(LAYOUT_ANIMATION_CONFIG.mass as number)
+  .damping(LAYOUT_ANIMATION_CONFIG.damping as number)
+  .stiffness(LAYOUT_ANIMATION_CONFIG.stiffness as number);
+
+const SPINNER_ENTER_ANIMATION = FadeIn.delay(time.ms(400)).duration(time.ms(150));
+const SPINNER_EXIT_ANIMATION = FadeOut.duration(time.ms(150));
 
 type LabelProps = Omit<TextProps, 'children'> & {
   label: string;
@@ -81,6 +101,8 @@ export type HoldToActivateButtonProps = {
   color?: TextProps['color'];
   size?: TextProps['size'];
   weight?: TextProps['weight'];
+  borderColor?: BoxProps['borderColor'];
+  borderWidth?: BoxProps['borderWidth'];
 };
 
 export function HoldToActivateButton({
@@ -101,6 +123,8 @@ export function HoldToActivateButton({
   color = 'label',
   size = '20pt',
   weight = 'heavy',
+  borderColor,
+  borderWidth,
 }: HoldToActivateButtonProps) {
   const longPressProgress = useSharedValue(0);
   const buttonScale = useSharedValue(1);
@@ -148,7 +172,7 @@ export function HoldToActivateButton({
 
   return (
     <GestureDetector gesture={longPress}>
-      <Animated.View style={[style, scaleStyle]}>
+      <Animated.View layout={LAYOUT_ANIMATION} style={[style, scaleStyle]}>
         <Box
           justifyContent="center"
           alignItems="center"
@@ -158,20 +182,36 @@ export function HoldToActivateButton({
           overflow="hidden"
           borderRadius={height}
           shadow={disabled ? ('12px' as const) : ('18px' as const)}
+          borderColor={borderColor}
+          borderWidth={borderWidth}
         >
-          {!IS_ANDROID && !disabled && <HoldToAuthorizeButtonIcon sharedValue={longPressProgress} progressColor={progressColor} />}
-          <LabelWithBiometryIcon
-            label={isProcessing ? processingLabel : label}
-            showIcon={showBiometryIcon && !isProcessing}
-            testID={testID}
-            size={size}
-            weight={weight}
-            color={color}
-            style={textStyle}
-          />
+          {!disabled && <HoldToAuthorizeButtonIcon sharedValue={longPressProgress} progressColor={progressColor} />}
+          {isProcessing && (
+            <Animated.View exiting={SPINNER_EXIT_ANIMATION} entering={SPINNER_ENTER_ANIMATION} style={styles.spinnerContainer}>
+              <AnimatedSpinner isLoading size={25} color={progressColor} />
+            </Animated.View>
+          )}
+          <Animated.View layout={LAYOUT_ANIMATION}>
+            <LabelWithBiometryIcon
+              label={isProcessing ? processingLabel : label}
+              showIcon={showBiometryIcon && !isProcessing}
+              testID={testID}
+              size={size}
+              weight={weight}
+              color={color}
+              style={textStyle}
+            />
+          </Animated.View>
           <ShimmerAnimation color={colors.whiteLabel} enabled={!disableShimmerAnimation && !disabled} />
         </Box>
       </Animated.View>
     </GestureDetector>
   );
 }
+
+const styles = StyleSheet.create({
+  spinnerContainer: {
+    position: 'absolute',
+    left: 18,
+  },
+});

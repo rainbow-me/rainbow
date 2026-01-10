@@ -93,7 +93,7 @@ jobs:
 
       - name: Rock Remote Build - iOS simulator
         id: rock-remote-build-ios
-        uses: callstackincubator/ios@0b4a5a6e4d6865d697bd5f277460088501982a5e
+        uses: callstackincubator/ios@0bfe6ed5c14bdf3fb88a638d5a19b440e59e845f
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         with:
@@ -140,7 +140,7 @@ jobs:
           rm -rf rainbow-env
 
       - name: Install Maestro
-        run: export MAESTRO_VERSION=2.0.3; curl -fsSL "https://get.maestro.mobile.dev" | bash
+        run: export MAESTRO_VERSION=2.0.10; curl -fsSL "https://get.maestro.mobile.dev" | bash
 
       - name: Install Anvil
         uses: foundry-rs/foundry-toolchain@82dee4ba654bd2146511f85f0d013af94670c4de
@@ -161,6 +161,7 @@ jobs:
         id: simulator
         with:
           model: "iPhone 16"
+          os_version: "18.5"
 
       - name: Ensure Simulator is fully booted
         run: |

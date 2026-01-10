@@ -147,10 +147,11 @@ function derive<DerivedState>(
   deriveFunction: ($: DeriveGetter) => DerivedState,
   optionsOrEqualityFn: DeriveOptions<DerivedState> = Object.is
 ): WithGetSnapshot<WithFlushUpdates<StoreApi<DerivedState>>> {
-  const { debounceOptions, debugMode, equalityFn, useStableSubscriptions } = parseOptions(optionsOrEqualityFn);
+  const { debounceOptions, debugMode, equalityFn, keepAlive, useStableSubscriptions } = parseOptions(optionsOrEqualityFn);
 
   // Active subscriptions *to* the derived store
   const watchers = new Set<Watcher<DerivedState>>();
+  if (keepAlive) watchers.add(dummyWatcher);
 
   // For subscriptions created by `$` within `derive`
   const unsubscribes = new Set<UnsubscribeFn<true>>();
@@ -374,7 +375,8 @@ function derive<DerivedState>(
     if (watchers.size) debouncedDerive?.flush();
   }
 
-  function destroy(): void {
+  function destroy(isInternalCall = true): void {
+    if (keepAlive && isInternalCall) return;
     debouncedDerive?.cancel();
     unsubscribeAll();
     watchers.clear();
@@ -388,7 +390,7 @@ function derive<DerivedState>(
   }
 
   return {
-    destroy,
+    destroy: () => destroy(false),
     flushUpdates,
     getSnapshot,
     getState,
@@ -413,6 +415,7 @@ function parseOptions<DerivedState>(options: DeriveOptions<DerivedState>): {
   debounceOptions: number | DebounceOptions | undefined;
   debugMode: boolean | 'verbose';
   equalityFn: EqualityFn<DerivedState>;
+  keepAlive: boolean;
   useStableSubscriptions: boolean;
 } {
   if (typeof options === 'function') {
@@ -420,6 +423,7 @@ function parseOptions<DerivedState>(options: DeriveOptions<DerivedState>): {
       debounceOptions: undefined,
       debugMode: false,
       equalityFn: options,
+      keepAlive: false,
       useStableSubscriptions: false,
     };
   }
@@ -427,6 +431,7 @@ function parseOptions<DerivedState>(options: DeriveOptions<DerivedState>): {
     debounceOptions: options.debounce,
     debugMode: (IS_DEV && options.debugMode) ?? false,
     equalityFn: options.equalityFn ?? Object.is,
+    keepAlive: options.keepAlive ?? false,
     useStableSubscriptions: options.fastMode ?? false,
   };
 }

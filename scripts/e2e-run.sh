@@ -96,7 +96,6 @@ cleanup() {
     echo "🛑 Killing Anvil (PID: $ANVIL_PID)"
     kill "$ANVIL_PID" 2>/dev/null || true
   fi
-  kill $(lsof -t -i:8545) 2>/dev/null || true
 }
 
 handle_interrupt() {

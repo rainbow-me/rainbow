@@ -1,11 +1,8 @@
 import {
-  BackdropBlur,
   BlendColor,
   Blur,
   Circle,
-  Fill,
   Group,
-  Color,
   Image,
   LinearGradient,
   Paint,
@@ -20,13 +17,14 @@ import {
   useImage,
   vec,
 } from '@shopify/react-native-skia';
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SkiaText } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { useCleanup } from '@/hooks/useCleanup';
+import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -88,7 +86,7 @@ const CARD_PROPS: Partial<SkiaCardProps> = {
 
 export const AirdropsCard = memo(function AirdropsCard() {
   const { navigate } = useNavigation();
-  const [coinIconPath] = useState(() => getCoinIconPath());
+  const coinIconPath = useStableValue(() => getCoinIconPath());
 
   const url = useAirdropsStore(state => state.getFirstCoinIconUrl(COIN_ICON_SIZE));
   const numberOfAirdrops = useAirdropsStore(state => state.getNumberOfAirdrops());
@@ -124,8 +122,8 @@ export const AirdropsCard = memo(function AirdropsCard() {
   const setBadgePosition = useCallback(
     (paragraph: SkParagraph) => {
       'worklet';
-      const [{ x }] = paragraph.getLineMetrics();
-      badgeOffset.value = [{ translateX: x - badgeXOffset }];
+      const [{ left }] = paragraph.getLineMetrics();
+      badgeOffset.value = [{ translateX: left - badgeXOffset }];
     },
     [badgeOffset, badgeXOffset]
   );

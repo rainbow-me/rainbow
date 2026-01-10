@@ -16,8 +16,13 @@
 
 ### General
 
-- Install NVM or Node.js 18: https://github.com/creationix/nvm
-- Install all project dependencies with `yarn setup`
+1. Install nvm: https://github.com/creationix/nvm
+2. Install required Node.js version: `nvm install`
+3. Enable yarn: `corepack enable`
+4. Install project dependencies: `yarn setup`
+
+**Note:** On future terminal sessions, run `nvm use` to activate the correct Node.js version. Alternatively,
+set up [automatic nvm switching](https://github.com/nvm-sh/nvm#deeper-shell-integration) in your shell.
 
 ### MacOS
 
@@ -64,7 +69,7 @@ https://reactnative.dev/docs/getting-started
 
 ### Preflight
 
-1. Run `nvm use` to force Node.js v18.
+1. Run `nvm use` to switch to the required Node.js version.
 
 2. Set up your .env file, use our env.example as a guide.
 

@@ -32,10 +32,9 @@ export type SliderWithLabelsProps = SliderProps & {
   maxButtonColor?: string | SharedValue<string>;
   icon?: React.ReactNode;
   visualState?: SliderVisualState | SharedValue<SliderVisualState>;
-  /**
-   * Initial progress used when a shared value is not provided.
-   */
 };
+
+const EMPTY_LABELS: SliderLabels = {};
 
 export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
   progressValue: externalProgressValue,
@@ -51,7 +50,7 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
   gestureState,
   onGestureBeginWorklet,
   containerStyle,
-  labels = {},
+  labels = EMPTY_LABELS,
   showPercentage = true,
   formatPercentageWorklet,
   onPressMaxWorklet,
@@ -81,7 +80,7 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
 
   // Handle both SharedValue and regular labels
   const labelsValue = useDerivedValue(() => {
-    if (!labels) return {};
+    if (!labels) return EMPTY_LABELS;
     if ('value' in labels) return labels.value;
     return labels;
   });

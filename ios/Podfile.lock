@@ -261,6 +261,8 @@ PODS:
   - hermes-engine (0.81.5):
     - hermes-engine/Pre-built (= 0.81.5)
   - hermes-engine/Pre-built (0.81.5)
+  - ImageColors (2.5.1):
+    - ExpoModulesCore
   - libwebp (1.5.0):
     - libwebp/demux (= 1.5.0)
     - libwebp/mux (= 1.5.0)
@@ -2646,7 +2648,7 @@ PODS:
     - Yoga
   - react-native-screen-corner-radius (0.2.3):
     - React
-  - react-native-skia (2.0.7):
+  - react-native-skia (2.4.7):
     - boost
     - DoubleConversion
     - fast_float
@@ -3422,7 +3424,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNCMaskedView (0.4.0):
+  - RNCMaskedView (0.4.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -4014,6 +4016,7 @@ DEPENDENCIES:
   - GoogleDataTransport
   - GoogleUtilities
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
+  - ImageColors (from `../node_modules/react-native-image-colors/ios`)
   - libwebp
   - "mobile-wallet-protocol-host (from `../node_modules/@coinbase/mobile-wallet-protocol-host`)"
   - nanopb
@@ -4245,6 +4248,8 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2025-07-07-RNv0.81.0-e0fc67142ec0763c6b6153ca2bf96df815539782
+  ImageColors:
+    :path: "../node_modules/react-native-image-colors/ios"
   mobile-wallet-protocol-host:
     :path: "../node_modules/@coinbase/mobile-wallet-protocol-host"
   NitroMmkv:
@@ -4572,6 +4577,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   hermes-engine: 9f4dfe93326146a1c99eb535b1cb0b857a3cd172
+  ImageColors: e12eb73e29bc1feaa3c228db8c174a1b25acb59d
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   MetricsReporter: 364b98791e868b10e9d512eb50af28d8c11e5cdb
   MMKVCore: f2dd4c9befea04277a55e84e7812f930537993df
@@ -4646,7 +4652,7 @@ SPEC CHECKSUMS:
   react-native-restart: f6f591aeb40194c41b9b5013901f00e6cf7d0f29
   react-native-safe-area-context: c6e2edd1c1da07bdce287fa9d9e60c5f7b514616
   react-native-screen-corner-radius: ebd0d3258fcc894571b41d25ee3db7569d375153
-  react-native-skia: 74a438720066c6a958bbd46d1fd9227ec6ad5372
+  react-native-skia: e819bda7455acc967c3d0c7113b1e665a9d7a472
   react-native-udp: 33844c2b4a0430271e46cd069a6152cc4c482095
   react-native-version-number: 3d74b5224ca4e1032b1593937d86d3f3c94bf95c
   react-native-video: dc7e341a8dc21d183f7e6a17a646b98ba2cf9448
@@ -4690,7 +4696,7 @@ SPEC CHECKSUMS:
   RNBootSplash: 258842208ec34cd3b1596110f9f8e7193ce9e41d
   RNCAsyncStorage: 6161dbb167973ab36a7800c5deb506ed854f2c33
   RNCClipboard: adba6334687b7fb2c37760e26dedd550b4846a72
-  RNCMaskedView: c043be2a699ed709e66c2be8fea61d69c5008e03
+  RNCMaskedView: e7a06dc4cc53a88528c5d21ff89b346d47fcd047
   RNDeviceInfo: c78d3d9ae81aed962fa0cc7c455e970f35a44a47
   RNFastImage: b4741be7fc96457586f610a1a454817518376819
   RNFBApp: 255fa19a91d6c1309e021ee75d5d209754e5961b

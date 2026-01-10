@@ -1,24 +1,8 @@
 import { RefObject, useLayoutEffect } from 'react';
 import { useLazyRef as useRef } from '@/hooks/useLazyRef';
-import { BaseRainbowStore, EqualityFn, Selector } from '../types';
+import { BaseRainbowStore, EqualityFn, InferStoreState, Selector } from '../types';
 
 // ============ Types ========================================================== //
-
-/**
- * Options for resubscribing a listener.
- */
-export type ResubscribeOptions = {
-  /**
-   * Whether to fire the callback immediately when resubscribing.
-   * @default false
-   */
-  fireImmediately?: boolean;
-  /**
-   * Whether to force a resubscription even if the listener is already active.
-   * @default false
-   */
-  forceResubscribe?: boolean;
-};
 
 /**
  * Handle returned by `useListen`.
@@ -34,6 +18,22 @@ export type ListenHandle = {
   resubscribe: (options?: ResubscribeOptions) => void;
   /** Detach the listener. Safe to call more than once. */
   unsubscribe: () => void;
+};
+
+/**
+ * Options for resubscribing a listener.
+ */
+export type ResubscribeOptions = {
+  /**
+   * Whether to fire the callback immediately when resubscribing.
+   * @default false
+   */
+  fireImmediately?: boolean;
+  /**
+   * Whether to force a resubscription even if the listener is already active.
+   * @default false
+   */
+  forceResubscribe?: boolean;
 };
 
 /**
@@ -116,8 +116,8 @@ const DEFAULT_OPTIONS = Object.freeze({
  * );
  * ```
  */
-export function useListen<S, Selected>(
-  store: BaseRainbowStore<S>,
+export function useListen<Store extends BaseRainbowStore<S>, Selected, S = InferStoreState<Store>>(
+  store: Store,
   selector: Selector<S, Selected>,
   react: (current: Selected, previous: Selected, unsubscribe: () => void) => void,
   optionsOrEqualityFn: UseListenOptions<Selected> | UseListenOptions<Selected>['equalityFn'] = DEFAULT_OPTIONS
@@ -145,8 +145,8 @@ const DEFAULT_RESUBSCRIBE_OPTIONS = Object.freeze({
   forceResubscribe: false,
 }) satisfies Readonly<ResubscribeOptions>;
 
-function attachListener<S, Selected>(
-  store: BaseRainbowStore<S>,
+function attachListener<Store extends BaseRainbowStore<S>, Selected, S = InferStoreState<Store>>(
+  store: Store,
   listenerRef: RefObject<ListenerRef<S, Selected>>,
   resubscribeOptions: ResubscribeOptions = DEFAULT_RESUBSCRIBE_OPTIONS
 ): void {

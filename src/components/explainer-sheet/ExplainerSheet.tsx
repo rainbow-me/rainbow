@@ -44,18 +44,6 @@ export interface ExplainerSheetButtonProps {
   isLastStep: SharedValue<boolean>;
 }
 
-export interface ExplainerSheetConfig {
-  steps: ExplainerSheetStep[];
-  headerTitleComponent: () => ReactNode;
-  gradientColors?: string[];
-  panelHeight?: number;
-  nextButtonLabel: string;
-  completeButtonLabel: string;
-  showSunrays?: boolean;
-  BackgroundComponent?: React.ComponentType;
-  ButtonComponent?: React.ComponentType<ExplainerSheetButtonProps>;
-}
-
 const SunraysBackground = memo(function SunraysBackground({ gradientColors }: { gradientColors: string[] }) {
   const { glowCircleRadius, sunrayFocalSize, sunrayRayHeight, overflowBuffer } = BACKGROUND_CONFIG;
   const sunraysSize = sunrayRayHeight * 2 + sunrayFocalSize;
@@ -113,7 +101,7 @@ function PanelSheet({ children }: { children: ReactNode }) {
   );
 }
 
-const PanelHeader = memo(function PanelHeader({ titleComponent }: { titleComponent: () => ReactNode }) {
+const PanelHeader = memo(function PanelHeader({ titleComponent }: { titleComponent?: () => ReactNode }) {
   return (
     <Box
       height={PANEL_HEADER_HEIGHT}
@@ -125,12 +113,16 @@ const PanelHeader = memo(function PanelHeader({ titleComponent }: { titleCompone
       zIndex={1}
     >
       <SheetHandle color={foregroundColors.labelQuaternary.dark} showBlur={true} />
-      <Box paddingVertical={'20px'}>
-        <Box>{titleComponent()}</Box>
-      </Box>
-      <Box width={'full'}>
-        <Separator color="separatorTertiary" thickness={THICK_BORDER_WIDTH} />
-      </Box>
+      {titleComponent && (
+        <>
+          <Box paddingVertical={'20px'}>
+            <Box>{titleComponent()}</Box>
+          </Box>
+          <Box width={'full'}>
+            <Separator color="separatorTertiary" thickness={THICK_BORDER_WIDTH} />
+          </Box>
+        </>
+      )}
     </Box>
   );
 });
@@ -270,6 +262,18 @@ const PanelContent = memo(function PanelContent({
     </Box>
   );
 });
+
+export interface ExplainerSheetConfig {
+  steps: ExplainerSheetStep[];
+  headerTitleComponent?: () => ReactNode;
+  gradientColors?: string[];
+  panelHeight?: number;
+  nextButtonLabel: string;
+  completeButtonLabel: string;
+  showSunrays?: boolean;
+  BackgroundComponent?: React.ComponentType;
+  ButtonComponent?: React.ComponentType<ExplainerSheetButtonProps>;
+}
 
 export function ExplainerSheet({
   steps,

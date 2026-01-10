@@ -23,6 +23,12 @@ export type Device = {
    * Used to show the explain sheet only on first visit to PerpsAccountScreen.
    */
   hasSeenPerpsExplainSheet: boolean;
+
+  /**
+   * Tracks whether the user has seen the Polymarket explain sheet.
+   * Used to show the explain sheet only on first visit to Polymarket.
+   */
+  hasSeenPolymarketExplainSheet: boolean;
 };
 
 /**

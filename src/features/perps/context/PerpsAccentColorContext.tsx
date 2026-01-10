@@ -57,6 +57,7 @@ type PerpsAccentColorContextType = {
 
 type PerpsAccentColorContextProviderProps = {
   children: React.ReactNode;
+  primaryColorOverride?: string;
 };
 
 const PerpsAccentColorContext = createContext<PerpsAccentColorContextType | undefined>(undefined);
@@ -69,11 +70,19 @@ export function usePerpsAccentColorContext() {
   return context;
 }
 
-export function PerpsAccentColorContextProvider({ children }: PerpsAccentColorContextProviderProps) {
+export function PerpsAccentColorContextProvider({ children, primaryColorOverride }: PerpsAccentColorContextProviderProps) {
   const { isDarkMode } = useColorMode();
 
   const accentColors: PerpsAccentColors = useMemo(() => {
-    const primary = theme[isDarkMode ? 'dark' : 'light'].primary;
+    const primary = primaryColorOverride ?? theme[isDarkMode ? 'dark' : 'light'].primary;
+    const gradient: LinearGradientProps['colors'] = primaryColorOverride
+      ? isDarkMode
+        ? [primary, opacityWorklet(primary, 0.8)]
+        : [primary, primary]
+      : isDarkMode
+        ? ['#72FFD9', '#3ECFAD']
+        : ['#31C8A4', '#31C8A4'];
+
     return {
       opacity100: primary,
       opacity80: opacityWorklet(primary, 0.8),
@@ -91,7 +100,7 @@ export function PerpsAccentColorContextProvider({ children }: PerpsAccentColorCo
       opacity2: opacityWorklet(primary, 0.02),
       opacity1: opacityWorklet(primary, 0.01),
       surfacePrimary: isDarkMode ? '#171E20' : 'white',
-      gradient: isDarkMode ? (['#72FFD9', '#3ECFAD'] as const) : (['#31C8A4', '#31C8A4'] as const),
+      gradient,
       priceChangeColors: {
         positive: getColorForTheme('green', isDarkMode ? 'dark' : 'light'),
         negative: getColorForTheme('red', isDarkMode ? 'dark' : 'light'),
@@ -106,7 +115,7 @@ export function PerpsAccentColorContextProvider({ children }: PerpsAccentColorCo
       shortRed: SHORT_RED,
       longGreen: LONG_GREEN,
     } satisfies PerpsAccentColors;
-  }, [isDarkMode]);
+  }, [isDarkMode, primaryColorOverride]);
 
   return (
     <PerpsAccentColorContext.Provider

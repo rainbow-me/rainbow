@@ -4,7 +4,6 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { Box, Cover, useColorMode, useForegroundColor } from '@/design-system';
 import { AnimatedText, SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
 import { IS_IOS } from '@/env';
-import { HYPERLIQUID_COLORS } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import chroma from 'chroma-js';
 import { StyleSheet, View, ViewStyle } from 'react-native';
@@ -64,13 +63,15 @@ const HoldProgress = ({ holdProgress, color }: { holdProgress: SharedValue<numbe
 };
 
 export const PerpsSwapButton = ({
+  accentColor,
   onLongPress,
   style,
   testID,
   label,
-  disabled,
+  disabled = false,
   disabledOpacity = 0.4,
 }: {
+  accentColor?: string;
   label: SharedOrDerivedValueText | string;
   style?: ViewStyle;
   testID?: string;
@@ -84,14 +85,10 @@ export const PerpsSwapButton = ({
   const holdProgress = useSharedValue(0);
 
   const containerStyle = useAnimatedStyle(() => {
-    if (typeof disabled === 'object') {
-      return {
-        opacity: withTiming(disabled.value ? disabledOpacity : 1, TIMING_CONFIGS.slowerFadeConfig),
-        pointerEvents: disabled.value ? 'none' : 'auto',
-      };
-    }
+    const isDisabled = typeof disabled === 'boolean' ? disabled : disabled.value;
     return {
-      opacity: withTiming(disabled ? disabledOpacity : 1, TIMING_CONFIGS.slowerFadeConfig),
+      opacity: withTiming(isDisabled ? disabledOpacity : 1, TIMING_CONFIGS.slowerFadeConfig),
+      pointerEvents: isDisabled ? 'none' : 'auto',
     };
   });
 
@@ -145,7 +142,7 @@ export const PerpsSwapButton = ({
             </>
           )}
           {!isDarkMode && <View style={[StyleSheet.absoluteFillObject, { backgroundColor: accentColors.opacity100 }]} />}
-          <HoldProgress holdProgress={holdProgress} color={HYPERLIQUID_COLORS.green} />
+          <HoldProgress holdProgress={holdProgress} color={accentColor ?? accentColors.opacity100} />
           <AnimatedText size="20pt" weight={'black'} color={isDarkMode ? 'black' : 'white'}>
             {label}
           </AnimatedText>
