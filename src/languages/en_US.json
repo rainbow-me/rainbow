@@ -2949,6 +2949,14 @@
         "copy_wallet_address": "Copy Address",
         "manage_smart_wallet": "Manage Smart Wallet"
       },
+      "delegations": {
+        "active": "Active",
+        "not_active": "Not active",
+        "enable_smart_wallet": "Enable Smart Wallet",
+        "disable_smart_wallet": "Disable Smart Wallet",
+        "enabled_description": "You'll miss out on faster transactions and lower network costs",
+        "disabled_description": "Updates will take effect on your next swap"
+      },
       "balance_title": "Balance",
       "buy": "Buy",
       "change_wallet": {
