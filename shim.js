@@ -72,6 +72,10 @@ if (SHORTEN_PROP_TYPES_ERROR) {
     if (typeof arguments[0] === 'string' && arguments[0].startsWith('VirtualizedLists should never be nested inside plain ScrollViews')) {
       return;
     }
+    const originalConsole = globalThis.originalConsole;
+    if (typeof originalConsole?.error === 'function') {
+      originalConsole.error(...arguments);
+    }
     oldConsoleError?.apply(this, arguments);
   };
 }
@@ -99,6 +103,40 @@ const isDev = typeof __DEV__ === 'boolean' && __DEV__;
 process.env.NODE_ENV = isDev ? 'development' : 'production';
 if (typeof localStorage !== 'undefined') {
   localStorage.debug = isDev ? '*' : '';
+}
+
+function patchConsoleForDevTools() {
+  if (!isDev || console.__rainbowDevtoolsPatched) return false;
+  const originalConsole = globalThis.originalConsole;
+  if (!originalConsole) return false;
+  const methods = ['log', 'info', 'warn', 'debug', 'trace', 'group', 'groupCollapsed', 'groupEnd'];
+  methods.forEach(method => {
+    const current = console[method];
+    const original = originalConsole[method];
+    if (typeof current === 'function' && typeof original === 'function') {
+      console[method] = function () {
+        original.apply(originalConsole, arguments);
+        return current.apply(console, arguments);
+      };
+    }
+  });
+  console.__rainbowDevtoolsPatched = true;
+  return true;
+}
+
+if (isDev && !patchConsoleForDevTools()) {
+  let attempts = 0;
+  const interval = setInterval(() => {
+    attempts += 1;
+    if (patchConsoleForDevTools() || attempts > 30) clearInterval(interval);
+  }, 1000);
+}
+
+if (isDev) {
+  const devSettings = ReactNative.NativeModules?.DevSettings;
+  if (typeof devSettings?.setHotLoadingEnabled === 'function') {
+    devSettings.setHotLoadingEnabled(true);
+  }
 }
 
 ReactNative.LayoutAnimation.configureNext = () => null;
