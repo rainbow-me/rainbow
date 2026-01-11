@@ -53,24 +53,8 @@ export default function IntroMarquee({ isSmallPhone }: { isSmallPhone: boolean }
   );
 
   const renderItem = useCallback(
-    ({
-      item,
-      onPressStart,
-      onPressCancel,
-      testID,
-    }: {
-      item: MarqueeItemType;
-      onPressStart: () => void;
-      onPressCancel: () => void;
-      testID?: string;
-    }) => (
-      <ENSAvatarPlaceholder
-        account={item.account}
-        onPress={item.onPress}
-        onPressCancel={onPressCancel}
-        onPressStart={onPressStart}
-        testID={testID}
-      />
+    ({ item, onPressStart, testID }: { item: MarqueeItemType; onPressStart: () => void; testID?: string }) => (
+      <ENSAvatarPlaceholder account={item.account} onPress={item.onPress} onPressStart={onPressStart} testID={testID} />
     ),
     []
   );
@@ -90,7 +74,14 @@ export default function IntroMarquee({ isSmallPhone }: { isSmallPhone: boolean }
 
   return (
     <Box height={{ custom: isSmallPhone ? 90 : 100 }}>
-      <MarqueeList height={isSmallPhone ? 90 : 100} items={items} renderItem={renderItem} speed={-15} testID="ens-names-marquee" />
+      <MarqueeList
+        height={isSmallPhone ? 90 : 100}
+        // @ts-expect-error items is typed as never[]
+        items={items}
+        renderItem={renderItem}
+        speed={-15}
+        testID="ens-names-marquee"
+      />
     </Box>
   );
 }
@@ -98,19 +89,17 @@ export default function IntroMarquee({ isSmallPhone }: { isSmallPhone: boolean }
 function ENSAvatarPlaceholder({
   account,
   onPress,
-  onPressCancel,
   onPressStart,
   testID,
 }: {
   account: EnsMarqueeAccount;
   onPress: () => void;
-  onPressCancel: () => void;
   onPressStart: () => void;
   testID?: string;
 }) {
   return (
     <ButtonPressAnimation
-      onCancel={({ nativeEvent: { state, close } }: any) => {
+      onCancel={({ nativeEvent: { state, close } }) => {
         // Ensure the press has been triggered
         if (state === 5 && close) {
           ReactNativeHapticFeedback.trigger('selection');
@@ -118,7 +107,6 @@ function ENSAvatarPlaceholder({
         }
       }}
       onPress={onPress}
-      onPressCancel={onPressCancel}
       onPressStart={onPressStart}
       reanimatedButton={false}
       scaleTo={0.8}

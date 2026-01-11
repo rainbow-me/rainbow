@@ -11,7 +11,7 @@ import ImgixImage from '@/components/images/ImgixImage';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Navigation } from '@/navigation';
 import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { PolymarketChart } from '@/features/charts/polymarket/components/PolymarketChart';
 import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
 import { getChartLineColors } from '@/features/charts/polymarket/utils/getChartLineColors';

@@ -1,7 +1,7 @@
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 
 export const STORAGE_IDS = {
-  ACCOUNT: 'ACCOUNT',
+  ACCOUNT: 'ACCOUNT_2',
   ASPECT_RATIO: 'ASPECT_RATIO',
   DOMINANT_COLOR: 'DOMINANT_COLOR',
   EXPERIMENTAL_CONFIG: 'EXPERIMENTAL_CONFIG',
@@ -18,10 +18,10 @@ export const STORAGE_IDS = {
 
 export const clearAllStorages = () => {
   Object.keys(STORAGE_IDS).forEach(id => {
-    const storage = new MMKV({ id });
+    const storage = createMMKV({ id });
     storage.clearAll();
   });
 
-  const defaultStorage = new MMKV();
+  const defaultStorage = createMMKV();
   defaultStorage.clearAll();
 };

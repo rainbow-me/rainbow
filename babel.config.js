@@ -23,7 +23,7 @@ module.exports = function (api) {
   api.cache(true);
 
   const plugins = [
-    ...(data ? [data] : []),
+    ...(data && !isJest ? [data] : []),
     [
       'module-resolver',
       {
@@ -56,7 +56,7 @@ module.exports = function (api) {
   return {
     env: {
       development: {
-        plugins: [...plugins, ['transform-remove-console', { exclude: ['disableYellowBox', 'error', 'info', 'log'] }]],
+        plugins,
         presets: presets,
       },
       production: {

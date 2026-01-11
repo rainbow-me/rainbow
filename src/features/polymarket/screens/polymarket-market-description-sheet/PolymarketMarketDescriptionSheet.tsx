@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';

@@ -34,7 +34,14 @@ export function isValidSwapsChainId(chainId: ChainId | SwapsChainId): chainId is
 // ============ Quote Validation =============================================== //
 
 export function isValidQuote(
-  quote: Quote | CrosschainQuote | QuoteError | DepositQuoteStatus.InsufficientBalance | DepositQuoteStatus.InsufficientGas | null
+  quote:
+    | Quote
+    | CrosschainQuote
+    | QuoteError
+    | DepositQuoteStatus.InsufficientBalance
+    | DepositQuoteStatus.InsufficientGas
+    | DepositQuoteStatus.Error
+    | null
 ): quote is Quote | CrosschainQuote {
   if (!quote || quote === DepositQuoteStatus.InsufficientBalance || quote === DepositQuoteStatus.InsufficientGas || isQuoteError(quote))
     return false;

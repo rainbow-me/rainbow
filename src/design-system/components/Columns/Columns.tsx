@@ -61,6 +61,7 @@ function PrivateColumn({ space, width, alignVertical, children, style }: Private
       paddingRight={space}
       width={width !== 'content' ? width : undefined}
       style={style}
+      collapsable={false}
     >
       {children}
     </Box>
@@ -95,12 +96,12 @@ export function Columns({ children, alignHorizontal, alignVertical, space }: Col
       justifyContent={alignHorizontal ? alignHorizontalToFlexAlign[alignHorizontal] : undefined}
       marginRight={space ? negateSpace(space) : undefined}
     >
-      {Children.map(flattenChildren(children), child => {
+      {Children.map(flattenChildren(children), (child, index) => {
         const columnProps = getColumnProps(child);
         return columnProps ? (
-          <PrivateColumn {...columnProps} alignVertical={alignVertical} space={space} />
+          <PrivateColumn {...columnProps} alignVertical={alignVertical} space={space} key={index} />
         ) : (
-          <PrivateColumn alignVertical={alignVertical} space={space}>
+          <PrivateColumn alignVertical={alignVertical} space={space} key={index}>
             {child}
           </PrivateColumn>
         );

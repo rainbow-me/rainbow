@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Box, Inline, Stack, Text, AccentColorProvider, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations';
 import { usePolymarketFeatureCard } from '@/features/polymarket/hooks/usePolymarketFeatureCard';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
@@ -34,7 +34,7 @@ export const PolymarketFeatureCard = memo(function PolymarketFeatureCard({
   }, [accentColor]);
 
   const { dismiss: dismissPolymarketFeatureCard } = usePolymarketFeatureCard();
-  const onDismiss = (e: ButtonPressAnimationTouchEvent) => {
+  const onDismiss = (e?: ButtonPressAnimationTouchEvent) => {
     if (e && 'stopPropagation' in e) {
       e.stopPropagation();
     }
@@ -44,7 +44,12 @@ export const PolymarketFeatureCard = memo(function PolymarketFeatureCard({
   return (
     <AccentColorProvider color={accentColor}>
       <View style={styles.container}>
-        <ButtonPressAnimation onPress={navigateToPolymarket} scaleTo={0.96}>
+        <ButtonPressAnimation
+          onPress={() => {
+            navigateToPolymarket();
+          }}
+          scaleTo={0.96}
+        >
           <ConditionalWrap
             condition={isDarkMode}
             wrap={children => (

@@ -23,7 +23,7 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   interpolate,
   runOnJS,

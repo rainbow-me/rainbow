@@ -9,7 +9,7 @@ import Routes from '@/navigation/routesNames';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';

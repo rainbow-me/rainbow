@@ -15,5 +15,5 @@ export const getGradientColorsForRank = (rank: number, isDarkTheme: boolean) => 
   } else if (rank === 3) {
     return isDarkTheme ? DARK_RANK_3_GRADIENT_COLORS : LIGHT_RANK_3_GRADIENT_COLORS;
   }
-  return [];
+  return ['transparent', 'transparent'] as const;
 };

@@ -1,4 +1,4 @@
-import XHRInterceptor from 'react-native/src/private/inspector/XHRInterceptor';
+import XHRInterceptor from 'react-native/src/private/devsupport/devmenu/elementinspector/XHRInterceptor';
 import { logger, RainbowError } from '@/logger';
 
 let internalCounter = 0;

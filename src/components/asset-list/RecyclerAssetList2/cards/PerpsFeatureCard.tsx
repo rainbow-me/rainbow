@@ -5,7 +5,7 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import infinityIcon from '@/assets/infinity.png';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
 import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
@@ -49,7 +49,7 @@ export const PerpsFeatureCard = memo(function PerpsFeatureCard({
   return (
     <AccentColorProvider color={accentColor}>
       <View style={styles.container}>
-        <ButtonPressAnimation onPress={navigateToPerps} scaleTo={0.96}>
+        <ButtonPressAnimation onPress={() => navigateToPerps()} scaleTo={0.96}>
           <ConditionalWrap
             condition={isDarkMode}
             wrap={children => (

@@ -14,9 +14,9 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
 import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
-import { GestureResponderEvent } from 'react-native';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
 
@@ -120,7 +120,7 @@ export function CoinRow({
   }, [address, mainnetAddress, chainId]);
 
   const onPressHandler = useCallback(
-    (event: GestureResponderEvent) => {
+    (event?: ButtonPressAnimationTouchEvent) => {
       event?.stopPropagation();
 
       if (output) {

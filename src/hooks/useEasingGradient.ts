@@ -1,4 +1,5 @@
 import chroma from 'chroma-js';
+import { LinearGradientProps } from 'expo-linear-gradient';
 import { useMemo } from 'react';
 import { Easing, EasingFunction } from 'react-native-reanimated';
 
@@ -17,9 +18,9 @@ export type UseEasingGradientParams = {
 };
 
 type GradientOutput = {
-  colors: string[];
+  colors: LinearGradientProps['colors'];
   end: PositionObject;
-  locations: number[];
+  locations: LinearGradientProps['locations'];
   start: PositionObject;
 };
 
@@ -69,9 +70,9 @@ export const useEasingGradient = ({
     }
 
     return {
-      colors,
+      colors: colors as unknown as LinearGradientProps['colors'],
       end: getPositionCoordinates(endPosition),
-      locations,
+      locations: locations as unknown as LinearGradientProps['locations'],
       start: getPositionCoordinates(startPosition),
     };
   }, [easing, endColor, endOpacity, endPosition, startColor, startOpacity, startPosition, steps]);

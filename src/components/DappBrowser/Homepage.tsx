@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -127,7 +127,7 @@ const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
       <Bleed space="24px">
         <ScrollView
           horizontal
-          decelerationRate="fast"
+          decelerationRate={IS_IOS ? 'fast' : undefined}
           disableIntervalMomentum
           showsHorizontalScrollIndicator={false}
           snapToOffsets={data.dApps.map((_, index) => index * (CARD_WIDTH + CARD_PADDING))}

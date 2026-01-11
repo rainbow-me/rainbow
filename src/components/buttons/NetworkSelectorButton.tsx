@@ -75,7 +75,12 @@ export const NetworkSelectorButton = ({
 
   return (
     <Bleed horizontal={bleed ? '12px' : undefined}>
-      <ButtonPressAnimation disabled={disabled} onPress={navigateToNetworkSelector} padding="12px" testID="network-selector-button">
+      <ButtonPressAnimation
+        disabled={disabled}
+        onPress={navigateToNetworkSelector}
+        contentContainerStyle={{ padding: 12 }}
+        testID="network-selector-button"
+      >
         <Inline alignVertical="center" space="6px" wrap={false}>
           {actionButton.icon && !selectedChainId && (
             <Text align="center" color={actionButton.color || iconColor} size={iconSize} weight={actionButton.weight || iconWeight}>

@@ -2064,7 +2064,7 @@ export const CandlestickChart = memo(function CandlestickChart({
               color={accentColor}
               idleComponent={
                 <ButtonPressAnimation
-                  hapticType="soft"
+                  hapticType="selection"
                   onPress={() => fetchAdditionalCandles(true)}
                   style={{ height: SPINNER_HIT_AREA_SIZE + 16, marginTop: 16, width: SPINNER_HIT_AREA_SIZE }}
                 >

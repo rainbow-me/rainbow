@@ -1,23 +1,7 @@
 import { jest, test, expect, beforeEach } from '@jest/globals';
 import { Storage } from '@/storage';
 
-jest.mock('react-native-mmkv', () => ({
-  MMKV: class MMKVMock {
-    _store = new Map();
-
-    set(key: string, value: unknown) {
-      this._store.set(key, value);
-    }
-
-    getString(key: string) {
-      return this._store.get(key);
-    }
-
-    delete(key: string) {
-      return this._store.delete(key);
-    }
-  },
-}));
+jest.mock('react-native-mmkv');
 
 type Schema = {
   boo: boolean;

@@ -1,10 +1,10 @@
 import React, { Fragment, useMemo } from 'react';
-import { PressableProps, TouchableWithoutFeedback, StyleSheet } from 'react-native';
+import { TouchableWithoutFeedback, StyleSheet } from 'react-native';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
 import { deviceUtils, magicMemo } from '../../utils';
 import Divider from '@/components/Divider';
-import { ButtonPressAnimation } from '../animations';
+import { ButtonPressAnimation, ButtonPressAnimationProps } from '../animations';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { Centered } from '../layout';
 import { TruncatedText } from '../text';
@@ -85,7 +85,7 @@ const CollectiblesSendRow = React.memo(
     disablePressAnimation?: boolean;
     item: UniqueAsset;
     isFirstRow?: boolean;
-    onPress: PressableProps['onPress'];
+    onPress: ButtonPressAnimationProps['onPress'];
     selected?: boolean;
     testID: string;
   }) => {

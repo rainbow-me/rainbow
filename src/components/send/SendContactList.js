@@ -4,7 +4,7 @@ import { sortBy } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { SectionList } from 'react-native';
 import * as DeviceInfo from 'react-native-device-info';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useDeepCompareMemo } from 'use-deep-compare';
 import { FlyInAnimation } from '../animations';
 import { ContactRow, SwipeableContactRow } from '../contacts';

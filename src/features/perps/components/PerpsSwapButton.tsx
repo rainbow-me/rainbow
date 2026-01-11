@@ -7,7 +7,7 @@ import { IS_IOS } from '@/env';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import chroma from 'chroma-js';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   Easing,
   interpolate,

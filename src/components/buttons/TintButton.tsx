@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
-import { ButtonProps } from 'react-native';
 import { TextColor } from '../../design-system/color/palettes';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonProps } from '../animations/ButtonPressAnimation/types';
 import { AccentColorProvider, Box, Cover, Text, useForegroundColor } from '@/design-system';
 
 const TintButton = ({
@@ -29,7 +29,7 @@ const TintButton = ({
       justifyContent="center"
       // @ts-ignore overloaded props
       onPress={disabled ? () => undefined : onPress}
-      scale={disabled ? 1 : 0.8}
+      scaleTo={disabled ? 1 : 0.8}
       style={{
         opacity: disabled ? 0.5 : 1,
         overflow: 'hidden',

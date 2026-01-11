@@ -10,7 +10,7 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/safe-math/SafeMath';
@@ -58,8 +58,8 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
     opacity: 0.4,
   });
   const gradientFillColors = isDarkMode
-    ? [opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)]
-    : [opacityWorklet(accentColor, 0), opacityWorklet(accentColor, 0.06)];
+    ? ([opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)] as const)
+    : ([opacityWorklet(accentColor, 0), opacityWorklet(accentColor, 0.06)] as const);
 
   useEffect(() => {
     usePolymarketOrderBookStore.getState().setTokenId(tokenId);
@@ -67,7 +67,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
   }, [tokenId]);
 
   const executionStore = useMemo(() => createSellExecutionStore(tokenId, sellAmountTokens), [tokenId, sellAmountTokens]);
-  const { worstPrice, bestPrice, expectedPayoutUsd, averagePrice, fee, spread } = executionStore(state => state);
+  const { worstPrice, bestPrice, expectedPayoutUsd, averagePrice, spread } = executionStore(state => state);
   const formattedBestPrice = `${trimTrailingZeros(toFixedWorklet(mulWorklet(bestPrice, 100), 1))}¢`;
   const formattedAveragePrice = `${trimTrailingZeros(toFixedWorklet(mulWorklet(averagePrice, 100), 1))}¢`;
 

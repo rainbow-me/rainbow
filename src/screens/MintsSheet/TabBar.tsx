@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AccentColorProvider, Box, Cover, Inline, globalColors, Text } from '@/design-system';
 import { IS_IOS } from '@/env';

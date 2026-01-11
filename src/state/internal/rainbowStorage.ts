@@ -1,4 +1,4 @@
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 
 /**
  * @internal
@@ -12,4 +12,4 @@ import { MMKV } from 'react-native-mmkv';
  *
  * Instead, use `createRainbowStore` or `createQueryStore`.
  */
-export const rainbowStorage = new MMKV({ id: 'rainbow-storage' });
+export const rainbowStorage = createMMKV({ id: 'rainbow-storage' });

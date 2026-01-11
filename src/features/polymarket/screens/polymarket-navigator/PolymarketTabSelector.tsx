@@ -9,7 +9,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'react-native-blur-view';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';

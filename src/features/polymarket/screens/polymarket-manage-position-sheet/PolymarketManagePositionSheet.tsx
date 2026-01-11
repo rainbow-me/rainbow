@@ -11,7 +11,7 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { logger, RainbowError } from '@/logger';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
@@ -89,8 +89,8 @@ export const PolymarketManagePositionSheet = memo(function PolymarketManagePosit
   const absPnl = Math.abs(pnl);
 
   const gradientFillColors = isDarkMode
-    ? [opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)]
-    : [opacityWorklet(accentColor, 0), opacityWorklet(accentColor, 0.06)];
+    ? ([opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)] as const)
+    : ([opacityWorklet(accentColor, 0), opacityWorklet(accentColor, 0.06)] as const);
 
   return (
     <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }}>

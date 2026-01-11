@@ -18,7 +18,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { noop } from 'lodash';
 import React, { memo, useCallback, useMemo } from 'react';
 import { Keyboard, Share } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { switchWallet } from '@/state/wallets/switchWallet';
 import { getNumberFormatter } from '@/helpers/intl';
@@ -166,15 +166,15 @@ export const LeaderboardRow = memo(function LeaderboardRow({
   let icon;
   switch (rank) {
     case 1:
-      gradient = ['#FFE456', '#CF9500'];
+      gradient = ['#FFE456', '#CF9500'] as const;
       icon = '🥇';
       break;
     case 2:
-      gradient = ['#FBFCFE', '#B3BCC7'];
+      gradient = ['#FBFCFE', '#B3BCC7'] as const;
       icon = '🥈';
       break;
     case 3:
-      gradient = ['#DE8F38', '#AE5F25'];
+      gradient = ['#DE8F38', '#AE5F25'] as const;
       icon = '🥉';
       break;
     default:
@@ -225,7 +225,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
           {rank <= 3 && gradient ? (
             <Bleed vertical="10px">
               <MaskedView
-                style={{ height: 30, alignItems: 'center' }}
+                style={{ height: 50, alignItems: 'center', borderWidth: 2, borderColor: 'red' }}
                 maskElement={
                   <Box paddingVertical="10px" justifyContent="center">
                     <Text align="right" weight="bold" color="label" size="15pt">

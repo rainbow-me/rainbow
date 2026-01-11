@@ -1,4 +1,4 @@
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { RapAction, RapActionParameterMap, RapActionTypes } from './references';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { logger } from '@/logger';
@@ -87,7 +87,7 @@ export function createNewENSRap(actions: RapENSAction[]) {
   };
 }
 
-export const swapMetadataStorage = new MMKV({
+export const swapMetadataStorage = createMMKV({
   id: STORAGE_IDS.SWAPS_METADATA_STORAGE,
 });
 

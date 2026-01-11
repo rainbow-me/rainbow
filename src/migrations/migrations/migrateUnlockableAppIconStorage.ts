@@ -1,8 +1,8 @@
 import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
 import { Migration, MigrationName } from '@/migrations/types';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 
-const mmkv = new MMKV();
+const mmkv = createMMKV();
 
 export function migrateUnlockableAppIconStorage(): Migration {
   return {

@@ -55,7 +55,7 @@ import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useState
 import { RefreshControl, Share, StyleProp, ViewStyle } from 'react-native';
 import FastImage, { Source } from 'react-native-fast-image';
 import { ScrollView } from 'react-native-gesture-handler';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { useRecoilState } from 'recoil';
 import { InfoCard } from '../components/InfoCard';
@@ -785,9 +785,9 @@ export function PointsContent() {
                       as={LinearGradient}
                       style={{ padding: 5 / 3, borderRadius: 18 + 5 / 3 }}
                       colors={['#31BCC4', '#57EA5F', '#F0D83F', '#DF5337', '#B756A7']}
-                      useAngle={true}
-                      angle={-15}
-                      angleCenter={{ x: 0.5, y: 0.5 }}
+                      // -15 deg angle
+                      start={{ x: 0, y: 0.633975 }}
+                      end={{ x: 1, y: 0.366025 }}
                     >
                       <Box
                         background="surfaceSecondaryElevated"
