@@ -561,7 +561,7 @@
       "reset_experimental_config": "重置实验配置",
       "status": "状态",
       "sync_codepush": "同步 CodePush",
-      "simulate_device_transfer": "Simulate Device Transfer"
+      "simulate_device_transfer": "模拟设备传输"
     },
     "discover": {
       "pulse": {
@@ -3787,14 +3787,19 @@
         "placing_bet": "下注中...",
         "confirming_order": "订单确认中...",
         "deposit_funds": "存款资金",
-        "average_price": "平均价格"
+        "average_price": "平均价格",
+        "errors": {
+          "not_enough_liquidity": "Not enough liquidity to place full order.",
+          "please_lower_amount": "Please lower the amount and try again.",
+          "no_liquidity_at_price": "No liquidity at this price."
+        }
       },
       "manage_position": {
         "hold_to_claim": "长按领取",
-        "hold_to_burn": "按住烧毁",
+        "hold_to_clear": "Hold to Clear",
         "hold_to_cash_out": "按住兑现",
         "claiming": "认领中...",
-        "burning": "正在销毁...",
+        "clearing": "Clearing...",
         "cashing_out": "兑现中...",
         "confirming_order": "订单确认中...",
         "position_value": "仓位价值"
@@ -3837,7 +3842,7 @@
         "won": "赢",
         "to_win": "赢得",
         "claim": "领取",
-        "burn": "烧毁",
+        "clear": "Clear",
         "cash_out": "兑现",
         "no_open_positions": "没有开放的头寸",
         "won_badge": "赢了",
@@ -3858,9 +3863,11 @@
         "other": "其他"
       },
       "sports": {
-        "vs": "对比",
-        "live": "直播",
-        "game_best_of": "游戏 %{currentPeriod} - 最佳 %{bestOf}"
+        "vs": "vs",
+        "live": "Live",
+        "game_best_of": "游戏 %{currentPeriod} - 最佳 %{bestOf}",
+        "final": "Final",
+        "no_games": "No games today or tomorrow"
       },
       "outcomes": {
         "yes": "是",
@@ -3872,16 +3879,21 @@
         "failed_to_place_bet": "下注失败。请再试一次。",
         "failed_to_cash_out": "兑现头寸失败。请再试一次。",
         "failed_to_claim": "认领头寸失败。请再试一次。"
+      },
+      "account": {
+        "hide_lost_bets": "Hide Lost Bets",
+        "show_lost_bets": "Show Lost Bets",
+        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
       }
     },
     "wallet_error_sheet": {
-      "title": "Restore your wallet",
+      "title": "恢复你的钱包",
       "restore": "恢复",
       "dismiss": "关闭",
-      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
-      "cause_switched_devices": "It looks like you may have switched devices.",
-      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
-      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
+      "cause_passcode_disabled": "看起来你可能已经禁用密码。",
+      "cause_switched_devices": "看起来你可能已经切换设备。",
+      "resolution_enable_passcode": "要使用你的钱包，请在设备设置中重新启用它。",
+      "resolution_restore_backup": "要使用你的钱包，请从备份恢复或重新导入你的秘密恢复短语。"
     }
   }
 }
