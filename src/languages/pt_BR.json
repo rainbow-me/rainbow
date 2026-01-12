@@ -560,7 +560,8 @@
       "restart_app": "Reiniciar App",
       "reset_experimental_config": "Redefinir Configuração Experimental",
       "status": "Status",
-      "sync_codepush": "Sincronizar CodePush"
+      "sync_codepush": "Sincronizar CodePush",
+      "simulate_device_transfer": "Simulate Device Transfer"
     },
     "discover": {
       "pulse": {
@@ -2941,12 +2942,7 @@
         "no_price": "Saldos Pequenos"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "Seu método de autenticação atual (Reconhecimento Facial) não é seguro o suficiente, vá para \"Configurações > Biometria e Segurança\" e ative um método biométrico alternativo como Impressão Digital ou Íris.",
-          "error": "Erro"
-        },
-        "please": "Faça a autenticação",
-        "please_seed_phrase": "Por favor, autentique-se para visualizar a chave privada"
+        "please": "Faça a autenticação"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} carteira",
@@ -3877,6 +3873,15 @@
         "failed_to_cash_out": "Falha ao retirar posição. Por favor, tente novamente.",
         "failed_to_claim": "Falha ao reivindicar posição. Por favor, tente novamente."
       }
+    },
+    "wallet_error_sheet": {
+      "title": "Restore your wallet",
+      "restore": "Restaurar",
+      "dismiss": "Dispensar",
+      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
+      "cause_switched_devices": "It looks like you may have switched devices.",
+      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
+      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
     }
   }
 }
