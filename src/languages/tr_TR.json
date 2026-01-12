@@ -561,7 +561,7 @@
       "reset_experimental_config": "Deneysel Yapılandırmayı Sıfırla",
       "status": "Durum",
       "sync_codepush": "CodePush'u Senkronize Et",
-      "simulate_device_transfer": "Simulate Device Transfer"
+      "simulate_device_transfer": "Cihaz Transferini Simüle Et"
     },
     "discover": {
       "pulse": {
@@ -3787,14 +3787,19 @@
         "placing_bet": "Bahis Yapılıyor...",
         "confirming_order": "Sipariş Onaylanıyor...",
         "deposit_funds": "Fon Yatırma",
-        "average_price": "Ortalama Fiyat"
+        "average_price": "Ortalama Fiyat",
+        "errors": {
+          "not_enough_liquidity": "Not enough liquidity to place full order.",
+          "please_lower_amount": "Please lower the amount and try again.",
+          "no_liquidity_at_price": "No liquidity at this price."
+        }
       },
       "manage_position": {
         "hold_to_claim": "Talep Etmek İçin Basılı Tutun",
-        "hold_to_burn": "Yakmak İçin Basılı Tutun",
+        "hold_to_clear": "Hold to Clear",
         "hold_to_cash_out": "Nakit Çıkışı İçin Basılı Tutun",
         "claiming": "Talep Ediliyor...",
-        "burning": "Yanıyor...",
+        "clearing": "Clearing...",
         "cashing_out": "Nakit Çıkışı Yapılıyor...",
         "confirming_order": "Sipariş Onaylanıyor...",
         "position_value": "Pozisyon Değeri"
@@ -3837,7 +3842,7 @@
         "won": "Kazandı",
         "to_win": "Kazanmak İçin",
         "claim": "Talep Et",
-        "burn": "Yak",
+        "clear": "Clear",
         "cash_out": "Nakit Çıkışı",
         "no_open_positions": "Açık Pozisyon Yok",
         "won_badge": "KAZANDI",
@@ -3858,9 +3863,11 @@
         "other": "Diğer"
       },
       "sports": {
-        "vs": "VS",
-        "live": "CANLI",
-        "game_best_of": "Oyun %{currentPeriod} - %{bestOf} En İyi"
+        "vs": "vs",
+        "live": "Live",
+        "game_best_of": "Oyun %{currentPeriod} - %{bestOf} En İyi",
+        "final": "Final",
+        "no_games": "No games today or tomorrow"
       },
       "outcomes": {
         "yes": "Evet",
@@ -3872,16 +3879,21 @@
         "failed_to_place_bet": "Bahis yapılamadı. Lütfen tekrar deneyin.",
         "failed_to_cash_out": "Pozisyondan nakit çıkışı yapılamadı. Lütfen tekrar deneyin.",
         "failed_to_claim": "Pozisyon talep edilemedi. Lütfen tekrar deneyin."
+      },
+      "account": {
+        "hide_lost_bets": "Hide Lost Bets",
+        "show_lost_bets": "Show Lost Bets",
+        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
       }
     },
     "wallet_error_sheet": {
-      "title": "Restore your wallet",
+      "title": "Cüzdanınızı geri yükleyin",
       "restore": "Geri Yükle",
       "dismiss": "İptal Et",
-      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
-      "cause_switched_devices": "It looks like you may have switched devices.",
-      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
-      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
+      "cause_passcode_disabled": "Görünüşe göre şifrenizi devre dışı bırakmış olabilirsiniz.",
+      "cause_switched_devices": "Görünüşe göre cihaz değiştirmiş olabilirsiniz.",
+      "resolution_enable_passcode": "Cüzdanınızı kullanmak için cihaz ayarlarında yeniden etkinleştirin.",
+      "resolution_restore_backup": "Cüzdanınızı kullanmak için yedekten geri yükleyin veya gizli kurtarma cümlenizi yeniden aktarın."
     }
   }
 }
