@@ -561,7 +561,7 @@
       "reset_experimental_config": "إعادة تعيين التكوين التجريبي",
       "status": "الحالة",
       "sync_codepush": "مز synchrony CodePush",
-      "simulate_device_transfer": "Simulate Device Transfer"
+      "simulate_device_transfer": "محاكاة نقل الجهاز"
     },
     "discover": {
       "pulse": {
@@ -3787,14 +3787,19 @@
         "placing_bet": "جارٍ وضع الرهان...",
         "confirming_order": "جارٍ تأكيد الطلب...",
         "deposit_funds": "إيداع الأموال",
-        "average_price": "السعر المتوسط"
+        "average_price": "السعر المتوسط",
+        "errors": {
+          "not_enough_liquidity": "Not enough liquidity to place full order.",
+          "please_lower_amount": "Please lower the amount and try again.",
+          "no_liquidity_at_price": "No liquidity at this price."
+        }
       },
       "manage_position": {
         "hold_to_claim": "اضغط للمطالبة",
-        "hold_to_burn": "اضغط للحرق",
+        "hold_to_clear": "Hold to Clear",
         "hold_to_cash_out": "اضغط لسحب الأموال",
         "claiming": "جارٍ المطالبة...",
-        "burning": "حرق...",
+        "clearing": "Clearing...",
         "cashing_out": "سحب الأموال...",
         "confirming_order": "جارٍ تأكيد الطلب...",
         "position_value": "قيمة الموقع"
@@ -3837,7 +3842,7 @@
         "won": "فاز",
         "to_win": "للفوز",
         "claim": "المطالبة",
-        "burn": "حرق",
+        "clear": "Clear",
         "cash_out": "سحب النقد",
         "no_open_positions": "لا توجد مواقف مفتوحة",
         "won_badge": "فاز",
@@ -3858,9 +3863,11 @@
         "other": "آخر"
       },
       "sports": {
-        "vs": "ضد",
-        "live": "مباشر",
-        "game_best_of": "اللعبة %{currentPeriod} - الأفضل من %{bestOf}"
+        "vs": "vs",
+        "live": "Live",
+        "game_best_of": "اللعبة %{currentPeriod} - الأفضل من %{bestOf}",
+        "final": "Final",
+        "no_games": "No games today or tomorrow"
       },
       "outcomes": {
         "yes": "نعم",
@@ -3872,16 +3879,21 @@
         "failed_to_place_bet": "فشل في وضع الرهان. يرجى المحاولة مرة أخرى.",
         "failed_to_cash_out": "فشل في سحب الموقف. يرجى المحاولة مرة أخرى.",
         "failed_to_claim": "فشل في المطالبة بالموقف. يرجى المحاولة مرة أخرى."
+      },
+      "account": {
+        "hide_lost_bets": "Hide Lost Bets",
+        "show_lost_bets": "Show Lost Bets",
+        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
       }
     },
     "wallet_error_sheet": {
-      "title": "Restore your wallet",
+      "title": "استعادة محفظتك",
       "restore": "استعادة",
       "dismiss": "رفض",
-      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
-      "cause_switched_devices": "It looks like you may have switched devices.",
-      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
-      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
+      "cause_passcode_disabled": "يبدو أنك قد قمت بتعطيل رمز المرور الخاص بك.",
+      "cause_switched_devices": "يبدو أنك قد قمت بتبديل الأجهزة.",
+      "resolution_enable_passcode": "لإستخدام محفظتك، أعد تفعيلها في إعدادات جهازك.",
+      "resolution_restore_backup": "لإستخدام محفظتك، قم بالاستعادة من نسخة احتياطية أو أعد استيراد عبارة الاسترداد السرية الخاصة بك."
     }
   }
 }
