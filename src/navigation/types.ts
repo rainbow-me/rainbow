@@ -712,7 +712,7 @@ type RouteParams = {
   [Routes.REVOKE_DELEGATION_PANEL]: {
     delegationsToRevoke: Array<{
       chainId: number;
-      contractAddress: string;
+      contractAddress: Address;
     }>;
     onSuccess?: () => void;
     revokeReason?: import('@/screens/delegation/RevokeDelegationPanel').RevokeReason;

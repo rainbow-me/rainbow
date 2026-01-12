@@ -25,6 +25,7 @@ import Restart from 'react-native-restart';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
+import type { Address } from 'viem';
 
 import { addDefaultNotificationGroupSettings } from '@/notifications/settings/initialization';
 import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
@@ -37,7 +38,7 @@ import FastImage from 'react-native-fast-image';
 import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
 import { getAllInternetCredentials, resetInternetCredentials } from 'react-native-keychain';
 import { ChainId } from '@/state/backendNetworks/types';
-import { executeDelegation, executeRevokeDelegation } from '@rainbow-me/delegation';
+import { executeDelegation, executeRevokeDelegation, getDelegations } from '@rainbow-me/delegation';
 import { loadWallet } from '@/model/wallet';
 import { getProvider } from '@/handlers/web3';
 import { Wallet } from '@ethersproject/wallet';
@@ -167,11 +168,11 @@ const DevSection = () => {
       const maxFeePerGas = feeData.maxFeePerGas?.toBigInt();
       const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas?.toBigInt();
 
-      const nonce = await getNextNonce({ address: accountAddress, chainId });
-
       if (!maxFeePerGas || !maxPriorityFeePerGas) {
         throw new Error('Failed to fetch gas prices from provider');
       }
+
+      const nonce = await getNextNonce({ address: accountAddress, chainId });
 
       // Use null for gasLimit to let the SDK estimate it automatically
       const tx = await executeDelegation({
@@ -219,11 +220,11 @@ const DevSection = () => {
       const maxFeePerGas = feeData.maxFeePerGas?.toBigInt();
       const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas?.toBigInt();
 
-      const nonce = await getNextNonce({ address: accountAddress, chainId });
-
       if (!maxFeePerGas || !maxPriorityFeePerGas) {
         throw new Error('Failed to fetch gas prices from provider');
       }
+
+      const nonce = await getNextNonce({ address: accountAddress, chainId });
 
       // Use null for gasLimit to let the SDK estimate it automatically
       const result = await executeRevokeDelegation({
@@ -255,32 +256,15 @@ const DevSection = () => {
     }
 
     try {
-      // Check for delegations on mainnet and base
-      const chainsToCheck = [ChainId.mainnet, ChainId.base];
-      const delegationsToRevoke: Array<{ chainId: number; contractAddress: string }> = [];
-
-      /*
-      for (const chainId of chainsToCheck) {
-        const isDelegated = await getIsDelegated({
-          address: accountAddress,
-          chainId,
-        });
-
-        if (isDelegated) {
-          // For this demo, we'll use a placeholder contract address
-          delegationsToRevoke.push({
-            chainId,
-            contractAddress: '0x0000000000000000000000000000000000000000',
-          });
-          logger.info('Found active delegation', { chainId, accountAddress });
-        }
-      }
-      */
+      const delegationsToRevoke = await getDelegations({ address: accountAddress });
 
       if (delegationsToRevoke.length > 0) {
         logger.info('Delegation status required', { delegationsToRevoke });
         Navigation.handleAction(Routes.REVOKE_DELEGATION_PANEL, {
-          delegationsToRevoke,
+          delegationsToRevoke: delegationsToRevoke.map(delegation => ({
+            chainId: delegation.chainId,
+            contractAddress: delegation.currentContract as Address,
+          })),
         });
       } else {
         Alert.alert(
