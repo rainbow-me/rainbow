@@ -561,7 +561,7 @@
       "reset_experimental_config": "प्रायोगिक कॉन्फ़िग को रीसेट करें",
       "status": "स्थिति",
       "sync_codepush": "CodePush सिंक करें",
-      "simulate_device_transfer": "Simulate Device Transfer"
+      "simulate_device_transfer": "उपकरण स्थानांतरण का अनुकरण करें"
     },
     "discover": {
       "pulse": {
@@ -3787,14 +3787,19 @@
         "placing_bet": "शर्त लगाई जा रही है...",
         "confirming_order": "ऑर्डर की पुष्टि हो रही है...",
         "deposit_funds": "फंड जमा करें",
-        "average_price": "औसत मूल्य"
+        "average_price": "औसत मूल्य",
+        "errors": {
+          "not_enough_liquidity": "Not enough liquidity to place full order.",
+          "please_lower_amount": "Please lower the amount and try again.",
+          "no_liquidity_at_price": "No liquidity at this price."
+        }
       },
       "manage_position": {
         "hold_to_claim": "दावे के लिए दबाए रखें",
-        "hold_to_burn": "जलाने के लिए पकड़ें",
+        "hold_to_clear": "Hold to Clear",
         "hold_to_cash_out": "नकद निकालने के लिए पकड़ें",
         "claiming": "दावा किया जा रहा है...",
-        "burning": "जलाया जा रहा है...",
+        "clearing": "Clearing...",
         "cashing_out": "नकद निकाला जा रहा है...",
         "confirming_order": "ऑर्डर की पुष्टि हो रही है...",
         "position_value": "स्थिति का मूल्य"
@@ -3837,7 +3842,7 @@
         "won": "जीता",
         "to_win": "जीतने के लिए",
         "claim": "दावा करें",
-        "burn": "जलाना",
+        "clear": "Clear",
         "cash_out": "नकद निकालें",
         "no_open_positions": "कोई खुली स्थिति नहीं",
         "won_badge": "जीता",
@@ -3858,9 +3863,11 @@
         "other": "अन्य"
       },
       "sports": {
-        "vs": "विरुद्ध",
-        "live": "लाइव",
-        "game_best_of": "गेम %{currentPeriod} - %{bestOf} में सर्वश्रेष्ठ"
+        "vs": "vs",
+        "live": "Live",
+        "game_best_of": "गेम %{currentPeriod} - %{bestOf} में सर्वश्रेष्ठ",
+        "final": "Final",
+        "no_games": "No games today or tomorrow"
       },
       "outcomes": {
         "yes": "हां",
@@ -3872,16 +3879,21 @@
         "failed_to_place_bet": "शर्त लगाने में विफल रहा। कृपया पुनः प्रयास करें।",
         "failed_to_cash_out": "स्थिति को नकद में बदलने में विफल। कृपया पुनः प्रयास करें।",
         "failed_to_claim": "स्थिति का दावा करने में विफल। कृपया पुनः प्रयास करें।"
+      },
+      "account": {
+        "hide_lost_bets": "Hide Lost Bets",
+        "show_lost_bets": "Show Lost Bets",
+        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
       }
     },
     "wallet_error_sheet": {
-      "title": "Restore your wallet",
+      "title": "अपने वॉलेट को पुनर्स्थापित करें",
       "restore": "पुनर्स्थापित करें",
       "dismiss": "खारिज करें",
-      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
-      "cause_switched_devices": "It looks like you may have switched devices.",
-      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
-      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
+      "cause_passcode_disabled": "ऐसा लगता है कि आपने अपना पासकोड अक्षम कर दिया है।",
+      "cause_switched_devices": "ऐसा लगता है कि आपने डिवाइस बदल दिया है।",
+      "resolution_enable_passcode": "अपना वॉलेट उपयोग करने के लिए, इसे अपने डिवाइस की सेटिंग्स में पुनः सक्षम करें।",
+      "resolution_restore_backup": "अपना वॉलेट उपयोग करने के लिए, बैकअप से पुनर्स्थापित करें या अपना गुप्त पुनर्प्राप्ति वाक्यांश पुनः आयात करें।"
     }
   }
 }
