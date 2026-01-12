@@ -561,7 +561,7 @@
       "reset_experimental_config": "Сбросить экспериментальную конфигурацию",
       "status": "Статус",
       "sync_codepush": "Синхронизировать CodePush",
-      "simulate_device_transfer": "Simulate Device Transfer"
+      "simulate_device_transfer": "Симуляция передачи устройства"
     },
     "discover": {
       "pulse": {
@@ -3787,14 +3787,19 @@
         "placing_bet": "Размещение ставки...",
         "confirming_order": "Подтверждение заказа...",
         "deposit_funds": "Пополнить средства",
-        "average_price": "Средняя цена"
+        "average_price": "Средняя цена",
+        "errors": {
+          "not_enough_liquidity": "Not enough liquidity to place full order.",
+          "please_lower_amount": "Please lower the amount and try again.",
+          "no_liquidity_at_price": "No liquidity at this price."
+        }
       },
       "manage_position": {
         "hold_to_claim": "Удерживайте, чтобы получить",
-        "hold_to_burn": "Удерживайте, чтобы сжечь",
+        "hold_to_clear": "Hold to Clear",
         "hold_to_cash_out": "Удерживайте, чтобы вывести",
         "claiming": "Получение...",
-        "burning": "Сжигание...",
+        "clearing": "Clearing...",
         "cashing_out": "Вывод средств...",
         "confirming_order": "Подтверждение заказа...",
         "position_value": "Стоимость позиции"
@@ -3837,7 +3842,7 @@
         "won": "Выиграл",
         "to_win": "Чтобы выиграть",
         "claim": "Получить",
-        "burn": "Сожечь",
+        "clear": "Clear",
         "cash_out": "Вывод средств",
         "no_open_positions": "Нет открытых позиций",
         "won_badge": "ВЫИГРАЛ",
@@ -3858,9 +3863,11 @@
         "other": "Другие"
       },
       "sports": {
-        "vs": "VS",
-        "live": "LIVE",
-        "game_best_of": "Игра %{currentPeriod} - Лучший из %{bestOf}"
+        "vs": "vs",
+        "live": "Live",
+        "game_best_of": "Игра %{currentPeriod} - Лучший из %{bestOf}",
+        "final": "Final",
+        "no_games": "No games today or tomorrow"
       },
       "outcomes": {
         "yes": "Да",
@@ -3872,16 +3879,21 @@
         "failed_to_place_bet": "Не удалось сделать ставку. Пожалуйста, попробуйте еще раз.",
         "failed_to_cash_out": "Не удалось вывести позицию. Пожалуйста, попробуйте еще раз.",
         "failed_to_claim": "Не удалось получить позицию. Пожалуйста, попробуйте еще раз."
+      },
+      "account": {
+        "hide_lost_bets": "Hide Lost Bets",
+        "show_lost_bets": "Show Lost Bets",
+        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
       }
     },
     "wallet_error_sheet": {
-      "title": "Restore your wallet",
+      "title": "Восстановите ваш кошелек",
       "restore": "Восстановить",
       "dismiss": "Отклонить",
-      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
-      "cause_switched_devices": "It looks like you may have switched devices.",
-      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
-      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
+      "cause_passcode_disabled": "Похоже, вы отключили код-пароль.",
+      "cause_switched_devices": "Похоже, вы сменили устройство.",
+      "resolution_enable_passcode": "Чтобы использовать ваш кошелек, включите его в настройках устройства.",
+      "resolution_restore_backup": "Чтобы использовать ваш кошелек, восстановите его из резервной копии или импортируйте вашу секретную фразу восстановления."
     }
   }
 }
