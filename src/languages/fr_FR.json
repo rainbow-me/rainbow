@@ -560,7 +560,8 @@
       "restart_app": "Redémarrer l'Appli",
       "reset_experimental_config": "Réinitialiser la Conf Expérimentale",
       "status": "Statut",
-      "sync_codepush": "Synchroniser CodePush"
+      "sync_codepush": "Synchroniser CodePush",
+      "simulate_device_transfer": "Simulate Device Transfer"
     },
     "discover": {
       "pulse": {
@@ -2941,12 +2942,7 @@
         "no_price": "Petits soldes"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "Votre méthode d'authentification actuelle (Reconnaissance faciale) n'est pas assez sécurisée, veuillez vous rendre à \"Paramètres > Biométrie & Sécurité\" et activer une autre méthode biométrique comme l'empreinte digitale ou l'iris.",
-          "error": "Erreur"
-        },
-        "please": "Veuillez vous authentifier pour afficher votre clé mnémonique",
-        "please_seed_phrase": "Veuillez vous authentifier pour voir la clé privée"
+        "please": "Veuillez vous authentifier pour afficher votre clé mnémonique"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} portefeuille",
@@ -3877,6 +3873,15 @@
         "failed_to_cash_out": "Échec de l'encaissement de la position. Veuillez réessayer.",
         "failed_to_claim": "Échec de la réclamation de la position. Veuillez réessayer."
       }
+    },
+    "wallet_error_sheet": {
+      "title": "Restore your wallet",
+      "restore": "Restaurer",
+      "dismiss": "Rejeter",
+      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
+      "cause_switched_devices": "It looks like you may have switched devices.",
+      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
+      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
     }
   }
 }
