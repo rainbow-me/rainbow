@@ -164,12 +164,16 @@ const DevSection = () => {
       }
 
       const feeData = await provider.getFeeData();
-      const maxFeePerGas = feeData.maxFeePerGas?.toBigInt() ?? 0n;
-      const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas?.toBigInt() ?? 0n;
-      const gasLimit = 100000n;
+      const maxFeePerGas = feeData.maxFeePerGas?.toBigInt();
+      const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas?.toBigInt();
 
       const nonce = await getNextNonce({ address: accountAddress, chainId });
 
+      if (!maxFeePerGas || !maxPriorityFeePerGas) {
+        throw new Error('Failed to fetch gas prices from provider');
+      }
+
+      // Use null for gasLimit to let the SDK estimate it automatically
       const tx = await executeDelegation({
         signer: wallet as Wallet,
         address: accountAddress,
@@ -179,7 +183,7 @@ const DevSection = () => {
         transactionOptions: {
           maxFeePerGas,
           maxPriorityFeePerGas,
-          gasLimit,
+          gasLimit: null,
         },
         nonce,
       });
@@ -212,11 +216,16 @@ const DevSection = () => {
       }
 
       const feeData = await provider.getFeeData();
-      const maxFeePerGas = feeData.maxFeePerGas?.toBigInt() ?? 0n;
-      const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas?.toBigInt() ?? 0n;
+      const maxFeePerGas = feeData.maxFeePerGas?.toBigInt();
+      const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas?.toBigInt();
 
       const nonce = await getNextNonce({ address: accountAddress, chainId });
 
+      if (!maxFeePerGas || !maxPriorityFeePerGas) {
+        throw new Error('Failed to fetch gas prices from provider');
+      }
+
+      // Use null for gasLimit to let the SDK estimate it automatically
       const result = await executeRevokeDelegation({
         signer: wallet as Wallet,
         address: accountAddress,
