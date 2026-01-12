@@ -19,9 +19,8 @@ import { MarketRow } from '@/features/polymarket/screens/polymarket-event-screen
 import { PolymarketTeamInfo } from '@/features/polymarket/types';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
-import { GammaMarket } from '@/features/charts/polymarket/types';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
 
 export const SportsEventMarkets = memo(function SportsEventMarkets() {
@@ -280,7 +279,3 @@ const StandardMoneylineMarkets = memo(function StandardMoneylineMarkets({
     </Box>
   );
 });
-
-export function isDrawMarket(market: PolymarketMarket | GammaMarket): boolean {
-  return market.slug.includes('-draw') || market.question.toLowerCase().includes('draw');
-}

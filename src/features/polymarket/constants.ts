@@ -8,6 +8,8 @@ export const RAINBOW_POLYMARKET_FEE_ADDRESS: Address = '0x757758506d6a4F8a433F8B
 export const POLYGON_USDC_ADDRESS: Address = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
 export const POLYGON_USDC_DECIMALS = 6;
 
+export const USD_FEE_PER_TOKEN = '0.01';
+
 export const POLYMARKET_CTF_ADDRESS: Address = '0x4D97DCd97eC945f40cF65F87097ACe5EA0476045';
 export const POLYMARKET_NEG_RISK_ADAPTER_ADDRESS: Address = '0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296';
 
@@ -23,6 +25,7 @@ export const POLYMARKET_SIGNING_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/sig
 export const POLYMARKET_CLOB_URL = 'https://clob.polymarket.com';
 export const POLYMARKET_GAMMA_API_URL = 'https://gamma-api.polymarket.com';
 export const POLYMARKET_DATA_API_URL = 'https://data-api.polymarket.com';
+export const POLYMARKET_SPORTS_WS_URL = 'wss://sports-api.polymarket.com/ws';
 
 export const BUILDER_CONFIG = new BuilderConfig({
   remoteBuilderConfig: { url: POLYMARKET_SIGNING_PROXY_URL, token: PLATFORM_API_KEY },
@@ -33,6 +36,10 @@ export const POLYMARKET_BACKGROUND_DARK = getSolidColorEquivalent({ background: 
 export const POLYMARKET_BACKGROUND_LIGHT = '#F5F5F7';
 
 export const POLYMARKET_TOKEN_ID_SUFFIX = 'polymarket';
+
+export const NAVIGATOR_FOOTER_HEIGHT = 66;
+// padding distance between bottom most content and the navigator footer
+export const NAVIGATOR_FOOTER_CLEARANCE = 36;
 
 export const POLYMARKET_SPORTS_MARKET_TYPE = {
   SPREADS: 'spreads',
@@ -51,18 +58,10 @@ export const POLYMARKET_SPORTS_MARKET_TYPE = {
   TENNIS_SET_TOTALS: 'tennis_set_totals',
   TENNIS_FIRST_SET_WINNER: 'tennis_first_set_winner',
   TENNIS_FIRST_SET_TOTALS: 'tennis_first_set_totals',
-  // Known unsupported market types
-  // TEAM_TOTALS: 'team_totals',
-  // POINTS: 'points',
-  // REBOUNDS: 'rebounds',
-  // ASSISTS: 'assists',
 } as const;
 
-export const NAVIGATOR_FOOTER_HEIGHT = 66;
-// padding distance between bottom most content and the navigator footer
-export const NAVIGATOR_FOOTER_CLEARANCE = 12;
-
 export const DEFAULT_CATEGORY_KEY = 'trending';
+export const DEFAULT_SPORTS_LEAGUE_KEY = 'all' as const;
 export const CATEGORIES = {
   trending: {
     label: 'Trending',
@@ -185,24 +184,3 @@ export const CATEGORIES = {
 } as const;
 
 export type Category = (typeof CATEGORIES)[keyof typeof CATEGORIES];
-
-export const USD_FEE_PER_TOKEN = '0.01';
-
-export const SPORT_LEAGUES = {
-  nba: {
-    name: 'NBA',
-    slug: 'nba',
-  },
-  nfl: {
-    name: 'NFL',
-    slug: 'nfl',
-  },
-  nhl: {
-    name: 'NHL',
-    slug: 'nhl',
-  },
-  mlb: {
-    name: 'MLB',
-    slug: 'mlb',
-  },
-} as const;

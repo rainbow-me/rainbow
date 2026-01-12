@@ -1328,6 +1328,8 @@ export type EventProperties = {
   [event.predictionsCollectTradeFeeFailed]: {
     tokenAmount: number;
     feeAmountUsd: number;
+    taskId: string | undefined;
+    safeAddress: string;
     errorMessage: string;
   };
   [event.predictionsRedeemPosition]: {

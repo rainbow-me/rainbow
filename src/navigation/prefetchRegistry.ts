@@ -40,4 +40,9 @@ export const prefetchRegistry = deepFreeze<PrefetchRegistry>({
     const tokenId = market.clobTokenIds[outcomeIndex];
     usePolymarketOrderBookStore.getState().setTokenId(tokenId);
   },
+
+  [Routes.POLYMARKET_SELL_POSITION_SHEET]: ({ position }) => {
+    const tokenId = position.clobTokenIds[position.outcomes.indexOf(position.outcome)];
+    usePolymarketOrderBookStore.getState().setTokenId(tokenId);
+  },
 });

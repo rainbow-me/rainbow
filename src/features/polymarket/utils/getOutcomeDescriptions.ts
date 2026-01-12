@@ -18,12 +18,12 @@ export function getOutcomeDescriptions({
     // Over / under markets are always positive
     if (market.line > 0) {
       outcomeSubtitle = `${outcome} ${market.line}`;
+    } else {
+      // A spread is always negative and the first outcome is always the negative line
+      const lineValue = Math.abs(market.line);
+      outcomeSubtitle = `${outcome} ${outcomeIndex === 0 ? '-' : '+'}${lineValue}`;
     }
-    // A spread is always negative
-    const lineValue = Math.abs(market.line);
-    outcomeSubtitle = `${outcome} ${outcomeIndex === 0 ? '-' : '+'}${lineValue}`;
-  }
-  if (market.groupItemTitle) {
+  } else if (market.groupItemTitle) {
     outcomeSubtitle = market.groupItemTitle;
   }
 

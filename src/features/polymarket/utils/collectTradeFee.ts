@@ -73,6 +73,7 @@ export async function collectTradeFee(tokenAmount: string): Promise<CollectTrade
     throw new RainbowError('[collectTradeFee] No proxy address available');
   }
   const feeAmount = mulWorklet(tokenAmount, USD_FEE_PER_TOKEN);
+  let taskId: string | undefined;
 
   try {
     /**
@@ -137,7 +138,8 @@ export async function collectTradeFee(tokenAmount: string): Promise<CollectTrade
       data: execData,
     };
 
-    const { taskId } = await gelatoRelay.sponsoredCall(request, GELATO_API_KEY);
+    const response = await gelatoRelay.sponsoredCall(request, GELATO_API_KEY);
+    taskId = response.taskId;
 
     const result = await pollTaskStatus(gelatoRelay, taskId);
 
@@ -157,13 +159,14 @@ export async function collectTradeFee(tokenAmount: string): Promise<CollectTrade
   } catch (e) {
     const error = ensureError(e);
     logger.error(new RainbowError('[Polymarket collectTradeFee] Error collecting trade fee', error), {
-      safeAddress,
       tokenAmount,
       feeAmount,
     });
     analytics.track(analytics.event.predictionsCollectTradeFeeFailed, {
       tokenAmount: Number(tokenAmount),
       feeAmountUsd: Number(feeAmount),
+      taskId,
+      safeAddress,
       errorMessage: error.message,
     });
   }
