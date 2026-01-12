@@ -561,7 +561,7 @@
       "reset_experimental_config": "실험 설정 재설정",
       "status": "상태",
       "sync_codepush": "CodePush 동기화",
-      "simulate_device_transfer": "Simulate Device Transfer"
+      "simulate_device_transfer": "디바이스 전송 시뮬레이션"
     },
     "discover": {
       "pulse": {
@@ -3787,14 +3787,19 @@
         "placing_bet": "베팅 중...",
         "confirming_order": "주문 확인 중...",
         "deposit_funds": "자금 입금",
-        "average_price": "평균 가격"
+        "average_price": "평균 가격",
+        "errors": {
+          "not_enough_liquidity": "Not enough liquidity to place full order.",
+          "please_lower_amount": "Please lower the amount and try again.",
+          "no_liquidity_at_price": "No liquidity at this price."
+        }
       },
       "manage_position": {
         "hold_to_claim": "청구하려면 유지",
-        "hold_to_burn": "소각하기 위해 계속 누르세요",
+        "hold_to_clear": "Hold to Clear",
         "hold_to_cash_out": "현금화 하려면 계속 누르세요",
         "claiming": "청구 중...",
-        "burning": "소각 중...",
+        "clearing": "Clearing...",
         "cashing_out": "현금화 중...",
         "confirming_order": "주문 확인 중...",
         "position_value": "포지션 가치"
@@ -3837,7 +3842,7 @@
         "won": "승리함",
         "to_win": "승리에 대해",
         "claim": "청구",
-        "burn": "소각",
+        "clear": "Clear",
         "cash_out": "현금화",
         "no_open_positions": "열려 있는 포지션이 없습니다",
         "won_badge": "승리함",
@@ -3858,9 +3863,11 @@
         "other": "기타"
       },
       "sports": {
-        "vs": "VS",
-        "live": "라이브",
-        "game_best_of": "게임 %{currentPeriod} - %{bestOf} 중 최고"
+        "vs": "vs",
+        "live": "Live",
+        "game_best_of": "게임 %{currentPeriod} - %{bestOf} 중 최고",
+        "final": "Final",
+        "no_games": "No games today or tomorrow"
       },
       "outcomes": {
         "yes": "예",
@@ -3872,16 +3879,21 @@
         "failed_to_place_bet": "베팅하는 데 실패했습니다. 다시 시도해 주세요.",
         "failed_to_cash_out": "포지션 현금화에 실패했습니다. 다시 시도해 주세요.",
         "failed_to_claim": "포지션 청구에 실패했습니다. 다시 시도해 주세요."
+      },
+      "account": {
+        "hide_lost_bets": "Hide Lost Bets",
+        "show_lost_bets": "Show Lost Bets",
+        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
       }
     },
     "wallet_error_sheet": {
-      "title": "Restore your wallet",
+      "title": "지갑 복원",
       "restore": "복원",
       "dismiss": "거부",
-      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
-      "cause_switched_devices": "It looks like you may have switched devices.",
-      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
-      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
+      "cause_passcode_disabled": "암호가 비활성화된 것 같습니다.",
+      "cause_switched_devices": "디바이스를 변경한 것 같습니다.",
+      "resolution_enable_passcode": "지갑을 사용하려면 디바이스 설정에서 다시 활성화하십시오.",
+      "resolution_restore_backup": "지갑을 사용하려면 백업에서 복원하거나 비밀 복구 구문을 다시 가져오십시오."
     }
   }
 }
