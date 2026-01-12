@@ -560,7 +560,8 @@
       "restart_app": "アプリを再起動",
       "reset_experimental_config": "実験的なコンフィグをリセット",
       "status": "ステータス",
-      "sync_codepush": "CodePushを同期"
+      "sync_codepush": "CodePushを同期",
+      "simulate_device_transfer": "Simulate Device Transfer"
     },
     "discover": {
       "pulse": {
@@ -2941,12 +2942,7 @@
         "no_price": "小口残高"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "現在の認証方法（顔認識）は十分に安全ではありません。代替生体認証方法（指紋または虹彩）を有効にするには、「設定」>「バイオメトリクスとセキュリティ」に移動してください。",
-          "error": "エラー"
-        },
-        "please": "認証してください",
-        "please_seed_phrase": "プライベートキーを表示するには、認証してください"
+        "please": "認証してください"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} ウォレット",
@@ -3877,6 +3873,15 @@
         "failed_to_cash_out": "ポジションのキャッシュアウトに失敗しました。もう一度試してください。",
         "failed_to_claim": "ポジションの請求に失敗しました。もう一度試してください。"
       }
+    },
+    "wallet_error_sheet": {
+      "title": "Restore your wallet",
+      "restore": "復元",
+      "dismiss": "閉じる",
+      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
+      "cause_switched_devices": "It looks like you may have switched devices.",
+      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
+      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
     }
   }
 }
