@@ -561,7 +561,7 @@
       "reset_experimental_config": "実験的なコンフィグをリセット",
       "status": "ステータス",
       "sync_codepush": "CodePushを同期",
-      "simulate_device_transfer": "Simulate Device Transfer"
+      "simulate_device_transfer": "デバイス転送をシミュレートする"
     },
     "discover": {
       "pulse": {
@@ -3787,14 +3787,19 @@
         "placing_bet": "賭けを行っています...",
         "confirming_order": "注文確認中...",
         "deposit_funds": "資金の預け入れ",
-        "average_price": "平均価格"
+        "average_price": "平均価格",
+        "errors": {
+          "not_enough_liquidity": "Not enough liquidity to place full order.",
+          "please_lower_amount": "Please lower the amount and try again.",
+          "no_liquidity_at_price": "No liquidity at this price."
+        }
       },
       "manage_position": {
         "hold_to_claim": "主張するまでホールド",
-        "hold_to_burn": "バーンするために保持",
+        "hold_to_clear": "Hold to Clear",
         "hold_to_cash_out": "キャッシュアウトするために保持",
         "claiming": "請求中...",
-        "burning": "焼却中...",
+        "clearing": "Clearing...",
         "cashing_out": "キャッシュアウト中...",
         "confirming_order": "注文確認中...",
         "position_value": "ポジションバリュー"
@@ -3837,7 +3842,7 @@
         "won": "勝利",
         "to_win": "勝つために",
         "claim": "請求",
-        "burn": "焼却",
+        "clear": "Clear",
         "cash_out": "キャッシュアウト",
         "no_open_positions": "オープンポジションなし",
         "won_badge": "勝利",
@@ -3858,9 +3863,11 @@
         "other": "その他"
       },
       "sports": {
-        "vs": "VS",
-        "live": "ライブ",
-        "game_best_of": "ゲーム %{currentPeriod} - ベストオブ %{bestOf}"
+        "vs": "vs",
+        "live": "Live",
+        "game_best_of": "ゲーム %{currentPeriod} - ベストオブ %{bestOf}",
+        "final": "Final",
+        "no_games": "No games today or tomorrow"
       },
       "outcomes": {
         "yes": "はい",
@@ -3872,16 +3879,21 @@
         "failed_to_place_bet": "賭けの配置に失敗しました。もう一度お試しください。",
         "failed_to_cash_out": "ポジションのキャッシュアウトに失敗しました。もう一度試してください。",
         "failed_to_claim": "ポジションの請求に失敗しました。もう一度試してください。"
+      },
+      "account": {
+        "hide_lost_bets": "Hide Lost Bets",
+        "show_lost_bets": "Show Lost Bets",
+        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
       }
     },
     "wallet_error_sheet": {
-      "title": "Restore your wallet",
+      "title": "ウォレットを復元する",
       "restore": "復元",
       "dismiss": "閉じる",
-      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
-      "cause_switched_devices": "It looks like you may have switched devices.",
-      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
-      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
+      "cause_passcode_disabled": "パスコードが無効になっている可能性があります。",
+      "cause_switched_devices": "デバイスを切り替えた可能性があります。",
+      "resolution_enable_passcode": "ウォレットを使用するには、デバイス設定で再度有効にしてください。",
+      "resolution_restore_backup": "ウォレットを使用するには、バックアップから復元するか、シークレットリカバリーフレーズを再インポートしてください。"
     }
   }
 }
