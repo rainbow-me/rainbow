@@ -561,7 +561,7 @@
       "reset_experimental_config": "Réinitialiser la Conf Expérimentale",
       "status": "Statut",
       "sync_codepush": "Synchroniser CodePush",
-      "simulate_device_transfer": "Simulate Device Transfer"
+      "simulate_device_transfer": "Simuler le transfert d'appareil"
     },
     "discover": {
       "pulse": {
@@ -3787,14 +3787,19 @@
         "placing_bet": "Placement de pari...",
         "confirming_order": "Confirmation de commande...",
         "deposit_funds": "Déposer des fonds",
-        "average_price": "Prix moyen"
+        "average_price": "Prix moyen",
+        "errors": {
+          "not_enough_liquidity": "Not enough liquidity to place full order.",
+          "please_lower_amount": "Please lower the amount and try again.",
+          "no_liquidity_at_price": "No liquidity at this price."
+        }
       },
       "manage_position": {
         "hold_to_claim": "Tenir pour Réclamer",
-        "hold_to_burn": "Maintenir pour brûler",
+        "hold_to_clear": "Hold to Clear",
         "hold_to_cash_out": "Maintenir pour encaisser",
         "claiming": "Réclamation...",
-        "burning": "Brûlage en cours...",
+        "clearing": "Clearing...",
         "cashing_out": "Encaissement en cours...",
         "confirming_order": "Confirmation de commande...",
         "position_value": "Valeur de la position"
@@ -3837,7 +3842,7 @@
         "won": "Gagné",
         "to_win": "Pour gagner",
         "claim": "Réclamer",
-        "burn": "Brûler",
+        "clear": "Clear",
         "cash_out": "Encaisser",
         "no_open_positions": "Aucune position ouverte",
         "won_badge": "GAGNÉ",
@@ -3858,9 +3863,11 @@
         "other": "Autre"
       },
       "sports": {
-        "vs": "VS",
-        "live": "EN DIRECT",
-        "game_best_of": "Jeu %{currentPeriod} - Meilleur de %{bestOf}"
+        "vs": "vs",
+        "live": "Live",
+        "game_best_of": "Jeu %{currentPeriod} - Meilleur de %{bestOf}",
+        "final": "Final",
+        "no_games": "No games today or tomorrow"
       },
       "outcomes": {
         "yes": "Yes :)",
@@ -3872,16 +3879,21 @@
         "failed_to_place_bet": "Échec du placement du pari. Veuillez réessayer.",
         "failed_to_cash_out": "Échec de l'encaissement de la position. Veuillez réessayer.",
         "failed_to_claim": "Échec de la réclamation de la position. Veuillez réessayer."
+      },
+      "account": {
+        "hide_lost_bets": "Hide Lost Bets",
+        "show_lost_bets": "Show Lost Bets",
+        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
       }
     },
     "wallet_error_sheet": {
-      "title": "Restore your wallet",
+      "title": "Restaurer votre portefeuille",
       "restore": "Restaurer",
       "dismiss": "Rejeter",
-      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
-      "cause_switched_devices": "It looks like you may have switched devices.",
-      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
-      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
+      "cause_passcode_disabled": "Il semble que vous ayez désactivé votre code d'accès.",
+      "cause_switched_devices": "Il semble que vous ayez changé d'appareil.",
+      "resolution_enable_passcode": "Pour utiliser votre portefeuille, réactivez-le dans les paramètres de votre appareil.",
+      "resolution_restore_backup": "Pour utiliser votre portefeuille, restaurez-le à partir d'une sauvegarde ou réimportez votre phrase secrète de récupération."
     }
   }
 }
