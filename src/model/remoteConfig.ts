@@ -95,6 +95,7 @@ export interface RainbowConfig
   king_of_the_hill2_enabled: boolean;
   perps_enabled: boolean;
   polymarket_enabled: boolean;
+  rnbw_rewards_enabled: boolean;
 }
 
 const Bips = {
@@ -228,6 +229,7 @@ export const DEFAULT_CONFIG = {
   perps_enabled: false,
   polymarket_enabled: false,
   dev_section_enabled: IS_DEV || false,
+  rnbw_rewards_enabled: IS_DEV || false,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;

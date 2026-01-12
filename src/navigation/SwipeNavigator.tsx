@@ -11,7 +11,6 @@ import {
   TAB_BAR_INNER_PADDING,
   TAB_BAR_WIDTH,
 } from '@/components/tab-bar/dimensions';
-import { TestnetToast } from '@/components/toasts';
 import { DAPP_BROWSER, LAZY_TABS, POINTS, useExperimentalFlag } from '@/config';
 import { Box, Columns, globalColors, useColorMode, Column } from '@/design-system';
 import { IS_IOS, IS_TEST } from '@/env';
@@ -22,9 +21,7 @@ import {
   useRecyclerListViewScrollToTopContext,
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { DappBrowser } from '@/components/DappBrowser/DappBrowser';
-import { PointsScreen } from '@/screens/points/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen/WalletScreen';
-import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
 import {
@@ -73,6 +70,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
+import { RnbwClaimScreen } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/RnbwClaimScreen';
 
 export const BASE_TAB_BAR_HEIGHT = 52;
 export const TAB_BAR_HEIGHT = getTabBarHeight();
@@ -90,7 +88,7 @@ const TAB_BAR_ICONS = {
   [Routes.DAPP_BROWSER_SCREEN]: 'tabDappBrowser',
   [Routes.PROFILE_SCREEN]: 'tabActivity',
   [Routes.KING_OF_THE_HILL]: 'tabKingOfTheHill',
-  [Routes.POINTS_SCREEN]: 'tabPoints',
+  [Routes.RNBW_REWARDS_SCREEN]: 'tabPoints',
 } as const;
 
 type TabIconKey = (typeof TAB_BAR_ICONS)[keyof typeof TAB_BAR_ICONS];
@@ -309,23 +307,32 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
     };
   });
 
+  const gradientVisibilityStyle = useAnimatedStyle(() => {
+    const route = getRouteFromTabIndex(reanimatedPosition.value);
+    return {
+      opacity: withTiming(route === Routes.RNBW_REWARDS_SCREEN ? 0 : 1, TIMING_CONFIGS.slowFadeConfig),
+    };
+  });
+
   return (
     <>
-      <MaskedView
-        maskElement={
-          <EasingGradient
-            easing={Easing.inOut(Easing.quad)}
-            endColor={globalColors.grey100}
-            endOpacity={0.92}
-            startColor={globalColors.grey100}
-            startOpacity={0}
-            style={styles.tabBarBackgroundFade}
-          />
-        }
-        style={styles.tabBarBackgroundFade}
-      >
-        <Animated.View style={[styles.tabBarBackgroundFade, gradientBackgroundStyle]} />
-      </MaskedView>
+      <Animated.View style={gradientVisibilityStyle}>
+        <MaskedView
+          maskElement={
+            <EasingGradient
+              easing={Easing.inOut(Easing.quad)}
+              endColor={globalColors.grey100}
+              endOpacity={0.92}
+              startColor={globalColors.grey100}
+              startOpacity={0}
+              style={styles.tabBarBackgroundFade}
+            />
+          }
+          style={styles.tabBarBackgroundFade}
+        >
+          <Animated.View style={[styles.tabBarBackgroundFade, gradientBackgroundStyle]} />
+        </MaskedView>
+      </Animated.View>
 
       <Animated.View style={[{ shadowColor: globalColors.grey100, shadowOffset: { width: 0, height: 12 }, shadowRadius: 18 }, shadowStyle]}>
         <Box
@@ -535,7 +542,7 @@ function getRouteFromTabIndex(index: number): RouteProp<ParamListBase, string>['
     case 3:
       return Routes.PROFILE_SCREEN;
     case 4:
-      return Routes.POINTS_SCREEN;
+      return Routes.RNBW_REWARDS_SCREEN;
     default:
       return Routes.WALLET_SCREEN;
   }
@@ -546,7 +553,7 @@ function getTabBackgroundColor(route: RouteProp<ParamListBase, string>['name'], 
   switch (route) {
     case Routes.DISCOVER_SCREEN:
     case Routes.DAPP_BROWSER_SCREEN:
-    case Routes.POINTS_SCREEN:
+    case Routes.RNBW_REWARDS_SCREEN:
       return isDarkMode ? BROWSER_BACKGROUND_COLOR_DARK : BROWSER_BACKGROUND_COLOR_LIGHT;
     default:
       return (isDarkMode ? darkModeThemeColors : lightModeThemeColors).white;
@@ -606,9 +613,8 @@ function SwipeNavigatorScreens() {
   const enableLazyTabs = useExperimentalFlag(LAZY_TABS);
   const lazy = useNavigationStore(state => enableLazyTabs || !state.isWalletScreenMounted);
 
-  const { dapp_browser, points_enabled } = useRemoteConfig('dapp_browser', 'points_enabled');
+  const { dapp_browser, rnbw_rewards_enabled } = useRemoteConfig('dapp_browser', 'rnbw_rewards_enabled');
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
-  const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
   const showKingOfTheHillTab = useShowKingOfTheHill();
 
   const { language } = useAccountSettings();
@@ -651,19 +657,20 @@ function SwipeNavigatorScreens() {
       ) : (
         <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.PROFILE_SCREEN] }} />
       )}
-      {showPointsTab && (
-        <Swipe.Screen component={PointsScreen} name={Routes.POINTS_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.POINTS_SCREEN] }} />
+      {rnbw_rewards_enabled && (
+        <Swipe.Screen
+          component={RnbwClaimScreen}
+          name={Routes.RNBW_REWARDS_SCREEN}
+          options={{ title: TAB_BAR_ICONS[Routes.RNBW_REWARDS_SCREEN] }}
+        />
       )}
     </Swipe.Navigator>
   );
 }
 
 export function SwipeNavigator() {
-  const { chainId } = useAccountSettings();
-  const { colors } = useTheme();
-
   return (
-    <FlexItem backgroundColor={colors.white}>
+    <FlexItem backgroundColor={globalColors.white100}>
       <BrowserTabBarContextProvider>
         <MainListProvider>
           <RecyclerListViewScrollToTopProvider>
@@ -672,7 +679,6 @@ export function SwipeNavigator() {
         </MainListProvider>
       </BrowserTabBarContextProvider>
 
-      {/* <TestnetToast chainId={chainId} /> */}
       <PendingTransactionWatcher />
       <MinedTransactionWatcher />
     </FlexItem>
