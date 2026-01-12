@@ -560,7 +560,8 @@
       "restart_app": "إعادة تشغيل التطبيق",
       "reset_experimental_config": "إعادة تعيين التكوين التجريبي",
       "status": "الحالة",
-      "sync_codepush": "مز synchrony CodePush"
+      "sync_codepush": "مز synchrony CodePush",
+      "simulate_device_transfer": "Simulate Device Transfer"
     },
     "discover": {
       "pulse": {
@@ -2941,12 +2942,7 @@
         "no_price": "الأرصدة الصغيرة"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "وسيلة المصادقة الحالية لك (التعرف على الوجه) غير آمنة بما يكفي ، يرجى الانتقال إلى \"الإعدادات > القياسات الحيوية والأمان\" وتمكين وسيلة بيومترية بديلة مثل البصمة أو القزحية.",
-          "error": "خطأ"
-        },
-        "please": "يرجى المصادقة",
-        "please_seed_phrase": "يرجى المصادقة لعرض المفتاح الخاص"
+        "please": "يرجى المصادقة"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} محفظة",
@@ -3877,6 +3873,15 @@
         "failed_to_cash_out": "فشل في سحب الموقف. يرجى المحاولة مرة أخرى.",
         "failed_to_claim": "فشل في المطالبة بالموقف. يرجى المحاولة مرة أخرى."
       }
+    },
+    "wallet_error_sheet": {
+      "title": "Restore your wallet",
+      "restore": "استعادة",
+      "dismiss": "رفض",
+      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
+      "cause_switched_devices": "It looks like you may have switched devices.",
+      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
+      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
     }
   }
 }
