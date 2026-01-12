@@ -560,7 +560,8 @@
       "restart_app": "Mulai Ulang Aplikasi",
       "reset_experimental_config": "Atur Ulang Konfigurasi Eksperimental",
       "status": "Status",
-      "sync_codepush": "Sinkronisasi CodePush"
+      "sync_codepush": "Sinkronisasi CodePush",
+      "simulate_device_transfer": "Simulate Device Transfer"
     },
     "discover": {
       "pulse": {
@@ -2941,12 +2942,7 @@
         "no_price": "Saldo Kecil"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "Metode autentikasi Anda saat ini (Pengenalan Wajah) tidak cukup aman, silakan pergi ke \"Pengaturan > Biometrik & Keamanan\" dan aktifkan metode biometrik alternatif seperti Sidik Jari atau Iris.",
-          "error": "Kesalahan"
-        },
-        "please": "Silakan otentifikasi",
-        "please_seed_phrase": "Harap otentikasi untuk melihat kunci privat"
+        "please": "Silakan otentifikasi"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} dompet",
@@ -3877,6 +3873,15 @@
         "failed_to_cash_out": "Gagal mencairkan posisi. Silakan coba lagi.",
         "failed_to_claim": "Gagal mengklaim posisi. Silakan coba lagi."
       }
+    },
+    "wallet_error_sheet": {
+      "title": "Restore your wallet",
+      "restore": "Pulihkan",
+      "dismiss": "Tutup",
+      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
+      "cause_switched_devices": "It looks like you may have switched devices.",
+      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
+      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
     }
   }
 }
