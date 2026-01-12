@@ -560,7 +560,8 @@
       "restart_app": "ऍप रीस्टार्ट करें",
       "reset_experimental_config": "प्रायोगिक कॉन्फ़िग को रीसेट करें",
       "status": "स्थिति",
-      "sync_codepush": "CodePush सिंक करें"
+      "sync_codepush": "CodePush सिंक करें",
+      "simulate_device_transfer": "Simulate Device Transfer"
     },
     "discover": {
       "pulse": {
@@ -2941,12 +2942,7 @@
         "no_price": "छोटी राशियां"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "आपका वर्तमान प्रमाणीकरण विधि (फेस रिकॉग्निशन) पर्याप्त सुरक्षित नहीं है, कृपया \"सेटिंग्स> बायोमेट्रिक्स और सुरक्षा\" पर जाएं और एक वैकल्पिक बायोमेट्रिक विधि जैसे फिंगरप्रिंट या आईरिस को सक्षम करें।",
-          "error": "त्रुटि"
-        },
-        "please": "कृपया प्रमाणित करें",
-        "please_seed_phrase": "निजी कुंजी देखने के लिए कृपया प्रमाणित करें"
+        "please": "कृपया प्रमाणित करें"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} वॉलेट",
@@ -3877,6 +3873,15 @@
         "failed_to_cash_out": "स्थिति को नकद में बदलने में विफल। कृपया पुनः प्रयास करें।",
         "failed_to_claim": "स्थिति का दावा करने में विफल। कृपया पुनः प्रयास करें।"
       }
+    },
+    "wallet_error_sheet": {
+      "title": "Restore your wallet",
+      "restore": "पुनर्स्थापित करें",
+      "dismiss": "खारिज करें",
+      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
+      "cause_switched_devices": "It looks like you may have switched devices.",
+      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
+      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
     }
   }
 }
