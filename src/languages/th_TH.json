@@ -561,7 +561,7 @@
       "reset_experimental_config": "ตั้งค่าคอนฟิกการทดลองใหม่",
       "status": "สถานะ",
       "sync_codepush": "ซิงค์ CodePush",
-      "simulate_device_transfer": "Simulate Device Transfer"
+      "simulate_device_transfer": "จำลองการโอนถ่ายอุปกรณ์"
     },
     "discover": {
       "pulse": {
@@ -3787,14 +3787,19 @@
         "placing_bet": "กำลังวางเดิมพัน...",
         "confirming_order": "กำลังยืนยันคำสั่ง...",
         "deposit_funds": "ฝากเงิน",
-        "average_price": "ราคาเฉลี่ย"
+        "average_price": "ราคาเฉลี่ย",
+        "errors": {
+          "not_enough_liquidity": "Not enough liquidity to place full order.",
+          "please_lower_amount": "Please lower the amount and try again.",
+          "no_liquidity_at_price": "No liquidity at this price."
+        }
       },
       "manage_position": {
         "hold_to_claim": "กดค้างเพื่อรับแบบอัตโนมัติ",
-        "hold_to_burn": "กดค้างเพื่อเผา",
+        "hold_to_clear": "Hold to Clear",
         "hold_to_cash_out": "กดค้างเพื่อขึ้นเงินออก",
         "claiming": "กำลังเรียกร้อง...",
-        "burning": "กำลังทำลาย...",
+        "clearing": "Clearing...",
         "cashing_out": "กำลังขึ้นเงินออก...",
         "confirming_order": "กำลังยืนยันคำสั่ง...",
         "position_value": "ค่าตำแหน่ง"
@@ -3837,7 +3842,7 @@
         "won": "ชนะ",
         "to_win": "เพื่อชนะ",
         "claim": "เคลม",
-        "burn": "เผา",
+        "clear": "Clear",
         "cash_out": "ขึ้นเงินออก",
         "no_open_positions": "ไม่มีตำแหน่งเปิด",
         "won_badge": "ชนะ",
@@ -3858,9 +3863,11 @@
         "other": "อื่น ๆ"
       },
       "sports": {
-        "vs": "VS",
-        "live": "สด",
-        "game_best_of": "เกม %{currentPeriod} - ดีที่สุดจาก %{bestOf}"
+        "vs": "vs",
+        "live": "Live",
+        "game_best_of": "เกม %{currentPeriod} - ดีที่สุดจาก %{bestOf}",
+        "final": "Final",
+        "no_games": "No games today or tomorrow"
       },
       "outcomes": {
         "yes": "ใช่",
@@ -3872,16 +3879,21 @@
         "failed_to_place_bet": "การวางเดิมพันไม่สำเร็จ กรุณาลองอีกครั้ง",
         "failed_to_cash_out": "การขึ้นเงินออกไม่สำเร็จ กรุณาลองอีกครั้ง",
         "failed_to_claim": "การเรียกร้องตำแหน่งไม่สำเร็จ กรุณาลองอีกครั้ง"
+      },
+      "account": {
+        "hide_lost_bets": "Hide Lost Bets",
+        "show_lost_bets": "Show Lost Bets",
+        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
       }
     },
     "wallet_error_sheet": {
-      "title": "Restore your wallet",
+      "title": "กู้คืนกระเป๋าเงินของคุณ",
       "restore": "คืนสภาพ",
       "dismiss": "ยกเลิก",
-      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
-      "cause_switched_devices": "It looks like you may have switched devices.",
-      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
-      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
+      "cause_passcode_disabled": "ดูเหมือนว่าคุณอาจจะปิดรหัสผ่านของคุณ",
+      "cause_switched_devices": "ดูเหมือนว่าคุณอาจจะเปลี่ยนอุปกรณ์",
+      "resolution_enable_passcode": "เพื่อใช้กระเป๋าเงินของคุณ เปิดใช้งานอีกครั้งในการตั้งค่าอุปกรณ์ของคุณ",
+      "resolution_restore_backup": "เพื่อใช้กระเป๋าเงินของคุณ กู้คืนจากการสำรองข้อมูลหรือคืนค่าประโยคการกู้คืนลับของคุณ"
     }
   }
 }
