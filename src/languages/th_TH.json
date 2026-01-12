@@ -560,7 +560,8 @@
       "restart_app": "เริ่มแอปใหม่",
       "reset_experimental_config": "ตั้งค่าคอนฟิกการทดลองใหม่",
       "status": "สถานะ",
-      "sync_codepush": "ซิงค์ CodePush"
+      "sync_codepush": "ซิงค์ CodePush",
+      "simulate_device_transfer": "Simulate Device Transfer"
     },
     "discover": {
       "pulse": {
@@ -2941,12 +2942,7 @@
         "no_price": "ยอดเงินคงเหลือเล็กน้อย"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "วิธีการยืนยันตัวตนปัจจุบันของคุณ (การรู้จำใบหน้า) ไม่ปลอดภัยเพียงพอ โปรดไปที่ \"การตั้งค่า > ชีวภาพ & ความปลอดภัย\" และเปิดใช้การยืนยันตัวตนทางชีวภาพทางเลือกอื่นๆ เช่น ลายนิ้วมือหรือตา",
-          "error": "ข้อผิดพลาด"
-        },
-        "please": "กรุณายืนยันตัวตน",
-        "please_seed_phrase": "กรุณาตรวจสอบสิทธิ์เพื่อดูคีย์ส่วนตัว"
+        "please": "กรุณายืนยันตัวตน"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} กระเป๋าเงิน",
@@ -3877,6 +3873,15 @@
         "failed_to_cash_out": "การขึ้นเงินออกไม่สำเร็จ กรุณาลองอีกครั้ง",
         "failed_to_claim": "การเรียกร้องตำแหน่งไม่สำเร็จ กรุณาลองอีกครั้ง"
       }
+    },
+    "wallet_error_sheet": {
+      "title": "Restore your wallet",
+      "restore": "คืนสภาพ",
+      "dismiss": "ยกเลิก",
+      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
+      "cause_switched_devices": "It looks like you may have switched devices.",
+      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
+      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
     }
   }
 }
