@@ -80,6 +80,7 @@ import {
   perpsAccountStackConfig,
   perpsDepositWithdrawalConfig,
   perpsExplainSheetConfig,
+  walletErrorSheetConfig,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -144,6 +145,7 @@ import { PolymarketWithdrawalScreen } from '@/features/polymarket/funding/screen
 import { PolymarketMarketDescriptionSheet } from '@/features/polymarket/screens/polymarket-market-description-sheet/PolymarketMarketDescriptionSheet';
 import { PolymarketExplainSheet } from '@/features/polymarket/screens/polymarket-learn-sheet/PolymarketExplainSheet';
 import { PolymarketSellPositionSheet } from '@/features/polymarket/screens/polymarket-sell-position-sheet/PolymarketSellPositionSheet';
+import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -349,6 +351,7 @@ function NativeStackNavigator() {
         name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}
         {...expandedAssetSheetV2Config}
       />
+      <NativeStack.Screen component={WalletErrorSheet} name={Routes.WALLET_ERROR_SHEET} {...walletErrorSheetConfig} />
     </NativeStack.Navigator>
   );
 }

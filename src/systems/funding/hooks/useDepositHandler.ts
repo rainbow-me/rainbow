@@ -97,7 +97,6 @@ export function useDepositHandler({
       })({
         address: quote.from,
         provider,
-        showErrorIfNotLoaded: false,
         timeTracking: {
           operation: TimeToSignOperation.Authentication,
           screen: Screens.PERPS_DEPOSIT,

@@ -7,10 +7,12 @@ import usePrevious from './usePrevious';
 import { BiometryTypes } from '@/helpers';
 import * as keychain from '@/keychain';
 
-export default function useBiometryType() {
+type BiometryType = keyof typeof BiometryTypes;
+
+export default function useBiometryType(): BiometryType | null {
   const { justBecameActive } = useAppState();
   const isMounted = useIsMounted();
-  const [biometryType, setBiometryType] = useState(null);
+  const [biometryType, setBiometryType] = useState<BiometryType | null>(null);
   const prevBiometricType = usePrevious(biometryType);
 
   useEffect(() => {

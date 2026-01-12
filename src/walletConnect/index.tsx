@@ -885,7 +885,7 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
        */
       const loadWalletAndSignMessage = async () => {
         const provider = getProvider({ chainId: ChainId.mainnet });
-        const wallet = await loadWallet({ address, showErrorIfNotLoaded: false, provider });
+        const wallet = await loadWallet({ address, provider });
 
         if (!wallet) {
           logger.error(new RainbowError(`[walletConnect]: could not loadWallet to sign auth_request`));

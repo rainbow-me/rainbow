@@ -74,7 +74,6 @@ async function loadWalletForAddress(address: Address): Promise<Wallet | null> {
   const wallet = await loadWallet({
     address,
     provider: getProvider({ chainId: ChainId.polygon }),
-    showErrorIfNotLoaded: true,
   });
 
   if (!wallet) {

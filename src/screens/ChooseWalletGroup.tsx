@@ -3,7 +3,6 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ImgixImage } from '@/components/images';
 import { Box, Separator, Text, useForegroundColor } from '@/design-system';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import showWalletErrorAlert from '@/helpers/support';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
@@ -155,7 +154,7 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
           logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account', e));
           if (getIsDamagedWallet()) {
             setTimeout(() => {
-              showWalletErrorAlert();
+              navigate(Routes.WALLET_ERROR_SHEET);
             }, 1000);
           }
         } finally {

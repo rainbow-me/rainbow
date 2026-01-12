@@ -5,6 +5,7 @@ import Routes from '@/navigation/routesNames';
 import { useEffect } from 'react';
 import { Linking } from 'react-native';
 import URL from 'url-parse';
+import { savePIN } from '@/handlers/authentication';
 
 /**
  * Handles E2E test commands. See e2e/README.md:31 for usage.
@@ -21,6 +22,7 @@ export function TestDeeplinkHandler() {
 
       switch (action) {
         case 'import':
+          await savePIN('1111');
           await initializeWallet({
             seedPhrase: query.privateKey,
             name: query.name,

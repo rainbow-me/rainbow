@@ -2930,12 +2930,7 @@
         "no_price": "小口残高"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "現在の認証方法（顔認識）は十分に安全ではありません。代替生体認証方法（指紋または虹彩）を有効にするには、「設定」>「バイオメトリクスとセキュリティ」に移動してください。",
-          "error": "エラー"
-        },
-        "please": "認証してください",
-        "please_seed_phrase": "プライベートキーを表示するには、認証してください"
+        "please": "認証してください"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} ウォレット",

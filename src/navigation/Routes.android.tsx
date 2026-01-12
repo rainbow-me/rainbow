@@ -122,6 +122,7 @@ import { PolymarketNavigator } from '@/features/polymarket/screens/polymarket-na
 import { PolymarketMarketDescriptionSheet } from '@/features/polymarket/screens/polymarket-market-description-sheet/PolymarketMarketDescriptionSheet';
 import { PolymarketExplainSheet } from '@/features/polymarket/screens/polymarket-learn-sheet/PolymarketExplainSheet';
 import { PolymarketSellPositionSheet } from '@/features/polymarket/screens/polymarket-sell-position-sheet/PolymarketSellPositionSheet';
+import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -303,6 +304,7 @@ function BSNavigator() {
       <BSStack.Screen component={PolymarketExplainSheet} name={Routes.POLYMARKET_EXPLAIN_SHEET} />
       <BSStack.Screen component={PolymarketBrowseEventsScreen} name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN} />
       <BSStack.Screen component={PolymarketSellPositionSheet} name={Routes.POLYMARKET_SELL_POSITION_SHEET} />
+      <BSStack.Screen component={WalletErrorSheet} name={Routes.WALLET_ERROR_SHEET} />
     </BSStack.Navigator>
   );
 }

@@ -5,15 +5,13 @@ import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { getIsDamagedWallet, getIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsStore';
+import { getIsDamagedWallet, getIsReadOnlyWallet, useAccountAddress, useIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { watchingAlert } from '@/utils';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config';
-import showWalletErrorAlert from '@/helpers/support';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import Clipboard from '@react-native-clipboard/clipboard';
 import * as React from 'react';
 import { PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
@@ -91,7 +89,7 @@ function ActionButton({
 }) {
   const { colorMode } = useColorMode();
   return (
-    <ButtonPressAnimation onPress={onPress} pointerEvents="box-only" scale={0.8} testID={testID}>
+    <ButtonPressAnimation disabled={!onPress} onPress={onPress} pointerEvents="box-only" scale={0.8} testID={testID}>
       <Stack alignHorizontal="center" space="10px">
         <Box
           alignItems="center"
@@ -141,7 +139,7 @@ function ActionButton({
 function BuyButton() {
   const handlePress = React.useCallback(() => {
     if (getIsDamagedWallet()) {
-      showWalletErrorAlert();
+      Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
       return;
     }
 
@@ -197,10 +195,11 @@ function SendButton() {
 export function CopyButton() {
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
   const accountAddress = useAccountAddress();
+  const isDamagedWallet = useIsDamagedWallet();
 
   const handlePressCopy = React.useCallback(() => {
-    if (getIsDamagedWallet()) {
-      showWalletErrorAlert();
+    if (isDamagedWallet) {
+      Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
       return;
     }
 
@@ -210,15 +209,12 @@ export function CopyButton() {
         setToastActive(false);
       }, 2000);
     }
-    Clipboard.setString(accountAddress);
-  }, [accountAddress, isToastActive, setToastActive]);
+  }, [isToastActive, setToastActive, isDamagedWallet]);
 
   return (
     <>
-      <CopyFloatingEmojis textToCopy={accountAddress}>
-        <ActionButton onPress={handlePressCopy} icon="􀐅" testID="receive-button">
-          {i18n.t(i18n.l.wallet.copy)}
-        </ActionButton>
+      <CopyFloatingEmojis textToCopy={accountAddress} onPress={handlePressCopy} disabled={isDamagedWallet} testID="receive-button">
+        <ActionButton icon="􀐅">{i18n.t(i18n.l.wallet.copy)}</ActionButton>
       </CopyFloatingEmojis>
     </>
   );

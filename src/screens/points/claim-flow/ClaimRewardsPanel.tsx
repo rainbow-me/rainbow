@@ -270,7 +270,6 @@ const ClaimingRewards = ({
       const provider = getProvider({ chainId: ChainId.optimism });
       const wallet = await loadWallet({
         address,
-        showErrorIfNotLoaded: false,
         provider,
       });
       if (!wallet) {

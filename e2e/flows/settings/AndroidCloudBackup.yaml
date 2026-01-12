@@ -34,7 +34,7 @@ tags:
       - tapOn:
           id: backup-now-button
       - runFlow: ../../utils/GoogleSignIn.yaml
-      - runFlow: ../../utils/MaybeSetupPin.yaml
+      - runFlow: ../../utils/MaybeInputPin.yaml
 
       # Set up Rainbow Cloud password
       - tapOn:
@@ -45,7 +45,7 @@ tags:
       - inputText: 12345678
       - tapOn:
           id: backup-button
-      - runFlow: ../../utils/MaybeSetupPin.yaml
+      - runFlow: ../../utils/MaybeInputPin.yaml
 
       # Check that backup is successful
       - assertVisible: '.*Up to Date.*'

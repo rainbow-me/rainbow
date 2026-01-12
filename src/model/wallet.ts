@@ -31,7 +31,6 @@ import { maybeAuthenticateWithPIN, maybeAuthenticateWithPINAndCreateIfNeeded } f
 import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
 import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
 import { createSignature } from '@/helpers/signingWallet';
-import showWalletErrorAlert from '@/helpers/support';
 import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { ethereumUtils } from '@/utils';
 import { ensureError, logger, RainbowError } from '@/logger';
@@ -48,7 +47,9 @@ import { sanitizeTypedData } from '@/utils/signingUtils';
 import { executeFn, ExecuteFnParams, Screen } from '@/state/performance/performance';
 import { Network } from '@/state/backendNetworks/types';
 import { GetOptions, SetOptions } from 'react-native-keychain';
-import { getWalletWithAccount } from '@/state/wallets/walletsStore';
+import { getIsDamagedWallet, getWalletWithAccount, setWalletDamaged } from '@/state/wallets/walletsStore';
+import Routes from '@/navigation/routesNames';
+import Navigation from '@/navigation/Navigation';
 import { IS_IOS } from '@/env';
 
 export type EthereumPrivateKey = string;
@@ -119,6 +120,12 @@ export interface RainbowAccount {
   image?: string | null;
 }
 
+export enum EncryptionType {
+  rainbowPin = 'rainbowPin',
+  keychain = 'keychain',
+  none = 'none',
+}
+
 export interface RainbowWallet {
   addresses: RainbowAccount[];
   color: number;
@@ -133,6 +140,7 @@ export interface RainbowWallet {
   backupType?: string;
   damaged?: boolean;
   deviceId?: string;
+  encryptionType: EncryptionType;
 }
 
 export interface AllRainbowWallets {
@@ -287,12 +295,10 @@ export const walletInit = async (props: InitializeWalletParams): Promise<WalletI
 
 export const loadWallet = async <S extends Screen>({
   address,
-  showErrorIfNotLoaded = true,
   provider,
   timeTracking,
 }: {
   address?: EthereumAddress;
-  showErrorIfNotLoaded?: boolean;
   provider: Provider;
   timeTracking?: ExecuteFnParams<S>;
 }): Promise<null | Wallet | LedgerSigner> => {
@@ -313,23 +319,27 @@ export const loadWallet = async <S extends Screen>({
   }
 
   // kc.ErrorType.UserCanceled means the user cancelled, so we don't wanna do anything
-  // kc.ErrorType.NotAuthenticated means the user is not authenticated (maybe removed biometrics).
-  //    In this case we show an alert inside loadPrivateKey
-  if (privateKey === kc.ErrorType.UserCanceled || privateKey === kc.ErrorType.NotAuthenticated) {
+  if (privateKey === kc.ErrorType.UserCanceled) {
     return null;
   }
-  if (isHardwareWalletKey(privateKey)) {
-    const index = privateKey?.split('/')[1];
-    const deviceId = privateKey?.split('/')[0];
-    if (typeof index !== undefined && deviceId) {
-      return new LedgerSigner(provider, getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }), deviceId);
+
+  if (selectedWallet) {
+    setWalletDamaged(selectedWallet.id, !privateKey || privateKey === kc.ErrorType.NotAuthenticated);
+  }
+
+  if (privateKey !== kc.ErrorType.NotAuthenticated) {
+    if (isHardwareWalletKey(privateKey)) {
+      const index = privateKey?.split('/')[1];
+      const deviceId = privateKey?.split('/')[0];
+      if (typeof index !== undefined && deviceId) {
+        return new LedgerSigner(provider, getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }), deviceId);
+      }
+    } else if (privateKey) {
+      return new Wallet(privateKey, provider);
     }
-  } else if (privateKey) {
-    return new Wallet(privateKey, provider);
   }
-  if (IS_IOS && showErrorIfNotLoaded) {
-    showWalletErrorAlert();
-  }
+
+  Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
   return null;
 };
 
@@ -881,6 +891,12 @@ export const createWallet = async ({
       name: walletName,
       primary,
       type,
+      encryptionType:
+        type === EthereumWalletType.readOnly || type === EthereumWalletType.bluetooth
+          ? EncryptionType.none
+          : androidEncryptionPin
+            ? EncryptionType.rainbowPin
+            : EncryptionType.keychain,
     };
 
     // create notifications settings entry for newly created wallet
@@ -904,6 +920,9 @@ export const createWallet = async ({
 
     logger.debug('[wallet]: saving all wallets', {}, DebugContext.wallet);
     await saveAllWallets(allWallets);
+
+    logger.debug('[wallet]: setting wallet damaged status to false', {}, DebugContext.wallet);
+    setWalletDamaged(id, false);
 
     if (walletResult && walletAddress) {
       const walletRes =
@@ -1031,11 +1050,7 @@ export const getPrivateKey = async (
         // User Cancelled - We want to bubble up this error code. No need to track it.
         return kc.ErrorType.UserCanceled;
       case kc.ErrorType.NotAuthenticated:
-        // Alert the user and bubble up the error code.
-        Alert.alert(
-          i18n.t(i18n.l.wallet.authenticate.alert.error),
-          i18n.t(i18n.l.wallet.authenticate.alert.current_authentication_not_secure_enough)
-        );
+        // Not Authenticated - We want to bubble up this error code. No need to track it.
         return kc.ErrorType.NotAuthenticated;
       case kc.ErrorType.Unavailable: {
         // Retry with checksummed address if needed
@@ -1109,15 +1124,16 @@ export const getSeedPhrase = async (
       androidEncryptionPin,
     });
 
-    if (error === kc.ErrorType.NotAuthenticated) {
-      Alert.alert(
-        i18n.t(i18n.l.wallet.authenticate.alert.error),
-        i18n.t(i18n.l.wallet.authenticate.alert.current_authentication_not_secure_enough)
-      );
+    if (error === kc.ErrorType.UserCanceled) {
       return null;
     }
 
-    return seedPhraseData || null;
+    if (!seedPhraseData) {
+      Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
+      return null;
+    }
+
+    return seedPhraseData;
   } catch (error) {
     logger.error(new RainbowError('[wallet]: Error in getSeedPhrase'), { error });
     return null;
@@ -1345,7 +1361,9 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (id: RainbowWallet['id']):
   try {
     let seedPhrase = null;
     // First we need to check if that key already exists
-    const keyFound = await keychain.hasKey(`${id}_${seedPhraseKey}`);
+    // If the wallet is damaged, assume it is already migrated, since we can't check if it was.
+    const keyFound = getIsDamagedWallet(id) ? true : await keychain.hasKey(`${id}_${seedPhraseKey}`);
+
     if (!keyFound) {
       logger.debug('[wallet]: key not found, should need migration', {}, DebugContext.wallet);
       // if it doesn't we might have a migration pending
@@ -1378,4 +1396,69 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (id: RainbowWallet['id']):
     logger.error(new RainbowError('[wallet]: Error in loadSeedPhraseAndMigrateIfNeeded'), { error });
     throw error;
   }
+};
+
+/**
+ * Checks the integrity of keychain encrypted wallets and returns a map of wallet state to be updated.
+ */
+export const checkWalletsDamagedState = async (wallets: AllRainbowWallets): Promise<Map<string, boolean>> => {
+  const updatedWalletDamagedStates = new Map<string, boolean>();
+  const keychainWallets = Object.values(wallets).filter(wallet => wallet.encryptionType === EncryptionType.keychain);
+  if (keychainWallets.length === 0) {
+    logger.debug('[wallet]: No keychain-encrypted wallets found, skipping checks', {}, DebugContext.wallet);
+    return updatedWalletDamagedStates;
+  }
+
+  // Try to detect cases where wallets will be unusable and might need to be re-imported
+  if (IS_IOS) {
+    // Passcode is disabled - the keychain data will be inaccessible until the user re-enables it.
+    const isPasscodeAuthAvailable = await kc.isPasscodeAuthAvailable();
+    if (!isPasscodeAuthAvailable) {
+      logger.debug('[wallet]: Passcode is disabled, marking keychain encrypted wallets as damaged', {}, DebugContext.wallet);
+      keychainWallets.forEach(wallet => {
+        updatedWalletDamagedStates.set(wallet.id, true);
+      });
+    } else {
+      const damagedWallets = keychainWallets.filter(wallet => wallet.damaged);
+      if (damagedWallets.length > 0) {
+        logger.debug('[wallet]: Keychain appears healthy again, repairing damaged wallets', {}, DebugContext.wallet);
+        damagedWallets.forEach(wallet => {
+          updatedWalletDamagedStates.set(wallet.id, false);
+        });
+      }
+
+      // Device migration - the keychain cache will be transferred, but not the keychain data itself.
+      await Promise.all(
+        keychainWallets.map(async wallet => {
+          // It is enough to just check the first address of each wallet.
+          const key = `${wallet.addresses[0].address}_${privateKeyKey}`;
+          let hasKey = false;
+          try {
+            hasKey = await kc.has(key);
+          } catch (e) {
+            logger.debug(
+              `[wallet]: Error checking keychain key existence for wallet ${wallet.id}: ${ensureError(e).message}`,
+              {},
+              DebugContext.wallet
+            );
+          }
+          if (!hasKey) {
+            logger.debug(`[wallet]: No private key found in keychain for wallet ${wallet.id}, marking as damaged`, {}, DebugContext.wallet);
+            updatedWalletDamagedStates.set(wallet.id, true);
+          }
+        })
+      );
+    }
+  } else {
+    // Passcode is disabled - the keychain data will be inaccessible permanently.
+    const isPasscodeAuthAvailable = await kc.isPasscodeAuthAvailable();
+    if (!isPasscodeAuthAvailable) {
+      logger.debug('[wallet]: Passcode is disabled, marking keychain encrypted wallets as damaged', {}, DebugContext.wallet);
+      keychainWallets.forEach(wallet => {
+        updatedWalletDamagedStates.set(wallet.id, true);
+      });
+    }
+  }
+
+  return updatedWalletDamagedStates;
 };

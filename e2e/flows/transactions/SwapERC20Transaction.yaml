@@ -36,7 +36,7 @@ tags:
 # Execute Swap
 - longPressOn:
     id: swap-bottom-action-button
-- runFlow: ../../utils/MaybeSetupPin.yaml
+- runFlow: ../../utils/MaybeInputPin.yaml
 
 # On Android, pull to refresh + copy balance before swap
 - retry:
@@ -75,7 +75,7 @@ tags:
 # Execute Swap
 - longPressOn:
     id: swap-bottom-action-button
-- runFlow: ../../utils/MaybeSetupPin.yaml
+- runFlow: ../../utils/MaybeInputPin.yaml
 
 # On Android, pull to refresh + copy balance after swap
 - retry:

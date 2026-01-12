@@ -51,7 +51,7 @@ tags:
     id: back-up-manually
 - tapOn:
     id: show-secret-button
-- runFlow: ../../utils/MaybeSetupPin.yaml
+- runFlow: ../../utils/MaybeInputPin.yaml
 - tapOn:
     id: saved-these-words
 - assertVisible: 'Wallets & Backup'

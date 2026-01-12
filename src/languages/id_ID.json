@@ -2930,12 +2930,7 @@
         "no_price": "Saldo Kecil"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "Metode autentikasi Anda saat ini (Pengenalan Wajah) tidak cukup aman, silakan pergi ke \"Pengaturan > Biometrik & Keamanan\" dan aktifkan metode biometrik alternatif seperti Sidik Jari atau Iris.",
-          "error": "Kesalahan"
-        },
-        "please": "Silakan otentifikasi",
-        "please_seed_phrase": "Harap otentikasi untuk melihat kunci privat"
+        "please": "Silakan otentifikasi"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} dompet",

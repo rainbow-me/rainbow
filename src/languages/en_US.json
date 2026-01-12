@@ -560,7 +560,8 @@
       "restart_app": "Restart App",
       "reset_experimental_config": "Reset Experimental Config",
       "status": "Status",
-      "sync_codepush": "Sync CodePush"
+      "sync_codepush": "Sync CodePush",
+      "simulate_device_transfer": "Simulate Device Transfer"
     },
     "discover": {
       "pulse": {
@@ -2923,12 +2924,7 @@
         "no_price": "Small Balances"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "Your current authentication method (Face Recognition) is not secure enough, please go to \"Settings > Biometrics & Security\" and enable an alternative biometric method like Fingerprint or Iris.",
-          "error": "Error"
-        },
-        "please": "Please authenticate",
-        "please_seed_phrase": "Please authenticate to view private key"
+        "please": "Please authenticate"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} wallet",
@@ -3839,6 +3835,15 @@
         "failed_to_cash_out": "Failed to cash out position. Please try again.",
         "failed_to_claim": "Failed to claim position. Please try again."
       }
+    },
+    "wallet_error_sheet": {
+      "title": "Restore your wallet",
+      "restore": "Restore",
+      "dismiss": "Dismiss",
+      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
+      "cause_switched_devices": "It looks like you may have switched devices.",
+      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
+      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
     }
   }
 }
