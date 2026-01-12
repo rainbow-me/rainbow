@@ -181,6 +181,10 @@ async function initializeApplication() {
     configureDelegationClient({
       platformClient: getPlatformClient(),
       logger: logger,
+      // Note: Chains are configured once at startup. If backend networks are updated
+      // after initialization, the delegation SDK won't automatically know about new chains.
+      // If this becomes an issue, we should add a subscription to backend networks changes
+      // and reconfigure the SDK when chains are updated.
       chains: useBackendNetworksStore.getState().getSupportedChains(),
       currentAddress: $ => $(useWalletsStore).accountAddress || null,
     }),
