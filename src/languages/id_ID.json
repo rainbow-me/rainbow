@@ -561,7 +561,7 @@
       "reset_experimental_config": "Atur Ulang Konfigurasi Eksperimental",
       "status": "Status",
       "sync_codepush": "Sinkronisasi CodePush",
-      "simulate_device_transfer": "Simulate Device Transfer"
+      "simulate_device_transfer": "Simulasikan Transfer Perangkat"
     },
     "discover": {
       "pulse": {
@@ -3787,14 +3787,19 @@
         "placing_bet": "Memasang Taruhan...",
         "confirming_order": "Mengonfirmasi Pesanan...",
         "deposit_funds": "Deposit Dana",
-        "average_price": "Harga Rata-rata"
+        "average_price": "Harga Rata-rata",
+        "errors": {
+          "not_enough_liquidity": "Not enough liquidity to place full order.",
+          "please_lower_amount": "Please lower the amount and try again.",
+          "no_liquidity_at_price": "No liquidity at this price."
+        }
       },
       "manage_position": {
         "hold_to_claim": "Tahan untuk Mengklaim",
-        "hold_to_burn": "Tahan untuk Hanguskan",
+        "hold_to_clear": "Hold to Clear",
         "hold_to_cash_out": "Tahan untuk Mencairkan",
         "claiming": "Mengklaim...",
-        "burning": "Membakar...",
+        "clearing": "Clearing...",
         "cashing_out": "Mencairkan...",
         "confirming_order": "Mengonfirmasi Pesanan...",
         "position_value": "Nilai Posisi"
@@ -3837,7 +3842,7 @@
         "won": "Menang",
         "to_win": "Untuk Menang",
         "claim": "Klaim",
-        "burn": "Hanguskan",
+        "clear": "Clear",
         "cash_out": "Cairkan",
         "no_open_positions": "Tidak ada posisi terbuka",
         "won_badge": "MENANG",
@@ -3858,9 +3863,11 @@
         "other": "Lainnya"
       },
       "sports": {
-        "vs": "VS",
-        "live": "LIVE",
-        "game_best_of": "Permainan %{currentPeriod} - Terbaik dari %{bestOf}"
+        "vs": "vs",
+        "live": "Live",
+        "game_best_of": "Permainan %{currentPeriod} - Terbaik dari %{bestOf}",
+        "final": "Final",
+        "no_games": "No games today or tomorrow"
       },
       "outcomes": {
         "yes": "Ya",
@@ -3872,16 +3879,21 @@
         "failed_to_place_bet": "Gagal memasang taruhan. Silakan coba lagi.",
         "failed_to_cash_out": "Gagal mencairkan posisi. Silakan coba lagi.",
         "failed_to_claim": "Gagal mengklaim posisi. Silakan coba lagi."
+      },
+      "account": {
+        "hide_lost_bets": "Hide Lost Bets",
+        "show_lost_bets": "Show Lost Bets",
+        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
       }
     },
     "wallet_error_sheet": {
-      "title": "Restore your wallet",
+      "title": "Pulihkan dompet Anda",
       "restore": "Pulihkan",
       "dismiss": "Tutup",
-      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
-      "cause_switched_devices": "It looks like you may have switched devices.",
-      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
-      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
+      "cause_passcode_disabled": "Sepertinya Anda mungkin telah menonaktifkan kode sandi Anda.",
+      "cause_switched_devices": "Sepertinya Anda mungkin telah mengganti perangkat.",
+      "resolution_enable_passcode": "Untuk menggunakan dompet Anda, aktifkan kembali di pengaturan perangkat Anda.",
+      "resolution_restore_backup": "Untuk menggunakan dompet Anda, pulihkan dari cadangan atau impor ulang frasa pemulihan rahasia Anda."
     }
   }
 }
