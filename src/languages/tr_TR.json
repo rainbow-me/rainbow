@@ -560,7 +560,8 @@
       "restart_app": "Uygulamayı Yeniden Başlat",
       "reset_experimental_config": "Deneysel Yapılandırmayı Sıfırla",
       "status": "Durum",
-      "sync_codepush": "CodePush'u Senkronize Et"
+      "sync_codepush": "CodePush'u Senkronize Et",
+      "simulate_device_transfer": "Simulate Device Transfer"
     },
     "discover": {
       "pulse": {
@@ -2941,12 +2942,7 @@
         "no_price": "Küçük Bakiyeler"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "Mevcut kimlik doğrulama yönteminiz (Yüz Tanıma) yeterince güvenli değil, lütfen \"Ayarlar > Biyometrik & Güvenlik\" bölümüne gidin ve Alternatif bir biyometrik yöntem olan Parmak izi veya Iris'i etkinleştirin.",
-          "error": "Hata"
-        },
-        "please": "Lütfen kimlik doğrulaması yapın",
-        "please_seed_phrase": "Lütfen özel anahtarı görüntülemek için kimlik doğrulayın"
+        "please": "Lütfen kimlik doğrulaması yapın"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} cüzdan",
@@ -3877,6 +3873,15 @@
         "failed_to_cash_out": "Pozisyondan nakit çıkışı yapılamadı. Lütfen tekrar deneyin.",
         "failed_to_claim": "Pozisyon talep edilemedi. Lütfen tekrar deneyin."
       }
+    },
+    "wallet_error_sheet": {
+      "title": "Restore your wallet",
+      "restore": "Geri Yükle",
+      "dismiss": "İptal Et",
+      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
+      "cause_switched_devices": "It looks like you may have switched devices.",
+      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
+      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
     }
   }
 }
