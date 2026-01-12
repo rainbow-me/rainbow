@@ -560,7 +560,8 @@
       "restart_app": "Перезагрузить приложение",
       "reset_experimental_config": "Сбросить экспериментальную конфигурацию",
       "status": "Статус",
-      "sync_codepush": "Синхронизировать CodePush"
+      "sync_codepush": "Синхронизировать CodePush",
+      "simulate_device_transfer": "Simulate Device Transfer"
     },
     "discover": {
       "pulse": {
@@ -2941,12 +2942,7 @@
         "no_price": "Маленький баланс"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "Ваш текущий метод аутентификации (распознавание лица) недостаточно безопасен, пройдите в \"Настройки > Биометрия и безопасность\" и включите альтернативный биометрический метод, такой как отпечаток пальца или ирис.",
-          "error": "Ошибка"
-        },
-        "please": "Пожалуйста, аутентифицируйтесь",
-        "please_seed_phrase": "Пожалуйста, аутентифицируйтесь, чтобы посмотреть приватный ключ"
+        "please": "Пожалуйста, аутентифицируйтесь"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} кошелек",
@@ -3877,6 +3873,15 @@
         "failed_to_cash_out": "Не удалось вывести позицию. Пожалуйста, попробуйте еще раз.",
         "failed_to_claim": "Не удалось получить позицию. Пожалуйста, попробуйте еще раз."
       }
+    },
+    "wallet_error_sheet": {
+      "title": "Restore your wallet",
+      "restore": "Восстановить",
+      "dismiss": "Отклонить",
+      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
+      "cause_switched_devices": "It looks like you may have switched devices.",
+      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
+      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
     }
   }
 }
