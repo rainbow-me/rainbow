@@ -1,4 +1,8 @@
-import { Box, Separator, Text, TextIcon, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import * as i18n from '@/languages';

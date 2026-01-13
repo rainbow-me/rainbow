@@ -2,7 +2,11 @@ import React, { ReactNode } from 'react';
 import { ButtonProps } from 'react-native';
 import { TextColor } from '../../design-system/color/palettes';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import { AccentColorProvider, Box, Cover, Text, useForegroundColor } from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Box } from '@/design-system/components/Box/Box';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { Text } from '@/design-system/components/Text/Text';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
 const TintButton = ({
   children,

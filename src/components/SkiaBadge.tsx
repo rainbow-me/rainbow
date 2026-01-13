@@ -16,7 +16,8 @@ import {
 } from '@shopify/react-native-skia';
 import { memo, useCallback, useMemo } from 'react';
 import Animated, { type SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { SkiaText, useColorMode } from '@/design-system';
+import { SkiaText } from '@/design-system/components/SkiaText/SkiaText';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextColor } from '@/design-system/color/palettes';

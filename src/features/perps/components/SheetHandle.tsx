@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HANDLE_COLOR, LIGHT_HANDLE_COLOR, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';

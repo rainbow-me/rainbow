@@ -1,7 +1,9 @@
 import { format } from 'date-fns';
 import React from 'react';
 import { RegistrationReviewRows } from '../../../components/ens-registration';
-import { Inset, Separator, Stack } from '@/design-system';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Stack } from '@/design-system/components/Stack/Stack';
 import { ENS_DOMAIN, REGISTRATION_MODES } from '@/helpers/ens';
 import useDimensions from '@/hooks/useDimensions';
 import useENSRegistrant from '@/hooks/useENSRegistrant';

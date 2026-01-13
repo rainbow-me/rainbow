@@ -6,7 +6,7 @@ import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { useLatestCallback } from '../../hooks/useLatestCallback';
 import { ButtonPressAnimation } from '../animations';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
-import { Text } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
 import { ImgixImage } from '@/components/images';
 import { ThemeContextProps } from '@/theme';
 

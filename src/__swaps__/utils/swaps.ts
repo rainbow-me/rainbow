@@ -9,7 +9,7 @@ import {
   SLIDER_WIDTH,
   STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
 } from '@/__swaps__/screens/Swap/constants';
-import { globalColors } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
 import { ForegroundColor, palettes } from '@/design-system/color/palettes';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';

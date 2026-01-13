@@ -7,7 +7,8 @@ import { ENSConfirmRenewSheetHeight } from '../../../screens/ENSConfirmRegisterS
 import { ButtonPressAnimation } from '../../animations';
 import { TokenInfoItem, TokenInfoValue } from '../../token-info';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { Column, Columns, Inset } from '@/design-system';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Inset } from '@/design-system/components/Inset/Inset';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import useENSAvatar from '@/hooks/useENSAvatar';
 import useENSRegistration from '@/hooks/useENSRegistration';

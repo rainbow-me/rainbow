@@ -1,6 +1,11 @@
 import React, { memo, useMemo } from 'react';
 import * as i18n from '@/languages';
-import { Bleed, Box, IconContainer, Stack, Text, TextShadow } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { IconContainer } from '@/design-system/components/IconContainer/IconContainer';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ScrollView } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

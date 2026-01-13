@@ -1,4 +1,8 @@
-import { Bleed, Box, Text, TextIcon, useColorMode } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import * as i18n from '@/languages';
 import { memo, useMemo, useState } from 'react';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';

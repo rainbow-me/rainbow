@@ -1,7 +1,8 @@
 import React, { memo } from 'react';
 import { StyleProp, TextStyle } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
-import { AnimatedText, Box } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Box } from '@/design-system/components/Box/Box';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { CurrencyInputCaret } from './CurrencyInputCaret';
 

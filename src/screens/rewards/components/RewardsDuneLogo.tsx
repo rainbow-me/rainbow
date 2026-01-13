@@ -1,6 +1,8 @@
 import React from 'react';
 import { Image } from 'react-native';
-import { Box, Inline, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
 import * as i18n from '@/languages';
 import duneLogoDark from '@/assets/dune-logo-dark.png';
 import duneLogo from '@/assets/dune-logo.png';

@@ -1,6 +1,12 @@
 import React from 'react';
 import { GenericCard, Gradient } from './GenericCard';
-import { AccentColorProvider, Box, Cover, globalColors, Stack, Text, useColorMode } from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Box } from '@/design-system/components/Box/Box';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { globalColors } from '@/design-system/color/palettes';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImageBackground } from 'react-native';
 import OpRewardsCardBackgroundImage from '../../assets/opRewardsCardBackgroundImage.png';

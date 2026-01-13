@@ -1,7 +1,12 @@
 import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
-import { Box, Column, Columns, Inset, Stack, Text, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';

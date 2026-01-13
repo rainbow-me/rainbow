@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import SheetActionButton, { SheetActionButtonProps } from './SheetActionButton';
 import Routes from '@/navigation/routesNames';
-import { Text } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
 import { colors } from '@/styles';
 import { IS_IOS } from '@/env';
 import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';

@@ -1,4 +1,6 @@
-import { Box, Text, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import haptics from '@/utils/haptics';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

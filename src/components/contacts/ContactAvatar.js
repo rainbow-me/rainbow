@@ -8,7 +8,7 @@ import { Text } from '../text';
 import { borders } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { IS_ANDROID } from '@/env';
-import { useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
 
 const buildShadows = (color, size, darkMode, colors) => {
   if (size === 'small') {

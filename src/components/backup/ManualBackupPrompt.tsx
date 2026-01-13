@@ -1,5 +1,11 @@
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
-import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import walletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';

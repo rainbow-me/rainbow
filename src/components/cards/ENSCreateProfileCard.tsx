@@ -1,6 +1,11 @@
 import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config';
-import { Bleed, Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { ColorModeProvider } from '@/design-system/color/ColorMode';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { prefetchENSAvatar } from '@/hooks/useENSAvatar';
 import { prefetchENSRecords } from '@/hooks/useENSRecords';
 import useAccountENSDomains from '@/hooks/useAccountENSDomains';

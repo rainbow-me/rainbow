@@ -4,7 +4,11 @@ import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtil
 import { fetchReverseRecord } from '@/handlers/ens';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
-import { Box, Column, Columns, Cover, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import Animated, { Easing, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { useTiming } from 'react-native-redash';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

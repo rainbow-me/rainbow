@@ -7,7 +7,10 @@ import styled from '@/styled-thing';
 import { buildTextStyles, padding } from '@/styles';
 import { useTheme } from '@/theme';
 import { TextInput } from 'react-native';
-import { Box, Inline, Inset, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Text } from '@/design-system/components/Text/Text';
 import { IS_ANDROID, IS_TEST } from '@/env';
 
 type GweiInputPillProps = {

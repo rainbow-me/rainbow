@@ -14,7 +14,7 @@ import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { spinnerExitConfig } from '@/components/animations/AnimatedSpinner';
-import { useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { foregroundColors } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';

@@ -1,6 +1,9 @@
 import { analytics } from '@/analytics';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
-import { Bleed, Box, Inline, Stack } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Stack } from '@/design-system/components/Stack/Stack';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';

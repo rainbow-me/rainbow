@@ -1,5 +1,6 @@
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
-import { Box, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';

@@ -1,5 +1,7 @@
 // @ts-nocheck
-import { Box, AccentColorProvider, Space } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import type { Space } from '@/design-system/layout/space';
 import React, { PropsWithChildren } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import LinearGradient from 'react-native-linear-gradient';

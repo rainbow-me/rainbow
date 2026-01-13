@@ -2,7 +2,8 @@ import React from 'react';
 import { DoubleLineTransactionDetailsRow } from '@/screens/transaction-details/components/DoubleLineTransactionDetailsRow';
 import { TransactionDetailsSymbol } from '@/screens/transaction-details/components/TransactionDetailsSymbol';
 import { RainbowTransaction } from '@/entities/transactions/transaction';
-import { Box, Stack } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Stack } from '@/design-system/components/Stack/Stack';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import * as i18n from '@/languages';
 

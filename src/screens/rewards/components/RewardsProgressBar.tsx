@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { useTheme } from '@/theme';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { LayoutChangeEvent } from 'react-native';

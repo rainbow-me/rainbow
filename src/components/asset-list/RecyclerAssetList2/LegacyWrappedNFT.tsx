@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { UniqueTokenCard } from '../../unique-token';
-import { Box, BoxProps } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import type { BoxProps } from '@/design-system/components/Box/Box';
 import { UniqueAsset } from '@/entities';
 import useCollectible from '@/hooks/useCollectible';
 import { Navigation } from '@/navigation';

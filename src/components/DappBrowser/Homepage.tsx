@@ -5,20 +5,17 @@ import LinearGradient from 'react-native-linear-gradient';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import {
-  Bleed,
-  Border,
-  Box,
-  ColorModeProvider,
-  Inline,
-  Inset,
-  Stack,
-  Text,
-  TextIcon,
-  globalColors,
-  useBackgroundColor,
-  useColorMode,
-} from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Border } from '@/design-system/components/Border/Border';
+import { Box } from '@/design-system/components/Box/Box';
+import { ColorModeProvider, useColorMode } from '@/design-system/color/ColorMode';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { globalColors } from '@/design-system/color/palettes';
+import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';

@@ -1,6 +1,12 @@
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
-import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

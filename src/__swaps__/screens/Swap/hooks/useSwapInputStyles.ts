@@ -8,7 +8,8 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { globalColors, useColorMode } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import {
   BASE_INPUT_HEIGHT,
   ETH_COLOR_DARK,

@@ -1,4 +1,6 @@
-import { AnimatedText, TextProps, useTextStyle } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import type { TextProps } from '@/design-system/components/Text/Text';
+import { useTextStyle } from '@/design-system/components/Text/useTextStyle';
 import React, { useMemo, useCallback, useState } from 'react';
 import { StyleProp, TextStyle, StyleSheet, ViewStyle, View } from 'react-native';
 import Animated, {

@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
-import { globalColors, useColorMode } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';

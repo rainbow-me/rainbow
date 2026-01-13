@@ -15,7 +15,7 @@ import PrivacyIconDark from '@/assets/settingsPrivacyDark.png';
 import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import { AppVersionStamp } from '@/components/AppVersionStamp';
 import useExperimentalFlag, { LANGUAGE_SETTINGS, NOTIFICATIONS } from '@/config/experimentalHooks';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';

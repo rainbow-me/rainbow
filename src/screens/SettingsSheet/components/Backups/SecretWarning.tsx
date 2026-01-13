@@ -1,5 +1,10 @@
 import { SheetActionButton } from '@/components/sheet';
-import { Bleed, Box, Column, Columns, Inset, Stack, Text } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID } from '@/env';
 import React, { useCallback } from 'react';

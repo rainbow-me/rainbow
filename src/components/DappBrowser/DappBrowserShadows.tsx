@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { AnimatedStyle, useAnimatedStyle } from 'react-native-reanimated';
-import { globalColors, useColorMode } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { IS_IOS } from '@/env';
 import { clamp } from '@/__swaps__/utils/swaps';
 import { useBrowserContext } from './BrowserContext';

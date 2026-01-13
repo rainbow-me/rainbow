@@ -1,5 +1,7 @@
 import React, { memo } from 'react';
-import { Box, Text, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { formatPriceChange } from '@/features/perps/utils';

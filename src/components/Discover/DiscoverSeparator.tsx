@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
-import { Separator, useColorMode } from '@/design-system';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { foregroundColors } from '@/design-system/color/palettes';
 import { opacity } from '@/__swaps__/utils/swaps';
 

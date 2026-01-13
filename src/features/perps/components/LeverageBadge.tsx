@@ -1,5 +1,8 @@
 import React, { memo, useMemo } from 'react';
-import { Bleed, Box, Text, useColorMode } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 

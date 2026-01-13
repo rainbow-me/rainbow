@@ -16,7 +16,8 @@ import gridDotsDark from '@/assets/dot-grid-dark.png';
 import gridDotsLight from '@/assets/dot-grid-light.png';
 import ledgerNano from '@/assets/ledger-nano.png';
 import { ImgixImage } from '@/components/images';
-import { useBackgroundColor, useColorMode } from '@/design-system';
+import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { useTheme } from '@/theme';
 import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 

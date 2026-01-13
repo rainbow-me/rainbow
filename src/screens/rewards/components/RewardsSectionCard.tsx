@@ -1,6 +1,9 @@
 import React, { PropsWithChildren } from 'react';
 import { View } from 'react-native';
-import { Box, Space, globalColors, useBackgroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import type { Space } from '@/design-system/layout/space';
+import { globalColors } from '@/design-system/color/palettes';
+import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useTheme } from '@/theme';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { IS_IOS } from '@/env';
 
 const ASSET_SPACE = 2;

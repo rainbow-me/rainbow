@@ -1,7 +1,11 @@
 import { memo, useMemo, Fragment } from 'react';
 import { PerpMarket, PerpsPosition } from '@/features/perps/types';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { Box, Text, TextShadow, Separator, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { abs, greaterThan, isEqual, isPositive, multiply } from '@/helpers/utilities';
 import { toFixedWorklet, getPercentageDifferenceWorklet } from '@/safe-math/SafeMath';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';

@@ -1,4 +1,4 @@
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { ClaimableType } from '@/resources/addys/claimables/types';

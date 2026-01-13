@@ -4,7 +4,7 @@ import { useDarkMode } from 'react-native-dark-mode';
 import { ThemeProvider } from 'styled-components';
 import { Colors, darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
 import currentColors from './currentColors';
-import { DesignSystemProvider } from '@/design-system';
+import { DesignSystemProvider } from '@/design-system/context/DesignSystemContext';
 import { getTheme, saveTheme } from '@/handlers/localstorage/theme';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 import { StyleThingThemeProvider } from '@/styled-thing';

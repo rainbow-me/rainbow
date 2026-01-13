@@ -4,19 +4,16 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import { ImgixImage } from '@/components/images';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import {
-  AccentColorProvider,
-  BackgroundProvider,
-  Box,
-  Column,
-  Columns,
-  Inset,
-  Separator,
-  Stack,
-  Text,
-  globalColors,
-  useColorMode,
-} from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { BackgroundProvider } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';

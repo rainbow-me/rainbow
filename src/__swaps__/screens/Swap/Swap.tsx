@@ -12,7 +12,7 @@ import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import { Page } from '@/components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';

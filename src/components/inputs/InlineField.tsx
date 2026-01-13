@@ -4,7 +4,13 @@ import { useTheme } from '../../theme/ThemeContext';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import Input from './Input';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { Bleed, Column, Columns, Inline, Inset, Text, TextProps, useTextStyle } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Text } from '@/design-system/components/Text/Text';
+import type { TextProps } from '@/design-system/components/Text/Text';
+import { useTextStyle } from '@/design-system/components/Text/useTextStyle';
 import useDimensions from '@/hooks/useDimensions';
 
 const textSize: TextProps['size'] = '16px / 22px (Deprecated)';

@@ -1,6 +1,8 @@
 import React from 'react';
 import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
-import { Box, useColorMode, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';

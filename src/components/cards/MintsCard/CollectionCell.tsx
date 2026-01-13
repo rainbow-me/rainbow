@@ -1,7 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { AccentColorProvider, Bleed, Box, Cover, Inline, Inset, Text } from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Text } from '@/design-system/components/Text/Text';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useTheme } from '@/theme';
 import { View } from 'react-native';

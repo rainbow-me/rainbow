@@ -1,6 +1,8 @@
 import React from 'react';
 import { RewardsSectionCard } from './RewardsSectionCard';
-import { Inline, Stack, Text } from '@/design-system';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { TextColor } from '@/design-system/color/palettes';
 import { CustomColor } from '@/design-system/color/useForegroundColor';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

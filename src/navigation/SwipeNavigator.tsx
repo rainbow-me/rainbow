@@ -12,7 +12,10 @@ import {
   TAB_BAR_WIDTH,
 } from '@/components/tab-bar/dimensions';
 import { DAPP_BROWSER, LAZY_TABS, POINTS, RNBW_REWARDS, useExperimentalFlag } from '@/config';
-import { Box, Columns, globalColors, useColorMode, Column, ColorModeProvider } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Columns, Column } from '@/design-system/components/Columns/Columns';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { IS_IOS, IS_TEST } from '@/env';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';

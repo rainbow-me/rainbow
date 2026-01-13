@@ -1,6 +1,11 @@
 import React, { memo } from 'react';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Bleed, Box, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { PerpMarketRow } from '@/features/perps/components/PerpMarketRow';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';

@@ -9,19 +9,17 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
-import {
-  Box,
-  BoxProps,
-  IconContainer,
-  Separator,
-  Stack,
-  Text,
-  TextProps,
-  TextShadow,
-  globalColors,
-  useColorMode,
-  useForegroundColor,
-} from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import type { BoxProps } from '@/design-system/components/Box/Box';
+import { IconContainer } from '@/design-system/components/IconContainer/IconContainer';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import type { TextProps } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';

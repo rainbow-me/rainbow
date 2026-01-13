@@ -3,7 +3,10 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { LinearGradient } from 'react-native-linear-gradient';
 import { StyleSheet } from 'react-native';
-import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import ImgixImage from '@/components/images/ImgixImage';
 import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';

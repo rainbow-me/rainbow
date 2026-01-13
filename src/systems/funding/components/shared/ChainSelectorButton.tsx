@@ -1,7 +1,10 @@
 import React, { memo } from 'react';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { Box, Inline, Text, TextIcon } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { opacity } from '@/__swaps__/utils/swaps';

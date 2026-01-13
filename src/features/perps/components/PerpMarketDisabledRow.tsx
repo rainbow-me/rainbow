@@ -1,4 +1,5 @@
-import { Box, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { PerpMarket } from '@/features/perps/types';
 import * as i18n from '@/languages';

@@ -6,20 +6,17 @@ import { convertRawAmountToBalance, convertRawAmountToBalanceWorklet, handleSign
 import { opacity } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import {
-  AnimatedText,
-  Bleed,
-  Box,
-  Column,
-  Columns,
-  Inline,
-  Separator,
-  Stack,
-  Text,
-  TextIcon,
-  useColorMode,
-  useForegroundColor,
-} from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

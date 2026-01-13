@@ -1,5 +1,7 @@
 import React from 'react';
-import { Box, Bleed, AnimatedText } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
 import { TextColor } from '@/design-system/color/palettes';
 import { CustomColor } from '@/design-system/color/useForegroundColor';
 import { AnimatedTextChildProps, AnimatedTextProps } from '@/design-system/components/Text/AnimatedText';

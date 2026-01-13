@@ -1,4 +1,8 @@
-import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';

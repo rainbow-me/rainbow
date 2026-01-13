@@ -11,7 +11,7 @@ import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { isNativeAsset } from '@/handlers/assets';
 import { Token } from '@/graphql/__generated__/metadata';
-import { useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';

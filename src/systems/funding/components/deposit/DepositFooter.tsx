@@ -1,6 +1,8 @@
 import { memo } from 'react';
 import { SharedValue, useDerivedValue } from 'react-native-reanimated';
-import { Box, Separator, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { PerpsSwapButton } from '@/features/perps/components/PerpsSwapButton';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';

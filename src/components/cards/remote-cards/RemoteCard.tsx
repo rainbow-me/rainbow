@@ -2,7 +2,15 @@ import { StyleSheet } from 'react-native';
 import React, { useCallback } from 'react';
 import { get } from 'lodash';
 
-import { Border, Box, Column, Columns, Cover, IconContainer, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
+import { Border } from '@/design-system/components/Border/Border';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { IconContainer } from '@/design-system/components/IconContainer/IconContainer';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { ImgixImage } from '@/components/images';
 import { IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';

@@ -8,7 +8,9 @@ import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFas
 import { AnimatedChainImage } from './AnimatedChainImage';
 import { fadeConfig } from '../constants';
 import { SwapCoinIconTextFallback } from './SwapCoinIconTextFallback';
-import { Box, globalColors, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
 import { useSwapContext } from '../providers/swap-provider';

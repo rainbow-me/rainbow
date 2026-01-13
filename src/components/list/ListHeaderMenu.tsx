@@ -1,7 +1,11 @@
 import React from 'react';
 import ContextMenuButton, { MenuConfig } from '@/components/native-context-menu/contextMenu';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Bleed, Box, Inline, Text, useForegroundColor } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import haptics from '@/utils/haptics';
 import { NftSort } from '@/state/nfts/nftsStoreManager';
 

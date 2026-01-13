@@ -1,5 +1,12 @@
 import React, { memo, useReducer, useEffect } from 'react';
-import { Box, Text, TextShadow, Stack, IconContainer, useForegroundColor, globalColors, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { IconContainer } from '@/design-system/components/IconContainer/IconContainer';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { isToday, intervalToDuration, format } from 'date-fns';
 import * as i18n from '@/languages';
 import { LIGHT_SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';

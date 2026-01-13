@@ -1,7 +1,11 @@
 import React from 'react';
 import { AnimatePresence, MotiView } from 'moti';
 
-import { Bleed, Box, Text, globalColors, useForegroundColor } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { globalColors } from '@/design-system/color/palettes';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { TextColor } from '@/design-system/color/palettes';
 import { infoForEventType, motiTimingConfig } from '@/components/Transactions/constants';
 

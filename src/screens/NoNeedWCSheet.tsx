@@ -7,7 +7,7 @@ import { useNavigation } from '../navigation/Navigation';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { Colors } from '../styles/colors';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
 import { RootStackParamList } from '@/navigation/types';

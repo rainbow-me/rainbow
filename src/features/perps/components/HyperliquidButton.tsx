@@ -1,5 +1,7 @@
 import React, { ComponentProps, ReactNode } from 'react';
-import { Box, BoxProps, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import type { BoxProps } from '@/design-system/components/Box/Box';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet, View } from 'react-native';

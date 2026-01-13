@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import { useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 

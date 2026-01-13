@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { ParsedAddressAsset } from '@/entities';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme';

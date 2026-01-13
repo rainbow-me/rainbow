@@ -1,6 +1,8 @@
 import * as i18n from '@/languages';
 import React from 'react';
-import { Inset, Stack, Text } from '@/design-system';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

@@ -1,6 +1,9 @@
 import React from 'react';
 import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
-import { Box, Column, Columns, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import * as i18n from '@/languages';
 import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
 import { RewardsProgressBar } from '@/screens/rewards/components/RewardsProgressBar';

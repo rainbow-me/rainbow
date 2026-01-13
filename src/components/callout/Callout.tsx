@@ -1,6 +1,9 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { Box, Inline, Inset, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Text } from '@/design-system/components/Text/Text';
 import { useTheme } from '@/theme';
 
 export default function Callout({ after, before, children }: { after?: React.ReactNode; before?: React.ReactNode; children: string }) {

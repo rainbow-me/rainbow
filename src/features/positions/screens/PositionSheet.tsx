@@ -1,5 +1,12 @@
 import React, { useCallback } from 'react';
-import { BackgroundProvider, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
+import { BackgroundProvider } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
+import { Box } from '@/design-system/components/Box/Box';
+import { globalColors } from '@/design-system/color/palettes';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
 import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';

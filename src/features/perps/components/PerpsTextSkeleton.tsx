@@ -1,6 +1,7 @@
 import { opacity } from '@/__swaps__/utils/swaps';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
-import { Box, useBackgroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
 
 export function PerpsTextSkeleton({ height, width }: { height: number; width: number }) {
   const skeletonColor = useBackgroundColor('fillQuaternary');

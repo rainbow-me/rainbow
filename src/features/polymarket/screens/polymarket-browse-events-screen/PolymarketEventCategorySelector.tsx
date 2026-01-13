@@ -5,7 +5,11 @@ import Animated, { SharedValue, useAnimatedStyle, useSharedValue } from 'react-n
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
-import { Border, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Border } from '@/design-system/components/Border/Border';
+import { globalColors } from '@/design-system/color/palettes';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { CATEGORIES, Category } from '@/features/polymarket/constants';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';

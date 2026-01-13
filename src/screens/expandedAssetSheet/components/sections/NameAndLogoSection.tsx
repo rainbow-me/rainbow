@@ -1,6 +1,8 @@
 import React, { memo } from 'react';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
-import { Box, Text, TextShadow } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { RainbowCoinEffect } from '@/components/rainbow-coin-effect/RainbowCoinEffect';
 import { RAINBOW_COIN_EFFECT } from '@/config/experimental';

@@ -1,6 +1,9 @@
 import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { Box, Text, TextIcon, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import * as i18n from '@/languages';
 import { GestureHandlerButton } from './GestureHandlerButton';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';

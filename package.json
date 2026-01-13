@@ -43,7 +43,7 @@
     "lint:js": "eslint --cache . --quiet",
     "lint:js:ci": "eslint . --quiet",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
-    "check:cycles": "./scripts/check-cycles.sh 1684",
+    "check:cycles": "./scripts/check-cycles.sh 1385",
     "postinstall": "./scripts/postinstall.sh",
     "start": "react-native start",
     "start:client-logs": "react-native start --client-logs",

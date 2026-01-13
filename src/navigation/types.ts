@@ -12,7 +12,7 @@ import { Address } from 'viem';
 import { SharedValue } from 'react-native-reanimated';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
-import { TextProps } from '@/design-system';
+import type { TextProps } from '@/design-system/components/Text/Text';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { GasTrend } from '@/__swaps__/utils/meteorology';
 import { RequestSource } from '@/utils/requestNavigationHandlers';

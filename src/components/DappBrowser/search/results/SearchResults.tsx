@@ -13,7 +13,15 @@ import Animated, {
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { Bleed, Box, Inline, Inset, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import * as i18n from '@/languages';
 import { Dapp, useBrowserDappsStore } from '@/resources/metadata/dapps';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';

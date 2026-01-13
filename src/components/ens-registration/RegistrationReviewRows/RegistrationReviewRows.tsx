@@ -2,7 +2,11 @@ import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
-import { Box, Column, Columns, Inset, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import useInterval from '@/hooks/useInterval';
 

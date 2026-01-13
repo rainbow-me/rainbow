@@ -1,5 +1,10 @@
 import { memo, useMemo } from 'react';
-import { Box, Text, useColorMode, useForegroundColor, globalColors, TextShadow } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { globalColors } from '@/design-system/color/palettes';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 

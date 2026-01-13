@@ -1,5 +1,11 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { AnimatedText, Box, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';

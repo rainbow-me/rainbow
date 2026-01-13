@@ -8,7 +8,7 @@ import ENSIntroSheet from '../screens/ENSIntroSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
 import { sharedCoolModalTopOffset } from './config';
 import { avatarMetadataAtom } from '@/components/ens-registration/RegistrationAvatar/RegistrationAvatar';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { accentColorAtom, REGISTRATION_MODES } from '@/helpers/ens';
 import useDimensions from '@/hooks/useDimensions';
 import useENSRegistration from '@/hooks/useENSRegistration';

@@ -14,7 +14,13 @@ import Animated, {
 import { View, StyleSheet } from 'react-native';
 
 import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
-import { AnimatedText, Bleed, Box, Text, TextIcon, TextShadow, useBackgroundColor } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
 import { Row } from '@/screens/expandedAssetSheet/components/shared/Row';
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
-import { Box, Cover, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { Text } from '@/design-system/components/Text/Text';
 import { useTheme } from '@/theme';
 import { View } from 'react-native';
 import { MintedNft } from '@/graphql/__generated__/arc';

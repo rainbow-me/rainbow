@@ -5,7 +5,7 @@ import deviceUtils from '@/utils/deviceUtils';
 import { AddWalletSheet } from '@/screens/AddWalletSheet';
 import { ChooseWalletGroup } from '@/screens/ChooseWalletGroup';
 import { ImportOrWatchWalletSheet } from '@/screens/ImportOrWatchWalletSheet';
-import { BackgroundProvider } from '@/design-system';
+import { BackgroundProvider } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { setActiveRoute } from '@/state/navigation/navigationStore';
