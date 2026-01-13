@@ -10,7 +10,7 @@ import { queryClient } from '@/react-query';
 import Routes from '@/navigation/routesNames';
 import { useEnsMarquee } from '@/resources/metadata/ensMarqueeQuery';
 import { EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
-import { ensIntroMarqueeNames } from '@/references';
+import ensIntroMarqueeNames from '@/references/ens-intro-marquee-names.json';
 
 type MarqueeItemType = {
   account: EnsMarqueeAccount;

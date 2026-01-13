@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 
-import { erc20ABI } from '@/references';
+import erc20ABI from '@/references/erc20-abi.json';
 import { convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

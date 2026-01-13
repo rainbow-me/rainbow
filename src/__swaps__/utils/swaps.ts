@@ -16,7 +16,7 @@ import { TokenColors } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
 import { DEFAULT_SLIPPAGE_BIPS_CHAINID, RainbowConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
-import { supportedNativeCurrencies } from '@/references';
+import { supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { BigNumberish } from '@ethersproject/bignumber';

@@ -5,7 +5,7 @@ import { Inset, Separator, Stack } from '@/design-system';
 import { ENS_DOMAIN, REGISTRATION_MODES } from '@/helpers/ens';
 import useDimensions from '@/hooks/useDimensions';
 import useENSRegistrant from '@/hooks/useENSRegistrant';
-import { timeUnits } from '@/references';
+import timeUnits from '@/references/time-units.json';
 
 const RenewContent = ({
   yearsDuration,

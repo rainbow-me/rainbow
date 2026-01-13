@@ -1,4 +1,4 @@
-import { supportedNativeCurrencies } from '@/references';
+import { supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { convertAmountToNativeDisplayWorklet } from './utilities';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import {

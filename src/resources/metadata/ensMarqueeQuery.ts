@@ -4,7 +4,7 @@ import { createQueryKey, queryClient, QueryConfig, QueryFunctionResult } from '@
 
 import { metadataClient } from '@/graphql';
 
-import { ensIntroMarqueeNames } from '@/references';
+import ensIntroMarqueeNames from '@/references/ens-intro-marquee-names.json';
 
 export const ensAvatarUrl = (ensName: string) => `https://metadata.ens.domains/mainnet/avatar/${ensName}?v=1.0`;
 

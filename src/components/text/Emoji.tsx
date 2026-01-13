@@ -1,7 +1,7 @@
 import { isString } from 'lodash';
 import React, { ReactNode } from 'react';
 import Text from './Text';
-import { emojis } from '@/references';
+import emojis from '@/references/emojis.json';
 import { TextAlign, TextLetterSpacing, TextSize, TextLineHeight } from './types';
 import { TextStyle, StyleProp } from 'react-native';
 

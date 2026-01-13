@@ -1,6 +1,6 @@
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
-import { supportedNativeCurrencies } from '@/references';
+import { supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { greaterThanOrEqualToWorklet } from '@/safe-math/SafeMath';
 import { addCommasToNumber } from '@/__swaps__/utils/swaps';
 import { CandleResolution } from '../types';

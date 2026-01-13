@@ -1,6 +1,6 @@
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { AppState } from '@/redux/store';
-import { supportedNativeCurrencies } from '@/references';
+import { supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import lang from 'i18n-js';

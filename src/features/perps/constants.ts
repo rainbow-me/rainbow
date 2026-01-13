@@ -8,7 +8,7 @@ import { SearchAsset } from '@/__swaps__/types/search';
 import { ChainId } from '@/state/backendNetworks/types';
 import { LinearTransition } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { supportedNativeCurrencies } from '@/references';
+import { supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 
 export const DEFAULT_SLIPPAGE_BIPS = 500;

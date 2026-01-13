@@ -3,7 +3,7 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { NavigationState, useNavigationStore } from '@/state/navigation/navigationStore';
 import { useUserAssetsStore } from '../assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { ETH_ADDRESS, SupportedCurrencyKey, WETH_ADDRESS } from '@/references';
+import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { getPlatformClient } from '@/resources/platform/client';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, greaterThan, multiply } from '@/helpers/utilities';
 import { fetchHyperliquidPrices } from './hyperliquidPriceService';
