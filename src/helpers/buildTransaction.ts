@@ -4,7 +4,7 @@ import { isNil } from 'lodash';
 import { estimateGasWithPadding, toHex } from '@/handlers/web3';
 import { type StaticJsonRpcProvider, type TransactionRequest } from '@ethersproject/providers';
 import type { SelectedGasFee } from '@/entities/gas';
-import { parseGasParamsForTransaction } from '@/parsers';
+import { parseGasParamsForTransaction } from '@/parsers/gas';
 import { getNextNonce } from '@/state/nonces';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { hexToNumber } from 'viem';

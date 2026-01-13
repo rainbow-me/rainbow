@@ -34,7 +34,7 @@ import {
   parseLegacyGasFeesBySpeed,
   parseRainbowMeteorologyData,
   weiToGwei,
-} from '@/parsers';
+} from '@/parsers/gas';
 import { ethUnits } from '@/references';
 import ethereumUtils from '@/utils/ethereumUtils';
 import gasUtils from '@/utils/gas';

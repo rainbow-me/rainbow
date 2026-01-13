@@ -7,7 +7,7 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import { maybeSignUri } from '@/handlers/imgix';
 import walletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
-import { getRequestDisplayDetails } from '@/parsers';
+import { getRequestDisplayDetails } from '@/parsers/requests';
 import store from '@/redux/store';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';

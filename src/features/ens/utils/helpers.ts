@@ -18,7 +18,7 @@ import {
 import type { ENSRegistrationRecords } from '../types/registration';
 import type { EthereumAddress } from '@/entities/wallet';
 import { getProvider, toHex } from '@/handlers/web3';
-import { gweiToWei } from '@/parsers';
+import { gweiToWei } from '@/parsers/gas';
 import {
   ENSBaseRegistrarImplementationABI,
   ensBaseRegistrarImplementationAddress,

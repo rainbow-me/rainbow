@@ -1,4 +1,4 @@
-import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { AccentColorProvider } from '@/design-system';
 import { useNavigation } from '@/navigation/Navigation';
 import React, { useCallback } from 'react';
 import Routes from '@/navigation/routesNames';

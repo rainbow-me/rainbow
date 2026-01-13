@@ -7,7 +7,7 @@ import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { add, formatNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import { weiToGwei } from '@/parsers';
+import { weiToGwei } from '@/parsers/gas';
 import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { type GasSpeed } from '@/__swaps__/types/gas';
 import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
