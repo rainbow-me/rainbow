@@ -10,7 +10,7 @@ import { useNavigationStore } from '@/state/navigation/navigationStore';
 import Routes from '@/navigation/routesNames';
 import Animated, { useAnimatedRef } from 'react-native-reanimated';
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { fontWithWidth } from '@/styles/buildTextStyles';
 import font from '@/styles/fonts';

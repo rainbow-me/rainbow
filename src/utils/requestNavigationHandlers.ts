@@ -1,4 +1,4 @@
-import { Navigation } from '@/navigation';
+import Navigation, { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 
 import { MobileWalletProtocolUserErrors } from '@/components/MobileWalletProtocolListener';
@@ -7,7 +7,6 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import { maybeSignUri } from '@/handlers/imgix';
 import walletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
-import { getActiveRoute } from '@/navigation/Navigation';
 import { getRequestDisplayDetails } from '@/parsers';
 import store from '@/redux/store';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

@@ -9,7 +9,7 @@ import { TokenSearchNotFound } from '@/components/token-search/TokenSearchNotFou
 import { AnimatedText, Bleed, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { shouldRevokeDelegation } from '@rainbow-me/delegation';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
 import { DELEGATION, getExperimentalFlag } from '@/config';

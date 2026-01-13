@@ -5,9 +5,9 @@ import Divider from '@/components/Divider';
 import { Row } from '@/components/layout';
 import { Sheet, SheetHandleFixedToTop, SheetTitle } from '@/components/sheet';
 import { WalletConnectV2ListItem, WALLET_CONNECT_LIST_ITEM_HEIGHT } from '../components/WalletConnectV2ListItem';
-import { useNavigation } from '@/navigation';
 import styled from '@/framework/ui/styled-thing';
 import { useWalletConnectV2Sessions } from '../hooks/useWalletConnectV2Sessions';
+import { useNavigation } from '@/navigation/Navigation';
 import { useFocusEffect } from '@react-navigation/native';
 import { Text, Box } from '@/design-system';
 

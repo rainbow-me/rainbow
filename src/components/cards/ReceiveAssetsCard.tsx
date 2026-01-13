@@ -4,7 +4,7 @@ import { AccentColorProvider, Box, Inline, Stack, Text } from '@/design-system';
 import useClipboard from '@/hooks/useClipboard';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useAccountAddress } from '@/state/wallets/walletsStore';

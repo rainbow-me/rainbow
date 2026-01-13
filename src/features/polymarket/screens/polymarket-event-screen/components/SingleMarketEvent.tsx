@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { Box, useColorMode } from '@/design-system';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { MarketRow } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';

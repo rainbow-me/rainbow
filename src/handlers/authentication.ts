@@ -2,7 +2,7 @@ import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import AesEncryptor from '../handlers/aesEncryption';
 import * as keychain from '../model/keychain';
 import * as kc from '@/keychain';
-import { Navigation } from '../navigation';
+import Navigation from '../navigation/Navigation';
 import { pinKey } from '@/utils/keychainConstants';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';

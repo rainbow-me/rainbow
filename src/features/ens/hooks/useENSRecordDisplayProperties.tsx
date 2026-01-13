@@ -6,7 +6,7 @@ import useClipboard from '@/hooks/useClipboard';
 import useENSRegistration from './useENSRegistration';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { ENS_RECORDS, REGISTRATION_MODES, textRecordFields } from '../utils/helpers';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { openInBrowser } from '@/utils/openInBrowser';

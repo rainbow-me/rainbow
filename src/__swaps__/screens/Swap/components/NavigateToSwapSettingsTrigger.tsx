@@ -1,6 +1,6 @@
-import { useNavigation } from '@/navigation';
 import { type RootStackParamList } from '@/navigation/types';
 import { type RouteProp, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@/navigation/Navigation';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { useSwapContext } from '../providers/swap-provider';
 import type Routes from '@/navigation/routesNames';

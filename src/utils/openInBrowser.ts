@@ -1,5 +1,5 @@
 import { logger } from '@/logger';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { Linking } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';

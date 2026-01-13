@@ -13,7 +13,7 @@ import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBa
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { prepareAirdropClaim } from '@/features/rnbw-rewards/utils/claimAirdrop';
 

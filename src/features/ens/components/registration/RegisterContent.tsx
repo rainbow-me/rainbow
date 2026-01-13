@@ -4,7 +4,7 @@ import { Switch } from 'react-native-gesture-handler';
 import StepIndicator from '@/components/step-indicator/StepIndicator';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Row, Rows, Separator, Stack, Text } from '@/design-system';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 

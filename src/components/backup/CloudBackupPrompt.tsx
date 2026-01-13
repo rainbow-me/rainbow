@@ -2,7 +2,7 @@ import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { backupsStore } from '@/state/backups/backups';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';

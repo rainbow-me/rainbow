@@ -15,7 +15,7 @@ import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { ImgixImage } from '@/components/images';
 import RestoreYourWallet from '@/assets/RestoreYourWallet.png';
 import { type Source } from 'react-native-fast-image';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { openInBrowser } from '@/utils/openInBrowser';
 import type Routes from '@/navigation/routesNames';
 

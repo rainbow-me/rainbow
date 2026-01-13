@@ -14,7 +14,7 @@ import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
-import { Navigation, useNavigation } from '@/navigation';
+import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { sanitizeSeedPhrase } from '@/utils/formatters';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';

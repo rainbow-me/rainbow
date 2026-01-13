@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { Box, Stack, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
 import { USDC_ICON_URL } from '@/features/perps/constants';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { View } from 'react-native';
 import { ImgixImage } from '@/components/images';

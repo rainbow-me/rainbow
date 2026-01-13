@@ -9,7 +9,7 @@ import rnbwCoinImage from '@/assets/rnbw.png';
 import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
 import * as i18n from '@/languages';
 import { ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { IS_IOS } from '@/env';
 

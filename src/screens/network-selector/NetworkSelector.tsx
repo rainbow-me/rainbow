@@ -60,8 +60,8 @@ import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPane
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
-import { Navigation, useNavigation } from '@/navigation';
 import { type UserAssetFilter } from '@/__swaps__/types/assets';
+import Navigation, { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { SEARCH_BAR_HEIGHT, SearchBar } from './components/SearchBar';
 import { KeyboardStickyView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';

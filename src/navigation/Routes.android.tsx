@@ -30,7 +30,6 @@ import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
 import { WelcomeScreen } from '../screens/WelcomeScreen/WelcomeScreen';
 import RegisterENSNavigator from '@/features/ens/navigation/RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
-import { createBottomSheetNavigator } from './bottom-sheet';
 import {
   closeKeyboardOnClose,
   defaultScreenStackOptions,
@@ -119,6 +118,7 @@ import { PolymarketExplainSheet } from '@/features/polymarket/screens/polymarket
 import { PolymarketSellPositionSheet } from '@/features/polymarket/screens/polymarket-sell-position-sheet/PolymarketSellPositionSheet';
 import { RnbwRewardsEstimateSheet } from '@/features/rnbw-rewards/screens/rnbw-rewards-estimate-sheet/RnbwRewardsEstimateSheet';
 import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
+import { createBottomSheetNavigator } from './bottom-sheet/createBottomSheetNavigator';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();

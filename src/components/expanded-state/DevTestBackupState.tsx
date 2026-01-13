@@ -5,7 +5,7 @@ import { clear } from '@/keychain';
 import { logger, RainbowError } from '@/logger';
 import { createBackup, restoreBackup } from '@/model/backup';
 import { clearAllStorages } from '@/model/mmkv';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { rainbowStorage } from '@/state/internal/rainbowStorage';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';

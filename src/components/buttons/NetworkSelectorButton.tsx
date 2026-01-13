@@ -5,7 +5,7 @@ import * as i18n from '@/languages';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { type RouteProp } from '@react-navigation/native';

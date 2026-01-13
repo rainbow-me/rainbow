@@ -15,8 +15,8 @@ import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import Routes from '@/navigation/routesNames';
-import { Navigation } from '@/navigation';
 import { type TokenToBuyListItem } from '@/__swaps__/types/search';
+import Navigation from '@/navigation/Navigation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { type UserAssetFilter } from '@/__swaps__/types/assets';
 

@@ -18,7 +18,7 @@ import { NETWORK_MENU_ACTION_KEY_FILTER, networksMenuItems } from '@/helpers/wal
 import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
 import { type RainbowWallet } from '@/model/wallet';
-import { Navigation, useNavigation } from '@/navigation';
+import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useDappMetadata } from '@/resources/metadata/dapp';

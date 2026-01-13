@@ -1,7 +1,7 @@
 import { type RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { loadAllKeys } from '@/model/keychain';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
