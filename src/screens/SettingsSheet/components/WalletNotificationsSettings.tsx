@@ -8,18 +8,17 @@ import MenuItem from './MenuItem';
 import { type ThemeContextProps, useTheme } from '@/theme';
 import { type RouteProp, useRoute } from '@react-navigation/native';
 import {
+  DEFAULT_ENABLED_TOPIC_SETTINGS,
   WalletNotificationRelationship,
   WalletNotificationTopic,
-  type WalletNotificationTopicType,
-  updateGroupSettings,
-  useWalletGroupNotificationSettings,
-  type WalletNotificationSettings,
-} from '@/notifications/settings';
+} from '@/notifications/settings/constants';
+import type { WalletNotificationTopicType, WalletNotificationSettings } from '@/notifications/settings/types';
+import { updateGroupSettings } from '@/notifications/settings/storage';
+import { useWalletGroupNotificationSettings } from '@/notifications/settings/hooks';
 import { toggleGroupNotifications, toggleTopicForWallet } from '@/notifications/settings/settings';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { DEFAULT_ENABLED_TOPIC_SETTINGS } from '@/notifications/settings/constants';
 import { type RootStackParamList } from '@/navigation/types';
 import type Routes from '@/navigation/routesNames';
 

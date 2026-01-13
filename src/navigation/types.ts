@@ -36,7 +36,7 @@ import { type LearnCardKey, type LearnCategory } from '@/components/cards/utils/
 import { type CardType } from '@/components/cards/GenericCard';
 import { type RefObject } from 'react';
 import { type ActiveTabRef } from '@/components/DappBrowser/types';
-import { type WalletNotificationSettings } from '@/notifications/settings';
+import { type WalletNotificationSettings } from '@/notifications/settings/types';
 import { type LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { type BigNumberish } from '@ethersproject/bignumber';
 import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
