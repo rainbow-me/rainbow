@@ -1,5 +1,5 @@
 import qs from 'qs';
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_DEV } from '@/env';
 import {
   HyperliquidChartParams,

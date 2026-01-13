@@ -17,7 +17,7 @@ import { Address } from 'viem';
 
 import { metadataPOSTClient } from '@/graphql';
 import { ChainId } from '@/state/backendNetworks/types';
-import { NewTransaction, TxHash, TransactionStatus, TransactionDirection } from '@/entities';
+import { NewTransaction, TxHash, TransactionStatus, TransactionDirection } from '@/entities/transactions';
 import { add } from '@/helpers/utilities';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, ensureError, logger } from '@/logger';

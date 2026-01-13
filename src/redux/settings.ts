@@ -5,7 +5,7 @@ import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { Language, updateLanguageLocale } from '../languages';
 import { analytics } from '@/analytics';
-import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities';
+import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 
 import {

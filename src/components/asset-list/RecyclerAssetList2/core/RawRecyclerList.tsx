@@ -1,6 +1,7 @@
 import { UniqueId } from '@/__swaps__/types/assets';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
-import { NativeCurrencyKey, UniqueAsset } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEdited from '@/hooks/useCoinListEdited';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';

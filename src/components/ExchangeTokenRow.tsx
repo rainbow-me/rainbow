@@ -10,7 +10,7 @@ import { FavStar, Info } from '@/components/asset-list/RecyclerAssetList2/FastCo
 import { View } from 'react-native';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ChainId } from '@/state/backendNetworks/types';
-import { ParsedAddressAsset } from '@/entities';
+import type { ParsedAddressAsset } from '@/entities/tokens';
 
 interface ExchangeTokenRowProps {
   item: any;

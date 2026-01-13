@@ -1,5 +1,5 @@
+import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import {
-  NativeCurrencyKey,
   RainbowTransaction,
   TransactionDirection,
   PaginatedTransactionsApiResponse,
@@ -9,7 +9,7 @@ import {
   TransactionTypeMap,
   TransactionWithChangesType,
   TransactionWithoutChangesType,
-} from '@/entities';
+} from '@/entities/transactions';
 
 import {
   convertAmountAndPriceToNativeDisplay,

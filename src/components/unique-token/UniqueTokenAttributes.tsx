@@ -3,7 +3,7 @@ import { sortList } from '../../helpers/sortList';
 import magicMemo from '@/utils/magicMemo';
 import Tag from './Tag';
 import { Inline } from '@/design-system';
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import isHttpUrl from '@/helpers/isHttpUrl';
 import transformUniqueAssetTraitsForPresentation from '@/helpers/transformUniqueAssetTraitsForPresentation';
 import uniqueAssetTraitDisplayTypeCompareFunction from '@/helpers/uniqueAssetTraitDisplayTypeCompareFunction';

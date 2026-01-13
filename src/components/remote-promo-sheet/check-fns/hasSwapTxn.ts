@@ -1,4 +1,5 @@
-import type { EthereumAddress, RainbowTransaction } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
+import type { RainbowTransaction } from '@/entities/transactions';
 import { queryClient } from '@/react-query/queryClient';
 import store from '@/redux/store';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';

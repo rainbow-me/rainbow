@@ -44,7 +44,7 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 // DO NOT REMOVE THESE COMMENTED ENV VARS
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IS_APK_BUILD } from 'react-native-dotenv';
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_TEST } from '@/env';
 
 const DEFAULT_SLIPPAGE_BIPS = 500;

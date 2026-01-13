@@ -4,7 +4,7 @@ import Animated, { SharedValue, useDerivedValue, useAnimatedStyle, withSpring, w
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, AnimatedTextProps, Box, BoxProps, Text, TextProps, TextShadow, useColorMode } from '@/design-system';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_IOS } from '@/env';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';

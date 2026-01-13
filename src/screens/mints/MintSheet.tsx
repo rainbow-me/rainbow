@@ -5,7 +5,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContactAvatar } from '@/components/contacts';
 import { GasSpeedButton } from '@/components/gas';
 import { Bleed, Box, ColorModeProvider, Column, Columns, Inline, Inset, Separator, Stack, Text } from '@/design-system';
-import { NewTransaction, TransactionStatus } from '@/entities';
+import { NewTransaction, TransactionStatus } from '@/entities/transactions';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { metadataPOSTClient } from '@/graphql';
 import { ReservoirCollection } from '@/graphql/__generated__/arcDev';

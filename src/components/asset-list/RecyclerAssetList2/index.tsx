@@ -5,7 +5,7 @@ import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import { NAVBAR_ICON_SIZE, NavBarTextIconFrame } from '@/components/navbar/NavbarTextIcon';
 import { Box, Cover, Text } from '@/design-system';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
-import { UniqueAsset } from '@/entities';
+import { UniqueAsset } from '@/entities/uniqueAssets';
 import { IS_ANDROID } from '@/env';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';

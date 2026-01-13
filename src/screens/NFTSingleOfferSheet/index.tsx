@@ -27,7 +27,7 @@ import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import useGas from '@/hooks/useGas';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities';
+import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { analytics } from '@/analytics';
 import { BigNumber } from '@ethersproject/bignumber';
 import { HoldToAuthorizeButton } from '@/components/buttons';

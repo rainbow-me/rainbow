@@ -2,7 +2,8 @@ import { TransactionReceipt, TransactionRequest } from '@ethersproject/abstract-
 import { Wallet } from '@ethersproject/wallet';
 import { Address, formatUnits } from 'viem';
 import { analytics } from '@/analytics';
-import { NativeCurrencyKey, NewTransaction, TransactionStatus } from '@/entities';
+import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { NewTransaction, TransactionStatus } from '@/entities/transactions';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider, toHex } from '@/handlers/web3';
 import { add, convertAmountToNativeDisplayWorklet, multiply, formatNumber } from '@/helpers/utilities';
