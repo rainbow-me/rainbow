@@ -3,7 +3,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { MiniButton } from '../buttons';
 import ExchangeInput from '@/components/ExchangeInput';
 import { Column, Row } from '../layout';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 

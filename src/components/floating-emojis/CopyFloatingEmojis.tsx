@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import FloatingEmojis from './FloatingEmojis';
-import { useClipboard } from '@/hooks';
+import useClipboard from '@/hooks/useClipboard';
 import magicMemo from '@/utils/magicMemo';
 
 interface CopyFloatingEmojisProps {

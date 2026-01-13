@@ -1,18 +1,16 @@
 import { AccentColorProvider, Bleed, Box, Cover, Heading, Inline, Inset, Row, Rows, Stack, Text } from '@/design-system';
 import { getSeenOnchainDataDisclaimer, saveSeenOnchainDataDisclaimer } from '@/handlers/localstorage/ens';
 import { accentColorAtom, ENS_RECORDS, REGISTRATION_MODES, TextRecordField, textRecordFields } from '@/helpers/ens';
-import {
-  useDimensions,
-  useENSModifiedRegistration,
-  useENSRecords,
-  useENSRegistration,
-  useENSRegistrationCosts,
-  useENSRegistrationForm,
-  useENSRegistrationStepHandler,
-  useENSSearch,
-  useKeyboardHeight,
-  useWalletSectionsData,
-} from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
+import useENSModifiedRegistration from '@/hooks/useENSModifiedRegistration';
+import useENSRecords from '@/hooks/useENSRecords';
+import useENSRegistration from '@/hooks/useENSRegistration';
+import useENSRegistrationCosts from '@/hooks/useENSRegistrationCosts';
+import useENSRegistrationForm from '@/hooks/useENSRegistrationForm';
+import useENSRegistrationStepHandler from '@/hooks/useENSRegistrationStepHandler';
+import useENSSearch from '@/hooks/useENSSearch';
+import useKeyboardHeight from '@/hooks/useKeyboardHeight';
+import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { ENSRoutes } from '@/navigation/RegisterENSNavigator';
 import Routes from '@/navigation/routesNames';

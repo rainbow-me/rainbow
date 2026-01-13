@@ -3,7 +3,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 

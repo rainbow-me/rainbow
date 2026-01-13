@@ -1,6 +1,6 @@
 import React from 'react';
 import { RefreshControl, RefreshControlProps } from 'react-native';
-import { useRefreshAccountData } from '@/hooks';
+import useRefreshAccountData from '@/hooks/useRefreshAccountData';
 import { useTheme } from '@/theme';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { opacity } from '@/framework/ui/utils/opacity';

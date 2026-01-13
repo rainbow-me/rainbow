@@ -4,7 +4,7 @@ import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIconIndicator } from '../coin-icon';
 import { Icon } from '../icons';
 import { Row } from '../layout';
-import { useCoinListFinishEditingOptions } from '@/hooks';
+import { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import styled from '@/styled-thing';
 import { borders, padding, position, shadow } from '@/styles';
 import { opacity } from '@/framework/ui/utils/opacity';

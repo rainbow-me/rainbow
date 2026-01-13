@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { Pressable } from 'react-native';
 import { Text } from '@/design-system';
-import { useAppVersion, useTimeout } from '@/hooks';
+import useAppVersion from '@/hooks/useAppVersion';
+import useTimeout from '@/hooks/useTimeout';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';

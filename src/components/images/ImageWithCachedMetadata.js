@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { useImageMetadata } from '@/hooks';
+import useImageMetadata from '@/hooks/useImageMetadata';
 import FastImage from 'react-native-fast-image';
 
 const ImageWithCachedMetadata = ({ cache = FastImage.cacheControl.web, imageUrl, onLoad, ...props }, ref) => {

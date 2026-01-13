@@ -5,7 +5,7 @@ import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@/design-system';
 import { Records } from '@/entities';
 import { deprecatedTextRecordFields, ENS_RECORDS } from '@/helpers/ens';
-import { useENSRecordDisplayProperties } from '@/hooks';
+import useENSRecordDisplayProperties from '@/hooks/useENSRecordDisplayProperties';
 
 const omitRecordKeys = [ENS_RECORDS.avatar, ENS_RECORDS.displayName];
 const topRecordKeys = [ENS_RECORDS.header, ENS_RECORDS.name, ENS_RECORDS.description];

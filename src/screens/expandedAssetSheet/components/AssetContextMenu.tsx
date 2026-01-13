@@ -2,7 +2,7 @@ import React, { useMemo, useEffect } from 'react';
 import * as i18n from '@/languages';
 import { DropdownMenu, MenuConfig, MenuItem } from '@/components/DropdownMenu';
 import { SheetActionButton } from '@/components/sheet';
-import { useCoinListFinishEditingOptions, useCoinListEditOptions } from '@/hooks';
+import useCoinListEditOptions, { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import { useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import ethereumUtils from '@/utils/ethereumUtils';

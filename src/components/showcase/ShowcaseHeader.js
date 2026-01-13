@@ -1,6 +1,6 @@
 import { getContacts } from '@/handlers/localstorage/contacts';
 import { isHexString } from '@/handlers/web3';
-import { useImportingWallet } from '@/hooks';
+import useImportingWallet from '@/hooks/useImportingWallet';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';

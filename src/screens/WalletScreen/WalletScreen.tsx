@@ -5,7 +5,10 @@ import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolL
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { Box } from '@/design-system';
-import { useAccountAccentColor, useAccountSettings, useFetchOpenCollectionsOnMount, useWalletSectionsData } from '@/hooks';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import useFetchOpenCollectionsOnMount from '@/hooks/useFetchOpenCollectionsOnMount';
+import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
 import { useInitializeWalletAndSetParams } from '@/hooks/useInitializeWalletAndSetParams';
