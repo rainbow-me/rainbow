@@ -6,7 +6,11 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
-import { globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
+import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import * as i18n from '@/languages';
 // import {
 //   polymarketRecommendationsActions,

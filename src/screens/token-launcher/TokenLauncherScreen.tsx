@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo } from 'react';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
-import { Border, Box, ColorModeProvider, globalColors } from '@/design-system';
+import { Border } from '@/design-system/components/Border/Border';
+import { Box } from '@/design-system/components/Box/Box';
+import { ColorModeProvider } from '@/design-system/color/ColorMode';
+import { globalColors } from '@/design-system/color/palettes';
 import { FOOTER_HEIGHT, TokenLauncherFooter } from './components/TokenLauncherFooter';
 import { TokenLauncherHeader } from './components/TokenLauncherHeader';
 import { InfoInputStep } from './components/InfoInputStep';

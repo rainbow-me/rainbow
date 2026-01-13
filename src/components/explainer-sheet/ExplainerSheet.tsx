@@ -4,7 +4,9 @@ import { Panel, PANEL_WIDTH, TapToDismiss } from '@/components/SmoothPager/ListP
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { SheetHandle } from '@/components/sheet';
-import { Box, Separator, AnimatedText } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import LinearGradient from 'react-native-linear-gradient';

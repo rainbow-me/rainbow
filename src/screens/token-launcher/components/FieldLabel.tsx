@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
 
 export function FieldLabel({ children }: { children: React.ReactNode }) {
   return (

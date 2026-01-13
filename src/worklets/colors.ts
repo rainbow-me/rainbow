@@ -1,5 +1,5 @@
 import { ParsedColorArray, convertToRGBA } from 'react-native-reanimated';
-import { globalColors } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
 
 export interface HSV {
   h: number;

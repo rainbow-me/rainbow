@@ -1,4 +1,7 @@
-import { Box, Text, TextIcon, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { TriggerOrderType } from '@/features/perps/types';
 import React, { memo } from 'react';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';

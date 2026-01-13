@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { GasMenu } from './GasMenu';
 import { GasSpeed } from '@/__swaps__/types/gas';

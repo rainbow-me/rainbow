@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
-import { Box, Text, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { ImgixImage } from '@/components/images';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';

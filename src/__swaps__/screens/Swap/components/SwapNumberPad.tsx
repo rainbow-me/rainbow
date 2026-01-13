@@ -13,7 +13,14 @@ import Animated, {
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { supportedNativeCurrencies } from '@/references';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Bleed, Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Columns } from '@/design-system/components/Columns/Columns';
+import { HitSlop } from '@/design-system/components/HitSlop/HitSlop';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { IS_IOS } from '@/env';
 import { equalWorklet } from '@/safe-math/SafeMath';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';

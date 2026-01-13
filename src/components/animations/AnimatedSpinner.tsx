@@ -12,7 +12,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { useForegroundColor } from '@/design-system';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { useCleanup } from '@/hooks/useCleanup';
 
 export const spinnerExitConfig = TIMING_CONFIGS.slowerFadeConfig;

@@ -1,5 +1,5 @@
 import { caretConfig } from '@/__swaps__/screens/Swap/constants';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {

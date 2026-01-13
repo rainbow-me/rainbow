@@ -1,6 +1,7 @@
 import React, { ForwardedRef } from 'react';
 import { TextInput as TextInputPrimitive, TextInputProps, StyleProp, TextStyle } from 'react-native';
-import { useColorMode, useForegroundColor } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import styled from '@/styled-thing';
 import { buildTextStyles, fonts } from '@/styles';

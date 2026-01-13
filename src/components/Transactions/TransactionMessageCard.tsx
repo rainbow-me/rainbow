@@ -3,7 +3,10 @@ import * as i18n from '@/languages';
 import { useSharedValue } from 'react-native-reanimated';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Bleed, Box, Inline, Text } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
 
 import useClipboard from '@/hooks/useClipboard';
 import { logger } from '@/logger';

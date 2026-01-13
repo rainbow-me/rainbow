@@ -4,7 +4,7 @@ import { BackupCloudStep, RestoreCloudStep } from '.';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import BackupWalletPrompt from '@/components/backup/BackupWalletPrompt';
 import ManualBackupPrompt from '@/components/backup/ManualBackupPrompt';
-import { BackgroundProvider } from '@/design-system';
+import { BackgroundProvider } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { getHeightForStep } from '@/navigation/config';
 import CloudBackupPrompt from './CloudBackupPrompt';

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Box, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 
 type Props = {
   title: string;

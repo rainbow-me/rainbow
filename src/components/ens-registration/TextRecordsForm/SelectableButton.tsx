@@ -1,6 +1,9 @@
 import React, { ReactNode } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import { AccentColorProvider, Box, Text, useForegroundColor } from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
 type SelectableButtonProps = {
   children: ReactNode;

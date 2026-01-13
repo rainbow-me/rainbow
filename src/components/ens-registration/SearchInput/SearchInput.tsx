@@ -4,7 +4,12 @@ import { TextInput, TextInputProps } from 'react-native';
 import Spinner from '../../Spinner';
 import { Input } from '../../inputs';
 import SearchInputGradientBackground from './SearchInputGradientBackground';
-import { Box, Column, Columns, Cover, Heading, Inset, useHeadingStyle } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { Heading } from '@/design-system/components/Heading/Heading';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { useHeadingStyle } from '@/design-system/components/Heading/useHeadingStyle';
 import useDimensions from '@/hooks/useDimensions';
 import useMagicAutofocus from '@/hooks/useMagicAutofocus';
 

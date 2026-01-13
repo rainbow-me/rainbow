@@ -1,4 +1,6 @@
-import { Box, Separator, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
 import * as i18n from '@/languages';
 import { memo, useState } from 'react';
 import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';

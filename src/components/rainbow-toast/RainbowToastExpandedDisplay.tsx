@@ -2,7 +2,7 @@ import { TOAST_EXPANDED_DISMISS_SENSITIVITY, TOAST_EXPANDED_UPWARD_SENSITIVITY_M
 import { ToastExpandedContent } from '@/components/rainbow-toast/ToastExpandedContent';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Panel } from '@/components/SmoothPager/ListPanel';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import useDimensions from '@/hooks/useDimensions';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

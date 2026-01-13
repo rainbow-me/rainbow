@@ -1,6 +1,10 @@
 import React from 'react';
 import * as i18n from '@/languages';
-import { Bleed, Box, Inline, Text, TextIcon } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { FieldContainer } from './FieldContainer';
 import { FieldLabel } from './FieldLabel';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';

@@ -1,5 +1,8 @@
 import React, { memo } from 'react';
-import { Box, BoxProps, Text, TextIcon } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import type { BoxProps } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import * as i18n from '@/languages';
 
 export const NoChartData = memo(function NoChartData({ height }: { height: BoxProps['height'] }) {

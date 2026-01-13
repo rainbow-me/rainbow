@@ -10,7 +10,10 @@ import Animated, {
   withDelay,
 } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { HitSlop, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { HitSlop } from '@/design-system/components/HitSlop/HitSlop';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { colors } from '@/styles';

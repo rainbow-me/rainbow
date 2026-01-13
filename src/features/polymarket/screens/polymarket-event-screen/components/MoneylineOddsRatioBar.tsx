@@ -1,6 +1,9 @@
 import React, { memo, useMemo } from 'react';
 import * as i18n from '@/languages';
-import { Box, Text, TextShadow, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { PolymarketEvent, PolymarketMarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getMarketsGroupedByBetType } from '@/features/polymarket/screens/polymarket-event-screen/utils/getMarketsGroupedByBetType';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';

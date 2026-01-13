@@ -1,7 +1,11 @@
 /** @refresh reset */
 import React from 'react';
 import Animated, { DerivedValue, LinearTransition, SharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { Bleed, Box, IconContainer, Text, TextShadow } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { IconContainer } from '@/design-system/components/IconContainer/IconContainer';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 

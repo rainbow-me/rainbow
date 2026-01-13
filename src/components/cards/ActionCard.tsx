@@ -1,4 +1,6 @@
-import { Box, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import React from 'react';
 import { GenericCard } from './GenericCard';
 import { CardColor } from './utils/types';

@@ -11,7 +11,9 @@ import { SwapAssetType } from '@/__swaps__/types/swap';
 import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import {} from '@/__swaps__/utils/swaps';
-import { Inline, Text, TextIcon } from '@/design-system';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { NavigateToSwapsParams, navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 
 type SwapActionButtonProps = {

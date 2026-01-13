@@ -1,5 +1,9 @@
 import React, { memo, useEffect, useState } from 'react';
-import { Box, globalColors, Separator, Text, TextShadow } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { globalColors } from '@/design-system/color/palettes';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import * as i18n from '@/languages';

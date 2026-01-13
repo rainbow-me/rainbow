@@ -1,5 +1,8 @@
 import React, { useCallback, forwardRef, useImperativeHandle, useState } from 'react';
-import { AnimatedText, Box, Text, useTextStyle } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { useTextStyle } from '@/design-system/components/Text/useTextStyle';
 import { AnimatedTextChildProps } from '@/design-system/components/Text/AnimatedText';
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import Animated, {

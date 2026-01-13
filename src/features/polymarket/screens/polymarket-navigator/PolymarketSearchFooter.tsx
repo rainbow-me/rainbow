@@ -1,6 +1,9 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, TextInput, View, NativeSyntheticEvent, TextInputChangeEventData } from 'react-native';
-import { Box, globalColors, Text, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { globalColors } from '@/design-system/color/palettes';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { PolymarketNavigation } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

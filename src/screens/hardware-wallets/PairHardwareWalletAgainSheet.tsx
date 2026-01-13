@@ -1,6 +1,10 @@
 import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
-import { Box, Inline, Inset, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { ImgixImage } from '@/components/images';
 import ledgerNano from '@/assets/ledger-nano.png';
 import { LEDGER_NANO_HEIGHT, LEDGER_NANO_WIDTH, GRID_DOTS_SIZE } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';

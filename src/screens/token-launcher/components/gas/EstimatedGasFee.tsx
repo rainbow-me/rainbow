@@ -1,5 +1,7 @@
 import React from 'react';
-import { Inline, TextIcon, TextProps } from '@/design-system';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import type { TextProps } from '@/design-system/components/Text/Text';
 import { useDerivedValue } from 'react-native-reanimated';
 import { GasFeeText } from './GasFeeText';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';

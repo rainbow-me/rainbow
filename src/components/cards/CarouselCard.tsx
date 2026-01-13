@@ -1,5 +1,11 @@
 /* eslint-disable no-nested-ternary */
-import { Bleed, Box, Column, Columns, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import React, { useEffect, useRef, useState } from 'react';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

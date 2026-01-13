@@ -1,4 +1,8 @@
-import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import React from 'react';
 import { CardType, GenericCard } from './GenericCard';
 import { getLearnCardColorway } from './utils/constants';

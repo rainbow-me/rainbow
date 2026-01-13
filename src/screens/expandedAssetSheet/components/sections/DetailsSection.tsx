@@ -1,6 +1,11 @@
 import React, { memo, useMemo, useState } from 'react';
 import * as i18n from '@/languages';
-import { Bleed, Box, IconContainer, Inline, Text, TextShadow } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { IconContainer } from '@/design-system/components/IconContainer/IconContainer';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { Row } from '../shared/Row';
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

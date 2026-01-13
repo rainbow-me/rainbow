@@ -5,7 +5,10 @@ import CheckmarkCircledIcon from '../../../components/icons/svg/CheckmarkCircled
 import WarningIcon from '../../../components/icons/svg/WarningIcon';
 import Chevron from '@/assets/chevronUpDown.png';
 import Caret from '@/assets/family-dropdown-arrow.png';
-import { Box, Inline, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import { ImageSourcePropType } from 'react-native';

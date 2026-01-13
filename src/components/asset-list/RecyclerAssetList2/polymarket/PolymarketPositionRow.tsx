@@ -1,6 +1,9 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { Bleed, Box, Text, useColorMode } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { PolymarketPosition } from '@/features/polymarket/types';
 import ImgixImage from '@/components/images/ImgixImage';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

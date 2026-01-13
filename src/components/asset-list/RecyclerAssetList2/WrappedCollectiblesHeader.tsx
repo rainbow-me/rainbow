@@ -1,5 +1,7 @@
 import React from 'react';
-import { Box, Inline, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
 import * as i18n from '@/languages';
 // import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';
 // import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';

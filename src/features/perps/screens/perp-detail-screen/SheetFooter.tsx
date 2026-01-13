@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { Box, Text, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';

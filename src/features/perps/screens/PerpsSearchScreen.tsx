@@ -1,6 +1,11 @@
 import React, { memo } from 'react';
 import { Keyboard } from 'react-native';
-import { Box, Separator, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { useFilteredHyperliquidMarkets, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { PerpMarketsList } from '@/features/perps/components/PerpMarketsList';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, FOOTER_HEIGHT } from '@/features/perps/constants';

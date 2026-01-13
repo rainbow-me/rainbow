@@ -1,7 +1,9 @@
 import { opacity } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GradientText } from '@/components/text';
-import { globalColors, Text, useColorMode } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

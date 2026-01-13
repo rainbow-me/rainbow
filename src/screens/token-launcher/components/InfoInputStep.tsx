@@ -1,6 +1,9 @@
 import React, { useCallback, useRef } from 'react';
 import * as i18n from '@/languages';
-import { Bleed, Box, Text, Separator } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { Separator } from '@/design-system/components/Separator/Separator';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { FOOTER_HEIGHT } from './TokenLauncherFooter';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT, TOKEN_LAUNCHER_SCROLL_INDICATOR_INSETS } from './TokenLauncherHeader';

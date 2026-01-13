@@ -1,7 +1,12 @@
 import React, { useMemo } from 'react';
 import { Image, ImageBackground } from 'react-native';
 import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
-import { AccentColorProvider, Box, Columns, Inline, Stack, Text } from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Box } from '@/design-system/components/Box/Box';
+import { Columns } from '@/design-system/components/Columns/Columns';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import * as i18n from '@/languages';
 import { RewardsAmount } from '@/graphql/__generated__/metadata';
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';

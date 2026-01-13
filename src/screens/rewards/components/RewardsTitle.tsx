@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
 
 type Props = { text: string };
 

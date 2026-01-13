@@ -7,7 +7,9 @@ import { UserCredentials } from 'react-native-keychain';
 import { useTheme } from '@/theme';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
-import { Box, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import * as i18n from '@/languages';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 

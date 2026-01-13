@@ -1,6 +1,11 @@
 import React, { memo, useState } from 'react';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Bleed, Box, Stack, Text, TextIcon, TextShadow } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { POLYMARKET_ACCENT_COLOR } from '@/features/polymarket/constants';
 import { Navigation } from '@/navigation';

@@ -8,7 +8,10 @@ import useExperimentalFlag, {
   TRENDING_TOKENS,
   POLYMARKET,
 } from '@rainbow-me/config/experimentalHooks';
-import { Inline, Inset, Stack, Box } from '@/design-system';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Box } from '@/design-system/components/Box/Box';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { GasCard } from '@/components/cards/GasCard';

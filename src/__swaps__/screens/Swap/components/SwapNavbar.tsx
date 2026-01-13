@@ -10,18 +10,16 @@ import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';
 import { DEGEN_MODE, useExperimentalFlag } from '@/config';
-import {
-  AnimatedText,
-  Bleed,
-  Box,
-  IconContainer,
-  Inset,
-  Text,
-  TextShadow,
-  globalColors,
-  useColorMode,
-  useForegroundColor,
-} from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { IconContainer } from '@/design-system/components/IconContainer/IconContainer';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';

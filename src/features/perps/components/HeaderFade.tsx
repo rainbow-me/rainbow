@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { StyleSheet } from 'react-native';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 

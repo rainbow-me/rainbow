@@ -3,7 +3,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ParsedAddressAsset, RainbowTransaction } from '@/entities';
 
-import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, TextProps } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Columns } from '@/design-system/components/Columns/Columns';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { Row, Rows } from '@/design-system/components/Rows/Rows';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import type { TextProps } from '@/design-system/components/Text/Text';
 
 import styled from '@/styled-thing';
 import { position } from '@/styles';

@@ -3,7 +3,10 @@ import { Source } from 'react-native-fast-image';
 import GoogleSearchIcon from '@/assets/googleSearchIcon.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
-import { Box, Inline, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { formatUrl } from '../utils';
 
 export const SearchResult = ({

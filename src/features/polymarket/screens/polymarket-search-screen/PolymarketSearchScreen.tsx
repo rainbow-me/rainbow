@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
 import * as i18n from '@/languages';
 import { polymarketEventSearchActions, usePolymarketEventSearchStore } from '@/features/polymarket/stores/polymarketEventSearchStore';
 import { PolymarketEventsListBase } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListBase';

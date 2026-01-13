@@ -4,7 +4,7 @@ import { SendToastIcon } from '@/components/rainbow-toast/icons/SendToastIcon';
 import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
 import { RainbowToast } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
-import { Text } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
 import { AssetType, TransactionStatus } from '@/entities';
 import { useTransactionLaunchToken } from '@/helpers/transactions';
 import * as i18n from '@/languages';

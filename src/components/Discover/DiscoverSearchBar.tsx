@@ -1,7 +1,9 @@
 import React from 'react';
 import * as i18n from '@/languages';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Inline, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
 import DiscoverSearchInput from '@/components/Discover/DiscoverSearchInput';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import deviceUtils from '@/utils/deviceUtils';

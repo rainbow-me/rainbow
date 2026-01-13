@@ -15,7 +15,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { globalColors } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
 
 import { useTheme } from '@/theme';
 

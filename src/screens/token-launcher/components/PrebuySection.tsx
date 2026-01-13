@@ -1,6 +1,10 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import * as i18n from '@/languages';
-import { AnimatedText, Box, Separator, TextShadow, useForegroundColor } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Box } from '@/design-system/components/Box/Box';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { CollapsableField } from './CollapsableField';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';

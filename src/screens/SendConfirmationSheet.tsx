@@ -3,7 +3,13 @@ import Divider from '@/components/Divider';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { Box, Heading, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Heading } from '@/design-system/components/Heading/Heading';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { AssetType } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import {

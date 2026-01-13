@@ -1,4 +1,4 @@
-import { useForegroundColor } from '@/design-system';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import React from 'react';
 
 type NavbarIconProps = {

@@ -2,7 +2,10 @@ import React, { useMemo } from 'react';
 import * as i18n from '@/languages';
 import { Image, PixelRatio } from 'react-native';
 
-import { Bleed, Box, Inline, Text } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
 
 import { TransactionAssetType, TransactionSimulationAsset } from '@/graphql/__generated__/metadataPOST';
 import { Network } from '@/state/backendNetworks/types';

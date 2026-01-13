@@ -1,4 +1,4 @@
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import React, { useMemo } from 'react';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { TriggerOrderCard } from '@/features/perps/components/TriggerOrderCard';

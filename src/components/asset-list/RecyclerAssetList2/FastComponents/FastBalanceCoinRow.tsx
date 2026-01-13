@@ -4,7 +4,7 @@ import CoinIconIndicator from '@/components/coin-icon/CoinIconIndicator';
 import { Icon } from '@/components/icons';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ExtendedState } from '../core/RawRecyclerList';
-import { Text } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
 import useAccountAsset from '@/hooks/useAccountAsset';
 import { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import Routes from '@/navigation/routesNames';

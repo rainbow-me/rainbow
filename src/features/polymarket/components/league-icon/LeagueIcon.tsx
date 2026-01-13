@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { SPORT_LEAGUES, getLeagueId } from '@/features/polymarket/leagues';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { CfbIcon } from './icons/CfbIcon';

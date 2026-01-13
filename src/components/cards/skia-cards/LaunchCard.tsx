@@ -2,7 +2,7 @@ import { opacity } from '@/__swaps__/utils/swaps';
 import { BlendColor, Circle, Group, ImageSVG, LinearGradient, Mask, Paint, Rect, Shadow, vec } from '@shopify/react-native-skia';
 import React, { memo, useState } from 'react';
 import { enableActionsOnReadOnlyWallet } from '@/config';
-import { SkiaText, SkiaTextChild } from '@/design-system';
+import { SkiaText, SkiaTextChild } from '@/design-system/components/SkiaText/SkiaText';
 import { globalColors } from '@/design-system/color/palettes';
 import { useCleanup } from '@/hooks/useCleanup';
 import * as i18n from '@/languages';

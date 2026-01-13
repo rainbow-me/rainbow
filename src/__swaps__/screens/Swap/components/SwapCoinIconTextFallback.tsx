@@ -1,6 +1,7 @@
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { AnimatedText, useColorMode } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { fonts } from '@/styles';
 import React from 'react';
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';

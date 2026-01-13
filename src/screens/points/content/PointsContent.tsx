@@ -7,25 +7,22 @@ import { FloatingEmojis } from '@/components/floating-emojis';
 import { Page } from '@/components/layout';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { ETH_REWARDS, useExperimentalFlag } from '@/config';
-import {
-  AccentColorProvider,
-  Bleed,
-  Border,
-  Box,
-  Column,
-  Columns,
-  IconContainer,
-  Inline,
-  Inset,
-  Separator,
-  Space,
-  Stack,
-  Text,
-  TextShadow,
-  globalColors,
-  useColorMode,
-  useForegroundColor,
-} from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Border } from '@/design-system/components/Border/Border';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { IconContainer } from '@/design-system/components/IconContainer/IconContainer';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import type { Space } from '@/design-system/layout/space';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';

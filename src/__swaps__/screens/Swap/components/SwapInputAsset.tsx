@@ -4,7 +4,11 @@ import { StyleSheet } from 'react-native';
 import Animated, { useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
-import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { useColorMode } from '@/design-system/color/ColorMode';
 
 import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';

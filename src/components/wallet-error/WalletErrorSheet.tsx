@@ -1,7 +1,10 @@
 import restoreWalletIcon from '@/assets/restoreWalletIcon.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { BackgroundProvider, Box, Separator, Text } from '@/design-system';
+import { BackgroundProvider } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
+import { Box } from '@/design-system/components/Box/Box';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
 import { IS_IOS } from '@/env';
 import useBiometryType from '@/hooks/useBiometryType';
 import * as i18n from '@/languages';

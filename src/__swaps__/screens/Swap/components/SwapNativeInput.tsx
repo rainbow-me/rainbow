@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { runOnJS, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
-import { AnimatedText } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SwapInputValuesCaret } from '@/__swaps__/screens/Swap/components/SwapInputValuesCaret';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';

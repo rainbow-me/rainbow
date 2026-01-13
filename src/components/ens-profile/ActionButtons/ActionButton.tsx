@@ -2,7 +2,12 @@ import React from 'react';
 import { ButtonProps } from 'react-native';
 import { BackgroundColor } from '../../../design-system/color/palettes';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import { AccentColorProvider, Box, Inset, Space, Text, useForegroundColor } from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import type { Space } from '@/design-system/layout/space';
+import { Text } from '@/design-system/components/Text/Text';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
 type ActionButtonProps = {
   children?: string;

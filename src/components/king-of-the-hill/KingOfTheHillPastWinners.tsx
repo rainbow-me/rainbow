@@ -1,5 +1,7 @@
 import { CHEVRON_RIGHT_SYMBOL } from '@/components/king-of-the-hill/constants';
-import { Box, Inline, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
 import React from 'react';
 import { View } from 'react-native';
 

@@ -1,5 +1,10 @@
 import React, { memo } from 'react';
-import { Box, Inline, Stack, Text, AnimatedText, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import Animated, {
   SharedValue,

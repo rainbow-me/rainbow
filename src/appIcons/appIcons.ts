@@ -17,7 +17,7 @@ import AppIconRedacted from '@/assets/appIconRedacted.png';
 import AppIconBaggy from '@/assets/appIconBaggy.png';
 import AppIconChonks from '@/assets/appIconChonks.png';
 import AppIconMog from '@/assets/appIconMog.png';
-import { globalColors } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
 import { TokenGateCheckerNetwork, TokenInfo } from '@/featuresToUnlock/tokenGatedUtils';
 import { Network } from '@/state/backendNetworks/types';
 

@@ -1,7 +1,14 @@
 import { MintableCollection, MintedNft } from '@/graphql/__generated__/arc';
 import React, { useEffect, useState } from 'react';
 import { getTimeElapsedFromDate } from '../utils';
-import { Bleed, Box, Cover, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Placeholder, RecentMintCell } from './RecentMintCell';

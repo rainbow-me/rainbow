@@ -1,6 +1,6 @@
 import { ImageOptions } from '@candlefinance/faster-image';
 import { CaptureOptions } from 'react-native-view-shot';
-import { globalColors } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
 import { IS_IOS } from '@/env';
 
 export const GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=';

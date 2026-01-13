@@ -3,7 +3,7 @@ import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import { useTheme } from '@/theme';
-import { BackgroundProvider } from '@/design-system';
+import { BackgroundProvider } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
 import { useNavigation } from '@/navigation';
 import { SettingsPages } from './SettingsPages';
 import { settingsCardStyleInterpolator } from './settingsCardStyleInterpolator';

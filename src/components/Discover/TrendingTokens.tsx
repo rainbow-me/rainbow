@@ -1,5 +1,10 @@
 import { DropdownMenu } from '@/components/DropdownMenu';
-import { globalColors, IconContainer, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
+import { IconContainer } from '@/design-system/components/IconContainer/IconContainer';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { analytics } from '@/analytics';

@@ -1,5 +1,7 @@
 import React, { memo } from 'react';
-import { Inline, Text, TextIcon } from '@/design-system';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import { useDepositContext } from '@/systems/funding/contexts/DepositContext';

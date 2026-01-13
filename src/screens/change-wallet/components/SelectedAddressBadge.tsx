@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, TextIcon } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { Shadow } from '@/design-system/layout/shadow';
 
 export function SelectedAddressBadge({ size = 22, shadow = '12px' }: { size?: number; shadow?: Shadow }) {

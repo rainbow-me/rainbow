@@ -1,5 +1,8 @@
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { PolymarketPosition } from '@/features/polymarket/types';
