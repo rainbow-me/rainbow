@@ -1,5 +1,5 @@
 import { ChainId } from '@/state/backendNetworks/types';
-import { weiToGwei } from '@/parsers';
+import { weiToGwei } from '@/parsers/gas';
 import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 import { useMemo } from 'react';

@@ -3,7 +3,7 @@ import { NotifyOnChangeProps, useQuery } from '@tanstack/react-query';
 import { ChainId } from '@/state/backendNetworks/types';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { abs, lessThan, subtract, isZero } from '@/helpers/utilities';
-import { gweiToWei } from '@/parsers';
+import { gweiToWei } from '@/parsers/gas';
 import { QueryConfig, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { useCallback } from 'react';
 import { GasSettings } from '../screens/Swap/hooks/useCustomGas';

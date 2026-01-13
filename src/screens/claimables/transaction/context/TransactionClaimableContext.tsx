@@ -30,7 +30,7 @@ import { loadWallet } from '@/model/wallet';
 import { externalTokenQueryFunction, externalTokenQueryKey } from '@/resources/assets/externalAssetsQuery';
 import { walletExecuteRap } from '@/raps/execute';
 import { executeClaim } from '../claim';
-import { weiToGwei } from '@/parsers';
+import { weiToGwei } from '@/parsers/gas';
 import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
 import { ClaimStatus } from '../../shared/types';
 import { analytics } from '@/analytics';
