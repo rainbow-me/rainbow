@@ -3,7 +3,7 @@ import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { AccentColorProvider, Box, Inset, Text } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 type Props = {
   type: 'availability' | 'expiration' | 'price';

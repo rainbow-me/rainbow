@@ -25,7 +25,7 @@ import {
   setSelectedWallet as setSelectedWalletInKeychain,
 } from '@/model/wallet';
 import { lightModeThemeColors } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { time } from '@/utils/time';
 import watchingAlert from '@/utils/watchingAlert';

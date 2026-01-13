@@ -36,7 +36,7 @@ import {
   useAccountAddress,
   useWallets,
 } from '@/state/wallets/walletsStore';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import doesWalletsContainAddress from '@/utils/doesWalletsContainAddress';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';

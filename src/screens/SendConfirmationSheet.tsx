@@ -34,7 +34,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { startTimeToSignTracking, Screens } from '@/state/performance/performance';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import promiseUtils from '@/utils/promise';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { AddressZero } from '@ethersproject/constants';

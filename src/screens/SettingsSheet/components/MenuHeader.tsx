@@ -2,7 +2,7 @@ import React from 'react';
 import { Source } from 'react-native-fast-image';
 import { Box, Space, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { ImageSourcePropType } from 'react-native';
 import { opacity } from '@/framework/ui/utils/opacity';
 

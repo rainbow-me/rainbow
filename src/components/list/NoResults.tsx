@@ -1,8 +1,10 @@
 import * as i18n from '@/languages';
 import React from 'react';
 import neverRerender from '@/utils/neverRerender';
-import { Inset, Stack, Text } from '@/design-system';
-import { useTheme } from '@/theme';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { useTheme } from '@/theme/ThemeContext';
 import { logger } from '@/logger';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 

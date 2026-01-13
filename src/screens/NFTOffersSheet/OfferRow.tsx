@@ -18,7 +18,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';

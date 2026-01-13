@@ -7,7 +7,7 @@ import Chevron from '@/assets/chevronUpDown.png';
 import Caret from '@/assets/family-dropdown-arrow.png';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { ImageSourcePropType } from 'react-native';
 import { Width } from '@/design-system/layout/size';
 import { colors } from '@/styles';

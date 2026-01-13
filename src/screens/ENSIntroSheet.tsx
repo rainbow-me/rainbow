@@ -18,7 +18,7 @@ import useENSAvatar from '@/hooks/useENSAvatar';
 import useENSRecords from '@/hooks/useENSRecords';
 import useENSRegistration from '@/hooks/useENSRegistration';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import ContextMenu from '@/components/context-menu/ContextMenu.android';
 import { RootStackParamList } from '@/navigation/types';

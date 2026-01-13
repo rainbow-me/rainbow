@@ -6,8 +6,8 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useTheme } from '@/theme';
-import { useColorMode } from '@/design-system';
+import { useTheme } from '@/theme/ThemeContext';
+import { useColorMode } from '@/design-system/color/ColorMode';
 
 const TestnetToast = ({ chainId }: { chainId: ChainId }) => {
   const { colors } = useTheme();

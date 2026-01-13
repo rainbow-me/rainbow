@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useForegroundColor } from '@/design-system';
-import { useTheme } from '@/theme';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { useTheme } from '@/theme/ThemeContext';
 import { opacity } from '@/framework/ui/utils/opacity';
 import deviceUtils from '@/utils/deviceUtils';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';

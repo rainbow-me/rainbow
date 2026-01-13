@@ -1,6 +1,12 @@
 import React from 'react';
-import { Bleed, Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
-import { useTheme } from '@/theme';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { useTheme } from '@/theme/ThemeContext';
 import {
   convertAmountToBalanceDisplay,
   convertAmountToPercentageDisplay,

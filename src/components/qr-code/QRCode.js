@@ -4,7 +4,7 @@ import Svg, { Circle, ClipPath, Defs, G, Image, Rect } from 'react-native-svg';
 import RainbowLogo from '../../assets/rainbow-og.png';
 import magicMemo from '@/utils/magicMemo';
 import useSafeImageUri from '@/hooks/useSafeImageUri';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { logger } from '@/logger';
 
 const generateMatrix = (value, errorCorrectionLevel) => {

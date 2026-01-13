@@ -4,7 +4,7 @@ import React from 'react';
 import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import { darkModeThemeColors } from '@/styles/colors';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import RainbowButtonTypes from '@/components/buttons/rainbow-button/RainbowButtonTypes';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';

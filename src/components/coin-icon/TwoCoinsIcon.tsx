@@ -3,7 +3,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box } from '@/design-system';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import RainbowCoinIcon from './RainbowCoinIcon';
 
 export function TwoCoinsIcon({

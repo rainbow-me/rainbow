@@ -8,7 +8,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet } from 'react-native';
 import { getGradientColorsForRank } from '@/screens/rewards/helpers/getGradientColorsForRank';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

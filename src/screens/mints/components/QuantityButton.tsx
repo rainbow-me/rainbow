@@ -5,8 +5,10 @@ import usePrevious from '@/hooks/usePrevious';
 import styled from '@/styled-thing';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Row from '@/components/layout/Row';
-import { Box, Inline, Text } from '@/design-system';
-import { useTheme } from '@/theme';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
+import { useTheme } from '@/theme/ThemeContext';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 const PLUS_ACTION_TYPE = 'plus';

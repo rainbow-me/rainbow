@@ -4,7 +4,7 @@ import { Box, Inline, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import duneLogoDark from '@/assets/dune-logo-dark.png';
 import duneLogo from '@/assets/dune-logo.png';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 export const RewardsDuneLogo: React.FC = () => {
   const { isDarkMode } = useTheme();

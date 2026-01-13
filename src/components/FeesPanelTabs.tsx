@@ -4,8 +4,12 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import useGas from '@/hooks/useGas';
 import { colors } from '@/styles';
 import gasUtils from '@/utils/gas';
-import { AccentColorProvider, Box, Inline, Inset, Text } from '@/design-system';
-import { useTheme } from '@/theme';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Text } from '@/design-system/components/Text/Text';
+import { useTheme } from '@/theme/ThemeContext';
 import { IS_ANDROID } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 

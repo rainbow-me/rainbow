@@ -10,7 +10,7 @@ import TokenInfoValue from './TokenInfoValue';
 import { Column, Columns } from '@/design-system';
 import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
 import styled from '@/styled-thing';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 const VerticalDivider = styled.View({

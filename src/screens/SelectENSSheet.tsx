@@ -12,7 +12,7 @@ import { prefetchENSRecords } from '@/hooks/useENSRecords';
 import useAccountENSDomains from '@/hooks/useAccountENSDomains';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation/Navigation';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
 import { ListRenderItem, View } from 'react-native';
 import { BaseEnsDomainFragment } from '@/graphql/__generated__/ens';

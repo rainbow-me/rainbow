@@ -1,4 +1,4 @@
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import React, { useState, useMemo, useEffect } from 'react';
 import * as i18n from '@/languages';
 import MenuItem from '../MenuItem';

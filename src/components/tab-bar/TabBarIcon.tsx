@@ -4,7 +4,7 @@ import Animated, { interpolate, interpolateColor, useAnimatedStyle, SharedValue,
 import { Icon } from '@/components/icons';
 import { Box, Cover, useColorMode } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { TAB_BAR_ICON_SIZE } from './dimensions';
 
 type TabBarIconProps = {
