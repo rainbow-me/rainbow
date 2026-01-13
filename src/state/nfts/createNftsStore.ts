@@ -16,7 +16,7 @@ import {
   pruneStaleAndClosedCollections,
   replaceEthereumWithMainnet,
 } from '@/state/nfts/utils';
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { isEmpty } from 'lodash';
 import { updateWebHidden, updateWebShowcase } from '@/helpers/webData';

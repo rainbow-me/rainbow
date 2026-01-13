@@ -5,7 +5,7 @@ import { loadString, publicAccessControlOptions, saveString } from '../model/key
 import { ChainId } from '@/state/backendNetworks/types';
 import { ensureLibWallet, loadWallet } from '../model/wallet';
 import { signingWalletAddress, signingWallet as signingWalletKeychain } from '../utils/keychainConstants';
-import { EthereumAddress } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { addHexPrefix, getProvider } from '@/handlers/web3';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';

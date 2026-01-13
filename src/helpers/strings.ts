@@ -1,6 +1,6 @@
 import { memoFn } from '../utils/memoFn';
 import { supportedNativeCurrencies } from '@/references';
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { convertAmountToNativeDisplayWorklet } from './utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getNumberFormatter } from '@/helpers/intl';

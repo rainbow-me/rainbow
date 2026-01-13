@@ -1,5 +1,5 @@
 import { RainbowFetchClient } from '../rainbow-fetch';
-import { EthereumAddress } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
 import { getSignatureForSigningWalletAndCreateSignatureIfNeeded, signWithSigningWallet } from '@/helpers/signingWallet';
 import { logger } from '@/logger';
 import { Network } from '@/state/backendNetworks/types';

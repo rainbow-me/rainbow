@@ -6,7 +6,7 @@ import { ColorModeProvider } from '@/design-system/color/ColorMode';
 import { Row, Rows } from '@/design-system/components/Rows/Rows';
 import { Stack } from '@/design-system/components/Stack/Stack';
 import { Text } from '@/design-system/components/Text/Text';
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { arcClient } from '@/graphql';
 import { maybeSignUri } from '@/handlers/imgix';

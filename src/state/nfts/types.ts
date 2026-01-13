@@ -1,7 +1,7 @@
 import { Address } from 'viem';
 import { QueryStoreState } from '@/state/internal/queryStore/types';
 import { OptionallyPersistedRainbowStore } from '@/state/internal/types';
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 
 export type CollectionId = string;
 export type UniqueId = string;

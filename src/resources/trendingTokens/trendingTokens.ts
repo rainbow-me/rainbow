@@ -5,7 +5,7 @@ import qs from 'qs';
 
 import { TrendingCategory, TrendingSort, TrendingTimeframe } from '@/state/trendingTokens/trendingTokens';
 import { Address } from 'viem';
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import store from '@/redux/store';
 import {
   SortDirection,

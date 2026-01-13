@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Records } from '@/entities';
+import type { Records } from '@/entities/ensRegistration';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import * as ensRedux from '@/redux/ensRegistration';
 import { AppState } from '@/redux/store';

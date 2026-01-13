@@ -1,4 +1,4 @@
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import React from 'react';
 
 type AnimationType = '3d' | 'video' | 'audio';

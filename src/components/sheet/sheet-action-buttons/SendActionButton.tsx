@@ -6,7 +6,8 @@ import { Text } from '@/design-system/components/Text/Text';
 import { colors } from '@/styles';
 import { IS_IOS } from '@/env';
 import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
-import { ParsedAddressAsset, RainbowToken, UniqueAsset } from '@/entities';
+import type { ParsedAddressAsset, RainbowToken } from '@/entities/tokens';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 
 type SendActionButtonProps = SheetActionButtonProps & {
   asset: RainbowToken | UniqueAsset | ParsedAddressAsset;

@@ -8,7 +8,7 @@ import { Box } from '@/design-system/components/Box/Box';
 import { Column, Columns } from '@/design-system/components/Columns/Columns';
 import { Inline } from '@/design-system/components/Inline/Inline';
 import { Text } from '@/design-system/components/Text/Text';
-import { RainbowToken } from '@/entities';
+import type { RainbowToken } from '@/entities/tokens';
 import { implementation } from '@/entities/dispersion';
 import { useNavigation } from '@/navigation';
 import { userAssetsStore } from '@/state/assets/userAssets';

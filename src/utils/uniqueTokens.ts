@@ -1,4 +1,4 @@
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 
 export const uniqueTokenTypes = {
   ENS: 'ENS',

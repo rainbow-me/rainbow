@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Records } from '@/entities';
+import type { Records } from '@/entities/ensRegistration';
 import { fetchCoinAddresses, fetchContenthash, fetchRecords } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
 import { ENS_RECORDS } from '@/helpers/ens';

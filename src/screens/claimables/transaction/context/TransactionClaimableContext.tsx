@@ -17,7 +17,7 @@ import {
 } from '@/helpers/utilities';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { getGasSettingsBySpeed, useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
-import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { getNextNonce } from '@/state/nonces';
 import { getProvider } from '@/handlers/web3';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';

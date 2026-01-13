@@ -1,5 +1,5 @@
 import { TextColor } from '@/design-system/color/palettes';
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_IOS } from '@/env';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';

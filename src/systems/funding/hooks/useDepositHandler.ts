@@ -4,7 +4,7 @@ import { Alert } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { ParsedAsset } from '@/__swaps__/types/assets';
-import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import * as i18n from '@/languages';

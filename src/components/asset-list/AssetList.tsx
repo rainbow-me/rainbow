@@ -5,7 +5,7 @@ import RecyclerAssetList, { RecyclerAssetListProps, RecyclerAssetListSection } f
 import RecyclerAssetList2, { AssetListType, RecyclerAssetList2Props } from './RecyclerAssetList2';
 import EmptyAssetList, { EmptyAssetListProps } from './EmptyAssetList';
 import * as i18n from '@/languages';
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { ListFooterHeight } from '../list/ListFooter';
 import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import { IS_ANDROID } from '@/env';

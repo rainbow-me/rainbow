@@ -1,4 +1,4 @@
-import { EthereumAddress } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
 import { arcClient } from '@/graphql';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

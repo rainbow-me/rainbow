@@ -1,4 +1,4 @@
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { isENSNFTRecord, parseENSNFTRecord } from '@/utils/ens';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 

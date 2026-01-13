@@ -21,7 +21,7 @@ import {
 } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import {
   convertAmountToNativeDisplayWorklet,
   convertRawAmountToDecimalFormat,
