@@ -1,7 +1,8 @@
 import React from 'react';
 import magicMemo from '@/utils/magicMemo';
-import { ButtonPressAnimation, OpacityToggler } from '../animations';
-import { CoinIconIndicator } from '../coin-icon';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import OpacityToggler from '../animations/OpacityToggler';
+import CoinIconIndicator from '../coin-icon/CoinIconIndicator';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';

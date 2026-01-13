@@ -14,7 +14,7 @@ import { createOpacityPalette } from '@/worklets/colors';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { ShimmerAnimation } from '@/components/animations';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 
 type MarketRowProps = {
   accentColor: string;

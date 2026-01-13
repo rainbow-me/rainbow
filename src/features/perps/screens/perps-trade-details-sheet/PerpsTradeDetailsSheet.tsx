@@ -17,7 +17,7 @@ import { Image } from 'react-native';
 import rainbowPlainImage from '@/assets/rainbows/plain.png';
 import rainbowOgImage from '@/assets/appIconOg.png';
 import { format } from 'date-fns';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 
 export const PerpsTradeDetailsSheet = memo(function PerpsTradeDetailsSheet() {

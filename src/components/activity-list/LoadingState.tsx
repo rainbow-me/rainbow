@@ -1,5 +1,5 @@
 import React from 'react';
-import { AssetListItemSkeleton } from '../asset-list';
+import AssetListItemSkeleton from '../asset-list/AssetListItemSkeleton';
 import { Column } from '../layout';
 import { times } from '@/helpers/utilities';
 

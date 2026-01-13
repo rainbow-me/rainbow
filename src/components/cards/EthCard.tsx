@@ -21,7 +21,7 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Spinner from '../Spinner';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
 import { GenericCard } from './GenericCard';

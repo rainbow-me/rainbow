@@ -6,7 +6,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { padding, position } from '@/styles';
 import { useTheme } from '@/theme';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Column, Row } from '../layout';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import Divider from '@/components/Divider';

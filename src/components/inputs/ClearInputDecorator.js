@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useState } from 'react';
 import Animated, { Easing, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import magicMemo from '@/utils/magicMemo';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import styled from '@/styled-thing';

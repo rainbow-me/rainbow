@@ -4,7 +4,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } 
 import { LayoutAnimation, View } from 'react-native';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
 import L2Disclaimer from '../../L2Disclaimer';
-import { ButtonPressAnimation } from '../../animations';
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import EdgeFade from '../../EdgeFade';
 import useExperimentalFlag, { CROSSCHAIN_SWAPS } from '@/config/experimentalHooks';
 import { BuyActionButton, SendActionButton, SheetActionButtonRow, SheetDivider, SlackSheet, SwapActionButton } from '../../sheet';

@@ -1,6 +1,6 @@
 import React, { memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Border, Box, Text, TextShadow, globalColors } from '@/design-system';
 import * as i18n from '@/languages';

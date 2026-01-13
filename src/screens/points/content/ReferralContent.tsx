@@ -1,5 +1,5 @@
 import { analytics } from '@/analytics';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import {
   Bleed,
   Box,

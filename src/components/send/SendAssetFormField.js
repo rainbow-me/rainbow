@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { useTheme } from '@/theme';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { BubbleField } from '../fields';
 import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';

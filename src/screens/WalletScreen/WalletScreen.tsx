@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { AssetList } from '../../components/asset-list';
+import AssetList from '../../components/asset-list/AssetList';
 import { Page } from '../../components/layout';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
 import { navbarHeight } from '@/components/navbar/Navbar';

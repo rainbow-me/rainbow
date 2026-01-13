@@ -1,7 +1,7 @@
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
 import EthIcon from '@/assets/eth-icon.png';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { Page } from '@/components/layout';

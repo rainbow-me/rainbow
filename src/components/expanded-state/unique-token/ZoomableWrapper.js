@@ -12,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import vstyled from 'styled-components';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
-import { ButtonPressAnimation } from '../../animations';
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
 import { position } from '@/styles';

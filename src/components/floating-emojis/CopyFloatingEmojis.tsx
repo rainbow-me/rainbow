@@ -1,5 +1,5 @@
 import React, { FC, ReactNode } from 'react';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import FloatingEmojis from './FloatingEmojis';
 import useClipboard from '@/hooks/useClipboard';
 import magicMemo from '@/utils/magicMemo';

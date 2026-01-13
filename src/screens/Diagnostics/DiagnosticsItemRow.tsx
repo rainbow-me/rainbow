@@ -6,7 +6,7 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { ColumnWithMargins, RowWithMargins } from '@/components/layout';
 import { Bold, Text } from '@/components/text';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { View } from 'react-native';
 import Divider from '@/components/Divider';
 import { DiagnosticsSecretInput } from '@/screens/Diagnostics/DiagnosticsSecretInput';
