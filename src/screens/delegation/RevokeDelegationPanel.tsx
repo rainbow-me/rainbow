@@ -13,6 +13,7 @@ import { executeRevokeDelegation } from '@rainbow-me/delegation';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { loadWallet } from '@/model/wallet';
 import { getProvider } from '@/handlers/web3';
+import { getNextNonce } from '@/state/nonces';
 
 export type RevokeStatus =
   | 'notReady' // preparing the data necessary to revoke
@@ -59,6 +60,8 @@ export const RevokeDelegationPanel = () => {
       const maxFeePerGas = feeData.maxFeePerGas?.toBigInt() ?? 0n;
       const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas?.toBigInt() ?? 0n;
 
+      const nonce = await getNextNonce({ address: accountAddress, chainId: currentDelegation.chainId });
+
       // Remove the delegation using the SDK function
       const result = await executeRevokeDelegation({
         signer: wallet as Wallet,
@@ -70,6 +73,7 @@ export const RevokeDelegationPanel = () => {
           maxPriorityFeePerGas,
           gasLimit: null,
         },
+        nonce,
       });
 
       logger.info('Delegation removed successfully', {
