@@ -12,7 +12,8 @@ import {
 } from '@/notifications/analytics';
 import { NotificationStorage } from '@/notifications/deferredNotificationStorage';
 import { handleShowingForegroundNotification } from '@/notifications/foregroundHandler';
-import { AddressWithRelationship, WalletNotificationRelationship } from '@/notifications/settings';
+import type { AddressWithRelationship } from '@/notifications/settings/types';
+import { WalletNotificationRelationship } from '@/notifications/settings/constants';
 import { initializeNotificationSettingsForAllAddresses } from '@/notifications/settings/initialization';
 import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
 import { registerTokenRefreshListener, saveFCMToken } from '@/notifications/tokens';

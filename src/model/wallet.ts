@@ -35,11 +35,9 @@ import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { deriveAccountFromBluetoothHardwareWallet, deriveAccountFromMnemonic, deriveAccountFromWalletInput } from '@/utils/wallet';
-import {
-  AddressWithRelationship,
-  initializeNotificationSettingsForAddresses,
-  WalletNotificationRelationship,
-} from '@/notifications/settings';
+import type { AddressWithRelationship } from '@/notifications/settings/types';
+import { initializeNotificationSettingsForAddresses } from '@/notifications/settings/initialization';
+import { WalletNotificationRelationship } from '@/notifications/settings/constants';
 import { DebugContext } from '@/logger/debugContext';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Signer } from '@ethersproject/abstract-signer';
