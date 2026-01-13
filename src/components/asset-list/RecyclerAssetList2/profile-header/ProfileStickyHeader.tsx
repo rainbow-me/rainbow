@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Box } from '@/design-system/components/Box/Box';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { StickyHeader } from '../core/StickyHeaders';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { IS_IOS } from '@/env';
 
 export const ProfileStickyHeaderHeight = 52;

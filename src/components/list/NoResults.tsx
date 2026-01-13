@@ -4,7 +4,7 @@ import neverRerender from '@/utils/neverRerender';
 import { Inset } from '@/design-system/components/Inset/Inset';
 import { Stack } from '@/design-system/components/Stack/Stack';
 import { Text } from '@/design-system/components/Text/Text';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { logger } from '@/logger';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 

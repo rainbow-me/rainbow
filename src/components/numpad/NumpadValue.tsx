@@ -5,7 +5,7 @@ import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated
 import { Text } from '../text';
 import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
-import { ThemeContextProps } from '@/theme';
+import type { ThemeContextProps } from '@/theme/ThemeContext';
 
 const FontSizeMultiple = 0.24;
 const HeightMultiple = 0.288;

@@ -5,7 +5,7 @@ import useDimensions from '@/hooks/useDimensions';
 import { supportedNativeCurrencies } from '@/references';
 import styled from '@/styled-thing';
 import { removeLeadingZeros } from '@/utils/formatters';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { IS_ANDROID } from '@/env';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 

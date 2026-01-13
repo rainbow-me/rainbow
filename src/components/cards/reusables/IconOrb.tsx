@@ -5,7 +5,7 @@ import { ColorModeProvider } from '@/design-system/color/ColorMode';
 import { Text } from '@/design-system/components/Text/Text';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { TextSize, TextWeight } from '@/design-system/components/Text/Text';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 export const ORB_SIZE = 36;
 

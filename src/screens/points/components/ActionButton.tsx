@@ -4,7 +4,7 @@ import { Box } from '@/design-system/components/Box/Box';
 import { Text } from '@/design-system/components/Text/Text';
 import { globalColors } from '@/design-system/color/palettes';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import c from 'chroma-js';
 import { StyleSheet } from 'react-native';
 

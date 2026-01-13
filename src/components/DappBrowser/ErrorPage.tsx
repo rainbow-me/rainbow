@@ -5,7 +5,7 @@ import { Text } from '../text';
 import styled from '@/styled-thing';
 import { Colors } from '../../styles/colors';
 import { Box } from '@/design-system/components/Box/Box';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { View } from 'moti';
 
 const BodyText = styled(Text).attrs(({ theme: { colors } }: { theme: { colors: Colors } }) => ({

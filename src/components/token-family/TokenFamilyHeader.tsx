@@ -8,7 +8,7 @@ import { ButtonPressAnimation } from '../animations';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 import { Text } from '@/design-system/components/Text/Text';
 import { ImgixImage } from '@/components/images';
-import { ThemeContextProps } from '@/theme';
+import type { ThemeContextProps } from '@/theme/ThemeContext';
 
 export const TokenFamilyHeaderAnimationDuration = 200;
 export const TokenFamilyHeaderHeight = 50;

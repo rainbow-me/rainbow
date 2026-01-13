@@ -6,7 +6,7 @@ import { Box } from '@/design-system/components/Box/Box';
 import { Cover } from '@/design-system/components/Cover/Cover';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { globalColors } from '@/design-system/color/palettes';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { TAB_BAR_ICON_SIZE } from './dimensions';
 
 type TabBarIconProps = {

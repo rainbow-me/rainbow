@@ -13,7 +13,7 @@ import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/ut
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Placeholder, RecentMintCell } from './RecentMintCell';
 import { View } from 'react-native';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { analytics } from '@/analytics';
 import * as i18n from '@/languages';
 import { ChainImage } from '@/components/coin-icon/ChainImage';

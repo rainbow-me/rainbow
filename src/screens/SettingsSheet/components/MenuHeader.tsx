@@ -5,7 +5,7 @@ import type { Space } from '@/design-system/layout/space';
 import { Stack } from '@/design-system/components/Stack/Stack';
 import { Text } from '@/design-system/components/Text/Text';
 import { ImgixImage } from '@/components/images';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { ImageSourcePropType } from 'react-native';
 
 interface ImageIconProps {

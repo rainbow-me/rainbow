@@ -40,7 +40,7 @@ import {
   useAccountAddress,
   useWallets,
 } from '@/state/wallets/walletsStore';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import doesWalletsContainAddress from '@/utils/doesWalletsContainAddress';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import showActionSheetWithOptions from '@/utils/actionsheet';

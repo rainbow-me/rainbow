@@ -19,7 +19,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { cloudPlatform } from '@/utils/platform';
 import React, { useCallback, useMemo } from 'react';
 import { Source } from 'react-native-fast-image';

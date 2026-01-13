@@ -50,7 +50,7 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { useAccountAddress, useIsReadOnlyWallet, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import abbreviations from '@/utils/abbreviations';
 import ethereumUtils, { getUniqueId } from '@/utils/ethereumUtils';
 import watchingAlert from '@/utils/watchingAlert';

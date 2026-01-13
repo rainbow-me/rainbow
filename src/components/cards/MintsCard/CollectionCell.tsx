@@ -9,7 +9,7 @@ import { Inline } from '@/design-system/components/Inline/Inline';
 import { Inset } from '@/design-system/components/Inset/Inset';
 import { Text } from '@/design-system/components/Text/Text';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { View } from 'react-native';
 import { MintableCollection } from '@/graphql/__generated__/arc';
 import { useNativeAsset } from '@/utils/ethereumUtils';

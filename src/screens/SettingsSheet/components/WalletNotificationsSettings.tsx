@@ -5,7 +5,8 @@ import Animated, { Easing, useAnimatedStyle, withTiming } from 'react-native-rea
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
-import { ThemeContextProps, useTheme } from '@/theme';
+import type { ThemeContextProps } from '@/theme/ThemeContext';
+import { useTheme } from '@/theme/ThemeContext';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { WalletNotificationRelationship, WalletNotificationTopic } from '@/notifications/settings/constants';
 import type { WalletNotificationTopicType, WalletNotificationSettings } from '@/notifications/settings/types';

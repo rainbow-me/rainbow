@@ -21,7 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Page } from '@/components/layout';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { backupsStore, CloudBackupState, LoadingStates } from '@/state/backups/backups';
 import { dateFormatter, titleForBackupState } from '@/screens/SettingsSheet/utils';
 

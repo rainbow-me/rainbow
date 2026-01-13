@@ -5,7 +5,7 @@ import { Stack } from '@/design-system/components/Stack/Stack';
 import { Text } from '@/design-system/components/Text/Text';
 import { globalColors } from '@/design-system/color/palettes';
 import React, { memo, useCallback, useMemo } from 'react';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import startCase from 'lodash/startCase';

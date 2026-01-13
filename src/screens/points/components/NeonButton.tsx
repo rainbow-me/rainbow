@@ -7,7 +7,7 @@ import { Cover } from '@/design-system/components/Cover/Cover';
 import { Text } from '@/design-system/components/Text/Text';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import useDimensions from '@/hooks/useDimensions';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 
 export const NeonButton = ({ color, label, onPress, width }: { color?: string; label: string; onPress?: () => void; width?: number }) => {

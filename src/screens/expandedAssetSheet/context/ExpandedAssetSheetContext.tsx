@@ -15,7 +15,7 @@ import { useColorMode } from '@/design-system/color/ColorMode';
 import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { time } from '@/utils/time';
 import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';

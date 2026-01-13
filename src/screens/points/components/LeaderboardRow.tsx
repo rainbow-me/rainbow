@@ -16,7 +16,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { isENSNFTRecord } from '@/utils/ens';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';

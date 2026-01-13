@@ -15,7 +15,7 @@ import useENSRegistration from '@/hooks/useENSRegistration';
 import useENSRegistrationForm from '@/hooks/useENSRegistrationForm';
 import usePrevious from '@/hooks/usePrevious';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
 import { RootStackParamList } from './types';
 

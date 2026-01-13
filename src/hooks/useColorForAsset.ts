@@ -6,7 +6,7 @@ import isETH from '@/utils/isETH';
 import pseudoRandomArrayItemFromString from '@/utils/pseudoRandomArrayItemFromString';
 import { getHighContrastColor } from './useAccountAccentColor';
 import { usePersistentDominantColorFromImage } from './usePersistentDominantColorFromImage';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 export default function useColorForAsset(
   asset: Partial<ParsedAddressAsset> = {},

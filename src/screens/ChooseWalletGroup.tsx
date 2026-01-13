@@ -18,7 +18,7 @@ import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { createAccountInExistingWallet, getIsDamagedWallet, loadWallets, useWallets } from '@/state/wallets/walletsStore';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import profileUtils from '@/utils/profileUtils';
 import { abbreviateEnsForDisplay, formatAddressForDisplay } from '@/utils/abbreviations';
 import chroma from 'chroma-js';

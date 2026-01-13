@@ -2,7 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { avatarBuilderStyles } from './avatarBuilderStyles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import magicMemo from '@/utils/magicMemo';
 
 interface Props {

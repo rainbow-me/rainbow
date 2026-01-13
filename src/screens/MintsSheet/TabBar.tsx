@@ -11,7 +11,7 @@ import { globalColors } from '@/design-system/color/palettes';
 import { Text } from '@/design-system/components/Text/Text';
 import { IS_IOS } from '@/env';
 import { MintsFilter, getMintsFilterLabel, useMintsFilter } from '@/resources/mints';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 function FilterButton({ filter }: { filter: MintsFilter }) {
   const { filter: currentFilter, setFilter } = useMintsFilter();

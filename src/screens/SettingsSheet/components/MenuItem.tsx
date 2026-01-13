@@ -10,7 +10,7 @@ import { Inline } from '@/design-system/components/Inline/Inline';
 import { Stack } from '@/design-system/components/Stack/Stack';
 import { Text } from '@/design-system/components/Text/Text';
 import { ImgixImage } from '@/components/images';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { ImageSourcePropType } from 'react-native';
 import { Width } from '@/design-system/layout/size';
 import { colors } from '@/styles';
