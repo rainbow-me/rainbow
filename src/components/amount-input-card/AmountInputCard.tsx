@@ -12,7 +12,8 @@ import {
   USD_DECIMALS,
 } from '@/features/perps/constants';
 import { runOnJS, runOnUI, SharedValue, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
-import { Slider, SliderChangeSource, SliderGestureState } from '@/features/perps/components/Slider';
+import { Slider } from '@/features/perps/components/Slider/Slider';
+import type { SliderChangeSource, SliderGestureState } from '@/features/perps/components/Slider/Slider';
 import { addCommasToNumber, clamp, opacityWorklet, trimCurrencyZeros } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { CurrencyInput } from '@/components/CurrencyInput/CurrencyInput';

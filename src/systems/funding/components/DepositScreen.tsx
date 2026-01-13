@@ -20,7 +20,7 @@ import { useColorMode } from '@/design-system/color/ColorMode';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { NumberPad } from '@/features/perps/components/NumberPad/NumberPad';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
-import { SliderWithLabels } from '@/features/perps/components/Slider';
+import { SliderWithLabels } from '@/features/perps/components/Slider/SliderWithLabels';
 import { SLIDER_MAX, SliderColors } from '@/features/perps/components/Slider/Slider';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { useStableValue } from '@/hooks/useStableValue';
