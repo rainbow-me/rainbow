@@ -9,7 +9,7 @@ import { HeaderHeightWithStatusBar } from '../components/header';
 import { Column, Row } from '../components/layout';
 import useUpdateEmoji from '../hooks/useUpdateEmoji';
 import { useNavigation } from '../navigation/Navigation';
-import { deviceUtils } from '../utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { AVATAR_CIRCLE_TOP_MARGIN } from '@/navigation/effects';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';

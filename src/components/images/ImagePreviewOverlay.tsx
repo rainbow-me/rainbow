@@ -11,7 +11,7 @@ import { BackgroundProvider, Box, BoxProps, Cover, useColorMode } from '@/design
 import { useDimensions, usePersistentAspectRatio } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { colors, position } from '@/styles';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { FULL_NFT_IMAGE_SIZE } from '@/utils/handleNFTImages';
 
 const idsAtom = atom<string[]>({

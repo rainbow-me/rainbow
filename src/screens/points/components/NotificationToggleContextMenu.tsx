@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { AccentColorProvider, Box, ColorModeProvider, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { GlobalNotificationTopic } from '@/notifications/settings/constants';

@@ -4,8 +4,8 @@ import React from 'react';
 import Link from '../../Link';
 import EdgeFade from '../../EdgeFade';
 import styled from '@/styled-thing';
-import { ethereumUtils } from '@/utils';
 import { opacity } from '@/framework/ui/utils/opacity';
+import ethereumUtils from '@/utils/ethereumUtils';
 
 const Carousel = styled.ScrollView.attrs({
   contentContainerStyle: {

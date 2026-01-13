@@ -13,7 +13,8 @@ import { TransactionDetailsDivider } from '@/screens/transaction-details/compone
 import { shortenTxHashString } from '@/screens/transaction-details/helpers/shortenTxHashString';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
-import { ethereumUtils, haptics } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
+import haptics from '@/utils/haptics';
 import { openInBrowser } from '@/utils/openInBrowser';
 import Clipboard from '@react-native-clipboard/clipboard';
 import startCase from 'lodash/startCase';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { magicMemo } from '../../utils';
+import magicMemo from '@/utils/magicMemo';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIconIndicator } from '../coin-icon';
 import { Icon } from '../icons';

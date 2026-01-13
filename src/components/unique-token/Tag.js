@@ -9,8 +9,8 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Inline } from '@/design-system';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { magicMemo } from '@/utils';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import magicMemo from '@/utils/magicMemo';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { opacity } from '@/framework/ui/utils/opacity';
 

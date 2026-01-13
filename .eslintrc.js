@@ -116,7 +116,6 @@ const allowedBarrelFiles = [
   'src/storage/index.ts',
   'src/styled-thing/index.tsx',
   'src/theme/index.ts',
-  'src/utils/index.ts',
   'src/walletConnect/index.tsx',
 ];
 

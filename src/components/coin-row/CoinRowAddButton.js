@@ -7,7 +7,7 @@ import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { magicMemo } from '@/utils';
+import magicMemo from '@/utils/magicMemo';
 import { IS_TEST } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 

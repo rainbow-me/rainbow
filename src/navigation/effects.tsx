@@ -5,7 +5,8 @@ import { StackNavigationOptions, TransitionPreset } from '@react-navigation/stac
 import { IS_ANDROID } from '@/env';
 import { lightModeThemeColors } from '@/styles';
 import { currentColors as colors } from '@/theme';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/HardwareWalletTxNavigator';
 import { HeaderHeightWithStatusBar } from '@/components/header';
 import AvatarCircle from '@/components/profile/AvatarCircle';

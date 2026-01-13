@@ -10,7 +10,7 @@ import { useNavigation } from '../navigation/Navigation';
 import { useDimensions } from '@/hooks';
 import { fonts, fontWithWidth, position } from '@/styles';
 import { useTheme } from '@/theme';
-import { formatURLForDisplay } from '@/utils';
+import formatURLForDisplay from '@/utils/formatURLForDisplay';
 import { IS_ANDROID } from '@/env';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { RootStackParamList } from '@/navigation/types';

@@ -40,8 +40,9 @@ import { useAccountAddress, useIsReadOnlyWallet, useIsHardwareWallet } from '@/s
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { abbreviations, ethereumUtils, watchingAlert } from '@/utils';
-import { getUniqueId } from '@/utils/ethereumUtils';
+import abbreviations from '@/utils/abbreviations';
+import ethereumUtils, { getUniqueId } from '@/utils/ethereumUtils';
+import watchingAlert from '@/utils/watchingAlert';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';

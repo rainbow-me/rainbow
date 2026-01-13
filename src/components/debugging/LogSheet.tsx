@@ -8,7 +8,7 @@ import { containsEmoji } from '@/helpers/strings';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 export interface LogEntry {

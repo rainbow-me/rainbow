@@ -7,7 +7,7 @@ import { IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import ConditionalWrap from 'conditional-wrap';

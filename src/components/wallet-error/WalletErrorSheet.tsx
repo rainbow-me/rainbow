@@ -7,7 +7,7 @@ import { useBiometryType } from '@/hooks';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import React from 'react';
 import { InteractionManager } from 'react-native';
 import FastImage from 'react-native-fast-image';

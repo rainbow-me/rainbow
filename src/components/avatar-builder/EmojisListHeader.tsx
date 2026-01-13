@@ -3,8 +3,8 @@ import { Text } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { avatarBuilderStyles } from './avatarBuilderStyles';
 import { useTheme } from '@/theme';
-import { magicMemo } from '@/utils';
 import { opacity } from '@/framework/ui/utils/opacity';
+import magicMemo from '@/utils/magicMemo';
 
 interface Props {
   title: string;

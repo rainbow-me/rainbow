@@ -1,7 +1,7 @@
 import { useEffect, useMemo, memo } from 'react';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

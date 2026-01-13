@@ -21,7 +21,7 @@ import {
 import { ImgixImage } from '@/components/images';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
-import { normalizeENS } from '@/utils';
+import { normalizeENS } from '@/utils/ens';
 
 export default function ENSSearchSheet() {
   const { navigate } = useNavigation();
