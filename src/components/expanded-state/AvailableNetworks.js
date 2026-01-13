@@ -5,7 +5,7 @@ import { Box } from '@/design-system/components/Box/Box';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { padding, position } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Column, Row } from '../layout';
 import { ChainImage } from '@/components/coin-icon/ChainImage';

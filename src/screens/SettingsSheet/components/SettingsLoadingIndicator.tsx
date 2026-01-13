@@ -2,7 +2,7 @@ import * as React from 'react';
 import Spinner from '@/components/Spinner';
 import styled from '@/styled-thing';
 import { IS_IOS } from '@/env';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { ActivityIndicator } from 'react-native';
 
 const ActivityIndicatorIos = styled(ActivityIndicator).attrs({

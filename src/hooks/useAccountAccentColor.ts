@@ -2,7 +2,7 @@ import { globalColors } from '@/design-system/color/palettes';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import chroma from 'chroma-js';
 import { useMemo } from 'react';
 

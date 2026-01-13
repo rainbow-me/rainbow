@@ -2,7 +2,7 @@ import { NativeModules } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { analytics } from '@/analytics';
 import { isSwipeRoute, setActiveRoute } from '@/state/navigation/navigationStore';
-import { currentColors } from '@/theme';
+import currentColors from '@/theme/currentColors';
 import { sentryUtils } from '../utils';
 import { Navigation } from './index';
 import Routes, { POINTS_ROUTES } from './routesNames';

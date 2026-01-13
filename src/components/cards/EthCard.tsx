@@ -20,7 +20,7 @@ import { ETH_ADDRESS } from '@/references';
 import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useRoute } from '@react-navigation/native';

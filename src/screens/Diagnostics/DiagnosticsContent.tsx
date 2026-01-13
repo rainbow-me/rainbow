@@ -4,7 +4,7 @@ import { IS_ANDROID } from '@/env';
 import { Column } from '@/components/layout';
 import { DiagnosticsItemRow } from '@/screens/Diagnostics/DiagnosticsItemRow';
 import { UserCredentials } from 'react-native-keychain';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { Box } from '@/design-system/components/Box/Box';

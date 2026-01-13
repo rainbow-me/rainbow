@@ -9,7 +9,7 @@ import { Box } from '@/design-system/components/Box/Box';
 import { Inline } from '@/design-system/components/Inline/Inline';
 import { Inset } from '@/design-system/components/Inset/Inset';
 import { Text } from '@/design-system/components/Text/Text';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { IS_ANDROID } from '@/env';
 
 const { CUSTOM, URGENT, GasSpeedOrder } = gasUtils;

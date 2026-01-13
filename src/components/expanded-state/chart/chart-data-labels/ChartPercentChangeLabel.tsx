@@ -17,7 +17,7 @@ import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { IS_ANDROID } from '@/env';
 import { greaterThanWorklet, lessThanWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 const UP_ARROW = IS_ANDROID ? '' : '↑';
 

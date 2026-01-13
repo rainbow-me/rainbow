@@ -13,7 +13,7 @@ import { Bleed } from '@/design-system/components/Bleed/Bleed';
 import { Column, Columns } from '@/design-system/components/Columns/Columns';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import useDimensions from '@/hooks/useDimensions';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { IS_ANDROID } from '@/env';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { SystemBars } from 'react-native-edge-to-edge';

@@ -10,7 +10,7 @@ import Animated, {
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 

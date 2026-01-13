@@ -13,7 +13,7 @@ import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { IS_ANDROID } from '@/env';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { time } from '@/utils/time';
 import React, { useCallback, useMemo } from 'react';
 import { StyleProp, TextStyle, ViewStyle, StyleSheet } from 'react-native';

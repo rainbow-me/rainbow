@@ -9,7 +9,7 @@ import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { TextColor } from '@/design-system/color/palettes';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 export const ToolbarIcon = ({
   color,

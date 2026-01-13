@@ -1,4 +1,4 @@
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import useImportingWallet from '@/hooks/useImportingWallet';
 import React, { useCallback } from 'react';
 import { WrappedAlert as Alert } from '@/helpers/alert';
