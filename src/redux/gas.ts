@@ -4,21 +4,8 @@ import { isEmpty } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
-import {
-  BlocksToConfirmation,
-  CurrentBlockParams,
-  GasFee,
-  GasFeeParam,
-  GasFeeParams,
-  GasFeeParamsBySpeed,
-  GasFeesBySpeed,
-  LegacyGasFee,
-  LegacyGasFeeParamsBySpeed,
-  LegacyGasFeesBySpeed,
-  LegacySelectedGasFee,
-  NativeCurrencyKey,
-  SelectedGasFee,
-} from '@/entities';
+import type { BlocksToConfirmation, CurrentBlockParams, GasFee, GasFeeParam, GasFeeParams, GasFeeParamsBySpeed, GasFeesBySpeed, LegacyGasFee, LegacyGasFeeParamsBySpeed, LegacyGasFeesBySpeed, LegacySelectedGasFee, SelectedGasFee } from '@/entities/gas';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { getProvider } from '@/handlers/web3';

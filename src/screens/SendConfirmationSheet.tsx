@@ -10,7 +10,7 @@ import { Stack } from '@/design-system/components/Stack/Stack';
 import { Text } from '@/design-system/components/Text/Text';
 import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
 import { useColorMode } from '@/design-system/color/ColorMode';
-import { AssetType } from '@/entities';
+import { AssetType } from '@/entities/assetTypes';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import {
   estimateENSReclaimGasLimit,

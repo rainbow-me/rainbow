@@ -11,7 +11,7 @@ import { Inset } from '@/design-system/components/Inset/Inset';
 import { Separator } from '@/design-system/components/Separator/Separator';
 import { Stack } from '@/design-system/components/Stack/Stack';
 import { Text } from '@/design-system/components/Text/Text';
-import { RegistrationParameters } from '@/entities';
+import type { RegistrationParameters } from '@/entities/ensRegistration';
 import useENSPendingRegistrations from '@/hooks/useENSPendingRegistrations';
 import { colors } from '@/styles';
 

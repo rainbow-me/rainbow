@@ -1,7 +1,7 @@
 import { subDays } from 'date-fns';
 import { Dispatch } from 'react';
 import { AppDispatch, AppGetState } from './store';
-import { ENSRegistrations, ENSRegistrationState, Records, RegistrationParameters, TransactionRegistrationParameters } from '@/entities';
+import type { ENSRegistrations, ENSRegistrationState, Records, RegistrationParameters, TransactionRegistrationParameters } from '@/entities/ensRegistration';
 import { getLocalENSRegistrations, saveLocalENSRegistrations } from '@/handlers/localstorage/accountLocal';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import { omitFlatten } from '@/helpers/utilities';

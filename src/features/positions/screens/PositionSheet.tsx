@@ -24,7 +24,7 @@ import Routes from '@/navigation/routesNames';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { Navigation } from '@/navigation';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { NativeCurrencyKeys } from '@/entities';
+import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { IS_IOS } from '@/env';
 import useDimensions from '@/hooks/useDimensions';

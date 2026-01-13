@@ -12,7 +12,7 @@ import { Inline } from '@/design-system/components/Inline/Inline';
 import { Inset } from '@/design-system/components/Inset/Inset';
 import { selectTextSizes, Text } from '@/design-system/components/Text/Text';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-import { Records } from '@/entities';
+import type { Records } from '@/entities/ensRegistration';
 import { deprecatedTextRecordFields, ENS_RECORDS } from '@/helpers/ens';
 import useENSRecordDisplayProperties from '@/hooks/useENSRecordDisplayProperties';
 import { useTheme } from '@/theme';

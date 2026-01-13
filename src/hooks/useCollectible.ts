@@ -1,4 +1,4 @@
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 

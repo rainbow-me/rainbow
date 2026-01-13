@@ -29,7 +29,7 @@ import { ContextMenu } from '../context-menu';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ThemeContextProps, useTheme } from '@/theme';
-import { ParsedAddressAsset } from '@/entities';
+import type { ParsedAddressAsset } from '@/entities/tokens';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 

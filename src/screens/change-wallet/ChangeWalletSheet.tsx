@@ -11,7 +11,7 @@ import { globalColors } from '@/design-system/color/palettes';
 import { HitSlop } from '@/design-system/components/HitSlop/HitSlop';
 import { Inline } from '@/design-system/components/Inline/Inline';
 import { Text } from '@/design-system/components/Text/Text';
-import { EthereumAddress } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import { isValidHex } from '@/handlers/web3';

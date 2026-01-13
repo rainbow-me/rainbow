@@ -14,7 +14,7 @@ import { Inset } from '@/design-system/components/Inset/Inset';
 import type { Space } from '@/design-system/layout/space';
 import { Stack } from '@/design-system/components/Stack/Stack';
 import { Text } from '@/design-system/components/Text/Text';
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import useClipboard from '@/hooks/useClipboard';
 import useDimensions from '@/hooks/useDimensions';
 import useHiddenTokens from '@/hooks/useHiddenTokens';

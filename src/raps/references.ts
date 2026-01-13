@@ -3,7 +3,7 @@ import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 
 import { ParsedAsset } from '@/__swaps__/types/assets';
-import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+import type { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { ChainId } from '@/state/backendNetworks/types';
 import { TransactionClaimableTxPayload } from '@/screens/claimables/transaction/types';
 import { SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';

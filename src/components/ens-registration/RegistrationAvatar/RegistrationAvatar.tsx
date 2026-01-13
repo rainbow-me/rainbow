@@ -11,7 +11,7 @@ import { Box } from '@/design-system/components/Box/Box';
 import { Cover } from '@/design-system/components/Cover/Cover';
 import { Text } from '@/design-system/components/Text/Text';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { UploadImageReturnData } from '@/handlers/pinata';
 import useENSModifiedRegistration from '@/hooks/useENSModifiedRegistration';
 import useENSRegistration from '@/hooks/useENSRegistration';

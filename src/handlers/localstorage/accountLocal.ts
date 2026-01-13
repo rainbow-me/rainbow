@@ -1,6 +1,6 @@
 import { MMKV } from 'react-native-mmkv';
 import { getAccountLocal, getKey, saveAccountLocal } from './common';
-import { ENSRegistrations } from '@/entities';
+import type { ENSRegistrations } from '@/entities/ensRegistration';
 import { STORAGE_IDS } from '@/model/mmkv';
 
 const assetsVersion = '0.3.0';

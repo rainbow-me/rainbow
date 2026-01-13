@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import SheetActionButton from './SheetActionButton';
 import { useTheme } from '@/theme';
-import { RainbowToken } from '@/entities';
+import type { RainbowToken } from '@/entities/tokens';
 import { containsEmoji } from '@/helpers/strings';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { userAssetsStore } from '@/state/assets/userAssets';

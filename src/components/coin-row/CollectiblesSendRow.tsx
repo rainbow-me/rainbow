@@ -11,7 +11,7 @@ import { Centered } from '../layout';
 import { TruncatedText } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { padding } from '@/styles';
 

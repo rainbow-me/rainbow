@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { metadataClient } from '@/graphql';
 import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { Token } from '@/graphql/__generated__/metadata';
 import { ChainId } from '@/state/backendNetworks/types';
 import { isNativeAsset } from '@/handlers/assets';

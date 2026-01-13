@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import usePrevious from './usePrevious';
 import useENSRegistration from './useENSRegistration';
 import { useInterval } from './useInterval';
-import { RegistrationParameters } from '@/entities';
+import type { RegistrationParameters } from '@/entities/ensRegistration';
 import { getProvider } from '@/handlers/web3';
 import {
   ENS_SECONDS_PADDING,

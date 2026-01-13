@@ -11,7 +11,7 @@ import type { TextProps } from '@/design-system/components/Text/Text';
 import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_IOS } from '@/env';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';

@@ -16,7 +16,7 @@ import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { globalColors } from '@/design-system/color/palettes';
 import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
 import { useColorMode } from '@/design-system/color/ColorMode';
-import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { IS_IOS } from '@/env';
 import { PointsErrorType } from '@/graphql/__generated__/metadata';
 import { getProvider } from '@/handlers/web3';
