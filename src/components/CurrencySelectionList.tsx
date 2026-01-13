@@ -1,7 +1,7 @@
 import React, { forwardRef, ForwardRefRenderFunction } from 'react';
 import { SectionList } from 'react-native';
 import magicMemo from '@/utils/magicMemo';
-import { EmptyAssetList } from '@/components/asset-list';
+import EmptyAssetList from '@/components/asset-list/EmptyAssetList';
 import { Centered } from '@/components/layout';
 import { NoResults } from '@/components/list';
 import ExchangeAssetList, { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';

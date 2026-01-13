@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { ThemeContextProps, useTheme } from '@/theme';
-import { ButtonPressAnimation } from '../../animations';
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';

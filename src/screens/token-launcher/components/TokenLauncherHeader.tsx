@@ -1,5 +1,5 @@
 import { analytics } from '@/analytics';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import { Box, Text, TextIcon } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';

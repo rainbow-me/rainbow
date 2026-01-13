@@ -1,6 +1,5 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { Box, Text, useColorMode } from '@/design-system';
-import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import {
   SLIDER_WIDTH,
   SLIDER_HEIGHT,
@@ -14,7 +13,7 @@ import { Slider, SliderChangeSource, SliderGestureState } from '@/features/perps
 import { addCommasToNumber, clamp, trimCurrencyZeros } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
+import { CurrencyInput, type CurrencyInputRef } from '@/components/CurrencyInput/CurrencyInput';
 import {
   divWorklet,
   equalWorklet,

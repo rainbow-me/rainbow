@@ -54,7 +54,7 @@ import URL from 'url-parse';
 import partyLogo from '../../assets/partyLogo.png';
 import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import ImagePreviewOverlay from '../images/ImagePreviewOverlay';
 import ImgixImage from '../images/ImgixImage';
 import { SendActionButton, SheetActionButton, SheetHandle, SlackSheet } from '../sheet';

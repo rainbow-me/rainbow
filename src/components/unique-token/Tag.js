@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import { upperCase, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered, Column } from '../layout';
 import { Text as TextElement } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';

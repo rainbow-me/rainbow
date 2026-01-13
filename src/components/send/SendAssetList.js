@@ -6,7 +6,7 @@ import { buildCoinsList } from '../../helpers/assets';
 import deviceUtils from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import Divider, { DividerSize } from '@/components/Divider';
-import { FlyInAnimation } from '../animations';
+import FlyInAnimation from '../animations/FlyInAnimation';
 import { CoinDividerOpenButton } from '../coin-divider';
 import { CollectiblesSendRow, SendCoinRow } from '../coin-row';
 import { Centered } from '../layout';

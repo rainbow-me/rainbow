@@ -11,7 +11,7 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 import haptics from '@/utils/haptics';
 import React, { useCallback } from 'react';
 import { useRecoilState } from 'recoil';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { GenericCard } from './GenericCard';
 import { IconOrb } from './reusables/IconOrb';

@@ -1,6 +1,6 @@
 import React from 'react';
 import * as i18n from '@/languages';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Text } from '@/design-system';
 import DiscoverSearchInput from '@/components/Discover/DiscoverSearchInput';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';

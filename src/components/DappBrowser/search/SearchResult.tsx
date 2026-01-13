@@ -1,7 +1,7 @@
 import React from 'react';
 import { Source } from 'react-native-fast-image';
 import GoogleSearchIcon from '@/assets/googleSearchIcon.png';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { formatUrl } from '../utils';

@@ -9,7 +9,7 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import React, { Fragment } from 'react';
 import { Share } from 'react-native';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import CoinDividerButtonLabel from '../coin-divider/CoinDividerButtonLabel';
 import { ContextMenu } from '../context-menu';
 import { Column, Row } from '../layout';

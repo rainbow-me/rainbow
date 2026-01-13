@@ -5,7 +5,7 @@ import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/f
 import { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { addCommasToNumber } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
+import { CurrencyInput, type CurrencyInputRef } from '@/components/CurrencyInput/CurrencyInput';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { Panel } from '@/components/SmoothPager/ListPanel';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';

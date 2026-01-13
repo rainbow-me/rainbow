@@ -6,7 +6,7 @@ import { ImageSystemSymbolConfiguration } from 'react-native-ios-context-menu/li
 import { ImageSourcePropType, ImageURISource, View } from 'react-native';
 import type { SFSymbols5_0 } from 'sf-symbols-typescript';
 import type { DropdownMenuContentProps } from '@radix-ui/react-dropdown-menu';
-import { ButtonPressAnimation } from './animations';
+import ButtonPressAnimation from './animations/ButtonPressAnimation';
 import ConditionalWrap from 'conditional-wrap';
 
 export const DropdownMenuRoot = DropdownMenuPrimitive.Root;

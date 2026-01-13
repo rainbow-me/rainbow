@@ -1,7 +1,7 @@
 import { analytics } from '@/analytics';
 import { MenuConfig, MenuItem } from '@/components/DropdownMenu';
 import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { FeatureHintTooltip, TooltipRef } from '@/components/tooltips/FeatureHintTooltip';

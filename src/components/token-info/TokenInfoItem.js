@@ -1,7 +1,8 @@
 import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { View } from 'react-native';
-import { ButtonPressAnimation, ShimmerAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import ShimmerAnimation from '../animations/ShimmerAnimation';
 import { ColumnWithMargins, RowWithMargins } from '../layout';
 import TokenInfoBalanceValue from './TokenInfoBalanceValue';
 import TokenInfoHeading from './TokenInfoHeading';

@@ -1,5 +1,5 @@
 import CreateNewWalletGroupIcon from '@/assets/CreateNewWalletGroup.png';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { Box, Separator, Text, useForegroundColor } from '@/design-system';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';

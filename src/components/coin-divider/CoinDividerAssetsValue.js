@@ -1,6 +1,6 @@
 import React from 'react';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
-import { OpacityToggler } from '../animations';
+import OpacityToggler from '../animations/OpacityToggler';
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import { position } from '@/styles';

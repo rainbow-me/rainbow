@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered, FlexItem, Row } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';

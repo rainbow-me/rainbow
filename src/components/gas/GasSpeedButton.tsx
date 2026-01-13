@@ -8,7 +8,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { InteractionManager, Keyboard, View } from 'react-native';
 import { Easing } from 'react-native-reanimated';
 import { darkModeThemeColors } from '../../styles/colors';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
