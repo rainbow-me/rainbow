@@ -230,6 +230,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
           maxPriorityFeePerGas: BigInt(eip1559.maxPriorityFeePerGas),
           gasLimit: null,
         },
+        nonce: swapParams.nonce!,
       });
 
       if (!result.hash) {
