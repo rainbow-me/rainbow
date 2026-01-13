@@ -1,12 +1,15 @@
-import { memo, useCallback, useEffect, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, useWindowDimensions, View, Image } from 'react-native';
 import Animated, {
+  cancelAnimation,
   Easing,
   interpolate,
-  runOnUI,
+  SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
+  withDelay,
   withRepeat,
   withSequence,
   withTiming,
@@ -15,6 +18,7 @@ import { BlurView } from 'react-native-blur-view';
 import rnbwCoin from '@/assets/rnbw.png';
 import { time } from '@/utils/time';
 import { ClaimSteps, useRnbwClaimContext } from '@/features/rnbw-rewards/context/RnbwClaimContext';
+import { getCoinCenterPosition } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/components/RnbwCoin';
 
 // Original design dimensions
 const DESIGN_WIDTH = 393;
@@ -24,6 +28,8 @@ const FLOAT_EASING = Easing.inOut(Easing.ease);
 const EXIT_EASING = Easing.bezier(0.2, 0.9, 0.2, 1);
 const EXIT_DURATION = time.seconds(1);
 
+const CLAIMED_CENTER = getCoinCenterPosition(ClaimSteps.NothingToClaim);
+
 const FLOAT_PATTERNS = {
   a: { x: 16, y: -18 },
   b: { x: -18, y: 15 },
@@ -31,114 +37,103 @@ const FLOAT_PATTERNS = {
   d: { x: -16, y: -16 },
 };
 
-// TODO: calculate from coin's position helpers
-const CLAIMED_POSITION = {
-  leftPercent: 176 / DESIGN_WIDTH,
-  topPercent: 144 / DESIGN_HEIGHT,
-};
-
 type CoinConfig = {
-  leftPercent: number;
-  topPercent: number;
+  left: number;
+  top: number;
   size: number;
   opacity: number;
   blur: number;
   pattern: keyof typeof FLOAT_PATTERNS;
   duration: number;
-  reverse?: boolean;
+  // The x and y translations that the coin animates off screen to
   exitX: number;
   exitY: number;
+  // Flips the sign of the x and y values of the pattern
+  reverse?: boolean;
 };
 
 const COINS: CoinConfig[] = [
   {
-    leftPercent: -67 / DESIGN_WIDTH,
-    topPercent: 388 / DESIGN_HEIGHT,
+    left: -67,
+    top: 388,
     size: 108,
     opacity: 0.8,
     blur: 2,
     pattern: 'a',
     duration: time.seconds(22),
     reverse: true,
-    exitX: -16,
-    exitY: 8,
+    exitX: -48,
+    exitY: 24,
   },
   {
-    leftPercent: -30 / DESIGN_WIDTH,
-    topPercent: 236 / DESIGN_HEIGHT,
+    left: -30,
+    top: 236,
     size: 66,
     opacity: 0.8,
     blur: 1,
     pattern: 'c',
     duration: time.seconds(16),
-    exitX: -24,
-    exitY: 8,
+    exitX: -72,
+    exitY: 24,
   },
   {
-    leftPercent: 63 / DESIGN_WIDTH,
-    topPercent: -30 / DESIGN_HEIGHT,
+    left: 63,
+    top: -30,
     size: 86,
     opacity: 0.8,
     blur: 2,
     pattern: 'a',
     duration: time.seconds(14),
-    exitX: -16,
-    exitY: -18,
+    exitX: -48,
+    exitY: -54,
   },
   {
-    leftPercent: 348 / DESIGN_WIDTH,
-    topPercent: 126 / DESIGN_HEIGHT,
+    left: 348,
+    top: 126,
     size: 74,
     opacity: 0.9,
     blur: 1.5,
     pattern: 'b',
     duration: time.seconds(18),
-    exitX: 32,
-    exitY: -8,
+    exitX: 96,
+    exitY: -24,
   },
   {
-    leftPercent: 300 / DESIGN_WIDTH,
-    topPercent: 271 / DESIGN_HEIGHT,
+    left: 300,
+    top: 271,
     size: 42,
     opacity: 1,
     blur: 1,
     pattern: 'd',
     duration: time.seconds(20),
-    exitX: 24,
-    exitY: 20,
+    exitX: 72,
+    exitY: 60,
   },
   {
-    leftPercent: 333 / DESIGN_WIDTH,
-    topPercent: 408 / DESIGN_HEIGHT,
+    left: 333,
+    top: 408,
     size: 90,
     opacity: 0.7,
     blur: 2,
     pattern: 'b',
     duration: time.seconds(15),
     reverse: true,
-    exitX: 26,
-    exitY: 12,
+    exitX: 78,
+    exitY: 36,
   },
 ];
 
-export type FloatingCoinsState = 'visible' | 'hidden' | 'claimed';
+type FloatingCoinsState = 'visible' | 'hidden' | 'claimed';
 
-function FloatingCoin({ config, state }: { config: CoinConfig; state: FloatingCoinsState }) {
-  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
-
+const FloatingCoin = memo(function FloatingCoin({ config, state }: { config: CoinConfig; state: SharedValue<FloatingCoinsState> }) {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const exitProgress = useSharedValue(0);
 
-  const size = config.size;
-  const left = screenWidth * config.leftPercent;
-  const top = screenHeight * config.topPercent;
+  const { left, top, size } = config;
 
-  const scaleX = screenWidth / DESIGN_WIDTH;
-  const scaleY = screenHeight / DESIGN_HEIGHT;
-
-  const claimedLeft = screenWidth * CLAIMED_POSITION.leftPercent;
-  const claimedTop = screenHeight * CLAIMED_POSITION.topPercent;
+  const claimedLeft = CLAIMED_CENTER.x - size / 2;
+  const claimedTop = CLAIMED_CENTER.y;
 
   const startFloatingAnimation = useCallback(() => {
     'worklet';
@@ -152,27 +147,52 @@ function FloatingCoin({ config, state }: { config: CoinConfig; state: FloatingCo
     translateY.value = withRepeat(withSequence(withTiming(y, timingConfig), withTiming(0, timingConfig)), -1);
   }, [config.pattern, config.reverse, translateX, translateY, config.duration]);
 
+  const stopFloatingAnimation = useCallback(() => {
+    'worklet';
+    cancelAnimation(translateX);
+    cancelAnimation(translateY);
+  }, [translateX, translateY]);
+
+  useAnimatedReaction(
+    () => state.value,
+    (current, previous) => {
+      if (current === previous) return;
+      if (current === 'visible') {
+        startFloatingAnimation();
+      } else {
+        stopFloatingAnimation();
+      }
+    },
+    [startFloatingAnimation, stopFloatingAnimation]
+  );
+
+  // Animate off screen for 'hidden' and behind primary coin icon for 'claimed' state
   useAnimatedReaction(
     () => {
-      return state;
+      return state.value;
     },
     current => {
-      exitProgress.value = withTiming(current === 'visible' ? 0 : 1, {
-        duration: EXIT_DURATION,
-        easing: EXIT_EASING,
-      });
+      let delay = 0;
+      if (current === 'claimed') {
+        const distanceFromClaimPosition = Math.sqrt(Math.pow(claimedLeft - left, 2) + Math.pow(claimedTop - top, 2));
+        // Normalize distance to 0-1 from 200-300
+        const normalizedDistance = Math.max(0, Math.min(1, (distanceFromClaimPosition - 200) / 100));
+        delay = normalizedDistance * time.ms(100);
+      }
+
+      exitProgress.value = withDelay(
+        delay,
+        withTiming(current === 'visible' ? 0 : 1, {
+          duration: EXIT_DURATION,
+          easing: EXIT_EASING,
+        })
+      );
     },
     [state, exitProgress]
   );
 
-  useEffect(() => {
-    runOnUI(() => {
-      startFloatingAnimation();
-    })();
-  }, [startFloatingAnimation]);
-
   const containerStyle = useAnimatedStyle(() => {
-    if (state === 'claimed') {
+    if (state.value === 'claimed') {
       return {
         left: interpolate(exitProgress.value, [0, 1], [left, claimedLeft]),
         top: interpolate(exitProgress.value, [0, 1], [top, claimedTop]),
@@ -188,22 +208,18 @@ function FloatingCoin({ config, state }: { config: CoinConfig; state: FloatingCo
   });
 
   const innerStyle = useAnimatedStyle(() => {
-    if (state === 'claimed') {
+    if (state.value === 'claimed') {
       return {
         opacity: interpolate(exitProgress.value, [0, 1], [config.opacity, 0]),
         transform: [{ scale: interpolate(exitProgress.value, [0, 1], [1, 0.6]) }],
       };
     }
 
-    // Hidden state - fly outward
-    const exitXFinal = config.exitX * 3 * scaleX;
-    const exitYFinal = config.exitY * 3 * scaleY;
-
     return {
       opacity: interpolate(exitProgress.value, [0, 1], [config.opacity, 0]),
       transform: [
-        { translateX: interpolate(exitProgress.value, [0, 1], [0, exitXFinal]) },
-        { translateY: interpolate(exitProgress.value, [0, 1], [0, exitYFinal]) },
+        { translateX: interpolate(exitProgress.value, [0, 1], [0, config.exitX]) },
+        { translateY: interpolate(exitProgress.value, [0, 1], [0, config.exitY]) },
         { scale: interpolate(exitProgress.value, [0, 1], [1, 0.55]) },
       ],
     };
@@ -228,24 +244,42 @@ function FloatingCoin({ config, state }: { config: CoinConfig; state: FloatingCo
       </Animated.View>
     </Animated.View>
   );
-}
+});
 
 export const FloatingCoins = memo(function FloatingCoins() {
-  const { activeStepState } = useRnbwClaimContext();
-  const state = useMemo(() => {
-    switch (activeStepState) {
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const { activeStep } = useRnbwClaimContext();
+  const state = useDerivedValue(() => {
+    switch (activeStep.value) {
       case ClaimSteps.Introduction:
       case ClaimSteps.Claim:
         return 'visible';
       case ClaimSteps.CheckingAirdrop:
         return 'hidden';
+      case ClaimSteps.NothingToClaim:
+        return 'claimed';
       default:
         return 'hidden';
     }
-  }, [activeStepState]);
+  }, [activeStep]);
+
+  const scaledCoins: CoinConfig[] = useMemo(() => {
+    const scaleX = screenWidth / DESIGN_WIDTH;
+    const scaleY = screenHeight / DESIGN_HEIGHT;
+
+    return COINS.map(({ left, top, size, ...config }) => ({
+      ...config,
+      left: left * scaleX,
+      top: top * scaleY,
+      exitX: config.exitX * scaleX,
+      exitY: config.exitY * scaleY,
+      size: size * scaleX,
+    }));
+  }, [screenHeight, screenWidth]);
+
   return (
     <View style={styles.container} pointerEvents="none">
-      {COINS.map((config, index) => (
+      {scaledCoins.map((config, index) => (
         <FloatingCoin key={index} config={config} state={state} />
       ))}
     </View>

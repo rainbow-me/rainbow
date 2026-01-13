@@ -45,7 +45,7 @@ const loadingSpinnerTop =
 
 const timingConfig = { duration: time.seconds(1), easing: customEasing };
 const delay = time.ms(100);
-const loadingSpinnerEnteringAnimation = FadeIn.delay(time.ms(200)).easing(customEasing);
+const loadingSpinnerEnteringAnimation = FadeIn.delay(timingConfig.duration * 0.5).easing(customEasing);
 const loadingSpinnerExitingAnimation = FadeOut.easing(customEasing);
 
 export const RnbwCoin = memo(function RnbwCoin() {
@@ -82,15 +82,15 @@ export const RnbwCoin = memo(function RnbwCoin() {
 
   return (
     <View style={[styles.container, { top: safeAreaInsets.top }]}>
+      <Animated.View style={[styles.concentricCircleContainer, concentricCircleAnimatedStyle]}>
+        <Image source={concentricCircleImage} style={styles.concentricCircle} />
+      </Animated.View>
+
       <Animated.View style={[styles.coinContainer, coinAnimatedStyle]}>
         <Image source={rnbwCoinImage} style={styles.coin} />
       </Animated.View>
 
       <CoinLoadingSpinner />
-
-      <Animated.View style={[styles.concentricCircleContainer, concentricCircleAnimatedStyle]}>
-        <Image source={concentricCircleImage} style={styles.concentricCircle} />
-      </Animated.View>
     </View>
   );
 });
@@ -111,10 +111,10 @@ function getCircleRelativeCenterPoint(size: number) {
   const outerHeight = size;
   const innerHeight = INNERMOST_CIRCLE_SIZE * circleSizeScale;
 
-  // This is the approximate offset relative to the absolute center of the image that the inner circle is shifted by.
+  // This is the approximate offset relative to the absolute center of the image that the innermost circle is shifted by.
   const offsetPercent = 0.095;
 
-  // Calculate the inner circle's actual top position
+  // Calculate the innermost circle's actual top position
   const centeredGap = (outerHeight - innerHeight) / 2;
   const offsetDistance = offsetPercent * centeredGap;
   const actualTop = centeredGap + offsetDistance;
@@ -131,6 +131,15 @@ function getCircleRelativeCenterPoint(size: number) {
 export function getCoinBottomPosition(step: ClaimStep) {
   const config = stepsConfig[step];
   return config.translateY + COIN_SIZE * config.scale;
+}
+
+export function getCoinCenterPosition(step: ClaimStep) {
+  const config = stepsConfig[step];
+  const coinSize = COIN_SIZE * config.scale;
+  return {
+    x: DEVICE_WIDTH / 2,
+    y: config.translateY + coinSize / 2,
+  };
 }
 
 const styles = StyleSheet.create({
