@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
 import { useTheme } from '@/theme';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { RowWithMargins } from '@/components/layout';
 import { Text } from '@/components/text';
 import RainbowButtonTypes from '@/components/buttons/rainbow-button/RainbowButtonTypes';

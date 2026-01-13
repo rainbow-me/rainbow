@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';

@@ -7,7 +7,7 @@ import { ContactAvatar } from '@/components/contacts';
 import { Box, Column, Columns, Cover, Stack, Text } from '@/design-system';
 import Animated, { Easing, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { useTiming } from 'react-native-redash';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Clipboard from '@react-native-clipboard/clipboard';
 import haptics from '@/utils/haptics';
 import { formatAddressForDisplay } from '@/utils/abbreviations';

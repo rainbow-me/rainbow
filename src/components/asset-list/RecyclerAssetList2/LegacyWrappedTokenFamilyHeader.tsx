@@ -6,7 +6,7 @@ import React, { useMemo, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import TokenFamilyHeaderIcon from '@/components/token-family/TokenFamilyHeaderIcon';
 import { Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';

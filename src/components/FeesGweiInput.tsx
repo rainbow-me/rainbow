@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import GweiInputPill from '@/components/GweiInputPill';
 import { delay } from '@/helpers/utilities';
 import usePrevious from '@/hooks/usePrevious';

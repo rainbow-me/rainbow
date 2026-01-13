@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Box, Text, useColorMode } from '@/design-system';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import * as i18n from '@/languages';
