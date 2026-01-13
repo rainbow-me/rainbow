@@ -1,5 +1,5 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text as NativeText } from 'react-native';
 import { Box, Separator, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
@@ -17,6 +17,10 @@ import { ContextCircleButton } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_IOS } from '@/env';
 import * as ethereumUtils from '@/utils/ethereumUtils';
+import { getDelegations, DelegationStatus, type ChainDelegationState } from '@rainbow-me/delegation';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { logger, RainbowError } from '@/logger';
+import type { Address } from 'viem';
 
 type ViewWalletDelegationsParams = {
   ViewWalletDelegations: { walletId: string; address: string; title: string };
@@ -34,16 +38,7 @@ type NetworkMenuEvent = {
   chainId: ChainId;
 };
 
-const ACTIVATED_NETWORKS = [
-  { chainId: ChainId.base, name: 'Base' },
-  { chainId: ChainId.optimism, name: 'Optimism' },
-  { chainId: ChainId.arbitrum, name: 'Arbitrum' },
-];
-
-const INACTIVE_NETWORKS = [
-  { chainId: ChainId.mainnet, name: 'Ethereum', delegatedTo: '0x1234...5678' },
-  { chainId: ChainId.polygon, name: 'Polygon', delegatedTo: '0xabcd...efgh' },
-];
+type DelegationInfo = ChainDelegationState & { chainId: number; name: string };
 
 type SmartWalletStatus = 'active' | 'disabled';
 
@@ -110,6 +105,37 @@ const ViewWalletDelegations = () => {
   const { address } = params;
 
   const [isSmartWalletEnabled, setIsSmartWalletEnabled] = useState(true);
+  const [delegations, setDelegations] = useState<DelegationInfo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getChainsName = useBackendNetworksStore(state => state.getChainsName);
+
+  useEffect(() => {
+    const fetchDelegations = async () => {
+      try {
+        setIsLoading(true);
+        const result = await getDelegations({ address: address as Address });
+        const chainsName = getChainsName();
+
+        const delegationsWithNames = result.map(delegation => ({
+          ...delegation,
+          name: chainsName[delegation.chainId as ChainId] || `Chain ${delegation.chainId}`,
+        }));
+
+        setDelegations(delegationsWithNames);
+      } catch (error) {
+        logger.error(new RainbowError('[ViewWalletDelegations]: Failed to fetch delegations'), { error });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDelegations();
+  }, [address, getChainsName]);
+
+  const activatedNetworks = delegations.filter(delegation => delegation.delegationStatus === DelegationStatus.RAINBOW_DELEGATED);
+
+  const inactiveNetworks = delegations.filter(delegation => delegation.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED);
 
   const handleRevokeDelegation = useCallback((chainId: ChainId) => {
     // TODO: Implement revoke delegation
@@ -118,7 +144,7 @@ const ViewWalletDelegations = () => {
 
   const handleViewOnExplorer = useCallback(
     (chainId: ChainId) => {
-      ethereumUtils.openAddressInBlockExplorer({ address, chainId });
+      ethereumUtils.default.openAddressInBlockExplorer({ address, chainId });
     },
     [address]
   );
@@ -280,7 +306,7 @@ const ViewWalletDelegations = () => {
 
             {/* Networks List */}
             <Menu>
-              {ACTIVATED_NETWORKS.map((network, index) => {
+              {activatedNetworks.map((network, index) => {
                 const NetworkContextMenuWrapper = ({ children }: { children: React.ReactNode }) => {
                   return IS_IOS ? (
                     <ContextMenuButton
@@ -321,7 +347,7 @@ const ViewWalletDelegations = () => {
                         }
                       />
                     </NetworkContextMenuWrapper>
-                    {index < ACTIVATED_NETWORKS.length - 1 && (
+                    {index < activatedNetworks.length - 1 && (
                       <Box paddingHorizontal="16px">
                         <Separator color="separatorTertiary" thickness={1} />
                       </Box>
@@ -345,7 +371,7 @@ const ViewWalletDelegations = () => {
 
             {/* Inactive Networks List */}
             <Menu>
-              {INACTIVE_NETWORKS.map((network, index) => {
+              {inactiveNetworks.map((network, index) => {
                 const NetworkContextMenuWrapper = ({ children }: { children: React.ReactNode }) => {
                   return IS_IOS ? (
                     <ContextMenuButton
@@ -379,7 +405,13 @@ const ViewWalletDelegations = () => {
                           </Box>
                         }
                         titleComponent={<MenuItem.Title text={network.name} weight="bold" />}
-                        labelComponent={<MenuItem.Label text={`Delegated to ${network.delegatedTo}`} />}
+                        labelComponent={
+                          network.currentContract ? (
+                            <MenuItem.Label
+                              text={`Delegated to ${network.currentContract.slice(0, 6)}...${network.currentContract.slice(-4)}`}
+                            />
+                          ) : undefined
+                        }
                         rightComponent={
                           <Text color="labelQuinary" size="17pt" weight="bold">
                             􀍡
@@ -387,7 +419,7 @@ const ViewWalletDelegations = () => {
                         }
                       />
                     </NetworkContextMenuWrapper>
-                    {index < INACTIVE_NETWORKS.length - 1 && (
+                    {index < inactiveNetworks.length - 1 && (
                       <Box paddingHorizontal="16px">
                         <Separator color="separatorTertiary" thickness={1} />
                       </Box>
