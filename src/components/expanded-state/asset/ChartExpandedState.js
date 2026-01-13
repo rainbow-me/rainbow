@@ -16,13 +16,11 @@ import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@/react-native-animated-charts/src';
 import { isL2Chain, isTestnetChain } from '@/handlers/web3';
 import { SwapAssetType } from '@/__swaps__/types/swap';
-import {
-  useAccountSettings,
-  useAdditionalAssetData,
-  useChartThrottledPoints,
-  useDelayedValueWithLayoutAnimation,
-  useDimensions,
-} from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import useAdditionalAssetData from '@/hooks/useAdditionalAssetData';
+import { useChartThrottledPoints } from '@/hooks/charts';
+import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
+import useDimensions from '@/hooks/useDimensions';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS } from '@/references';

@@ -15,7 +15,10 @@ import { TestnetToast } from '@/components/toasts';
 import { DAPP_BROWSER, LAZY_TABS, POINTS, useExperimentalFlag } from '@/config';
 import { Box, Columns, globalColors, useColorMode, Column } from '@/design-system';
 import { IS_IOS, IS_TEST } from '@/env';
-import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions } from '@/hooks';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import useCoinListEdited from '@/hooks/useCoinListEdited';
+import useDimensions from '@/hooks/useDimensions';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import {
   RecyclerListViewScrollToTopProvider,

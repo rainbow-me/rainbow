@@ -1,16 +1,14 @@
 import { ImgixImage } from '@/components/images';
 import { AccentColorProvider, Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
 import { accentColorAtom, ENS_DOMAIN, ENS_SECONDS_WAIT, REGISTRATION_MODES, REGISTRATION_STEPS } from '@/helpers/ens';
-import {
-  useDimensions,
-  useENSModifiedRegistration,
-  useENSRegistration,
-  useENSRegistrationActionHandler,
-  useENSRegistrationCosts,
-  useENSRegistrationForm,
-  useENSRegistrationStepHandler,
-  useENSSearch,
-} from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
+import useENSModifiedRegistration from '@/hooks/useENSModifiedRegistration';
+import useENSRegistration from '@/hooks/useENSRegistration';
+import useENSRegistrationActionHandler from '@/hooks/useENSRegistrationActionHandler';
+import useENSRegistrationCosts from '@/hooks/useENSRegistrationCosts';
+import useENSRegistrationForm from '@/hooks/useENSRegistrationForm';
+import useENSRegistrationStepHandler from '@/hooks/useENSRegistrationStepHandler';
+import useENSSearch from '@/hooks/useENSSearch';
 import { ActionTypes } from '@/hooks/useENSRegistrationActionHandler';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { useNavigation } from '@/navigation';

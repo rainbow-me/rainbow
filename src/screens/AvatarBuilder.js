@@ -11,7 +11,7 @@ import useUpdateEmoji from '../hooks/useUpdateEmoji';
 import { useNavigation } from '../navigation/Navigation';
 import { deviceUtils } from '../utils';
 import { AVATAR_CIRCLE_TOP_MARGIN } from '@/navigation/effects';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 

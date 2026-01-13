@@ -4,7 +4,7 @@ import { TokenToReceive, TransactionClaimableTxPayload } from '../types';
 import { CrosschainQuote, ETH_ADDRESS, getCrosschainQuote, getQuote, Quote, QuoteParams } from '@rainbow-me/swaps';
 import { Claimable, ClaimableType, TransactionClaimable } from '@/resources/addys/claimables/types';
 import { logger, RainbowError } from '@/logger';
-import { useAccountSettings } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
 import {
   convertAmountToNativeDisplay,
   convertAmountToRawAmount,

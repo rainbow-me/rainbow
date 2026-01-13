@@ -8,7 +8,7 @@ import { UniqueAsset } from '@/entities';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { useNftsStore } from '@/state/nfts/nfts';
-import { useWalletSectionsData } from '@/hooks';
+import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 
 export default function SelectUniqueTokenSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SELECT_UNIQUE_TOKEN_SHEET>>();

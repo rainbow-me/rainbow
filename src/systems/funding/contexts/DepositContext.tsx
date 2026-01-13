@@ -1,7 +1,7 @@
 import React, { createContext, ReactNode, useContext } from 'react';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { useCleanup } from '@/hooks';
+import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { createDepositAmountStore } from '../stores/createAmountStore';

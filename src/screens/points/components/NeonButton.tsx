@@ -3,7 +3,7 @@ import { StyleSheet, Text as RNText } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import { Box, Cover, Text, useForegroundColor } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { useTheme } from '@/theme';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 

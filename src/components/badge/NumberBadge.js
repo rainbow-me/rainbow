@@ -3,7 +3,7 @@ import Animated, { interpolate, SpringUtils, useAnimatedStyle, useSharedValue, w
 import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { useTimeout } from '@/hooks';
+import useTimeout from '@/hooks/useTimeout';
 import styled from '@/styled-thing';
 import { borders, position } from '@/styles';
 

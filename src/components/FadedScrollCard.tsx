@@ -19,7 +19,7 @@ import { globalColors } from '@/design-system';
 
 import { useTheme } from '@/theme';
 
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { FadeGradient } from '@/components/FadeGradient';
 
 const COLLAPSED_CARD_HEIGHT = 56;

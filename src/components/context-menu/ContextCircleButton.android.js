@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { Text } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { useLatestCallback } from '@/hooks';
+import useLatestCallback from '@/hooks/useLatestCallback';
 import styled from '@/styled-thing';
 import { borders, position } from '@/styles';
 

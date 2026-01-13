@@ -6,7 +6,7 @@ import { useSharedValue, SharedValue, useAnimatedStyle, useAnimatedReaction, wit
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useRoute } from '@/navigation/Navigation';
 import { toUnixTime } from '@/worklets/dates';
-import { usePrevious } from '@/hooks';
+import usePrevious from '@/hooks/usePrevious';
 
 interface LiveTokenValueParams {
   tokenId: string;

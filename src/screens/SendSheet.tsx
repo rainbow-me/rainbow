@@ -21,22 +21,20 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { REGISTRATION_STEPS } from '@/helpers/ens';
 import { convertAmountAndPriceToNativeDisplay, convertAmountFromNativeValue, formatInputDecimals, lessThan } from '@/helpers/utilities';
 import { checkIsValidAddressOrDomain, checkIsValidAddressOrDomainFormat, isENSAddressFormat } from '@/helpers/validators';
-import {
-  prefetchENSAvatar,
-  prefetchENSCover,
-  useAccountSettings,
-  useCoinListEditOptions,
-  useColorForAsset,
-  useContacts,
-  useENSProfile,
-  useENSRegistrationActionHandler,
-  useGas,
-  useMaxInputBalance,
-  usePrevious,
-  useSendableUniqueTokens,
-  useSendSheetInputRefs,
-  useUserAccounts,
-} from '@/hooks';
+import { prefetchENSAvatar } from '@/hooks/useENSAvatar';
+import { prefetchENSCover } from '@/hooks/useENSCover';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
+import useColorForAsset from '@/hooks/useColorForAsset';
+import useContacts from '@/hooks/useContacts';
+import useENSProfile from '@/hooks/useENSProfile';
+import useENSRegistrationActionHandler from '@/hooks/useENSRegistrationActionHandler';
+import useGas from '@/hooks/useGas';
+import useMaxInputBalance from '@/hooks/useMaxInputBalance';
+import usePrevious from '@/hooks/usePrevious';
+import useSendableUniqueTokens from '@/hooks/useSendableUniqueTokens';
+import useSendSheetInputRefs from '@/hooks/useSendSheetInputRefs';
+import useUserAccounts from '@/hooks/useUserAccounts';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet, sendTransaction } from '@/model/wallet';
