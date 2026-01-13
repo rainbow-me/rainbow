@@ -6,7 +6,7 @@ import { toHex } from '@/handlers/web3';
 import { ENSRegistrationTransactionType, getENSExecutionDetails, REGISTRATION_MODES } from '@/helpers/ens';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { parseGasParamAmounts } from '@/parsers';
+import { parseGasParamAmounts } from '@/parsers/gas';
 import { ENSActionParameters, ENSRap, ENSRapActionType, RapENSAction, RapENSActionParameters } from '@/raps/common';
 import { saveCommitRegistrationParameters, updateTransactionRegistrationParameters } from '@/redux/ensRegistration';
 import store from '@/redux/store';

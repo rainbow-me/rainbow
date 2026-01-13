@@ -9,7 +9,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import { add, formatNumber } from '@/helpers/utilities';
-import { weiToGwei } from '@/parsers';
+import { weiToGwei } from '@/parsers/gas';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import gasUtils from '@/utils/gas';
 

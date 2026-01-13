@@ -7,7 +7,7 @@ import { ACTION_BUTTON_HEIGHT, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Sw
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { gweiToWei, weiToGwei } from '@/parsers';
+import { gweiToWei, weiToGwei } from '@/parsers/gas';
 import {
   getCachedCurrentBaseFee,
   getSelectedSpeedSuggestion,

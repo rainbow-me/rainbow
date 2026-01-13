@@ -42,7 +42,7 @@ import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
-import { parseGasParamsForTransaction } from '@/parsers';
+import { parseGasParamsForTransaction } from '@/parsers/gas';
 import { Contact } from '@/redux/contacts';
 import { rainbowTokenList } from '@/references';
 import { interactionsCountQueryKey } from '@/resources/addys/interactions';
