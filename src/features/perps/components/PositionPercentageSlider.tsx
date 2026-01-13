@@ -4,7 +4,7 @@ import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccent
 import { INPUT_CARD_HEIGHT, SLIDER_WIDTH } from '@/features/perps/constants';
 import * as i18n from '@/languages';
 import { type SharedValue, useDerivedValue } from 'react-native-reanimated';
-import { Slider, type SliderChangeSource } from '@/features/perps/components/Slider';
+import { Slider, type SliderChangeSource } from '@/features/perps/components/Slider/Slider';
 
 const ProgressSlider = ({
   progressValue,
