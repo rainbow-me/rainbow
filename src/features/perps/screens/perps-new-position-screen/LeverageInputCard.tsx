@@ -3,8 +3,13 @@ import { runOnJS, runOnUI, SharedValue, useAnimatedReaction, useDerivedValue, us
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useDebouncedCallback } from 'use-debounce';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedText, Box, Inline, Text, useColorMode } from '@/design-system';
-import { Slider, SliderProps } from '@/features/perps/components/Slider';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { Slider } from '@/features/perps/components/Slider/Slider';
+import type { SliderProps } from '@/features/perps/components/Slider/Slider';
 import { SLIDER_MAX, SliderGestureState } from '@/features/perps/components/Slider/Slider';
 import { INPUT_CARD_HEIGHT, SLIDER_WIDTH } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
