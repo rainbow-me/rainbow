@@ -1,7 +1,7 @@
 import { ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { League } from '@/features/polymarket/leagues';
-import { PolymarketTeamInfo } from '@/features/polymarket/types';
+import { PolymarketTeamInfo } from '@/features/polymarket/types/team-info';
 
 export type SportsMarketType = (typeof POLYMARKET_SPORTS_MARKET_TYPE)[keyof typeof POLYMARKET_SPORTS_MARKET_TYPE];
 
