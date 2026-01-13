@@ -708,6 +708,7 @@ type RouteParams = {
       chainId: number;
       contractAddress: string;
     }>;
+    onSuccess?: () => void;
   };
 };
 

@@ -27,7 +27,7 @@ export type RevokeStatus =
 export const RevokeDelegationPanel = () => {
   const { goBack } = useNavigation();
   const {
-    params: { delegationsToRevoke },
+    params: { delegationsToRevoke, onSuccess },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.REVOKE_DELEGATION_PANEL>>();
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -89,6 +89,8 @@ export const RevokeDelegationPanel = () => {
       // Move to next delegation or finish
       setTimeout(() => {
         if (isLastDelegation) {
+          // Call success callback if provided
+          onSuccess?.();
           goBack();
         } else {
           setCurrentIndex(prev => prev + 1);
