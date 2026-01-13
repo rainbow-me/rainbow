@@ -1,4 +1,4 @@
-import { RAINBOW_TOASTS, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { RAINBOW_TOASTS } from '@/config/experimentalHooks';
 import { IS_TEST } from '@/env';
 import { useRemoteConfig } from '@/model/remoteConfig';
 

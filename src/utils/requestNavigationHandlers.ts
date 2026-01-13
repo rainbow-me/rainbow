@@ -3,7 +3,7 @@ import Routes from '@/navigation/routesNames';
 
 import { MobileWalletProtocolUserErrors } from '@/components/MobileWalletProtocolListener';
 import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
-import { enableActionsOnReadOnlyWallet } from '@/config';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { maybeSignUri } from '@/handlers/imgix';
 import walletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';

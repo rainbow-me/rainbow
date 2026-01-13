@@ -10,7 +10,7 @@ import {
   TAB_BAR_INNER_PADDING,
   TAB_BAR_WIDTH,
 } from '@/components/tab-bar/dimensions';
-import { DAPP_BROWSER, LAZY_TABS, RNBW_REWARDS, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { DAPP_BROWSER, LAZY_TABS, RNBW_REWARDS } from '@/config/experimentalHooks';
 import { Box, Columns, globalColors, useColorMode, Column, ColorModeProvider } from '@/design-system';
 import { IS_IOS, IS_TEST } from '@/env';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';

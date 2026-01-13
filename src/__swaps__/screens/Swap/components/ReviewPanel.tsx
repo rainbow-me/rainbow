@@ -40,7 +40,7 @@ import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { REVIEW_SHEET_ROW_HEIGHT } from '../constants';
 import { useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useWillExecuteDelegation } from '@/hooks/useWillExecuteDelegation';
-import { ATOMIC_SWAPS, getExperimentalFlag } from '@/config';
+import { ATOMIC_SWAPS, getExperimentalFlag } from '@/config/experimentalHooks';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';

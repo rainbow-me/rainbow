@@ -1,6 +1,6 @@
 import { type RainbowPosition } from '../../types';
 import { PositionName, DetailType, type PortfolioItem, type PositionToken } from '../../types/generated/positions/positions';
-import { getExperimentalFlag, DEFI_POSITIONS_THRESHOLD_FILTER } from '@/config';
+import { getExperimentalFlag, DEFI_POSITIONS_THRESHOLD_FILTER } from '@/config/experimentalHooks';
 
 // ============ Constants ====================================================== //
 

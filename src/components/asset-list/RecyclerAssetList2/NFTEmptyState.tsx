@@ -3,7 +3,7 @@ import Animated from 'react-native-reanimated';
 import { Box, Stack, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { TokenFamilyHeaderHeight } from './NFTLoadingSkeleton';
-import { MINTS, NFTS_ENABLED, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { MINTS, NFTS_ENABLED } from '@/config/experimentalHooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useMints } from '@/resources/mints';
 import { useAccountAddress } from '@/state/wallets/walletsStore';

@@ -1,4 +1,4 @@
-import { KING_OF_THE_HILL_TAB, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { KING_OF_THE_HILL_TAB } from '@/config/experimentalHooks';
 import { IS_TEST } from '@/env';
 import { useRemoteConfig } from '@/model/remoteConfig';
 

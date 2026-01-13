@@ -9,7 +9,7 @@ import { getIsDamagedWallet, getIsReadOnlyWallet, useAccountAddress, useIsDamage
 import watchingAlert from '@/utils/watchingAlert';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { analytics } from '@/analytics';
-import { enableActionsOnReadOnlyWallet } from '@/config';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import * as React from 'react';

@@ -40,7 +40,7 @@ import { useTrendingDApps } from '@/resources/metadata/trendingDapps';
 import { type DApp } from '@/graphql/__generated__/metadata';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, HTTP, HTTPS } from './constants';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { FEATURED_RESULTS, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { FEATURED_RESULTS } from '@/config/experimentalHooks';
 import { FeaturedResultStack, type FeaturedResultStackProps } from '@/components/FeaturedResult/FeaturedResultStack';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 

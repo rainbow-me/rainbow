@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
-import { enableActionsOnReadOnlyWallet } from '@/config';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { useNavigation, type NavigateArgs } from '@/navigation/Navigation';
 import { type Route } from '@/navigation/routesNames';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';

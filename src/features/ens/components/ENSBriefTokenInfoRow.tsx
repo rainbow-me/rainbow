@@ -6,7 +6,7 @@ import { InteractionManager } from 'react-native';
 import { ENSConfirmRenewSheetHeight } from '../screens/ENSConfirmRegisterSheet';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TokenInfoItem, TokenInfoValue } from '@/components/token-info';
-import { PROFILES, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { Column, Columns, Inset } from '@/design-system';
 import { REGISTRATION_MODES } from '../utils/helpers';
 import useENSAvatar from '../hooks/useENSAvatar';

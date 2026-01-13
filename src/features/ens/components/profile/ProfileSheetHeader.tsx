@@ -9,7 +9,7 @@ import ProfileCover from './ProfileCover';
 import ProfileDescription from './ProfileDescription';
 import RecordTags, { Placeholder as RecordTagsPlaceholder } from './RecordTags';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
-import { PROFILES, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { Bleed, Box, Column, Columns, Heading, Inset, Separator, Stack } from '@/design-system';
 import { ENS_RECORDS } from '../../utils/helpers';
 import useENSAvatar from '../../hooks/useENSAvatar';

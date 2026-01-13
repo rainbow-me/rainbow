@@ -5,7 +5,7 @@ import * as i18n from '@/languages';
 // import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
 // import { colors } from '@/styles';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { NFTS_ENABLED } from '@/config/experimentalHooks';
 // import { IS_IOS } from '@/env';
 // import { nftsStoreManager } from '@/state/nfts/nftsStoreManager';
 

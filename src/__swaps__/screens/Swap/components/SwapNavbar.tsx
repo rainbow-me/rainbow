@@ -8,7 +8,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';
-import { DEGEN_MODE, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { DEGEN_MODE } from '@/config/experimentalHooks';
 import {
   AnimatedText,
   Bleed,

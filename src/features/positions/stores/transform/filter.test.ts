@@ -2,7 +2,7 @@ import { shouldFilterPosition, shouldFilterPortfolioItem } from './filter';
 import { PositionName, DetailType } from '../../types/generated/positions/positions';
 import { createMockRainbowPosition, createMockDeposit, createMockPortfolioItem } from '../../__fixtures__/mocks/positions';
 
-jest.mock('@/config', () => ({
+jest.mock('@/config/experimentalHooks', () => ({
   getExperimentalFlag: jest.fn(() => true),
   DEFI_POSITIONS_THRESHOLD_FILTER: 'defi_positions_threshold_filter',
 }));

@@ -1,5 +1,5 @@
 import { ImgixImage } from '@/components/images';
-import { defaultConfig, getExperimentalFlag, LOG_PUSH } from '@/config';
+import { defaultConfig, getExperimentalFlag, LOG_PUSH } from '@/config/experimentalHooks';
 import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
 import { deleteAllBackups } from '@/handlers/cloudBackup';
 import { RainbowContext } from '@/helpers/RainbowContext';

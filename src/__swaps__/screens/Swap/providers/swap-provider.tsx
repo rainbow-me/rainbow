@@ -50,7 +50,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { getNextNonce } from '@/state/nonces';
 import { type CrosschainQuote, type Quote, type QuoteError, SwapType } from '@rainbow-me/swaps';
 import { IS_IOS } from '@/env';
-import { ATOMIC_SWAPS, getExperimentalFlag } from '@/config';
+import { ATOMIC_SWAPS, getExperimentalFlag } from '@/config/experimentalHooks';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';

@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
-import { PROFILES, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { AssetType } from '@/entities/assetTypes';
 import { type NewTransaction, TransactionStatus } from '@/entities/transactions';
 import { type ParsedAddressAsset } from '@/entities/tokens';

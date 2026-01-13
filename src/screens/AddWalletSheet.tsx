@@ -5,7 +5,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import React from 'react';
 import * as i18n from '@/languages';
-import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { HARDWARE_WALLETS } from '@/config/experimentalHooks';
 import { analytics } from '@/analytics';
 import { InteractionManager } from 'react-native';
 import { logger, RainbowError } from '@/logger';

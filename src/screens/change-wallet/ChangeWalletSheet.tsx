@@ -5,7 +5,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { FeatureHintTooltip, type TooltipRef } from '@/components/tooltips/FeatureHintTooltip';
-import { NOTIFICATIONS, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { NOTIFICATIONS } from '@/config/experimentalHooks';
 import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
 import type { EthereumAddress } from '@/entities/wallet';
 import { IS_ANDROID, IS_IOS } from '@/env';

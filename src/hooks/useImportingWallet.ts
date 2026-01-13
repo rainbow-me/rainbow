@@ -10,7 +10,7 @@ import useIsWalletEthZero from './useIsWalletEthZero';
 import usePrevious from './usePrevious';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
-import { PROFILES, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';

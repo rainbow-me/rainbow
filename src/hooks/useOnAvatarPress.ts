@@ -1,6 +1,7 @@
 import { analytics } from '@/analytics';
 import { type MenuConfig } from '@/components/native-context-menu/contextMenu';
-import { enableActionsOnReadOnlyWallet, PROFILES, useExperimentalFlag } from '@/config';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { IS_IOS } from '@/env';
 import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { isZero } from '@/helpers/utilities';

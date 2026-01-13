@@ -37,7 +37,7 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { DelayedMount } from '@/components/utilities/DelayedMount';
 import { MountWhenFocused } from '@/components/utilities/MountWhenFocused';
-import { CANDLESTICK_DATA_MONITOR, useExperimentalFlag } from '@/config';
+import useExperimentalFlag, { CANDLESTICK_DATA_MONITOR } from '@/config/experimentalHooks';
 import { Text, TextIcon, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { type TextSegment, useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
