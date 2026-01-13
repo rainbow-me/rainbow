@@ -108,18 +108,18 @@ const ViewWalletDelegations = () => {
   const [delegations, setDelegations] = useState<DelegationInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const getChainsName = useBackendNetworksStore(state => state.getChainsName);
+  const getChainsLabel = useBackendNetworksStore(state => state.getChainsLabel);
 
   useEffect(() => {
     const fetchDelegations = async () => {
       try {
         setIsLoading(true);
         const result = await getDelegations({ address: address as Address });
-        const chainsName = getChainsName();
+        const chainsLabel = getChainsLabel();
 
         const delegationsWithNames = result.map(delegation => ({
           ...delegation,
-          name: chainsName[delegation.chainId as ChainId] || `Chain ${delegation.chainId}`,
+          name: chainsLabel[delegation.chainId as ChainId] || `Chain ${delegation.chainId}`,
         }));
 
         setDelegations(delegationsWithNames);
@@ -131,7 +131,7 @@ const ViewWalletDelegations = () => {
     };
 
     fetchDelegations();
-  }, [address, getChainsName]);
+  }, [address, getChainsLabel]);
 
   const activatedNetworks = delegations.filter(delegation => delegation.delegationStatus === DelegationStatus.RAINBOW_DELEGATED);
 
@@ -360,81 +360,83 @@ const ViewWalletDelegations = () => {
         </Box>
 
         {/* Inactive Networks Section */}
-        <Box>
-          <Stack space="20px">
-            {/* Section Header */}
-            <Box paddingHorizontal="10px">
-              <Text color="labelSecondary" size="15pt" weight="bold">
-                Inactive Networks
-              </Text>
-            </Box>
+        {inactiveNetworks.length > 0 && (
+          <Box>
+            <Stack space="20px">
+              {/* Section Header */}
+              <Box paddingHorizontal="10px">
+                <Text color="labelSecondary" size="15pt" weight="bold">
+                  Inactive Networks
+                </Text>
+              </Box>
 
-            {/* Inactive Networks List */}
-            <Menu>
-              {inactiveNetworks.map((network, index) => {
-                const NetworkContextMenuWrapper = ({ children }: { children: React.ReactNode }) => {
-                  return IS_IOS ? (
-                    <ContextMenuButton
-                      menuConfig={inactiveNetworkMenuConfig}
-                      onPressMenuItem={e => onPressNetworkMenuItem({ ...e, chainId: network.chainId })}
-                    >
-                      {children}
-                    </ContextMenuButton>
-                  ) : (
-                    <ContextCircleButton
-                      options={inactiveNetworkMenuConfig.menuItems.map(item => item.actionTitle)}
-                      onPressActionSheet={(buttonIndex: number) => {
-                        const actionKey = inactiveNetworkMenuConfig.menuItems[buttonIndex].actionKey;
-                        onPressNetworkMenuItem({ nativeEvent: { actionKey }, chainId: network.chainId });
-                      }}
-                    >
-                      {children}
-                    </ContextCircleButton>
+              {/* Inactive Networks List */}
+              <Menu>
+                {inactiveNetworks.map((network, index) => {
+                  const NetworkContextMenuWrapper = ({ children }: { children: React.ReactNode }) => {
+                    return IS_IOS ? (
+                      <ContextMenuButton
+                        menuConfig={inactiveNetworkMenuConfig}
+                        onPressMenuItem={e => onPressNetworkMenuItem({ ...e, chainId: network.chainId })}
+                      >
+                        {children}
+                      </ContextMenuButton>
+                    ) : (
+                      <ContextCircleButton
+                        options={inactiveNetworkMenuConfig.menuItems.map(item => item.actionTitle)}
+                        onPressActionSheet={(buttonIndex: number) => {
+                          const actionKey = inactiveNetworkMenuConfig.menuItems[buttonIndex].actionKey;
+                          onPressNetworkMenuItem({ nativeEvent: { actionKey }, chainId: network.chainId });
+                        }}
+                      >
+                        {children}
+                      </ContextCircleButton>
+                    );
+                  };
+
+                  return (
+                    <React.Fragment key={network.chainId}>
+                      <NetworkContextMenuWrapper>
+                        <MenuItem
+                          size={60}
+                          disabled
+                          leftComponent={
+                            <Box width={{ custom: 28 }} height={{ custom: 28 }}>
+                              <ChainImage chainId={network.chainId} size={28} position="relative" />
+                            </Box>
+                          }
+                          titleComponent={<MenuItem.Title text={network.name} weight="bold" />}
+                          labelComponent={
+                            network.currentContract ? (
+                              <MenuItem.Label
+                                text={`Delegated to ${network.currentContract.slice(0, 6)}...${network.currentContract.slice(-4)}`}
+                              />
+                            ) : undefined
+                          }
+                          rightComponent={
+                            <Text color="labelQuinary" size="17pt" weight="bold">
+                              􀍡
+                            </Text>
+                          }
+                        />
+                      </NetworkContextMenuWrapper>
+                      {index < inactiveNetworks.length - 1 && (
+                        <Box paddingHorizontal="16px">
+                          <Separator color="separatorTertiary" thickness={1} />
+                        </Box>
+                      )}
+                    </React.Fragment>
                   );
-                };
+                })}
+              </Menu>
 
-                return (
-                  <React.Fragment key={network.chainId}>
-                    <NetworkContextMenuWrapper>
-                      <MenuItem
-                        size={60}
-                        disabled
-                        leftComponent={
-                          <Box width={{ custom: 28 }} height={{ custom: 28 }}>
-                            <ChainImage chainId={network.chainId} size={28} position="relative" />
-                          </Box>
-                        }
-                        titleComponent={<MenuItem.Title text={network.name} weight="bold" />}
-                        labelComponent={
-                          network.currentContract ? (
-                            <MenuItem.Label
-                              text={`Delegated to ${network.currentContract.slice(0, 6)}...${network.currentContract.slice(-4)}`}
-                            />
-                          ) : undefined
-                        }
-                        rightComponent={
-                          <Text color="labelQuinary" size="17pt" weight="bold">
-                            􀍡
-                          </Text>
-                        }
-                      />
-                    </NetworkContextMenuWrapper>
-                    {index < inactiveNetworks.length - 1 && (
-                      <Box paddingHorizontal="16px">
-                        <Separator color="separatorTertiary" thickness={1} />
-                      </Box>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </Menu>
-
-            {/* Separator */}
-            <Box paddingHorizontal="8px">
-              <Separator color="separatorTertiary" thickness={1} />
-            </Box>
-          </Stack>
-        </Box>
+              {/* Separator */}
+              <Box paddingHorizontal="8px">
+                <Separator color="separatorTertiary" thickness={1} />
+              </Box>
+            </Stack>
+          </Box>
+        )}
 
         {/* Toggle Smart Wallet Button */}
         <Box>
