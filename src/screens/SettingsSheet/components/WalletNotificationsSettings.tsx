@@ -7,14 +7,10 @@ import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import {
-  WalletNotificationRelationship,
-  WalletNotificationTopic,
-  WalletNotificationTopicType,
-  updateGroupSettings,
-  useWalletGroupNotificationSettings,
-  WalletNotificationSettings,
-} from '@/notifications/settings';
+import { WalletNotificationRelationship, WalletNotificationTopic } from '@/notifications/settings/constants';
+import type { WalletNotificationTopicType, WalletNotificationSettings } from '@/notifications/settings/types';
+import { updateGroupSettings } from '@/notifications/settings/storage';
+import { useWalletGroupNotificationSettings } from '@/notifications/settings/hooks';
 import { toggleGroupNotifications, toggleTopicForWallet } from '@/notifications/settings/settings';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';

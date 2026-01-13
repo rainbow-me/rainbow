@@ -5,7 +5,7 @@ import { AccentColorProvider, Box, ColorModeProvider, Text, globalColors, useCol
 import { GlobalNotificationTopic } from '@/notifications/settings/constants';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
-import { useAllNotificationSettingsFromStorage } from '@/notifications/settings';
+import { useAllNotificationSettingsFromStorage } from '@/notifications/settings/hooks';
 import { toggleGlobalNotificationTopic } from '@/notifications/settings/settings';
 import { setAllGlobalNotificationSettingsToStorage } from '@/notifications/settings/storage';
 import { IS_ANDROID } from '@/env';
