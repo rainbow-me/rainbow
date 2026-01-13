@@ -6,7 +6,8 @@ import { Records, UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { deprecatedTextRecordFields, REGISTRATION_MODES } from '@/helpers/ens';
 import * as ensRedux from '@/redux/ensRegistration';
-import { getENSNFTAvatarUrl, isENSNFTRecord, isLowerCaseMatch, parseENSNFTRecord } from '@/utils';
+import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '@/utils/ens';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 

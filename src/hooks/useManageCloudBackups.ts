@@ -13,7 +13,7 @@ import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { CloudBackupState, backupsStore } from '@/state/backups/backups';
 import { clearAllWalletsBackupStatus } from '@/state/wallets/walletsStore';
-import { showActionSheetWithOptions } from '@/utils';
+import showActionSheetWithOptions from '@/utils/actionsheet';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { cloudPlatform } from '../utils/platform';

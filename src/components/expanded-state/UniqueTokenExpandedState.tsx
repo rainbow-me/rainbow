@@ -32,7 +32,9 @@ import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsS
 import styled from '@/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme';
-import { magicMemo, safeAreaInsetValues, isLowerCaseMatch } from '@/utils';
+import magicMemo from '@/utils/magicMemo';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import { openInBrowser } from '@/utils/openInBrowser';
@@ -638,7 +640,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                                 bottom={IS_ANDROID ? '15px (Deprecated)' : undefined}
                                 top="15px (Deprecated)"
                               >
-                                {/* @ts-expect-error JavaScript component */}
+                                {/* @ts-expect-error emoji prop is optional but inferred as required from untyped JS */}
                                 <Link color={imageColor} display={familyLinkDisplay} url={asset.collectionUrl} weight="bold" />
                               </Bleed>
                             ) : null}

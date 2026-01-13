@@ -12,6 +12,8 @@ import { RainbowFetchRequestOpts } from '@/rainbow-fetch';
 
 export const metadataRequester = getFetchRequester(config.metadata);
 
+const a = 1;
+const b = 'a' + a;
 export const ensClient = getEnsSdk(getFetchRequester(config.ens));
 export const metadataClient = getMetadataSdk(metadataRequester);
 export const metadataPOSTClient = getMetadataSdk(getFetchRequester(config.metadataPOST));

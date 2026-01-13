@@ -3,7 +3,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
-import { deviceUtils } from '../../utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { Centered, Column } from '../layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Text } from '../text';

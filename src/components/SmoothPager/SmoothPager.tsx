@@ -23,7 +23,7 @@ import { Box } from '@/design-system';
 import { AlignVertical, alignVerticalToFlexAlign } from '@/design-system/layout/alignment';
 import { useStableValue } from '@/hooks/useStableValue';
 import { clamp } from '@/__swaps__/utils/swaps';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 
 // ============ Constants ====================================================== //
 

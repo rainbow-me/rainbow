@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme } from '../../theme/ThemeContext';
-import { magicMemo } from '../../utils';
+import magicMemo from '@/utils/magicMemo';
 import { ButtonPressAnimation } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';

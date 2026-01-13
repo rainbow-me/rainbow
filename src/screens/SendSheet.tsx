@@ -60,7 +60,11 @@ import { getWallets, useAccountAddress, useIsHardwareWallet } from '@/state/wall
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
-import { deviceUtils, ethereumUtils, isLowerCaseMatch, safeAreaInsetValues, time } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
+import ethereumUtils from '@/utils/ethereumUtils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+import { time } from '@/utils/time';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { RouteProp, useRoute } from '@react-navigation/native';

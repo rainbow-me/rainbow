@@ -15,7 +15,7 @@ import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/ext
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';

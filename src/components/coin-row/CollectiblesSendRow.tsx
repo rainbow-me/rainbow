@@ -2,7 +2,8 @@ import React, { Fragment, useMemo } from 'react';
 import { PressableProps, TouchableWithoutFeedback, StyleSheet } from 'react-native';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
-import { deviceUtils, magicMemo } from '../../utils';
+import deviceUtils from '@/utils/deviceUtils';
+import magicMemo from '@/utils/magicMemo';
 import Divider from '@/components/Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RequestVendorLogoIcon } from '../coin-icon';
@@ -50,7 +51,8 @@ const TopRow = ({ tokenId, name, selected }: { tokenId: string; name: string; se
 };
 
 const UniqueTokenCoinIcon = magicMemo(
-  asset => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (asset: any) => {
     const { collectionName, backgroundColor, images, selected, shouldPrioritizeImageLoading, ...props } = asset;
     const { colors } = useTheme();
     const imageUrl = svgToPngIfNeeded(images.lowResUrl || images.highResUrl, true);
@@ -63,6 +65,7 @@ const UniqueTokenCoinIcon = magicMemo(
           imageUrl={imageUrl}
           noShadow={selected}
           shouldPrioritizeImageLoading={shouldPrioritizeImageLoading}
+          showLargeShadow={false}
           {...props}
           badgeYPosition={-4}
         />
@@ -103,7 +106,7 @@ const CollectiblesSendRow = React.memo(
           </Centered>
         )}
         <Wrapper onPress={onPress} scaleTo={0.96}>
-          {/* @ts-expect-error JavaScript component */}
+          {/* @ts-expect-error CoinRow is untyped JS component */}
           <CoinRow
             {...props}
             {...item}

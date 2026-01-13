@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { sortList } from '../../helpers/sortList';
-import { magicMemo } from '../../utils';
+import magicMemo from '@/utils/magicMemo';
 import Tag from './Tag';
 import { Inline } from '@/design-system';
 import { UniqueAsset } from '@/entities';

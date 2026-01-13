@@ -16,7 +16,7 @@ import { BackgroundProvider, Box } from '@/design-system';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import * as i18n from '@/languages';
 import { createAndShareStateDumpFile } from './helpers/createAndShareStateDumpFile';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { RootStackParamList } from '@/navigation/types';

@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
-import { watchingAlert } from '@/utils';
+import watchingAlert from '@/utils/watchingAlert';
 import React, { useCallback, useMemo } from 'react';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { ClaimButton } from '../../shared/components/ClaimButton';

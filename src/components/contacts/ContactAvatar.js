@@ -2,7 +2,7 @@ import { toUpper } from 'lodash';
 import React, { useMemo } from 'react';
 import { darkModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';
-import { getFirstGrapheme } from '../../utils';
+import { getFirstGrapheme } from '@/utils/abbreviations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { borders } from '@/styles';

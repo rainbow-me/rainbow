@@ -2,7 +2,7 @@ import { Address } from 'viem';
 import { arcClient } from '@/graphql';
 import { logger, RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { NftsState, NftParams, NftsQueryData, PaginationInfo, CollectionId, UniqueId, Collection } from './types';
 import { parseUniqueAsset, parseUniqueId } from '@/resources/nfts/utils';
 import { useBackendNetworksStore } from '../backendNetworks/backendNetworks';

@@ -6,7 +6,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { getAddysHttpClient } from './client';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import { Address } from 'viem';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 // ///////////////////////////////////////////////

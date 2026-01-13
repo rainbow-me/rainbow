@@ -4,7 +4,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import { checkIsValidAddressOrDomain } from '@/helpers/validators';
 import { useClipboard, useInvalidPaste } from '@/hooks';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 
 export default function PasteAddressButton({ onPress }) {
   const [isValid, setIsValid] = useState(false);

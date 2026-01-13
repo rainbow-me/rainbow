@@ -15,7 +15,7 @@ import LayoutItemAnimator from './LayoutItemAnimator';
 import { EthereumAddress } from '@/entities';
 import { useCoinListEdited, usePrevious, useRefreshAccountData } from '@/hooks';
 import styled from '@/styled-thing';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';

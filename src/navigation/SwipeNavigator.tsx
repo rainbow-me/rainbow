@@ -22,7 +22,7 @@ import {
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { DappBrowser } from '@/components/DappBrowser/DappBrowser';
 import WalletScreen from '@/screens/WalletScreen/WalletScreen';
-import { deviceUtils } from '@/utils';
+import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
 import {
   MaterialTopTabBarProps,
@@ -58,7 +58,6 @@ import Routes, { Route } from './routesNames';
 import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
 import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
-import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
 import { MinedTransactionWatcher } from '@/components/mined-transaction-watcher/MinedTransactionWatcher';
 import { KingOfTheHillScreen } from '@/screens/KingOfTheHill';

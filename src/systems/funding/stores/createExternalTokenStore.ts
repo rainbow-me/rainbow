@@ -8,7 +8,7 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { DepositStoreType } from '../types';
 
 // ============ Types ========================================================= //

@@ -1,7 +1,7 @@
 import { controlPanelStyles, Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
 import { Box } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import React from 'react';
 import { ClaimPanelHeader } from './ClaimPanelHeader';
 import { ClaimStatus } from '../../shared/types';

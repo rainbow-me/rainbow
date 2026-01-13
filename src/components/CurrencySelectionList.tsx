@@ -1,6 +1,6 @@
 import React, { forwardRef, ForwardRefRenderFunction } from 'react';
 import { SectionList } from 'react-native';
-import { magicMemo } from '@/utils';
+import magicMemo from '@/utils/magicMemo';
 import { EmptyAssetList } from '@/components/asset-list';
 import { Centered } from '@/components/layout';
 import { NoResults } from '@/components/list';

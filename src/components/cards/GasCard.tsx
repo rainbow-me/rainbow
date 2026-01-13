@@ -7,7 +7,7 @@ import Animated, { Easing, useAnimatedStyle, useSharedValue, withSequence, withS
 import { AccentColorProvider, Box, globalColors, Stack, Text } from '@/design-system';
 import { add } from '@/helpers/utilities';
 import { useGas } from '@/hooks';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 import { GenericCard, SQUARE_CARD_SIZE } from './GenericCard';
 
 type AnimationConfigOptions = {

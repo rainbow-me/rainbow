@@ -4,7 +4,7 @@ import { contactsLoadState } from '@/redux/contacts';
 import { imageMetadataCacheLoadState } from '@/redux/imageMetadata';
 import { keyboardHeightsLoadState } from '@/redux/keyboardHeight';
 import { transactionSignaturesLoadState } from '@/redux/transactionSignatures';
-import { promiseUtils } from '@/utils';
+import promiseUtils from '@/utils/promise';
 import { logger } from '@/logger';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';

@@ -10,7 +10,7 @@ import font from '@/styles/fonts';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { isDarkTheme } from '@/theme/ThemeContext';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getNumberFormatter } from '@/helpers/intl';
 

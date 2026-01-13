@@ -20,7 +20,7 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
 import { SwapsState, useSwapsStore } from '@/state/swaps/swapsStore';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { watchingAlert } from '@/utils';
+import watchingAlert from '@/utils/watchingAlert';
 import { INITIAL_SLIDER_POSITION, SLIDER_WIDTH } from './constants';
 import { setSelectedGasSpeed } from './hooks/useSelectedGas';
 

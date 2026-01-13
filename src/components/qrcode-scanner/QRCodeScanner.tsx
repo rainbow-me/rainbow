@@ -4,12 +4,11 @@ import { Camera, CodeScanner, useCameraDevice } from 'react-native-vision-camera
 import Animated from 'react-native-reanimated';
 import { ErrorText } from '../text';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
-import { deviceUtils } from '@/utils';
+import deviceUtils, { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 import { Box, Cover, Rows, Row } from '@/design-system';
 import { CameraMaskSvg } from '../svg/CameraMaskSvg';
 import { IS_ANDROID } from '@/env';
 import { useFocusEffect } from '@react-navigation/native';
-import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 const deviceHeight = deviceUtils.dimensions.height;
