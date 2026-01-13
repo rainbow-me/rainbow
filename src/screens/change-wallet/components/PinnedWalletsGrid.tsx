@@ -1,5 +1,10 @@
 import { Draggable, DraggableGrid, DraggableGridProps, UniqueIdentifier } from '@/components/drag-and-drop';
-import { Box, HitSlop, Inline, Stack, Text, TextIcon } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { HitSlop } from '@/design-system/components/HitSlop/HitSlop';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import React, { useCallback, useMemo } from 'react';
 import { BlurView } from 'react-native-blur-view';
 import { AddressItem, AddressMenuAction, AddressMenuActionData, PANEL_INSET_HORIZONTAL } from '../ChangeWalletSheet';

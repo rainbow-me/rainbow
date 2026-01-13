@@ -1,7 +1,7 @@
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { globalColors } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
 
 export function FarcasterIcon({ color = globalColors.grey100, width = 25, height = 18 }: { color: string; width: number; height: number }) {
   return (

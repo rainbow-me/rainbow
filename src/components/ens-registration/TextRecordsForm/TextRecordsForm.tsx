@@ -4,7 +4,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { LayoutChangeEvent, TextInputProps, ViewProps } from 'react-native';
 import InlineField, { InlineFieldProps } from '../../inputs/InlineField';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
-import { Box, Column, Columns, Separator, Stack } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Stack } from '@/design-system/components/Stack/Stack';
 import { ENS_RECORDS } from '@/helpers/ens';
 import useENSRegistrationForm from '@/hooks/useENSRegistrationForm';
 

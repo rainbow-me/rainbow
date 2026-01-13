@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { KeyboardType } from '@/helpers/keyboardTypes';
 import useDimensions from '@/hooks/useDimensions';
 

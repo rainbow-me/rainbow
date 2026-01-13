@@ -3,7 +3,12 @@ import React from 'react';
 import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';
 import HourglassAnimation from '../../../components/animations/HourglassAnimation';
 import StepIndicator from '../../../components/step-indicator/StepIndicator';
-import { Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Heading } from '@/design-system/components/Heading/Heading';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Row, Rows } from '@/design-system/components/Rows/Rows';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import useDimensions from '@/hooks/useDimensions';
 
 const WaitCommitmentConfirmationContent = ({

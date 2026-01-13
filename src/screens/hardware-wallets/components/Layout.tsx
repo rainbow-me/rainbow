@@ -1,4 +1,4 @@
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import React from 'react';
 
 type Props = {

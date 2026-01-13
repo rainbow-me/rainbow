@@ -1,7 +1,8 @@
 import React, { memo } from 'react';
-import { Cover, useColorMode, useForegroundColor } from '@/design-system';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor, CustomColor } from '@/design-system/color/useForegroundColor';
 import { ForegroundColor } from '@/design-system/color/palettes';
-import { CustomColor } from '@/design-system/color/useForegroundColor';
 import { IS_IOS } from '@/env';
 
 export type BorderProps = {

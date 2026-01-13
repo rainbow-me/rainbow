@@ -1,5 +1,6 @@
 import CopyTooltip from '@/components/copy-tooltip';
-import { Box, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { clear } from '@/keychain';
 import { logger, RainbowError } from '@/logger';

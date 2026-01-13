@@ -1,7 +1,9 @@
 import React from 'react';
 import * as i18n from '@/languages';
 import { Text as NativeText } from 'react-native';
-import { Box, ColorModeProvider, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { ColorModeProvider } from '@/design-system/color/ColorMode';
+import { Text } from '@/design-system/components/Text/Text';
 import currentKingImage from '@/assets/kingOfTheHillExplainer/currentKing.png';
 import pointsMultiplierImage from '@/assets/kingOfTheHillExplainer/pointsMultiplier.png';
 import FastImage from 'react-native-fast-image';

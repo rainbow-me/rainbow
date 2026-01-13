@@ -1,7 +1,8 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
-import { AnimatedText, useForegroundColor } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { ItemSelector, Item, RenderItemProps } from './ItemSelector';

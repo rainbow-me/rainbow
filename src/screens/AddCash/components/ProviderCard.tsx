@@ -4,7 +4,11 @@ import LinearGradient from 'react-native-linear-gradient';
 import chroma from 'chroma-js';
 
 import { IS_IOS } from '@/env';
-import { Box, Text, Inline, Bleed, useBackgroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 
 import { Ramp as RampLogo } from '@/components/icons/svg/Ramp';

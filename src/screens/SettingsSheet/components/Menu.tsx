@@ -1,5 +1,8 @@
 import React from 'react';
-import { Box, Separator, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 
 type DescriptionContent = string | React.ReactNode;
 type DescriptionPosition = 'leading' | 'trailing';

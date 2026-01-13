@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import { useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 
 export const HYPERLIQUID_GREEN = '#3ECFAD';

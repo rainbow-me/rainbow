@@ -5,7 +5,9 @@ import GweiInputPill from '@/components/GweiInputPill';
 import { delay } from '@/helpers/utilities';
 import usePrevious from '@/hooks/usePrevious';
 import { TextInput } from 'react-native';
-import { Box, Inline, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
 import { colors } from '@/styles';
 import { IS_ANDROID } from '@/env';
 

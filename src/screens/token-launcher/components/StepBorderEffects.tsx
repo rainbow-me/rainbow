@@ -4,7 +4,7 @@ import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherSt
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import Animated, { interpolate, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
-import { useForegroundColor } from '@/design-system';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { getSquirclePath } from '@/design-system/layout/shapes';
 
 export const StepBorderEffects = memo(function StepBorderEffects({ width, height }: { width: number; height: number }) {

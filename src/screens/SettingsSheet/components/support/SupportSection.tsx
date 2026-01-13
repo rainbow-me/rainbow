@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { useNavigation } from '@/navigation';
-import { Box, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';

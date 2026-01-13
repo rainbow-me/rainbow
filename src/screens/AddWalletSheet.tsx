@@ -1,6 +1,8 @@
 import { AddWalletList } from '@/components/add-wallet/AddWalletList';
 import { AddWalletItem } from '@/components/add-wallet/AddWalletRow';
-import { Box, globalColors, Inset } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { globalColors } from '@/design-system/color/palettes';
+import { Inset } from '@/design-system/components/Inset/Inset';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import React from 'react';

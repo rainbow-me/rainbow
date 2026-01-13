@@ -1,7 +1,8 @@
 import React, { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Text, useColorMode } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { INTERVAL_LABELS, PolymarketInterval } from '../types';
 import { usePolymarketStore } from '../stores/polymarketStore';
 

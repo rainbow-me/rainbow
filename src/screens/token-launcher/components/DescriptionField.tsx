@@ -5,7 +5,7 @@ import { SingleFieldInput } from './SingleFieldInput';
 import { FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR } from '../constants';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { validateDescriptionWorklet } from '../helpers/inputValidators';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 
 export function DescriptionField() {
   const setDescription = useTokenLauncherStore(state => state.setDescription);

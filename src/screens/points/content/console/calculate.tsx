@@ -1,6 +1,8 @@
 import { analytics } from '@/analytics';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
-import { Bleed, Box, Stack } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Stack } from '@/design-system/components/Stack/Stack';
 import { abbreviateNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';

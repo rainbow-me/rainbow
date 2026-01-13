@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Source } from 'react-native-fast-image';
 import eyeSlash from '../../assets/sf-eye.slash.png';
-import { Text } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
 import { ImgixImage } from '@/components/images';
 import { borders } from '@/styles';
 import { ThemeContextProps } from '@/theme';

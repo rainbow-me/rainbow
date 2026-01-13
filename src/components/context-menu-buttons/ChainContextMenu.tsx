@@ -1,7 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContextMenuButton } from '@/components/context-menu';
-import { Bleed, Box, Inline, Text, TextProps } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text, type TextProps } from '@/design-system/components/Text/Text';
 import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';

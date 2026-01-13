@@ -1,7 +1,9 @@
 import React from 'react';
-import { AccentColorProvider, Box, ColorModeProvider, Text } from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Box } from '@/design-system/components/Box/Box';
+import { ColorModeProvider } from '@/design-system/color/ColorMode';
+import { Text, TextSize, TextWeight } from '@/design-system/components/Text/Text';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
-import { TextSize, TextWeight } from '@/design-system/components/Text/Text';
 import { useTheme } from '@/theme';
 
 export const ORB_SIZE = 36;

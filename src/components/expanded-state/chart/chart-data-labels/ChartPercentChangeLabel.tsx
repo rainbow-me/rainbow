@@ -10,7 +10,10 @@ import {
 } from 'react-native-reanimated';
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Box } from '@/design-system/components/Box/Box';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { IS_ANDROID } from '@/env';
 import { greaterThanWorklet, lessThanWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { opacity } from '@/framework/ui/utils/opacity';

@@ -1,6 +1,9 @@
 import { opacity } from '@/framework/ui/utils/opacity';
 import { PANEL_BACKGROUND_DARK, PANEL_BACKGROUND_LIGHT } from '@/components/PanelSheet/PanelSheet';
-import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { FloatingSparks } from '@/features/perps/screens/perps-trade-details-sheet/FloatingSparks';
 import { PerspectiveGrid } from '@/features/perps/screens/perps-trade-details-sheet/PerspectiveGrid';
 import { SkiaBadge } from '@/components/SkiaBadge';

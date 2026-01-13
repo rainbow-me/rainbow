@@ -4,7 +4,11 @@ import Animated, { runOnUI, useAnimatedRef, useAnimatedStyle, useDerivedValue, w
 import { analytics } from '@/analytics';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, Inline, Text, TextIcon, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { palettes } from '@/design-system/color/palettes';
 import * as i18n from '@/languages';
 import { equalWorklet } from '@/safe-math/SafeMath';

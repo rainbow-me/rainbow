@@ -1,16 +1,13 @@
-import {
-  AccentColorProvider,
-  Bleed,
-  Box,
-  Column,
-  Columns,
-  Inline,
-  Inset,
-  Stack,
-  Text,
-  useColorMode,
-  useForegroundColor,
-} from '@/design-system';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import React, { useEffect, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

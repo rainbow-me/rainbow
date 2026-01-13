@@ -4,7 +4,9 @@ import { TouchableWithoutFeedback } from 'react-native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { Box, Inline, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
 
 import { DetailIcon, DetailBadge, IconContainer } from '@/components/Transactions/TransactionIcons';
 import { SMALL_CARD_ROW_HEIGHT } from '@/components/Transactions/constants';

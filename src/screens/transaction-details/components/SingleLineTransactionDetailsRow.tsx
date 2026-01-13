@@ -1,5 +1,8 @@
 import React from 'react';
-import { Box, Columns, Inline, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Columns } from '@/design-system/components/Columns/Columns';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
 import { TransactionDetailsSymbol } from '@/screens/transaction-details/components/TransactionDetailsSymbol';
 
 type Props = {

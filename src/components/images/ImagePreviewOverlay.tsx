@@ -7,7 +7,10 @@ import { atom, atomFamily, RecoilRoot, useRecoilState, useRecoilValue, useSetRec
 import { ZoomableWrapper } from '../expanded-state/unique-token/ZoomableWrapper';
 import { SheetHandleFixedToTopHeight } from '../sheet';
 import AvatarCoverPhotoMaskSvg from '../svg/AvatarCoverPhotoMaskSvg';
-import { BackgroundProvider, Box, BoxProps, Cover, useColorMode } from '@/design-system';
+import { BackgroundProvider } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
+import { Box, type BoxProps } from '@/design-system/components/Box/Box';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import useDimensions from '@/hooks/useDimensions';
 import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
 import { ImgixImage } from '@/components/images';

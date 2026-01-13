@@ -1,6 +1,7 @@
 import React from 'react';
 import { Image } from 'react-native';
-import { Bleed, Box } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
 import { HYPERLIQUID_COLORS } from '@/features/perps/constants';
 import hyperliquidLogo from '@/assets/hyperliquidLogo.png';
 

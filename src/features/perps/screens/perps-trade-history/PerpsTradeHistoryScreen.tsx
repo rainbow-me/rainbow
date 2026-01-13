@@ -8,7 +8,10 @@ import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsA
 import { TradeListItem } from '@/features/perps/components/TradeListItem';
 import { useHlTradesStore } from '@/features/perps/stores/hlTradesStore';
 import { HlTrade } from '@/features/perps/types';
-import { Box, Separator, Text, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import * as i18n from '@/languages';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';

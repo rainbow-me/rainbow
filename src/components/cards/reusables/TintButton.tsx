@@ -1,4 +1,6 @@
-import { AccentColorProvider, Box, Text, useAccentColor } from '@/design-system';
+import { AccentColorProvider, useAccentColor } from '@/design-system/color/AccentColorContext';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
 import React from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import ConditionalWrap from 'conditional-wrap';

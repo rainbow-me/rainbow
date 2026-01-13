@@ -1,6 +1,9 @@
 import { memo, useCallback, useState } from 'react';
 import { Alert, View, StyleSheet } from 'react-native';
-import { Box, globalColors, Text, TextIcon } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { globalColors } from '@/design-system/color/palettes';
 import * as i18n from '@/languages';
 import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import Animated from 'react-native-reanimated';

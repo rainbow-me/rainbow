@@ -7,7 +7,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { settingsOptions } from '@/navigation/config';
 import { useTheme } from '@/theme';
-import { BackgroundProvider } from '@/design-system';
+import { BackgroundProvider } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import useDimensions from '@/hooks/useDimensions';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

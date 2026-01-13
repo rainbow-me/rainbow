@@ -1,7 +1,7 @@
 import { analytics } from '@/analytics';
 import Alert from '@/components/alerts/Alert';
 import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { events } from '@/handlers/appEvents';

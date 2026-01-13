@@ -1,7 +1,10 @@
 import React, { ComponentProps, memo, useMemo } from 'react';
 import { StyleProp, StyleSheet, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
 import Animated, { AnimatedStyle } from 'react-native-reanimated';
-import { Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';

@@ -1,7 +1,10 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { Box, Text, useColorMode, globalColors } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { globalColors } from '@/design-system/color/palettes';
 import ImgixImage from '@/components/images/ImgixImage';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 

@@ -1,4 +1,9 @@
-import { Box, globalColors, Separator, Text, TextIcon, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { globalColors } from '@/design-system/color/palettes';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import React, { memo, useMemo, useState } from 'react';

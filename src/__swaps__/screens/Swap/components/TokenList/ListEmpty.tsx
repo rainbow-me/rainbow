@@ -1,7 +1,9 @@
 import React, { memo, useMemo } from 'react';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import * as i18n from '@/languages';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';

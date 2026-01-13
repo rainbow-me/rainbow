@@ -1,7 +1,9 @@
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Box, globalColors, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { Box } from '@/design-system/components/Box/Box';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { easing } from '@/components/animations/animationConfigs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';

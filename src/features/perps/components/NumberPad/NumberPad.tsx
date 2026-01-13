@@ -1,5 +1,6 @@
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, Columns } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Columns } from '@/design-system/components/Columns/Columns';
 import React from 'react';
 import Animated, { SharedValue, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { NumberPadField, NumberPadKey } from './NumberPadKey';

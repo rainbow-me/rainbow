@@ -1,5 +1,5 @@
 import { FasterImageView } from '@candlefinance/faster-image';
-import { useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import React, { memo, useMemo } from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { ChainId } from '@/state/backendNetworks/types';

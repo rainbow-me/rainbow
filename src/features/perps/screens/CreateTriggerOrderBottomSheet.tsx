@@ -1,6 +1,11 @@
 import React, { memo, useCallback, useRef } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
-import { AnimatedText, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Box } from '@/design-system/components/Box/Box';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { addCommasToNumber } from '@/__swaps__/utils/swaps';

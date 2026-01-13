@@ -9,7 +9,8 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { Box, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { caretConfig } from '@/__swaps__/screens/Swap/constants';
 
 interface CurrencyInputCaretProps {

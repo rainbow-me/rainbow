@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { GestureHandlerButton } from './GestureHandlerButton';
-import { AnimatedText, Box } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Box } from '@/design-system/components/Box/Box';
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';

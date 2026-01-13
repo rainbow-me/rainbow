@@ -1,7 +1,13 @@
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import RainbowContextWrapper from '../../helpers/RainbowContext';
-import { Box, DesignSystemProvider, Separator, Inline, Inset, Stack, Text } from '../';
+import { Box } from '../components/Box/Box';
+import { Inline } from '../components/Inline/Inline';
+import { Inset } from '../components/Inset/Inset';
+import { Separator } from '../components/Separator/Separator';
+import { Stack } from '../components/Stack/Stack';
+import { Text } from '../components/Text/Text';
+import { DesignSystemProvider } from '../context/DesignSystemContext';
 import { ColorMode } from '../color/palettes';
 import backgroundPlayground from '../components/BackgroundProvider/BackgroundProvider.playground';
 import bleedPlayground from '../components/Bleed/Bleed.playground';

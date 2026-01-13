@@ -1,6 +1,6 @@
 import React from 'react';
 import { DerivedValue } from 'react-native-reanimated';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { EstimatedGasFee } from './EstimatedGasFee';
 import { GasMenu } from './GasMenu';

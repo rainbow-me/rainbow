@@ -29,7 +29,7 @@ import styled from '@/styled-thing';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import AvailableNetworksv2 from '@/components/expanded-state/AvailableNetworksv2';
 import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo } from '@/helpers/utilities';

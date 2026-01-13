@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
-import { Box, useBackgroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { useLiveWalletBalance } from '@/hooks/useLiveWalletBalance';
 

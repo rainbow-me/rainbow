@@ -1,5 +1,6 @@
 import React from 'react';
-import { Bleed, Separator } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Separator } from '@/design-system/components/Separator/Separator';
 
 export const TransactionDetailsDivider: React.FC = () => (
   <Bleed horizontal="20px">

@@ -1,6 +1,7 @@
 import React from 'react';
 import * as i18n from '@/languages';
-import { Box, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { RainbowTokenFlip } from './RainbowTokenFlip';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';

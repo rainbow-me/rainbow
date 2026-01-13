@@ -1,4 +1,7 @@
-import { Bleed, Box, Text, useColorMode } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import React from 'react';
 import { View } from 'react-native';
 import { DropdownMenu, MenuConfig } from '@/components/DropdownMenu';

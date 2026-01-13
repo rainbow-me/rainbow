@@ -1,6 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { View } from 'react-native';
-import { Text, useForegroundColor } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { hyperliquidMarketsActions, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { ImgixImage } from '@/components/images';
 import { ImgixImageProps } from '@/components/images/ImgixImage';

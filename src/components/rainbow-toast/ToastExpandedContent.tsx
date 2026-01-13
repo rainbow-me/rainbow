@@ -4,7 +4,7 @@ import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/
 import { getSwapToastNetworkLabel, getToastTitle } from '@/components/rainbow-toast/ToastContent';
 import type { RainbowToast } from '@/components/rainbow-toast/types';
 import Spinner from '@/components/Spinner';
-import { Text } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
 import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { activityValues, useTransactionLaunchToken } from '@/helpers/transactions';

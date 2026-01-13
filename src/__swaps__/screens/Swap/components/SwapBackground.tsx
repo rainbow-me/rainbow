@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useDerivedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useSwapsStore } from '@/state/swaps/swapsStore';

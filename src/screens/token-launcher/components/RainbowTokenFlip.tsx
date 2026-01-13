@@ -34,7 +34,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { globalColors, useColorMode } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { clamp } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';

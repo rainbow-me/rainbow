@@ -1,5 +1,10 @@
 import React from 'react';
-import { Bleed, Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { TOP_RANK_SYMBOLS } from '@/screens/rewards/constants';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';

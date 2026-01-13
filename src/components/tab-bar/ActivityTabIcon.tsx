@@ -1,11 +1,12 @@
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import { TAB_BAR_ICON_SIZE } from '@/components/tab-bar/dimensions';
-import { Box, Text, Cover } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text, TextSize } from '@/design-system/components/Text/Text';
+import { Cover } from '@/design-system/components/Cover/Cover';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
 import React, { memo, useMemo } from 'react';
 import { SharedValue } from 'react-native-reanimated';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
-import { TextSize } from '@/design-system/components/Text/Text';
 import { IS_TEST } from '@/env';
 
 export const ActivityTabIcon = memo(function ActivityTabIcon({

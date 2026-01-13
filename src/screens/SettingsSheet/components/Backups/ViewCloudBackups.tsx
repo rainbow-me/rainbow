@@ -15,7 +15,7 @@ import ActivityIndicator from '@/components/ActivityIndicator';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { CloudBackupState, LoadingStates, backupsStore } from '@/state/backups/backups';
 import { titleForBackupState, dateFormatter } from '@/screens/SettingsSheet/utils';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 
 type LoadingTextProps = {
   theme: ThemeContextProps;

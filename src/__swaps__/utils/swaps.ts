@@ -9,8 +9,7 @@ import {
   SLIDER_WIDTH,
   STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
 } from '@/__swaps__/screens/Swap/constants';
-import { globalColors } from '@/design-system';
-import { ForegroundColor, palettes } from '@/design-system/color/palettes';
+import { globalColors, ForegroundColor, palettes } from '@/design-system/color/palettes';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
 import { DEFAULT_SLIPPAGE_BIPS_CHAINID, RainbowConfig } from '@/model/remoteConfig';

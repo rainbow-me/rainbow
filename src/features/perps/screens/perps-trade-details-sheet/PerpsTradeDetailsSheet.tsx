@@ -1,6 +1,10 @@
 import React, { memo, useCallback, useState } from 'react';
 import * as i18n from '@/languages';
-import { Box, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { RouteProp, useRoute } from '@react-navigation/native';

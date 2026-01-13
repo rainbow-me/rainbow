@@ -3,18 +3,16 @@ import { ContactAvatar } from '@/components/contacts';
 import { ImgixImage } from '@/components/images';
 import { SortMenu } from '@/components/nft-offers/SortMenu';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import {
-  AccentColorProvider,
-  BackgroundProvider,
-  Bleed,
-  Box,
-  Inline,
-  Inset,
-  Separator,
-  Stack,
-  Text,
-  useForegroundColor,
-} from '@/design-system';
+import { BackgroundProvider } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { NftOffer } from '@/graphql/__generated__/arc';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import useDimensions from '@/hooks/useDimensions';

@@ -1,6 +1,10 @@
 import React from 'react';
 import * as i18n from '@/languages';
-import { Box, Inline, Separator, Text, TextShadow } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { FIELD_BORDER_RADIUS } from '../constants';
 import { convertAmountToPercentageDisplay } from '@/helpers/utilities';

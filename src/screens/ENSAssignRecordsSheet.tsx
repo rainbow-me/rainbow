@@ -1,4 +1,13 @@
-import { AccentColorProvider, Bleed, Box, Cover, Heading, Inline, Inset, Row, Rows, Stack, Text } from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { Heading } from '@/design-system/components/Heading/Heading';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Row, Rows } from '@/design-system/components/Rows/Rows';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { getSeenOnchainDataDisclaimer, saveSeenOnchainDataDisclaimer } from '@/handlers/localstorage/ens';
 import { accentColorAtom, ENS_RECORDS, REGISTRATION_MODES, TextRecordField, textRecordFields } from '@/helpers/ens';
 import useDimensions from '@/hooks/useDimensions';

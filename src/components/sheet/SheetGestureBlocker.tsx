@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { IS_IOS } from '@/env';
 
 export const SheetGestureBlocker = ({

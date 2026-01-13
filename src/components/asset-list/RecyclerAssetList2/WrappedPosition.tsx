@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, BoxProps } from '@/design-system';
+import { Box, type BoxProps } from '@/design-system/components/Box/Box';
 import { PositionCard } from '@/features/positions/components/PositionCard';
 import { RainbowPosition } from '@/features/positions/types';
 

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Bleed, Box, Text } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
 
 const SIZE = { custom: 40 };
 

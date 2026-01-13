@@ -1,4 +1,5 @@
-import { Box, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { memo } from 'react';
 import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { ResolvedMarketRow } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketRow';

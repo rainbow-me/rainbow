@@ -1,7 +1,9 @@
 import c from 'chroma-js';
 import React, { useMemo } from 'react';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { Box, ColorModeProvider, Column, Columns, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { ColorModeProvider, useColorMode } from '@/design-system/color/ColorMode';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
 import { useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
 import * as i18n from '@/languages';
 import { SwapAssetType } from '@/__swaps__/types/swap';

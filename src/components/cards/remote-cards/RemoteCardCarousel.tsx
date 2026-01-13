@@ -5,7 +5,8 @@ import { CarouselCard } from '../CarouselCard';
 
 import { RemoteCard } from '@/components/cards/remote-cards';
 import { REMOTE_CARDS, getExperimentalFlag } from '@/config';
-import { Separator, useColorMode } from '@/design-system';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import useDimensions from '@/hooks/useDimensions';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import Routes from '@/navigation/routesNames';

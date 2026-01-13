@@ -1,6 +1,9 @@
 import { View } from 'react-native';
 import { memo } from 'react';
-import { Box, Text, TextIcon, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/framework/ui/utils/opacity';

@@ -8,7 +8,8 @@ import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccent
 import { useHasPositionCheck } from '@/features/perps/stores/derived/useHasPositionCheck';
 import { useFilteredHyperliquidMarkets } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { PerpMarket } from '@/features/perps/types';
-import { Box, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
 import * as i18n from '@/languages';
 
 type PerpMarketsListProps = {

@@ -3,7 +3,7 @@ import { useRoute, RouteProp } from '@react-navigation/native';
 
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { RootStackParamList } from '@/navigation/types';
 import { StyleSheet } from 'react-native';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';

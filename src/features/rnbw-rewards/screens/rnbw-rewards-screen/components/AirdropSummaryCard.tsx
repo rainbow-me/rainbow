@@ -1,7 +1,8 @@
 import { memo, useCallback } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import * as i18n from '@/languages';
-import { Box, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { opacity } from '@/framework/ui/utils/opacity';

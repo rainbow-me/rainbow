@@ -3,7 +3,8 @@ import { StyleProp, ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated from 'react-native-reanimated';
 
-import { Box, globalColors } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { globalColors } from '@/design-system/color/palettes';
 
 import { useTheme } from '@/theme';
 import { opacity } from '@/framework/ui/utils/opacity';

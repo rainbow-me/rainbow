@@ -1,6 +1,9 @@
 import React, { memo, useMemo } from 'react';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Inline, Text, TextIcon } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { opacity } from '@/framework/ui/utils/opacity';
 

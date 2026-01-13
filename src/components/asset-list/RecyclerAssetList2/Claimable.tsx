@@ -1,7 +1,10 @@
 import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { Box, Inline, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import Routes from '@/navigation/routesNames';
 import { Claimable as ClaimableType } from '@/resources/addys/claimables/types';
 import { getClaimableName, isRainbowEthRewards } from '@/resources/addys/claimables/utils';

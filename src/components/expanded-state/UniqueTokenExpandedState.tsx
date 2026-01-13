@@ -1,23 +1,18 @@
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import {
-  AccentColorProvider,
-  Bleed,
-  Box,
-  ColorModeProvider,
-  Columns,
-  Heading,
-  HeadingProps,
-  Inline,
-  Inset,
-  MarkdownText,
-  MarkdownTextProps,
-  Separator,
-  Space,
-  Stack,
-  Text,
-  TextProps,
-} from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { ColorModeProvider } from '@/design-system/color/ColorMode';
+import { Columns } from '@/design-system/components/Columns/Columns';
+import { Heading, type HeadingProps } from '@/design-system/components/Heading/Heading';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { MarkdownText, type MarkdownTextProps } from '@/design-system/components/MarkdownText/MarkdownText';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { type Space } from '@/design-system/layout/space';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text, type TextProps } from '@/design-system/components/Text/Text';
 import { AssetType, UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';

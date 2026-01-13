@@ -1,6 +1,12 @@
 import React, { memo, useMemo } from 'react';
 import * as i18n from '@/languages';
-import { Box, Text, TextIcon, TextShadow, useColorMode, useBackgroundColor, AnimatedText } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { Row } from '../../shared/Row';
 import { abbreviateNumber } from '@/helpers/utilities';

@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import * as i18n from '@/languages';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
-import { Box, Inline, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { TextColor } from '@/design-system/color/palettes';
 
 import abbreviations from '@/utils/abbreviations';

@@ -1,6 +1,8 @@
 import { memo, useRef } from 'react';
 import { View, StyleSheet, Image } from 'react-native';
-import { Box, globalColors, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { globalColors } from '@/design-system/color/palettes';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import Animated, {
   FadeIn,

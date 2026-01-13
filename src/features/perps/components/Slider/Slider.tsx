@@ -15,7 +15,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { SCRUBBER_WIDTH, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';

@@ -3,7 +3,9 @@ import { StyleSheet } from 'react-native';
 import { ColumnWithMargins, Row, RowWithMargins } from '@/components/layout';
 import { times } from '@/helpers/utilities';
 import { fonts } from '@/styles';
-import { Box, Text, Separator } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { Separator } from '@/design-system/components/Separator/Separator';
 
 interface Props {
   seed: string;

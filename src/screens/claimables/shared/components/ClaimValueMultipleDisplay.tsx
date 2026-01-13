@@ -1,6 +1,10 @@
 import React from 'react';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { globalColors } from '@/design-system/color/palettes';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { StyleSheet } from 'react-native';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';

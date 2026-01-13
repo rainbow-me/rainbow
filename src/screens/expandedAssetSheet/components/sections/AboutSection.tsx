@@ -3,7 +3,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { Address } from 'viem';
 
 import * as i18n from '@/languages';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '@/screens/expandedAssetSheet/components/shared/Separator';
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';

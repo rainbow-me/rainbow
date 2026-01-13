@@ -1,6 +1,8 @@
 import React from 'react';
 import { RowWithMargins } from '../layout';
-import { Bleed, Cover, Text } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { Text } from '@/design-system/components/Text/Text';
 const DoubleChevron = () => (
   <Cover alignHorizontal="center" alignVertical="center">
     <RowWithMargins>

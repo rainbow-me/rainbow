@@ -1,7 +1,12 @@
 import { analytics } from '@/analytics';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { IS_IOS } from '@/env';
 import useChartThrottledPoints from '@/hooks/charts/useChartThrottledPoints';
 import useColorForAsset from '@/hooks/useColorForAsset';

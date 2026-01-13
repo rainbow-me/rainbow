@@ -2,7 +2,10 @@ import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef } 
 import { StyleSheet, View, LayoutChangeEvent, useWindowDimensions } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS } from 'react-native-reanimated';
-import { Box, globalColors, HitSlop, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { globalColors } from '@/design-system/color/palettes';
+import { HitSlop } from '@/design-system/components/HitSlop/HitSlop';
+import { Text } from '@/design-system/components/Text/Text';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import Svg, { Path } from 'react-native-svg';

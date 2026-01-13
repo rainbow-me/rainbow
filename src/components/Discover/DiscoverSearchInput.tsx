@@ -6,7 +6,7 @@ import Animated, { Easing, useAnimatedProps, useAnimatedStyle, useSharedValue, w
 import Spinner from '@/assets/chartSpinner.png';
 import { ClearInputDecorator, Input } from '@/components/inputs';
 import { Row } from '@/components/layout';
-import { TextIcon } from '@/design-system';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { analytics } from '@/analytics';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';

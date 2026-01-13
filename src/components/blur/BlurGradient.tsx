@@ -3,7 +3,7 @@ import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import Animated, { AnimatedStyle, Easing } from 'react-native-reanimated';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { IS_IOS } from '@/env';
 
 type FadeTo = 'top' | 'bottom' | 'left' | 'right';

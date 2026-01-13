@@ -1,7 +1,8 @@
 import { memo } from 'react';
 import * as i18n from '@/languages';
 import { Image, StyleSheet, View } from 'react-native';
-import { Box, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
 import ethImage from '@/features/rnbw-rewards/assets/rnbw-reward-methods/eth.png';
 import usdcImage from '@/features/rnbw-rewards/assets/rnbw-reward-methods/usdc.png';
 import bridgeImage from '@/features/rnbw-rewards/assets/rnbw-reward-methods/bridge.png';

@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import Animated from 'react-native-reanimated';
-import { Separator, useColorMode } from '@/design-system';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { LAYOUT_ANIMATION } from './CollapsibleSection';
 
 const SEPARATOR_COLOR = 'rgba(245, 248, 255, 0.025)';

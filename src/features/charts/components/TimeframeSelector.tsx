@@ -12,7 +12,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import { SPRING_CONFIGS, easing } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { AnimatedText, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { IS_IOS } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';

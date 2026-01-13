@@ -16,7 +16,9 @@ import {
   PANEL_HEADER_HEIGHT,
   PANEL_INSET_HORIZONTAL,
 } from '@/screens/change-wallet/ChangeWalletSheet';
-import { Box, Separator, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
 import { DndProvider, Draggable, DraggableScrollViewProps, UniqueIdentifier } from '@/components/drag-and-drop';
 import { PinnedWalletsGrid } from '@/screens/change-wallet/components/PinnedWalletsGrid';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';

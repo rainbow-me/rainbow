@@ -1,6 +1,9 @@
 import React, { useCallback } from 'react';
 import Animated from 'react-native-reanimated';
-import { Box, Stack, Text, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import * as i18n from '@/languages';
 import { TokenFamilyHeaderHeight } from './NFTLoadingSkeleton';
 import { MINTS, NFTS_ENABLED, useExperimentalFlag } from '@/config';

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Animated from 'react-native-reanimated';
-import { Text } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
 import { AsyncActionState } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { time } from '@/utils/time';
 import {

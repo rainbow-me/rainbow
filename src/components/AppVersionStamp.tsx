@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Pressable } from 'react-native';
-import { Text } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
 import useAppVersion from '@/hooks/useAppVersion';
 import useTimeout from '@/hooks/useTimeout';
 import { useNavigation } from '@/navigation';

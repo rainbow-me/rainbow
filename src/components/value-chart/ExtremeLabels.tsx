@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { LayoutChangeEvent, StyleProp, View, ViewStyle } from 'react-native';
 import { useChartData } from '@/react-native-animated-charts/src';
-import { Text } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
 import { TextSize } from '@/design-system/typography/typeHierarchy';

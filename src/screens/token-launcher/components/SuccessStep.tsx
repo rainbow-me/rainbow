@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import * as i18n from '@/languages';
-import { Box, Text, TextShadow } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text, TextSize } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { Canvas, LinearGradient, Path, vec, Skia, Group, BlurMask } from '@shopify/react-native-skia';
 import { TokenImageBadge } from './TokenImageBadge';
@@ -8,7 +10,6 @@ import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { Easing, useDerivedValue, withRepeat, withTiming, useSharedValue, runOnUI } from 'react-native-reanimated';
 import FastImage from 'react-native-fast-image';
 import useDimensions from '@/hooks/useDimensions';
-import { TextSize } from '@/design-system/components/Text/Text';
 
 function Cone({ height, baseWidth, headWidth }: { height: number; baseWidth: number; headWidth: number }) {
   const path = Skia.Path.Make();

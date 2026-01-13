@@ -1,6 +1,9 @@
 import React from 'react';
 import { Source } from 'react-native-fast-image';
-import { Box, Space, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import type { Space } from '@/design-system/layout/space';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import { ImageSourcePropType } from 'react-native';

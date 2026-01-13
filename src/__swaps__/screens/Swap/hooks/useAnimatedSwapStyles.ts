@@ -15,7 +15,7 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { spinnerExitConfig } from '@/components/animations/AnimatedSpinner';
-import { useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { foregroundColors } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';

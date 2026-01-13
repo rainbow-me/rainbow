@@ -1,6 +1,10 @@
 import React, { useCallback } from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
-import { AnimatedText, Box, ColorModeProvider, Text, TextShadow } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Box } from '@/design-system/components/Box/Box';
+import { ColorModeProvider } from '@/design-system/color/ColorMode';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { ExplainerSheet, ExplainerSheetStep, PANEL_INNER_WIDTH } from '@/components/explainer-sheet/ExplainerSheet';
 import FastImage from 'react-native-fast-image';
 import magicOrbImage from '@/assets/perpsExplainer/magicOrb.png';

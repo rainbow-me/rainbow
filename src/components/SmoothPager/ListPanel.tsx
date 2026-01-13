@@ -3,19 +3,15 @@ import { ScrollView, ScrollViewProps, StyleProp, StyleSheet, TouchableWithoutFee
 import Animated, { AnimatedStyle, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
-import {
-  AnimatedText,
-  Box,
-  Column,
-  Columns,
-  Separator,
-  Stack,
-  Text,
-  globalColors,
-  useColorMode,
-  useForegroundColor,
-} from '@/design-system';
-import { TextColor } from '@/design-system/color/palettes';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { globalColors, TextColor } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';

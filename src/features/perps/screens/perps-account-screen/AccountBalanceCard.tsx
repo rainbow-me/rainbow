@@ -1,5 +1,10 @@
 import React, { memo } from 'react';
-import { Box, Stack, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { USDC_ICON_URL } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

@@ -1,7 +1,10 @@
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, Cover, useColorMode, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { AnimatedText, SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
 import { IS_IOS } from '@/env';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';

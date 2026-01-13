@@ -1,6 +1,9 @@
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { IS_IOS } from '@/env';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { opacity } from '@/framework/ui/utils/opacity';

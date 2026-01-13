@@ -1,5 +1,7 @@
 import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
-import { Box, Text, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import {
   SLIDER_WIDTH,
   SLIDER_HEIGHT,

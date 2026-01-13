@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Box, Inset } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inset } from '@/design-system/components/Inset/Inset';
 
 export const CardRowWrapper = React.memo(function CardRowWrapper({ children }: { children: React.ReactNode }) {
   return (

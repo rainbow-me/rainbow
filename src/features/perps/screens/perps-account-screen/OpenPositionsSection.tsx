@@ -1,6 +1,9 @@
 import React from 'react';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Stack, Text, TextShadow } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { PerpPositionCard } from '@/features/perps/components/PerpPositionCard';
 import { DOWN_ARROW, HYPERLIQUID_COLORS, UP_ARROW } from '@/features/perps/constants';
 import { usePerpsPositionsInfo } from '@/features/perps/stores/derived/usePerpsPositionsInfo';

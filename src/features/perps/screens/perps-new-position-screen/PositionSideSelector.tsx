@@ -1,7 +1,11 @@
 import React, { memo } from 'react';
 import * as i18n from '@/languages';
 import { StyleSheet, View } from 'react-native';
-import { AnimatedText, Border, Box, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Border } from '@/design-system/components/Border/Border';
+import { Box } from '@/design-system/components/Box/Box';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { PerpPositionSide } from '@/features/perps/types';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';

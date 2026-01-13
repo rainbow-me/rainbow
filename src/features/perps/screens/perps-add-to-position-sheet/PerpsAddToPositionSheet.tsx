@@ -1,7 +1,11 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import Navigation from '@/navigation/Navigation';
-import { Box, Separator, Text, TextIcon, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';

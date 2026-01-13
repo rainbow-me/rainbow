@@ -1,6 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { Bleed, Inline, Text, TextProps } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text, type TextProps } from '@/design-system/components/Text/Text';
 import * as i18n from '@/languages';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

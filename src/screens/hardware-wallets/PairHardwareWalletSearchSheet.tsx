@@ -1,6 +1,9 @@
 import * as i18n from '@/languages';
 import React from 'react';
-import { Box, Inset, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { useSetRecoilState } from 'recoil';

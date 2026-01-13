@@ -8,7 +8,7 @@ import FastImage from 'react-native-fast-image';
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import TokenFamilyHeaderIcon from '@/components/token-family/TokenFamilyHeaderIcon';
-import { Text } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
 import { ImgixImage } from '@/components/images';
 import { ThemeContextProps } from '@/theme';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';

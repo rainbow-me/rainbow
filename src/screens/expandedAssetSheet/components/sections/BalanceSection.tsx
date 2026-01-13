@@ -1,6 +1,9 @@
 import React, { useMemo } from 'react';
 import * as i18n from '@/languages';
-import { AnimatedText, Box, Text, TextShadow } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { SheetSeparator } from '../shared/Separator';

@@ -24,7 +24,7 @@ import { RewardsOverviewScene } from '@/features/rnbw-rewards/screens/rnbw-rewar
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { AirdropUnavailableScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropUnavailableScene';
-import { ColorModeProvider } from '@/design-system';
+import { ColorModeProvider } from '@/design-system/color/ColorMode';
 import { useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 
 export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {

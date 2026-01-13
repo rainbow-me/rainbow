@@ -1,7 +1,10 @@
 import React from 'react';
 import { PressableProps } from 'react-native';
-import { Bleed, Box, Inset, Space } from '@/design-system';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import type { Space } from '@/design-system/layout/space';
 
 type NavbarItemProps = {
   children: React.ReactElement;

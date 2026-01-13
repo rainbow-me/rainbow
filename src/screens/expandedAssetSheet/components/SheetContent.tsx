@@ -1,5 +1,7 @@
 import React, { memo } from 'react';
-import { AccentColorProvider, Box, ColorModeProvider, useColorMode } from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Box } from '@/design-system/components/Box/Box';
+import { ColorModeProvider, useColorMode } from '@/design-system/color/ColorMode';
 import {
   DetailsSection,
   BalanceSection,

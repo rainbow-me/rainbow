@@ -6,7 +6,7 @@ import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered, Column } from '../layout';
 import { Text as TextElement } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { Inline } from '@/design-system';
+import { Inline } from '@/design-system/components/Inline/Inline';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';

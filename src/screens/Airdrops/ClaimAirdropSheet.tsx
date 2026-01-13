@@ -7,22 +7,18 @@ import { PANEL_WIDTH, Panel, TapToDismiss } from '@/components/SmoothPager/ListP
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SheetHandleFixedToTop } from '@/components/sheet';
-import {
-  AnimatedText,
-  Bleed,
-  Box,
-  ColorModeProvider,
-  IconContainer,
-  Inline,
-  Separator,
-  Stack,
-  Text,
-  TextShadow,
-  globalColors,
-  useForegroundColor,
-} from '@/design-system';
-import { foregroundColors } from '@/design-system/color/palettes';
-import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { ColorModeProvider } from '@/design-system/color/ColorMode';
+import { IconContainer } from '@/design-system/components/IconContainer/IconContainer';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { globalColors, foregroundColors } from '@/design-system/color/palettes';
+import { useForegroundColor, getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { IS_IOS } from '@/env';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { getSizedImageUrl } from '@/handlers/imgix';

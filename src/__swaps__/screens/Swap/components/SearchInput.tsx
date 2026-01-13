@@ -9,7 +9,12 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { Input } from '@/components/inputs';
-import { Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';

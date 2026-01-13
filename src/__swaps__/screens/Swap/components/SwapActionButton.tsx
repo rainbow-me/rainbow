@@ -12,14 +12,20 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedText, Box, Column, Columns, Cover, Stack, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
+import { AnimatedText, SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { IS_IOS } from '@/env';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { DepositContextType } from '@/systems/funding/types';
 import { useSwapContext } from '../providers/swap-provider';
 import { GestureHandlerButton, GestureHandlerButtonProps } from './GestureHandlerButton';
+import { Stack } from '@/design-system/components/Stack/Stack';
 
 const getSwapButtonPadding = ({ outline, rightIcon, small }: { outline?: boolean; rightIcon?: string; small?: boolean }) => {
   const horizontalPadding = small ? 14 : 20 - (outline ? 2 : 0);

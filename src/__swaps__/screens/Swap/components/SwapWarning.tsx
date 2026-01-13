@@ -1,7 +1,9 @@
 import React from 'react';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedText, Box, Inline } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SwapWarningType } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';

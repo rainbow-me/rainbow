@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { FlexStyle, StyleProp, ViewStyle } from 'react-native';
-import { Box, Space } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import type { Space } from '@/design-system/layout/space';
 
 type FloatingPanelProps = {
   borderRadius: number;

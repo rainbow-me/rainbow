@@ -1,4 +1,4 @@
-import { globalColors } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
 import { CardColor, CardColorway, LearnCardDetails, LearnCategory } from './types';
 
 export const getCardColorways: (isDarkMode: boolean) => {

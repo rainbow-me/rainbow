@@ -1,7 +1,10 @@
 import React from 'react';
 import { useTheme } from '@/theme';
 
-import { Box, Text, TextProps, AccentColorProvider, Stack } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text, type TextProps } from '@/design-system/components/Text/Text';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
 import { ImgixImage } from '@/components/images';
 import SheetActionButton from '@/components/sheet/sheet-action-buttons/SheetActionButton';
 import { ImageSourcePropType, ScrollView, StyleSheet } from 'react-native';

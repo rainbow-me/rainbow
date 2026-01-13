@@ -4,18 +4,15 @@ import { View } from 'react-native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import {
-  AccentColorProvider,
-  BackgroundProvider,
-  Box,
-  Inline,
-  Inset,
-  Separator,
-  Text,
-  Columns,
-  Column,
-  useForegroundColor,
-} from '@/design-system';
+import { BackgroundProvider } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { ImgixImage } from '@/components/images';
 import { getFormattedTimeQuantity, convertAmountToNativeDisplay, handleSignificantDecimals } from '@/helpers/utilities';
 import { NftOffer } from '@/graphql/__generated__/arc';

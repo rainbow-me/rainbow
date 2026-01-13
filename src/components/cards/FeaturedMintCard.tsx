@@ -1,18 +1,14 @@
 import { analytics } from '@/analytics';
-import {
-  AccentColorProvider,
-  Box,
-  ColorModeProvider,
-  Column,
-  Columns,
-  Cover,
-  Inline,
-  Stack,
-  Text,
-  globalColors,
-  useColorMode,
-  useForegroundColor,
-} from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Box } from '@/design-system/components/Box/Box';
+import { ColorModeProvider, useColorMode } from '@/design-system/color/ColorMode';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { globalColors } from '@/design-system/color/palettes';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { IS_IOS } from '@/env';
 import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import useDimensions from '@/hooks/useDimensions';

@@ -9,7 +9,8 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { useWalletConnectV2Sessions } from '@/walletConnect/hooks/useWalletConnectV2Sessions';
 import { useFocusEffect } from '@react-navigation/native';
-import { Text, Box } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
+import { Box } from '@/design-system/components/Box/Box';
 
 const MAX_VISIBLE_DAPPS = 7;
 

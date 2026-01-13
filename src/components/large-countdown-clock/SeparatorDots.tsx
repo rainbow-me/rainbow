@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
 type SeparatorDotsProps = {
   minuteEndsWithOne: boolean;

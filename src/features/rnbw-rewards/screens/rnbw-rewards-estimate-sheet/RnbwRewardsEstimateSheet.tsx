@@ -1,7 +1,9 @@
 import { memo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { PanelSheet, PANEL_WIDTH } from '@/components/PanelSheet/PanelSheet';
-import { ColorModeProvider, Stack, Text } from '@/design-system';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { ColorModeProvider } from '@/design-system/color/ColorMode';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useRoute } from '@/navigation/Navigation';

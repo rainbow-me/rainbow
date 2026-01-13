@@ -1,7 +1,11 @@
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { enableActionsOnReadOnlyWallet } from '@/config';
-import { AccentColorProvider, Box, Inline, Text, TextShadow } from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import deviceUtils from '@/utils/deviceUtils';

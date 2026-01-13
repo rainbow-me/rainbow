@@ -4,7 +4,7 @@ import { Page } from '../../components/layout';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useFetchOpenCollectionsOnMount from '@/hooks/useFetchOpenCollectionsOnMount';

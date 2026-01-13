@@ -1,7 +1,10 @@
 import React from 'react';
 import { ImageSourcePropType } from 'react-native';
 
-import { Box, Stack, Text, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import styled from '@/styled-thing';
 import { Icon } from '../icons';
 import deviceUtils from '@/utils/deviceUtils';

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Box, Cover, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { Text } from '@/design-system/components/Text/Text';
 import { useTheme } from '@/theme';
 import { opacity } from '@/framework/ui/utils/opacity';
 

@@ -1,5 +1,11 @@
 import React, { memo, useMemo } from 'react';
-import { Bleed, Box, BoxProps, globalColors, Separator, Stack, Text, useColorMode } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box, type BoxProps } from '@/design-system/components/Box/Box';
+import { globalColors } from '@/design-system/color/palettes';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { PerpsPosition } from '@/features/perps/types';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';

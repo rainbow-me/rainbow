@@ -1,5 +1,9 @@
 import React, { memo, useMemo } from 'react';
-import { Bleed, Box, Text, TextShadow, useForegroundColor } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { PerpPositionSide } from '@/features/perps/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 
