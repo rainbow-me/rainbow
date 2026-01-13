@@ -5,52 +5,62 @@ import { memo, useCallback, useEffect, useMemo } from 'react';
 import Animated, { Easing, runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
 const DEFAULT_ANIMATION_DURATION_MS = time.ms(700);
-const GLOW_ARC_DEGREES = 10;
-const GLOW_BLUR_RADIUS = 4;
-const GLOW_EXTENT = GLOW_BLUR_RADIUS * 2;
+const DEFAULT_GLOW_ARC_DEGREES = 10;
+const DEFAULT_GLOW_BLUR_RADIUS = 4;
 
 interface LoadingSpinnerProps {
   color: string;
+  animationDurationMs?: number;
+  glowArcDegrees?: number;
+  glowBlurRadius?: number;
   size?: number;
   strokeWidth?: number;
 }
 
-export const LoadingSpinner = memo(function LoadingSpinner({ color, size = 24, strokeWidth = 2 }: LoadingSpinnerProps) {
+export const LoadingSpinner = memo(function LoadingSpinner({
+  color,
+  animationDurationMs = DEFAULT_ANIMATION_DURATION_MS,
+  glowArcDegrees = DEFAULT_GLOW_ARC_DEGREES,
+  glowBlurRadius = DEFAULT_GLOW_BLUR_RADIUS,
+  size = 24,
+  strokeWidth = 2,
+}: LoadingSpinnerProps) {
   const rotation = useSharedValue(0);
 
-  const canvasSize = size + GLOW_EXTENT * 2;
+  const glowExtent = glowBlurRadius * 2;
+  const canvasSize = size + glowExtent * 2;
   const center = size / 2;
   // Path is inset so the outer edge of the stroke aligns with the view boundary (inner stroke)
   const arcRadius = center - strokeWidth / 2;
 
-  const oval = useMemo(
+  const circle = useMemo(
     () => ({
-      x: GLOW_EXTENT + center - arcRadius,
-      y: GLOW_EXTENT + center - arcRadius,
+      x: glowExtent + center - arcRadius,
+      y: glowExtent + center - arcRadius,
       width: arcRadius * 2,
       height: arcRadius * 2,
     }),
-    [center, arcRadius]
+    [center, arcRadius, glowExtent]
   );
 
   const arcPath = useMemo(() => {
     const path = Skia.Path.Make();
-    path.addArc(oval, 0, 180);
+    path.addArc(circle, 0, 180);
     return path;
-  }, [oval]);
+  }, [circle]);
 
   const glowArcPath = useMemo(() => {
     const path = Skia.Path.Make();
-    path.addArc(oval, 180 - GLOW_ARC_DEGREES, GLOW_ARC_DEGREES);
+    path.addArc(circle, 180 - glowArcDegrees, glowArcDegrees);
     return path;
-  }, [oval]);
+  }, [circle, glowArcDegrees]);
 
-  const gradientCenter = useMemo(() => vec(GLOW_EXTENT + center + arcRadius, GLOW_EXTENT + center), [center, arcRadius]);
+  const gradientCenter = useMemo(() => vec(glowExtent + center + arcRadius, glowExtent + center), [center, arcRadius, glowExtent]);
 
   const startAnimation = useCallback(() => {
     'worklet';
-    rotation.value = withRepeat(withTiming(360, { duration: DEFAULT_ANIMATION_DURATION_MS, easing: Easing.linear }), -1, false);
-  }, [rotation]);
+    rotation.value = withRepeat(withTiming(360, { duration: animationDurationMs, easing: Easing.linear }), -1, false);
+  }, [animationDurationMs, rotation]);
 
   useEffect(() => {
     runOnUI(() => {
@@ -63,11 +73,11 @@ export const LoadingSpinner = memo(function LoadingSpinner({ color, size = 24, s
   }));
 
   return (
-    <Animated.View style={[{ width: canvasSize, height: canvasSize, margin: -GLOW_EXTENT }, animatedStyle]}>
+    <Animated.View style={[{ width: canvasSize, height: canvasSize, margin: -glowExtent }, animatedStyle]}>
       <Canvas style={{ width: canvasSize, height: canvasSize }}>
         <Group>
           <Path path={glowArcPath} style="stroke" strokeWidth={strokeWidth} strokeCap="round" color={color} />
-          <Blur blur={GLOW_BLUR_RADIUS} />
+          <Blur blur={glowBlurRadius} />
         </Group>
         <Group>
           <Path path={arcPath} style="stroke" strokeWidth={strokeWidth} strokeCap="round">
