@@ -8,7 +8,7 @@ import { CardType, GenericCard } from './GenericCard';
 import { getLearnCardColorway } from './utils/constants';
 import { LearnCardDetails } from './utils/types';
 import { IconOrb } from './reusables/IconOrb';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme';

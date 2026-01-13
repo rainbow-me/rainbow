@@ -23,7 +23,7 @@ import SecretDisplayCard from './SecretDisplayCard';
 import { SecretDisplayError } from '@/components/secret-display/SecretDisplayError';
 import { SecretDisplayStates, SecretDisplayStatesType } from '@/components/secret-display/states';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';

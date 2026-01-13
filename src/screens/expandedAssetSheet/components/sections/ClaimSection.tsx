@@ -8,7 +8,7 @@ import { Text } from '@/design-system/components/Text/Text';
 import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { globalColors } from '@/design-system/color/palettes';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { AirdropClaimable, BalancePill } from '@/screens/Airdrops/AirdropsSheet';

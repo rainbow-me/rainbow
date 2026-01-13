@@ -7,7 +7,7 @@ import { useColorMode } from '@/design-system/color/ColorMode';
 import { PolymarketPosition } from '@/features/polymarket/types';
 import ImgixImage from '@/components/images/ImgixImage';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';

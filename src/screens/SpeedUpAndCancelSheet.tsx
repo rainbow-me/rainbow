@@ -9,7 +9,7 @@ import useGas from '@/hooks/useGas';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { sendTransaction } from '@/model/wallet';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { parseGasParamsForTransaction } from '@/parsers';

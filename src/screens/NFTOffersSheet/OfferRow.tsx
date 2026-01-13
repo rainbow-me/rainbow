@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { Bleed } from '@/design-system/components/Bleed/Bleed';
 import { Box } from '@/design-system/components/Box/Box';
 import { Column, Columns } from '@/design-system/components/Columns/Columns';

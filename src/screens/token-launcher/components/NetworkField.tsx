@@ -12,7 +12,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ERROR_RED, FIELD_BORDER_COLOR, FIELD_BORDER_WIDTH, INPUT_HEIGHT } from '../constants';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';

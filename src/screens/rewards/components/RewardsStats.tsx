@@ -5,7 +5,7 @@ import { Text } from '@/design-system/components/Text/Text';
 import * as i18n from '@/languages';
 import { RewardsStatsCard } from './RewardsStatsCard';
 import { RewardStatsAction, RewardStatsActionType } from '@/graphql/__generated__/metadata';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';

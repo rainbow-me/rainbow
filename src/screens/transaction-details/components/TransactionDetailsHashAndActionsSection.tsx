@@ -5,7 +5,7 @@ import { Box } from '@/design-system/components/Box/Box';
 import { Stack } from '@/design-system/components/Stack/Stack';
 import { RainbowTransaction, TransactionStatus } from '@/entities';
 import * as i18n from '@/languages';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { swapMetadataStorage } from '@/raps/common';
 import { SwapMetadata } from '@/raps/references';

@@ -5,7 +5,7 @@ import { Inset } from '@/design-system/components/Inset/Inset';
 import { Stack } from '@/design-system/components/Stack/Stack';
 import { Text } from '@/design-system/components/Text/Text';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { CheckmarkAnimation } from '@/components/animations/CheckmarkAnimation';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';

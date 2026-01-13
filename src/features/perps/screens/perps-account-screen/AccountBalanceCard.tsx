@@ -9,7 +9,7 @@ import { USDC_ICON_URL } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { View } from 'react-native';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';

@@ -10,7 +10,7 @@ import { PROFILES } from '@/config/experimentalHooks';
 import { FiatProviderName } from '@/entities/f2c';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
 import { logger } from '@/logger';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import { InitialRoute } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import { queryClient } from '@/react-query';

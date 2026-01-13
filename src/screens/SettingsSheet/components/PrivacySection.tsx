@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { device } from '@/storage';

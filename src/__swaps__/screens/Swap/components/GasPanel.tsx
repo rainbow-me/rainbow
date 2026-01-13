@@ -32,7 +32,7 @@ import { globalColors } from '@/design-system/color/palettes';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { IS_ANDROID } from '@/env';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';

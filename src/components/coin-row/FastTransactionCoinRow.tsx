@@ -10,7 +10,7 @@ import { globalColors } from '@/design-system/color/palettes';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { NativeCurrencyKey, RainbowTransaction, TransactionStatus, TransactionType } from '@/entities';
 import { ThemeContextProps } from '@/theme';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
 import { ImgixImage } from '../images';
 import { CardSize } from '../unique-token/CardSize';

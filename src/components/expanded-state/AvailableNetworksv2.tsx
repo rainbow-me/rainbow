@@ -10,7 +10,7 @@ import { Inline } from '@/design-system/components/Inline/Inline';
 import { Text } from '@/design-system/components/Text/Text';
 import type { RainbowToken } from '@/entities/tokens';
 import { implementation } from '@/entities/dispersion';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';

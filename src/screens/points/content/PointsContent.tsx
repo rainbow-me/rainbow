@@ -33,7 +33,7 @@ import useClipboard from '@/hooks/useClipboard';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';

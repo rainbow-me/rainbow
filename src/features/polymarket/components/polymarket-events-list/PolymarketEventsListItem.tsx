@@ -17,7 +17,7 @@ import * as i18n from '@/languages';
 //   usePolymarketRecommendationsStore,
 // } from '@/features/polymarket/stores/polymarketRecommendationsStore';
 import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { roundWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
 import { deepFreeze } from '@/utils/deepFreeze';

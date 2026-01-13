@@ -19,7 +19,7 @@ import { getProvider, isTestnetChain, toHex } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { add, convertRawAmountToDecimalFormat, fromWei, greaterThan, isZero, subtract } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { parseAssetNative } from '@/parsers';
 import store from '@/redux/store';

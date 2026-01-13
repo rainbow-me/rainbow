@@ -5,7 +5,7 @@ import { analytics } from '@/analytics';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { getWalletProfileMeta } from '@/helpers/walletProfileHandler';
 import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@/model/wallet';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 import profileUtils from '@/utils/profileUtils';

@@ -15,7 +15,7 @@ import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/tr
 import { useTransactionDetailsToasts } from '@/screens/transaction-details/hooks/useTransactionDetailsToasts';
 import useDimensions from '@/hooks/useDimensions';
 import { RootStackParamList } from '@/navigation/types';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 

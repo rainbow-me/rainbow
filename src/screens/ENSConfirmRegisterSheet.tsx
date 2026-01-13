@@ -16,7 +16,7 @@ import useENSRegistrationForm from '@/hooks/useENSRegistrationForm';
 import useENSRegistrationStepHandler from '@/hooks/useENSRegistrationStepHandler';
 import useENSSearch from '@/hooks/useENSSearch';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { ChainId, Network } from '@/state/backendNetworks/types';

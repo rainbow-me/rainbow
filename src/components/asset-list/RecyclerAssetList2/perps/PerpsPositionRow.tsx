@@ -17,7 +17,7 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import * as i18n from '@/languages';

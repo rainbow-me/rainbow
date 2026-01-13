@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 
 export default function watchingAlert() {

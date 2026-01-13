@@ -16,7 +16,7 @@ import * as i18n from '@/languages';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import infinityIcon from '@/assets/infinity.png';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 

@@ -16,7 +16,7 @@ import { SortDirection, Timeframe, TrendingSort } from '@/graphql/__generated__/
 import { categories, TrendingCategory, sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { FarcasterUser, TrendingToken, useTrendingTokens } from '@/resources/trendingTokens/trendingTokens';
 import { useNavigationStore } from '@/state/navigation/navigationStore';

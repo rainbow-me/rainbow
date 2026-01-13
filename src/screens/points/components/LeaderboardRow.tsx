@@ -12,7 +12,7 @@ import useClipboard from '@/hooks/useClipboard';
 import useContacts from '@/hooks/useContacts';
 import useWatchWallet from '@/hooks/useWatchWallet';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';

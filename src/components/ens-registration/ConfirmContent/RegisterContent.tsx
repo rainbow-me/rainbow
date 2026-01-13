@@ -9,7 +9,7 @@ import { Row, Rows } from '@/design-system/components/Rows/Rows';
 import { Separator } from '@/design-system/components/Separator/Separator';
 import { Stack } from '@/design-system/components/Stack/Stack';
 import { Text } from '@/design-system/components/Text/Text';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 

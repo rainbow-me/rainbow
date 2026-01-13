@@ -18,7 +18,7 @@ import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';

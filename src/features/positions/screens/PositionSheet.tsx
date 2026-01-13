@@ -22,7 +22,7 @@ import { RootStackParamList } from '@/navigation/types';
 import { openInBrowser } from '@/utils/openInBrowser';
 import Routes from '@/navigation/routesNames';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';

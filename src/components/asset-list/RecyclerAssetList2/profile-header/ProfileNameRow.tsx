@@ -10,7 +10,7 @@ import { Inset } from '@/design-system/components/Inset/Inset';
 import { Text } from '@/design-system/components/Text/Text';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import useDimensions from '@/hooks/useDimensions';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { formatAccountLabel, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import haptics from '@/utils/haptics';

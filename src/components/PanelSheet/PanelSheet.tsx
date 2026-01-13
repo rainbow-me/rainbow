@@ -7,7 +7,7 @@ import { useColorMode } from '@/design-system/color/ColorMode';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { IS_IOS } from '@/env';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';

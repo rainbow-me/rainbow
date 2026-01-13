@@ -22,7 +22,7 @@ import { useChartThrottledPoints } from '@/hooks/charts/useChartThrottledPoints'
 import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
 import useDimensions from '@/hooks/useDimensions';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';

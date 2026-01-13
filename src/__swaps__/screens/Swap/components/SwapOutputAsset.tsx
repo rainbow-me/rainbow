@@ -23,7 +23,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
 import * as i18n from '@/languages';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import Clipboard from '@react-native-clipboard/clipboard';

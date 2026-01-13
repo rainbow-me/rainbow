@@ -27,7 +27,7 @@ import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { walletExecuteRap } from '@/raps/execute';
 import { RapSwapActionParameters } from '@/raps/references';
 import { invalidatePointsQuery, usePoints } from '@/resources/points';

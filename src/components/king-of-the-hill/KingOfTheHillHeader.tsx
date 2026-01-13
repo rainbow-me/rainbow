@@ -13,7 +13,7 @@ import { formatCurrency } from '@/helpers/strings';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { time } from '@/utils/time';

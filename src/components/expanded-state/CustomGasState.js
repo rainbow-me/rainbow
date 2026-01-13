@@ -10,7 +10,7 @@ import { getTrendKey } from '@/helpers/gas';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useGas from '@/hooks/useGas';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import deviceUtils from '@/utils/deviceUtils';

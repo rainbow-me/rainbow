@@ -8,7 +8,7 @@ import { Text } from '@/design-system/components/Text/Text';
 import { IS_IOS } from '@/env';
 import useBiometryType from '@/hooks/useBiometryType';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import React from 'react';

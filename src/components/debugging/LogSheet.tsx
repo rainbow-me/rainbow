@@ -6,7 +6,7 @@ import { MarkdownText } from '@/design-system/components/MarkdownText/MarkdownTe
 import { Separator } from '@/design-system/components/Separator/Separator';
 import { Stack } from '@/design-system/components/Stack/Stack';
 import { Text } from '@/design-system/components/Text/Text';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import { containsEmoji } from '@/helpers/strings';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
