@@ -10,7 +10,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import { useTheme } from '@/theme';
-import { showActionSheetWithOptions } from '@/utils';
+import showActionSheetWithOptions from '@/utils/actionsheet';
 import { changeAccount, disconnectSession } from '@/walletConnect';
 import { SessionTypes } from '@walletconnect/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';

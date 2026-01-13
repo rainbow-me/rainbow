@@ -12,7 +12,10 @@ import { useClipboard } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding } from '@/styles';
 import { IS_TEST } from '@/env';
-import { abbreviations, ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
+import abbreviations from '@/utils/abbreviations';
+import ethereumUtils from '@/utils/ethereumUtils';
+import haptics from '@/utils/haptics';
+import showActionSheetWithOptions from '@/utils/actionsheet';
 
 const InfoButton = styled(Centered)({
   alignItems: 'center',

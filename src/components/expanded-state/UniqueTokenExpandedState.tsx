@@ -32,7 +32,9 @@ import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsS
 import styled from '@/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme';
-import { magicMemo, safeAreaInsetValues, isLowerCaseMatch } from '@/utils';
+import magicMemo from '@/utils/magicMemo';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import { openInBrowser } from '@/utils/openInBrowser';

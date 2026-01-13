@@ -8,7 +8,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import React, { useCallback } from 'react';
 import { useRecoilState } from 'recoil';
 import { ButtonPressAnimation } from '../animations';

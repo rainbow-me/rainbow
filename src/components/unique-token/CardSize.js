@@ -1,4 +1,4 @@
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 
 export const UniqueTokenCardMargin = 15;
 export const UniqueTokenRowPadding = 19;

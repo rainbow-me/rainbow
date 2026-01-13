@@ -9,7 +9,7 @@ import { analytics } from '@/analytics';
 import { useSearchCurrencyList, useHardwareBackOnFocus } from '@/hooks';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';

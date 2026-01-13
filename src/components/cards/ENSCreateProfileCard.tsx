@@ -4,7 +4,7 @@ import { Bleed, Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/d
 import { prefetchENSAvatar, prefetchENSRecords, useAccountENSDomains, useDimensions } from '@/hooks';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
-import { watchingAlert } from '@/utils';
+import watchingAlert from '@/utils/watchingAlert';
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import ENSAvatarGrid from '../../assets/ensAvatarGrid.png';

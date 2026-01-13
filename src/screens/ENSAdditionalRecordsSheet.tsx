@@ -7,7 +7,7 @@ import { SlackSheet } from '../components/sheet';
 import { AccentColorProvider, Box, Inline } from '@/design-system';
 import { accentColorAtom, textRecordFields } from '@/helpers/ens';
 import { useENSRegistrationForm } from '@/hooks';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { IS_ANDROID } from '@/env';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';

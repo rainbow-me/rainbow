@@ -40,7 +40,9 @@ import { useAccountAddress, useIsReadOnlyWallet, useIsHardwareWallet } from '@/s
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { abbreviations, ethereumUtils, watchingAlert } from '@/utils';
+import abbreviations from '@/utils/abbreviations';
+import ethereumUtils from '@/utils/ethereumUtils';
+import watchingAlert from '@/utils/watchingAlert';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { addressHashedColorIndex } from '@/utils/profileUtils';

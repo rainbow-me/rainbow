@@ -8,7 +8,7 @@ import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { Panel } from '@/components/SmoothPager/ListPanel';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { PerpMarket, PerpPositionSide, PerpsPosition, TriggerOrderType, TriggerOrderSource } from '@/features/perps/types';
 import { useNavigation, useRoute } from '@/navigation/Navigation';

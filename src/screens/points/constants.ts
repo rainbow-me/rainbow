@@ -1,4 +1,4 @@
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { OnboardPointsMutation, PointsOnboardingCategory } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';

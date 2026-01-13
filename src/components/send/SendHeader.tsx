@@ -21,7 +21,8 @@ import { useClipboard, useDimensions, useContacts } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { profileUtils, showActionSheetWithOptions } from '@/utils';
+import profileUtils from '@/utils/profileUtils';
+import showActionSheetWithOptions from '@/utils/actionsheet';
 import { RainbowAccount } from '@/model/wallet';
 import { Contact } from '@/redux/contacts';
 

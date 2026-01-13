@@ -54,7 +54,7 @@ import {
 } from '@/state/networkSwitcher/networkSwitcher';
 import { RootStackParamList } from '@/navigation/types';
 import { IS_IOS } from '@/env';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { noop } from 'lodash';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';

@@ -14,7 +14,7 @@ import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { Canvas, Circle, LinearGradient, vec } from '@shopify/react-native-skia';
 import React, { memo, useEffect, useLayoutEffect, useState } from 'react';

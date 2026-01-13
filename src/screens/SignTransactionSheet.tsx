@@ -15,7 +15,8 @@ import { RainbowError, logger } from '@/logger';
 import { useNavigation } from '@/navigation';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme';
-import { deviceUtils, ethereumUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import {
   PERSONAL_SIGN,
   SEND_TRANSACTION,

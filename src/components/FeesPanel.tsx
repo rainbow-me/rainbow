@@ -11,7 +11,7 @@ import { add, greaterThan, isZero, lessThan, multiply, toFixedDecimals } from '@
 import { useFeesPanelInputRefs, useGas, usePrevious, useTimeout } from '@/hooks';
 import { gweiToWei, parseGasFeeParam } from '@/parsers';
 import Routes from '@/navigation/routesNames';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { isL2Chain } from '@/handlers/web3';
