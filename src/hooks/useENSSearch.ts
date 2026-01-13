@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import useENSLocalTransactions from './useENSLocalTransactions';
 import { fetchRegistrationDate } from '@/handlers/ens';
 import { ENS_DOMAIN, formatRentPrice, getAvailable, getENSRegistrarControllerContract, getNameExpires, getRentPrice } from '@/helpers/ens';
-import { timeUnits } from '@/references';
+import timeUnits from '@/references/time-units.json';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { validateENS } from '@/utils/ens';
 import { ChainId } from '@/state/backendNetworks/types';

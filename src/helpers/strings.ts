@@ -1,5 +1,5 @@
 import { memoFn } from '../utils/memoFn';
-import { supportedNativeCurrencies } from '@/references';
+import { supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { convertAmountToNativeDisplayWorklet } from './utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';

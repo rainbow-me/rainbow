@@ -1,6 +1,6 @@
 import { Address } from 'viem';
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import { SupportedCurrencyKey } from '@/references';
+import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { ChainId } from '@/state/backendNetworks/types';
 import { QueryStoreState } from '@/state/internal/queryStore/types';
 import { OptionallyPersistedRainbowStore } from '@/state/internal/types';

@@ -22,7 +22,7 @@ import { add } from '@/helpers/utilities';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, ensureError, logger } from '@/logger';
 
-import { gasUnits, REFERRER } from '@/references';
+import { gasUnits } from '@/references/gasUnits';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { ActionProps, RapActionResult, RapSwapActionParameters } from '../references';
 import {

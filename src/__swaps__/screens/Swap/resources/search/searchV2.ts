@@ -6,7 +6,7 @@ import { getProvider } from '@/handlers/web3';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { Contract } from '@ethersproject/contracts';
-import { erc20ABI } from '@/references';
+import erc20ABI from '@/references/erc20-abi.json';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';

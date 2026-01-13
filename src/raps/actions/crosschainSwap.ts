@@ -5,7 +5,7 @@ import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { add } from '@/helpers/utilities';
 import { assetNeedsUnlocking, estimateApprove } from './unlock';
 
-import { REFERRER, gasUnits, ReferrerType } from '@/references';
+import { gasUnits } from '@/references/gasUnits';
 import { ChainId } from '@/state/backendNetworks/types';
 import { NewTransaction, TransactionDirection, TransactionStatus, TxHash } from '@/entities';
 import { addNewTransaction } from '@/state/pendingTransactions';

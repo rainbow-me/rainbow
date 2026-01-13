@@ -1,6 +1,6 @@
 import { SharedValue, withSpring } from 'react-native-reanimated';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { supportedNativeCurrencies } from '@/references';
+import { supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { InputKeys, InputMethods, InputValues } from '@/__swaps__/types/swap';
