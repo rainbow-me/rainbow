@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { CoinIconIndicator } from '@/components/coin-icon';
+import CoinIconIndicator from '@/components/coin-icon/CoinIconIndicator';
 import { Icon } from '@/components/icons';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ExtendedState } from '../core/RawRecyclerList';
