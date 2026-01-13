@@ -18,7 +18,7 @@ import watchingAlert from '@/utils/watchingAlert';
 import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import Divider from '../Divider';
 
 const NOOP = () => null;

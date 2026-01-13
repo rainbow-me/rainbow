@@ -15,7 +15,7 @@ import {
 import { AirdropRecipient, useTokenLauncherStore } from '../state/tokenLauncherStore';
 import FastImage from 'react-native-fast-image';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { FieldContainer } from './FieldContainer';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { checkIsValidAddressOrDomainFormat, isENSAddressFormat } from '@/helpers/validators';

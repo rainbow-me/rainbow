@@ -4,7 +4,7 @@ import { Animated, Easing, StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import useLatestCallback from '../../hooks/useLatestCallback';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 import { Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';

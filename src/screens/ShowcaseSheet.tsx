@@ -11,7 +11,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { ComponentProps, useContext, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import ActivityIndicator from '../components/ActivityIndicator';
-import { AssetList } from '../components/asset-list';
+import AssetList from '../components/asset-list/AssetList';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
 import { CollectibleTokenFamily } from '../components/token-family';
 import { AddressPreferencesData, getPreference } from '../model/preferences';

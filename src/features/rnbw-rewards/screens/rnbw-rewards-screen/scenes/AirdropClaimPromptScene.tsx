@@ -8,7 +8,7 @@ import { time } from '@/utils/time';
 import { defaultExitAnimation, createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';

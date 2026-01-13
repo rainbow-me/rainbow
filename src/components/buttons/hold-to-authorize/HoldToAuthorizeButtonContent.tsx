@@ -8,7 +8,7 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Spinner from '../../Spinner';
-import { ShimmerAnimation } from '../../animations';
+import ShimmerAnimation from '../../animations/ShimmerAnimation';
 import { Centered, InnerBorder } from '../../layout';
 import BiometricButtonContent from '../BiometricButtonContent';
 import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';

@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 import styled from '@/styled-thing';

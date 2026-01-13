@@ -2,7 +2,7 @@ import React from 'react';
 import isEqual from 'react-fast-compare';
 import { Text as RNText, StyleSheet, View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
-import { ButtonPressAnimation } from '../../../animations';
+import ButtonPressAnimation from '../../../animations/ButtonPressAnimation';
 import { CoinRowHeight } from '../../../coin-row';
 import { FloatingEmojis } from '../../../floating-emojis';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';

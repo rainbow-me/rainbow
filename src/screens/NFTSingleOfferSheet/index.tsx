@@ -19,7 +19,7 @@ import {
 import { ImgixImage } from '@/components/images';
 import { getFormattedTimeQuantity, convertAmountToNativeDisplay, handleSignificantDecimals } from '@/helpers/utilities';
 import { NftOffer } from '@/graphql/__generated__/arc';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useNavigation } from '@/navigation';
 import { IS_ANDROID } from '@/env';
 import ConditionalWrap from 'conditional-wrap';

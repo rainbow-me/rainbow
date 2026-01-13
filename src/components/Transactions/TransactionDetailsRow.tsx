@@ -2,7 +2,7 @@ import React from 'react';
 import * as i18n from '@/languages';
 import { TouchableWithoutFeedback } from 'react-native';
 
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box, Inline, Text } from '@/design-system';
 

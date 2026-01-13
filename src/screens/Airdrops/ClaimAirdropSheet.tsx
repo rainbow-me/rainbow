@@ -4,7 +4,7 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { PANEL_WIDTH, Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import {

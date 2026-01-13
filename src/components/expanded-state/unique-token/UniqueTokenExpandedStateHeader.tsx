@@ -3,7 +3,7 @@ import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import URL from 'url-parse';
-import { ButtonPressAnimation } from '../../animations';
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import saveToCameraRoll from './saveToCameraRoll';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Bleed, Column, Columns, Heading, Inline, Inset, Space, Stack, Text } from '@/design-system';

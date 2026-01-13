@@ -3,7 +3,7 @@ import { ParsedAsset } from '@/__swaps__/types/assets';
 import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { ListHeader, ListPanel, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ChainImage } from '@/components/coin-icon/ChainImage';

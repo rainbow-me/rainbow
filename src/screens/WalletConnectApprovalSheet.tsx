@@ -3,7 +3,7 @@ import { analytics } from '@/analytics';
 import Divider from '@/components/Divider';
 import Spinner from '@/components/Spinner';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { RequestVendorLogoIcon } from '@/components/coin-icon';
+import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';

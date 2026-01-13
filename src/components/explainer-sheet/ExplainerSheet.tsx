@@ -9,7 +9,7 @@ import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import LinearGradient from 'react-native-linear-gradient';
 import { downscalePagerIndex, SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Extrapolation, interpolate, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { useNavigation } from '@/navigation';
 import { Canvas, LinearGradient as SkiaLinearGradient, RadialGradient, vec, Circle, Group, Blur } from '@shopify/react-native-skia';

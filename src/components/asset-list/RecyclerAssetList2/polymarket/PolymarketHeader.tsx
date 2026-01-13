@@ -4,7 +4,7 @@ import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-n
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
 import * as i18n from '@/languages';
 import { formatCurrency } from '@/helpers/strings';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';

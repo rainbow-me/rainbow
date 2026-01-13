@@ -3,7 +3,7 @@ import React from 'react';
 import { View, ViewProps } from 'react-native';
 import { ThemeContextProps, withThemeContext } from '../../theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
-import { ShimmerAnimation } from '../animations';
+import ShimmerAnimation from '../animations/ShimmerAnimation';
 import { CoinRowHeight } from '../coin-row';
 import { Row } from '../layout';
 import styled from '@/styled-thing';

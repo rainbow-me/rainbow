@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Text } from '../text';
 import { checkIsValidAddressOrDomain } from '@/helpers/validators';
 import { opacity } from '@/framework/ui/utils/opacity';

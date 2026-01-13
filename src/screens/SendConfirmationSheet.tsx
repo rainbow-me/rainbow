@@ -1,6 +1,6 @@
 import { opacity } from '@/framework/ui/utils/opacity';
 import Divider from '@/components/Divider';
-import { ShimmerAnimation } from '@/components/animations';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { Box, Heading, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';

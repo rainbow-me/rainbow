@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useState } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import { useNavigation } from '../../../navigation/Navigation';
 import { useTheme } from '../../../theme/ThemeContext';
-import { ShimmerAnimation } from '../../animations';
+import ShimmerAnimation from '../../animations/ShimmerAnimation';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';

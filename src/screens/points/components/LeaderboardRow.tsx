@@ -1,4 +1,4 @@
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar, showDeleteContactActionSheet } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
