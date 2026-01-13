@@ -1,5 +1,5 @@
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SheetActionButton } from '@/components/sheet';
 import { Box, Stack } from '@/design-system';
 import { RainbowTransaction, TransactionStatus } from '@/entities';

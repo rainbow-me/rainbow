@@ -1,6 +1,6 @@
 import { Box, Text } from '@/design-system';
 import React from 'react';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import * as i18n from '@/languages';
 
 export const CancelButton = ({ onPress }: { onPress: () => void }) => (

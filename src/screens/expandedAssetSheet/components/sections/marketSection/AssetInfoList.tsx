@@ -9,7 +9,7 @@ import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/conte
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { formatDate } from '@/utils/formatDate';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { ShimmerAnimation } from '@/components/animations';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';

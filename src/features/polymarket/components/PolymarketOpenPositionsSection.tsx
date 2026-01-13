@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, Stack, Text, TextIcon, TextShadow } from '@/design-system';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { POLYMARKET_ACCENT_COLOR } from '@/features/polymarket/constants';

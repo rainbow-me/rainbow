@@ -3,7 +3,7 @@ import React, { ReactElement, ReactNode, memo, useMemo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { convertToRGBA } from 'react-native-reanimated';
 import { useDeepCompareMemo } from 'use-deep-compare';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useBackgroundColor, useColorMode } from '@/design-system';
 import { BackgroundColor, globalColors } from '@/design-system/color/palettes';
 import { IS_IOS } from '@/env';

@@ -1,5 +1,5 @@
 import restoreWalletIcon from '@/assets/restoreWalletIcon.png';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider, Box, Separator, Text } from '@/design-system';
 import { IS_IOS } from '@/env';

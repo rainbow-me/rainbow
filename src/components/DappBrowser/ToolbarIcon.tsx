@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, Text, TextIcon, useForegroundColor } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { TextWeight } from '@/design-system/components/Text/Text';

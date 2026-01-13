@@ -4,7 +4,7 @@ import { BlurView } from 'react-native-blur-view';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import {
   Bleed,
   Border,

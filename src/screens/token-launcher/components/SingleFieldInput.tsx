@@ -24,7 +24,7 @@ import {
   ERROR_RED,
   GHOST_INPUT_ACCESSORY_NATIVE_ID,
 } from '../constants';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 
 const TITLE_GAP = 10;
 

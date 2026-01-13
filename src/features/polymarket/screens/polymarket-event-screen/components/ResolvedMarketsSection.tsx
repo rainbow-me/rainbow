@@ -3,7 +3,7 @@ import * as i18n from '@/languages';
 import { memo, useState } from 'react';
 import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ResolvedMarketsList } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsList';
 
 export const ResolvedMarketsSection = memo(function ResolvedMarketsSection({

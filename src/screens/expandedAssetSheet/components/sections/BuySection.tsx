@@ -3,7 +3,7 @@ import * as i18n from '@/languages';
 import { Bleed, Box, IconContainer, Stack, Text, TextShadow } from '@/design-system';
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ScrollView } from 'react-native-gesture-handler';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Row } from '../shared/Row';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';

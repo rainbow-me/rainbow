@@ -7,7 +7,7 @@ import { useNavigation } from '../../navigation/Navigation';
 import { ThemeContextProps, useTheme } from '../../theme/ThemeContext';
 import Divider from '@/components/Divider';
 import Spinner from '@/components/Spinner';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { PasteAddressButton } from '../buttons';
 import showDeleteContactActionSheet from '../contacts/showDeleteContactActionSheet';
 import { AddressField } from '../fields';
