@@ -1,5 +1,6 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigation } from '@/navigation';
 import { StyleSheet, Text as NativeText } from 'react-native';
 import { Box, Separator, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
@@ -17,7 +18,7 @@ import { ContextCircleButton } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_IOS } from '@/env';
 import * as ethereumUtils from '@/utils/ethereumUtils';
-import { getDelegations, DelegationStatus, type ChainDelegationState } from '@rainbow-me/delegation';
+import { getDelegations, DelegationStatus, delegationPreference, type ChainDelegationState } from '@rainbow-me/delegation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { logger, RainbowError } from '@/logger';
 import type { Address } from 'viem';
@@ -103,12 +104,15 @@ const SmartWalletStatusBadge = ({ status, text }: SmartWalletStatusBadgeProps) =
 const ViewWalletDelegations = () => {
   const { params } = useRoute<RouteProp<ViewWalletDelegationsParams, typeof Routes.VIEW_WALLET_DELEGATIONS>>();
   const { address } = params;
+  const { navigate } = useNavigation();
 
-  const [isSmartWalletEnabled, setIsSmartWalletEnabled] = useState(true);
   const [delegations, setDelegations] = useState<DelegationInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const getChainsLabel = useBackendNetworksStore(state => state.getChainsLabel);
+
+  // Get delegation preference from SDK
+  const { enabled: isSmartWalletEnabled, setPreference } = delegationPreference({ address: address as Address });
 
   useEffect(() => {
     const fetchDelegations = async () => {
@@ -137,10 +141,22 @@ const ViewWalletDelegations = () => {
 
   const inactiveNetworks = delegations.filter(delegation => delegation.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED);
 
-  const handleRevokeDelegation = useCallback((chainId: ChainId) => {
-    // TODO: Implement revoke delegation
-    console.log('Revoke delegation for chain:', chainId);
-  }, []);
+  const handleRevokeDelegation = useCallback(
+    (chainId: ChainId) => {
+      const delegation = delegations.find(d => d.chainId === chainId);
+      if (!delegation?.currentContract) return;
+
+      navigate(Routes.REVOKE_DELEGATION_PANEL, {
+        delegationsToRevoke: [
+          {
+            chainId,
+            contractAddress: delegation.currentContract,
+          },
+        ],
+      });
+    },
+    [delegations, navigate]
+  );
 
   const handleViewOnExplorer = useCallback(
     (chainId: ChainId) => {
@@ -150,8 +166,30 @@ const ViewWalletDelegations = () => {
   );
 
   const handleToggleSmartWallet = useCallback(() => {
-    setIsSmartWalletEnabled(prev => !prev);
-  }, []);
+    if (isSmartWalletEnabled) {
+      // Disabling smart wallet - revoke all active delegations
+      const delegationsToRevoke = activatedNetworks
+        .filter(network => network.currentContract)
+        .map(network => ({
+          chainId: network.chainId,
+          contractAddress: network.currentContract!,
+        }));
+
+      if (delegationsToRevoke.length > 0) {
+        // Navigate to revoke panel with callback to disable preference after success
+        navigate(Routes.REVOKE_DELEGATION_PANEL, {
+          delegationsToRevoke,
+          onSuccess: () => {
+            // Set delegation preference to disabled after successful revocation
+            setPreference(false);
+          },
+        });
+      }
+    } else {
+      // Enabling smart wallet - set preference to enabled
+      setPreference(true);
+    }
+  }, [isSmartWalletEnabled, activatedNetworks, navigate, setPreference]);
 
   const activeNetworkMenuConfig = {
     menuTitle: '',
@@ -289,75 +327,79 @@ const ViewWalletDelegations = () => {
           </Menu>
         </Box>
 
-        {/* Separator */}
-        <Box paddingHorizontal="8px">
-          <Separator color="separatorTertiary" thickness={1} />
-        </Box>
-
         {/* Activated Networks Section */}
-        <Box>
-          <Stack space="20px">
-            {/* Section Header */}
-            <Box paddingHorizontal="10px">
-              <Text color="labelSecondary" size="15pt" weight="bold">
-                Activated Networks
-              </Text>
+        {activatedNetworks.length > 0 && (
+          <>
+            {/* Separator */}
+            <Box paddingHorizontal="8px">
+              <Separator color="separatorTertiary" thickness={1} />
             </Box>
 
-            {/* Networks List */}
-            <Menu>
-              {activatedNetworks.map((network, index) => {
-                const NetworkContextMenuWrapper = ({ children }: { children: React.ReactNode }) => {
-                  return IS_IOS ? (
-                    <ContextMenuButton
-                      menuConfig={activeNetworkMenuConfig}
-                      onPressMenuItem={e => onPressNetworkMenuItem({ ...e, chainId: network.chainId })}
-                    >
-                      {children}
-                    </ContextMenuButton>
-                  ) : (
-                    <ContextCircleButton
-                      options={activeNetworkMenuConfig.menuItems.map(item => item.actionTitle)}
-                      onPressActionSheet={(buttonIndex: number) => {
-                        const actionKey = activeNetworkMenuConfig.menuItems[buttonIndex].actionKey;
-                        onPressNetworkMenuItem({ nativeEvent: { actionKey }, chainId: network.chainId });
-                      }}
-                    >
-                      {children}
-                    </ContextCircleButton>
-                  );
-                };
+            <Box>
+              <Stack space="20px">
+                {/* Section Header */}
+                <Box paddingHorizontal="10px">
+                  <Text color="labelSecondary" size="15pt" weight="bold">
+                    Activated Networks
+                  </Text>
+                </Box>
 
-                return (
-                  <React.Fragment key={network.chainId}>
-                    <NetworkContextMenuWrapper>
-                      <MenuItem
-                        size={52}
-                        disabled
-                        leftComponent={
-                          <Box width={{ custom: 28 }} height={{ custom: 28 }}>
-                            <ChainImage chainId={network.chainId} size={28} position="relative" />
+                {/* Networks List */}
+                <Menu>
+                  {activatedNetworks.map((network, index) => {
+                    const NetworkContextMenuWrapper = ({ children }: { children: React.ReactNode }) => {
+                      return IS_IOS ? (
+                        <ContextMenuButton
+                          menuConfig={activeNetworkMenuConfig}
+                          onPressMenuItem={e => onPressNetworkMenuItem({ ...e, chainId: network.chainId })}
+                        >
+                          {children}
+                        </ContextMenuButton>
+                      ) : (
+                        <ContextCircleButton
+                          options={activeNetworkMenuConfig.menuItems.map(item => item.actionTitle)}
+                          onPressActionSheet={(buttonIndex: number) => {
+                            const actionKey = activeNetworkMenuConfig.menuItems[buttonIndex].actionKey;
+                            onPressNetworkMenuItem({ nativeEvent: { actionKey }, chainId: network.chainId });
+                          }}
+                        >
+                          {children}
+                        </ContextCircleButton>
+                      );
+                    };
+
+                    return (
+                      <React.Fragment key={network.chainId}>
+                        <NetworkContextMenuWrapper>
+                          <MenuItem
+                            size={52}
+                            disabled
+                            leftComponent={
+                              <Box width={{ custom: 28 }} height={{ custom: 28 }}>
+                                <ChainImage chainId={network.chainId} size={28} position="relative" />
+                              </Box>
+                            }
+                            titleComponent={<MenuItem.Title text={network.name} weight="bold" />}
+                            rightComponent={
+                              <Text color="labelQuinary" size="17pt" weight="bold">
+                                􀍡
+                              </Text>
+                            }
+                          />
+                        </NetworkContextMenuWrapper>
+                        {index < activatedNetworks.length - 1 && (
+                          <Box paddingHorizontal="16px">
+                            <Separator color="separatorTertiary" thickness={1} />
                           </Box>
-                        }
-                        titleComponent={<MenuItem.Title text={network.name} weight="bold" />}
-                        rightComponent={
-                          <Text color="labelQuinary" size="17pt" weight="bold">
-                            􀍡
-                          </Text>
-                        }
-                      />
-                    </NetworkContextMenuWrapper>
-                    {index < activatedNetworks.length - 1 && (
-                      <Box paddingHorizontal="16px">
-                        <Separator color="separatorTertiary" thickness={1} />
-                      </Box>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </Menu>
-          </Stack>
-        </Box>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </Menu>
+              </Stack>
+            </Box>
+          </>
+        )}
 
         {/* Inactive Networks Section */}
         {inactiveNetworks.length > 0 && (
@@ -437,6 +479,11 @@ const ViewWalletDelegations = () => {
             </Stack>
           </Box>
         )}
+
+        {/* Separator */}
+        <Box paddingHorizontal="8px">
+          <Separator color="separatorTertiary" thickness={1} />
+        </Box>
 
         {/* Toggle Smart Wallet Button */}
         <Box>
