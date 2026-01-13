@@ -2,15 +2,9 @@ import { analytics } from '@/analytics';
 import { MinimalNotification } from '@/notifications/types';
 import { getPermissionStatus } from '@/notifications/permissions';
 import messaging from '@react-native-firebase/messaging';
-import {
-  WalletNotificationRelationship,
-  WALLET_GROUPS_STORAGE_KEY,
-  WALLET_TOPICS_STORAGE_KEY,
-  GroupSettings,
-  GlobalNotificationTopicType,
-  WalletNotificationSettings,
-  notificationSettingsStorage,
-} from '@/notifications/settings';
+import { WalletNotificationRelationship, WALLET_GROUPS_STORAGE_KEY, WALLET_TOPICS_STORAGE_KEY } from '@/notifications/settings/constants';
+import type { GroupSettings, GlobalNotificationTopicType, WalletNotificationSettings } from '@/notifications/settings/types';
+import { notificationSettingsStorage } from '@/notifications/settings/storage';
 
 export const trackTappedPushNotification = (notification: MinimalNotification | undefined) => {
   analytics.track(analytics.event.notificationsPromoTapped, {

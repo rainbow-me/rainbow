@@ -11,12 +11,9 @@ import { RainbowAccount } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { isNotificationPermissionGranted, requestNotificationPermission } from '@/notifications/permissions';
-import {
-  useAllNotificationSettingsFromStorage,
-  useWalletGroupNotificationSettings,
-  WalletNotificationRelationship,
-  WalletNotificationSettings,
-} from '@/notifications/settings';
+import { useAllNotificationSettingsFromStorage, useWalletGroupNotificationSettings } from '@/notifications/settings/hooks';
+import { WalletNotificationRelationship } from '@/notifications/settings/constants';
+import type { WalletNotificationSettings } from '@/notifications/settings/types';
 import { GlobalNotificationTopic } from '@/notifications/settings/constants';
 import { toggleGlobalNotificationTopic } from '@/notifications/settings/settings';
 import { getNotificationSettingsForWalletWithAddress, setAllGlobalNotificationSettingsToStorage } from '@/notifications/settings/storage';
