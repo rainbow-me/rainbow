@@ -7,7 +7,7 @@ import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { logger } from '@/logger';
 import { RainbowAccount } from '@/model/wallet';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { checkKeychainIntegrity, getSelectedWallet, getWallets } from '@/state/wallets/walletsStore';
 import { backupsStore, LoadingStates, oneWeekInMs } from '@/state/backups/backups';

@@ -8,7 +8,7 @@ import { Stack } from '@/design-system/components/Stack/Stack';
 import { Text } from '@/design-system/components/Text/Text';
 import * as i18n from '@/languages';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { backupsStore } from '@/state/backups/backups';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';

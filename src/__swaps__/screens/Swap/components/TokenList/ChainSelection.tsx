@@ -22,7 +22,7 @@ import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import Routes from '@/navigation/routesNames';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import { TokenToBuyListItem } from '@/__swaps__/types/search';
 import { GestureHandlerButton } from '../GestureHandlerButton';
 import { UserAssetFilter } from '@/__swaps__/types/assets';

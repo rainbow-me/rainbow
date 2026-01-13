@@ -8,7 +8,7 @@ import useAccountSettings from '@/hooks/useAccountSettings';
 import useAppState from '@/hooks/useAppState';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { RainbowAccount } from '@/model/wallet';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { isNotificationPermissionGranted, requestNotificationPermission } from '@/notifications/permissions';
 import {

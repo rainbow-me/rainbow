@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { Box } from '@/design-system/components/Box/Box';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { padding, position } from '@/styles';
 import { useTheme } from '@/theme';

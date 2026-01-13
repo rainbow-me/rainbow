@@ -17,7 +17,7 @@ import { useColorMode } from '@/design-system/color/ColorMode';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { queryClient } from '@/react-query';
 import { mintsQueryKey, useMints } from '@/resources/mints';

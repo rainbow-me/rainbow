@@ -3,7 +3,7 @@ import { BackgroundProvider } from '@/design-system/components/BackgroundProvide
 import useDimensions from '@/hooks/useDimensions';
 import { useLedgerConnect } from '@/hooks/useLedgerConnect';
 import { logger } from '@/logger';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { PairHardwareWalletAgainSheet } from '@/screens/hardware-wallets/PairHardwareWalletAgainSheet';
 import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHardwareWalletErrorSheet';

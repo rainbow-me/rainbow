@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { Text as RNText } from '../text';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import useDimensions from '@/hooks/useDimensions';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
 import { Box } from '@/design-system/components/Box/Box';

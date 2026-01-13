@@ -14,7 +14,7 @@ import { ImgixImage } from '@/components/images';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { useLedgerConnect } from '@/hooks/useLedgerConnect';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 

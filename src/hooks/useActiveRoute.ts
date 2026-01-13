@@ -1,4 +1,4 @@
-import { Navigation, useNavigation } from '@/navigation';
+import Navigation, { useNavigation } from '@/navigation/Navigation';
 import { useEffect, useState } from 'react';
 
 export const useActiveRoute = () => {

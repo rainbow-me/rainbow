@@ -13,7 +13,7 @@ import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { ShinyCoinIcon } from '@/components/coin-icon/ShinyCoinIcon';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
 import { getSizedImageUrl } from '@/handlers/imgix';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useDerivedValue } from 'react-native-reanimated';
 import { useAnimatedCountdown } from '@/hooks/reanimated/useAnimatedCountdown';

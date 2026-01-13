@@ -1,6 +1,6 @@
 import { TokenGateCheckerNetwork, TokenInfo, checkIfWalletsOwnNft, checkIfWalletsOwnNft1155 } from './tokenGatedUtils';
 import type { EthereumAddress } from '@/entities/wallet';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import { RainbowError, logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';

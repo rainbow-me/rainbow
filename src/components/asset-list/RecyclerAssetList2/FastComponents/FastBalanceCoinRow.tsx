@@ -12,7 +12,7 @@ import { borders, colors, padding, shadow } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { ChainId } from '@/state/backendNetworks/types';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { toSignificantDigits } from '@/helpers/utilities';
 import { getLiquidityCappedBalance, TokenData } from '@/state/liveTokens/liveTokensStore';

@@ -7,7 +7,7 @@ import UniqueTokenCard from './UniqueTokenCard';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 
 const Container = styled(Row).attrs({ align: 'center' })({
   ...padding.object(0, UniqueTokenRowPadding),

@@ -19,7 +19,7 @@ import { add, convertAmountToNativeDisplayWorklet, greaterThan, toFixedDecimals 
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useGas from '@/hooks/useGas';
 import usePrevious from '@/hooks/usePrevious';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
