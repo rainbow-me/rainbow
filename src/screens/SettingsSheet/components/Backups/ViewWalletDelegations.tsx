@@ -111,8 +111,14 @@ const ViewWalletDelegations = () => {
 
   const getChainsLabel = useBackendNetworksStore(state => state.getChainsLabel);
 
-  // Get delegation preference from SDK
-  const { enabled: isSmartWalletEnabled, setPreference } = delegationPreference({ address: address as Address });
+  // Get delegation preference from SDK and maintain local state
+  const { enabled: initialEnabled, setPreference } = delegationPreference({ address: address as Address });
+  const [isSmartWalletEnabled, setIsSmartWalletEnabled] = useState(initialEnabled);
+
+  // Sync initial preference from SDK
+  useEffect(() => {
+    setIsSmartWalletEnabled(initialEnabled);
+  }, [initialEnabled]);
 
   useEffect(() => {
     const fetchDelegations = async () => {
@@ -182,14 +188,16 @@ const ViewWalletDelegations = () => {
           onSuccess: () => {
             // Set delegation preference to disabled after successful revocation
             setPreference(false);
+            setIsSmartWalletEnabled(false);
           },
         });
       }
     } else {
       // Enabling smart wallet - set preference to enabled
       setPreference(true);
+      setIsSmartWalletEnabled(true);
     }
-  }, [isSmartWalletEnabled, activatedNetworks, navigate, setPreference]);
+  }, [isSmartWalletEnabled, activatedNetworks, navigate, setPreference, setIsSmartWalletEnabled]);
 
   const activeNetworkMenuConfig = {
     menuTitle: '',
