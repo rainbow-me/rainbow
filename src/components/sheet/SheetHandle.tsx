@@ -3,7 +3,7 @@ import { View, type ViewProps } from 'react-native';
 import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { type Colors } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 export const SHEET_HANDLE_HEIGHT = 5;

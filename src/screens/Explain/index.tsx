@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 import { Box, Text, type TextProps, AccentColorProvider, Stack } from '@/design-system';
 import { ImgixImage } from '@/components/images';

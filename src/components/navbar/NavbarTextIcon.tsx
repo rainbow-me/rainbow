@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Cover, Text } from '@/design-system';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 export const NAVBAR_ICON_SIZE = 36;

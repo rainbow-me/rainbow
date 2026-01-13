@@ -5,7 +5,7 @@ import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import styled from '@/framework/ui/styled-thing';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { type Colors } from '../styles/colors';
 import { Box } from '@/design-system';
 import { type RouteProp, useRoute } from '@react-navigation/native';

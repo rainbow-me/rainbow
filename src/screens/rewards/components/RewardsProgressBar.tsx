@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@/design-system';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { type LayoutChangeEvent } from 'react-native';
 import { opacity } from '@/framework/ui/utils/opacity';

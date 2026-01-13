@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatedText, type TextProps, useForegroundColor } from '@/design-system';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { useLiveTokensStore, addSubscribedToken, removeSubscribedToken, type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useSharedValue, type SharedValue, useAnimatedStyle, useAnimatedReaction, withTiming, withDelay } from 'react-native-reanimated';
 import { useListen } from '@/state/internal/hooks/useListen';

@@ -3,7 +3,7 @@ import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { useColorMode } from '@/design-system';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR } from '../constants';
 import { type BackendNetwork } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

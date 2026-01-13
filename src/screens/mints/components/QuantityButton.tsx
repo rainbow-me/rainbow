@@ -6,7 +6,7 @@ import styled from '@/framework/ui/styled-thing';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Row from '@/components/layout/Row';
 import { Box, Inline, Text } from '@/design-system';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 const PLUS_ACTION_TYPE = 'plus';

@@ -12,7 +12,7 @@ import Navigation from '@/navigation/Navigation';
 import { useNavigation } from '@react-navigation/native';
 import Routes from '@/navigation/routesNames';
 import { isNotificationPermissionGranted, requestNotificationPermission } from '@/notifications/permissions';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import backgroundImage from '@/assets/notificationsPromoSheetBackground.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import mockNotificationsIOS from '@/assets/mockNotificationsIOS.png';

@@ -7,7 +7,7 @@ import { unlockableAppIcons } from '../models/appIcons';
 import { ImgixImage } from '@/components/images';
 import { type Source } from 'react-native-fast-image';
 import { type RouteProp, useRoute } from '@react-navigation/native';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import * as i18n from '@/languages';
 import { delay } from '@/utils/delay';
 import Routes from '@/navigation/routesNames';

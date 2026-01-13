@@ -26,7 +26,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { ChainId } from '@/state/backendNetworks/types';
 import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
 import styled from '@/framework/ui/styled-thing';
-import { type ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
 import { type WalletconnectMeta } from '@/features/wallet-connect/types';
 import { type RouteProp, useRoute } from '@react-navigation/native';
 import { noop } from 'lodash';

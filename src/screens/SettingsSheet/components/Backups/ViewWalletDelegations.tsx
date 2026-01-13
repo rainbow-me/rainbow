@@ -11,7 +11,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { fonts } from '@/design-system/typography/typography';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ContextCircleButton } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';

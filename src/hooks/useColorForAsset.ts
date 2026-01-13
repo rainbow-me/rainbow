@@ -6,7 +6,7 @@ import isETH from '@/utils/isETH';
 import { getDeterministicIndex } from '@/framework/core/utils/getDeterministicIndex';
 import { getHighContrastColor } from './useAccountAccentColor';
 import { usePersistentDominantColorFromImage } from './usePersistentDominantColorFromImage';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 export default function useColorForAsset(
   asset: Partial<ParsedAddressAsset> = {},

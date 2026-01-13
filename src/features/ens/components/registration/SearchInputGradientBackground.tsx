@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import RadialGradientBackground, { type RadialGradientBackgroundProps } from '@/components/RadialGradientBackground';
 import { type SearchInputProps } from './SearchInput';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 type SearchInputGradientBackgroundProps = {
   variant: SearchInputProps['variant'];

@@ -20,7 +20,7 @@ import { RainbowButton } from '../buttons';
 import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { usePasswordValidation } from './usePasswordValidation';
 import { type TextInput } from 'react-native';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { type RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';

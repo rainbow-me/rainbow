@@ -4,7 +4,7 @@ import { TouchableOpacity as GHTouchableOpacity } from 'react-native-gesture-han
 import { EMOJIS_CONTAINER_HORIZONTAL_MARGIN } from './constants';
 import { type AllEmojiContentEntry } from './helpers/getFormattedAllEmojiList';
 import { type EmojiEntry } from './types';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 type Props = AllEmojiContentEntry & {
   columns: number;

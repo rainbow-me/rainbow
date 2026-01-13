@@ -17,7 +17,7 @@ import gridDotsLight from '@/assets/dot-grid-light.png';
 import ledgerNano from '@/assets/ledger-nano.png';
 import { ImgixImage } from '@/components/images';
 import { useBackgroundColor, useColorMode } from '@/design-system';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const SCALE_FACTOR = deviceUtils.isSmallPhone ? 0.9 : 1;

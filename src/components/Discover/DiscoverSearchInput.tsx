@@ -12,7 +12,7 @@ import { ImgixImage } from '@/components/images';
 import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 import deviceUtils from '@/utils/deviceUtils';
-import { type ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';

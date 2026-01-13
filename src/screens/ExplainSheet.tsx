@@ -17,7 +17,7 @@ import gasUtils from '@/utils/gas';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { buildRainbowLearnUrl, LearnUTMCampaign } from '@/utils/buildRainbowUrl';
 import { cloudPlatformAccountName } from '@/utils/platform';
-import { type ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
 import type Routes from '@/navigation/routesNames';
 
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';

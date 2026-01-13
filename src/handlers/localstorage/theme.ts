@@ -1,6 +1,6 @@
 import { IS_ANDROID } from '@/env';
 import { getGlobal, saveGlobal } from './common';
-import { Themes, type ThemesType } from '@/theme';
+import { Themes, type ThemesType } from '@/theme/ThemeContext';
 import { SystemBars } from 'react-native-edge-to-edge';
 
 const THEME = 'theme';

@@ -16,7 +16,7 @@ import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { IS_DEV, IS_IOS, IS_TEST_FLIGHT } from '@/env';
 import { DELEGATION, getExperimentalFlag } from '@/config';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { StyleSheet } from 'react-native';
 import { DelegationStatus, useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';

@@ -5,7 +5,7 @@ import { Navbar } from '@/components/navbar/Navbar';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import React from 'react';
 import { View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';

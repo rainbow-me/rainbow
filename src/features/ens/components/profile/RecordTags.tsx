@@ -10,7 +10,7 @@ import { Bleed, Box, Inline, Inset, selectTextSizes, Text, useForegroundColor } 
 import type { Records } from '../../types/registration';
 import { deprecatedTextRecordFields, ENS_RECORDS } from '../../utils/helpers';
 import useENSRecordDisplayProperties from '../../hooks/useENSRecordDisplayProperties';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 const getRecordType = (recordKey: string) => {
   switch (recordKey) {

@@ -5,7 +5,7 @@ import Animated, { Easing, useAnimatedStyle, withTiming } from 'react-native-rea
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
-import { type ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
 import { type RouteProp, useRoute } from '@react-navigation/native';
 import {
   DEFAULT_ENABLED_TOPIC_SETTINGS,

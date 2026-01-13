@@ -4,7 +4,7 @@ import { G, Path } from 'react-native-svg';
 import { Centered } from '../../layout';
 import Svg from '../Svg';
 import { position } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 const AnimatedSvg = Animated.createAnimatedComponent<PropsWithChildren>(Svg);

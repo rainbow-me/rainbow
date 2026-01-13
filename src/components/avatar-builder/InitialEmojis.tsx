@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { EMOJIS_CONTAINER_HORIZONTAL_MARGIN, EMOJIS_TOP_OFFSET } from './constants';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import magicMemo from '@/utils/magicMemo';
 
 interface Props {

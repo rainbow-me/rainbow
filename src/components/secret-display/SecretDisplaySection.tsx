@@ -7,7 +7,7 @@ import useWalletManualBackup from '@/hooks/useWalletManualBackup';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { createdWithBiometricError, identifyWalletType, loadPrivateKey, loadSeedPhraseAndMigrateIfNeeded } from '@/model/wallet';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { type RouteProp, useRoute } from '@react-navigation/native';
 import React, { type ReactNode, useCallback, useEffect, useState } from 'react';
 import ActivityIndicator from '../ActivityIndicator';

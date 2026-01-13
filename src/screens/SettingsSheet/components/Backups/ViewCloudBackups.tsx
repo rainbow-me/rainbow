@@ -12,7 +12,7 @@ import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { Page } from '@/components/layout';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
-import { type ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
 import { CloudBackupState, LoadingStates, backupsStore } from '@/state/backups/backups';
 import { titleForBackupState, dateFormatter } from '@/screens/SettingsSheet/utils';
 import { Box } from '@/design-system';

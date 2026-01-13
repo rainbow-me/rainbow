@@ -1,7 +1,7 @@
 import React from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Box, Inline, Inset, Text } from '@/design-system';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 export default function Callout({ after, before, children }: { after?: React.ReactNode; before?: React.ReactNode; children: string }) {
   const { colors } = useTheme();

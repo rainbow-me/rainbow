@@ -5,9 +5,9 @@ import useGas from '@/hooks/useGas';
 import { colors } from '@/styles';
 import gasUtils from '@/utils/gas';
 import { AccentColorProvider, Box, Inline, Inset, Text } from '@/design-system';
-import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { useTheme } from '@/theme/ThemeContext';
 
 const { CUSTOM, URGENT, GasSpeedOrder } = gasUtils;
 

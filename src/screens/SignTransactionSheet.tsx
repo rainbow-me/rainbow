@@ -15,7 +15,7 @@ import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { type ChainId, type Network } from '@/state/backendNetworks/types';
 import { useNavigation } from '@/navigation/Navigation';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
 import ethereumUtils from '@/utils/ethereumUtils';
 import {

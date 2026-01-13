@@ -5,7 +5,7 @@ import React from 'react';
 import styled from '@/framework/ui/styled-thing';
 import Reanimated from 'react-native-reanimated';
 import { Emoji, Text } from '@/components/text';
-import { type ThemeContextProps } from '@/theme';
+import { type ThemeContextProps } from '@/theme/ThemeContext';
 import { RowWithMargins } from '@/components/layout';
 import { shadow } from '@/styles';
 

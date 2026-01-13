@@ -18,7 +18,7 @@ import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { loadWallets } from '@/state/wallets/walletsStore';
 import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
-import { type ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme/ThemeContext';
 import { cloudPlatform } from '@/utils/platform';
 import { type RouteProp, useRoute } from '@react-navigation/native';
 import { isEmpty } from 'lodash';

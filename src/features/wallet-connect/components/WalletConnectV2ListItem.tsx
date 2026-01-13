@@ -9,7 +9,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { ChainId } from '@/state/backendNetworks/types';
 import styled from '@/framework/ui/styled-thing';
 import { padding, position } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { changeAccount, disconnectSession } from '..';
 import { type SessionTypes } from '@walletconnect/types';

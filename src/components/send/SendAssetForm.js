@@ -14,7 +14,7 @@ import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { assetIsUniqueAsset } from '@/handlers/web3';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { IS_IOS } from '@/env';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 

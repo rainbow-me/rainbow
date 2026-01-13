@@ -6,7 +6,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AccentColorProvider, Box, Cover, Inline, globalColors, Text } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { MintsFilter, getMintsFilterLabel, useMintsFilter } from '@/resources/mints';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 function FilterButton({ filter }: { filter: MintsFilter }) {
   const { filter: currentFilter, setFilter } = useMintsFilter();

@@ -19,7 +19,7 @@ import {
   LINK_ICON_SIZE,
   ERROR_RED,
 } from '../constants';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import FastImage from 'react-native-fast-image';
 import { Grid } from './Grid';
 import { validateLinkWorklet } from '../helpers/inputValidators';

@@ -7,7 +7,7 @@ import { IconOrb } from './reusables/IconOrb';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import * as i18n from '@/languages';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
 
