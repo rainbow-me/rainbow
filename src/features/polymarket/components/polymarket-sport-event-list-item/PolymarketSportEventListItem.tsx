@@ -11,7 +11,7 @@ import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarket
 import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { parsePeriod, parseScore, selectGameInfo, type PolymarketEventGameInfo } from '@/features/polymarket/utils/sports';
 import * as i18n from '@/languages';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { formatTimestamp, toUnixTime } from '@/worklets/dates';

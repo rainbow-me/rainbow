@@ -1,8 +1,8 @@
 import * as i18n from '@/languages';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TokenInfoItem } from '../../token-info';
-import { Columns } from '@/design-system';
-import { useNavigation } from '@/navigation';
+import { Columns } from '@/design-system/components/Columns/Columns';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { convertAmountToNativeDisplay, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';

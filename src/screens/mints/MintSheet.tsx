@@ -30,7 +30,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { loadPrivateKey } from '@/model/wallet';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';

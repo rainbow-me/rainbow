@@ -17,7 +17,7 @@ import { ItemSelector } from '@/features/polymarket/screens/polymarket-event-scr
 import { BetTypeSelector } from '@/features/polymarket/screens/polymarket-event-screen/BetTypeSelector';
 import { MarketRow } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
 import { PolymarketTeamInfo } from '@/features/polymarket/types';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';

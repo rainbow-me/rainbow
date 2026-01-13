@@ -13,7 +13,7 @@ import { delay } from '@/helpers/utilities';
 import useGas from '@/hooks/useGas';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme';
 import deviceUtils from '@/utils/deviceUtils';

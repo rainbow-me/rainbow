@@ -8,7 +8,7 @@ import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFa
 import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { Box, globalColors, MarkdownText, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
-import { useUntrustedUrlOpener } from '@/navigation';
+import useUntrustedUrlOpener from '@/navigation/useUntrustedUrlOpener';
 import { useRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';

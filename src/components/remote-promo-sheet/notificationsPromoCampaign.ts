@@ -1,6 +1,6 @@
 import { logger } from '@/logger';
 import { STORAGE_IDS } from '@/model/mmkv';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { createMMKV } from 'react-native-mmkv';
 import { getSelectedWallet } from '@/state/wallets/walletsStore';

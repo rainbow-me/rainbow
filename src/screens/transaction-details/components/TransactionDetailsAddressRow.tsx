@@ -16,7 +16,7 @@ import { RainbowAccount } from '@/model/wallet';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { isENSAddressFormat } from '@/helpers/validators';

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import useENSRegistration from './useENSRegistration';
 import type { ENSRegistrationState } from '@/entities/ensRegistration';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { removeExpiredRegistrations } from '@/redux/ensRegistration';
 import { AppState } from '@/redux/store';
 import Routes from '@/navigation/routesNames';

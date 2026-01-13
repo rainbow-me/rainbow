@@ -10,7 +10,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { downscalePagerIndex, SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Extrapolation, interpolate, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { Canvas, LinearGradient as SkiaLinearGradient, RadialGradient, vec, Circle, Group, Blur } from '@shopify/react-native-skia';
 import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
 import { StepIndicators } from './components/StepIndicators';

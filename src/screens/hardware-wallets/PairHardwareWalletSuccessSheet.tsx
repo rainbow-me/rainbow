@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { CheckmarkAnimation } from '@/components/animations/CheckmarkAnimation';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';

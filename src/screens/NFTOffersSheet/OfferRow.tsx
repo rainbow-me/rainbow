@@ -1,6 +1,15 @@
 import React from 'react';
-import { useNavigation } from '@/navigation';
-import { Bleed, Box, Column, Columns, globalColors, Inline, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
+import { useNavigation } from '@/navigation/Navigation';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { globalColors } from '@/design-system/color/palettes';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { NftOffer } from '@/graphql/__generated__/arc';
 import { ImgixImage } from '@/components/images';

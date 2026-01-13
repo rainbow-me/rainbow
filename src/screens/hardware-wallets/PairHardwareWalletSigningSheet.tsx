@@ -12,7 +12,7 @@ import { useRecoilValue } from 'recoil';
 import { RainbowError, logger } from '@/logger';
 import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';

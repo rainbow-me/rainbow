@@ -11,7 +11,7 @@ import {
 } from '@/__swaps__/utils/swaps';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';

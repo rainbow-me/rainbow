@@ -1,5 +1,5 @@
 import { InteractionManager } from 'react-native';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchPromoSheetCollection } from '@/resources/promoSheet/promoSheetCollectionQuery';
 import { logger } from '@/logger';

@@ -3,7 +3,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box, Inline } from '@/design-system';
 import { changeConnectionMenuItems } from '@/helpers/walletConnectNetworks';
 import * as i18n from '@/languages';
-import { Navigation, useNavigation } from '@/navigation';
+import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';

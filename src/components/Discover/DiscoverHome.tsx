@@ -25,7 +25,7 @@ import { TrendingTokens } from '@/components/Discover/TrendingTokens';
 import { FeaturedResultStack } from '@/components/FeaturedResult/FeaturedResultStack';
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import { isTestnetChain } from '@/handlers/web3';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
 import { DiscoverSeparator } from './DiscoverSeparator';
