@@ -11,7 +11,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { supportedNativeCurrencies } from '@/references';
+import { supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Bleed } from '@/design-system/components/Bleed/Bleed';
 import { Box } from '@/design-system/components/Box/Box';

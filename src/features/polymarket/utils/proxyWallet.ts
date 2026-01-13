@@ -15,7 +15,7 @@ import { getPolymarketRelayClient, usePolymarketClients } from '@/features/polym
 import { erc1155Interface, erc20Interface } from '@/features/polymarket/utils/erc20Interface';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
-import { erc20ABI } from '@/references';
+import erc20ABI from '@/references/erc20-abi.json';
 import { awaitPolygonConfirmation } from './confirmation';
 
 // ============================================================================

@@ -16,7 +16,7 @@ import { uploadImage } from '@/handlers/pinata';
 import { getProvider } from '@/handlers/web3';
 import { ENS_DOMAIN, generateSalt, getRentPrice, REGISTRATION_STEPS } from '@/helpers/ens';
 import { loadWallet } from '@/model/wallet';
-import { timeUnits } from '@/references';
+import timeUnits from '@/references/time-units.json';
 import Routes from '@/navigation/routesNames';
 import labelhash from '@/utils/labelhash';
 import { getNextNonce } from '@/state/nonces';

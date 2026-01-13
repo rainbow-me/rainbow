@@ -1,7 +1,8 @@
 import BigNumber from 'bignumber.js';
 import { isNil } from 'lodash';
 import { isHexString } from '@/handlers/web3';
-import { ethUnits, smartContractMethods } from '@/references';
+import ethUnits from '@/references/ethereum-units.json';
+import smartContractMethods from '@/references/smartcontract-methods.json';
 import { convertAmountAndPriceToNativeDisplay, convertHexToString, convertRawAmountToDecimalFormat, fromWei } from '@/helpers/utilities';
 import { logger } from '@/logger';
 import ethereumUtils from '@/utils/ethereumUtils';

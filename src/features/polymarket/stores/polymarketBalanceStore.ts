@@ -5,7 +5,7 @@ import { POLYGON_USDC_ADDRESS } from '@/features/polymarket/constants';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { getProvider } from '@/handlers/web3';
 import { RainbowError } from '@/logger';
-import { erc20ABI } from '@/references';
+import erc20ABI from '@/references/erc20-abi.json';
 import { truncateToDecimals } from '@/safe-math/SafeMath';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';

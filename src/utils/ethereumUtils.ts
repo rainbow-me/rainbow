@@ -23,7 +23,8 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { parseAssetNative } from '@/parsers/accounts';
 import store from '@/redux/store';
-import { ETH_ADDRESS, ethUnits, optimismGasOracleAbi, OVM_GAS_PRICE_ORACLE } from '@/references';
+import ethUnits from '@/references/ethereum-units.json';
+import optimismGasOracleAbi from '@/references/optimism-gas-oracle-abi.json';
 import {
   externalTokenQueryKey,
   fetchExternalToken,
