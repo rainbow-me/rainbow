@@ -12,7 +12,7 @@ import useFeesPanelInputRefs from '@/hooks/useFeesPanelInputRefs';
 import useGas from '@/hooks/useGas';
 import usePrevious from '@/hooks/usePrevious';
 import useTimeout from '@/hooks/useTimeout';
-import { gweiToWei, parseGasFeeParam } from '@/parsers';
+import { gweiToWei, parseGasFeeParam } from '@/parsers/gas';
 import Routes from '@/navigation/routesNames';
 import gasUtils from '@/utils/gas';
 import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';

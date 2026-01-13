@@ -7,7 +7,7 @@ import { ACTION_BUTTON_HEIGHT } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { gweiToWei, weiToGwei } from '@/parsers';
+import { gweiToWei, weiToGwei } from '@/parsers/gas';
 import {
   getCachedCurrentBaseFee,
   getSelectedSpeedSuggestion,
