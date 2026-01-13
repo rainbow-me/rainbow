@@ -16,7 +16,7 @@ import { IS_IOS } from '@/env';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import { type SupportedCurrencyKey, supportedNativeCurrencies } from '@/references';
+import { supportedCurrencies as supportedNativeCurrencies, type SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { addCommasToNumber } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';

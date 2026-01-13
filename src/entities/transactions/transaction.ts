@@ -3,7 +3,7 @@ import { type Hash } from 'viem';
 import { type ProtocolType } from '../protocolTypes';
 import { type ParsedAddressAsset, type ZerionAsset } from '../tokens';
 import { type EthereumAddress } from '../wallet';
-import { type AddCashCurrencyAsset } from '@/references';
+import type { AddCashCurrencyAsset } from '@/references/constants';
 import { type SwapType } from '@rainbow-me/swaps';
 import { type SwapMetadata } from '@/raps/references';
 import { type UniqueAsset } from '../uniqueAssets';

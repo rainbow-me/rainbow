@@ -3,7 +3,7 @@ import { type Token } from '@/graphql/__generated__/metadata';
 import { metadataClient } from '@/graphql';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
-import { ETH_ADDRESS } from '@/references';
+import { ETH_ADDRESS } from '@/references/constants';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { type ChainId } from '@/state/backendNetworks/types';

@@ -6,7 +6,7 @@ import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { AddressZero } from '@ethersproject/constants';
-import { ETH_ADDRESS } from '@/references';
+import { ETH_ADDRESS } from '@/references/constants';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { StyleSheet } from 'react-native';

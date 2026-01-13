@@ -52,7 +52,7 @@ import { useCleanup } from '@/hooks/useCleanup';
 import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';
 import Routes from '@/navigation/routesNames';
-import { supportedNativeCurrencies } from '@/references';
+import { supportedCurrencies as supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { useListen } from '@/state/internal/hooks/useListen';

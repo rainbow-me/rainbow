@@ -6,7 +6,7 @@ import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
 import type { RainbowToken } from '@/entities/tokens';
 import { RainbowError, logger } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
-import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
+import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references/constants';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId, type Network } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';

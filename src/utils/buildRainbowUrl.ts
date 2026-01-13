@@ -1,7 +1,7 @@
 import type { EthereumAddress } from '@/entities/wallet';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { logger, RainbowError } from '@/logger';
-import { RAINBOW_PROFILES_BASE_URL } from '@/references';
+import { RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
 import { qs } from 'url-parse';
 
 export function parseCollectionSlugFromUrl(url: string) {

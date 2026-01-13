@@ -35,7 +35,7 @@ import {
   parseRainbowMeteorologyData,
   weiToGwei,
 } from '@/parsers/gas';
-import { ethUnits } from '@/references';
+import ethUnits from '@/references/ethereum-units.json';
 import ethereumUtils from '@/utils/ethereumUtils';
 import gasUtils from '@/utils/gas';
 import { ChainId } from '@/state/backendNetworks/types';

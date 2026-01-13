@@ -78,7 +78,6 @@ const allowedBarrelFiles = [
   'src/react-native-animated-charts/src/index.ts',
   'src/react-query/index.ts',
   'src/features/ens/references/index.ts',
-  'src/references/index.ts',
   'src/references/opensea/index.ts',
   'src/references/rainbow-token-list/index.ts',
   'src/references/signatureRegistry/index.ts',

@@ -1,6 +1,6 @@
 import type { Address } from 'viem';
 
-import { type ETH_ADDRESS } from '@/references';
+import type { ETH_ADDRESS } from '@/references/constants';
 import { type ChainId, type ChainName } from '@/state/backendNetworks/types';
 import { type SearchAsset } from '@/__swaps__/types/search';
 import { type ResponseByTheme } from '../utils/swaps';

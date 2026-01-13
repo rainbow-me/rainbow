@@ -1,7 +1,7 @@
 import { AssetType } from '@/entities/assetTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/features/ens/references';
-import { POAP_NFT_ADDRESS } from '@/references';
+import { POAP_NFT_ADDRESS } from '@/references/constants';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { handleNFTImages } from '@/utils/handleNFTImages';
 import { NftTokenType, type SimpleHashNft } from '@/graphql/__generated__/arc';

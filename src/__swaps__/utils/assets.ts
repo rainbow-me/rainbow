@@ -1,4 +1,4 @@
-import { type SupportedCurrencyKey } from '@/references';
+import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import {
   type AddressOrEth,
   type AssetApiResponse,

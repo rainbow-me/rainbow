@@ -10,7 +10,7 @@ import useContacts from '@/hooks/useContacts';
 import useWatchWallet from '@/hooks/useWatchWallet';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useNavigation } from '@/navigation/Navigation';
-import { RAINBOW_PROFILES_BASE_URL } from '@/references';
+import { RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
 import Routes from '@/navigation/routesNames';
 import ethereumUtils from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';

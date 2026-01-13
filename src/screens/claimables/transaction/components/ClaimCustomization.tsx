@@ -3,7 +3,7 @@ import haptics from '@/utils/haptics';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { ETH_SYMBOL, USDC_ADDRESS } from '@/references';
+import { ETH_SYMBOL, USDC_ADDRESS } from '@/references/constants';
 import { ClaimableMenu } from '../../shared/components/ClaimableMenu';
 import { type TokenToReceive } from '../types';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';

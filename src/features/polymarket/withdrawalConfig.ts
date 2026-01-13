@@ -4,7 +4,7 @@ import { parseUnits } from 'ethers/lib/utils';
 import { analytics } from '@/analytics';
 import { USD_DECIMALS } from '@/features/perps/constants';
 import { logger, RainbowError } from '@/logger';
-import { USDC_ADDRESS } from '@/references';
+import { USDC_ADDRESS } from '@/references/constants';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createWithdrawalConfig } from '@/systems/funding/config';
 import { type WithdrawalExecutionResult, type WithdrawalExecutorParams } from '@/systems/funding/types';
