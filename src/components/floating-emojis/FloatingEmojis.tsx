@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState, ReactNode } from 'rea
 import { Animated, View, ViewProps } from 'react-native';
 import FloatingEmoji from './FloatingEmoji';
 import GravityEmoji from './GravityEmoji';
-import { useTimeout } from '@/hooks';
+import useTimeout from '@/hooks/useTimeout';
 import { position } from '@/styles';
 
 interface Emoji {

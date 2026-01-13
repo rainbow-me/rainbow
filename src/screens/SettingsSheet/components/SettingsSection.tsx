@@ -17,7 +17,7 @@ import { AppVersionStamp } from '@/components/AppVersionStamp';
 import useExperimentalFlag, { LANGUAGE_SETTINGS, NOTIFICATIONS } from '@/config/experimentalHooks';
 import { Box } from '@/design-system';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
-import { useAccountSettings } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
 import { backupsStore } from '@/state/backups/backups';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';

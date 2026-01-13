@@ -3,7 +3,7 @@ import React, { useMemo, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
-import { useLatestCallback } from '../../hooks';
+import { useLatestCallback } from '../../hooks/useLatestCallback';
 import { ButtonPressAnimation } from '../animations';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 import { Text } from '@/design-system';

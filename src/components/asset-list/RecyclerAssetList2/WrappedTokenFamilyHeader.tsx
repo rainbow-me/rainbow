@@ -1,6 +1,6 @@
 import React from 'react';
 import { TokenFamilyHeader } from '../../token-family';
-import { useLatestCallback } from '@/hooks';
+import useLatestCallback from '@/hooks/useLatestCallback';
 import { ThemeContextProps } from '@/theme';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';

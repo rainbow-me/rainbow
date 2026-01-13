@@ -3,7 +3,8 @@ import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPr
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { useChartThrottledPoints, useColorForAsset } from '@/hooks';
+import { useChartThrottledPoints } from '@/hooks/charts/useChartThrottledPoints';
+import useColorForAsset from '@/hooks/useColorForAsset';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';

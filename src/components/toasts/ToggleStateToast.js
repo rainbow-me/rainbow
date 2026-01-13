@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { usePrevious, useTimeout } from '../../hooks';
+import { usePrevious } from '../../hooks/usePrevious';
+import { useTimeout } from '../../hooks/useTimeout';
 import Toast from './Toast';
 
 export default function ToggleStateToast({ isAdded, addCopy, removeCopy }) {

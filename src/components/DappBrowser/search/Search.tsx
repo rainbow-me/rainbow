@@ -5,7 +5,7 @@ import Animated, { dispatchCommand, runOnJS, useAnimatedStyle, withSpring } from
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { useKeyboardHeight } from '@/hooks';
+import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';

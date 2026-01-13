@@ -8,7 +8,7 @@ import { RowWithMargins } from '../../layout';
 import { Text } from '../../text';
 import RainbowButtonBackground from './RainbowButtonBackground';
 import RainbowButtonTypes from './RainbowButtonTypes';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { position, shadow } from '@/styles';

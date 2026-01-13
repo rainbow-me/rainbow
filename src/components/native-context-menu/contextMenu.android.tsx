@@ -2,7 +2,7 @@ import { MenuView, NativeActionEvent, MenuComponentRef } from '@react-native-men
 import React, { PropsWithChildren, useMemo, useRef } from 'react';
 import { View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { useLatestCallback } from '@/hooks';
+import useLatestCallback from '@/hooks/useLatestCallback';
 import { NativeMenuComponentProps } from '@react-native-menu/menu/lib/typescript/src/types';
 import { MenuConfig } from './contextMenu';
 

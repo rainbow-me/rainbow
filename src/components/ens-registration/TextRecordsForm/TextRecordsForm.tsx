@@ -6,7 +6,7 @@ import InlineField, { InlineFieldProps } from '../../inputs/InlineField';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
 import { Box, Column, Columns, Separator, Stack } from '@/design-system';
 import { ENS_RECORDS } from '@/helpers/ens';
-import { useENSRegistrationForm } from '@/hooks';
+import useENSRegistrationForm from '@/hooks/useENSRegistrationForm';
 
 export default function TextRecordsForm({
   autoFocusKey,

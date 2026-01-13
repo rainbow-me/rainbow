@@ -11,7 +11,8 @@ import { SkImage, useAnimatedImageValue, useImage } from '@shopify/react-native-
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { SharedValue } from 'react-native-reanimated';
 import { logger, RainbowError } from '@/logger';
-import { useCleanup, useCoinListEditOptions } from '@/hooks';
+import { useCleanup } from '@/hooks/useCleanup';
+import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { ScrollView } from 'react-native';
 

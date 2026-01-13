@@ -2,7 +2,8 @@ import { differenceInSeconds } from 'date-fns';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import usePrevious from './usePrevious';
-import { useENSRegistration, useInterval } from '.';
+import useENSRegistration from './useENSRegistration';
+import { useInterval } from './useInterval';
 import { RegistrationParameters } from '@/entities';
 import { getProvider } from '@/handlers/web3';
 import {

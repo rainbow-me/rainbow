@@ -17,7 +17,12 @@ import { assetIsParsedAddressAsset, assetIsUniqueAsset, estimateGasLimit, getPro
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
-import { useColorForAsset, useContacts, useDimensions, useENSAvatar, useGas, useUserAccounts } from '@/hooks';
+import useColorForAsset from '@/hooks/useColorForAsset';
+import useContacts from '@/hooks/useContacts';
+import useDimensions from '@/hooks/useDimensions';
+import useENSAvatar from '@/hooks/useENSAvatar';
+import useGas from '@/hooks/useGas';
+import useUserAccounts from '@/hooks/useUserAccounts';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation';

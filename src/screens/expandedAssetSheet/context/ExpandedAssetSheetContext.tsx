@@ -1,6 +1,6 @@
 import { ParsedAddressAsset } from '@/entities';
-import { useAdditionalAssetData, useColorForAsset } from '@/hooks';
-import { TokenMetadata } from '@/hooks/useAdditionalAssetData';
+import useAdditionalAssetData, { TokenMetadata } from '@/hooks/useAdditionalAssetData';
+import useColorForAsset from '@/hooks/useColorForAsset';
 import useAccountAsset from '@/hooks/useAccountAsset';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import chroma from 'chroma-js';
