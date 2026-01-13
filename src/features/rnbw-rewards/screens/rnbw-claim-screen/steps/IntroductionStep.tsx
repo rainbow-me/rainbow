@@ -6,7 +6,6 @@ import * as i18n from '@/languages';
 import { ClaimSteps, useRnbwClaimContext } from '@/features/rnbw-rewards/context/RnbwClaimContext';
 import Animated from 'react-native-reanimated';
 import { time } from '@/utils/time';
-import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 import { createExitingAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
 
 const customExitingFirstTranche = createExitingAnimation(time.ms(20));
@@ -15,11 +14,10 @@ const customExitingThirdTranche = createExitingAnimation(time.ms(240));
 
 export const IntroductionStep = memo(function IntroductionStep() {
   const { isDarkMode } = useColorMode();
-  const { activeStep } = useRnbwClaimContext();
-  const tabBarOffset = useTabBarOffset();
+  const { setActiveStep } = useRnbwClaimContext();
 
   return (
-    <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: tabBarOffset + 32 }}>
+    <View style={styles.container}>
       <Box gap={24} alignItems="center" paddingHorizontal={{ custom: 40 }}>
         <Box gap={24}>
           <Animated.View exiting={customExitingFirstTranche}>
@@ -43,7 +41,7 @@ export const IntroductionStep = memo(function IntroductionStep() {
             style={[styles.button, { backgroundColor: isDarkMode ? globalColors.white100 : globalColors.grey100 }]}
             onPress={() => {
               'worklet';
-              activeStep.value = ClaimSteps.CheckingAirdrop;
+              setActiveStep(ClaimSteps.CheckingAirdrop);
             }}
           >
             <Text color="black" size="22pt" weight="heavy">
@@ -57,6 +55,11 @@ export const IntroductionStep = memo(function IntroductionStep() {
 });
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingBottom: 32,
+  },
   button: {
     height: 51,
     width: 250,

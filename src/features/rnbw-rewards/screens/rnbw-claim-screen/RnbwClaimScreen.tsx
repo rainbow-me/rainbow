@@ -8,6 +8,8 @@ import { CalculatingRewardsStep } from '@/features/rnbw-rewards/screens/rnbw-cla
 import { BottomGradientGlow } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/components/BottomGradientGlow';
 import { FloatingCoins } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/components/FloatingCoins';
 import { ClaimRewardsStep } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/steps/ClaimRewardsStep';
+import { useTabBarOffset } from '@/hooks/useTabBarOffset';
+import { NothingToClaimStep } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/steps/NothingToClaimStep';
 
 export const RnbwClaimScreen = memo(function RnbwClaimScreen() {
   const safeAreaInsets = useSafeAreaInsets();
@@ -27,13 +29,15 @@ export const RnbwClaimScreen = memo(function RnbwClaimScreen() {
 });
 
 function RnbwClaimScreenSteps() {
+  const tabBarOffset = useTabBarOffset();
   const { activeStepState } = useRnbwClaimContext();
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={[styles.stepsContainer, { paddingBottom: tabBarOffset }]}>
       {activeStepState === ClaimSteps.Introduction && <IntroductionStep />}
       {activeStepState === ClaimSteps.CheckingAirdrop && <CalculatingRewardsStep />}
       {activeStepState === ClaimSteps.Claim && <ClaimRewardsStep />}
+      {activeStepState === ClaimSteps.NothingToClaim && <NothingToClaimStep />}
     </View>
   );
 }
@@ -42,5 +46,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0D0D0D',
+  },
+  stepsContainer: {
+    flex: 1,
   },
 });

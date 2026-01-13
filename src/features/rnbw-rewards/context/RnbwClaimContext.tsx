@@ -19,9 +19,10 @@ type RnbwClaimContextType = {
 
 const RnbwClaimContext = createContext<RnbwClaimContextType | null>(null);
 
+const initialStep = ClaimSteps.Introduction;
 export function RnbwClaimContextProvider({ children }: { children: ReactNode }) {
-  const activeStep = useSharedValue<ClaimStep>(ClaimSteps.Introduction);
-  const [activeStepState, setActiveStepState] = useState<ClaimStep>(ClaimSteps.Introduction);
+  const activeStep = useSharedValue<ClaimStep>(initialStep);
+  const [activeStepState, setActiveStepState] = useState<ClaimStep>(initialStep);
 
   useSyncSharedValue({
     compareDepth: 'shallow',
