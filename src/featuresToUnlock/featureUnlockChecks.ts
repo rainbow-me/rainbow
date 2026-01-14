@@ -1,6 +1,6 @@
 import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
 import { unlockableAppIconCheck } from './unlockableAppIconCheck';
-import { EthereumAddress } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
 
 // a FeatureUnlockCheck fn should take in a list of wallet addresses to check for feature unlockability
 // and return true if the feature is unlocked, false otherwise

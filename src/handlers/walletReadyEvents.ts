@@ -1,5 +1,5 @@
 import { runLocalCampaignChecks } from '@/components/remote-promo-sheet/localCampaignChecks';
-import { EthereumAddress } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
 import { IS_TEST } from '@/env';
 import { featureUnlockChecks } from '@/featuresToUnlock';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';

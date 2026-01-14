@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { analytics } from '@/analytics';
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { useAccountAddress, getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import useFetchHiddenTokens, { hiddenTokensQueryKey } from './useFetchHiddenTokens';
 import { getPreference, PreferenceActionType, setPreference } from '@/model/preferences';

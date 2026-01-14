@@ -1,6 +1,8 @@
 import { createSelector } from 'reselect';
 import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
-import { NativeCurrencyKey, ParsedAddressAsset, UniqueAsset } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import type { ParsedAddressAsset } from '@/entities/tokens';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { RainbowPositions } from '@/features/positions/types';
 import { UniqueId } from '@/__swaps__/types/assets';

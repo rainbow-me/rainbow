@@ -7,7 +7,7 @@ import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { convertAmountToNativeDisplay, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { useNFTListing } from '@/resources/nfts';
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { fetchReservoirNFTFloorPrice } from '@/resources/nfts/utils';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';

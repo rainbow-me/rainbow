@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import usePrevious from './usePrevious';
 import { useENSRegistration, useInterval } from '.';
-import { RegistrationParameters } from '@/entities';
+import type { RegistrationParameters } from '@/entities/ensRegistration';
 import { getProvider } from '@/handlers/web3';
 import {
   ENS_SECONDS_PADDING,

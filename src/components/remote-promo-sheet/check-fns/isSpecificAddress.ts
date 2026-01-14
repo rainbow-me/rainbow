@@ -1,5 +1,5 @@
 import { ActionFn } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
-import { EthereumAddress } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
 
 type props = {

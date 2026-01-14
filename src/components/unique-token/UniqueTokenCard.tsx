@@ -9,7 +9,7 @@ import { shadow as shadowUtil } from '@/styles';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { StyleProp, View, ViewStyle } from 'react-native';
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = (colors: ThemeContextProps['colors']) => [0, 2, 6, colors.shadow, 0.08];

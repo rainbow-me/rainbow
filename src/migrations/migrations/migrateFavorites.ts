@@ -1,6 +1,7 @@
 import { UniqueId } from '@/__swaps__/types/assets';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { EthereumAddress, RainbowToken } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
+import type { RainbowToken } from '@/entities/tokens';
 import { createQueryKey, persistOptions, queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { persistQueryClientRestore, persistQueryClientSave } from '@tanstack/react-query-persist-client';

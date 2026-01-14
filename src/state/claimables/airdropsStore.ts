@@ -1,6 +1,6 @@
 import { qs } from 'url-parse';
 import { Address } from 'viem';
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { logger, RainbowError } from '@/logger';
 import Routes from '@/navigation/routesNames';

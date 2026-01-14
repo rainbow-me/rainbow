@@ -1,4 +1,5 @@
-import { AssetType, UniqueAsset } from '@/entities';
+import { AssetType } from '@/entities/assetTypes';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { ENS_NFT_CONTRACT_ADDRESS, POAP_NFT_ADDRESS } from '@/references';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { handleNFTImages } from '@/utils/handleNFTImages';

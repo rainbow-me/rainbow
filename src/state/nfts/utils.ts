@@ -9,7 +9,7 @@ import { NftsState } from '@/state/nfts/types';
 import { parseUniqueId } from '@/resources/nfts/utils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { fetchNFTData, NFTData, nftsQueryKey } from '@/resources/nfts';
 import { isENSAddressFormat } from '@/helpers/validators';
 

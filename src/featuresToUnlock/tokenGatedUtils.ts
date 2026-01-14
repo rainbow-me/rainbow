@@ -1,4 +1,4 @@
-import { EthereumAddress } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
 import { getProvider } from '@/handlers/web3';
 import { tokenGateCheckerAbi } from '@/references';
 import { Network } from '@/state/backendNetworks/types';

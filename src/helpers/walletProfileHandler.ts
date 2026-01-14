@@ -1,5 +1,5 @@
 import { returnStringFirstEmoji } from './emojiHandler';
-import { EthereumAddress } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
 import profileUtils from '@/utils/profileUtils';
 
 export const getWalletProfileMeta = (

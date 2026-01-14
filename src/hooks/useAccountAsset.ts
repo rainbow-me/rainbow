@@ -1,4 +1,4 @@
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import useAccountSettings from './useAccountSettings';
 import { parseAssetNative } from '@/parsers';
 import { useUserAssetsStore } from '@/state/assets/userAssets';

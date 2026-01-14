@@ -1,4 +1,5 @@
-import { EthereumAddress, UniqueAsset } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { logger, RainbowError } from '@/logger';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import { qs } from 'url-parse';

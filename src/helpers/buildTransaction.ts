@@ -3,7 +3,7 @@ import { greaterThan, convertHexToString } from './utilities';
 import { isNil } from 'lodash';
 import { estimateGasWithPadding, toHex } from '@/handlers/web3';
 import { StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
-import { SelectedGasFee } from '@/entities';
+import type { SelectedGasFee } from '@/entities/gas';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { getNextNonce } from '@/state/nonces';
 import { ChainId } from '@/state/backendNetworks/types';

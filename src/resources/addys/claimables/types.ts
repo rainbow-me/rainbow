@@ -1,5 +1,5 @@
 import { Address } from 'viem';
-import { ParsedAddressAsset } from '@/entities';
+import type { ParsedAddressAsset } from '@/entities/tokens';
 import { ChainId } from '@/state/backendNetworks/types';
 import { AddysAsset, AddysConsolidatedError, AddysResponseStatus } from '../types';
 

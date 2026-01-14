@@ -1,4 +1,4 @@
-import { EthereumAddress } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
 import { ImageSourcePropType } from 'react-native';
 import AppIconFiniliar from '@/assets/appIconFiniliar.png';
 import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';

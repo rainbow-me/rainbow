@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react';
 import useGas from './useGas';
 import ethereumUtils from '@/utils/ethereumUtils';
-import { ParsedAddressAsset, UniqueAsset } from '@/entities';
+import type { ParsedAddressAsset } from '@/entities/tokens';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { assetIsUniqueAsset } from '@/handlers/web3';
 
 export default function useMaxInputBalance() {
