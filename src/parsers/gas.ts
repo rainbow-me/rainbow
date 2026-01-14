@@ -21,7 +21,8 @@ import {
 } from '@/entities';
 import { toHex } from '@/handlers/web3';
 import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
-import { ethUnits, timeUnits } from '@/references';
+import ethUnits from '@/references/ethereum-units.json';
+import timeUnits from '@/references/time-units.json';
 import {
   add,
   convertRawAmountToBalance,

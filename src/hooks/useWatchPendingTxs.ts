@@ -8,7 +8,7 @@ import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { SupportedCurrencyKey } from '@/references';
+import type { SupportedCurrencyKey } from '@/references/supportedCurrencies';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { useMinedTransactionsStore } from '@/state/minedTransactions/minedTransactions';

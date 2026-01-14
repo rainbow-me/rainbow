@@ -17,7 +17,7 @@ import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { ENS_DOMAIN, ENS_RECORDS, ENSRegistrationTransactionType, generateSalt, getENSExecutionDetails, getNameOwner } from '@/helpers/ens';
 import { add } from '@/helpers/utilities';
 import { ImgixImage } from '@/components/images';
-import { ENS_NFT_CONTRACT_ADDRESS, ethUnits } from '@/references';
+import ethUnits from '@/references/ethereum-units.json';
 import labelhash from '@/utils/labelhash';
 import profileUtils from '@/utils/profileUtils';
 import { AvatarResolver } from '@/ens-avatar/src';

@@ -11,18 +11,7 @@ import type { ENSRegistrationRecords } from '@/entities/ensRegistration';
 import type { EthereumAddress } from '@/entities/wallet';
 import { getProvider, toHex } from '@/handlers/web3';
 import { gweiToWei } from '@/parsers/gas';
-import {
-  ENSBaseRegistrarImplementationABI,
-  ensBaseRegistrarImplementationAddress,
-  ENSETHRegistrarControllerABI,
-  ensETHRegistrarControllerAddress,
-  ENSPublicResolverABI,
-  ensPublicResolverAddress,
-  ensRegistryAddress,
-  ENSRegistryWithFallbackABI,
-  ENSReverseRegistrarABI,
-  ensReverseRegistrarAddress,
-} from '@/references';
+import { ENSBaseRegistrarImplementationABI, ensBaseRegistrarImplementationAddress, ENSETHRegistrarControllerABI, ensETHRegistrarControllerAddress, ENSPublicResolverABI, ensPublicResolverAddress, ensRegistryAddress, ENSRegistryWithFallbackABI, ENSReverseRegistrarABI, ensReverseRegistrarAddress } from '@/references/ens';
 import { colors } from '@/styles';
 import labelhash from '@/utils/labelhash';
 import { encodeContenthash, isValidContenthash } from '@/utils/contenthash';

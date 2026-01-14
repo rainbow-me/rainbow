@@ -10,7 +10,8 @@ import { startsWith } from 'lodash';
 import { AssetType, NewTransaction, ParsedAddressAsset, UniqueAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { isUnstoppableAddressFormat } from '@/helpers/validators';
-import { ethUnits, smartContractMethods, CRYPTO_KITTIES_NFT_ADDRESS, CRYPTO_PUNKS_NFT_ADDRESS } from '@/references';
+import ethUnits from '@/references/ethereum-units.json';
+import smartContractMethods from '@/references/smartcontract-methods.json';
 import {
   addBuffer,
   convertAmountToRawAmount,

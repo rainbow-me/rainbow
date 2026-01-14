@@ -8,7 +8,8 @@ import { estimateGasWithPadding, getProvider, toHexNoLeadingZeros } from './web3
 import { getRemoteConfig } from '@/model/remoteConfig';
 import type { Asset } from '@/entities/tokens';
 import { add, convertRawAmountToDecimalFormat, divide, lessThan, multiply, subtract } from '@/helpers/utilities';
-import { erc20ABI, ethUnits } from '@/references';
+import erc20ABI from '@/references/erc20-abi.json';
+import ethUnits from '@/references/ethereum-units.json';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { logger, RainbowError } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
