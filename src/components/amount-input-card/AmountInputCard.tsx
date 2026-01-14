@@ -13,7 +13,8 @@ import { runOnJS, runOnUI, SharedValue, useAnimatedReaction, useDerivedValue, us
 import { Slider, SliderChangeSource, SliderGestureState } from '@/features/perps/components/Slider';
 import { addCommasToNumber, clamp, opacityWorklet, trimCurrencyZeros } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
+import { CurrencyInput } from '@/components/CurrencyInput/CurrencyInput';
+import type { CurrencyInputRef } from '@/components/CurrencyInput/CurrencyInput';
 import {
   divWorklet,
   equalWorklet,

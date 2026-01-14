@@ -4,7 +4,8 @@ import { AnimatedText, Box, Separator, Text, useColorMode, useForegroundColor } 
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { addCommasToNumber, opacityWorklet } from '@/__swaps__/utils/swaps';
-import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
+import { CurrencyInput } from '@/components/CurrencyInput/CurrencyInput';
+import type { CurrencyInputRef } from '@/components/CurrencyInput/CurrencyInput';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { Panel } from '@/components/SmoothPager/ListPanel';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
