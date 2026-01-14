@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { BackgroundProvider, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
-import { RequestVendorLogoIcon } from '@/components/coin-icon';
+import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import startCase from 'lodash/startCase';
 import { useTheme } from '@/theme';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
