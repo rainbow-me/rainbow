@@ -3789,17 +3789,17 @@
         "deposit_funds": "Deposit Dana",
         "average_price": "Harga Rata-rata",
         "errors": {
-          "not_enough_liquidity": "Not enough liquidity to place full order.",
-          "please_lower_amount": "Please lower the amount and try again.",
-          "no_liquidity_at_price": "No liquidity at this price."
+          "not_enough_liquidity": "Likuiditas tidak cukup untuk melakukan pemesanan penuh.",
+          "please_lower_amount": "Silakan kurangi jumlahnya dan coba lagi.",
+          "no_liquidity_at_price": "Tidak ada likuiditas pada harga ini."
         }
       },
       "manage_position": {
         "hold_to_claim": "Tahan untuk Mengklaim",
-        "hold_to_clear": "Hold to Clear",
+        "hold_to_clear": "Tahan untuk Menghapus",
         "hold_to_cash_out": "Tahan untuk Mencairkan",
         "claiming": "Mengklaim...",
-        "clearing": "Clearing...",
+        "clearing": "Menghapus...",
         "cashing_out": "Mencairkan...",
         "confirming_order": "Mengonfirmasi Pesanan...",
         "position_value": "Nilai Posisi"
@@ -3842,7 +3842,7 @@
         "won": "Menang",
         "to_win": "Untuk Menang",
         "claim": "Klaim",
-        "clear": "Clear",
+        "clear": "Hapus",
         "cash_out": "Cairkan",
         "no_open_positions": "Tidak ada posisi terbuka",
         "won_badge": "MENANG",
@@ -3864,10 +3864,10 @@
       },
       "sports": {
         "vs": "vs",
-        "live": "Live",
+        "live": "Langsung",
         "game_best_of": "Permainan %{currentPeriod} - Terbaik dari %{bestOf}",
         "final": "Final",
-        "no_games": "No games today or tomorrow"
+        "no_games": "Tidak ada permainan hari ini atau besok"
       },
       "outcomes": {
         "yes": "Ya",
@@ -3881,9 +3881,9 @@
         "failed_to_claim": "Gagal mengklaim posisi. Silakan coba lagi."
       },
       "account": {
-        "hide_lost_bets": "Hide Lost Bets",
-        "show_lost_bets": "Show Lost Bets",
-        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
+        "hide_lost_bets": "Sembunyikan Taruhan yang Kalah",
+        "show_lost_bets": "Tampilkan Taruhan yang Kalah",
+        "lost_bets_dont_clear": "Taruhan yang kalah tidak dihapus secara otomatis. Anda dapat menghapusnya di bawah ini."
       }
     },
     "wallet_error_sheet": {
