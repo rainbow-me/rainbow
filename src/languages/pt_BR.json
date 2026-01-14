@@ -3789,17 +3789,17 @@
         "deposit_funds": "Deposite Fundos",
         "average_price": "Preço Médio",
         "errors": {
-          "not_enough_liquidity": "Not enough liquidity to place full order.",
-          "please_lower_amount": "Please lower the amount and try again.",
-          "no_liquidity_at_price": "No liquidity at this price."
+          "not_enough_liquidity": "Não há liquidez suficiente para realizar o pedido completo.",
+          "please_lower_amount": "Por favor, reduza o valor e tente novamente.",
+          "no_liquidity_at_price": "Não há liquidez neste preço."
         }
       },
       "manage_position": {
         "hold_to_claim": "Pressione para Solicitar",
-        "hold_to_clear": "Hold to Clear",
+        "hold_to_clear": "Mantenha para Limpar",
         "hold_to_cash_out": "Segurar para Retirar",
         "claiming": "Reivindicando...",
-        "clearing": "Clearing...",
+        "clearing": "Limpando...",
         "cashing_out": "Retirando...",
         "confirming_order": "Confirmando Pedido...",
         "position_value": "Valor da Posição"
@@ -3842,7 +3842,7 @@
         "won": "Ganhou",
         "to_win": "Para Ganhar",
         "claim": "Reivindicar",
-        "clear": "Clear",
+        "clear": "Limpar",
         "cash_out": "Retirar",
         "no_open_positions": "Nenhuma posição aberta",
         "won_badge": "GANHOU",
@@ -3864,10 +3864,10 @@
       },
       "sports": {
         "vs": "vs",
-        "live": "Live",
+        "live": "Ao vivo",
         "game_best_of": "Jogo %{currentPeriod} - Melhor de %{bestOf}",
         "final": "Final",
-        "no_games": "No games today or tomorrow"
+        "no_games": "Nenhum jogo hoje ou amanhã"
       },
       "outcomes": {
         "yes": "Sim",
@@ -3881,9 +3881,9 @@
         "failed_to_claim": "Falha ao reivindicar posição. Por favor, tente novamente."
       },
       "account": {
-        "hide_lost_bets": "Hide Lost Bets",
-        "show_lost_bets": "Show Lost Bets",
-        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
+        "hide_lost_bets": "Ocultar Apostas Perdidas",
+        "show_lost_bets": "Mostrar Apostas Perdidas",
+        "lost_bets_dont_clear": "As apostas perdidas não são removidas automaticamente. Você pode limpá-las abaixo."
       }
     },
     "wallet_error_sheet": {
