@@ -3789,17 +3789,17 @@
         "deposit_funds": "ฝากเงิน",
         "average_price": "ราคาเฉลี่ย",
         "errors": {
-          "not_enough_liquidity": "Not enough liquidity to place full order.",
-          "please_lower_amount": "Please lower the amount and try again.",
-          "no_liquidity_at_price": "No liquidity at this price."
+          "not_enough_liquidity": "ไม่มีสภาพคล่องเพียงพอในการสั่งซื้อตามจำนวนเต็ม.",
+          "please_lower_amount": "กรุณาลดจำนวนเงินและลองอีกครั้ง.",
+          "no_liquidity_at_price": "ไม่มีสภาพคล่องในราคานี้."
         }
       },
       "manage_position": {
         "hold_to_claim": "กดค้างเพื่อรับแบบอัตโนมัติ",
-        "hold_to_clear": "Hold to Clear",
+        "hold_to_clear": "กดค้างเพื่อล้าง",
         "hold_to_cash_out": "กดค้างเพื่อขึ้นเงินออก",
         "claiming": "กำลังเรียกร้อง...",
-        "clearing": "Clearing...",
+        "clearing": "กำลังล้าง...",
         "cashing_out": "กำลังขึ้นเงินออก...",
         "confirming_order": "กำลังยืนยันคำสั่ง...",
         "position_value": "ค่าตำแหน่ง"
@@ -3842,7 +3842,7 @@
         "won": "ชนะ",
         "to_win": "เพื่อชนะ",
         "claim": "เคลม",
-        "clear": "Clear",
+        "clear": "ยกเลิก",
         "cash_out": "ขึ้นเงินออก",
         "no_open_positions": "ไม่มีตำแหน่งเปิด",
         "won_badge": "ชนะ",
@@ -3863,11 +3863,11 @@
         "other": "อื่น ๆ"
       },
       "sports": {
-        "vs": "vs",
-        "live": "Live",
+        "vs": "เทียบกับ",
+        "live": "ถ่ายทอดสด",
         "game_best_of": "เกม %{currentPeriod} - ดีที่สุดจาก %{bestOf}",
-        "final": "Final",
-        "no_games": "No games today or tomorrow"
+        "final": "รอบชิงชนะเลิศ",
+        "no_games": "ไม่มีการแข่งขันวันนี้หรือพรุ่งนี้"
       },
       "outcomes": {
         "yes": "ใช่",
@@ -3881,9 +3881,9 @@
         "failed_to_claim": "การเรียกร้องตำแหน่งไม่สำเร็จ กรุณาลองอีกครั้ง"
       },
       "account": {
-        "hide_lost_bets": "Hide Lost Bets",
-        "show_lost_bets": "Show Lost Bets",
-        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
+        "hide_lost_bets": "ซ่อนการเดิมพันที่แพ้",
+        "show_lost_bets": "แสดงการเดิมพันที่แพ้",
+        "lost_bets_dont_clear": "การเดิมพันที่แพ้ไม่ได้ถูกลบโดยอัตโนมัติ. คุณสามารถลบได้ด้านล่าง."
       }
     },
     "wallet_error_sheet": {
