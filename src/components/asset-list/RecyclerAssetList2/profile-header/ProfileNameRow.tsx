@@ -5,7 +5,7 @@ import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingO
 import { NAVBAR_HORIZONTAL_INSET } from '@/components/navbar/Navbar';
 import { NAVBAR_ICON_SIZE } from '@/components/navbar/NavbarTextIcon';
 import { Bleed, Box, Inset, Text, useForegroundColor } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { formatAccountLabel, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';

@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { Box, ColorModeProvider, globalColors, Stack, Text } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useENSPendingRegistrations } from '@/hooks';
+import useENSPendingRegistrations from '@/hooks/useENSPendingRegistrations';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import watchingAlert from '@/utils/watchingAlert';

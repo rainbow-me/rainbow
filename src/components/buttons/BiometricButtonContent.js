@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from '../text';
 import { BiometryTypes } from '@/helpers';
-import { useBiometryType } from '@/hooks';
+import useBiometryType from '@/hooks/useBiometryType';
 import { useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';

@@ -1,7 +1,7 @@
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useEffect, useRef } from 'react';
 import Routes from '@/navigation/routesNames';
-import { usePrevious } from '@/hooks';
+import usePrevious from '@/hooks/usePrevious';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 

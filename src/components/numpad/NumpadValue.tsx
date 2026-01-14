@@ -3,7 +3,7 @@ import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { Text } from '../text';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
 import { ThemeContextProps } from '@/theme';
 

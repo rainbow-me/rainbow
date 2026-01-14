@@ -3,7 +3,7 @@ import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Box } from '@/design-system';
 import { KeyboardType } from '@/helpers/keyboardTypes';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 
 interface KeyboardFixedOpenLayoutProps {
   additionalPadding?: number;

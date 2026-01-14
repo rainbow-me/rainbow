@@ -1,5 +1,7 @@
 import Divider from '@/components/Divider';
-import { useDimensions, useHiddenTokens, useShowcaseTokens } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
+import useHiddenTokens from '@/hooks/useHiddenTokens';
+import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import * as i18n from '@/languages';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import { getIsReadOnlyWallet, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';

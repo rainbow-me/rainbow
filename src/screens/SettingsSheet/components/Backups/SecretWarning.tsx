@@ -4,7 +4,7 @@ import { TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID } from '@/env';
 import React, { useCallback } from 'react';
 
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation';
 
 import WalletTypes from '@/helpers/walletTypes';

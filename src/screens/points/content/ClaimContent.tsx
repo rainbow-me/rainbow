@@ -1,7 +1,7 @@
 import { analytics } from '@/analytics';
 import { ETH_REWARDS, useExperimentalFlag } from '@/config';
 import { Box, Row, Rows, Stack, Text, globalColors, useColorMode } from '@/design-system';
-import { useAccountAccentColor } from '@/hooks';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';

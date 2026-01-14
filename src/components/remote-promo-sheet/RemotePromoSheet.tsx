@@ -11,7 +11,7 @@ import { maybeSignUri } from '@/handlers/imgix';
 import { delay } from '@/utils/delay';
 import Routes from '@/navigation/routesNames';
 import { Language } from '@/languages';
-import { useAccountSettings } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { RootStackParamList } from '@/navigation/types';
 import { Colors } from '@/styles';

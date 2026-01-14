@@ -1,7 +1,7 @@
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import { TAB_BAR_ICON_SIZE } from '@/components/tab-bar/dimensions';
 import { Box, Text, Cover } from '@/design-system';
-import { usePendingTransactions } from '@/hooks';
+import usePendingTransactions from '@/hooks/usePendingTransactions';
 import React, { memo, useMemo } from 'react';
 import { SharedValue } from 'react-native-reanimated';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';

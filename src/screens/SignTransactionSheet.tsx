@@ -9,7 +9,7 @@ import { IS_IOS } from '@/env';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
 import { getProvider } from '@/handlers/web3';
 import { delay } from '@/helpers/utilities';
-import { useGas } from '@/hooks';
+import useGas from '@/hooks/useGas';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { useNavigation } from '@/navigation';

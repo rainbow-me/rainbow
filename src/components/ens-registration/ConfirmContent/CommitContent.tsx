@@ -5,7 +5,7 @@ import brain from '../../../assets/brain.png';
 import { RegistrationReviewRows } from '../../../components/ens-registration';
 import { Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { ImgixImage } from '@/components/images';
 
 const CommitContent = ({

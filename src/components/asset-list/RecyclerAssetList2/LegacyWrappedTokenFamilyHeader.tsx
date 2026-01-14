@@ -1,4 +1,4 @@
-import { useLatestCallback } from '@/hooks';
+import useLatestCallback from '@/hooks/useLatestCallback';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
 import * as i18n from '@/languages';

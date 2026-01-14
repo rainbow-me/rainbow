@@ -3,7 +3,7 @@ import { analytics } from '@/analytics';
 import { ButtonPressAnimation } from '@/components/animations';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import { Box, Text, TextIcon } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

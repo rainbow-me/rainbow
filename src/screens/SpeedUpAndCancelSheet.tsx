@@ -3,7 +3,9 @@ import { GasFeeType, GasFeeTypes, LegacyTransactionGasParamAmounts, TransactionG
 import { getProvider, isL2Chain, toHex } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { greaterThan } from '@/helpers/utilities';
-import { useAccountSettings, useDimensions, useGas } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import useDimensions from '@/hooks/useDimensions';
+import useGas from '@/hooks/useGas';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { sendTransaction } from '@/model/wallet';

@@ -8,7 +8,8 @@ import { ZoomableWrapper } from '../expanded-state/unique-token/ZoomableWrapper'
 import { SheetHandleFixedToTopHeight } from '../sheet';
 import AvatarCoverPhotoMaskSvg from '../svg/AvatarCoverPhotoMaskSvg';
 import { BackgroundProvider, Box, BoxProps, Cover, useColorMode } from '@/design-system';
-import { useDimensions, usePersistentAspectRatio } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
+import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
 import { ImgixImage } from '@/components/images';
 import { colors, position } from '@/styles';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';

@@ -11,13 +11,11 @@ import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { useNavigation } from '../navigation/Navigation';
 import { Box, Heading, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import { ENS_DOMAIN, REGISTRATION_MODES } from '@/helpers/ens';
-import {
-  useENSPendingRegistrations,
-  useENSRegistration,
-  useENSRegistrationCosts,
-  useENSRegistrationStepHandler,
-  useENSSearch,
-} from '@/hooks';
+import useENSPendingRegistrations from '@/hooks/useENSPendingRegistrations';
+import useENSRegistration from '@/hooks/useENSRegistration';
+import useENSRegistrationCosts from '@/hooks/useENSRegistrationCosts';
+import useENSRegistrationStepHandler from '@/hooks/useENSRegistrationStepHandler';
+import useENSSearch from '@/hooks/useENSSearch';
 import { ImgixImage } from '@/components/images';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';

@@ -5,7 +5,7 @@ import { PairHardwareWalletIntroSheet } from '@/screens/hardware-wallets/PairHar
 import { PairHardwareWalletSearchSheet } from '@/screens/hardware-wallets/PairHardwareWalletSearchSheet';
 import { PairHardwareWalletSigningSheet } from '@/screens/hardware-wallets/PairHardwareWalletSigningSheet';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { atom, useRecoilState } from 'recoil';
 import Routes from '@/navigation/routesNames';

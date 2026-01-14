@@ -6,7 +6,7 @@ import { ShimmerAnimation } from '../../animations';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
-import { useOpenENSNFTHandler } from '@/hooks';
+import useOpenENSNFTHandler from '@/hooks/useOpenENSNFTHandler';
 import { Bleed, Box, Inline, Inset, Text, useForegroundColor } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import Routes from '@/navigation/routesNames';

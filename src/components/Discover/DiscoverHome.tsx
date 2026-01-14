@@ -9,7 +9,7 @@ import useExperimentalFlag, {
   POLYMARKET,
 } from '@rainbow-me/config/experimentalHooks';
 import { Inline, Inset, Stack, Box } from '@/design-system';
-import { useAccountSettings } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { GasCard } from '@/components/cards/GasCard';
 import { LearnCard } from '@/components/cards/LearnCard';

@@ -3,7 +3,7 @@ import React from 'react';
 import TouchableBackdrop from '../../TouchableBackdrop';
 import { AssetPanel, FloatingPanels } from '../../floating-panels';
 import { KeyboardFixedOpenLayout } from '../../layout';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { IS_IOS } from '@/env';
 
 export default function ProfileModalContainer({ onPressBackdrop, ...props }) {

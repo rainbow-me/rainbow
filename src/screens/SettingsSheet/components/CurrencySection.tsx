@@ -6,7 +6,7 @@ import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
 import { IS_IOS } from '@/env';
-import { useAccountSettings } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
 import { ETH_ADDRESS, WBTC_ADDRESS, emojis, supportedNativeCurrencies } from '@/references';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';

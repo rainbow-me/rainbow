@@ -9,7 +9,7 @@ import Skeleton from '../../skeleton/Skeleton';
 import { Bleed, Box, Inline, Inset, selectTextSizes, Text, useForegroundColor } from '@/design-system';
 import { Records } from '@/entities';
 import { deprecatedTextRecordFields, ENS_RECORDS } from '@/helpers/ens';
-import { useENSRecordDisplayProperties } from '@/hooks';
+import useENSRecordDisplayProperties from '@/hooks/useENSRecordDisplayProperties';
 import { useTheme } from '@/theme';
 
 const getRecordType = (recordKey: string) => {

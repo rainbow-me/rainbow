@@ -8,7 +8,7 @@ import { isEmpty } from 'lodash';
 import { InteractionManager } from 'react-native';
 import { GasFeeParamsBySpeed } from '@/entities';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { useGas } from '@/hooks';
+import useGas from '@/hooks/useGas';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 

@@ -1,4 +1,4 @@
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import React from 'react';
 import { ColorValue, ScrollView } from 'react-native';
 import SlackSheet from './SlackSheet';

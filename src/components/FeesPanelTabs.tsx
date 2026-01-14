@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 import React from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useGas } from '@/hooks';
+import useGas from '@/hooks/useGas';
 import { colors } from '@/styles';
 import gasUtils from '@/utils/gas';
 import { AccentColorProvider, Box, Inline, Inset, Text } from '@/design-system';

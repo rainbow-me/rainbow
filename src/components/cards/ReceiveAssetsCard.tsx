@@ -1,7 +1,7 @@
 import { analytics } from '@/analytics';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { AccentColorProvider, Box, Inline, Stack, Text } from '@/design-system';
-import { useClipboard } from '@/hooks';
+import useClipboard from '@/hooks/useClipboard';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';

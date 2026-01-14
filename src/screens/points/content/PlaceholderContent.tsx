@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { FloatingEmojisTapper } from '@/components/floating-emojis';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 

@@ -7,7 +7,7 @@ import TokenInfoBalanceValue from './TokenInfoBalanceValue';
 import TokenInfoHeading from './TokenInfoHeading';
 import TokenInfoValue from './TokenInfoValue';
 import { Column, Columns } from '@/design-system';
-import { useDelayedValueWithLayoutAnimation } from '@/hooks';
+import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 

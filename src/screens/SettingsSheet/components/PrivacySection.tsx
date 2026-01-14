@@ -11,7 +11,8 @@ import { Switch } from 'react-native-gesture-handler';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
-import { useHiddenTokens, useShowcaseTokens } from '@/hooks';
+import useHiddenTokens from '@/hooks/useHiddenTokens';
+import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import { wipeWebData, initWebData } from '@/helpers/webData';
 
 const TRANSLATIONS = i18n.l.settings.privacy_section;

@@ -1,6 +1,6 @@
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { useLedgerConnect } from '@/hooks/useLedgerConnect';
 import { logger } from '@/logger';
 import { useNavigation } from '@/navigation';

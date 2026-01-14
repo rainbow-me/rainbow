@@ -5,7 +5,7 @@ import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import Skeleton from '../../skeleton/Skeleton';
 import AvatarCoverPhotoMaskSvg from '../../svg/AvatarCoverPhotoMaskSvg';
 import { BackgroundProvider, Box, Cover } from '@/design-system';
-import { useFadeImage } from '@/hooks';
+import useFadeImage from '@/hooks/useFadeImage';
 import { ImgixImage } from '@/components/images';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 

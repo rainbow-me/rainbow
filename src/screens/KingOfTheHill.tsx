@@ -6,7 +6,7 @@ import { KingOfTheHillContent } from '@/components/king-of-the-hill/KingOfTheHil
 import { Navbar } from '@/components/navbar/Navbar';
 import { Text, useColorMode } from '@/design-system';
 import { abbreviateNumber } from '@/helpers/utilities';
-import { usePrevious } from '@/hooks';
+import usePrevious from '@/hooks/usePrevious';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

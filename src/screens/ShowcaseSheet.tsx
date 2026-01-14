@@ -1,7 +1,7 @@
 import { RecyclerAssetListSection } from '@/components/asset-list/RecyclerAssetList';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { buildUniqueTokenList } from '@/helpers/assets';
-import { useAccountSettings } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
 import { RootStackParamList } from '@/navigation/types';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';

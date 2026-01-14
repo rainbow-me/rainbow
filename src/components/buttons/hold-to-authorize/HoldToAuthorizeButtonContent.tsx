@@ -29,7 +29,7 @@ import ShadowStack from 'react-native-shadow-stack';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 
 const { ACTIVE, BEGAN, END, FAILED } = GestureHandlerState;
 

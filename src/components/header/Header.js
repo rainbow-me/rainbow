@@ -1,6 +1,6 @@
 import React from 'react';
 import { Row } from '../layout';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 

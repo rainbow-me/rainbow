@@ -1,5 +1,6 @@
 import { ParsedAddressAsset } from '@/entities';
-import { useAdditionalAssetData, useColorForAsset } from '@/hooks';
+import useAdditionalAssetData from '@/hooks/useAdditionalAssetData';
+import useColorForAsset from '@/hooks/useColorForAsset';
 import { TokenMetadata } from '@/hooks/useAdditionalAssetData';
 import useAccountAsset from '@/hooks/useAccountAsset';
 import { getUniqueId } from '@/utils/ethereumUtils';

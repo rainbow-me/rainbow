@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { Source } from 'react-native-fast-image';
 import ledgerNanoUnlock from '@/assets/ledger-nano-unlock.png';
 import ledgerNanoEthApp from '@/assets/ledger-nano-eth-app.png';

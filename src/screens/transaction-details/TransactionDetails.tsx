@@ -12,7 +12,7 @@ import { Toast, ToastPositionContainer } from '@/components/toasts';
 import * as i18n from '@/languages';
 import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
 import { useTransactionDetailsToasts } from '@/screens/transaction-details/hooks/useTransactionDetailsToasts';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

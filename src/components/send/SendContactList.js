@@ -12,7 +12,7 @@ import { SheetHandleFixedToTopHeight } from '../sheet';
 import { Text } from '../text';
 import { InvalidPasteToast, ToastPositionContainer } from '../toasts';
 import SendEmptyState from './SendEmptyState';
-import { useKeyboardHeight } from '@/hooks';
+import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';

@@ -5,7 +5,7 @@ import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { IS_ANDROID } from '@/env';
-import { useAccountAccentColor } from '@/hooks';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useColorMode } from '@/design-system';
 
 const buildSmallShadows = (color, colors) => [

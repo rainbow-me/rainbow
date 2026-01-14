@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import { Text as RNText } from '../text';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';

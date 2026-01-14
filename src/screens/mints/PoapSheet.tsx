@@ -6,7 +6,7 @@ import { UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { arcClient } from '@/graphql';
 import { maybeSignUri } from '@/handlers/imgix';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';

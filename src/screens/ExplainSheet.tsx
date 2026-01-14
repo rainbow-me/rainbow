@@ -9,7 +9,7 @@ import { Emoji, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
 import { Box, Text as DSText, Separator } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
 import ethereumUtils from '@/utils/ethereumUtils';

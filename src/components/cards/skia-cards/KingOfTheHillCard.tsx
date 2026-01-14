@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import * as i18n from '@/languages';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { SkiaCard } from './SkiaCard';
 import { Blur, Group, Image, Paint, useImage } from '@shopify/react-native-skia';
 import { AnimatedText, Box, ColorModeProvider, globalColors, Inline, Text, TextShadow } from '@/design-system';

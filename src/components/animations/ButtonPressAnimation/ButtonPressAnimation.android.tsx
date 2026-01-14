@@ -19,7 +19,7 @@ import { normalizeTransformOrigin } from './NativeButton';
 import { ScaleButtonContext } from './ScaleButtonZoomable';
 import { BaseButtonAnimationProps } from './types';
 import { HapticFeedbackType } from '@/utils/haptics';
-import { useLongPressEvents } from '@/hooks';
+import useLongPressEvents from '@/hooks/useLongPressEvents';
 
 interface BaseProps extends BaseButtonAnimationProps {
   backgroundColor: string;

@@ -27,7 +27,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { greaterThan } from '@/helpers/utilities';
 import WalletTypes from '@/helpers/walletTypes';
-import { useWalletsWithBalancesAndNames } from '@/hooks';
+import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';

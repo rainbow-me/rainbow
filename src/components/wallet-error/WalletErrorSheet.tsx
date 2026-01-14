@@ -3,7 +3,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider, Box, Separator, Text } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { useBiometryType } from '@/hooks';
+import useBiometryType from '@/hooks/useBiometryType';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

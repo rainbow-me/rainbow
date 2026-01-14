@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 import { Row } from '../layout';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 
 export default function JellySelectorRow({ renderRow = Row, ...props }) {
   const { width } = useDimensions();

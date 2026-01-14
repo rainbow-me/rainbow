@@ -20,7 +20,7 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { NativeCurrencyKeys } from '@/entities';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { IS_IOS } from '@/env';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const DEPOSIT_ITEM_HEIGHT = 44;

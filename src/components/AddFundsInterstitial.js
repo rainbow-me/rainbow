@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import Divider from '@/components/Divider';
 import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from '@/components/animations';
 import { Icon } from '@/components/icons';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import Routes from '@/navigation/routesNames';
 import ShadowStack from '@/react-native-shadow-stack';
 import { Network } from '@/state/backendNetworks/types';

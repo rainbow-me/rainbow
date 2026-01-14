@@ -1,5 +1,6 @@
 import ContextMenu from '@/components/native-context-menu/contextMenu';
-import { useLatestCallback, useOnAvatarPress } from '@/hooks';
+import useLatestCallback from '@/hooks/useLatestCallback';
+import useOnAvatarPress from '@/hooks/useOnAvatarPress';
 import ShadowStack from '@/react-native-shadow-stack';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';

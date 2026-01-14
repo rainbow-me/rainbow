@@ -1,6 +1,6 @@
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import walletTypes from '@/helpers/walletTypes';
-import { usePrevious } from '@/hooks';
+import usePrevious from '@/hooks/usePrevious';
 import { logger } from '@/logger';
 import { Navigation } from '@/navigation';
 import {

@@ -7,7 +7,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import SheetHandle from './SheetHandle';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { borders } from '@/styles';
 
 const Sheet = ({ borderRadius = 39, children, hideHandle = false, noInsets = false, paddingBottom = 7, paddingTop = 6 }) => {

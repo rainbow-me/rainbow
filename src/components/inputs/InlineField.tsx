@@ -5,7 +5,7 @@ import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import Input from './Input';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { Bleed, Column, Columns, Inline, Inset, Text, TextProps, useTextStyle } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 
 const textSize: TextProps['size'] = '16px / 22px (Deprecated)';
 const textSizeNumeric = 16;
