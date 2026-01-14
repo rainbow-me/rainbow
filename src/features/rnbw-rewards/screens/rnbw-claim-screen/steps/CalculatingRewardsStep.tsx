@@ -4,8 +4,14 @@ import Animated from 'react-native-reanimated';
 import { Text } from '@/design-system';
 import { ClaimSteps, useRnbwClaimContext } from '@/features/rnbw-rewards/context/RnbwClaimContext';
 import { time } from '@/utils/time';
-import { createExitingAnimation, createScaleInFadeInSlideDownEnterAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
+import {
+  createScaleOutFadeOutSlideExitAnimation,
+  createScaleInFadeInSlideEnterAnimation,
+} from '@/features/rnbw-rewards/animations/layoutAnimations';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/components/RnbwCoin';
+
+const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: -24 });
+const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();
 
 export const CalculatingRewardsStep = memo(function CalculatingRewardsStep() {
   const { setActiveStep } = useRnbwClaimContext();
@@ -47,7 +53,7 @@ export const CalculatingRewardsStep = memo(function CalculatingRewardsStep() {
       {progressLabels.map((label, index) => {
         if (index === progressLabelIndex) {
           return (
-            <Animated.View key={label} entering={createScaleInFadeInSlideDownEnterAnimation()} exiting={createExitingAnimation()}>
+            <Animated.View key={label} entering={enteringAnimation} exiting={exitingAnimation}>
               <Text color={{ custom: '#858585' }} size="20pt" weight="heavy">
                 {label}
               </Text>

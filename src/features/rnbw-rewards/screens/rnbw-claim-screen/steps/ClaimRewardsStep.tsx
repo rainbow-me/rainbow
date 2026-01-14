@@ -5,13 +5,16 @@ import * as i18n from '@/languages';
 import { ClaimSteps, useRnbwClaimContext } from '@/features/rnbw-rewards/context/RnbwClaimContext';
 import Animated from 'react-native-reanimated';
 import { time } from '@/utils/time';
-import { createExitingAnimation, createScaleInFadeInSlideUpEnterAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
+import {
+  createScaleOutFadeOutSlideExitAnimation,
+  createScaleInFadeInSlideEnterAnimation,
+} from '@/features/rnbw-rewards/animations/layoutAnimations';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/components/RnbwCoin';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 
-const enteringAnimation = createScaleInFadeInSlideUpEnterAnimation(time.ms(200));
-const exitingAnimation = createExitingAnimation();
+const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: 24, delay: time.ms(200) });
+const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();
 
 export const ClaimRewardsStep = memo(function ClaimRewardsStep() {
   const { isDarkMode } = useColorMode();

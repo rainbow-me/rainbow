@@ -6,7 +6,7 @@ import { ClaimStep, ClaimSteps, useRnbwClaimContext } from '@/features/rnbw-rewa
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { time } from '@/utils/time';
-import { customEasing } from '@/features/rnbw-rewards/animations/layoutAnimations';
+import { transitionEasing } from '@/features/rnbw-rewards/animations/layoutAnimations';
 import { LoadingSpinner } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/components/LoadingSpinner';
 import concentricCircleImage from '@/features/rnbw-rewards/assets/radial-circle.png';
 import { SpinnableCoin, SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/components/SpinnableCoin';
@@ -44,10 +44,10 @@ const loadingSpinnerTop =
   stepsConfig[ClaimSteps.CheckingAirdrop].translateY -
   (LOADING_SPINNER_SIZE - COIN_SIZE * stepsConfig[ClaimSteps.CheckingAirdrop].scale) / 2;
 
-const timingConfig = { duration: time.seconds(1), easing: customEasing };
+const timingConfig = { duration: time.seconds(1), easing: transitionEasing };
 const delay = time.ms(100);
-const loadingSpinnerEnteringAnimation = FadeIn.delay(timingConfig.duration * 0.5).easing(customEasing);
-const loadingSpinnerExitingAnimation = FadeOut.easing(customEasing);
+const loadingSpinnerEnteringAnimation = FadeIn.delay(timingConfig.duration * 0.5).easing(transitionEasing);
+const loadingSpinnerExitingAnimation = FadeOut.easing(transitionEasing);
 
 export const RnbwCoin = memo(function RnbwCoin() {
   const { activeStep } = useRnbwClaimContext();

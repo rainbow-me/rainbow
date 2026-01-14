@@ -2,7 +2,7 @@ import { useCleanup } from '@/hooks/useCleanup';
 import { Canvas, DataSourceParam, ImageShader, Rect, Shader, Skia, useImage, vec } from '@shopify/react-native-skia';
 import { forwardRef, memo, useImperativeHandle } from 'react';
 import { cancelAnimation, convertToRGBA, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
-import { customEasing } from '@/features/rnbw-rewards/animations/layoutAnimations';
+import { transitionEasing } from '@/features/rnbw-rewards/animations/layoutAnimations';
 
 const DEFAULT_SIZE = 160;
 const DEFAULT_EDGE_THICKNESS = 12;
@@ -42,7 +42,7 @@ export const SpinnableCoin = memo(
           if (remainder >= epsilon && 180 - remainder >= epsilon) {
             correction = degrees >= 0 ? 180 - remainder : -remainder;
           }
-          rotation.value = withTiming(targetRotation + correction, { duration: durationMs, easing: customEasing });
+          rotation.value = withTiming(targetRotation + correction, { duration: durationMs, easing: transitionEasing });
         },
       }),
       [rotation]

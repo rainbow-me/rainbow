@@ -5,10 +5,10 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ClaimSteps, useRnbwClaimContext } from '@/features/rnbw-rewards/context/RnbwClaimContext';
 import Animated from 'react-native-reanimated';
 import { time } from '@/utils/time';
-import { createScaleInFadeInSlideUpEnterAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
+import { createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
 import { IS_DEV } from '@/env';
 
-const enteringAnimation = createScaleInFadeInSlideUpEnterAnimation(time.ms(200));
+const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: 24, delay: time.ms(200) });
 
 export const NothingToClaimStep = memo(function NothingToClaimStep() {
   const { setActiveStep } = useRnbwClaimContext();

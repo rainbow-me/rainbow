@@ -6,11 +6,11 @@ import * as i18n from '@/languages';
 import { ClaimSteps, useRnbwClaimContext } from '@/features/rnbw-rewards/context/RnbwClaimContext';
 import Animated from 'react-native-reanimated';
 import { time } from '@/utils/time';
-import { createExitingAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
+import { createScaleOutFadeOutSlideExitAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
 
-const customExitingFirstTranche = createExitingAnimation(time.ms(20));
-const customExitingSecondTranche = createExitingAnimation(time.ms(120));
-const customExitingThirdTranche = createExitingAnimation(time.ms(240));
+const customExitingFirstTranche = createScaleOutFadeOutSlideExitAnimation({ delay: time.ms(20) });
+const customExitingSecondTranche = createScaleOutFadeOutSlideExitAnimation({ delay: time.ms(120) });
+const customExitingThirdTranche = createScaleOutFadeOutSlideExitAnimation({ delay: time.ms(240) });
 
 export const IntroductionStep = memo(function IntroductionStep() {
   const { isDarkMode } = useColorMode();
