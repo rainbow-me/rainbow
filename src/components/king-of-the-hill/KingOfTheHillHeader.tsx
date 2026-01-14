@@ -1,5 +1,5 @@
 import crownImage from '@/assets/crown.png';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ShinyCoinIcon } from '@/components/coin-icon/ShinyCoinIcon';
 import { CHEVRON_RIGHT_SYMBOL } from '@/components/king-of-the-hill/constants';

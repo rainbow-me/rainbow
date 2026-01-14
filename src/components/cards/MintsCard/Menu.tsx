@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Inline, Inset, Text } from '@/design-system';
 import haptics from '@/utils/haptics';
 import { MintsFilter, getMintsFilterLabel, useMintsFilter } from '@/resources/mints';

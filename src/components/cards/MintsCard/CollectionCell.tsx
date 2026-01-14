@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { AccentColorProvider, Bleed, Box, Cover, Inline, Inset, Text } from '@/design-system';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useTheme } from '@/theme';
 import { View } from 'react-native';
 import { MintableCollection } from '@/graphql/__generated__/arc';

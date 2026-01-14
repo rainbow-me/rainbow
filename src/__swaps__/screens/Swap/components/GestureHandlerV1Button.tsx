@@ -1,4 +1,4 @@
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { IS_IOS } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 import React from 'react';

@@ -5,7 +5,7 @@ import * as i18n from '@/languages';
 import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
 import { RewardsProgressBar } from '@/screens/rewards/components/RewardsProgressBar';
 import { addDays, differenceInDays, differenceInHours, fromUnixTime } from 'date-fns';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';

@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

@@ -1,5 +1,5 @@
 import { analytics } from '@/analytics';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Spinner from '@/components/Spinner';
 import { Box, ColorModeProvider, Row, Rows, Stack, Text } from '@/design-system';
 import { UniqueAsset } from '@/entities';

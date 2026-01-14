@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { Bleed, Box, Text, useColorMode } from '@/design-system';
 import { PolymarketPosition } from '@/features/polymarket/types';
 import ImgixImage from '@/components/images/ImgixImage';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';

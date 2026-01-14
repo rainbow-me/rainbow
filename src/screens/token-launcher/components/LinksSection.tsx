@@ -7,7 +7,7 @@ import { Bleed, Box, IconContainer, Separator, Text, TextIcon, TextShadow } from
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import Animated from 'react-native-reanimated';
 import { SingleFieldInput } from './SingleFieldInput';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Icon } from '@/components/icons';
 import {
   COLLAPSABLE_FIELD_ANIMATION,

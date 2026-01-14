@@ -3,7 +3,7 @@ import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { SharedValue, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { Border, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { CATEGORIES, Category } from '@/features/polymarket/constants';

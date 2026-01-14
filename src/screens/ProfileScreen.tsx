@@ -2,7 +2,7 @@ import React from 'react';
 import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';
 import Navigation from '@/navigation/Navigation';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';

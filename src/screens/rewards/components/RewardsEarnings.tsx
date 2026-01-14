@@ -8,7 +8,7 @@ import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDi
 import { addDays, differenceInDays, differenceInHours, fromUnixTime, isPast } from 'date-fns';
 import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
 import { useNavigation } from '@/navigation';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Routes from '@/navigation/routesNames';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';

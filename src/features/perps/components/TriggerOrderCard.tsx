@@ -2,7 +2,7 @@ import { Box, Text, TextIcon, useColorMode } from '@/design-system';
 import { TriggerOrderType } from '@/features/perps/types';
 import React, { memo } from 'react';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import * as i18n from '@/languages';

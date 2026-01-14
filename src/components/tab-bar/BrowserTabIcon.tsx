@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 import { useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import { Box, useColorMode, TextIcon } from '@/design-system';
 import { useBrowserStore } from '@/state/browser/browserStore';

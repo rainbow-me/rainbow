@@ -3,7 +3,7 @@ import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton
 import { AddressOrEth, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
 import { CoinRowItem } from '@/__swaps__/types/search';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContextMenuButton } from '@/components/context-menu';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
 import { setClipboard } from '@/hooks/useClipboard';

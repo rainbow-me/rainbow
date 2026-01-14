@@ -1,4 +1,4 @@
-import { ShimmerAnimation } from '@/components/animations';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBiometryIconString } from '@/components/buttons/BiometricButtonContent';

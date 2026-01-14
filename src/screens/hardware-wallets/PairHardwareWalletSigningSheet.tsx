@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { Box, Column, Columns, Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import useDimensions from '@/hooks/useDimensions';
 import useImportingWallet from '@/hooks/useImportingWallet';

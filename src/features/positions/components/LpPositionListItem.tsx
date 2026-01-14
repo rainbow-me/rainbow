@@ -7,7 +7,7 @@ import { LpPositionRangeBadge } from './LpPositionRangeBadge';
 import { TwoCoinsIcon } from '@/components/coin-icon/TwoCoinsIcon';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 

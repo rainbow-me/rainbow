@@ -1,5 +1,5 @@
 import React from 'react';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Stack, Text, TextShadow } from '@/design-system';
 import { PerpPositionCard } from '@/features/perps/components/PerpPositionCard';
 import { DOWN_ARROW, HYPERLIQUID_COLORS, UP_ARROW } from '@/features/perps/constants';

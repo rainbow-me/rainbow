@@ -15,7 +15,7 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import infinityIcon from '@/assets/infinity.png';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 
 const ESTIMATED_ITEM_HEIGHT = 68;
 const SCROLL_INSETS = { bottom: 48 };

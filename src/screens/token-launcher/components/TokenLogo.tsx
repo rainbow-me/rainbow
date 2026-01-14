@@ -3,7 +3,7 @@ import Svg, { Circle } from 'react-native-svg';
 import * as i18n from '@/languages';
 import { Box, Text, TextIcon, TextShadow } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useUploadToCloudinary } from '../hooks/useUploadToCloudinary';

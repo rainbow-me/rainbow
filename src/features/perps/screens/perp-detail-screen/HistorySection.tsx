@@ -3,7 +3,7 @@ import { PerpMarket } from '@/features/perps/types';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useHlTradesStore } from '@/features/perps/stores/hlTradesStore';
 import { Box, Separator, Text, TextShadow } from '@/design-system';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import * as i18n from '@/languages';
 import { TradeListItem } from '../../components/TradeListItem';
 import { Navigation } from '@/navigation';

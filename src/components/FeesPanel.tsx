@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard, KeyboardAvoidingView } from 'react-native';
 import { Alert } from '@/components/alerts';
 import { useTheme } from '@/theme/ThemeContext';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import FeesGweiInput from '@/components/FeesGweiInput';
 import { calculateMinerTipAddDifference, calculateMinerTipSubstDifference } from '@/helpers/gas';
 import { add, greaterThan, isZero, lessThan, multiply, toFixedDecimals } from '@/helpers/utilities';

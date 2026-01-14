@@ -6,7 +6,7 @@ import { memo, useCallback, useMemo } from 'react';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import ImgixImage from '@/components/images/ImgixImage';
 import { mulWorklet, subWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';

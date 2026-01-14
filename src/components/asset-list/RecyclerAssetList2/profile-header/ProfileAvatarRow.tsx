@@ -1,4 +1,4 @@
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import ContextMenu from '@/components/native-context-menu/contextMenu';
 import { navbarHeight } from '@/components/navbar/Navbar';

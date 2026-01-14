@@ -3,7 +3,7 @@ import { AccentColorProvider, Bleed, Box, Cover, IconContainer, Separator, Text,
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { View } from 'react-native';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import Animated, { SharedValue, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';

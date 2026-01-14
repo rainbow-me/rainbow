@@ -5,7 +5,7 @@ import { analytics } from '@/analytics';
 import { RequestVendorLogoIcon } from '@/components/coin-icon';
 import startCase from 'lodash/startCase';
 import { useTheme } from '@/theme';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { PositionListItem } from '../components/PositionListItem';
 import * as i18n from '@/languages';
 import { capitalize } from 'lodash';

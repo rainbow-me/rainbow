@@ -4,7 +4,7 @@ import React, { useCallback, useMemo } from 'react';
 import { BlurView } from 'react-native-blur-view';
 import { AddressItem, AddressMenuAction, AddressMenuActionData, PANEL_INSET_HORIZONTAL } from '../ChangeWalletSheet';
 import { AddressAvatar } from './AddressAvatar';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { SelectedAddressBadge } from './SelectedAddressBadge';
 import { JiggleAnimation } from '@/components/animations/JiggleAnimation';

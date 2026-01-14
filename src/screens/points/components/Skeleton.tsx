@@ -1,5 +1,5 @@
 import { opacity } from '@/__swaps__/utils/swaps';
-import { ShimmerAnimation } from '@/components/animations';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { AccentColorProvider, Box, useBackgroundColor, useColorMode } from '@/design-system';
 import React from 'react';
 import { DimensionValue } from 'react-native';

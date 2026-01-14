@@ -6,7 +6,7 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import infinityIcon from '@/assets/infinity.png';
 import LinearGradient from 'react-native-linear-gradient';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
 import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 import { useRemoteConfig } from '@/model/remoteConfig';

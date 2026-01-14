@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { OpacityToggler } from '@/components/animations';
+import OpacityToggler from '@/components/animations/OpacityToggler';
 import { CoinRowHeight } from '@/components/coin-row';
 import useFrameDelayedValue from '@/hooks/useFrameDelayedValue';
 import { StyleSheet } from 'react-native';

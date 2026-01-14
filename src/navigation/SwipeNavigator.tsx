@@ -1,7 +1,7 @@
 import ConditionalWrap from 'conditional-wrap';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { FlexItem } from '@/components/layout';
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import {

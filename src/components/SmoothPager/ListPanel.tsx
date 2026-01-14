@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { ScrollView, ScrollViewProps, StyleProp, StyleSheet, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
 import Animated, { AnimatedStyle, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import {
   AnimatedText,

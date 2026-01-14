@@ -8,7 +8,7 @@ import {
 } from '@/helpers/utilities';
 import { PositionAsset } from '@/features/positions/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 
 type Props = {
   asset: PositionAsset;

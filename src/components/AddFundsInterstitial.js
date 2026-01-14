@@ -1,6 +1,6 @@
 import { analytics } from '@/analytics';
 import Divider from '@/components/Divider';
-import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from '@/components/animations';
+import ButtonPressAnimation, { ScaleButtonZoomableAndroid } from '@/components/animations/ButtonPressAnimation';
 import { Icon } from '@/components/icons';
 import useDimensions from '@/hooks/useDimensions';
 import Routes from '@/navigation/routesNames';

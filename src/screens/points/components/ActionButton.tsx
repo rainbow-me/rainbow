@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Text, globalColors, useForegroundColor } from '@/design-system';
 import { useTheme } from '@/theme';
 import c from 'chroma-js';

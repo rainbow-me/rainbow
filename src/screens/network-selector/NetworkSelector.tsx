@@ -2,7 +2,7 @@ import { BlurView } from 'react-native-blur-view';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import {

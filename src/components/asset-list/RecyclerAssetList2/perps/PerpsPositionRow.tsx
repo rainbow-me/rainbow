@@ -7,7 +7,7 @@ import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTok
 import { abs } from '@/helpers/utilities';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { navigateToPerpDetailScreen } from '@/features/perps/utils';

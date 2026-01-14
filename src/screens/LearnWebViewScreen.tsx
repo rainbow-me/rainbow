@@ -10,7 +10,7 @@ import { SlackSheet } from '@/components/sheet';
 import { Box, Text, useBackgroundColor } from '@/design-system';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { globalColors } from '@/design-system/color/palettes';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { IS_ANDROID } from '@/env';
 import { analytics } from '@/analytics';
 import * as i18n from '@/languages';
