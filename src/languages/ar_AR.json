@@ -3789,17 +3789,17 @@
         "deposit_funds": "إيداع الأموال",
         "average_price": "السعر المتوسط",
         "errors": {
-          "not_enough_liquidity": "Not enough liquidity to place full order.",
-          "please_lower_amount": "Please lower the amount and try again.",
-          "no_liquidity_at_price": "No liquidity at this price."
+          "not_enough_liquidity": "لا يوجد سيولة كافية لتنفيذ الطلب بالكامل.",
+          "please_lower_amount": "يرجى تقليل الكمية والمحاولة مرة أخرى.",
+          "no_liquidity_at_price": "لا توجد سيولة عند هذا السعر."
         }
       },
       "manage_position": {
         "hold_to_claim": "اضغط للمطالبة",
-        "hold_to_clear": "Hold to Clear",
+        "hold_to_clear": "اضغط للتنظيف",
         "hold_to_cash_out": "اضغط لسحب الأموال",
         "claiming": "جارٍ المطالبة...",
-        "clearing": "Clearing...",
+        "clearing": "جاري المسح...",
         "cashing_out": "سحب الأموال...",
         "confirming_order": "جارٍ تأكيد الطلب...",
         "position_value": "قيمة الموقع"
@@ -3842,7 +3842,7 @@
         "won": "فاز",
         "to_win": "للفوز",
         "claim": "المطالبة",
-        "clear": "Clear",
+        "clear": "مسح",
         "cash_out": "سحب النقد",
         "no_open_positions": "لا توجد مواقف مفتوحة",
         "won_badge": "فاز",
@@ -3863,11 +3863,11 @@
         "other": "آخر"
       },
       "sports": {
-        "vs": "vs",
-        "live": "Live",
+        "vs": "مقابل",
+        "live": "مباشر",
         "game_best_of": "اللعبة %{currentPeriod} - الأفضل من %{bestOf}",
-        "final": "Final",
-        "no_games": "No games today or tomorrow"
+        "final": "نهائي",
+        "no_games": "لا توجد مباريات اليوم أو غدًا"
       },
       "outcomes": {
         "yes": "نعم",
@@ -3881,9 +3881,9 @@
         "failed_to_claim": "فشل في المطالبة بالموقف. يرجى المحاولة مرة أخرى."
       },
       "account": {
-        "hide_lost_bets": "Hide Lost Bets",
-        "show_lost_bets": "Show Lost Bets",
-        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
+        "hide_lost_bets": "إخفاء الرهانات الخاسرة",
+        "show_lost_bets": "عرض الرهانات الخاسرة",
+        "lost_bets_dont_clear": "لا تتم إزالة الرهانات الخاسرة تلقائيًا. يمكنك مسحها أدناه."
       }
     },
     "wallet_error_sheet": {
