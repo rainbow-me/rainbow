@@ -12,7 +12,7 @@ import Animated, {
   useAnimatedReaction,
 } from 'react-native-reanimated';
 import { IS_TEST } from '@/env';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 const timingConfig = {
   duration: 2500,

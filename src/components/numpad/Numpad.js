@@ -5,7 +5,7 @@ import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 const KeyboardButtonContent = styled(Centered)({
   height: ({ height }) => height,

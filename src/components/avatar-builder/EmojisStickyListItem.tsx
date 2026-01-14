@@ -4,7 +4,7 @@ import { BlurView } from 'react-native-blur-view';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { IS_IOS } from '@/env';
 import { fonts } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { Categories } from './Categories';
 import { AllEmojiHeaderEntry } from './helpers/getFormattedAllEmojiList';
 

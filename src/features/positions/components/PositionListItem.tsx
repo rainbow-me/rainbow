@@ -6,7 +6,7 @@ import { Inline } from '@/design-system/components/Inline/Inline';
 import { Stack } from '@/design-system/components/Stack/Stack';
 import { Text } from '@/design-system/components/Text/Text';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import {
   convertAmountToBalanceDisplay,
   convertAmountToPercentageDisplay,

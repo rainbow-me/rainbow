@@ -2,7 +2,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { BackgroundProvider } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
 import { useNavigation } from '@/navigation/Navigation';
 import { SettingsPages } from './SettingsPages';

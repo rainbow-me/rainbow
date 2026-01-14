@@ -8,7 +8,7 @@ import Row from '@/components/layout/Row';
 import { Box } from '@/design-system/components/Box/Box';
 import { Inline } from '@/design-system/components/Inline/Inline';
 import { Text } from '@/design-system/components/Text/Text';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';

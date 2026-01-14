@@ -7,7 +7,7 @@ import TabBar from './TabBar';
 import { EmojiCategory } from './types';
 import { ImgixImage } from '@/components/images';
 import { position } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import magicMemo from '@/utils/magicMemo';
 
 const categoryKeys = Object.keys(Categories);

@@ -9,7 +9,7 @@ import { Emoji, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import useDimensions from '@/hooks/useDimensions';
 import { fonts, fontWithWidth, position } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import formatURLForDisplay from '@/utils/formatURLForDisplay';
 import { IS_ANDROID } from '@/env';
 import { openInBrowser } from '@/utils/openInBrowser';

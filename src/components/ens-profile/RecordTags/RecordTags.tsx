@@ -15,7 +15,7 @@ import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import type { Records } from '@/entities/ensRegistration';
 import { deprecatedTextRecordFields, ENS_RECORDS } from '@/helpers/ens';
 import useENSRecordDisplayProperties from '@/hooks/useENSRecordDisplayProperties';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 const getRecordType = (recordKey: string) => {
   switch (recordKey) {

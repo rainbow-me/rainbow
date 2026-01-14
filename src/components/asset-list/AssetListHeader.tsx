@@ -7,7 +7,7 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { fonts, position } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import React, { ComponentProps, useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';

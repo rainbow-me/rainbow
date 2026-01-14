@@ -16,7 +16,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { ChainId } from '@/state/backendNetworks/types';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import watchingAlert from '@/utils/watchingAlert';
 import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';

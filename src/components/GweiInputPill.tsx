@@ -5,7 +5,7 @@ import TextInputMask from 'react-native-text-input-mask';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import styled from '@/styled-thing';
 import { buildTextStyles, padding } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { TextInput } from 'react-native';
 import { Box } from '@/design-system/components/Box/Box';
 import { Inline } from '@/design-system/components/Inline/Inline';

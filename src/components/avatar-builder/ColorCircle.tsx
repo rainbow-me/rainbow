@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 interface Props {
   backgroundColor?: string;

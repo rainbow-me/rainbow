@@ -1,7 +1,7 @@
 import React from 'react';
 import { RefreshControl, RefreshControlProps } from 'react-native';
 import useRefreshAccountData from '@/hooks/useRefreshAccountData';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { navbarHeight } from '@/components/navbar/Navbar';
 
 export default function RefreshControlWrapped(props: Partial<RefreshControlProps>) {

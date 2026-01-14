@@ -5,7 +5,7 @@ import { get } from 'lodash';
 
 import { useNavigation } from '@/navigation/Navigation';
 import { PromoSheet } from '@/components/PromoSheet';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { usePromoSheetQuery } from '@/resources/promoSheet/promoSheetQuery';
 import { maybeSignUri } from '@/handlers/imgix';
 import { delay } from '@/utils/delay';

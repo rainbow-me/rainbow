@@ -5,7 +5,7 @@ import { Animated as RNAnimated } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { BaseScrollView } from 'recyclerlistview';
 import { useRecyclerAssetListPosition } from './Contexts';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 const Context = React.createContext<
   | {

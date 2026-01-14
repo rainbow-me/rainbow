@@ -4,7 +4,7 @@ import { TokenInfoItem } from '../../token-info';
 import { Columns } from '@/design-system/components/Columns/Columns';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { convertAmountToNativeDisplay, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { useNFTListing } from '@/resources/nfts';
 import type { UniqueAsset } from '@/entities/uniqueAssets';

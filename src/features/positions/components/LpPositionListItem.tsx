@@ -5,7 +5,7 @@ import { Inline } from '@/design-system/components/Inline/Inline';
 import { Stack } from '@/design-system/components/Stack/Stack';
 import { Text } from '@/design-system/components/Text/Text';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { RainbowUnderlyingAsset, RangeStatus, LpAllocation } from '@/features/positions/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { LpPositionRangeBadge } from './LpPositionRangeBadge';

@@ -2,7 +2,7 @@ import React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Categories } from './Categories';
 import { avatarBuilderStyles } from './avatarBuilderStyles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 const { width } = Dimensions.get('screen');
 

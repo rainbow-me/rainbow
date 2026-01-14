@@ -2,7 +2,7 @@ import React from 'react';
 import { Box } from '@/design-system/components/Box/Box';
 import { Cover } from '@/design-system/components/Cover/Cover';
 import { Text } from '@/design-system/components/Text/Text';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 export const NAVBAR_ICON_SIZE = 36;
 

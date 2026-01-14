@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { ThemeContextProps, useTheme } from '@/theme';
+import type { ThemeContextProps } from '@/theme/ThemeContext';
+import { useTheme } from '@/theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';

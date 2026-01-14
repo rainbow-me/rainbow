@@ -9,7 +9,7 @@ import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { TextColor } from '@/design-system/color/palettes';
 import { infoForEventType, motiTimingConfig } from '@/components/Transactions/constants';
 
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { DetailInfo, EventInfo, EventType } from '@/components/Transactions/types';
 
 export const EventIcon = ({ eventType }: { eventType: EventType }) => {

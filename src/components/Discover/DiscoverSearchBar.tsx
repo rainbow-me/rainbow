@@ -10,7 +10,7 @@ import deviceUtils from '@/utils/deviceUtils';
 import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
 import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { NAVBAR_HORIZONTAL_INSET, navbarHeight } from '../navbar/Navbar';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 const placeholderText = deviceUtils.isNarrowPhone
   ? i18n.t(i18n.l.discover.search.search_ethereum_short)

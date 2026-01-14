@@ -23,7 +23,7 @@ import useAndroidScrollViewGestureHandler from '@/hooks/useAndroidScrollViewGest
 import usePrevious from '@/hooks/usePrevious';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import abbreviations from '@/utils/abbreviations';
 import magicMemo from '@/utils/magicMemo';
 import { Box } from '@/design-system/components/Box/Box';
