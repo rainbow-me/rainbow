@@ -3789,17 +3789,17 @@
         "deposit_funds": "Fon Yatırma",
         "average_price": "Ortalama Fiyat",
         "errors": {
-          "not_enough_liquidity": "Not enough liquidity to place full order.",
-          "please_lower_amount": "Please lower the amount and try again.",
-          "no_liquidity_at_price": "No liquidity at this price."
+          "not_enough_liquidity": "Tam sipariş vermek için yeterli likidite yok.",
+          "please_lower_amount": "Lütfen miktarı azaltın ve tekrar deneyin.",
+          "no_liquidity_at_price": "Bu fiyatta likidite yok."
         }
       },
       "manage_position": {
         "hold_to_claim": "Talep Etmek İçin Basılı Tutun",
-        "hold_to_clear": "Hold to Clear",
+        "hold_to_clear": "Temizlemek İçin Basılı Tutun",
         "hold_to_cash_out": "Nakit Çıkışı İçin Basılı Tutun",
         "claiming": "Talep Ediliyor...",
-        "clearing": "Clearing...",
+        "clearing": "Temizleniyor...",
         "cashing_out": "Nakit Çıkışı Yapılıyor...",
         "confirming_order": "Sipariş Onaylanıyor...",
         "position_value": "Pozisyon Değeri"
@@ -3842,7 +3842,7 @@
         "won": "Kazandı",
         "to_win": "Kazanmak İçin",
         "claim": "Talep Et",
-        "clear": "Clear",
+        "clear": "Temizle",
         "cash_out": "Nakit Çıkışı",
         "no_open_positions": "Açık Pozisyon Yok",
         "won_badge": "KAZANDI",
@@ -3864,10 +3864,10 @@
       },
       "sports": {
         "vs": "vs",
-        "live": "Live",
+        "live": "Canlı",
         "game_best_of": "Oyun %{currentPeriod} - %{bestOf} En İyi",
         "final": "Final",
-        "no_games": "No games today or tomorrow"
+        "no_games": "Bugün veya yarın oyun yok"
       },
       "outcomes": {
         "yes": "Evet",
@@ -3881,9 +3881,9 @@
         "failed_to_claim": "Pozisyon talep edilemedi. Lütfen tekrar deneyin."
       },
       "account": {
-        "hide_lost_bets": "Hide Lost Bets",
-        "show_lost_bets": "Show Lost Bets",
-        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
+        "hide_lost_bets": "Kaybedilen Bahisleri Gizle",
+        "show_lost_bets": "Kaybedilen Bahisleri Göster",
+        "lost_bets_dont_clear": "Kaybedilen bahisler otomatik olarak kaldırılmaz. Aşağıda temizleyebilirsiniz."
       }
     },
     "wallet_error_sheet": {
