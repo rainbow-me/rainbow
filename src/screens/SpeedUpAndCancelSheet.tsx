@@ -12,7 +12,7 @@ import { sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
-import { parseGasParamsForTransaction } from '@/parsers';
+import { parseGasParamsForTransaction } from '@/parsers/gas';
 import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/redux/ensRegistration';
 import { updateGasFeeForSpeed } from '@/redux/gas';
 import { ethUnits } from '@/references';

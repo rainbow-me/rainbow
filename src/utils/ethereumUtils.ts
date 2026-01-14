@@ -21,7 +21,7 @@ import { add, convertRawAmountToDecimalFormat, fromWei, greaterThan, isZero, sub
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { parseAssetNative } from '@/parsers';
+import { parseAssetNative } from '@/parsers/accounts';
 import store from '@/redux/store';
 import { ETH_ADDRESS, ethUnits, optimismGasOracleAbi, OVM_GAS_PRICE_ORACLE } from '@/references';
 import {

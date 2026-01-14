@@ -8,7 +8,7 @@ import { getProvider, toHex } from '@/handlers/web3';
 import { add, convertAmountToNativeDisplayWorklet, multiply, formatNumber } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
-import { weiToGwei } from '@/parsers';
+import { weiToGwei } from '@/parsers/gas';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { isStaging } from '@/resources/addys/client';
 import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
