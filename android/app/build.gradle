@@ -163,8 +163,6 @@ android {
         renderscriptTargetApi 23
         renderscriptSupportModeEnabled true
         multiDexEnabled true
-        testBuildType System.getProperty('testBuildType', 'debug')
-        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         manifestPlaceholders = [
             BRANCH_KEY: env.get('BRANCH_KEY')
