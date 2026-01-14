@@ -1,5 +1,9 @@
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, TextShadow, Text, useColorMode, TextIcon } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { TriggerOrderType, TriggerOrderSource } from '@/features/perps/types';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useCallback } from 'react';

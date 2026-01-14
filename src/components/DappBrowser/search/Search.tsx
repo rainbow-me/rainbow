@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { dispatchCommand, runOnJS, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { IS_IOS } from '@/env';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';

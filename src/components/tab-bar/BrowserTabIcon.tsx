@@ -4,7 +4,9 @@ import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, withTiming } 
 import { useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
-import { Box, useColorMode, TextIcon } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';

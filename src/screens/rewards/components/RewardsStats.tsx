@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
-import { Box, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import * as i18n from '@/languages';
 import { RewardsStatsCard } from './RewardsStatsCard';
 import { RewardStatsAction, RewardStatsActionType } from '@/graphql/__generated__/metadata';

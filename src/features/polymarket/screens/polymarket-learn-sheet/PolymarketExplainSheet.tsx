@@ -1,7 +1,9 @@
 import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as i18n from '@/languages';
-import { Box, ColorModeProvider, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { ColorModeProvider } from '@/design-system/color/ColorMode';
+import { Text } from '@/design-system/components/Text/Text';
 import step1Image from '@/assets/polymarketExplainer/step1.png';
 import step2Image from '@/assets/polymarketExplainer/step2.png';
 import step3Image from '@/assets/polymarketExplainer/step3.png';

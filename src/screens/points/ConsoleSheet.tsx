@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { Box, Inset, globalColors } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { globalColors } from '@/design-system/color/palettes';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
 

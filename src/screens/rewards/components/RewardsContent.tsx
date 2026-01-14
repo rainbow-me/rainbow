@@ -7,7 +7,8 @@ import { RewardsFakeContent } from '@/screens/rewards/components/RewardsFakeCont
 import { RewardsProgramStatus } from '@/screens/rewards/components/RewardsProgramStatus';
 import * as i18n from '@/languages';
 import { InfoAlert } from '@/components/info-alert/info-alert';
-import { Box, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
 
 type Props = {
   assetPrice?: number;

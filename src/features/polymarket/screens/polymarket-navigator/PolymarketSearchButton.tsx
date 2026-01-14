@@ -1,6 +1,9 @@
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Box, TextIcon, globalColors, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { PolymarketNavigation } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
 import Routes from '@/navigation/routesNames';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { toast } from 'sonner-native';
-import { globalColors } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';

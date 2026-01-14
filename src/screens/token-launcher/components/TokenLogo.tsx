@@ -1,7 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
 import Svg, { Circle } from 'react-native-svg';
 import * as i18n from '@/languages';
-import { Box, Text, TextIcon, TextShadow } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { IS_IOS } from '@/env';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { StyleSheet } from 'react-native';

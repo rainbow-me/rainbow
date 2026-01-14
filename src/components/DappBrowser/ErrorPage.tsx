@@ -4,7 +4,7 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import { Colors } from '../../styles/colors';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { useTheme } from '@/theme';
 import { View } from 'moti';
 

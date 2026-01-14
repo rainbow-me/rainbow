@@ -1,5 +1,10 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { Bleed, Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { PerpsPosition } from '@/features/perps/types';
 import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';

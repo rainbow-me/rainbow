@@ -3,7 +3,7 @@ import * as i18n from '@/languages';
 import React from 'react';
 import { ENSConfirmUpdateSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
-import { Stack } from '@/design-system';
+import { Stack } from '@/design-system/components/Stack/Stack';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import useENSRegistration from '@/hooks/useENSRegistration';
 import Routes from '@/navigation/routesNames';

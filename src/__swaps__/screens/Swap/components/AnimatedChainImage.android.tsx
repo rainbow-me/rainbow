@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Image, View } from 'react-native';
 import { getChainBadgeStyles } from '@/components/coin-icon/ChainImage';
-import { useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';

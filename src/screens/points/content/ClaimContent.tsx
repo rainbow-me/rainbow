@@ -1,6 +1,11 @@
 import { analytics } from '@/analytics';
 import { ETH_REWARDS, useExperimentalFlag } from '@/config';
-import { Box, Row, Rows, Stack, Text, globalColors, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Row, Rows } from '@/design-system/components/Rows/Rows';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';

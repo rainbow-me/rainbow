@@ -1,5 +1,11 @@
 import { ImgixImage } from '@/components/images';
-import { AccentColorProvider, Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Box } from '@/design-system/components/Box/Box';
+import { Heading } from '@/design-system/components/Heading/Heading';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Row, Rows } from '@/design-system/components/Rows/Rows';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { accentColorAtom, ENS_DOMAIN, ENS_SECONDS_WAIT, REGISTRATION_MODES, REGISTRATION_STEPS } from '@/helpers/ens';
 import useDimensions from '@/hooks/useDimensions';
 import useENSModifiedRegistration from '@/hooks/useENSModifiedRegistration';

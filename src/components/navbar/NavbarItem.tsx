@@ -1,6 +1,9 @@
 import React from 'react';
 import { PressableProps } from 'react-native';
-import { Bleed, Box, Inset, Space } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import type { Space } from '@/design-system/layout/space';
 import { ButtonPressAnimation } from '../animations';
 
 type NavbarItemProps = {

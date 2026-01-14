@@ -1,7 +1,9 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { HlTrade, TradeExecutionType } from '@/features/perps/types';
-import { Box, Text, TextIcon } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { format } from 'date-fns';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';

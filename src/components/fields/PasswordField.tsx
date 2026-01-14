@@ -6,7 +6,7 @@ import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { TextInput, TextInputProps, View } from 'react-native';
 import { IS_IOS, IS_ANDROID } from '@/env';
 import { Icon } from '../icons';

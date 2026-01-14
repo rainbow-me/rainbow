@@ -1,20 +1,16 @@
 import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import {
-  Bleed,
-  Box,
-  Column,
-  Columns,
-  Inline,
-  Row,
-  Rows,
-  Stack,
-  Text,
-  globalColors,
-  useColorMode,
-  useForegroundColor,
-  useTextStyle,
-} from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Column, Columns } from '@/design-system/components/Columns/Columns';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Row, Rows } from '@/design-system/components/Rows/Rows';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { useTextStyle } from '@/design-system/components/Text/useTextStyle';
 import { IS_IOS } from '@/env';
 import { metadataPOSTClient } from '@/graphql';
 import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';

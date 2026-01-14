@@ -5,18 +5,16 @@ import { ChainId } from '@/state/backendNetworks/types';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import {
-  AnimatedText,
-  Box,
-  DesignSystemProvider,
-  globalColors,
-  Inset,
-  Separator,
-  Text,
-  TextShadow,
-  useBackgroundColor,
-  useColorMode,
-} from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { Box } from '@/design-system/components/Box/Box';
+import { DesignSystemProvider } from '@/design-system/context/DesignSystemContext';
+import { globalColors } from '@/design-system/color/palettes';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import * as i18n from '@/languages';
 import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';

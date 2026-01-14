@@ -5,7 +5,7 @@ import EmptyAssetList from '@/components/asset-list/EmptyAssetList';
 import { Centered } from '@/components/layout';
 import { NoResults } from '@/components/list';
 import ExchangeAssetList, { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { NoResultsType } from '@/components/list/NoResults';
 import type { SearchAsset } from '@/__swaps__/types/search';
 

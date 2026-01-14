@@ -6,7 +6,8 @@ import { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { colors } from '@/styles';
-import { AnimatedText, useForegroundColor } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
 export const TabPill = ({ tab, index }: { tab: string; index: number }) => {

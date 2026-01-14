@@ -1,7 +1,7 @@
 import React from 'react';
 import ThreeDotsIcon from '../../icons/svg/ThreeDotsIcon';
 import ActionButton from '../ActionButtons/ActionButton';
-import { useForegroundColor } from '@/design-system';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
 export default function MoreButton() {
   const color = useForegroundColor('secondary80 (Deprecated)');

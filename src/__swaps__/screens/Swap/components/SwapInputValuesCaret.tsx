@@ -1,4 +1,5 @@
-import { Box, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {

@@ -1,7 +1,10 @@
 import React from 'react';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Inline, Inset, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Text } from '@/design-system/components/Text/Text';
 import haptics from '@/utils/haptics';
 import { SortCriterion } from '@/graphql/__generated__/arc';
 import * as i18n from '@/languages';

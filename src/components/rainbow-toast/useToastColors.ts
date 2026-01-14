@@ -1,4 +1,4 @@
-import { useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { useTheme } from '@/theme/ThemeContext';
 import { useMemo } from 'react';
 

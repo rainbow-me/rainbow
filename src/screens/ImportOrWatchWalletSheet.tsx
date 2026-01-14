@@ -1,6 +1,13 @@
 import { Input } from '@/components/inputs';
 import { SheetHandleFixedToTopHeight } from '@/components/sheet';
-import { AccentColorProvider, Box, globalColors, Inset, Stack, Text, useForegroundColor, useTextStyle } from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Box } from '@/design-system/components/Box/Box';
+import { globalColors } from '@/design-system/color/palettes';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { useTextStyle } from '@/design-system/components/Text/useTextStyle';
 import { IS_ANDROID } from '@/env';
 import useImportingWallet from '@/hooks/useImportingWallet';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';

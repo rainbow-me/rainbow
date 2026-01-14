@@ -1,7 +1,12 @@
 import React, { useCallback, useState } from 'react';
 import haptics from '@/utils/haptics';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { AccentColorProvider, Box, ColorModeProvider, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { AccentColorProvider } from '@/design-system/color/AccentColorContext';
+import { Box } from '@/design-system/components/Box/Box';
+import { ColorModeProvider, useColorMode } from '@/design-system/color/ColorMode';
+import { Text } from '@/design-system/components/Text/Text';
+import { globalColors } from '@/design-system/color/palettes';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { GlobalNotificationTopic } from '@/notifications/settings/constants';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';

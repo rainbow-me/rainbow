@@ -1,5 +1,7 @@
 import React from 'react';
-import { Box, Separator, Stack } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Stack } from '@/design-system/components/Stack/Stack';
 import { EXPANDED_INPUT_HEIGHT } from '@/__swaps__/screens/Swap/constants';
 import { SearchInput } from '@/__swaps__/screens/Swap/components/SearchInput';
 import { TokenToSellList } from '@/__swaps__/screens/Swap/components/TokenList/TokenToSellList';

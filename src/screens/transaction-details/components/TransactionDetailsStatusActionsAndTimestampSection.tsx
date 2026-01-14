@@ -1,6 +1,8 @@
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ContextMenuButton, { MenuConfig } from '@/components/native-context-menu/contextMenu';
-import { Box, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { PendingTransaction, RainbowTransaction, TransactionStatus } from '@/entities';
 import * as i18n from '@/languages';
 import { formatTransactionDetailsDate } from '@/screens/transaction-details/helpers/formatTransactionDetailsDate';

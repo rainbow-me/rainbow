@@ -1,6 +1,7 @@
 import { analytics } from '@/analytics';
 import { DynamicHeightSheet } from '@/components/sheet';
-import { BackgroundProvider, Box } from '@/design-system';
+import { BackgroundProvider } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
+import { Box } from '@/design-system/components/Box/Box';
 import useDimensions from '@/hooks/useDimensions';
 import { useRewards } from '@/resources/rewards/rewardsQuery';
 import { RewardsContent } from '@/screens/rewards/components/RewardsContent';

@@ -1,5 +1,8 @@
 import React, { useCallback, memo } from 'react';
-import { Box, Text, useColorMode, globalColors } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { globalColors } from '@/design-system/color/palettes';
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import { networkSwitcherStore } from '@/state/networkSwitcher/networkSwitcher';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

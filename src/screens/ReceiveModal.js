@@ -1,5 +1,5 @@
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { toChecksumAddress } from '@/handlers/web3';
 import useDimensions from '@/hooks/useDimensions';

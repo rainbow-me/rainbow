@@ -13,7 +13,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { globalColors, useColorMode } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { useCleanup } from '@/hooks/useCleanup';
 import Routes from '@/navigation/routesNames';

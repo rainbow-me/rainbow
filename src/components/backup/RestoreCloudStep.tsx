@@ -1,5 +1,7 @@
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
-import { Box, Inset, Stack } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
 import { IS_ANDROID } from '@/env';
 import { isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';

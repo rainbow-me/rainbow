@@ -1,5 +1,10 @@
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
-import { Bleed, Box, Inline, Inset, Stack, Text } from '@/design-system';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { IS_ANDROID } from '@/env';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import useDimensions from '@/hooks/useDimensions';

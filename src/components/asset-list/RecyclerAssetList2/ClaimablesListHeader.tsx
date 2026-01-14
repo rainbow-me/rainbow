@@ -3,7 +3,9 @@ import { Animated, Easing, Image } from 'react-native';
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
 import { useTheme } from '@/theme/ThemeContext';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Inline, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Text } from '@/design-system/components/Text/Text';
 import * as i18n from '@/languages';
 import useOpenClaimables from '@/hooks/useOpenClaimables';
 

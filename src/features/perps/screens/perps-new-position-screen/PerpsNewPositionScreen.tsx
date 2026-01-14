@@ -1,7 +1,10 @@
 import React, { memo } from 'react';
 import { Keyboard, ScrollView } from 'react-native';
 import Animated, { useSharedValue } from 'react-native-reanimated';
-import { Box, Separator, Stack, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
 import { LeverageInputCard } from './LeverageInputCard';
 import { POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING, PositionSideSelector } from './PositionSideSelector';

@@ -1,5 +1,7 @@
 import { ListHeader } from '@/components/SmoothPager/ListPanel';
-import { Box, Text, TextShadow } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { FasterImageView } from '@candlefinance/faster-image';
 import React, { useMemo } from 'react';
 import * as i18n from '@/languages';

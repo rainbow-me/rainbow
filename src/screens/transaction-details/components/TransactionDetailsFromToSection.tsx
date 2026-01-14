@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import { RainbowTransaction } from '@/entities';
 import TransactionMasthead from './TransactionMasthead';

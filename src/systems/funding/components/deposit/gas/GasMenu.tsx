@@ -3,7 +3,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { IS_ANDROID } from '@/env';
 import { add, formatNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';

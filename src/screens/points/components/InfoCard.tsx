@@ -1,5 +1,12 @@
 import React, { memo } from 'react';
-import { Border, Box, Inline, Stack, Text, TextShadow, globalColors, useColorMode } from '@/design-system';
+import { Border } from '@/design-system/components/Border/Border';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { TextSize } from '@/design-system/components/Text/Text';
 import { Skeleton } from './Skeleton';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';

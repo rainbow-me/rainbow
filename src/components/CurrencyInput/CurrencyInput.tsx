@@ -4,7 +4,8 @@ import { SharedValue, runOnUI, useAnimatedStyle, useDerivedValue, useSharedValue
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { HiddenNativeInput } from './HiddenNativeInput';
 import { CurrencyDisplay } from './CurrencyDisplay';
-import { TextProps, useTextStyle } from '@/design-system';
+import type { TextProps } from '@/design-system/components/Text/Text';
+import { useTextStyle } from '@/design-system/components/Text/useTextStyle';
 
 export type CurrencyInputProps = Omit<TextProps, 'color' | 'children'> & {
   initialValue: string;

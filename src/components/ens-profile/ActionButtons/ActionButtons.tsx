@@ -3,7 +3,7 @@ import EditButton from './EditButton';
 import MoreButton from './MoreButton';
 import SendButton from './SendButton';
 import WatchButton from './WatchButton';
-import { Inline } from '@/design-system';
+import { Inline } from '@/design-system/components/Inline/Inline';
 import { useWallets, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 
 export default function ActionButtons({

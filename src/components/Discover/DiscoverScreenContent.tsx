@@ -2,7 +2,8 @@ import React from 'react';
 import { View } from 'react-native';
 import DiscoverHome from '@/components/Discover/DiscoverHome';
 import DiscoverSearch from '@/components/Discover/DiscoverSearch';
-import { Box, Inset } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Inset } from '@/design-system/components/Inset/Inset';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 

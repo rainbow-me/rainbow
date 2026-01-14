@@ -6,7 +6,9 @@ import { Circle, Defs, G, RadialGradient, Stop, Svg } from 'react-native-svg';
 import { CheckmarkAnimation } from '../animations/CheckmarkAnimation';
 import { SeparatorDots } from './SeparatorDots';
 import { useVariableFont } from './useVariableFont';
-import { Box, useForegroundColor, useTextStyle } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { useTextStyle } from '@/design-system/components/Text/useTextStyle';
 
 type LargeCountdownClockProps = {
   initialSeconds?: number;

@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { DerivedValue, SharedValue, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { useForegroundColor } from '@/design-system';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';

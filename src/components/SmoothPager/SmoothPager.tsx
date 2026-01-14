@@ -19,7 +19,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { AlignVertical, alignVerticalToFlexAlign } from '@/design-system/layout/alignment';
 import { useStableValue } from '@/hooks/useStableValue';
 import { clamp } from '@/__swaps__/utils/swaps';

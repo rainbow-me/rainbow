@@ -26,7 +26,7 @@ import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/Hardware
 import { StackNavigationOptions } from '@react-navigation/stack';
 import { ExplainSheetRouteParams, ExplainSheetType, PartialNavigatorConfigOptions, RootStackParamList } from '@/navigation/types';
 import { BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
-import { Box } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
 import { IS_ANDROID } from '@/env';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import Routes from './routesNames';

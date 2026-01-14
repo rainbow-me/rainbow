@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Text } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
 
 const sx = StyleSheet.create({
   activityListHeader: {

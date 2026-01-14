@@ -2,7 +2,10 @@ import React from 'react';
 import { StyleSheet, Text as RNText } from 'react-native';
 import Animated from 'react-native-reanimated';
 
-import { Box, Cover, Text, useForegroundColor } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Cover } from '@/design-system/components/Cover/Cover';
+import { Text } from '@/design-system/components/Text/Text';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import useDimensions from '@/hooks/useDimensions';
 import { useTheme } from '@/theme';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

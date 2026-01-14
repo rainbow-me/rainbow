@@ -5,7 +5,7 @@ import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFas
 import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
 import { getChainBadgeStyles } from '@/components/coin-icon/ChainImage';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
-import { useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapContext } from '../providers/swap-provider';

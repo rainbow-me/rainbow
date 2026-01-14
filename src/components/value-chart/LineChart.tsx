@@ -1,5 +1,6 @@
 import React, { memo, useMemo } from 'react';
-import { Box, useColorMode } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { ExtremeLabels, LABEL_VERTICAL_EXTRA_OFFSET } from './ExtremeLabels';
 import { ChartDot, ChartPath, ChartPathProvider, useChartData } from '@/react-native-animated-charts/src';
 import { useTheme } from '@/theme';

@@ -1,6 +1,9 @@
 import React from 'react';
 import { SheetHandle } from '@/components/sheet';
-import { Box, Text, Inset, Stack } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Stack } from '@/design-system/components/Stack/Stack';
 
 interface ExchangeHeaderProps {
   testID: string;

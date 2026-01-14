@@ -20,7 +20,7 @@ import {
 import React, { memo, useCallback, useMemo } from 'react';
 import { useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { SkiaText } from '@/design-system';
+import { SkiaText } from '@/design-system/components/SkiaText/SkiaText';
 import { globalColors } from '@/design-system/color/palettes';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { useCleanup } from '@/hooks/useCleanup';

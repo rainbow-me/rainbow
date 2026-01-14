@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import SheetActionButton, { SheetActionButtonProps } from './SheetActionButton';
 import { analytics } from '@/analytics';
-import { Text } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
 import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
 
 import Routes from '@/navigation/routesNames';

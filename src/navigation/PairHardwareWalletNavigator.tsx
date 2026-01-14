@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BackgroundProvider } from '@/design-system';
+import { BackgroundProvider } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { PairHardwareWalletIntroSheet } from '@/screens/hardware-wallets/PairHardwareWalletIntroSheet';
 import { PairHardwareWalletSearchSheet } from '@/screens/hardware-wallets/PairHardwareWalletSearchSheet';

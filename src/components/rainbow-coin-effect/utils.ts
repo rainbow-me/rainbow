@@ -2,7 +2,7 @@ import { SkPath, SkPoint, SkRect, point } from '@shopify/react-native-skia';
 import { Easing, SharedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { ViewStyle } from 'react-native';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { globalColors } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { generateRainbowGradient } from '@/worklets/gradients';

@@ -1,6 +1,10 @@
 import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config';
-import { Box, ColorModeProvider, globalColors, Stack, Text } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { ColorModeProvider } from '@/design-system/color/ColorMode';
+import { globalColors } from '@/design-system/color/palettes';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import useENSPendingRegistrations from '@/hooks/useENSPendingRegistrations';
 import * as i18n from '@/languages';

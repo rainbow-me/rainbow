@@ -8,7 +8,8 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useColorMode, useForegroundColor } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, pulsingConfig } from '@/__swaps__/screens/Swap/constants';
 import { InputMethods, InputValues } from '@/__swaps__/types/swap';

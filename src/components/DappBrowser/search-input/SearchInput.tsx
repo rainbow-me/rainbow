@@ -2,7 +2,10 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import React, { memo, useCallback, useMemo } from 'react';
 import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
-import { AnimatedText, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
+import { globalColors } from '@/design-system/color/palettes';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import Animated, {
   AnimatedRef,
   AnimatedStyle,

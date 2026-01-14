@@ -1,7 +1,7 @@
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { globalColors } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
 
 export const TabPointsInner = ({ color = globalColors.grey100, size = 28 }: { color: string; size: number }) => {
   return (
