@@ -6,7 +6,7 @@ import Routes from '@/navigation/routesNames';
 import { Claimable as ClaimableType } from '@/resources/addys/claimables/types';
 import { getClaimableName, isRainbowEthRewards } from '@/resources/addys/claimables/utils';
 import { ChainId } from '@/state/backendNetworks/types';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { FasterImageView } from '@candlefinance/faster-image';
 import React, { memo, useMemo } from 'react';

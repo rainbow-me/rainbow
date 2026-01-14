@@ -1,6 +1,6 @@
 import { AddressOrEth, ParsedAsset } from '@/__swaps__/types/assets';
 import { HlBuilderSettings, MarketSortOrder } from '@/features/perps/types';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { Address } from 'viem';
 import { getUniqueId } from '@/utils/ethereumUtils';

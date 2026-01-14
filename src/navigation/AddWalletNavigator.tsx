@@ -1,7 +1,7 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useState } from 'react';
 import Routes from '@/navigation/routesNames';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { AddWalletSheet } from '@/screens/AddWalletSheet';
 import { ChooseWalletGroup } from '@/screens/ChooseWalletGroup';
 import { ImportOrWatchWalletSheet } from '@/screens/ImportOrWatchWalletSheet';

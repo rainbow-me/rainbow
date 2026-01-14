@@ -3,7 +3,7 @@ import { Dispatch } from 'redux';
 import { getKeyboardHeight as loadKeyboardHeights, setKeyboardHeight as saveKeyboardHeight } from '@/handlers/localstorage/globalSettings';
 import KeyboardTypes, { KeyboardType } from '@/helpers/keyboardTypes';
 import { AppGetState } from '@/redux/store';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 
 // -- Constants --------------------------------------- //
 const LOAD = 'keyboardHeight/LOAD';

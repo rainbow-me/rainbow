@@ -8,7 +8,7 @@ import { EmojiCategory } from './types';
 import { ImgixImage } from '@/components/images';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { magicMemo } from '@/utils';
+import magicMemo from '@/utils/magicMemo';
 
 const categoryKeys = Object.keys(Categories);
 

@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Inline, Inset, Text } from '@/design-system';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import { MintsFilter, getMintsFilterLabel, useMintsFilter } from '@/resources/mints';
 import { DropdownMenu, MenuConfig } from '@/components/DropdownMenu';
 

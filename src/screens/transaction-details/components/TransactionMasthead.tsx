@@ -22,7 +22,7 @@ import { fetchReverseRecord } from '@/handlers/ens';
 
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { ContactAvatar } from '@/components/contacts';
-import { isLowerCaseMatch } from '@/utils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { useContacts, useUserAccounts } from '@/hooks';

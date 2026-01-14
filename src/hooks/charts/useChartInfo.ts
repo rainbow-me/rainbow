@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { createQueryKey } from '@/react-query';
 import { SupportedCurrencyKey } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
 export type ChartTime = (typeof chartTimes)[number];

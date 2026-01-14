@@ -20,7 +20,8 @@ import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsS
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
-import { gasUtils, safeAreaInsetValues } from '@/utils';
+import gasUtils from '@/utils/gas';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { BytesLike } from '@ethersproject/bytes';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';

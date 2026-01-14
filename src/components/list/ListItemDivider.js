@@ -1,7 +1,7 @@
 import { PropTypes } from 'prop-types';
 import Divider from '@/components/Divider';
 import styled from '@/styled-thing';
-import { neverRerender } from '@/utils';
+import neverRerender from '@/utils/neverRerender';
 
 const ListItemDivider = styled(Divider).attrs(({ inset = 16, theme: { colors } }) => ({
   color: colors.rowDividerFaint,

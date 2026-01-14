@@ -21,7 +21,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { ChainId } from '@/state/backendNetworks/types';

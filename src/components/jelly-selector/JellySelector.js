@@ -4,7 +4,7 @@ import { useSharedValue, withSpring } from 'react-native-reanimated';
 import JellySelectorItem from './JellySelectorItem';
 import JellySelectorRow from './JellySelectorRow';
 import { JellySelectorColorIndicator, JellySelectorIndicator } from './jelly-selector-indicator';
-import { magicMemo } from '@/utils';
+import magicMemo from '@/utils/magicMemo';
 
 const springConfig = {
   damping: 38,

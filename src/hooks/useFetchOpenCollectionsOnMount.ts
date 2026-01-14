@@ -2,7 +2,7 @@ import { parseUniqueId } from '@/resources/nfts/utils';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { promiseUtils } from '@/utils';
+import promiseUtils from '@/utils/promise';
 import { isAddress } from '@ethersproject/address';
 import { useCallback, useEffect } from 'react';
 

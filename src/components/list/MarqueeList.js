@@ -11,7 +11,7 @@ import Animated, {
   useSharedValue,
   withDecay,
 } from 'react-native-reanimated';
-import { withSpeed } from '@/utils';
+import withSpeed from '@/utils/withSpeed';
 
 const DECCELERATION = 0.998;
 

@@ -8,7 +8,7 @@ import { useTheme } from '@/theme';
 import RainbowButtonTypes from '@/components/buttons/rainbow-button/RainbowButtonTypes';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
-import { magicMemo } from '@/utils';
+import magicMemo from '@/utils/magicMemo';
 
 const RainbowGradientColorsFactory = (darkMode: boolean) => ({
   inner: {

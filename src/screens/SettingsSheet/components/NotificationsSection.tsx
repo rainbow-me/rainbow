@@ -22,7 +22,8 @@ import { getNotificationSettingsForWalletWithAddress, setAllGlobalNotificationSe
 import { GlobalNotificationTopics, GlobalNotificationTopicType } from '@/notifications/settings/types';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
-import { abbreviations, deviceUtils } from '@/utils';
+import abbreviations from '@/utils/abbreviations';
+import deviceUtils from '@/utils/deviceUtils';
 import profileUtils from '@/utils/profileUtils';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useFocusEffect } from '@react-navigation/native';

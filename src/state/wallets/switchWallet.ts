@@ -2,7 +2,7 @@ import { toChecksumAddress } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { getWallets, setSelectedWallet } from '@/state/wallets/walletsStore';
-import { isLowerCaseMatch } from '@/utils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
 export const switchWallet = async (address: string): Promise<string | null> => {
   const wallets = getWallets();

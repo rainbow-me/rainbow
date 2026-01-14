@@ -22,7 +22,8 @@ import {
   gasUpdateToCustomGasFee,
   gasUpdateTxFee,
 } from '@/redux/gas';
-import { ethereumUtils, isLowerCaseMatch } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import {
   EXTERNAL_TOKEN_CACHE_TIME,
   EXTERNAL_TOKEN_STALE_TIME,

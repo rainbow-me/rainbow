@@ -4,7 +4,7 @@ import Toast from './Toast';
 import { useAccountSettings, useIsOffline } from '@/hooks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 
 const OfflineToast = () => {
   const isOffline = useIsOffline({ debounceMs: time.seconds(0.5) });

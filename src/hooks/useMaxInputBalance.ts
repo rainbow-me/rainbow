@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import useGas from './useGas';
-import { ethereumUtils } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { ParsedAddressAsset, UniqueAsset } from '@/entities';
 import { assetIsUniqueAsset } from '@/handlers/web3';
 

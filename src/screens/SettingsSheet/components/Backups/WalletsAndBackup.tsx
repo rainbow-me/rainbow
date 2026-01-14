@@ -24,7 +24,7 @@ import Routes from '@/navigation/routesNames';
 import { CloudBackupState, backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { formatAccountLabel, loadWallets, useWallets } from '@/state/wallets/walletsStore';
-import { abbreviations } from '@/utils';
+import abbreviations from '@/utils/abbreviations';
 import { cloudPlatform } from '@/utils/platform';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { useRoute } from '@react-navigation/native';

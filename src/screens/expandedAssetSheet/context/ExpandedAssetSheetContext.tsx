@@ -16,7 +16,7 @@ import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/ext
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useTheme } from '@/theme';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';

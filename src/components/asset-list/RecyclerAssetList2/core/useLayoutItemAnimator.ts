@@ -6,7 +6,7 @@ import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../../../fab
 import { ListFooter } from '../../../list';
 import { AssetListHeaderHeight } from '../../AssetListHeader';
 import { RecyclerListViewRef } from './ViewTypes';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 
 const easingAnimation: LayoutAnimationConfig = {
   duration: 250,

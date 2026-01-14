@@ -1,4 +1,4 @@
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { NavigationState, useNavigationStore } from '@/state/navigation/navigationStore';
 import { useUserAssetsStore } from '../assets/userAssets';

@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React, { useMemo } from 'react';
 import Text from './Text';
 import { toChecksumAddress } from '@/handlers/web3';
-import { abbreviations } from '@/utils';
+import abbreviations from '@/utils/abbreviations';
 
 const TruncatedAddress = ({ address, firstSectionLength, truncationLength, ...props }, ref) => {
   const text = useMemo(

@@ -14,7 +14,7 @@ import { LpPositionListItem } from '../components/LpPositionListItem';
 import { RootStackParamList } from '@/navigation/types';
 import { openInBrowser } from '@/utils/openInBrowser';
 import Routes from '@/navigation/routesNames';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { Navigation } from '@/navigation';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { NativeCurrencyKeys } from '@/entities';

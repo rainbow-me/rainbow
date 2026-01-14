@@ -2,7 +2,7 @@ import { NativeCurrencyKey } from '@/entities';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getWalletAddresses, useWalletsStore } from '@/state/wallets/walletsStore';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { Address } from 'viem';
 import { createQueryStore } from '../internal/createQueryStore';
 

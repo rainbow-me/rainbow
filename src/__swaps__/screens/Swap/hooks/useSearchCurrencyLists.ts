@@ -19,7 +19,9 @@ import {
 import { AddressOrEth, AssetType, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { AssetToBuySectionId, FavoritedAsset, SearchAsset, TokenToBuyListItem } from '@/__swaps__/types/search';
 import { RecentSwap } from '@/__swaps__/types/swap';
-import { isLowerCaseMatch, filterList, time } from '@/utils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
+import { filterList } from '@/utils/search';
+import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { usePopularTokensStore } from '../resources/search/discovery';
 

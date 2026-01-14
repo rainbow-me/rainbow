@@ -16,7 +16,8 @@ import { standardizeUrl, useFavoriteDappsStore } from '@/state/browser/favoriteD
 import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { getSelectedWallet, getWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
-import { ethereumUtils, profileUtils } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
+import profileUtils from '@/utils/profileUtils';
 import { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import * as kc from '@/keychain';
 import { captureException } from '@sentry/react-native';

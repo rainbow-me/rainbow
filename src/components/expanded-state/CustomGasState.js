@@ -11,7 +11,7 @@ import { useColorForAsset, useGas, useKeyboardHeight } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import FeesPanel from '@/components/FeesPanel';
 import FeesPanelTabs from '@/components/FeesPanelTabs';
 import { KeyboardType } from '@/helpers/keyboardTypes';

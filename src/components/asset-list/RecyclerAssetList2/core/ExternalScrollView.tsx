@@ -5,7 +5,7 @@ import BaseScrollView, { ScrollViewDefaultProps } from 'recyclerlistview/dist/re
 import { useMemoOne } from 'use-memo-one';
 import { useRecyclerAssetListPosition } from './Contexts';
 import { StickyHeaderContext } from './StickyHeaders';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { IS_ANDROID } from '@/env';
 
 const extraPadding = { paddingBottom: 100 + safeAreaInsetValues.bottom };

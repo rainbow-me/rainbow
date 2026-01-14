@@ -24,7 +24,7 @@ import {
   convertAmountToPercentageDisplay,
   convertRawAmountToDecimalFormat,
 } from '@/helpers/utilities';
-import { isLowerCaseMatch } from '@/utils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { RainbowToken } from '@/entities';
 import { userAssetsStore } from '@/state/assets/userAssets';

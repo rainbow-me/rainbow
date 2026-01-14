@@ -2,7 +2,7 @@ import React, { FC, ReactNode } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import FloatingEmojis from './FloatingEmojis';
 import { useClipboard } from '@/hooks';
-import { magicMemo } from '@/utils';
+import magicMemo from '@/utils/magicMemo';
 
 interface CopyFloatingEmojisProps {
   /** Child elements or nodes to render inside this component */

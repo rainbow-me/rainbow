@@ -2,7 +2,7 @@ import { QueryClient, QueryCache } from '@tanstack/react-query';
 import { PersistedClient, Persister, PersistQueryClientOptions } from '@tanstack/react-query-persist-client';
 import { debounce } from 'lodash';
 import { REACT_QUERY_STORAGE_ID, queryStorage } from '@/storage/legacy';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { logger, RainbowError } from '@/logger';
 
 class MMKVPersister implements Persister {

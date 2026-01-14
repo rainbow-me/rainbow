@@ -14,7 +14,9 @@ import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/valid
 import { Navigation } from '@/navigation';
 import { POAP_BASE_URL, RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { addressUtils, ethereumUtils, haptics } from '@/utils';
+import addressUtils from '@/utils/address';
+import ethereumUtils from '@/utils/ethereumUtils';
+import haptics from '@/utils/haptics';
 import { logger, RainbowError } from '@/logger';
 import { checkPushNotificationPermissions } from '@/notifications/permissions';
 import { pair as pairWalletConnect } from '@/walletConnect';

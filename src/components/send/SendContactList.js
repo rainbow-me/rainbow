@@ -17,7 +17,8 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { filterList, isLowerCaseMatch } from '@/utils';
+import { filterList } from '@/utils/search';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const KeyboardArea = styled.View({

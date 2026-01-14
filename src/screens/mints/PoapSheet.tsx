@@ -17,7 +17,7 @@ import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsS
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { watchingAlert } from '@/utils';
+import watchingAlert from '@/utils/watchingAlert';
 import { delay } from '@/utils/delay';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { PoapMintError } from '@/utils/poaps';

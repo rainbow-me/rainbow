@@ -7,7 +7,7 @@ import { useNavigation } from '@/navigation';
 import { removeExpiredRegistrations } from '@/redux/ensRegistration';
 import { AppState } from '@/redux/store';
 import Routes from '@/navigation/routesNames';
-import { getENSNFTAvatarUrl } from '@/utils';
+import { getENSNFTAvatarUrl } from '@/utils/ens';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 

@@ -5,7 +5,7 @@ import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam'
 import { isThreeWayMoneyline } from '@/features/polymarket/utils/marketClassification';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { ResponseByTheme } from '@/__swaps__/utils/swaps';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { fetchPriceHistory } from '../api/clobClient';
 import { fetchGammaEvent } from '../api/gammaClient';
 import {

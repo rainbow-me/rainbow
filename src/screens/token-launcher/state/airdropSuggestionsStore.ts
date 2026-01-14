@@ -1,7 +1,7 @@
 import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { GetAirdropSuggestionsResponse } from '@rainbow-me/token-launcher';
 
 // address can be initially null due to coming from redux. Should never happen by time this store is used but for types we have to handle it

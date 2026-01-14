@@ -16,7 +16,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { SystemBars } from 'react-native-edge-to-edge';
 
 const adjustConfig = {

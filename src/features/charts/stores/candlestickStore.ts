@@ -16,7 +16,7 @@ import { createQueryStore, getQueryKey } from '@/state/internal/createQueryStore
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { CacheEntry, SetDataParams } from '@/state/internal/queryStore/types';
 import { Exact } from '@/types/objects';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import {
   Bar,
   CandlestickChartMetadata,

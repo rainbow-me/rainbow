@@ -30,7 +30,8 @@ import { startTimeToSignTracking, Screens } from '@/state/performance/performanc
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { promiseUtils, safeAreaInsetValues } from '@/utils';
+import promiseUtils from '@/utils/promise';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { AddressZero } from '@ethersproject/constants';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';

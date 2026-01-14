@@ -1,7 +1,7 @@
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import useAppState from './useAppState';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 
 const listeners = new Set<React.Dispatch<React.SetStateAction<string>>>();
 

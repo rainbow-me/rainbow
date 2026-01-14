@@ -19,7 +19,7 @@ import { POLYMARKET_FEATURE_CARD_HEIGHT } from '@/components/asset-list/Recycler
 import { DISCOVER_MORE_BUTTON_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/core/DiscoverMoreButton';
 import { CardSize, UniqueTokenCardMargin } from '@/components/unique-token/CardSize';
 import { IS_IOS } from '@/env';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 
 type Dim = {
   width?: number;

@@ -3,7 +3,7 @@ import { Inline, Text, TextIcon } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 
 const SWAP_GAS_ICONS = gasUtils.SWAP_GAS_ICONS;
 

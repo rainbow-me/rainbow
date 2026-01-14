@@ -23,7 +23,7 @@ import {
   ensReverseRegistrarAddress,
 } from '@/references';
 import { colors } from '@/styles';
-import { labelhash } from '@/utils';
+import labelhash from '@/utils/labelhash';
 import { encodeContenthash, isValidContenthash } from '@/utils/contenthash';
 import { ChainId } from '@/state/backendNetworks/types';
 

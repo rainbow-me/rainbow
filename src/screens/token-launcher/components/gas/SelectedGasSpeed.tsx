@@ -3,7 +3,7 @@ import { GasSpeed } from '@/__swaps__/types/gas';
 import { Inline, Text, TextIcon } from '@/design-system';
 import * as i18n from '@/languages';
 import { IS_ANDROID } from '@/env';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 
 const SWAP_GAS_ICONS = gasUtils.SWAP_GAS_ICONS;
 

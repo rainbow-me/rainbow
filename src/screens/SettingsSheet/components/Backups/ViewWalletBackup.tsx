@@ -30,7 +30,7 @@ import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { createAccountInExistingWallet, formatAccountLabel, getIsDamagedWallet, useWallet } from '@/state/wallets/walletsStore';
-import { abbreviations } from '@/utils';
+import abbreviations from '@/utils/abbreviations';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { format } from 'date-fns';
 import React, { useCallback, useMemo, useRef } from 'react';

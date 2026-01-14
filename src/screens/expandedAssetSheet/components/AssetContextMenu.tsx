@@ -5,7 +5,7 @@ import { SheetActionButton } from '@/components/sheet';
 import { useCoinListFinishEditingOptions, useCoinListEditOptions } from '@/hooks';
 import { useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { ethereumUtils } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import EditAction from '@/helpers/EditAction';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { IS_ANDROID } from '@/env';

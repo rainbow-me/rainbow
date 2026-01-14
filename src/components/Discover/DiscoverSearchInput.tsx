@@ -11,7 +11,7 @@ import { analytics } from '@/analytics';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

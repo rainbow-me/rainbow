@@ -6,7 +6,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ThemeContextProps, useTheme } from '@/theme';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import React, { LegacyRef, useCallback, useEffect, useMemo, useRef } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { SetterOrUpdater } from 'recoil';

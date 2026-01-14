@@ -3,7 +3,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { ClaimableType } from '@/resources/addys/claimables/types';
 import { useWalletsStore, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { watchingAlert } from '@/utils';
+import watchingAlert from '@/utils/watchingAlert';
 import React, { useCallback, useMemo } from 'react';
 import { ClaimButton } from '../../shared/components/ClaimButton';
 import { ClaimPanel } from '../../shared/components/ClaimPanel';

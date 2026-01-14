@@ -2,7 +2,7 @@ import React from 'react';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { ImgixImage } from '@/components/images';
 import { HORIZONTAL_PADDING } from './DiscoverHome';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { FeaturedResult } from '@/graphql/__generated__/arc';
 import { StyleSheet } from 'react-native';
 

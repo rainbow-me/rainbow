@@ -1,5 +1,5 @@
 import { Easing } from 'react-native-reanimated';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 
 export const BORDER_THICKNESS = 2;
 export const CANVAS_VIEW_BUFFER_FACTOR = 2;

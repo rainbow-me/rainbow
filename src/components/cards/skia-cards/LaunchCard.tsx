@@ -7,7 +7,7 @@ import { globalColors } from '@/design-system/color/palettes';
 import { useCleanup } from '@/hooks/useCleanup';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
-import { watchingAlert } from '@/utils';
+import watchingAlert from '@/utils/watchingAlert';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import Navigation from '@/navigation/Navigation';
 import { DEFAULT_CARD_SIZE, SkiaCard, SkiaCardProps } from './SkiaCard';

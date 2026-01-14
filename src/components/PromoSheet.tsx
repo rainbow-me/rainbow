@@ -9,7 +9,7 @@ import { AccentColorProvider, Box, Stack, Text, Bleed, Column, Columns, useForeg
 import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { SystemBars } from 'react-native-edge-to-edge';
 
 type SheetActionButtonProps = {

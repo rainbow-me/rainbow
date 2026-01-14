@@ -9,7 +9,7 @@ import Animated, { Easing, interpolate, useAnimatedStyle } from 'react-native-re
 import { useTiming } from 'react-native-redash';
 import { ButtonPressAnimation } from '@/components/animations';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { Contact } from '@/redux/contacts';
 import { RainbowAccount } from '@/model/wallet';

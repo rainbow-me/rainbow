@@ -28,7 +28,8 @@ import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/Nano
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress, useAccountProfileInfo, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { safeAreaInsetValues, watchingAlert } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+import watchingAlert from '@/utils/watchingAlert';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
 import { useMutation } from '@tanstack/react-query';

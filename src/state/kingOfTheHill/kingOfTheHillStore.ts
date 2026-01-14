@@ -3,7 +3,7 @@ import { KingOfTheHill, KingOfTheHillRankings } from '@/graphql/__generated__/me
 import { RainbowError, logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { userAssetsStoreManager } from '../assets/userAssetsStoreManager';
 import { useNavigationStore } from '../navigation/navigationStore';
 

@@ -9,7 +9,8 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Inline } from '@/design-system';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { magicMemo, showActionSheetWithOptions } from '@/utils';
+import magicMemo from '@/utils/magicMemo';
+import showActionSheetWithOptions from '@/utils/actionsheet';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 const HairlineSpace = '\u200a';

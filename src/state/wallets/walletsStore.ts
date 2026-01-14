@@ -26,7 +26,9 @@ import {
 } from '@/model/wallet';
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
-import { isLowerCaseMatch, time, watchingAlert } from '@/utils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
+import { time } from '@/utils/time';
+import watchingAlert from '@/utils/watchingAlert';
 import { didShowWalletErrorSheetKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
 import { shallowEqual } from '@/worklets/comparisons';

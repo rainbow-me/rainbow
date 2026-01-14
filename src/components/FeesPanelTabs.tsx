@@ -3,7 +3,7 @@ import React from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useGas } from '@/hooks';
 import { colors } from '@/styles';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 import { AccentColorProvider, Box, Inline, Inset, Text } from '@/design-system';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';

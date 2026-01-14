@@ -42,7 +42,9 @@ import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDa
 import { getWalletWithAccount, setSelectedWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
-import { deviceUtils, safeAreaInsetValues, watchingAlert } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+import watchingAlert from '@/utils/watchingAlert';
 import { address } from '@/utils/abbreviations';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';

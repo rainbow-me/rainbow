@@ -1,7 +1,7 @@
 import { Dimension, Layout, LayoutManager, LayoutProvider } from 'recyclerlistview';
 import ViewDimensions from './ViewDimensions';
 import { CellType, CellTypes } from './ViewTypes';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { RainbowConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED } from '@/config';
 import { useContext } from 'react';

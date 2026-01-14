@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { EMOJIS_CONTAINER_HORIZONTAL_MARGIN, EMOJIS_TOP_OFFSET } from './constants';
 import { useTheme } from '@/theme';
-import { magicMemo } from '@/utils';
+import magicMemo from '@/utils/magicMemo';
 
 interface Props {
   emojisRows: string[][];

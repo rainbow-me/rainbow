@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import { ethereumUtils, isLowerCaseMatch } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { RainbowTransaction } from '@/entities';

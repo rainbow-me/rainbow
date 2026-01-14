@@ -20,7 +20,8 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
-import { ethereumUtils, time } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
+import { time } from '@/utils/time';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 

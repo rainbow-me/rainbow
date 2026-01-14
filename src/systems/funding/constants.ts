@@ -1,6 +1,6 @@
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { CUSTOM_KEYBOARD_HEIGHT } from '@/features/perps/components/NumberPad/NumberPad';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 // ============ Slider Constants =============================================== //

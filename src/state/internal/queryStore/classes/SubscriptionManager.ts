@@ -1,4 +1,4 @@
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 
 /**
  * Initialization config for the SubscriptionManager.

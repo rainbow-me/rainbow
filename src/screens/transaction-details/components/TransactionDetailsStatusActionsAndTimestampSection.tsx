@@ -6,7 +6,7 @@ import * as i18n from '@/languages';
 import { formatTransactionDetailsDate } from '@/screens/transaction-details/helpers/formatTransactionDetailsDate';
 import { getIconColorAndGradientForTransactionStatus } from '@/screens/transaction-details/helpers/getIconColorAndGradientForTransactionStatus';
 import { useTheme } from '@/theme';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import Routes from '@rainbow-me/routes';
 import { useNavigation } from '@/navigation/Navigation';
 import React, { useCallback, useMemo } from 'react';

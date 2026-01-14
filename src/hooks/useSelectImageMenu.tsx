@@ -9,7 +9,7 @@ import { UniqueAsset } from '@/entities';
 import { uploadImage, UploadImageReturnData } from '@/handlers/pinata';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { showActionSheetWithOptions } from '@/utils';
+import showActionSheetWithOptions from '@/utils/actionsheet';
 
 type Action = 'library' | 'nft';
 

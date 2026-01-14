@@ -4,7 +4,7 @@ import SendAssetFormField from './SendAssetFormField';
 import { useDimensions } from '@/hooks';
 import { supportedNativeCurrencies } from '@/references';
 import styled from '@/styled-thing';
-import { removeLeadingZeros } from '@/utils';
+import { removeLeadingZeros } from '@/utils/formatters';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';

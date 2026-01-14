@@ -25,7 +25,7 @@ import { DappBrowser } from '@/components/DappBrowser/DappBrowser';
 import { PointsScreen } from '@/screens/points/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen/WalletScreen';
 import { useTheme } from '@/theme';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
 import {
   MaterialTopTabBarProps,

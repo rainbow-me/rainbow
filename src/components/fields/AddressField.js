@@ -5,7 +5,8 @@ import { Input } from '../inputs';
 import { Row } from '../layout';
 import { useClipboard, useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
-import { abbreviations, addressUtils } from '@/utils';
+import abbreviations from '@/utils/abbreviations';
+import addressUtils from '@/utils/address';
 
 const AddressInput = styled(Input).attrs({
   autoCapitalize: 'none',

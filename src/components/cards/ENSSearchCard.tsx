@@ -5,7 +5,7 @@ import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useENSPendingRegistrations } from '@/hooks';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
-import { watchingAlert } from '@/utils';
+import watchingAlert from '@/utils/watchingAlert';
 import { useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';

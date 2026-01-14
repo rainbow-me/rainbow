@@ -18,7 +18,7 @@ import { ENS_DOMAIN, generateSalt, getRentPrice, REGISTRATION_STEPS } from '@/he
 import { loadWallet } from '@/model/wallet';
 import { timeUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { labelhash } from '@/utils';
+import labelhash from '@/utils/labelhash';
 import { getNextNonce } from '@/state/nonces';
 import { Hex } from 'viem';
 import { executeENSRap } from '@/raps/actions/ens';

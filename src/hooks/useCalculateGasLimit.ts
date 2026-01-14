@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { estimateGas, toHex } from '@/handlers/web3';
 import { convertHexToString, omitFlatten } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { ethereumUtils } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { hexToNumber, isHex } from 'viem';
 import { isEmpty } from 'lodash';
 import { InteractionManager } from 'react-native';

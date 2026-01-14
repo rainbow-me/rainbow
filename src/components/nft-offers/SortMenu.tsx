@@ -2,7 +2,7 @@ import React from 'react';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Inline, Inset, Text } from '@/design-system';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import { SortCriterion } from '@/graphql/__generated__/arc';
 import * as i18n from '@/languages';
 import ConditionalWrap from 'conditional-wrap';

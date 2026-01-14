@@ -11,7 +11,7 @@ import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';

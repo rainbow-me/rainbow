@@ -7,7 +7,7 @@ import { Centered } from '../layout';
 import { useColorMode, Text } from '@/design-system';
 import { useHiddenTokens } from '@/hooks';
 import { Colors } from '@/styles';
-import { isLowerCaseMatch } from '@/utils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { RainbowImage } from '../RainbowImage';
 import { logger } from '@/logger';
 

@@ -6,7 +6,8 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { ethereumUtils, magicMemo } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
+import magicMemo from '@/utils/magicMemo';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const CoinIconSize = 40;

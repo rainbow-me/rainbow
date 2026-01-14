@@ -2,7 +2,7 @@ import React, { memo, useCallback, ReactNode } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Panel, PANEL_WIDTH, TapToDismiss } from '@/components/SmoothPager/ListPanel';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { SheetHandle } from '@/components/sheet';
 import { Box, Separator, AnimatedText } from '@/design-system';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';

@@ -4,7 +4,7 @@ import { useCallback, useMemo } from 'react';
 import { useTheme } from '../theme/ThemeContext';
 import { addHexPrefix } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
-import { filterList } from '@/utils';
+import { filterList } from '@/utils/search';
 import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { ChainId } from '@/state/backendNetworks/types';

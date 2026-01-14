@@ -5,7 +5,7 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { UserAssetsStateToPersist, deserializeUserAssetsState, serializeUserAssetsState } from './persistence';
 import { FetchedUserAssetsData, UserAssetsParams, UserAssetsState } from './types';

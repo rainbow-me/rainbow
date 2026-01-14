@@ -7,7 +7,7 @@ import { useClaimablesStore } from '@/state/claimables/claimables';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { refetchWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { getAccountAddress, refreshWalletInfo } from '@/state/wallets/walletsStore';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import delay from 'delay';
 import { useCallback, useState } from 'react';
 import { useNftsStore } from '@/state/nfts/nfts';

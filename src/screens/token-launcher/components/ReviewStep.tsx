@@ -11,7 +11,7 @@ import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar'
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
-import { formatURLForDisplay } from '@/utils';
+import formatURLForDisplay from '@/utils/formatURLForDisplay';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import React, { useMemo } from 'react';

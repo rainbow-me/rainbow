@@ -1,5 +1,5 @@
 import { memoFn } from '../utils/memoFn';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 import { ChainId } from '@/state/backendNetworks/types';
 import { isL2Chain } from '@/handlers/web3';
 

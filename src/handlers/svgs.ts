@@ -4,7 +4,7 @@ import { image as cloudinaryImage } from 'cloudinary/lib/cloudinary';
 import cloudinaryConfig from 'cloudinary/lib/config';
 import { PixelRatio } from 'react-native';
 import { CLOUDINARY_API_KEY as apiKey, CLOUDINARY_API_SECRET as apiSecret, CLOUDINARY_CLOUD_NAME as cloudName } from 'react-native-dotenv';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import isSVGImage from '@/utils/isSVG';
 
 cloudinaryConfig({

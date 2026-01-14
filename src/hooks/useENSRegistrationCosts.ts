@@ -25,7 +25,8 @@ import {
 } from '@/helpers/ens';
 import { add, addBuffer, addDisplay, fromWei, greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
 import { ethUnits, timeUnits } from '@/references';
-import { ethereumUtils, gasUtils } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
+import gasUtils from '@/utils/gas';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';

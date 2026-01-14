@@ -7,7 +7,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ActionButton } from '@/screens/points/components/ActionButton';
-import { watchingAlert } from '@/utils';
+import watchingAlert from '@/utils/watchingAlert';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';

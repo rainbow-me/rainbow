@@ -17,7 +17,7 @@ import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@
 import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { sanitizeSeedPhrase } from '@/utils';
+import { sanitizeSeedPhrase } from '@/utils/formatters';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger, RainbowError } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';

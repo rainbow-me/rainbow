@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useForegroundColor } from '@/design-system';
 import { useTheme } from '@/theme';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
 

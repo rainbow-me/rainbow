@@ -11,7 +11,7 @@ import {
   LoadingSkeleton,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 const ITEM_GAP = 12;
 const ROW_HEIGHT = ITEM_HEIGHT + ITEM_GAP;

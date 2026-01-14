@@ -4,7 +4,7 @@ import { isHexString } from '@/handlers/web3';
 import { ethUnits, smartContractMethods } from '@/references';
 import { convertAmountAndPriceToNativeDisplay, convertHexToString, convertRawAmountToDecimalFormat, fromWei } from '@/helpers/utilities';
 import { logger } from '@/logger';
-import { ethereumUtils } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { isSignTypedData, SIGN, PERSONAL_SIGN, SEND_TRANSACTION, SIGN_TRANSACTION } from '@/utils/signingMethods';
 import { isAddress } from '@ethersproject/address';
 import { toUtf8String } from '@ethersproject/strings';

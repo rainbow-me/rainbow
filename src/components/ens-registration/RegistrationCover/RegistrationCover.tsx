@@ -11,7 +11,8 @@ import { UniqueAsset } from '@/entities';
 import { UploadImageReturnData } from '@/handlers/pinata';
 import { useENSModifiedRegistration, useENSRegistration, useENSRegistrationForm, useSelectImageMenu } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import { magicMemo, stringifyENSNFTRecord } from '@/utils';
+import magicMemo from '@/utils/magicMemo';
+import { stringifyENSNFTRecord } from '@/utils/ens';
 import { ENS_RECORDS } from '@/helpers/ens';
 import { ImagePickerAsset } from 'expo-image-picker';
 

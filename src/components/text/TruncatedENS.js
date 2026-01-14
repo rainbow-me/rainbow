@@ -1,7 +1,7 @@
 import * as i18n from '@/languages';
 import React from 'react';
 import Text from './Text';
-import { abbreviations } from '@/utils';
+import abbreviations from '@/utils/abbreviations';
 
 const TruncatedENS = ({ ens, truncationLength, ...props }, ref) => {
   const text = React.useMemo(
