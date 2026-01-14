@@ -1,7 +1,7 @@
-import { memo } from 'react';
+import { memo, useRef } from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 import rnbwCoinImage from '@/assets/rnbw.png';
-import Animated, { FadeIn, FadeOut, useAnimatedStyle, withDelay, withTiming } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, useAnimatedReaction, useAnimatedStyle, withDelay, withTiming } from 'react-native-reanimated';
 import { ClaimStep, ClaimSteps, useRnbwClaimContext } from '@/features/rnbw-rewards/context/RnbwClaimContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -9,6 +9,7 @@ import { time } from '@/utils/time';
 import { customEasing } from '@/features/rnbw-rewards/animations/layoutAnimations';
 import { LoadingSpinner } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/components/LoadingSpinner';
 import concentricCircleImage from '@/features/rnbw-rewards/assets/radial-circle.png';
+import { SpinnableCoin, SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/components/SpinnableCoin';
 
 const COIN_SIZE = 160;
 const SMALL_COIN_SIZE = 90;
@@ -51,6 +52,21 @@ const loadingSpinnerExitingAnimation = FadeOut.easing(customEasing);
 export const RnbwCoin = memo(function RnbwCoin() {
   const { activeStep } = useRnbwClaimContext();
   const safeAreaInsets = useSafeAreaInsets();
+  const coinRef = useRef<SpinnableCoinHandle>(null);
+
+  useAnimatedReaction(
+    () => activeStep.value,
+    (current, previous) => {
+      if (current === ClaimSteps.CheckingAirdrop && previous === ClaimSteps.Introduction) {
+        coinRef.current?.spin({ turns: 0.5, durationMs: time.seconds(1.8) });
+      } else if (current === ClaimSteps.Claim && previous === ClaimSteps.CheckingAirdrop) {
+        coinRef.current?.spin({ turns: 2, durationMs: time.seconds(3) });
+      } else if (current === ClaimSteps.NothingToClaim && previous === ClaimSteps.Claim) {
+        coinRef.current?.spin({ turns: 0.5, durationMs: time.seconds(1.8) });
+      }
+    },
+    []
+  );
 
   const coinAnimatedStyle = useAnimatedStyle(() => {
     const config = stepsConfig[activeStep.value];
@@ -87,7 +103,7 @@ export const RnbwCoin = memo(function RnbwCoin() {
       </Animated.View>
 
       <Animated.View style={[styles.coinContainer, coinAnimatedStyle]}>
-        <Image source={rnbwCoinImage} style={styles.coin} />
+        <SpinnableCoin ref={coinRef} source={rnbwCoinImage} size={COIN_SIZE} />
       </Animated.View>
 
       <CoinLoadingSpinner />
