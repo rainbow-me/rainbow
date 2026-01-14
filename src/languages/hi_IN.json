@@ -3789,17 +3789,17 @@
         "deposit_funds": "फंड जमा करें",
         "average_price": "औसत मूल्य",
         "errors": {
-          "not_enough_liquidity": "Not enough liquidity to place full order.",
-          "please_lower_amount": "Please lower the amount and try again.",
-          "no_liquidity_at_price": "No liquidity at this price."
+          "not_enough_liquidity": "पूरी ऑर्डर के लिए पर्याप्त तरलता नहीं है।",
+          "please_lower_amount": "कृपया राशि को कम करें और पुनः प्रयास करें।",
+          "no_liquidity_at_price": "इस मूल्य पर कोई तरलता नहीं है।"
         }
       },
       "manage_position": {
         "hold_to_claim": "दावे के लिए दबाए रखें",
-        "hold_to_clear": "Hold to Clear",
+        "hold_to_clear": "क्लियर करने के लिए दबाए रखें",
         "hold_to_cash_out": "नकद निकालने के लिए पकड़ें",
         "claiming": "दावा किया जा रहा है...",
-        "clearing": "Clearing...",
+        "clearing": "क्लियर कर रहा है...",
         "cashing_out": "नकद निकाला जा रहा है...",
         "confirming_order": "ऑर्डर की पुष्टि हो रही है...",
         "position_value": "स्थिति का मूल्य"
@@ -3842,7 +3842,7 @@
         "won": "जीता",
         "to_win": "जीतने के लिए",
         "claim": "दावा करें",
-        "clear": "Clear",
+        "clear": "हटाएं",
         "cash_out": "नकद निकालें",
         "no_open_positions": "कोई खुली स्थिति नहीं",
         "won_badge": "जीता",
@@ -3863,11 +3863,11 @@
         "other": "अन्य"
       },
       "sports": {
-        "vs": "vs",
-        "live": "Live",
+        "vs": "विरुद्ध",
+        "live": "लाइव",
         "game_best_of": "गेम %{currentPeriod} - %{bestOf} में सर्वश्रेष्ठ",
-        "final": "Final",
-        "no_games": "No games today or tomorrow"
+        "final": "अंतिम",
+        "no_games": "आज या कल कोई खेल नहीं"
       },
       "outcomes": {
         "yes": "हां",
@@ -3881,9 +3881,9 @@
         "failed_to_claim": "स्थिति का दावा करने में विफल। कृपया पुनः प्रयास करें।"
       },
       "account": {
-        "hide_lost_bets": "Hide Lost Bets",
-        "show_lost_bets": "Show Lost Bets",
-        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
+        "hide_lost_bets": "खोई हुई बाजियाँ छुपाएँ",
+        "show_lost_bets": "खोई हुई बाजियाँ दिखाएँ",
+        "lost_bets_dont_clear": "खोई हुई बाजियाँ स्वचालित रूप से नहीं हटती हैं। आप उन्हें नीचे साफ कर सकते हैं।"
       }
     },
     "wallet_error_sheet": {
