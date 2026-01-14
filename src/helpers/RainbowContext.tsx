@@ -11,7 +11,7 @@ import { defaultConfig, defaultConfigValues } from '@/config/experimental';
 import { useTheme } from '../theme/ThemeContext';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { logger, RainbowError } from '@/logger';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { IS_ANDROID, IS_DEV, IS_TEST } from '@/env';

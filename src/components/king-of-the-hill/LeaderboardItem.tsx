@@ -8,7 +8,7 @@ import { useColorMode } from '@/design-system/color/ColorMode';
 import { Token } from '@/graphql/__generated__/metadata';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import * as i18n from '@/languages';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import React, { memo, useMemo } from 'react';

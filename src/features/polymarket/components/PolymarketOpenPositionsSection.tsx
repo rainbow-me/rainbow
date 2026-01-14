@@ -8,7 +8,7 @@ import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { POLYMARKET_ACCENT_COLOR } from '@/features/polymarket/constants';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { StyleSheet } from 'react-native';
 import * as i18n from '@/languages';

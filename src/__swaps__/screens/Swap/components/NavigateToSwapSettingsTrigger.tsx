@@ -1,4 +1,4 @@
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { RootStackParamList } from '@/navigation/types';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';

@@ -18,7 +18,7 @@ import { useTokenLauncher } from '@/hooks/useTokenLauncher';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';

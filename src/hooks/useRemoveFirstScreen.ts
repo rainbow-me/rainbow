@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { IS_ANDROID } from '@/env';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import Routes from '@/navigation/routesNames';
 

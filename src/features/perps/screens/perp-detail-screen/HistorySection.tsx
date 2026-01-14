@@ -9,7 +9,7 @@ import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import * as i18n from '@/languages';
 import { TradeListItem } from '../../components/TradeListItem';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 
 const DEFAULT_VISIBLE_TRADE_COUNT = 10;

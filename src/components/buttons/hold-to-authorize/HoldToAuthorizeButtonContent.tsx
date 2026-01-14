@@ -27,7 +27,7 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import haptics from '@/utils/haptics';
 import ShadowStack from 'react-native-shadow-stack';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import useDimensions from '@/hooks/useDimensions';
 

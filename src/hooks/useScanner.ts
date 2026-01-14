@@ -11,7 +11,7 @@ import { useNavigation } from '../navigation/Navigation';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { analytics } from '@/analytics';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import { POAP_BASE_URL, RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import addressUtils from '@/utils/address';

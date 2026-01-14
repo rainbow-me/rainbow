@@ -11,7 +11,7 @@ import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import { getLocalBackupPassword, restoreCloudBackup, RestoreCloudBackupResultStates, saveLocalBackupPassword } from '@/model/backup';
 
-import { Navigation, useNavigation } from '@/navigation';
+import Navigation, { useNavigation } from '@/navigation/Navigation';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';

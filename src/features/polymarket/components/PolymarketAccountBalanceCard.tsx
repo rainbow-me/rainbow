@@ -7,7 +7,7 @@ import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { USDC_ICON_URL } from '@/features/perps/constants';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { View } from 'react-native';
 import { ImgixImage } from '@/components/images';

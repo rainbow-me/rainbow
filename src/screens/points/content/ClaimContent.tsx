@@ -9,7 +9,7 @@ import { useColorMode } from '@/design-system/color/ColorMode';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { ActionButton } from '@/screens/points/components/ActionButton';
 import watchingAlert from '@/utils/watchingAlert';

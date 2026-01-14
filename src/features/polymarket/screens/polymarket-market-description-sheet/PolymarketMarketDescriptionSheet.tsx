@@ -12,7 +12,7 @@ import { MarkdownText } from '@/design-system/components/MarkdownText/MarkdownTe
 import { Text } from '@/design-system/components/Text/Text';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import * as i18n from '@/languages';
-import { useUntrustedUrlOpener } from '@/navigation';
+import useUntrustedUrlOpener from '@/navigation/useUntrustedUrlOpener';
 import { useRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';

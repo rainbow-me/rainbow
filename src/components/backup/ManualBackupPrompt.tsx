@@ -9,7 +9,7 @@ import { Text } from '@/design-system/components/Text/Text';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import walletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import React, { useCallback } from 'react';

@@ -14,7 +14,7 @@ import { Text } from '@/design-system/components/Text/Text';
 import useDimensions from '@/hooks/useDimensions';
 import useHardwareBack from '@/hooks/useHardwareBack';
 import useScanner from '@/hooks/useScanner';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { usePagerPosition } from '@/navigation/ScrollPositionContext';
 import styled from '@/styled-thing';

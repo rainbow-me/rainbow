@@ -4,7 +4,7 @@ import { Bleed } from '@/design-system/components/Bleed/Bleed';
 import { Box } from '@/design-system/components/Box/Box';
 import { Stack } from '@/design-system/components/Stack/Stack';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
 import React, { useState } from 'react';

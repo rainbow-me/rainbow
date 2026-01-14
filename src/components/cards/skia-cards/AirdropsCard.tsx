@@ -26,7 +26,7 @@ import { abbreviateNumber } from '@/helpers/utilities';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useAirdropsStore } from '@/state/claimables/airdropsStore';
 import { useNavigationStore } from '@/state/navigation/navigationStore';

@@ -1,6 +1,6 @@
 import type { EthereumAddress } from '@/entities/wallet';
 import { arcClient } from '@/graphql';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
 import { WrappedAlert as Alert } from '@/helpers/alert';

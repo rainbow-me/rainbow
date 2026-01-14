@@ -7,7 +7,7 @@ import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';

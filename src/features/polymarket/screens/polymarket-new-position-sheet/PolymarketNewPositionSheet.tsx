@@ -17,7 +17,7 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import LinearGradient from 'react-native-linear-gradient';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';

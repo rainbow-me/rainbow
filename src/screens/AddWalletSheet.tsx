@@ -3,7 +3,7 @@ import { AddWalletItem } from '@/components/add-wallet/AddWalletRow';
 import { Box } from '@/design-system/components/Box/Box';
 import { globalColors } from '@/design-system/color/palettes';
 import { Inset } from '@/design-system/components/Inset/Inset';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import React from 'react';
 import * as i18n from '@/languages';

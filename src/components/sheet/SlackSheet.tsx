@@ -9,7 +9,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, { SheetHandleFixedToTopHeight } from './SheetHandleFixedToTop';
 import useDimensions from '@/hooks/useDimensions';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { IS_ANDROID, IS_IOS } from '@/env';

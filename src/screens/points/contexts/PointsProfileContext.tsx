@@ -12,7 +12,7 @@ import { metadataPOSTClient } from '@/graphql';
 import { getProvider } from '@/handlers/web3';
 import { RainbowError, logger } from '@/logger';
 import { loadWallet, signPersonalMessage } from '@/model/wallet';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { queryClient } from '@/react-query';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';

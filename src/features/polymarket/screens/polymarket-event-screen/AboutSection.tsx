@@ -11,7 +11,7 @@ import { useColorMode } from '@/design-system/color/ColorMode';
 import { CATEGORIES } from '@/features/polymarket/constants';
 import * as i18n from '@/languages';
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { format } from 'date-fns';
 import { memo, useMemo } from 'react';

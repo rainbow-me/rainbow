@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 import { logger, RainbowError } from '@/logger';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import { ChainId } from '@/state/backendNetworks/types';
 import { StoreActions } from '@/state/internal/utils/createStoreActions';
 import { useWalletsStore } from '@/state/wallets/walletsStore';

@@ -23,7 +23,7 @@ import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { RainbowAccount, createWallet } from '@/model/wallet';
-import { Navigation, useNavigation } from '@/navigation';
+import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { CloudBackupState, backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';

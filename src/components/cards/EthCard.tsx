@@ -13,7 +13,7 @@ import useColorForAsset from '@/hooks/useColorForAsset';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-charts/src';
 import { ETH_ADDRESS } from '@/references';

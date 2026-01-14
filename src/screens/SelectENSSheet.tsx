@@ -19,7 +19,7 @@ import { prefetchENSCover } from '@/hooks/useENSCover';
 import { prefetchENSRecords } from '@/hooks/useENSRecords';
 import useAccountENSDomains from '@/hooks/useAccountENSDomains';
 import { ImgixImage } from '@/components/images';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { useTheme } from '@/theme';
 import deviceUtils from '@/utils/deviceUtils';
 import { ListRenderItem, View } from 'react-native';
