@@ -10,10 +10,11 @@ import { FloatingCoins } from '@/features/rnbw-rewards/screens/rnbw-claim-screen
 import { ClaimRewardsStep } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/steps/ClaimRewardsStep';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 import { NothingToClaimStep } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/steps/NothingToClaimStep';
+import { Navbar } from '@/components/navbar/Navbar';
+import { AccountImage } from '@/components/AccountImage';
 
 export const RnbwClaimScreen = memo(function RnbwClaimScreen() {
   const safeAreaInsets = useSafeAreaInsets();
-
   return (
     <RnbwClaimContextProvider>
       <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
@@ -22,6 +23,7 @@ export const RnbwClaimScreen = memo(function RnbwClaimScreen() {
           <FloatingCoins />
           <RnbwCoin />
         </View>
+        <Navbar floating leftComponent={<AccountImage />} />
         <RnbwClaimScreenSteps />
       </View>
     </RnbwClaimContextProvider>
