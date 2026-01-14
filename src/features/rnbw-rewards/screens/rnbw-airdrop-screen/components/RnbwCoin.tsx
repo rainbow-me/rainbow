@@ -2,14 +2,14 @@ import { memo, useRef } from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import Animated, { FadeIn, FadeOut, useAnimatedReaction, useAnimatedStyle, withDelay, withTiming } from 'react-native-reanimated';
-import { ClaimStep, ClaimSteps, useRnbwClaimContext } from '@/features/rnbw-rewards/context/RnbwClaimContext';
+import { ClaimStep, ClaimSteps, useRnbwAirdropContext } from '@/features/rnbw-rewards/context/RnbwAirdropContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { time } from '@/utils/time';
 import { transitionEasing } from '@/features/rnbw-rewards/animations/layoutAnimations';
-import { LoadingSpinner } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/components/LoadingSpinner';
+import { LoadingSpinner } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/components/LoadingSpinner';
 import concentricCircleImage from '@/features/rnbw-rewards/assets/radial-circle.png';
-import { SpinnableCoin, SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/components/SpinnableCoin';
+import { SpinnableCoin, SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/components/SpinnableCoin';
 
 const COIN_SIZE = 160;
 const SMALL_COIN_SIZE = 90;
@@ -50,7 +50,7 @@ const loadingSpinnerEnteringAnimation = FadeIn.delay(timingConfig.duration * 0.5
 const loadingSpinnerExitingAnimation = FadeOut.easing(transitionEasing);
 
 export const RnbwCoin = memo(function RnbwCoin() {
-  const { activeStep } = useRnbwClaimContext();
+  const { activeStep } = useRnbwAirdropContext();
   const safeAreaInsets = useSafeAreaInsets();
   const coinRef = useRef<SpinnableCoinHandle>(null);
 
@@ -112,7 +112,7 @@ export const RnbwCoin = memo(function RnbwCoin() {
 });
 
 function CoinLoadingSpinner() {
-  const { activeStepState } = useRnbwClaimContext();
+  const { activeStepState } = useRnbwAirdropContext();
   if (activeStepState !== ClaimSteps.CheckingAirdrop) return null;
   return (
     <Animated.View style={styles.loadingSpinner} entering={loadingSpinnerEnteringAnimation} exiting={loadingSpinnerExitingAnimation}>

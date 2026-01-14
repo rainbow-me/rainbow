@@ -2,23 +2,23 @@ import { memo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
-import { ClaimSteps, useRnbwClaimContext } from '@/features/rnbw-rewards/context/RnbwClaimContext';
+import { ClaimSteps, useRnbwAirdropContext } from '@/features/rnbw-rewards/context/RnbwAirdropContext';
 import Animated from 'react-native-reanimated';
 import { time } from '@/utils/time';
 import {
   createScaleOutFadeOutSlideExitAnimation,
   createScaleInFadeInSlideEnterAnimation,
 } from '@/features/rnbw-rewards/animations/layoutAnimations';
-import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/components/RnbwCoin';
+import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/components/RnbwCoin';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: 24, delay: time.ms(200) });
 const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();
 
-export const ClaimRewardsStep = memo(function ClaimRewardsStep() {
+export const ClaimAirdropStep = memo(function ClaimAirdropStep() {
   const { isDarkMode } = useColorMode();
-  const { setActiveStep } = useRnbwClaimContext();
+  const { setActiveStep } = useRnbwAirdropContext();
 
   const [isClaiming, setIsClaiming] = useState(false);
 

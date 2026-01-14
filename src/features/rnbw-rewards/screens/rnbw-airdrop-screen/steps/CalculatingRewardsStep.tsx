@@ -2,19 +2,19 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Text } from '@/design-system';
-import { ClaimSteps, useRnbwClaimContext } from '@/features/rnbw-rewards/context/RnbwClaimContext';
+import { ClaimSteps, useRnbwAirdropContext } from '@/features/rnbw-rewards/context/RnbwAirdropContext';
 import { time } from '@/utils/time';
 import {
   createScaleOutFadeOutSlideExitAnimation,
   createScaleInFadeInSlideEnterAnimation,
 } from '@/features/rnbw-rewards/animations/layoutAnimations';
-import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/components/RnbwCoin';
+import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/components/RnbwCoin';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: -24 });
 const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();
 
-export const CalculatingRewardsStep = memo(function CalculatingRewardsStep() {
-  const { setActiveStep } = useRnbwClaimContext();
+export const CheckingAirdropStep = memo(function CheckingAirdropStep() {
+  const { setActiveStep } = useRnbwAirdropContext();
 
   const progressLabels = ['Calculating Rewards...', 'Checking Historical Activity...', 'Checking Eligibility...', ''];
   const [progressLabelIndex, setProgressLabelIndex] = useState(0);

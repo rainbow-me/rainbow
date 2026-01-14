@@ -11,16 +11,16 @@ export const ClaimSteps = {
 
 export type ClaimStep = (typeof ClaimSteps)[keyof typeof ClaimSteps];
 
-type RnbwClaimContextType = {
+type RnbwAirdropContextType = {
   activeStep: SharedValue<ClaimStep>;
   activeStepState: ClaimStep;
   setActiveStep: (step: ClaimStep) => void;
 };
 
-const RnbwClaimContext = createContext<RnbwClaimContextType | null>(null);
+const RnbwAirdropContext = createContext<RnbwAirdropContextType | null>(null);
 
 const initialStep = ClaimSteps.Introduction;
-export function RnbwClaimContextProvider({ children }: { children: ReactNode }) {
+export function RnbwAirdropContextProvider({ children }: { children: ReactNode }) {
   const activeStep = useSharedValue<ClaimStep>(initialStep);
   const [activeStepState, setActiveStepState] = useState<ClaimStep>(initialStep);
 
@@ -43,13 +43,13 @@ export function RnbwClaimContextProvider({ children }: { children: ReactNode }) 
 
   const value = useMemo(() => ({ activeStep, activeStepState, setActiveStep }), [activeStep, activeStepState, setActiveStep]);
 
-  return <RnbwClaimContext.Provider value={value}>{children}</RnbwClaimContext.Provider>;
+  return <RnbwAirdropContext.Provider value={value}>{children}</RnbwAirdropContext.Provider>;
 }
 
-export function useRnbwClaimContext(): RnbwClaimContextType {
-  const context = useContext(RnbwClaimContext);
+export function useRnbwAirdropContext(): RnbwAirdropContextType {
+  const context = useContext(RnbwAirdropContext);
   if (!context) {
-    throw new Error('useRnbwClaimContext must be used within RnbwClaimContextProvider');
+    throw new Error('useRnbwAirdropContext must be used within RnbwAirdropContextProvider');
   }
   return context;
 }

@@ -71,7 +71,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
-import { RnbwClaimScreen } from '@/features/rnbw-rewards/screens/rnbw-claim-screen/RnbwClaimScreen';
+import { RnbwAirdropScreen } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/RnbwAirdropScreen';
 
 export const BASE_TAB_BAR_HEIGHT = 52;
 export const TAB_BAR_HEIGHT = getTabBarHeight();
@@ -90,7 +90,7 @@ const TAB_BAR_ICONS = {
   [Routes.PROFILE_SCREEN]: 'tabActivity',
   [Routes.KING_OF_THE_HILL]: 'tabKingOfTheHill',
   [Routes.POINTS_SCREEN]: 'tabPoints',
-  [Routes.RNBW_REWARDS_SCREEN]: 'tabPoints',
+  [Routes.RNBW_AIRDROP_SCREEN]: 'tabPoints',
 } as const;
 
 type TabIconKey = (typeof TAB_BAR_ICONS)[keyof typeof TAB_BAR_ICONS];
@@ -115,7 +115,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const { dapp_browser, points_enabled, rnbw_rewards_enabled } = useRemoteConfig('dapp_browser', 'points_enabled', 'rnbw_rewards_enabled');
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || rnbw_rewards_enabled || IS_TEST;
-  const rewardsRouteName = rnbw_rewards_enabled ? Routes.RNBW_REWARDS_SCREEN : Routes.POINTS_SCREEN;
+  const rewardsRouteName = rnbw_rewards_enabled ? Routes.RNBW_AIRDROP_SCREEN : Routes.POINTS_SCREEN;
 
   const numberOfTabs = 3 + (showPointsTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
   const tabWidth = (deviceWidth - TAB_BAR_HORIZONTAL_INSET * 2 - TAB_BAR_INNER_PADDING * 2) / numberOfTabs;
@@ -250,7 +250,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
       stateRef.current.routes.map((route: RouteProp<ParamListBase, string>, index: number) => {
         if (
           (!showDappBrowserTab && route.name === Routes.DAPP_BROWSER_SCREEN) ||
-          (!showPointsTab && (route.name === Routes.POINTS_SCREEN || route.name === Routes.RNBW_REWARDS_SCREEN))
+          (!showPointsTab && (route.name === Routes.POINTS_SCREEN || route.name === Routes.RNBW_AIRDROP_SCREEN))
         ) {
           return null;
         }
@@ -316,7 +316,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const gradientVisibilityStyle = useAnimatedStyle(() => {
     const route = getRouteFromTabIndex(reanimatedPosition.value, rewardsRouteName);
     return {
-      opacity: withTiming(route === Routes.RNBW_REWARDS_SCREEN ? 0 : 1, TIMING_CONFIGS.slowFadeConfig),
+      opacity: withTiming(route === Routes.RNBW_AIRDROP_SCREEN ? 0 : 1, TIMING_CONFIGS.slowFadeConfig),
     };
   });
 
@@ -562,7 +562,7 @@ function getTabBackgroundColor(route: RouteProp<ParamListBase, string>['name'], 
   switch (route) {
     case Routes.DISCOVER_SCREEN:
     case Routes.DAPP_BROWSER_SCREEN:
-    case Routes.RNBW_REWARDS_SCREEN:
+    case Routes.RNBW_AIRDROP_SCREEN:
       return isDarkMode ? BROWSER_BACKGROUND_COLOR_DARK : BROWSER_BACKGROUND_COLOR_LIGHT;
     default:
       return (isDarkMode ? darkModeThemeColors : lightModeThemeColors).white;
@@ -670,9 +670,9 @@ function SwipeNavigatorScreens() {
       {showPointsTab &&
         (rnbw_rewards_enabled ? (
           <Swipe.Screen
-            component={RnbwClaimScreen}
-            name={Routes.RNBW_REWARDS_SCREEN}
-            options={{ title: TAB_BAR_ICONS[Routes.RNBW_REWARDS_SCREEN] }}
+            component={RnbwAirdropScreen}
+            name={Routes.RNBW_AIRDROP_SCREEN}
+            options={{ title: TAB_BAR_ICONS[Routes.RNBW_AIRDROP_SCREEN] }}
           />
         ) : (
           <Swipe.Screen component={PointsScreen} name={Routes.POINTS_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.POINTS_SCREEN] }} />

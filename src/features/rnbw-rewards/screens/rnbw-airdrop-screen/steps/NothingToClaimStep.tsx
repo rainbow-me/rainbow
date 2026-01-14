@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Box, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
-import { ClaimSteps, useRnbwClaimContext } from '@/features/rnbw-rewards/context/RnbwClaimContext';
+import { ClaimSteps, useRnbwAirdropContext } from '@/features/rnbw-rewards/context/RnbwAirdropContext';
 import Animated from 'react-native-reanimated';
 import { time } from '@/utils/time';
 import { createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
@@ -11,7 +11,7 @@ import { IS_DEV } from '@/env';
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: 24, delay: time.ms(200) });
 
 export const NothingToClaimStep = memo(function NothingToClaimStep() {
-  const { setActiveStep } = useRnbwClaimContext();
+  const { setActiveStep } = useRnbwAirdropContext();
 
   return (
     <View style={styles.container}>

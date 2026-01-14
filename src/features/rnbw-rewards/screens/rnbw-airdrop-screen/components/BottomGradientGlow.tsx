@@ -1,4 +1,4 @@
-import { ClaimStep, ClaimSteps, useRnbwClaimContext } from '@/features/rnbw-rewards/context/RnbwClaimContext';
+import { ClaimStep, ClaimSteps, useRnbwAirdropContext } from '@/features/rnbw-rewards/context/RnbwAirdropContext';
 import { Blur, Canvas, Group, LinearGradient, RoundedRect, vec } from '@shopify/react-native-skia';
 import { interpolate, interpolateColor, useAnimatedReaction, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { memo } from 'react';
@@ -79,7 +79,7 @@ const END_Y = GRADIENT_SEQUENCE.map(config => config.end.y);
 
 export const BottomGradientGlow = memo(function BottomGradientGlow() {
   const { width: screenWidth, height: screenHeight } = useDimensions();
-  const { activeStep } = useRnbwClaimContext();
+  const { activeStep } = useRnbwAirdropContext();
 
   const stepProgress = useSharedValue(0);
   const opacity = useSharedValue(0);
