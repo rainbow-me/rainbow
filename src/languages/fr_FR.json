@@ -3789,17 +3789,17 @@
         "deposit_funds": "Déposer des fonds",
         "average_price": "Prix moyen",
         "errors": {
-          "not_enough_liquidity": "Not enough liquidity to place full order.",
-          "please_lower_amount": "Please lower the amount and try again.",
-          "no_liquidity_at_price": "No liquidity at this price."
+          "not_enough_liquidity": "Pas assez de liquidité pour passer la commande complète.",
+          "please_lower_amount": "Veuillez réduire le montant et réessayer.",
+          "no_liquidity_at_price": "Pas de liquidité à ce prix."
         }
       },
       "manage_position": {
         "hold_to_claim": "Tenir pour Réclamer",
-        "hold_to_clear": "Hold to Clear",
+        "hold_to_clear": "Tenir pour Effacer",
         "hold_to_cash_out": "Maintenir pour encaisser",
         "claiming": "Réclamation...",
-        "clearing": "Clearing...",
+        "clearing": "Effacement...",
         "cashing_out": "Encaissement en cours...",
         "confirming_order": "Confirmation de commande...",
         "position_value": "Valeur de la position"
@@ -3842,7 +3842,7 @@
         "won": "Gagné",
         "to_win": "Pour gagner",
         "claim": "Réclamer",
-        "clear": "Clear",
+        "clear": "Effacer",
         "cash_out": "Encaisser",
         "no_open_positions": "Aucune position ouverte",
         "won_badge": "GAGNÉ",
@@ -3863,11 +3863,11 @@
         "other": "Autre"
       },
       "sports": {
-        "vs": "vs",
-        "live": "Live",
+        "vs": "contre",
+        "live": "En direct",
         "game_best_of": "Jeu %{currentPeriod} - Meilleur de %{bestOf}",
         "final": "Final",
-        "no_games": "No games today or tomorrow"
+        "no_games": "Aucun jeu aujourd'hui ou demain"
       },
       "outcomes": {
         "yes": "Yes :)",
@@ -3881,9 +3881,9 @@
         "failed_to_claim": "Échec de la réclamation de la position. Veuillez réessayer."
       },
       "account": {
-        "hide_lost_bets": "Hide Lost Bets",
-        "show_lost_bets": "Show Lost Bets",
-        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
+        "hide_lost_bets": "Masquer les paris perdus",
+        "show_lost_bets": "Afficher les paris perdus",
+        "lost_bets_dont_clear": "Les paris perdus ne sont pas supprimés automatiquement. Vous pouvez les effacer ci-dessous."
       }
     },
     "wallet_error_sheet": {
