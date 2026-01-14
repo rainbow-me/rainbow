@@ -20,7 +20,7 @@ import { NumberPad } from '@/features/perps/components/NumberPad/NumberPad';
 import { PerpsSwapButton } from '@/features/perps/components/PerpsSwapButton';
 import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
-import { SliderWithLabels } from '@/features/perps/components/Slider';
+import { SliderWithLabels } from '@/features/perps/components/Slider/SliderWithLabels';
 import { USDC_ASSET } from '@/features/perps/constants';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import * as i18n from '@/languages';
