@@ -3789,17 +3789,17 @@
         "deposit_funds": "存款资金",
         "average_price": "平均价格",
         "errors": {
-          "not_enough_liquidity": "Not enough liquidity to place full order.",
-          "please_lower_amount": "Please lower the amount and try again.",
-          "no_liquidity_at_price": "No liquidity at this price."
+          "not_enough_liquidity": "没有足够的流动性来完成整个订单。",
+          "please_lower_amount": "请减少金额后再试。",
+          "no_liquidity_at_price": "此价格没有流动性。"
         }
       },
       "manage_position": {
         "hold_to_claim": "长按领取",
-        "hold_to_clear": "Hold to Clear",
+        "hold_to_clear": "长按清除",
         "hold_to_cash_out": "按住兑现",
         "claiming": "认领中...",
-        "clearing": "Clearing...",
+        "clearing": "清除中...",
         "cashing_out": "兑现中...",
         "confirming_order": "订单确认中...",
         "position_value": "仓位价值"
@@ -3842,7 +3842,7 @@
         "won": "赢",
         "to_win": "赢得",
         "claim": "领取",
-        "clear": "Clear",
+        "clear": "清除",
         "cash_out": "兑现",
         "no_open_positions": "没有开放的头寸",
         "won_badge": "赢了",
@@ -3863,11 +3863,11 @@
         "other": "其他"
       },
       "sports": {
-        "vs": "vs",
-        "live": "Live",
+        "vs": "对",
+        "live": "直播",
         "game_best_of": "游戏 %{currentPeriod} - 最佳 %{bestOf}",
-        "final": "Final",
-        "no_games": "No games today or tomorrow"
+        "final": "最终",
+        "no_games": "今天或明天没有比赛"
       },
       "outcomes": {
         "yes": "是",
@@ -3881,9 +3881,9 @@
         "failed_to_claim": "认领头寸失败。请再试一次。"
       },
       "account": {
-        "hide_lost_bets": "Hide Lost Bets",
-        "show_lost_bets": "Show Lost Bets",
-        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
+        "hide_lost_bets": "隐藏输掉的赌注",
+        "show_lost_bets": "显示输掉的赌注",
+        "lost_bets_dont_clear": "输掉的赌注不会自动清除。您可以在下面清除它们。"
       }
     },
     "wallet_error_sheet": {
