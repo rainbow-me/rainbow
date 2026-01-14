@@ -65,7 +65,8 @@ export const ClaimRewardsStep = memo(function ClaimRewardsStep() {
             disabled={isClaiming}
             isProcessing={isClaiming}
             processingLabel="Claiming..."
-            showBiometryIcon={true}
+            showBiometryIcon={false}
+            progressColor="black"
             style={styles.button}
             size="22pt"
             weight="black"
@@ -86,7 +87,7 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 51,
-    width: 250,
+    width: 260,
     borderRadius: 26,
   },
 });

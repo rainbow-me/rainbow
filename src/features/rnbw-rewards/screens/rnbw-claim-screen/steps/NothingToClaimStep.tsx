@@ -17,7 +17,7 @@ export const NothingToClaimStep = memo(function NothingToClaimStep() {
     <View style={styles.container}>
       {IS_DEV && (
         <ButtonPressAnimation
-          style={{ position: 'absolute', top: 20, left: 20 }}
+          style={{ position: 'absolute', top: 60, left: 20 }}
           onPress={() => {
             'worklet';
             setActiveStep(ClaimSteps.Introduction);
