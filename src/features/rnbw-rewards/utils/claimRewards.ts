@@ -4,6 +4,7 @@ import { useRnbwRewardsStore } from '@/features/rnbw-rewards/screens/rnbw-reward
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet, signTypedDataMessage } from '@/model/wallet';
+import type { RainbowFetchResponse } from '@/rainbow-fetch';
 import { getPlatformClient } from '@/resources/platform/client';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
@@ -24,20 +25,21 @@ const CLAIM_FAILURE_STATUSES = new Set(['CLAIM_STATUS_FAILED']);
 
 type ClaimStatusPollResult = {
   attempts: number;
-  response: { data?: ClaimRewardsResponse };
+  response: RainbowFetchResponse<ClaimRewardsResponse>;
 };
 
 export async function claimRewards({ address, currency }: { address: Address; currency: NativeCurrencyKey }) {
   // Only base is supported for now
   const chainId = ChainId.base;
   const startedAt = Date.now();
+  const platformClient = getPlatformClient();
 
-  let intentResponse: { data?: GetClaimIntentResponse } | undefined;
-  let claimResponse: { data?: ClaimRewardsResponse } | undefined;
+  let intentResponse: RainbowFetchResponse<GetClaimIntentResponse> | undefined;
+  let claimResponse: RainbowFetchResponse<ClaimRewardsResponse> | undefined;
   let pollResult: ClaimStatusPollResult | undefined;
 
   try {
-    intentResponse = await getPlatformClient().get<GetClaimIntentResponse>('/rewards/GetClaimIntent', {
+    intentResponse = await platformClient.get<GetClaimIntentResponse>('/rewards/GetClaimIntent', {
       params: {
         walletAddress: address,
         chainId: String(chainId),
@@ -52,7 +54,7 @@ export async function claimRewards({ address, currency }: { address: Address; cu
 
     const signedIntent = await signIntent({ address, intent: intentResult.intent, chainId });
 
-    claimResponse = await getPlatformClient().post<ClaimRewardsResponse>('/rewards/ClaimRewards', {
+    claimResponse = await platformClient.post<ClaimRewardsResponse>('/rewards/ClaimRewards', {
       chainId: String(chainId),
       currency,
       walletAddress: address,
@@ -87,9 +89,9 @@ export async function claimRewards({ address, currency }: { address: Address; cu
       durationMs: Date.now() - startedAt,
       pollAttempts: pollResult.attempts,
       platformRequestIds: {
-        intent: intentResponse?.data?.metadata?.requestId,
-        claim: claimResponse?.data?.metadata?.requestId,
-        status: pollResult?.response?.data?.metadata?.requestId,
+        intent: intentResponse?.headers?.get('x-request-id') ?? undefined,
+        claim: claimResponse?.headers?.get('x-request-id') ?? undefined,
+        status: pollResult?.response?.headers?.get('x-request-id') ?? undefined,
       },
     });
 
@@ -105,11 +107,10 @@ export async function claimRewards({ address, currency }: { address: Address; cu
       status: lastStatus,
       errorMessage,
       durationMs: Date.now() - startedAt,
-      pollAttempts: pollResult?.attempts ?? 0,
       platformRequestIds: {
-        intent: intentResponse?.data?.metadata?.requestId,
-        claim: claimResponse?.data?.metadata?.requestId,
-        status: pollResult?.response?.data?.metadata?.requestId,
+        intent: intentResponse?.headers?.get('x-request-id') ?? undefined,
+        claim: claimResponse?.headers?.get('x-request-id') ?? undefined,
+        status: pollResult?.response?.headers?.get('x-request-id') ?? undefined,
       },
     });
     logger.error(new RainbowError('[claimRewards]: Failed to claim rewards', e));

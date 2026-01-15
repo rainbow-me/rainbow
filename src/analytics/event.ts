@@ -1398,7 +1398,6 @@ export type EventProperties = {
     status?: string;
     errorMessage: string;
     durationMs: number;
-    pollAttempts: number;
     platformRequestIds?: {
       intent?: string;
       claim?: string;
