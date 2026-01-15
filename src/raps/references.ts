@@ -75,6 +75,7 @@ export interface RapUnlockActionParameters {
   assetToUnlock: ParsedAsset;
   contractAddress: Address;
   chainId: number;
+  amount: string;
 }
 
 export interface RapClaimActionParameters {

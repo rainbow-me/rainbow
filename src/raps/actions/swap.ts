@@ -34,7 +34,7 @@ import {
   populateSwap,
 } from '../utils';
 
-import { assetNeedsUnlocking, estimateApprove, populateApprove } from './unlock';
+import { estimateApprove, populateApprove } from './unlock';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { swapMetadataStorage } from '../common';
 import { AddysNetworkDetails, ParsedAsset } from '@/resources/assets/types';
@@ -45,12 +45,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 
 const WRAP_GAS_PADDING = 1.002;
 
-export const estimateUnlockAndSwap = async ({
-  sellAmount,
-  quote,
-  chainId,
-  assetToSell,
-}: Pick<RapSwapActionParameters<'swap'>, 'sellAmount' | 'quote' | 'chainId' | 'assetToSell'>) => {
+export const estimateUnlockAndSwap = async ({ quote, chainId }: Pick<RapSwapActionParameters<'swap'>, 'quote' | 'chainId'>) => {
   const {
     from: accountAddress,
     sellTokenAddress,
@@ -64,21 +59,10 @@ export const estimateUnlockAndSwap = async ({
   const targetAddress = getTargetAddress(quote);
 
   let gasLimits: (string | number)[] = [];
-  let swapAssetNeedsUnlocking = false;
 
   if (allowanceNeeded) {
-    swapAssetNeedsUnlocking = await assetNeedsUnlocking({
-      owner: accountAddress,
-      amount: sellAmount,
-      assetToUnlock: assetToSell,
-      spender: targetAddress as Address,
-      chainId,
-    });
-  }
-
-  if (swapAssetNeedsUnlocking) {
     const gasLimitFromMetadata = await estimateUnlockAndSwapFromMetadata({
-      swapAssetNeedsUnlocking,
+      swapAssetNeedsUnlocking: allowanceNeeded,
       chainId,
       accountAddress,
       sellTokenAddress,
@@ -98,7 +82,7 @@ export const estimateUnlockAndSwap = async ({
 
   const swapGasLimit = await estimateSwapGasLimit({
     chainId,
-    requiresApprove: swapAssetNeedsUnlocking,
+    requiresApprove: allowanceNeeded,
     quote,
   });
 
@@ -205,6 +189,7 @@ export const estimateUnlockAndSwapFromMetadata = async ({
       tokenAddress: sellTokenAddress,
       spender: targetAddress as Address,
       chainId,
+      amount: quote.sellAmount.toString(),
     });
 
     const provider = getProvider({ chainId });
@@ -324,8 +309,6 @@ export const swap = async ({
   let gasLimit;
   try {
     gasLimit = await estimateUnlockAndSwap({
-      sellAmount,
-      assetToSell,
       chainId,
       quote,
     });

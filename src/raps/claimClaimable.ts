@@ -3,7 +3,6 @@ import { createNewAction, createNewRap } from './common';
 import { RapAction, RapSwapActionParameters } from './references';
 import { logger, RainbowError } from '@/logger';
 import { CrosschainQuote } from '@rainbow-me/swaps';
-import { assetNeedsUnlocking } from './actions';
 
 export async function createClaimClaimableRap(parameters: RapSwapActionParameters<'claimClaimable'>) {
   let actions: RapAction<'claimClaimable' | 'crosschainSwap' | 'unlock' | 'swap'>[] = [];
@@ -34,24 +33,13 @@ export async function createClaimClaimableRap(parameters: RapSwapActionParameter
     allowanceNeeded: boolean;
   };
 
-  let swapAssetNeedsUnlocking = false;
-
   if (allowanceNeeded) {
-    swapAssetNeedsUnlocking = await assetNeedsUnlocking({
-      owner: accountAddress,
-      amount: sellAmount,
-      assetToUnlock: assetToSell,
-      spender: allowanceTarget,
-      chainId,
-    });
-  }
-
-  if (swapAssetNeedsUnlocking) {
     const unlock = createNewAction('unlock', {
       fromAddress: accountAddress,
       assetToUnlock: assetToSell,
       chainId,
       contractAddress: allowanceTarget,
+      amount: sellAmount,
     });
     actions = actions.concat(unlock);
   }
@@ -60,7 +48,7 @@ export async function createClaimClaimableRap(parameters: RapSwapActionParameter
     // create a swap rap
     const swap = createNewAction('swap', {
       chainId: chainId,
-      requiresApprove: swapAssetNeedsUnlocking,
+      requiresApprove: allowanceNeeded,
       quote: quote as CrosschainQuote,
       meta: meta,
       assetToSell,
@@ -74,7 +62,7 @@ export async function createClaimClaimableRap(parameters: RapSwapActionParameter
     // create a crosschain swap rap
     const crosschainSwap = createNewAction('crosschainSwap', {
       chainId: chainId,
-      requiresApprove: swapAssetNeedsUnlocking,
+      requiresApprove: allowanceNeeded,
       quote: quote as CrosschainQuote,
       meta: meta,
       assetToSell,

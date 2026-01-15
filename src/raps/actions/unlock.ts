@@ -12,8 +12,6 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
 import { ETH_ADDRESS, gasUnits } from '@/references';
-import { ParsedAsset as SwapsParsedAsset } from '@/__swaps__/types/assets';
-import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
 import { ActionProps, RapActionResult } from '../references';
 
 import { overrideWithFastSpeedIfNeeded } from './../utils';
@@ -43,33 +41,6 @@ export const getAssetRawAllowance = async ({
     });
     return null;
   }
-};
-
-export const assetNeedsUnlocking = async ({
-  owner,
-  amount,
-  assetToUnlock,
-  spender,
-  chainId,
-}: {
-  owner: Address;
-  amount: string;
-  assetToUnlock: SwapsParsedAsset;
-  spender: Address;
-  chainId: ChainId;
-}) => {
-  if (assetToUnlock.isNativeAsset || assetToUnlock.address === ETH_ADDRESS) return false;
-
-  const allowance = await getAssetRawAllowance({
-    owner,
-    assetAddress: assetToUnlock.address,
-    spender,
-    chainId,
-  });
-
-  const rawAmount = convertAmountToRawAmount(amount, assetToUnlock.decimals);
-  const needsUnlocking = !greaterThan(allowance, rawAmount);
-  return needsUnlocking;
 };
 
 export const estimateApprove = async ({
@@ -108,16 +79,18 @@ export const populateApprove = async ({
   tokenAddress,
   spender,
   chainId,
+  amount,
 }: {
   owner: Address;
   tokenAddress: Address;
   spender: Address;
   chainId: ChainId;
+  amount: string;
 }): Promise<PopulatedTransaction | null> => {
   try {
     const provider = getProvider({ chainId });
     const tokenContract = new Contract(tokenAddress, erc20Abi, provider);
-    const approveTransaction = await tokenContract.populateTransaction.approve(spender, MaxUint256, {
+    const approveTransaction = await tokenContract.populateTransaction.approve(spender, amount, {
       from: owner,
     });
     return approveTransaction;
@@ -186,6 +159,7 @@ export const executeApprove = async ({
   spender,
   tokenAddress,
   wallet,
+  amount,
 }: {
   chainId: ChainId;
   gasLimit: string;
@@ -194,9 +168,10 @@ export const executeApprove = async ({
   spender: Address;
   tokenAddress: Address;
   wallet: Signer;
+  amount: string;
 }) => {
   const exchange = new Contract(tokenAddress, erc20Abi, wallet);
-  return exchange.approve(spender, MaxUint256, {
+  return exchange.approve(spender, amount, {
     gasLimit: toHex(gasLimit) || undefined,
     // In case it's an L2 with legacy gas price like arbitrum
     gasPrice: gasParams.gasPrice,
@@ -256,6 +231,7 @@ export const unlock = async ({
       wallet,
       nonce,
       chainId,
+      amount: parameters.amount,
     });
   } catch (e) {
     logger.error(new RainbowError('[raps/unlock]: error executeApprove'), {
@@ -285,7 +261,7 @@ export const unlock = async ({
     nonce: approval.nonce,
     status: TransactionStatus.pending,
     type: 'approve',
-    approvalAmount: 'UNLIMITED',
+    approvalAmount: parameters.amount,
     ...gasParams,
   } satisfies NewTransaction;
 

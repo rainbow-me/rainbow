@@ -3,7 +3,7 @@ import { CrosschainQuote, fillCrosschainQuote, SwapType } from '@rainbow-me/swap
 import { Address } from 'viem';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { add } from '@/helpers/utilities';
-import { assetNeedsUnlocking, estimateApprove } from './unlock';
+import { estimateApprove } from './unlock';
 
 import { REFERRER, gasUnits, ReferrerType } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -31,11 +31,9 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
 export const estimateUnlockAndCrosschainSwap = async ({
-  sellAmount,
   quote,
   chainId,
-  assetToSell,
-}: Pick<RapSwapActionParameters<'crosschainSwap'>, 'sellAmount' | 'quote' | 'chainId' | 'assetToSell'>) => {
+}: Pick<RapSwapActionParameters<'crosschainSwap'>, 'quote' | 'chainId'>) => {
   const {
     from: accountAddress,
     sellTokenAddress,
@@ -49,19 +47,8 @@ export const estimateUnlockAndCrosschainSwap = async ({
   };
 
   let gasLimits: (string | number)[] = [];
-  let swapAssetNeedsUnlocking = false;
 
   if (allowanceNeeded) {
-    swapAssetNeedsUnlocking = await assetNeedsUnlocking({
-      owner: accountAddress,
-      amount: sellAmount,
-      assetToUnlock: assetToSell,
-      spender: allowanceTarget,
-      chainId,
-    });
-  }
-
-  if (swapAssetNeedsUnlocking) {
     const unlockGasLimit = await estimateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,
@@ -73,7 +60,7 @@ export const estimateUnlockAndCrosschainSwap = async ({
 
   const swapGasLimit = await estimateCrosschainSwapGasLimit({
     chainId,
-    requiresApprove: swapAssetNeedsUnlocking,
+    requiresApprove: allowanceNeeded,
     quote,
   });
 
@@ -174,7 +161,7 @@ export const crosschainSwap = async ({
   gasParams,
   gasFeeParamsBySpeed,
 }: ActionProps<'crosschainSwap'>): Promise<RapActionResult> => {
-  const { assetToSell, sellAmount, quote, chainId } = parameters;
+  const { quote, chainId } = parameters;
 
   let gasParamsToUse = gasParams;
   if (currentRap.actions.length - 1 > index) {
@@ -188,10 +175,8 @@ export const crosschainSwap = async ({
   let gasLimit;
   try {
     gasLimit = await estimateUnlockAndCrosschainSwap({
-      sellAmount,
       quote,
       chainId,
-      assetToSell,
     });
   } catch (e) {
     logger.error(new RainbowError('[raps/crosschainSwap]: error estimateCrosschainSwapGasLimit'), {
