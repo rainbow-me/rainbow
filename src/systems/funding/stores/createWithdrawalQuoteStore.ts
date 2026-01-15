@@ -1,4 +1,5 @@
-import { CrosschainQuote, Quote, QuoteParams, Source } from '@rainbow-me/swaps';
+import { getAddress } from 'viem';
+import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteParams, Source } from '@rainbow-me/swaps';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { equalWorklet, greaterThanWorklet } from '@/safe-math/SafeMath';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -23,6 +24,7 @@ import { fetchAndValidateCrosschainQuote } from '../utils/crosschainQuote';
 import { fetchAndValidateSameChainQuote } from '../utils/sameChainQuote';
 import { resolveDefaultSlippage } from '../utils/slippage';
 import { getWithdrawalSwapRequirement, resolveTokenAddressForChain } from '../utils/withdrawalSwap';
+import { isNativeAsset } from '@/handlers/assets';
 
 // ============ Quote Store Factory ============================================ //
 
@@ -41,7 +43,9 @@ export function createWithdrawalQuoteStore<TBalanceStore extends BalanceQuerySto
     $ => {
       const tokenData = $(useTokenStore, state => state.getData());
       const selectedChainId = $(useWithdrawalStore, state => state.selectedChainId);
-      return resolveTokenAddressForChain(tokenData, selectedChainId);
+      const address = resolveTokenAddressForChain(tokenData, selectedChainId);
+      if (!address || !selectedChainId) return null;
+      return isNativeAsset(address, selectedChainId) ? ETH_ADDRESS : getAddress(address);
     },
     { fastMode: true }
   );

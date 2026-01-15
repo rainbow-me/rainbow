@@ -1,3 +1,5 @@
+import type { Address } from 'viem';
+import type { AddressOrEth } from '@/__swaps__/types/assets';
 import { IS_ANDROID } from '@/env';
 import * as chain from 'viem/chains';
 
@@ -167,7 +169,7 @@ export interface BackendNetworkServices {
   launcher: {
     v1: {
       enabled: boolean;
-      contractAddress: string;
+      contractAddress: Address;
     };
   };
 }
@@ -210,7 +212,7 @@ export interface BackendNetwork {
     };
   };
   nativeAsset: {
-    address: string;
+    address: AddressOrEth;
     name: string;
     symbol: string;
     decimals: number;
@@ -222,7 +224,7 @@ export interface BackendNetwork {
     };
   };
   nativeWrappedAsset: {
-    address: string;
+    address: Address;
     name: string;
     symbol: string;
     decimals: number;

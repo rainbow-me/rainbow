@@ -19,6 +19,7 @@ import {
 } from '../types';
 import { executeRefreshSchedule } from '../utils/scheduleRefreshes';
 import { getWithdrawalSwapRequirement, resolveTokenAddressForChain } from '../utils/withdrawalSwap';
+import { AddressOrEth } from '@/__swaps__/types/assets';
 
 // ============ Types ========================================================== //
 
@@ -176,7 +177,10 @@ function buildChainInfo(context: WithdrawalContextType<BalanceQueryStore>): With
   return { chainId, tokenAddress };
 }
 
-function resolveBuyTokenAddressFromContext(context: WithdrawalContextType<BalanceQueryStore>, chainId: ChainId | undefined): string | null {
+function resolveBuyTokenAddressFromContext(
+  context: WithdrawalContextType<BalanceQueryStore>,
+  chainId: ChainId | undefined
+): AddressOrEth | null {
   if (!context.useQuoteStore) return null;
   return resolveTokenAddressForChain(context.useTokenStore.getState().getData(), chainId);
 }
