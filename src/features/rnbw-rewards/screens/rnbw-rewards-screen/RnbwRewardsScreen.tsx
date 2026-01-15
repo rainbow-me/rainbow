@@ -1,5 +1,5 @@
 import { memo, useCallback, useState } from 'react';
-import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import { View, StyleSheet, ScrollView, RefreshControl, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Navbar } from '@/components/navbar/Navbar';
 import { AccountImage } from '@/components/AccountImage';
@@ -16,6 +16,7 @@ import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { claimRewards } from '@/features/rnbw-rewards/utils/claimRewards';
 import { time } from '@/utils/time';
+import * as i18n from '@/languages';
 
 export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
   const safeAreaInsets = useSafeAreaInsets();
@@ -66,7 +67,11 @@ function RnbwRewardsBalance() {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const handleClaimRewards = useCallback(async () => {
-    await claimRewards({ address: address, currency: nativeCurrency });
+    try {
+      await claimRewards({ address: address, currency: nativeCurrency });
+    } catch (e) {
+      Alert.alert(i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_title), i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_message));
+    }
   }, [address, nativeCurrency]);
 
   return (

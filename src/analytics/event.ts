@@ -351,6 +351,10 @@ export const event = {
   predictionsWithdrawal: 'predictions.withdrawal',
   predictionsWithdrawalFailed: 'predictions.withdrawal.failed',
   predictionsOrderMatchFailed: 'predictions.order_match.failed',
+
+  // rnbw rewards
+  rnbwRewardsClaim: 'rnbw_rewards.claim',
+  rnbwRewardsClaimFailed: 'rnbw_rewards.claim.failed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -1366,5 +1370,39 @@ export type EventProperties = {
     reason: string;
     status: string;
     errorMessage?: string;
+  };
+
+  // rnbw rewards
+  [event.rnbwRewardsClaim]: {
+    chainId: number;
+    intentId: string;
+    claimId: string;
+    claimedRnbw: string;
+    claimedValueInCurrency: string;
+    decimals: number;
+    status: string;
+    txHash?: string | null;
+    tenderlyUrl?: string | null;
+    durationMs: number;
+    pollAttempts: number;
+    platformRequestIds?: {
+      intent?: string;
+      claim?: string;
+      status?: string;
+    };
+  };
+  [event.rnbwRewardsClaimFailed]: {
+    chainId: number;
+    intentId?: string;
+    claimId?: string;
+    status?: string;
+    errorMessage: string;
+    durationMs: number;
+    pollAttempts: number;
+    platformRequestIds?: {
+      intent?: string;
+      claim?: string;
+      status?: string;
+    };
   };
 };
