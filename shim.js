@@ -214,3 +214,8 @@ if (!Promise.withResolvers) {
     return { promise, resolve, reject };
   };
 }
+
+// Fix for console-browserify breaking React Native DevTools logging in RN 0.77+
+if (global.originalConsole) {
+  global.console = global.originalConsole;
+}
