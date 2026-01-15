@@ -21,6 +21,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.17](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.17)
+
+### Added
+
+- Add Polymarket integration for predictions (https://github.com/rainbow-me/rainbow/pull/6946)
+- Improve Polymarket integration (https://github.com/rainbow-me/rainbow/pull/6969)
+
+### Changed
+
+- Improve Node.js setup instructions (https://github.com/rainbow-me/rainbow/pull/6964)
+- Bump iOS and Android to v2.0.17 (https://github.com/rainbow-me/rainbow/pull/6966)
+- Remove react-native-safe-area-view dependency (https://github.com/rainbow-me/rainbow/pull/6977)
+- Move getSquirclePath util to design system (https://github.com/rainbow-me/rainbow/pull/6968)
+
+### Fixed
+
+- Fix dapp browser messaging race condition (https://github.com/rainbow-me/rainbow/pull/6958)
+- Update rockjs iOS action to fix simulator tophat builds (https://github.com/rainbow-me/rainbow/pull/6957)
+- Fix iOS e2e CI stability (https://github.com/rainbow-me/rainbow/pull/6976)
+- Improve damaged wallet error handling (https://github.com/rainbow-me/rainbow/pull/6935)
+
 ## [2.0.16](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.16)
 
 ### Added
