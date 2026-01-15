@@ -1,4 +1,5 @@
 import { getAddress } from '@ethersproject/address';
+import type { Address, Hex } from 'viem';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { Contract } from '@ethersproject/contracts';
@@ -28,7 +29,6 @@ import { ChainId, chainAnvil } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { NftTokenType } from '@/graphql/__generated__/arc';
-import { Address } from 'viem';
 
 export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
 
@@ -160,7 +160,7 @@ export const isHexString = (value: string): boolean => isEthersHexString(value);
  * @param value The number.
  * @return The hex string.
  */
-export const toHex = (value: BigNumberish): string => BigNumber.from(value).toHexString();
+export const toHex = (value: BigNumberish): Hex => BigNumber.from(value).toHexString() as Hex;
 
 /**
  * Converts a number to a hex string without leading zeros.
