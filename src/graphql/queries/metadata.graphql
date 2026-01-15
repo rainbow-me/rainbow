@@ -206,6 +206,13 @@ query simulateTransactions($chainId: Int!, $transactions: [Transaction!], $domai
           ...target
         }
       }
+      delegation {
+        address
+        name
+        iconURL
+        created
+        sourceCodeStatus
+      }
     }
   }
 }

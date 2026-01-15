@@ -36,7 +36,7 @@ import { ClaimStatus } from '../../shared/types';
 import { analytics } from '@/analytics';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { estimateClaimUnlockSwapGasLimit } from '../estimateGas';
+import { estimateClaimUnlockSwap } from '../estimateGas';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useClaimablesStore } from '@/state/claimables/claimables';
@@ -226,7 +226,7 @@ export function TransactionClaimableContextProvider({
         return;
       }
 
-      const gasLimit = await estimateClaimUnlockSwapGasLimit({
+      const gasLimit = await estimateClaimUnlockSwap({
         chainId: claimable.chainId,
         claim: claimable.action.map(action => ({ to: action.to, from: accountAddress, data: action.data })),
         quote: quoteState.quote,
