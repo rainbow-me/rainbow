@@ -715,6 +715,7 @@ type RouteParams = {
       contractAddress: string;
     }>;
     onSuccess?: () => void;
+    revokeReason?: import('@/screens/delegation/RevokeDelegationPanel').RevokeReason;
   };
 };
 

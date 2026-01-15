@@ -22,6 +22,7 @@ import { getDelegations, DelegationStatus, delegationPreference, type ChainDeleg
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { logger, RainbowError } from '@/logger';
 import type { Address } from 'viem';
+import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
 
 type ViewWalletDelegationsParams = {
   ViewWalletDelegations: { walletId: string; address: string; title: string };
@@ -148,7 +149,7 @@ const ViewWalletDelegations = () => {
   const inactiveNetworks = delegations.filter(delegation => delegation.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED);
 
   const handleRevokeDelegation = useCallback(
-    (chainId: ChainId) => {
+    (chainId: ChainId, revokeReason: RevokeReason) => {
       const delegation = delegations.find(d => d.chainId === chainId);
       if (!delegation?.currentContract) return;
 
@@ -159,6 +160,7 @@ const ViewWalletDelegations = () => {
             contractAddress: delegation.currentContract,
           },
         ],
+        revokeReason,
       });
     },
     [delegations, navigate]
@@ -185,6 +187,7 @@ const ViewWalletDelegations = () => {
         // Navigate to revoke panel with callback to disable preference after success
         navigate(Routes.REVOKE_DELEGATION_PANEL, {
           delegationsToRevoke,
+          revokeReason: RevokeReason.DISABLE_SMART_WALLET,
           onSuccess: () => {
             // Set delegation preference to disabled after successful revocation
             setPreference(false);
@@ -238,9 +241,16 @@ const ViewWalletDelegations = () => {
   const onPressNetworkMenuItem = useCallback(
     ({ nativeEvent: { actionKey }, chainId }: NetworkMenuEvent) => {
       switch (actionKey) {
-        case NetworkMenuAction.RevokeDelegation:
-          handleRevokeDelegation(chainId);
+        case NetworkMenuAction.RevokeDelegation: {
+          // Determine the correct reason based on delegation status
+          const delegation = delegations.find(d => d.chainId === chainId);
+          const revokeReason =
+            delegation?.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED
+              ? RevokeReason.THIRD_PARTY_CONFLICT
+              : RevokeReason.REVOKE_SINGLE_NETWORK;
+          handleRevokeDelegation(chainId, revokeReason);
           break;
+        }
         case NetworkMenuAction.ViewOnExplorer:
           handleViewOnExplorer(chainId);
           break;
@@ -248,7 +258,7 @@ const ViewWalletDelegations = () => {
           break;
       }
     },
-    [handleRevokeDelegation, handleViewOnExplorer]
+    [delegations, handleRevokeDelegation, handleViewOnExplorer]
   );
 
   return (
