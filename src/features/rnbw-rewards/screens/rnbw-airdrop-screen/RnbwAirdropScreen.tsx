@@ -4,7 +4,7 @@ import { IntroductionStep } from './steps/IntroductionStep';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RnbwCoin } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/components/RnbwCoin';
 import { RnbwAirdropContextProvider, ClaimSteps, useRnbwAirdropContext } from '@/features/rnbw-rewards/context/RnbwAirdropContext';
-import { CheckingAirdropStep } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/steps/CalculatingRewardsStep';
+import { CheckingAirdropStep } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/steps/CheckingAirdropStep';
 import { BottomGradientGlow } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/components/BottomGradientGlow';
 import { FloatingCoins } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/components/FloatingCoins';
 import { ClaimAirdropStep } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/steps/ClaimAirdropStep';
