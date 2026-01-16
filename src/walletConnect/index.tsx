@@ -44,7 +44,7 @@ import { IWalletKit, WalletKit, WalletKitTypes } from '@reown/walletkit';
 import WalletConnectCore, { Core } from '@walletconnect/core';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import { buildApprovedNamespaces, getSdkError, parseUri } from '@walletconnect/utils';
-import { gretch } from 'gretchen';
+import { rainbowFetch } from '@/rainbow-fetch';
 import { uniq } from 'lodash';
 import React from 'react';
 import { InteractionManager } from 'react-native';
@@ -417,23 +417,23 @@ export async function initWalletConnectPushNotifications() {
 }
 
 async function subscribeToEchoServer({ client_id, token }: { client_id: string; token: string }) {
-  const res = await gretch(`https://wcpush.p.rainbow.me/clients`, {
-    method: 'POST',
-    json: {
-      type: 'FCM',
-      client_id,
-      token,
-    },
-  }).json();
-
-  if (res.error) {
+  try {
+    await rainbowFetch(`https://wcpush.p.rainbow.me/clients`, {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'FCM',
+        client_id,
+        token,
+      }),
+    });
+  } catch (error) {
     /*
      * Most of these appear to be network errors and timeouts. So our backend
      * should report these to Datadog, and we can leave this as a warn to
      * continue to monitor.
      */
     logger.warn(`[walletConnect]: echo server subscription failed`, {
-      error: res.error,
+      error,
     });
   }
 }

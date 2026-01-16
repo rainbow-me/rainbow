@@ -1,6 +1,6 @@
 import { NFT_API_KEY, NFT_API_URL } from 'react-native-dotenv';
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import { SimpleHashListing, SimpleHashNFT, SimpleHashMarketplaceId } from '@/resources/nfts/simplehash/types';
+import { SimpleHashNFT } from '@/resources/nfts/simplehash/types';
 import { AssetType, UniqueAsset } from '@/entities';
 import { RainbowError, logger } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -11,8 +11,6 @@ export const START_CURSOR = 'start';
 const nftApi = new RainbowFetchClient({
   baseURL: `https://${NFT_API_URL}/api/v0`,
 });
-
-const createCursorSuffix = (cursor: string) => (cursor === START_CURSOR ? '' : `&cursor=${cursor}`);
 
 export async function fetchSimpleHashNFT(
   contractAddress: string,
@@ -35,47 +33,6 @@ export async function fetchSimpleHashNFT(
     },
   });
   return response?.data;
-}
-
-export async function fetchSimpleHashNFTListing(
-  contractAddress: string,
-  tokenId: string,
-  chainId: Omit<ChainId, ChainId.goerli> = ChainId.mainnet
-): Promise<SimpleHashListing | undefined> {
-  return undefined;
-  // array of all eth listings on OpenSea for this token
-  let listings: SimpleHashListing[] = [];
-  let cursor = START_CURSOR;
-  const simplehashNetwork = useBackendNetworksStore.getState().getChainsSimplehashNetwork()[chainId as ChainId];
-
-  if (!simplehashNetwork) {
-    logger.warn(`[simplehash]: no SimpleHash for chainId: ${chainId}`);
-    return;
-  }
-
-  while (cursor) {
-    const cursorSuffix = createCursorSuffix(cursor);
-    const response = await nftApi.get(
-      // OpenSea ETH offers only for now
-      `/nfts/listings/${simplehashNetwork}/${contractAddress}/${tokenId}?marketplaces=${SimpleHashMarketplaceId.OpenSea}${cursorSuffix}`,
-      {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'x-api-key': NFT_API_KEY,
-        },
-      }
-    );
-    cursor = response?.data?.next_cursor;
-    // aggregate array of eth listings on OpenSea
-    listings = [
-      ...listings,
-      response?.data?.listings?.find((listing: SimpleHashListing) => listing?.payment_token?.payment_token_id === 'ethereum.native'),
-    ];
-  }
-  // cheapest eth listing
-  const cheapestListing = listings.reduce((prev, curr) => (curr.price < prev.price ? curr : prev));
-  return cheapestListing;
 }
 
 /**
