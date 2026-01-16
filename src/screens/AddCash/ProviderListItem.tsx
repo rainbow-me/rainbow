@@ -27,12 +27,7 @@ export function ProviderListItem({ accountAddress, config, getWidgetURL }: Provi
       const redirectUri = `https://rnbw.app/f2c?provider=${config.id}&sessionId=${sessionId}`;
       // we're only passing redirect URL to Moonpay for now
       const query = { destinationAddress: accountAddress, ...(config.id === FiatProviderName.Moonpay ? { redirectUri } : {}) };
-      const { data, error } = await getWidgetURL(config.id, query);
-
-      if (!data || error) {
-        const [{ message }] = error?.errors || [];
-        throw new Error(`F2C: URL generation failed: ${message}`);
-      }
+      const { data } = await getWidgetURL(config.id, query);
 
       const { url } = data;
 
