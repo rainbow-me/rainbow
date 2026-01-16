@@ -14,7 +14,7 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { checkKeychainIntegrity, clearWalletState, updateWallets, useWallets } from '@/state/wallets/walletsStore';
+import { clearWalletState, updateWallets, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { isAuthenticated } from '@/utils/authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -25,23 +25,30 @@ import Restart from 'react-native-restart';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
+import type { Address } from 'viem';
 
 import { addDefaultNotificationGroupSettings } from '@/notifications/settings/initialization';
 import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 import { getFCMToken } from '@/notifications/tokens';
 import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { nonceActions } from '@/state/nonces';
+import { nonceActions, getNextNonce } from '@/state/nonces';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import FastImage from 'react-native-fast-image';
 import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
 import { getAllInternetCredentials, resetInternetCredentials } from 'react-native-keychain';
+import { ChainId } from '@/state/backendNetworks/types';
+import { executeDelegation, executeRevokeDelegation, getDelegations } from '@rainbow-me/delegation';
+import { loadWallet } from '@/model/wallet';
+import { getProvider } from '@/handlers/web3';
+import { Wallet } from '@ethersproject/wallet';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
   const wallets = useWallets();
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
+  const accountAddress = useWalletsStore(state => state.accountAddress);
 
   const [loadingStates, setLoadingStates] = useState({
     clearLocalStorage: false,
@@ -137,6 +144,140 @@ const DevSection = () => {
   const clearPendingTransactions = async () => {
     pendingTransactionsActions.clearPendingTransactions();
     nonceActions.clearNonces();
+  };
+
+  const delegateOnChain = async (chainId: ChainId) => {
+    if (!accountAddress) {
+      Alert.alert('Error', 'No account address available');
+      return;
+    }
+
+    try {
+      const provider = getProvider({ chainId });
+
+      const wallet = await loadWallet({
+        address: accountAddress,
+        provider,
+      });
+
+      if (!wallet) {
+        throw new Error('Failed to load wallet');
+      }
+
+      const feeData = await provider.getFeeData();
+      const maxFeePerGas = feeData.maxFeePerGas?.toBigInt();
+      const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas?.toBigInt();
+
+      if (!maxFeePerGas || !maxPriorityFeePerGas) {
+        throw new Error('Failed to fetch gas prices from provider');
+      }
+
+      const nonce = await getNextNonce({ address: accountAddress, chainId });
+
+      // Use null for gasLimit to let the SDK estimate it automatically
+      const tx = await executeDelegation({
+        signer: wallet as Wallet,
+        address: accountAddress,
+        provider,
+        chainId,
+        calldata: '0x',
+        transactionOptions: {
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          gasLimit: null,
+        },
+        nonce,
+      });
+
+      Alert.alert('Success', `Delegation set up on chain ${chainId}. Tx: ${tx.hash}`);
+      logger.info(`[DevSection] Delegation set up on chain ${chainId}`, { hash: tx.hash });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      Alert.alert('Error', `Failed to delegate: ${errorMessage}`);
+      logger.error(new RainbowError(`[DevSection] Failed to delegate on chain ${chainId}: ${errorMessage}`));
+    }
+  };
+
+  const revokeOnChain = async (chainId: ChainId) => {
+    if (!accountAddress) {
+      Alert.alert('Error', 'No account address available');
+      return;
+    }
+
+    try {
+      const provider = getProvider({ chainId });
+
+      const wallet = await loadWallet({
+        address: accountAddress,
+        provider,
+      });
+
+      if (!wallet) {
+        throw new Error('Failed to load wallet');
+      }
+
+      const feeData = await provider.getFeeData();
+      const maxFeePerGas = feeData.maxFeePerGas?.toBigInt();
+      const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas?.toBigInt();
+
+      if (!maxFeePerGas || !maxPriorityFeePerGas) {
+        throw new Error('Failed to fetch gas prices from provider');
+      }
+
+      const nonce = await getNextNonce({ address: accountAddress, chainId });
+
+      // Use null for gasLimit to let the SDK estimate it automatically
+      const result = await executeRevokeDelegation({
+        signer: wallet as Wallet,
+        address: accountAddress,
+        provider,
+        chainId,
+        transactionOptions: {
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          gasLimit: null,
+        },
+        nonce,
+      });
+
+      Alert.alert('Success', `Delegation revoked on chain ${chainId}. Tx: ${result.hash}`);
+      logger.info(`[DevSection] Delegation revoked on chain ${chainId}`, { hash: result.hash });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      Alert.alert('Error', `Failed to revoke delegation: ${errorMessage}`);
+      logger.error(new RainbowError(`[DevSection] Failed to revoke delegation on chain ${chainId}: ${errorMessage}`));
+    }
+  };
+
+  const triggerKillSwitch = async () => {
+    if (!accountAddress) {
+      Alert.alert('Error', 'No account address available');
+      return;
+    }
+
+    try {
+      const delegationsToRevoke = await getDelegations({ address: accountAddress });
+
+      if (delegationsToRevoke.length > 0) {
+        logger.info('Delegation status required', { delegationsToRevoke });
+        Navigation.handleAction(Routes.REVOKE_DELEGATION_PANEL, {
+          delegationsToRevoke: delegationsToRevoke.map(delegation => ({
+            chainId: delegation.chainId,
+            contractAddress: delegation.currentContract as Address,
+          })),
+        });
+      } else {
+        Alert.alert(
+          'Kill Switch Simulated',
+          'No active delegations found. The revocation panel will only show if active delegations are detected.'
+        );
+        logger.debug('No active delegations found for revoke');
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      Alert.alert('Error', `Failed to simulate kill switch: ${errorMessage}`);
+      logger.error(new RainbowError(`[DevSection] Failed to simulate kill switch: ${errorMessage}`));
+    }
   };
 
   const clearLocalStorage = async () => {
@@ -409,6 +550,38 @@ const DevSection = () => {
               }}
               size={52}
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.simulate_device_transfer)} />}
+            />
+          </Menu>
+          <Menu header="Delegation Controls">
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🔗" isEmoji />}
+              onPress={() => delegateOnChain(ChainId.mainnet)}
+              size={52}
+              titleComponent={<MenuItem.Title text="Delegate (Mainnet)" />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
+              onPress={() => revokeOnChain(ChainId.mainnet)}
+              size={52}
+              titleComponent={<MenuItem.Title text="Revoke (Mainnet)" />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🔗" isEmoji />}
+              onPress={() => delegateOnChain(ChainId.base)}
+              size={52}
+              titleComponent={<MenuItem.Title text="Delegate (Base)" />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
+              onPress={() => revokeOnChain(ChainId.base)}
+              size={52}
+              titleComponent={<MenuItem.Title text="Revoke (Base)" />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🔫" isEmoji />}
+              onPress={triggerKillSwitch}
+              size={52}
+              titleComponent={<MenuItem.Title text="Trigger Kill Switch" />}
             />
           </Menu>
           <Menu header="Feature Flags">

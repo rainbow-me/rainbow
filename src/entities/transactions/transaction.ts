@@ -94,6 +94,10 @@ export interface RainbowTransaction {
     fromChainId: ChainId;
     isBridge: boolean;
   };
+  /** True when transaction uses batched execution (atomic swaps) - applies to both type 2 and type 4 */
+  batch?: boolean;
+  /** True when transaction includes a new EIP-7702 delegation (type 4 only) */
+  delegation?: boolean;
   symbol?: string | null;
   timestamp?: number; // for purchases
   title: string;
