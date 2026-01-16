@@ -57,7 +57,6 @@ const loadingSpinnerExitingAnimation = FadeOut.easing(transitionEasing);
 
 export const RnbwCoin = memo(function RnbwCoin() {
   const { activeStep } = useRnbwAirdropContext();
-  const safeAreaInsets = useSafeAreaInsets();
   const coinRef = useRef<SpinnableCoinHandle>(null);
 
   useAnimatedReaction(
@@ -106,15 +105,17 @@ export const RnbwCoin = memo(function RnbwCoin() {
     const config = stepsConfig[activeStep.value];
     const coinSize = COIN_SIZE * config.scale;
     const top = config.translateY + coinSize / 2 - BLUR_CIRCLE_SIZE / 2;
+    const opacity = activeStep.value === ClaimSteps.CheckingAirdrop ? 0 : 1;
 
     return {
+      opacity: withDelay(STEP_TRANSITION_DELAY, withTiming(opacity, timingConfig)),
       top: withDelay(STEP_TRANSITION_DELAY, withTiming(top, timingConfig)),
       transform: [{ scale: withDelay(STEP_TRANSITION_DELAY, withTiming(config.scale, timingConfig)) }],
     };
   }, [activeStep]);
 
   return (
-    <View style={[styles.container, { top: safeAreaInsets.top }]}>
+    <View style={styles.container}>
       <Animated.View style={[styles.blurContainer, blurAnimatedStyle]}>
         <View style={styles.blurCircle} />
         <BlurView

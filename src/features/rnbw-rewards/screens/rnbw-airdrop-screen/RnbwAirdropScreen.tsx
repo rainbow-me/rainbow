@@ -1,7 +1,6 @@
 import { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { IntroductionStep } from './steps/IntroductionStep';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RnbwCoin } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/components/RnbwCoin';
 import { RnbwAirdropContextProvider, ClaimSteps, useRnbwAirdropContext } from '@/features/rnbw-rewards/context/RnbwAirdropContext';
 import { CheckingAirdropStep } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/steps/CheckingAirdropStep';
@@ -14,18 +13,17 @@ import { Navbar } from '@/components/navbar/Navbar';
 import { AccountImage } from '@/components/AccountImage';
 
 export const RnbwAirdropScreen = memo(function RnbwAirdropScreen() {
-  const safeAreaInsets = useSafeAreaInsets();
   return (
     <RnbwAirdropContextProvider>
-      <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
+      <View style={styles.container}>
         <View style={StyleSheet.absoluteFill}>
           <BottomGradientGlow />
           <RnbwCoin />
           <FloatingCoins />
         </View>
-        <Navbar floating leftComponent={<AccountImage />} />
         <RnbwAirdropScreenSteps />
       </View>
+      <Navbar floating leftComponent={<AccountImage />} />
     </RnbwAirdropContextProvider>
   );
 });

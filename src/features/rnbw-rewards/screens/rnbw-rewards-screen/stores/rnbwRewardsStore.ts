@@ -48,9 +48,10 @@ export const useRnbwRewardsStore = createQueryStore<RnbwRewardsData, RnbwRewards
           tokenAmount: '0',
           nativeCurrencyAmount: '0',
         };
+      const isZero = Number(data.claimableValueInCurrency) === 0;
       return {
         tokenAmount: convertRawAmountToDecimalFormat(data.claimableRnbw, data.decimals),
-        nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(data.claimableValueInCurrency, currency, true),
+        nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(data.claimableValueInCurrency, currency, !isZero),
       };
     },
   }),

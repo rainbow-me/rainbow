@@ -3849,6 +3849,7 @@
       },
       "claim": {
         "available_to_claim": "Available to Claim",
+        "your_airdrop": "Your Airdrop",
         "based_on_your_swaps": "Based on Your Swaps and the %{points} Rainbow Points you've Earned Over Time. You're Ranked #%{rank} on the Leaderboard.",
         "claim_failed_title": "Error Claiming Rewards",
         "claim_failed_message": "Please try again."
