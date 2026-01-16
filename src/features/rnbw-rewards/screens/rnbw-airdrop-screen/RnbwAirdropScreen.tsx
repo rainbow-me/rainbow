@@ -20,8 +20,8 @@ export const RnbwAirdropScreen = memo(function RnbwAirdropScreen() {
       <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
         <View style={StyleSheet.absoluteFill}>
           <BottomGradientGlow />
-          <FloatingCoins />
           <RnbwCoin />
+          <FloatingCoins />
         </View>
         <Navbar floating leftComponent={<AccountImage />} />
         <RnbwAirdropScreenSteps />

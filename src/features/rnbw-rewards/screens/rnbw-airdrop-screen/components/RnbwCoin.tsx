@@ -10,6 +10,8 @@ import { transitionEasing } from '@/features/rnbw-rewards/animations/layoutAnima
 import { LoadingSpinner } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/components/LoadingSpinner';
 import concentricCircleImage from '@/features/rnbw-rewards/assets/radial-circle.png';
 import { SpinnableCoin, SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/components/SpinnableCoin';
+import { BlurView } from 'react-native-blur-view';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
 const COIN_SIZE = 160;
 const SMALL_COIN_SIZE = 90;
@@ -20,6 +22,11 @@ const MEDIUM_COIN_SCALE = MEDIUM_COIN_SIZE / COIN_SIZE;
 
 const CONCENTRIC_CIRCLE_SIZE = 633;
 const INNERMOST_CIRCLE_SIZE = 182;
+const BLUR_INTENSITY = 94 / 2;
+const BLUR_EXTENT = BLUR_INTENSITY * 3;
+const BLUR_CIRCLE_SIZE = 224;
+
+const STEP_TRANSITION_DELAY = time.ms(100);
 
 const stepsConfig: Record<ClaimStep, { scale: number; translateY: number }> = {
   [ClaimSteps.Introduction]: {
@@ -45,7 +52,6 @@ const loadingSpinnerTop =
   (LOADING_SPINNER_SIZE - COIN_SIZE * stepsConfig[ClaimSteps.CheckingAirdrop].scale) / 2;
 
 const timingConfig = { duration: time.seconds(1), easing: transitionEasing };
-const delay = time.ms(100);
 const loadingSpinnerEnteringAnimation = FadeIn.delay(timingConfig.duration * 0.5).easing(transitionEasing);
 const loadingSpinnerExitingAnimation = FadeOut.easing(transitionEasing);
 
@@ -72,8 +78,8 @@ export const RnbwCoin = memo(function RnbwCoin() {
     const config = stepsConfig[activeStep.value];
     return {
       transform: [
-        { translateY: withDelay(delay, withTiming(config.translateY, timingConfig)) },
-        { scale: withDelay(delay, withTiming(config.scale, timingConfig)) },
+        { translateY: withDelay(STEP_TRANSITION_DELAY, withTiming(config.translateY, timingConfig)) },
+        { scale: withDelay(STEP_TRANSITION_DELAY, withTiming(config.scale, timingConfig)) },
       ],
     };
   }, [activeStep]);
@@ -90,14 +96,42 @@ export const RnbwCoin = memo(function RnbwCoin() {
 
     return {
       transform: [
-        { translateY: withDelay(delay, withTiming(top, timingConfig)) },
-        { scale: withDelay(delay, withTiming(config.scale, timingConfig)) },
+        { translateY: withDelay(STEP_TRANSITION_DELAY, withTiming(top, timingConfig)) },
+        { scale: withDelay(STEP_TRANSITION_DELAY, withTiming(config.scale, timingConfig)) },
       ],
+    };
+  }, [activeStep]);
+
+  const blurAnimatedStyle = useAnimatedStyle(() => {
+    const config = stepsConfig[activeStep.value];
+    const coinSize = COIN_SIZE * config.scale;
+    const top = config.translateY + coinSize / 2 - BLUR_CIRCLE_SIZE / 2;
+
+    return {
+      top: withDelay(STEP_TRANSITION_DELAY, withTiming(top, timingConfig)),
+      transform: [{ scale: withDelay(STEP_TRANSITION_DELAY, withTiming(config.scale, timingConfig)) }],
     };
   }, [activeStep]);
 
   return (
     <View style={[styles.container, { top: safeAreaInsets.top }]}>
+      <Animated.View style={[styles.blurContainer, blurAnimatedStyle]}>
+        <View style={styles.blurCircle} />
+        <BlurView
+          style={[
+            styles.blurView,
+            {
+              top: -BLUR_EXTENT,
+              left: -BLUR_EXTENT,
+              right: -BLUR_EXTENT,
+              bottom: -BLUR_EXTENT,
+            },
+          ]}
+          blurStyle="plain"
+          blurIntensity={BLUR_INTENSITY}
+        />
+      </Animated.View>
+
       <Animated.View style={[styles.concentricCircleContainer, concentricCircleAnimatedStyle]}>
         <Image source={concentricCircleImage} style={styles.concentricCircle} />
       </Animated.View>
@@ -187,5 +221,23 @@ const styles = StyleSheet.create({
   concentricCircle: {
     width: CONCENTRIC_CIRCLE_SIZE,
     height: CONCENTRIC_CIRCLE_SIZE,
+  },
+  blurContainer: {
+    position: 'absolute',
+    left: DEVICE_WIDTH / 2 - BLUR_CIRCLE_SIZE / 2,
+    width: BLUR_CIRCLE_SIZE,
+    height: BLUR_CIRCLE_SIZE,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'visible',
+  },
+  blurCircle: {
+    width: BLUR_CIRCLE_SIZE,
+    height: BLUR_CIRCLE_SIZE,
+    borderRadius: BLUR_CIRCLE_SIZE / 2,
+    backgroundColor: opacityWorklet('#F6D56B', 0.2),
+  },
+  blurView: {
+    position: 'absolute',
   },
 });
