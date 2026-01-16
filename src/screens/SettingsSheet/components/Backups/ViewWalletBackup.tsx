@@ -48,6 +48,7 @@ type ViewWalletBackupParams = {
 };
 
 const enum WalletMenuAction {
+  EditSmartWallet = 'edit_smart_wallet',
   ViewPrivateKey = 'view_private_key',
   CopyWalletAddress = 'copy_wallet_address',
 }
@@ -237,6 +238,14 @@ const ViewWalletBackup = () => {
     menuTitle: '',
     menuItems: [
       {
+        actionKey: WalletMenuAction.EditSmartWallet,
+        actionTitle: i18n.t(i18n.l.wallet.back_ups.edit_smart_wallet),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'gearshape',
+        },
+      },
+      {
         actionKey: WalletMenuAction.ViewPrivateKey,
         actionTitle: i18n.t(i18n.l.wallet.back_ups.view_private_key),
         icon: {
@@ -257,6 +266,21 @@ const ViewWalletBackup = () => {
 
   const onPressMenuItem = ({ nativeEvent: { actionKey: menuAction }, account }: MenuEvent) => {
     switch (menuAction) {
+      case WalletMenuAction.EditSmartWallet: {
+        const title =
+          formatAccountLabel({
+            address: account.address,
+            ens: abbreviations.abbreviateEnsForDisplay(account.ens ?? undefined, 8, 4),
+            label: account.label,
+          }) || abbreviations.address(account.address, 6, 4);
+
+        navigate(Routes.VIEW_WALLET_DELEGATIONS, {
+          walletId,
+          address: account.address,
+          title: title ?? '',
+        });
+        break;
+      }
       case WalletMenuAction.ViewPrivateKey: {
         const title =
           formatAccountLabel({
