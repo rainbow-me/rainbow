@@ -18,6 +18,7 @@ import { logger, RainbowError } from '@/logger';
 import * as i18n from '@/languages';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { ProviderListItem } from './ProviderListItem';
+import { FiatProviderName } from '@/entities/f2c';
 
 const deviceHeight = deviceUtils.dimensions.height;
 
@@ -47,7 +48,7 @@ export function AddCashSheet() {
         throw new Error(e.message);
       }
 
-      return data.providers;
+      return data.providers?.filter(p => Object.values(FiatProviderName).includes(p.id));
     },
     {
       staleTime: 1000 * 60, // one min
