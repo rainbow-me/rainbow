@@ -7,7 +7,9 @@ import { MAX_SIG_FIGS, MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/features/p
 export function formatTriggerOrderInput(text: string, sizeDecimals: number, marketType: 'perp' | 'spot' = 'perp'): string {
   'worklet';
 
-  const cleanedText = text.replace(/[^0-9.]/g, '');
+  // Normalize locale decimal separators (e.g., "0,001" -> "0.001")
+  const normalized = text.replace(/,/g, '.');
+  const cleanedText = normalized.replace(/[^0-9.]/g, '');
 
   if (!cleanedText) return '';
 
