@@ -42,6 +42,7 @@ import { ScrollView } from 'react-native';
 import { HlTrade, PerpMarket, PerpsPosition, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
 import { PolymarketPosition } from '@/features/polymarket/types';
 import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
 
 export type PortalSheetProps = {
   children: React.FC;
@@ -709,6 +710,7 @@ type RouteParams = {
       contractAddress: Address;
     }>;
     onSuccess?: () => void;
+    revokeReason?: RevokeReason;
   };
 };
 

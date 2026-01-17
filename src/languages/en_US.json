@@ -2991,6 +2991,30 @@
         "view_private_key": "View Private Key",
         "copy_wallet_address": "Copy wallet address"
       },
+      "delegations": {
+        "revoke_panel": {
+          "disable_title": "Disable Smart Wallet",
+          "disable_subtitle": "This will revoke all active delegations and disable Smart Wallet features.",
+          "disable_button": "Hold to Disable",
+          "revoke_network_title": "Disable on %{network}",
+          "revoke_network_subtitle": "This will remove the Smart Wallet delegation for this network.",
+          "revoke_network_button": "Hold to Revoke",
+          "conflict_title": "Disable Account",
+          "conflict_subtitle": "Your wallet is delegated to a different Smart Wallet. Disable to use Rainbow.",
+          "conflict_button": "Hold to Disable",
+          "security_title": "Security Alert",
+          "security_subtitle": "An unknown delegation was detected. Revoke it to secure your wallet.",
+          "security_button": "Hold to Revoke",
+          "settings_title": "Revoke Delegation",
+          "settings_subtitle": "Remove delegation from this contract.",
+          "settings_button": "Hold to Revoke",
+          "revoking": "Revoking...",
+          "done": "Done",
+          "next": "Next",
+          "try_again": "Try Again",
+          "gas_fee": "to revoke on %{chainName}"
+        }
+      },
       "balance_title": "Balance",
       "buy": "Buy",
       "change_wallet": {
