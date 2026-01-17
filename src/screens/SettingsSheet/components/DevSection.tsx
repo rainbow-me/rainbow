@@ -13,7 +13,7 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { checkKeychainIntegrity, clearWalletState, updateWallets, useWallets } from '@/state/wallets/walletsStore';
+import { clearWalletState, updateWallets, useWallets } from '@/state/wallets/walletsStore';
 import { isAuthenticated } from '@/utils/authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -29,6 +29,7 @@ import { addDefaultNotificationGroupSettings } from '@/notifications/settings/in
 import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 import { getFCMToken } from '@/notifications/tokens';
 import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
+import { resetCache as resetDelegationCache } from '@rainbow-me/delegation';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { nonceActions } from '@/state/nonces';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
@@ -275,6 +276,12 @@ const DevSection = () => {
               onPress={() => clearReactQueryCache()}
               size={52}
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.clear_react_query_cache)} />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🗑️" isEmoji />}
+              onPress={() => resetDelegationCache()}
+              size={52}
+              titleComponent={<MenuItem.Title text="Delegation Store Reset" />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
