@@ -1,6 +1,6 @@
 import React, { ForwardedRef, forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { PanGestureHandler } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   DerivedValue,
   SharedValue,
@@ -9,7 +9,6 @@ import Animated, {
   interpolate,
   runOnJS,
   runOnUI,
-  useAnimatedGestureHandler,
   useAnimatedReaction,
   useAnimatedRef,
   useAnimatedStyle,
@@ -254,84 +253,100 @@ const SmoothPagerComponent = (
     return { transform: [{ translateX }] };
   });
 
-  const swipeGestureHandler = useAnimatedGestureHandler({
-    onStart: (
-      _,
-      context: {
-        startPage?: number;
-        startX?: number;
-        maxForwardIndex?: number;
-        canSwipeForward?: boolean;
-      }
-    ) => {
-      context.canSwipeForward = undefined;
-      context.maxForwardIndex = undefined;
-      context.startPage = undefined;
-      context.startX = undefined;
-    },
+  const startPage = useSharedValue<number | null>(null);
+  const startX = useSharedValue<number | null>(null);
+  const maxForwardIndex = useSharedValue<number | null>(null);
+  const canSwipeForward = useSharedValue<boolean | null>(null);
 
-    onActive: (event, context) => {
-      if (context.startPage === undefined) {
-        context.startPage = downscalePagerIndex(currentPageIndex.value);
+  const swipeGesture = useMemo(() => {
+    const gesture = Gesture.Pan()
+      .activeOffsetX([-5, 5])
+      .failOffsetY([-12, 12])
+      .enabled(enableSwipeToGoBack || enableSwipeToGoForward !== false)
+      .onBegin(() => {
+        startPage.value = null;
+        startX.value = null;
+        maxForwardIndex.value = null;
+        canSwipeForward.value = null;
+      })
+      .onUpdate(event => {
+        if (startPage.value === null) {
+          startPage.value = downscalePagerIndex(currentPageIndex.value);
 
-        if (enableSwipeToGoForward === 'always') {
-          context.canSwipeForward = true;
-          context.maxForwardIndex = numberOfPages - 1;
-        } else if (enableSwipeToGoForward) {
-          context.canSwipeForward = deepestReachedPageIndex.value > context.startPage;
-          context.maxForwardIndex = deepestReachedPageIndex.value;
-        } else {
-          context.canSwipeForward = false;
-          context.maxForwardIndex = context.startPage;
+          if (enableSwipeToGoForward === 'always') {
+            canSwipeForward.value = true;
+            maxForwardIndex.value = numberOfPages - 1;
+          } else if (enableSwipeToGoForward) {
+            canSwipeForward.value = deepestReachedPageIndex.value > startPage.value;
+            maxForwardIndex.value = deepestReachedPageIndex.value;
+          } else {
+            canSwipeForward.value = false;
+            maxForwardIndex.value = startPage.value;
+          }
         }
-      }
 
-      if (context.startX === undefined) context.startX = event.translationX;
+        if (startX.value === null) startX.value = event.translationX;
 
-      const dragDistance = event.translationX - context.startX;
-      const dragPages = dragDistance / (DEVICE_WIDTH + pageGap);
-      let newPageIndex = context.startPage - dragPages;
+        const dragDistance = event.translationX - (startX.value ?? 0);
+        const dragPages = dragDistance / (DEVICE_WIDTH + pageGap);
+        let newPageIndex = (startPage.value ?? 0) - dragPages;
 
-      const minIndex = enableSwipeToGoBack ? 0 : context.startPage;
-      const maxIndex = context.maxForwardIndex ?? numberOfPages - 1;
+        const minIndex = enableSwipeToGoBack ? 0 : startPage.value ?? 0;
+        const maxIndex = maxForwardIndex.value ?? numberOfPages - 1;
 
-      newPageIndex = clamp(newPageIndex, minIndex, maxIndex);
-      currentPageIndex.value = upscalePagerIndex(newPageIndex);
-    },
+        newPageIndex = clamp(newPageIndex, minIndex, maxIndex);
+        currentPageIndex.value = upscalePagerIndex(newPageIndex);
+      })
+      .onEnd(event => {
+        if (startPage.value === null) return;
 
-    onEnd: (event, context) => {
-      if (context.startPage === undefined) return;
+        const swipeVelocityThreshold = 300;
+        const velocity = event.velocityX;
+        let targetIndex = downscalePagerIndex(currentPageIndex.value);
 
-      const swipeVelocityThreshold = 300;
-      const velocity = event.velocityX;
-      let targetIndex = downscalePagerIndex(currentPageIndex.value);
+        if (velocity < -swipeVelocityThreshold && canSwipeForward.value) {
+          targetIndex = Math.ceil(targetIndex);
+        } else if (velocity > swipeVelocityThreshold && enableSwipeToGoBack) {
+          targetIndex = Math.floor(targetIndex);
+        } else {
+          targetIndex = Math.round(targetIndex);
+        }
 
-      if (velocity < -swipeVelocityThreshold && context.canSwipeForward) {
-        targetIndex = Math.ceil(targetIndex);
-      } else if (velocity > swipeVelocityThreshold && enableSwipeToGoBack) {
-        targetIndex = Math.floor(targetIndex);
-      } else {
-        targetIndex = Math.round(targetIndex);
-      }
+        const minIndex = enableSwipeToGoBack ? 0 : startPage.value;
+        const maxIndex = maxForwardIndex.value ?? numberOfPages - 1;
 
-      const minIndex = enableSwipeToGoBack ? 0 : context.startPage;
-      const maxIndex = context.maxForwardIndex ?? numberOfPages - 1;
+        targetIndex = clamp(targetIndex, minIndex ?? 0, maxIndex);
 
-      targetIndex = clamp(targetIndex, minIndex, maxIndex);
+        animateIndex(targetIndex, -velocity);
+        if (onNewIndex) runOnJS(onNewIndex)(targetIndex);
+      });
 
-      animateIndex(targetIndex, -velocity);
-      if (onNewIndex) runOnJS(onNewIndex)(targetIndex);
-    },
-  });
+    if (waitFor) {
+      const refs = Array.isArray(waitFor) ? waitFor : [waitFor];
+      refs.forEach(ref => {
+        gesture.requireExternalGestureToFail(ref as never);
+      });
+    }
+
+    return gesture;
+  }, [
+    animateIndex,
+    canSwipeForward,
+    currentPageIndex,
+    deepestReachedPageIndex,
+    enableSwipeToGoBack,
+    enableSwipeToGoForward,
+    maxForwardIndex,
+    numberOfPages,
+    onNewIndex,
+    pageGap,
+    startPage,
+    startX,
+    waitFor,
+  ]);
 
   return (
-    <PanGestureHandler
-      activeOffsetX={[-5, 5]}
-      enabled={enableSwipeToGoBack || enableSwipeToGoForward !== false}
-      failOffsetY={[-12, 12]}
-      onGestureEvent={swipeGestureHandler}
-      waitFor={waitFor}
-    >
+    <GestureDetector gesture={swipeGesture}>
       <Animated.View style={styles.pagerContainer}>
         <Animated.View
           style={[
@@ -386,7 +401,7 @@ const SmoothPagerComponent = (
           })}
         </Animated.View>
       </Animated.View>
-    </PanGestureHandler>
+    </GestureDetector>
   );
 };
 

@@ -318,5 +318,7 @@
 	<string>$(BRANCH_APP_DOMAIN)</string>
 	<key>branch_key</key>
 	<string>$(BRANCH_KEY)</string>
+	<key>ReactNativeReleaseLevel</key>
+	<string>experimental</string>
 </dict>
 </plist>

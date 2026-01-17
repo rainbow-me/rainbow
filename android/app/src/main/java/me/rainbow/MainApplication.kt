@@ -10,8 +10,9 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactPackage
-import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
 import com.facebook.react.defaults.DefaultReactNativeHost
+import com.facebook.react.common.ReleaseLevel
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import com.facebook.soloader.SoLoader
 import io.branch.rnbranch.RNBranchModule
@@ -60,6 +61,7 @@ class MainApplication : Application(), ReactApplication {
         ReactNativePerformance.onAppStarted();
         super.onCreate()
         appContext = this
+        DefaultNewArchitectureEntryPoint.releaseLevel = ReleaseLevel.EXPERIMENTAL
         loadReactNative(this)
         // Branch logging for debugging
         RNBranchModule.enableLogging()

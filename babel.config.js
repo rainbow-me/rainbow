@@ -37,7 +37,7 @@ module.exports = function (api) {
     'date-fns',
     'graphql-tag',
     ['lodash', { id: ['lodash', 'recompact'] }],
-    'react-native-reanimated/plugin',
+    'react-native-worklets/plugin',
   ];
 
   // We don't want dotenv transform for unit tests.

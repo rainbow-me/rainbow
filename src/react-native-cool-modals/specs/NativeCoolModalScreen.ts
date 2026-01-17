@@ -1,6 +1,4 @@
-import { type ColorValue, type ViewProps } from 'react-native';
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
-import { type DirectEventHandler, type Double, type Int32, type WithDefault } from 'react-native/Libraries/Types/CodegenTypes';
+import { type ColorValue, type ViewProps, codegenNativeComponent, type CodegenTypes } from 'react-native';
 
 type StackPresentation =
   | 'push'
@@ -18,36 +16,36 @@ type TouchTopEvent = Readonly<{
 }>;
 
 export interface NativeProps extends ViewProps {
-  allowsDragToDismiss?: WithDefault<boolean, true>;
-  allowsTapToDismiss?: WithDefault<boolean, true>;
-  anchorModalToLongForm?: WithDefault<boolean, false>;
-  backgroundOpacity?: WithDefault<Double, 0.7>;
-  blocksBackgroundTouches?: WithDefault<boolean, true>;
-  cornerRadius?: Double;
-  customStack?: WithDefault<boolean, false>;
-  disableShortFormAfterTransitionToLongForm?: WithDefault<boolean, false>;
-  dismissable?: WithDefault<boolean, true>;
-  gestureEnabled?: WithDefault<boolean, true>;
-  headerHeight?: Double;
-  hidden?: WithDefault<boolean, false>;
-  ignoreBottomOffset?: WithDefault<boolean, false>;
-  interactWithScrollView?: WithDefault<boolean, true>;
-  isShortFormEnabled?: WithDefault<boolean, false>;
-  longFormHeight?: Double;
+  allowsDragToDismiss?: CodegenTypes.WithDefault<boolean, true>;
+  allowsTapToDismiss?: CodegenTypes.WithDefault<boolean, true>;
+  anchorModalToLongForm?: CodegenTypes.WithDefault<boolean, false>;
+  backgroundOpacity?: CodegenTypes.WithDefault<CodegenTypes.Double, 0.7>;
+  blocksBackgroundTouches?: CodegenTypes.WithDefault<boolean, true>;
+  cornerRadius?: CodegenTypes.Double;
+  customStack?: CodegenTypes.WithDefault<boolean, false>;
+  disableShortFormAfterTransitionToLongForm?: CodegenTypes.WithDefault<boolean, false>;
+  dismissable?: CodegenTypes.WithDefault<boolean, true>;
+  gestureEnabled?: CodegenTypes.WithDefault<boolean, true>;
+  headerHeight?: CodegenTypes.Double;
+  hidden?: CodegenTypes.WithDefault<boolean, false>;
+  ignoreBottomOffset?: CodegenTypes.WithDefault<boolean, false>;
+  interactWithScrollView?: CodegenTypes.WithDefault<boolean, true>;
+  isShortFormEnabled?: CodegenTypes.WithDefault<boolean, false>;
+  longFormHeight?: CodegenTypes.Double;
   modalBackgroundColor?: ColorValue;
-  onAppear?: DirectEventHandler<undefined>;
-  onDismissed?: DirectEventHandler<undefined>;
-  onTouchTop?: DirectEventHandler<TouchTopEvent>;
-  onWillDismiss?: DirectEventHandler<undefined>;
-  relevantScrollViewDepth?: WithDefault<Int32, 1>;
-  shortFormHeight?: WithDefault<Double, 300>;
-  showDragIndicator?: WithDefault<boolean, true>;
-  stackAnimation?: WithDefault<StackAnimation, 'default'>;
-  stackPresentation?: WithDefault<StackPresentation, 'push'>;
-  springDamping?: Double;
-  startFromShortForm?: WithDefault<boolean, false>;
-  topOffset?: WithDefault<Double, 42>;
-  transitionDuration?: Double;
+  onAppear?: CodegenTypes.DirectEventHandler<undefined>;
+  onDismissed?: CodegenTypes.DirectEventHandler<undefined>;
+  onTouchTop?: CodegenTypes.DirectEventHandler<TouchTopEvent>;
+  onWillDismiss?: CodegenTypes.DirectEventHandler<undefined>;
+  relevantScrollViewDepth?: CodegenTypes.WithDefault<CodegenTypes.Int32, 1>;
+  shortFormHeight?: CodegenTypes.WithDefault<CodegenTypes.Double, 300>;
+  showDragIndicator?: CodegenTypes.WithDefault<boolean, true>;
+  stackAnimation?: CodegenTypes.WithDefault<StackAnimation, 'default'>;
+  stackPresentation?: CodegenTypes.WithDefault<StackPresentation, 'push'>;
+  springDamping?: CodegenTypes.Double;
+  startFromShortForm?: CodegenTypes.WithDefault<boolean, false>;
+  topOffset?: CodegenTypes.WithDefault<CodegenTypes.Double, 42>;
+  transitionDuration?: CodegenTypes.Double;
 }
 
 export default codegenNativeComponent<NativeProps>('RNCMScreen', { excludedPlatforms: ['android'], interfaceOnly: true });

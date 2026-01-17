@@ -44,7 +44,7 @@ const DarkShadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: {
   width: 236,
 }));
 const Shadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: { theme: ThemeContextProps }) => ({
-  ...shadow.buildAsObject(0, 5, 15, colors.shadow, isDarkMode ? 0 : 0.4),
+  ...shadow.buildAsObject(0, 5, 15, colors.shadow, isDarkMode ? 0 : 0.4, true),
   borderRadius: 30,
   height: 60,
   position: 'absolute',
@@ -54,9 +54,7 @@ const Shadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: { the
         left: -3,
         top: -3,
       }
-    : {
-        elevation: 30,
-      }),
+    : {}),
 }));
 
 interface Props extends BaseButtonAnimationProps {

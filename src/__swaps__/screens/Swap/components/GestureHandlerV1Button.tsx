@@ -1,10 +1,10 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { IS_IOS } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleProp, ViewProps, ViewStyle } from 'react-native';
-import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import Animated, { AnimatedStyle, runOnJS, useAnimatedGestureHandler } from 'react-native-reanimated';
+import { Gesture, GestureDetector, GestureType } from 'react-native-gesture-handler';
+import Animated, { AnimatedStyle, runOnJS } from 'react-native-reanimated';
 
 export type GestureHandlerButtonProps = {
   buttonPressWrapperStyleIOS?: StyleProp<ViewStyle>;
@@ -17,6 +17,7 @@ export type GestureHandlerButtonProps = {
   pointerEvents?: ViewProps['pointerEvents'];
   scaleTo?: number;
   style?: StyleProp<ViewStyle> | AnimatedStyle;
+  gestureRef?: React.RefObject<GestureType | undefined>;
 };
 
 /**
@@ -56,30 +57,33 @@ export type GestureHandlerButtonProps = {
  * };
  * ```
  */
-export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1Button(
-  {
-    buttonPressWrapperStyleIOS,
-    children,
-    disableButtonPressWrapper = false,
-    disabled = false,
-    onPressJS,
-    onPressStartWorklet,
-    onPressWorklet,
-    pointerEvents = 'box-only',
-    scaleTo = 0.86,
-    style,
-  }: GestureHandlerButtonProps,
-  ref: React.LegacyRef<unknown> | undefined
-) {
-  const pressHandler = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
-    onStart: () => {
-      if (onPressStartWorklet) onPressStartWorklet();
-    },
-    onActive: () => {
-      if (onPressWorklet) onPressWorklet();
-      if (onPressJS) runOnJS(onPressJS)();
-    },
-  });
+export function GestureHandlerV1Button({
+  buttonPressWrapperStyleIOS,
+  children,
+  disableButtonPressWrapper = false,
+  disabled = false,
+  onPressJS,
+  onPressStartWorklet,
+  onPressWorklet,
+  pointerEvents = 'box-only',
+  scaleTo = 0.86,
+  style,
+  gestureRef,
+}: GestureHandlerButtonProps) {
+  const pressGesture = useMemo(() => {
+    const gesture = Gesture.Tap()
+      .enabled(!disabled)
+      .onBegin(() => {
+        if (onPressStartWorklet) onPressStartWorklet();
+      })
+      .onEnd(() => {
+        if (onPressWorklet) onPressWorklet();
+        if (onPressJS) runOnJS(onPressJS)();
+      });
+
+    if (gestureRef) gesture.withRef(gestureRef);
+    return gesture;
+  }, [disabled, onPressJS, onPressStartWorklet, onPressWorklet, gestureRef]);
 
   return (
     <ConditionalWrap
@@ -90,11 +94,11 @@ export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1
         </ButtonPressAnimation>
       )}
     >
-      <TapGestureHandler enabled={!disabled} onGestureEvent={pressHandler} ref={ref}>
+      <GestureDetector gesture={pressGesture}>
         <Animated.View accessible accessibilityRole="button" pointerEvents={pointerEvents} style={style}>
           {children}
         </Animated.View>
-      </TapGestureHandler>
+      </GestureDetector>
     </ConditionalWrap>
   );
-});
+}

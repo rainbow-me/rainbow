@@ -2,14 +2,13 @@
 /* 👆 Had to disable this ESLint rule it was false positive on shared Props interface */
 import React, { forwardRef, PropsWithChildren, useCallback, useContext, useMemo } from 'react';
 import { processColor, requireNativeComponent, StyleSheet, View } from 'react-native';
-import { createNativeWrapper, NativeViewGestureHandlerGestureEvent, RawButtonProps } from 'react-native-gesture-handler';
+import { createNativeWrapper, Gesture, GestureDetector, RawButtonProps } from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   AnimatedProps,
   Easing,
   runOnJS,
-  useAnimatedGestureHandler,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -89,41 +88,50 @@ const ScaleButton = forwardRef(function ScaleButton(
     onPress,
   });
 
-  const gestureHandler = useAnimatedGestureHandler<NativeViewGestureHandlerGestureEvent>({
-    onActive: () => {
-      runOnJS(handleStartPress)();
-      if (hasScaledDown.value === 0) {
-        scale.value = scaleTo;
-      }
-      hasScaledDown.value = 1;
-    },
-    onCancel: () => {
-      scale.value = 1;
-      hasScaledDown.value = 0;
-      runOnJS(handleCancel)();
-    },
-    onEnd: () => {
-      hasScaledDown.value = 0;
-      scale.value = 1;
-      runOnJS(handlePress)();
-    },
-    onFail: () => {
-      runOnJS(handleCancel)();
-    },
-  });
+  const pressGesture = useMemo(() => {
+    return Gesture.LongPress()
+      .minDuration(0)
+      .maxDistance(20)
+      .onTouchesDown(() => {
+        runOnJS(handleStartPress)();
+        if (hasScaledDown.value === 0) {
+          scale.value = scaleTo;
+        }
+        hasScaledDown.value = 1;
+      })
+      .onEnd(() => {
+        hasScaledDown.value = 0;
+        scale.value = 1;
+        runOnJS(handlePress)();
+      })
+      .onFinalize((_, success) => {
+        if (!success) {
+          scale.value = 1;
+          hasScaledDown.value = 0;
+          runOnJS(handleCancel)();
+        }
+      })
+      .onTouchesCancelled(() => {
+        scale.value = 1;
+        hasScaledDown.value = 0;
+        runOnJS(handleCancel)();
+      });
+  }, [handleCancel, handlePress, handleStartPress, hasScaledDown, scale, scaleTo]);
 
   return (
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     <View style={[sx.overflow, wrapperStyle]} testID={testID} ref={ref}>
       <View style={{ margin: -overflowMargin }}>
-        <AnimatedRawButton exclusive={exclusive} hitSlop={-overflowMargin} onGestureEvent={gestureHandler} rippleColor={transparentColor}>
-          <View style={sx.transparentBackground}>
-            <View style={{ padding: overflowMargin }}>
-              <Animated.View style={[sz, contentContainerStyle]}>{children}</Animated.View>
+        <GestureDetector gesture={pressGesture}>
+          <AnimatedRawButton exclusive={exclusive} hitSlop={-overflowMargin} rippleColor={transparentColor}>
+            <View style={sx.transparentBackground}>
+              <View style={{ padding: overflowMargin }}>
+                <Animated.View style={[sz, contentContainerStyle]}>{children}</Animated.View>
+              </View>
             </View>
-          </View>
-        </AnimatedRawButton>
+          </AnimatedRawButton>
+        </GestureDetector>
       </View>
     </View>
   );

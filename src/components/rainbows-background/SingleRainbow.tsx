@@ -39,8 +39,6 @@ const SingleRainbow = ({ details, shouldAnimate }: Props) => {
           delay + BASE_DELAY,
           withSpring(1, {
             damping: 7,
-            restDisplacementThreshold: 0.0001,
-            restSpeedThreshold: 0.001,
             stiffness: 150,
           })
         );

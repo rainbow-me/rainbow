@@ -1,15 +1,10 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
-import {
-  LongPressGestureHandler,
-  LongPressGestureHandlerGestureEvent,
-  LongPressGestureHandlerProperties,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, LongPressGestureHandlerProperties } from 'react-native-gesture-handler';
 import Animated, {
   FadeIn,
   cancelAnimation,
   runOnUI,
-  useAnimatedGestureHandler,
   useAnimatedProps,
   useAnimatedReaction,
   useSharedValue,
@@ -284,55 +279,43 @@ const ChartPathInner = React.memo(
       };
     }, [currentPath]);
 
-    const onGestureEvent = useAnimatedGestureHandler<LongPressGestureHandlerGestureEvent>(
-      {
-        onActive: event => {
+    const onGestureEvent = useMemo(() => {
+      const maxDist = longPressGestureHandlerProps?.maxDist ?? 100000;
+      const minDurationMs = longPressGestureHandlerProps?.minDurationMs ?? 0;
+      const shouldCancelWhenOutside = longPressGestureHandlerProps?.shouldCancelWhenOutside ?? false;
+
+      return Gesture.LongPress()
+        .enabled(gestureEnabled)
+        .maxDistance(maxDist)
+        .minDuration(minDurationMs)
+        .shouldCancelWhenOutside(shouldCancelWhenOutside)
+        .onStart(event => {
           if (!isActive.value) {
             isActive.value = true;
             if (hapticsEnabled) triggerHaptics('soft');
           }
           state.value = event.state;
           updatePosition({ x: positionXWithMargin(event.x, hitSlop, width), y: event.y });
-        },
-        onCancel: event => {
-          state.value = event.state;
-          resetGestureState();
-        },
-        onEnd: event => {
-          state.value = event.state;
-          resetGestureState();
-
-          if (hapticsEnabled) triggerHaptics('soft');
-        },
-        onFail: event => {
-          state.value = event.state;
-          resetGestureState();
-        },
-        onStart: event => {
-          // WARNING: the following code does not run on using iOS, but it does on Android.
-          // I use the same code from onActive
-          // platform is for safety
-          if (IS_ANDROID) {
-            state.value = event.state;
+        })
+        .onTouchesMove(event => {
+          const touch = event.changedTouches[0];
+          if (!touch) return;
+          if (!isActive.value) {
             isActive.value = true;
-
             if (hapticsEnabled) triggerHaptics('soft');
           }
-        },
-      },
-      [width, height, hapticsEnabled, hitSlop, timingFeedbackConfig, updatePosition]
-    );
+          state.value = event.state;
+          updatePosition({ x: positionXWithMargin(touch.x, hitSlop, width), y: touch.y });
+        })
+        .onFinalize((event, success) => {
+          state.value = event.state;
+          resetGestureState();
+          if (success && hapticsEnabled) triggerHaptics('soft');
+        });
+    }, [gestureEnabled, hapticsEnabled, hitSlop, isActive, longPressGestureHandlerProps, resetGestureState, state, updatePosition, width]);
 
     return (
-      <LongPressGestureHandler
-        enabled={gestureEnabled}
-        maxDist={100000}
-        minDurationMs={0}
-        onGestureEvent={onGestureEvent}
-        shouldCancelWhenOutside={false}
-        // eslint-disable-next-line react/jsx-props-no-spreading
-        {...longPressGestureHandlerProps}
-      >
+      <GestureDetector gesture={onGestureEvent}>
         <Animated.View>
           <Svg
             style={{
@@ -349,7 +332,7 @@ const ChartPathInner = React.memo(
             />
           </Svg>
         </Animated.View>
-      </LongPressGestureHandler>
+      </GestureDetector>
     );
   }
 );

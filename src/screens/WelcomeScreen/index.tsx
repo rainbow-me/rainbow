@@ -32,6 +32,7 @@ import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScree
 import { openInBrowser } from '@/utils/openInBrowser';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
 const Container = styled(View)({
   ...position.coverAsObject,
@@ -176,6 +177,7 @@ export default function WelcomeScreen() {
   const createWalletButtonAnimatedShadowStyle = useAnimatedStyle(() => ({
     backgroundColor: calculatedColor.value,
     shadowColor: calculatedColor.value,
+    boxShadow: [{ color: opacityWorklet(calculatedColor.value, isDarkMode ? 0 : 0.4), offsetX: 0, offsetY: 5, blurRadius: 15 }],
   }));
 
   const onCreateWallet = useCallback(async () => {
