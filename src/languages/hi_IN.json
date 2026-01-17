@@ -24,6 +24,7 @@
       "tab_savings": "बचत",
       "tab_showcase": "शोकेस",
       "tab_perps": "परप्स",
+      "tab_polymarket": "पेशगोई",
       "tab_points": "अंक",
       "tab_positions": "पोजीशन्स",
       "tab_rewards": "इनाम",
@@ -559,7 +560,8 @@
       "restart_app": "ऍप रीस्टार्ट करें",
       "reset_experimental_config": "प्रायोगिक कॉन्फ़िग को रीसेट करें",
       "status": "स्थिति",
-      "sync_codepush": "CodePush सिंक करें"
+      "sync_codepush": "CodePush सिंक करें",
+      "simulate_device_transfer": "उपकरण स्थानांतरण का अनुकरण करें"
     },
     "discover": {
       "pulse": {
@@ -757,6 +759,13 @@
         },
         "about": {
           "title": "के बारे में",
+          "created_by": "निर्माता",
+          "protocol": "प्रोटोकॉल",
+          "created_via": "के माध्यम से बनाया गया",
+          "what_is": "%{assetName} क्या है?"
+        },
+        "details": {
+          "title": "विवरण",
           "what_is": "%{assetName} क्या है?"
         },
         "history": {
@@ -970,6 +979,8 @@
       "baggy_title": "आपने अनलॉक कर लिया है\n रेनबो बैगी",
       "chonks_description": "इमेजिन कीजिए कि आपके Rainbow बालों में हवा है, आप 101 पर ड्राइव कर रहे हैं और Chonky महसूस कर रहे हैं।",
       "chonks_title": "आपने Chonkiest आइकन अनलॉक कर लिया है",
+      "mog_description": "आसान ब्रह्मांडीय विश्व वर्चस्व, रंगों में मोगिंग।",
+      "mog_title": "आपने अनलॉक कर लिया है\nRainbow Mogs",
       "button": "आइकन पकड़ें"
     },
     "explain": {
@@ -1604,12 +1615,12 @@
         "liq": "लिक्विड"
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "स्थिति में जोड़ें",
+        "new_total": "नया कुल"
       },
       "feature_card": {
         "title": "परप्स",
-        "subtitle": "उच्च जोखिम, उच्च इनाम ट्रेडिंग"
+        "subtitle": "उच्च जोखिम, उच्च लाभ व्यापार"
       },
       "actions": {
         "fund_wallet": "वॉलेट फंड करें",
@@ -1638,7 +1649,8 @@
         "confirm_button_over_balance_text": "अपर्याप्त धन",
         "confirm_button_error_text": "कोट त्रुटि",
         "quote_error": "􀇿 कोई भाव उपलब्ध नहीं है",
-        "insufficient_balance": "􀫲 अपर्याप्त धन"
+        "insufficient_balance": "􀫲 अपर्याप्त धन",
+        "insufficient_gas": "अपर्याप्त गैस"
       },
       "withdraw": {
         "title": "निकासी",
@@ -3731,6 +3743,157 @@
           }
         }
       }
+    },
+    "predictions": {
+      "feature_card": {
+        "title": "पेशगोई",
+        "subtitle": "वास्तविक दुनिया की घटनाओं पर शर्त लगाएं"
+      },
+      "explain_sheet": {
+        "next": "अगला",
+        "get_started": "शुरुआत करें",
+        "title": "पेशगोई",
+        "steps": {
+          "step_1": {
+            "title": "पेशगोई",
+            "subtitle_parts": [
+              "बाज़ार में क्या हो रहा है जानने का एक नया तरीका आज़माएं। पॉलीमार्केट द्वारा संचालित"
+            ]
+          },
+          "step_2": {
+            "title": "लगभग किसी भी चीज़ पर शर्त लगाएं",
+            "subtitle_parts": [
+              "आपको पसंद आने वाला बाज़ार चुनें, अपनी स्थिति रखें और देखें कि यह कहाँ तक पहुँचता है।"
+            ]
+          },
+          "step_3": {
+            "title": "अपने परिणाम का चयन करें",
+            "subtitle_parts": [
+              "प्रत्येक बाज़ार में स्पष्ट विकल्प होते हैं। जिस पर आपका विश्वास हो, उसे चुनें और यह कैसे प्रदर्शन करता है, इसे ट्रैक करें।"
+            ]
+          }
+        }
+      },
+      "navbar": {
+        "title": "पेशगोई"
+      },
+      "new_position": {
+        "title": "शर्त लगाएं",
+        "amount": "राशि",
+        "chance_of_outcome": "परिणाम की संभावना",
+        "to_win": "जीतने के लिए",
+        "spread": "विस्तार",
+        "hold_to_place_bet": "शर्त लगाने के लिए दबाकर रखें",
+        "placing_bet": "शर्त लगाई जा रही है...",
+        "confirming_order": "ऑर्डर की पुष्टि हो रही है...",
+        "deposit_funds": "फंड जमा करें",
+        "average_price": "औसत मूल्य",
+        "errors": {
+          "not_enough_liquidity": "पूरी ऑर्डर के लिए पर्याप्त तरलता नहीं है।",
+          "please_lower_amount": "कृपया राशि को कम करें और पुनः प्रयास करें।",
+          "no_liquidity_at_price": "इस मूल्य पर कोई तरलता नहीं है।"
+        }
+      },
+      "manage_position": {
+        "hold_to_claim": "दावे के लिए दबाए रखें",
+        "hold_to_clear": "क्लियर करने के लिए दबाए रखें",
+        "hold_to_cash_out": "नकद निकालने के लिए पकड़ें",
+        "claiming": "दावा किया जा रहा है...",
+        "clearing": "क्लियर कर रहा है...",
+        "cashing_out": "नकद निकाला जा रहा है...",
+        "confirming_order": "ऑर्डर की पुष्टि हो रही है...",
+        "position_value": "स्थिति का मूल्य"
+      },
+      "cash_out": {
+        "title": "बेट कैश आउट",
+        "current_price": "वर्तमान मूल्य",
+        "average_price": "औसत मूल्य",
+        "profit_loss": "लाभ / हानि",
+        "receive": "प्राप्त करें",
+        "spread": "विस्तार",
+        "cash_out": "नकद निकालें"
+      },
+      "search": {
+        "placeholder": "भविष्यवाणी बाज़ार खोजें",
+        "input_placeholder": "बाज़ार खोजें",
+        "no_results": "कोई परिणाम नहीं मिला"
+      },
+      "event": {
+        "outcomes": "परिणाम",
+        "about": "के बारे में",
+        "show_rules": "नियम दिखाएँ",
+        "rules": "नियम",
+        "end_date": "अंतिम तिथि",
+        "resolution_source": "संकल्प स्रोत",
+        "category": "श्रेणी",
+        "hide_resolved": "समाधान छिपाएँ",
+        "show_resolved": "समाधान दिखाएँ",
+        "open_positions": "खुली स्थितियां",
+        "market_resolved": "बाज़ार का समाधान हो गया",
+        "volume_suffix": "वॉल्यूम",
+        "show_less": "कम दिखाएँ",
+        "show_more": "अधिक दिखाएँ",
+        "resolved": "समाधान हुआ"
+      },
+      "position": {
+        "outcome": "परिणाम",
+        "odds": "आकस्मिक संभावनाएं",
+        "bet": "शर्त लगाएं",
+        "won": "जीता",
+        "to_win": "जीतने के लिए",
+        "claim": "दावा करें",
+        "clear": "हटाएं",
+        "cash_out": "नकद निकालें",
+        "no_open_positions": "कोई खुली स्थिति नहीं",
+        "won_badge": "जीता",
+        "lost_badge": "खो दिया",
+        "learn_more": "भविष्यवाणियों के बारे में अधिक जानें"
+      },
+      "tabs": {
+        "browse": "ब्राउज़ करें",
+        "portfolio": "पोर्टफोलियो"
+      },
+      "market": {
+        "buy_outcome": "खरीदें %{outcome}"
+      },
+      "bet_types": {
+        "winner": "विजेता",
+        "spreads": "प्लावन",
+        "totals": "कुल",
+        "other": "अन्य"
+      },
+      "sports": {
+        "vs": "विरुद्ध",
+        "live": "लाइव",
+        "game_best_of": "गेम %{currentPeriod} - %{bestOf} में सर्वश्रेष्ठ",
+        "final": "अंतिम",
+        "no_games": "आज या कल कोई खेल नहीं"
+      },
+      "outcomes": {
+        "yes": "हां",
+        "yes_badge": "हाँ",
+        "no_badge": "नहीं"
+      },
+      "errors": {
+        "title": "त्रुटि",
+        "failed_to_place_bet": "शर्त लगाने में विफल रहा। कृपया पुनः प्रयास करें।",
+        "failed_to_cash_out": "स्थिति को नकद में बदलने में विफल। कृपया पुनः प्रयास करें।",
+        "failed_to_claim": "स्थिति का दावा करने में विफल। कृपया पुनः प्रयास करें।"
+      },
+      "account": {
+        "hide_lost_bets": "खोई हुई बाजियाँ छुपाएँ",
+        "show_lost_bets": "खोई हुई बाजियाँ दिखाएँ",
+        "lost_bets_dont_clear": "खोई हुई बाजियाँ स्वचालित रूप से नहीं हटती हैं। आप उन्हें नीचे साफ कर सकते हैं।"
+      }
+    },
+    "wallet_error_sheet": {
+      "title": "अपने वॉलेट को पुनर्स्थापित करें",
+      "restore": "पुनर्स्थापित करें",
+      "dismiss": "खारिज करें",
+      "cause_passcode_disabled": "ऐसा लगता है कि आपने अपना पासकोड अक्षम कर दिया है।",
+      "cause_switched_devices": "ऐसा लगता है कि आपने डिवाइस बदल दिया है।",
+      "resolution_enable_passcode": "अपना वॉलेट उपयोग करने के लिए, इसे अपने डिवाइस की सेटिंग्स में पुनः सक्षम करें।",
+      "resolution_restore_backup": "अपना वॉलेट उपयोग करने के लिए, बैकअप से पुनर्स्थापित करें या अपना गुप्त पुनर्प्राप्ति वाक्यांश पुनः आयात करें।"
     }
   }
 }

@@ -24,6 +24,7 @@
       "tab_savings": "Poupanças",
       "tab_showcase": "Vitrine",
       "tab_perps": "Perps",
+      "tab_polymarket": "Previsões",
       "tab_points": "Pontos",
       "tab_positions": "Posições",
       "tab_rewards": "Recompensas",
@@ -559,7 +560,8 @@
       "restart_app": "Reiniciar App",
       "reset_experimental_config": "Redefinir Configuração Experimental",
       "status": "Status",
-      "sync_codepush": "Sincronizar CodePush"
+      "sync_codepush": "Sincronizar CodePush",
+      "simulate_device_transfer": "Simular transferência de dispositivo"
     },
     "discover": {
       "pulse": {
@@ -757,6 +759,13 @@
         },
         "about": {
           "title": "Sobre",
+          "created_by": "Criador",
+          "protocol": "Protocolo",
+          "created_via": "Criado por",
+          "what_is": "O que é %{assetName}?"
+        },
+        "details": {
+          "title": "Detalhes",
           "what_is": "O que é %{assetName}?"
         },
         "history": {
@@ -970,6 +979,8 @@
       "baggy_title": "Você desbloqueou Rainbow Baggy",
       "chonks_description": "Imagine o vento em seu cabelo Rainbow, dirigindo pela 101, sentindo a Chonky.",
       "chonks_title": "Você desbloqueou\n o Ícone Mais Chonky",
+      "mog_description": "Dominação cósmica do mundo sem esforço, mogando em cores.",
+      "mog_title": "Você desbloqueou\nRainbow Mogs",
       "button": "Desbloqueie o ícone"
     },
     "explain": {
@@ -1604,8 +1615,8 @@
         "liq": "liq."
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "Adicionar à Posição",
+        "new_total": "Novo Total"
       },
       "feature_card": {
         "title": "Perps",
@@ -1638,7 +1649,8 @@
         "confirm_button_over_balance_text": "Fundos insuficientes",
         "confirm_button_error_text": "Erro na Cotação",
         "quote_error": "􀇿 Nenhuma cotação disponível",
-        "insufficient_balance": "􀫲 Fundos insuficientes"
+        "insufficient_balance": "􀫲 Fundos insuficientes",
+        "insufficient_gas": "Gasolina insuficiente"
       },
       "withdraw": {
         "title": "Retirar",
@@ -3731,6 +3743,157 @@
           }
         }
       }
+    },
+    "predictions": {
+      "feature_card": {
+        "title": "Previsões",
+        "subtitle": "Aposte em eventos do mundo real"
+      },
+      "explain_sheet": {
+        "next": "Avançar",
+        "get_started": "Comece Agora",
+        "title": "Previsões",
+        "steps": {
+          "step_1": {
+            "title": "Previsões",
+            "subtitle_parts": [
+              "Experimente uma nova maneira de seguir o que está acontecendo nos mercados. Alimentado por Polymarket"
+            ]
+          },
+          "step_2": {
+            "title": "Aposte em Quase Qualquer Coisa",
+            "subtitle_parts": [
+              "Escolha um mercado que você gosta, coloque sua posição e veja para onde vai."
+            ]
+          },
+          "step_3": {
+            "title": "Escolha Seu Resultado",
+            "subtitle_parts": [
+              "Cada mercado tem opções claras. Escolha aquela em que você acredita e acompanhe seu desempenho."
+            ]
+          }
+        }
+      },
+      "navbar": {
+        "title": "Previsões"
+      },
+      "new_position": {
+        "title": "Fazer Aposta",
+        "amount": "Quantidade",
+        "chance_of_outcome": "Chance de Resultado",
+        "to_win": "Para Ganhar",
+        "spread": "Spread",
+        "hold_to_place_bet": "Segure para Fazer Aposta",
+        "placing_bet": "Fazendo Aposta...",
+        "confirming_order": "Confirmando Pedido...",
+        "deposit_funds": "Deposite Fundos",
+        "average_price": "Preço Médio",
+        "errors": {
+          "not_enough_liquidity": "Não há liquidez suficiente para realizar o pedido completo.",
+          "please_lower_amount": "Por favor, reduza o valor e tente novamente.",
+          "no_liquidity_at_price": "Não há liquidez neste preço."
+        }
+      },
+      "manage_position": {
+        "hold_to_claim": "Pressione para Solicitar",
+        "hold_to_clear": "Mantenha para Limpar",
+        "hold_to_cash_out": "Segurar para Retirar",
+        "claiming": "Reivindicando...",
+        "clearing": "Limpando...",
+        "cashing_out": "Retirando...",
+        "confirming_order": "Confirmando Pedido...",
+        "position_value": "Valor da Posição"
+      },
+      "cash_out": {
+        "title": "Retirada de Aposta",
+        "current_price": "Preço Atual",
+        "average_price": "Preço Médio",
+        "profit_loss": "Lucro / Perda",
+        "receive": "Receber",
+        "spread": "Spread",
+        "cash_out": "Retirar"
+      },
+      "search": {
+        "placeholder": "Pesquisar por mercados de previsão",
+        "input_placeholder": "Buscar mercados",
+        "no_results": "Nenhum resultado encontrado"
+      },
+      "event": {
+        "outcomes": "Resultados",
+        "about": "Sobre",
+        "show_rules": "Mostrar Regras",
+        "rules": "Regras",
+        "end_date": "Data de Término",
+        "resolution_source": "Fonte de Resolução",
+        "category": "Categoria",
+        "hide_resolved": "Ocultar Resolvidos",
+        "show_resolved": "Mostrar Resolvidos",
+        "open_positions": "Posições Abertas",
+        "market_resolved": "MERCADO RESOLVIDO",
+        "volume_suffix": "VOL",
+        "show_less": "Mostrar Menos",
+        "show_more": "Mostrar Mais",
+        "resolved": "Resolvido"
+      },
+      "position": {
+        "outcome": "Resultado",
+        "odds": "Probabilidades",
+        "bet": "Aposta",
+        "won": "Ganhou",
+        "to_win": "Para Ganhar",
+        "claim": "Reivindicar",
+        "clear": "Limpar",
+        "cash_out": "Retirar",
+        "no_open_positions": "Nenhuma posição aberta",
+        "won_badge": "GANHOU",
+        "lost_badge": "PERDEU",
+        "learn_more": "Saiba mais sobre Previsões"
+      },
+      "tabs": {
+        "browse": "Navegar",
+        "portfolio": "Portfólio"
+      },
+      "market": {
+        "buy_outcome": "Comprar %{outcome}"
+      },
+      "bet_types": {
+        "winner": "Vencedor",
+        "spreads": "Spreads",
+        "totals": "Totais",
+        "other": "Outro"
+      },
+      "sports": {
+        "vs": "vs",
+        "live": "Ao vivo",
+        "game_best_of": "Jogo %{currentPeriod} - Melhor de %{bestOf}",
+        "final": "Final",
+        "no_games": "Nenhum jogo hoje ou amanhã"
+      },
+      "outcomes": {
+        "yes": "Sim",
+        "yes_badge": "SIM",
+        "no_badge": "NÃO"
+      },
+      "errors": {
+        "title": "Erro",
+        "failed_to_place_bet": "Falha ao fazer aposta. Por favor, tente novamente.",
+        "failed_to_cash_out": "Falha ao retirar posição. Por favor, tente novamente.",
+        "failed_to_claim": "Falha ao reivindicar posição. Por favor, tente novamente."
+      },
+      "account": {
+        "hide_lost_bets": "Ocultar Apostas Perdidas",
+        "show_lost_bets": "Mostrar Apostas Perdidas",
+        "lost_bets_dont_clear": "As apostas perdidas não são removidas automaticamente. Você pode limpá-las abaixo."
+      }
+    },
+    "wallet_error_sheet": {
+      "title": "Restaurar sua carteira",
+      "restore": "Restaurar",
+      "dismiss": "Dispensar",
+      "cause_passcode_disabled": "Parece que você pode ter desativado seu código de acesso.",
+      "cause_switched_devices": "Parece que você pode ter trocado de dispositivo.",
+      "resolution_enable_passcode": "Para usar sua carteira, reative-a nas configurações do seu dispositivo.",
+      "resolution_restore_backup": "Para usar sua carteira, restaure a partir de um backup ou reimporte sua frase secreta de recuperação."
     }
   }
 }
