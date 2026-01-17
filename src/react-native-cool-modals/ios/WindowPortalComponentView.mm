@@ -87,7 +87,6 @@ using namespace facebook::react;
   [self.window.rootViewController.view unmountChildComponentView:childComponentView index:index];
   self.window = nil;
   _childView = nil;
-  [super unmountChildComponentView:childComponentView index:index];
 }
 
 - (void)removeFromSuperview
