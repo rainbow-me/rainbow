@@ -1,3 +1,31 @@
+diff --git a/node_modules/@polymarket/clob-client/dist/client.js b/node_modules/@polymarket/clob-client/dist/client.js
+index 8e24347..d1e9777 100644
+--- a/node_modules/@polymarket/clob-client/dist/client.js
++++ b/node_modules/@polymarket/clob-client/dist/client.js
+@@ -23,7 +23,6 @@ class ClobClient {
+             this.creds = creds;
+         }
+         this.orderBuilder = new builder_1.OrderBuilder(signer, chainId, signatureType, funderAddress, getSigner);
+-        this.tickSizes = {};
+         this.negRisk = {};
+         this.feeRates = {};
+         this.geoBlockToken = geoBlockToken;
+@@ -92,14 +91,10 @@ class ClobClient {
+     }
+     getTickSize(tokenID) {
+         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+-            if (tokenID in this.tickSizes) {
+-                return this.tickSizes[tokenID];
+-            }
+             const result = yield this.get(`${this.host}${endpoints_1.GET_TICK_SIZE}`, {
+                 params: { token_id: tokenID },
+             });
+-            this.tickSizes[tokenID] = result.minimum_tick_size.toString();
+-            return this.tickSizes[tokenID];
++            return result.minimum_tick_size.toString();
+         });
+     }
+     getNegRisk(tokenID) {
 diff --git a/node_modules/@polymarket/clob-client/dist/http-helpers/index.js b/node_modules/@polymarket/clob-client/dist/http-helpers/index.js
 index e270f4e..a6dcacc 100644
 --- a/node_modules/@polymarket/clob-client/dist/http-helpers/index.js

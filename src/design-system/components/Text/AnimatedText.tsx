@@ -74,7 +74,6 @@ export function AnimatedText<T extends SharedValue | DerivedValue>({
   }));
 
   return (
-    // @ts-expect-error AnimateableText is missing type for children.
     <AnimateableText
       allowFontScaling={false}
       animatedProps={animatedText}

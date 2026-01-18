@@ -85,6 +85,8 @@ export default function WelcomeScreen() {
 
   useEffect(() => {
     const initialize = async () => {
+      // Skip looping animations for e2e - they prevent the test framework from settling
+      // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
       if (IS_TEST) {
         logger.debug('[WelcomeScreen] Skipping animations because IS_TEST is true');
         contentAnimation.value = 1;
@@ -110,9 +112,6 @@ export default function WelcomeScreen() {
         })
       );
 
-      // We need to disable looping animations
-      // There's no way to disable sync yet
-      // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
       createWalletButtonAnimation.value = withDelay(
         initialDuration,
         withTiming(1.02, { duration: 1000 }, () => {

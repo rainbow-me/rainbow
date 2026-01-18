@@ -4,9 +4,9 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { RawPolymarketEvent, PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { RainbowError } from '@/logger';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
-import { getLeague, processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
-import { PolymarketGameMetadata, PolymarketTeamInfo } from '@/features/polymarket/types';
-import { fetchGameMetadata, fetchTeamsInfo, parseTeamAbbreviationsFromTicker } from '@/features/polymarket/utils/sports';
+import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
+import { PolymarketTeamInfo } from '@/features/polymarket/types';
+import { fetchTeamsForEvent } from '@/features/polymarket/utils/sports';
 
 type FetchParams = { eventId: string | null };
 
@@ -72,32 +72,9 @@ async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: A
   const { data: event } = await rainbowFetch<RawPolymarketEvent>(url, { abortController, timeout: time.seconds(15) });
 
   let teams: PolymarketTeamInfo[] | undefined = undefined;
-  let gameMetadata: PolymarketGameMetadata | null = null;
-  let league: string | undefined = undefined;
 
   if (event.gameId) {
-    gameMetadata = await fetchGameMetadata(event.ticker);
-    if (gameMetadata) {
-      league = gameMetadata.sport;
-      // The `ordering` field represents the order in which the teams are listed in the game metadata.
-      // This is not indicative of how the teams should be displayed in the event, which is always away @ home.
-      if (gameMetadata.ordering === 'home') {
-        event.homeTeamName = gameMetadata.teams[0];
-        event.awayTeamName = gameMetadata.teams[1];
-      } else {
-        event.homeTeamName = gameMetadata.teams[1];
-        event.awayTeamName = gameMetadata.teams[0];
-      }
-    }
-  }
-
-  if (event.homeTeamName && event.awayTeamName) {
-    const tickerAbbreviations = parseTeamAbbreviationsFromTicker(event.ticker);
-    teams = await fetchTeamsInfo({
-      abbreviations: tickerAbbreviations ? [tickerAbbreviations.away, tickerAbbreviations.home] : undefined,
-      league: league ?? getLeague(event)?.slug,
-      teamNames: [event.awayTeamName, event.homeTeamName],
-    });
+    teams = await fetchTeamsForEvent(event);
   }
 
   const processedEvent = await processRawPolymarketEvent(event, teams);

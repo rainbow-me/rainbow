@@ -560,7 +560,8 @@
       "restart_app": "Restart App",
       "reset_experimental_config": "Reset Experimental Config",
       "status": "Status",
-      "sync_codepush": "Sync CodePush"
+      "sync_codepush": "Sync CodePush",
+      "simulate_device_transfer": "Simulate Device Transfer"
     },
     "discover": {
       "pulse": {
@@ -2923,12 +2924,7 @@
         "no_price": "Small Balances"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "Your current authentication method (Face Recognition) is not secure enough, please go to \"Settings > Biometrics & Security\" and enable an alternative biometric method like Fingerprint or Iris.",
-          "error": "Error"
-        },
-        "please": "Please authenticate",
-        "please_seed_phrase": "Please authenticate to view private key"
+        "please": "Please authenticate"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} wallet",
@@ -3753,14 +3749,19 @@
         "placing_bet": "Placing Bet...",
         "confirming_order": "Confirming Order...",
         "deposit_funds": "Deposit Funds",
-        "average_price": "Average Price"
+        "average_price": "Average Price",
+        "errors": {
+          "not_enough_liquidity": "Not enough liquidity to place full order.",
+          "please_lower_amount": "Please lower the amount and try again.",
+          "no_liquidity_at_price": "No liquidity at this price."
+        }
       },
       "manage_position": {
         "hold_to_claim": "Hold to Claim",
-        "hold_to_burn": "Hold to Burn",
+        "hold_to_clear": "Hold to Clear",
         "hold_to_cash_out": "Hold to Cash Out",
         "claiming": "Claiming...",
-        "burning": "Burning...",
+        "clearing": "Clearing...",
         "cashing_out": "Cashing Out...",
         "confirming_order": "Confirming Order...",
         "position_value": "Position Value"
@@ -3803,7 +3804,7 @@
         "won": "Won",
         "to_win": "To Win",
         "claim": "Claim",
-        "burn": "Burn",
+        "clear": "Clear",
         "cash_out": "Cash Out",
         "no_open_positions": "No open positions",
         "won_badge": "WON",
@@ -3824,9 +3825,11 @@
         "other": "Other"
       },
       "sports": {
-        "vs": "VS",
-        "live": "LIVE",
-        "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}"
+        "vs": "vs",
+        "live": "Live",
+        "game_best_of": "Game %{currentPeriod} - Best of %{bestOf}",
+        "final": "Final",
+        "no_games": "No games today or tomorrow"
       },
       "outcomes": {
         "yes": "Yes",
@@ -3838,7 +3841,21 @@
         "failed_to_place_bet": "Failed to place bet. Please try again.",
         "failed_to_cash_out": "Failed to cash out position. Please try again.",
         "failed_to_claim": "Failed to claim position. Please try again."
+      },
+      "account": {
+        "hide_lost_bets": "Hide Lost Bets",
+        "show_lost_bets": "Show Lost Bets",
+        "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
       }
+    },
+    "wallet_error_sheet": {
+      "title": "Restore your wallet",
+      "restore": "Restore",
+      "dismiss": "Dismiss",
+      "cause_passcode_disabled": "It looks like you may have disabled your passcode.",
+      "cause_switched_devices": "It looks like you may have switched devices.",
+      "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
+      "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
     }
   }
 }

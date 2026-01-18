@@ -107,7 +107,7 @@ interface SlackSheetProps extends ViewStyle {
   hideHandle?: boolean;
   limitScrollViewContent?: boolean;
   onContentSizeChange?: () => void;
-  renderHeader?: (yPosition: Animated.SharedValue<number>) => React.ReactNode;
+  renderHeader?: (yPosition: SharedValue<number>) => React.ReactNode;
   scrollEnabled?: boolean;
   scrollIndicatorInsets?: Insets;
   showsHorizontalScrollIndicator?: boolean;

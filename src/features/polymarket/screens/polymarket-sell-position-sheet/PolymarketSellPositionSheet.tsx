@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
@@ -23,9 +23,8 @@ import { BlurView } from 'react-native-blur-view';
 import { analytics } from '@/analytics';
 import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
-import { createSellExecutionStore } from '@/features/polymarket/screens/polymarket-manage-position-sheet/stores/createSellExecutionStore';
-import { usePolymarketOrderBookStore } from '@/features/polymarket/stores/polymarketOrderBookStore';
-import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeTitles';
+import { createSellExecutionStore } from '@/features/polymarket/screens/polymarket-sell-position-sheet/stores/createSellExecutionStore';
+import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 
@@ -60,11 +59,6 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
   const gradientFillColors = isDarkMode
     ? ([opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)] as const)
     : ([opacityWorklet(accentColor, 0), opacityWorklet(accentColor, 0.06)] as const);
-
-  useEffect(() => {
-    usePolymarketOrderBookStore.getState().setTokenId(tokenId);
-    return () => usePolymarketOrderBookStore.getState().setTokenId(null);
-  }, [tokenId]);
 
   const executionStore = useMemo(() => createSellExecutionStore(tokenId, sellAmountTokens), [tokenId, sellAmountTokens]);
   const { worstPrice, bestPrice, expectedPayoutUsd, averagePrice, spread } = executionStore(state => state);

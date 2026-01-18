@@ -33,7 +33,6 @@ export const NFTS_ENABLED = 'Nfts Enabled';
 export const TRENDING_TOKENS = 'Trending Tokens';
 export const PERFORMANCE_TOAST = 'Performance Toast';
 export const RAINBOW_COIN_EFFECT = 'Rainbow Coin Effect';
-export const NEW_DISCOVER_CARDS = 'New Discover Cards';
 export const RAINBOW_TRENDING_TOKENS_LIST = 'Rainbow Trending Tokens List';
 export const PRINCE_OF_THE_HILL = 'Prince of the Hill';
 export const LAZY_TABS = 'Lazy Tabs';
@@ -85,7 +84,6 @@ const config = {
   [TRENDING_TOKENS]: { settings: true, value: false },
   [PERFORMANCE_TOAST]: { settings: true, value: false },
   [RAINBOW_COIN_EFFECT]: { settings: true, value: false },
-  [NEW_DISCOVER_CARDS]: { settings: true, value: false },
   [RAINBOW_TRENDING_TOKENS_LIST]: { settings: true, value: false },
   [PRINCE_OF_THE_HILL]: { settings: true, value: false },
   [LAZY_TABS]: { needsRestart: true, settings: true, value: false },

@@ -3,7 +3,15 @@ import { useIsFocused } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import { isNaN } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  EasingFunction,
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { AccentColorProvider, Box, globalColors, Stack, Text } from '@/design-system';
 import { add } from '@/helpers/utilities';
 import { useGas } from '@/hooks';
@@ -12,7 +20,7 @@ import { GenericCard, SQUARE_CARD_SIZE } from './GenericCard';
 
 type AnimationConfigOptions = {
   duration: number;
-  easing: Animated.EasingFunction;
+  easing: EasingFunction;
 };
 
 const TRANSLATIONS = i18n.l.cards.gas;

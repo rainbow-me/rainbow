@@ -1,5 +1,5 @@
-import { ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { PolymarketTeamInfo } from '@/features/polymarket/types/team-info';
 
 export type RawPolymarketPosition = {
   proxyWallet: string;
@@ -58,27 +58,4 @@ export type PolymarketWalletListData = {
   enabled: boolean;
 };
 
-export type PolymarketGameMetadata = {
-  teams: string[];
-  sport: string;
-  ordering: 'home' | 'away';
-  type: string[];
-};
-
-export type RawPolymarketTeamInfo = {
-  id: number;
-  name: string;
-  league: string;
-  record: string;
-  logo: string;
-  abbreviation: string;
-  alias: string | null;
-  createdAt: string;
-  updatedAt: string;
-  providerId: number;
-  color?: string;
-};
-
-export type PolymarketTeamInfo = Omit<RawPolymarketTeamInfo, 'color'> & {
-  color: ResponseByTheme<string>;
-};
+export type { PolymarketGameMetadata, PolymarketTeamInfo, RawPolymarketTeamInfo, TeamSide } from '@/features/polymarket/types/team-info';

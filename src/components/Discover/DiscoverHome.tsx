@@ -108,7 +108,7 @@ export default function DiscoverHome() {
               </Inset>
             </Stack>
           )}
-          {/* FIXME: IS_TEST disables nftOffers this makes some DETOX tests hang forever at exit - investigate */}
+          {/* FIXME: IS_TEST disables nftOffers - this caused e2e tests to hang at exit */}
           {/* Requires new offers provider in order to re-enable this */}
           {/* {!IS_TEST && nftOffersEnabled && <NFTOffersCard />} */}
           {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}

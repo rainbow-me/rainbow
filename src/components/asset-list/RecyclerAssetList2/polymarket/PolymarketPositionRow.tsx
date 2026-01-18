@@ -98,7 +98,7 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
                       </Text>
                       {position.market.groupItemTitle && (
                         <Bleed vertical={'4px'}>
-                          <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />
+                          <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} color={accentColor} />
                         </Bleed>
                       )}
                     </Box>

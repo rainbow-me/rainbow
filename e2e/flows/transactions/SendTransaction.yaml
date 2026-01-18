@@ -73,7 +73,7 @@ tags:
       platform: Android
     commands:
       - longPressOn: 'Hold to Send'
-      - runFlow: ../../utils/MaybeSetupPin.yaml
+      - runFlow: ../../utils/MaybeInputPin.yaml
 
       # Check toast data
       - assertVisible:

@@ -29,6 +29,7 @@ import { Box } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import Routes from './routesNames';
+import { getWalletErrorSheetHeight } from '@/components/wallet-error/WalletErrorSheet';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -706,6 +707,15 @@ export const perpsDepositWithdrawalConfig: PartialNavigatorConfigOptions = {
       springDamping: 1,
       topOffset: 0,
       transitionDuration: 0.3,
+    }),
+  }),
+};
+
+export const walletErrorSheetConfig: PartialNavigatorConfigOptions = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: getWalletErrorSheetHeight(),
     }),
   }),
 };

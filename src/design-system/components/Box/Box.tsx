@@ -192,6 +192,7 @@ export const Box = forwardRef(function Box(
   const height = typeof heightProp === 'number' ? heightProp : resolveToken(heights, heightProp);
 
   const ComponentToUse = IS_TEST && COMPONENTS_TO_OVERRIDE_IN_TEST_MODE.some(_C => Component instanceof _C) ? View : Component;
+  // @ts-expect-error TS thinks there is no overlap.
   const isView = ComponentToUse === View || ComponentToUse === Animated.View;
 
   const shadowStylesExist =

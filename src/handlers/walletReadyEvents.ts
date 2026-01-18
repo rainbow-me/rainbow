@@ -13,13 +13,15 @@ import { checkKeychainIntegrity, getSelectedWallet, getWallets } from '@/state/w
 import { backupsStore, LoadingStates, oneWeekInMs } from '@/state/backups/backups';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
-import { getKeychainIntegrityState } from './localstorage/globalSettings';
 
-export const runKeychainIntegrityChecks = async () => {
-  const keychainIntegrityState = await getKeychainIntegrityState();
-  if (!keychainIntegrityState) {
-    await checkKeychainIntegrity();
+let integrityCheckTimeout: NodeJS.Timeout | null = null;
+
+export const runKeychainIntegrityChecks = (): void => {
+  // Run with a small delay to avoid blocking more important tasks on startup.
+  if (integrityCheckTimeout) {
+    clearTimeout(integrityCheckTimeout);
   }
+  integrityCheckTimeout = setTimeout(checkKeychainIntegrity, 2_500);
 };
 
 const delay = (ms: number) =>

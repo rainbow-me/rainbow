@@ -347,6 +347,7 @@ function determineStaleTime(state: NavigationState): number {
   switch (state.activeRoute) {
     case Routes.PERPS_NEW_POSITION_SCREEN:
     case Routes.CLOSE_POSITION_BOTTOM_SHEET:
+    case Routes.POLYMARKET_EVENT_SCREEN:
       return FAST_REFRESH_STALE_TIME;
     default:
       return DEFAULT_STALE_TIME;

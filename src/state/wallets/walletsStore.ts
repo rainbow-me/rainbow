@@ -1,4 +1,3 @@
-import { saveKeychainIntegrityState } from '@/handlers/localstorage/globalSettings';
 import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
@@ -6,10 +5,13 @@ import WalletTypes from '@/helpers/walletTypes';
 import { fetchENSAvatarWithRetry } from '@/hooks/useENSAvatar';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { parseTimestampFromBackupFile } from '@/model/backup';
-import { hasKey } from '@/model/keychain';
+import * as kc from '@/keychain';
 import { PreferenceActionType, setPreference } from '@/model/preferences';
+import Routes from '@/navigation/routesNames';
+import Navigation from '@/navigation/Navigation';
 import {
   AllRainbowWallets,
+  checkWalletsDamagedState,
   cleanUpWalletKeys,
   generateAccount,
   getAllWallets,
@@ -25,13 +27,12 @@ import {
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
 import { isLowerCaseMatch, time, watchingAlert } from '@/utils';
-import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
+import { didShowWalletErrorSheetKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
 import { shallowEqual } from '@/worklets/comparisons';
 import { captureMessage } from '@sentry/react-native';
 import { dequal } from 'dequal';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { keys } from 'lodash';
 import { Address } from 'viem';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
@@ -91,8 +92,9 @@ interface WalletsState {
 
   refreshWalletInfo: (props?: { addresses?: string[]; useCachedENS?: boolean }) => Promise<void>;
   checkKeychainIntegrity: () => Promise<void>;
+  setWalletDamaged: (walletId: string, damaged: boolean) => void;
 
-  getIsDamagedWallet: () => boolean;
+  getIsDamagedWallet: (walletId?: string) => boolean;
   getIsReadOnlyWallet: () => boolean;
   getIsHardwareWallet: () => boolean;
   getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
@@ -104,7 +106,10 @@ const INITIAL_ADDRESS = '' as Address;
 
 export const useWalletsStore = createRainbowStore<WalletsState>(
   (set, get) => ({
-    getIsDamagedWallet: () => !!get().selected?.damaged,
+    getIsDamagedWallet: (walletId?: string) => {
+      const { wallets, selected } = get();
+      return !!wallets[walletId ?? selected?.id ?? '']?.damaged;
+    },
     getIsReadOnlyWallet: () => get().selected?.type === WalletTypes.readOnly,
     getIsHardwareWallet: () => !!get().selected?.deviceId,
 
@@ -522,110 +527,52 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     checkKeychainIntegrity: async () => {
       try {
-        let healthyKeychain = true;
+        const startTime = Date.now();
         logger.debug('[walletsStore]: Starting keychain integrity checks');
 
-        const hasAddress = await hasKey(addressKey);
-        if (hasAddress) {
-          logger.debug('[walletsStore]: address is ok');
-        } else {
-          healthyKeychain = false;
-          logger.debug(`[walletsStore]: address is missing: ${hasAddress}`);
+        if (!get().walletReady) {
+          logger.debug('[walletsStore]: Wallets not ready yet, skipping keychain integrity checks');
+          return;
         }
 
-        const hasOldSeedPhraseMigratedFlag = await hasKey(oldSeedPhraseMigratedKey);
-        if (hasOldSeedPhraseMigratedFlag) {
-          logger.debug('[walletsStore]: migrated flag is OK');
-        } else {
-          logger.debug(`[walletsStore]: migrated flag is present: ${hasOldSeedPhraseMigratedFlag}`);
-        }
+        const updatedWalletsDamagedState = await checkWalletsDamagedState(get().wallets);
+        const healthyKeychain = Array.from(updatedWalletsDamagedState.values()).every(damaged => !damaged);
 
-        const hasOldSeedphrase = await hasKey(seedPhraseKey);
-        if (hasOldSeedphrase) {
-          logger.debug('[walletsStore]: old seed is still present!');
-        } else {
-          logger.debug(`[walletsStore]: old seed is present: ${hasOldSeedphrase}`);
-        }
+        set(state => {
+          if (!state.wallets || updatedWalletsDamagedState.size === 0) return state;
+          const updatedWallets = { ...state.wallets };
 
-        const { wallets, selected } = get();
-
-        if (!selected) {
-          logger.warn('[walletsStore]: selectedWallet is missing');
-        }
-
-        const nonReadOnlyWalletKeys = keys(wallets).filter(key => wallets[key].type !== WalletTypes.readOnly);
-        const damagedWalletIds = new Set<string>();
-
-        for (const key of nonReadOnlyWalletKeys) {
-          let healthyWallet = true;
-          const wallet = wallets[key];
-
-          const seedKeyFound = await hasKey(`${key}_${seedPhraseKey}`);
-          if (!seedKeyFound) {
-            healthyWallet = false;
-            logger.warn('[walletsStore]: seed key is missing');
-          } else {
-            logger.debug('[walletsStore]: seed key is present');
-          }
-
-          for (const account of wallet.addresses || []) {
-            const pkeyFound = await hasKey(`${account.address}_${privateKeyKey}`);
-            if (!pkeyFound) {
-              healthyWallet = false;
-              logger.warn(`[walletsStore]: pkey is missing`);
-            } else {
-              logger.debug(`[walletsStore]: pkey is present`);
-            }
-          }
-
-          // Handle race condition:
-          // A wallet is NOT damaged if:
-          // - it's not imported
-          // - and hasn't been migrated yet
-          // - and the old seedphrase is still there
-          if (!wallet.imported && !hasOldSeedPhraseMigratedFlag && hasOldSeedphrase) {
-            healthyWallet = true;
-          }
-
-          if (!healthyWallet) {
-            logger.warn('[walletsStore]: declaring wallet unhealthy...');
-            healthyKeychain = false;
-            damagedWalletIds.add(wallet.id);
-          }
-        }
-
-        if (damagedWalletIds.size) {
-          set(state => {
-            if (!state.wallets) return state;
-
-            const updatedWallets = { ...state.wallets };
-
-            damagedWalletIds.forEach(walletId => {
+          updatedWalletsDamagedState.forEach((damaged, walletId) => {
+            const curWallet = updatedWallets[walletId];
+            if (curWallet.damaged !== damaged) {
               updatedWallets[walletId] = {
                 ...updatedWallets[walletId],
-                damaged: true,
+                damaged,
               };
-            });
-
-            const newSelected =
-              state.selected && damagedWalletIds.has(state.selected.id) ? updatedWallets[state.selected.id] : state.selected;
-
-            logger.debug('[walletsStore]: done updating wallets');
-
-            return {
-              ...state,
-              wallets: updatedWallets,
-              selected: newSelected,
-            };
+            }
           });
-        }
+
+          const newSelected =
+            state.selected && updatedWalletsDamagedState.has(state.selected.id) ? updatedWallets[state.selected.id] : state.selected;
+
+          return {
+            ...state,
+            wallets: updatedWallets,
+            selected: newSelected,
+          };
+        });
 
         if (!healthyKeychain) {
           captureMessage('Keychain Integrity is not OK');
+          const didShowWalletErrorSheet = await kc.has(didShowWalletErrorSheetKey);
+          if (!didShowWalletErrorSheet) {
+            Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
+            // Save this flag in the keychain so we only show the alert once per device transfer.
+            await kc.set(didShowWalletErrorSheetKey, 'true', kc.publicAccessControlOptions);
+          }
         }
 
-        logger.debug('[walletsStore]: check completed');
-        saveKeychainIntegrityState('done');
+        logger.debug(`[walletsStore]: check completed in ${Date.now() - startTime} ms`);
       } catch (e) {
         logger.error(new RainbowError("[walletsStore]: error thrown'"), {
           message: ensureError(e).message,
@@ -633,6 +580,28 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         captureMessage('Error running keychain integrity checks');
       }
     },
+
+    setWalletDamaged: (walletId: string, damaged: boolean) =>
+      set(state => {
+        const { selected, wallets } = state;
+        const currentWallet = wallets[walletId];
+
+        if (!currentWallet || currentWallet.damaged === damaged) return state;
+
+        const newWallets = {
+          ...wallets,
+          [walletId]: {
+            ...currentWallet,
+            damaged,
+          },
+        };
+
+        return {
+          ...state,
+          selected: selected?.id === walletId ? newWallets[walletId] : state.selected,
+          wallets: newWallets,
+        };
+      }),
 
     getWalletWithAccount(accountAddress: string): RainbowWallet | undefined {
       const { wallets } = get();
@@ -802,7 +771,10 @@ function applyWalletUpdatesFromKeychain(storeWallets: AllRainbowWallets, keychai
       const existingAddresses = new Set(newWallets[walletId].addresses.map(a => a.address.toLowerCase()));
       const missingAddresses = keychainWallet.addresses.filter(account => !existingAddresses.has(account.address.toLowerCase()));
 
-      const needsUpdate = missingAddresses.length || newWallets[walletId].type !== keychainWallet.type;
+      const needsUpdate =
+        missingAddresses.length ||
+        newWallets[walletId].type !== keychainWallet.type ||
+        newWallets[walletId].encryptionType !== keychainWallet.encryptionType;
 
       if (needsUpdate) {
         // Add new addresses to existing wallet
@@ -812,6 +784,7 @@ function applyWalletUpdatesFromKeychain(storeWallets: AllRainbowWallets, keychai
             ...newWallets[walletId],
             addresses: missingAddresses.length ? [...newWallets[walletId].addresses, ...missingAddresses] : newWallets[walletId].addresses,
             type: keychainWallet.type,
+            encryptionType: keychainWallet.encryptionType,
           },
         };
       }
@@ -866,6 +839,7 @@ export const {
   setAllWalletsWithIdsAsBackedUp,
   setSelectedWallet,
   setWalletBackedUp,
+  setWalletDamaged,
   setWalletReady,
   setAccountAddress,
   updateAccountInfo,

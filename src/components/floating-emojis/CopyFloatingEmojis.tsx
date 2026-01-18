@@ -16,11 +16,12 @@ interface CopyFloatingEmojisProps {
   onPress?: (textToCopy?: string) => void;
   /** The text that should be copied to the clipboard */
   textToCopy?: string;
+  testID?: string;
   /** Any additional props you want to forward to FloatingEmojis */
   [key: string]: unknown;
 }
 
-const CopyFloatingEmojis: FC<CopyFloatingEmojisProps> = ({ children, disabled = false, onPress, textToCopy, ...props }) => {
+const CopyFloatingEmojis: FC<CopyFloatingEmojisProps> = ({ children, disabled = false, onPress, textToCopy, testID, ...props }) => {
   const { setClipboard } = useClipboard();
 
   return (
@@ -39,6 +40,7 @@ const CopyFloatingEmojis: FC<CopyFloatingEmojisProps> = ({ children, disabled = 
           }}
           radiusAndroid={24}
           contentContainerStyle={{ padding: 10 }}
+          testID={testID}
         >
           {children}
         </ButtonPressAnimation>

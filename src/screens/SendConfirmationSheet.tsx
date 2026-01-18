@@ -373,6 +373,7 @@ export const SendConfirmationSheet = () => {
     } catch (e) {
       const error = ensureError(e);
       logger.error(new RainbowError(`[SendConfirmationSheet]: error submitting transaction: ${error.message}`, error));
+    } finally {
       setIsAuthorizing(false);
     }
   }, [callback, canSubmit, checkboxes, isENS]);

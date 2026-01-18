@@ -2930,12 +2930,7 @@
         "no_price": "Küçük Bakiyeler"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "Mevcut kimlik doğrulama yönteminiz (Yüz Tanıma) yeterince güvenli değil, lütfen \"Ayarlar > Biyometrik & Güvenlik\" bölümüne gidin ve Alternatif bir biyometrik yöntem olan Parmak izi veya Iris'i etkinleştirin.",
-          "error": "Hata"
-        },
-        "please": "Lütfen kimlik doğrulaması yapın",
-        "please_seed_phrase": "Lütfen özel anahtarı görüntülemek için kimlik doğrulayın"
+        "please": "Lütfen kimlik doğrulaması yapın"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} cüzdan",

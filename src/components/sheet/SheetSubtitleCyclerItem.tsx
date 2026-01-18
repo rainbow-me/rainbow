@@ -53,15 +53,7 @@ const LocalSheetSubtitleCyclerItem = ({ error, selected, subtitle }: Props) => {
 
   return (
     <Container style={opacityStyle}>
-      <AnimatedText
-        align="center"
-        // @ts-expect-error untyped JS component
-        animatedProps={colorProps}
-        letterSpacing="uppercase"
-        size="smedium"
-        uppercase
-        weight="semibold"
-      >
+      <AnimatedText align="center" animatedProps={colorProps} letterSpacing="uppercase" size="smedium" uppercase weight="semibold">
         {subtitle}
       </AnimatedText>
     </Container>
