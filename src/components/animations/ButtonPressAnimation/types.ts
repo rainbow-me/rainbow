@@ -6,7 +6,7 @@ export type Direction = 'bottom' | 'left' | 'right' | 'top';
 export type ButtonPressAnimationTouchEvent = NativeSyntheticEvent<NativeTouchEvent>;
 
 export interface BaseButtonAnimationProps
-  extends Pick<ViewProps, 'onLayout' | 'style' | 'testID' | 'pointerEvents' | 'hitSlop'>,
+  extends Pick<ViewProps, 'onLayout' | 'style' | 'testID' | 'pointerEvents' | 'hitSlop' | 'accessible' | 'accessibilityLabel'>,
     Pick<PressableProps, 'onPress'> {
   activeOpacity?: number;
   disabled?: boolean;

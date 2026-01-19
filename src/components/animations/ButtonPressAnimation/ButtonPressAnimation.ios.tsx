@@ -40,6 +40,7 @@ const ButtonPressAnimation = React.forwardRef<React.ElementRef<typeof NativeButt
       transformOrigin,
       testID,
       onPress,
+      accessible = true,
       ...rest
     }: ButtonProps,
     ref
@@ -57,10 +58,11 @@ const ButtonPressAnimation = React.forwardRef<React.ElementRef<typeof NativeButt
       transformOrigin: normalizedTransformOrigin,
       useLateHaptic,
       onPress: onPress as NativeButtonProps['onPress'],
+      accessible,
     };
 
     return compensateForTransformOrigin ? (
-      <View>
+      <View collapsable={false}>
         {/*
         👆️ This wrapper View is necessary.
         In order to compensate for the way our NativeButton's transformOrigin effects layout/positioning,

@@ -125,7 +125,6 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
     _blocked = NO;
     _invalidated = NO;
 
-    self.isAccessibilityElement = YES;
     self.userInteractionEnabled = YES;
     SetAnchorPoint(self, CGPointMake(0.5, 0.5));
 
