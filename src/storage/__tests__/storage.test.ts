@@ -1,7 +1,5 @@
-import { jest, test, expect, beforeEach } from '@jest/globals';
+import { test, expect, beforeEach } from '@jest/globals';
 import { Storage } from '@/storage';
-
-jest.mock('react-native-mmkv');
 
 type Schema = {
   boo: boolean;
