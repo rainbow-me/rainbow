@@ -36,9 +36,9 @@ export function AddCashSheet() {
   } = useQuery(
     ['f2c', 'providers'],
     async () => {
-      const [{ data, error }] = await wait(1000, [await getProviders()]);
+      const [{ data }] = await wait(1000, [await getProviders()]);
 
-      if (!data || error) {
+      if (!data) {
         const e = new RainbowError('[AddCash]: failed to fetch providers');
 
         logger.error(e);
