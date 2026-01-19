@@ -10153,7 +10153,7 @@ __metadata:
     react-native-redash: "npm:16.3.0"
     react-native-restart: "npm:0.0.22"
     react-native-safe-area-context: "npm:5.4.0"
-    react-native-screen-corner-radius: "npm:0.2.2"
+    react-native-screen-corner-radius: "npm:0.2.3"
     react-native-screens: "npm:4.10.0"
     react-native-section-list-get-item-layout: "npm:2.2.3"
     react-native-share: "npm:8.2.1"
@@ -24717,13 +24717,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-screen-corner-radius@npm:0.2.2":
-  version: 0.2.2
-  resolution: "react-native-screen-corner-radius@npm:0.2.2"
+"react-native-screen-corner-radius@npm:0.2.3":
+  version: 0.2.3
+  resolution: "react-native-screen-corner-radius@npm:0.2.3"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/8bdc2d3aeff94682c7833ae0780b55bb55138520615a67c356c0925786ad75ca47fc0d89a758983489060f4cd5560cc548b31bd25d40fa0631e41891622ca198
+  checksum: 10c0/75c6a7648f4e02eaebf9a9f426a8bbcc88bc47d95d73a9977cb04603bc10414c6c378afb4e2d6cc24b264ce83e0946f0dbc87fe8a5d6793ad89b9cf224afd02a
   languageName: node
   linkType: hard
 
