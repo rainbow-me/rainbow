@@ -15,6 +15,7 @@ import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 
 let integrityCheckTimeout: NodeJS.Timeout | null = null;
+let localCampaignCheckTimeout: NodeJS.Timeout | null = null;
 
 export const runKeychainIntegrityChecks = (): void => {
   // Run with a small delay to avoid blocking more important tasks on startup.
@@ -109,10 +110,14 @@ const notificationsCampaignCheckTimeout = 15_000;
 const routesToExitEarlyOn: string[] = [Routes.BACKUP_SHEET, Routes.APP_ICON_UNLOCK_SHEET, Routes.REMOTE_PROMO_SHEET];
 
 const handleLocalCampaignChecks = async () => {
-  setTimeout(() => {
+  if (localCampaignCheckTimeout) {
+    clearTimeout(localCampaignCheckTimeout);
+  }
+  localCampaignCheckTimeout = setTimeout(() => {
     const { activeRoute } = useNavigationStore.getState();
     if (routesToExitEarlyOn.includes(activeRoute)) return;
     runLocalCampaignChecks();
+    localCampaignCheckTimeout = null;
   }, notificationsCampaignCheckTimeout);
 };
 
