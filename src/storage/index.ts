@@ -2,6 +2,7 @@ import { MMKV } from 'react-native-mmkv';
 
 import { Account, Cards, Campaigns, Device, Review, WatchedWalletCohort } from '@/storage/schema';
 import { EthereumAddress, RainbowTransaction } from '@/entities';
+import { logger, RainbowError } from '@/logger';
 import { SecureStorage } from '@coinbase/mobile-wallet-protocol-host';
 import { ChainId } from '@/state/backendNetworks/types';
 
@@ -35,10 +36,18 @@ export class Storage<Scopes extends unknown[], Schema> {
    *   `get([scope, key])`
    */
   get<Key extends keyof Schema>(scopes: [...Scopes, Key]): Schema[Key] | undefined {
-    const res = this.store.getString(scopes.join(this.sep));
+    const key = scopes.join(this.sep);
+    const res = this.store.getString(key);
     if (!res) return undefined;
-    // parsed from storage structure `{ data: <value> }`
-    return JSON.parse(res).data;
+
+    try {
+      // parsed from storage structure `{ data: <value> }`
+      return (JSON.parse(res) as { data?: Schema[Key] }).data;
+    } catch (error) {
+      logger.error(new RainbowError(`[storage]: failed to parse persisted value`), { error, key });
+      this.store.delete(key);
+      return undefined;
+    }
   }
 
   /**
