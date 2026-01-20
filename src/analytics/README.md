@@ -60,6 +60,8 @@ export const event = {
 
 You'll also need to define the payload for the event on the `EventProperties` type. If your event doesn't have a payload, use `undefined` as its value. See the file for examples.
 
+**Important:** Never include sensitive user data (private keys, mnemonics, passwords, or wallet addresses) in analytics events. This data will be sent to third-party analytics services and could compromise user security.
+
 ### Updating old events
 
 **Important:** once an event name has been used in production, it should not be
