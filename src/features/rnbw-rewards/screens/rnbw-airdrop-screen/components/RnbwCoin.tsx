@@ -2,8 +2,7 @@ import { memo, useRef } from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import Animated, { FadeIn, FadeOut, useAnimatedReaction, useAnimatedStyle, withDelay, withTiming } from 'react-native-reanimated';
-import { ClaimStep, ClaimSteps, useRnbwAirdropContext } from '@/features/rnbw-rewards/context/RnbwAirdropContext';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ClaimStep, ClaimSteps, useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/context/RnbwRewardsTransitionContext';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { time } from '@/utils/time';
 import { transitionEasing } from '@/features/rnbw-rewards/animations/layoutAnimations';
@@ -41,6 +40,22 @@ const stepsConfig: Record<ClaimStep, { scale: number; translateY: number }> = {
     scale: 1,
     translateY: 88,
   },
+  [ClaimSteps.Rewards]: {
+    scale: 108 / COIN_SIZE,
+    translateY: 81,
+  },
+  [ClaimSteps.ClaimingAirdrop]: {
+    scale: SMALL_COIN_SCALE,
+    translateY: 275,
+  },
+  [ClaimSteps.ClaimingRewards]: {
+    scale: SMALL_COIN_SCALE,
+    translateY: 275,
+  },
+  [ClaimSteps.AirdropClaimFinished]: {
+    scale: 108 / COIN_SIZE,
+    translateY: 245,
+  },
   [ClaimSteps.NothingToClaim]: {
     scale: MEDIUM_COIN_SCALE,
     translateY: 72,
@@ -56,7 +71,7 @@ const loadingSpinnerEnteringAnimation = FadeIn.delay(timingConfig.duration * 0.5
 const loadingSpinnerExitingAnimation = FadeOut.easing(transitionEasing);
 
 export const RnbwCoin = memo(function RnbwCoin() {
-  const { activeStep } = useRnbwAirdropContext();
+  const { activeStep } = useRnbwRewardsTransitionContext();
   const coinRef = useRef<SpinnableCoinHandle>(null);
 
   useAnimatedReaction(
@@ -68,6 +83,10 @@ export const RnbwCoin = memo(function RnbwCoin() {
         coinRef.current?.spin({ turns: 2, durationMs: time.seconds(3) });
       } else if (current === ClaimSteps.NothingToClaim && previous === ClaimSteps.Claim) {
         coinRef.current?.spin({ turns: 0.5, durationMs: time.seconds(1.8) });
+      } else if (current === ClaimSteps.Rewards && previous === ClaimSteps.ClaimingRewards) {
+        coinRef.current?.spin({ turns: 0.5, durationMs: time.seconds(1.8) });
+      } else if (current === ClaimSteps.ClaimingRewards && previous === ClaimSteps.Rewards) {
+        coinRef.current?.spin({ turns: 0.5, durationMs: time.seconds(3) });
       }
     },
     []
@@ -147,8 +166,12 @@ export const RnbwCoin = memo(function RnbwCoin() {
 });
 
 function CoinLoadingSpinner() {
-  const { activeStepState } = useRnbwAirdropContext();
-  if (activeStepState !== ClaimSteps.CheckingAirdrop) return null;
+  const { activeStepState } = useRnbwRewardsTransitionContext();
+  const isLoading =
+    activeStepState === ClaimSteps.CheckingAirdrop ||
+    activeStepState === ClaimSteps.ClaimingAirdrop ||
+    activeStepState === ClaimSteps.ClaimingRewards;
+  if (!isLoading) return null;
   return (
     <Animated.View style={styles.loadingSpinner} entering={loadingSpinnerEnteringAnimation} exiting={loadingSpinnerExitingAnimation}>
       <LoadingSpinner color={'#F6D66C'} size={LOADING_SPINNER_SIZE} strokeWidth={2} />

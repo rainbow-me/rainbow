@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
-import { ClaimSteps, useRnbwAirdropContext } from '@/features/rnbw-rewards/context/RnbwAirdropContext';
+import { ClaimSteps, useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/context/RnbwRewardsTransitionContext';
 import Animated from 'react-native-reanimated';
 import { time } from '@/utils/time';
 import { createScaleOutFadeOutSlideExitAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
@@ -14,7 +14,7 @@ const customExitingThirdTranche = createScaleOutFadeOutSlideExitAnimation({ dela
 
 export const IntroductionStep = memo(function IntroductionStep() {
   const { isDarkMode } = useColorMode();
-  const { setActiveStep } = useRnbwAirdropContext();
+  const { setActiveStep } = useRnbwRewardsTransitionContext();
 
   return (
     <View style={styles.container}>

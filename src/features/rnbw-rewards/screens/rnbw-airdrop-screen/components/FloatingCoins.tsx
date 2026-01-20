@@ -17,7 +17,7 @@ import Animated, {
 import { BlurView } from 'react-native-blur-view';
 import rnbwCoin from '@/assets/rnbw.png';
 import { time } from '@/utils/time';
-import { ClaimSteps, useRnbwAirdropContext } from '@/features/rnbw-rewards/context/RnbwAirdropContext';
+import { ClaimSteps, useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/context/RnbwRewardsTransitionContext';
 import { getCoinCenterPosition } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/components/RnbwCoin';
 
 // Original design dimensions
@@ -248,7 +248,7 @@ const FloatingCoin = memo(function FloatingCoin({ config, state }: { config: Coi
 
 export const FloatingCoins = memo(function FloatingCoins() {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
-  const { activeStep } = useRnbwAirdropContext();
+  const { activeStep } = useRnbwRewardsTransitionContext();
   const state = useDerivedValue(() => {
     switch (activeStep.value) {
       case ClaimSteps.Introduction:

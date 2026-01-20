@@ -13,25 +13,52 @@ type AirdropStore = {
     tokenAmount: string;
     nativeCurrencyAmount: string;
   };
-};
-
-type AirdropData = {
-  claimableRnbw: string;
-  claimableValueInCurrency: string;
-  decimals: number;
-  hasPendingClaim: boolean;
-  hasClaimed: boolean;
+  hasClaimed: () => boolean;
+  hasClaimableAirdrop: () => boolean;
 };
 
 type AirdropParams = {
-  currency: NativeCurrencyKey;
   address: Address;
+  currency: NativeCurrencyKey;
 };
 
-export const useAirdropStore = createQueryStore<AirdropData, AirdropParams, AirdropStore>(
+type AirdropResponseData = {
+  airdropped: {
+    amountInDecimal: string;
+    amountInWei: string;
+    value: string;
+  };
+  available: {
+    amountInDecimal: string;
+    amountInWei: string;
+    value: string;
+  };
+  rnbwPrice: string;
+  message?: string;
+  // TODO: why is this structured differently than other responses?
+  // "errors": [
+  //   "string"
+  // ],
+  // "message": "string",
+  // "metadata": {
+  //   "currency": "string",
+  //   "pagination": {
+  //     "next": "string"
+  //   },
+  //   "requestId": "string",
+  //   "requestTime": "2026-01-20T15:18:17.712Z",
+  //   "responseTime": "2026-01-20T15:18:17.712Z",
+  //   "success": true,
+  //   "version": "string"
+  // };
+};
+
+type AirdropResponse = PlatformResponse<AirdropResponseData>;
+
+export const useAirdropStore = createQueryStore<AirdropResponseData, AirdropParams, AirdropStore>(
   {
     fetcher: fetchAirdrop,
-    cacheTime: time.days(1),
+    cacheTime: time.days(0),
     params: {
       currency: $ => $(userAssetsStoreManager).currency,
       address: $ => $(useWalletsStore).accountAddress,
@@ -43,29 +70,53 @@ export const useAirdropStore = createQueryStore<AirdropData, AirdropParams, Aird
     getBalance: () => {
       const data = get().getData();
       const currency = userAssetsStoreManager.getState().currency;
-      if (!data)
+      if (!data) {
         return {
           tokenAmount: '0',
-          nativeCurrencyAmount: '0',
+          nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(0, currency, false),
         };
+      }
       return {
-        tokenAmount: convertRawAmountToDecimalFormat(data.claimableRnbw, data.decimals),
-        nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(data.claimableValueInCurrency, currency),
+        tokenAmount: convertRawAmountToDecimalFormat(data.airdropped.amountInDecimal, 18),
+        nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(data.airdropped.value, currency, false),
+        // nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(data.claimableValueInCurrency, currency, !isZero),
       };
     },
+    hasClaimed: () => {
+      const data = get().getData();
+      return data?.available.amountInDecimal !== data?.airdropped.amountInDecimal;
+    },
+    hasClaimableAirdrop: () => {
+      const data = get().getData();
+      return data?.available.amountInDecimal !== '0';
+    },
   }),
-
-  { storageKey: 'airdropStore' }
+  { storageKey: 'airdropStore', version: 1 }
 );
 
-async function fetchAirdrop({ currency, address }: AirdropParams): Promise<AirdropData> {
-  // TODO: blocked by backend
+async function fetchAirdrop({ address, currency }: AirdropParams): Promise<AirdropResponseData> {
+  const response = await getPlatformClient().get<AirdropResponse>('/rewards/GetAirdropBalance', {
+    params: {
+      walletAddress: address,
+      currency,
+    },
+  });
+
+  // @ts-ignore - backend response shape needs to be fixed
+  const data = response.data as AirdropResponseData;
 
   return {
-    claimableRnbw: '1253371.2345',
-    claimableValueInCurrency: '1234.56',
-    decimals: 18,
-    hasPendingClaim: false,
-    hasClaimed: false,
+    airdropped: {
+      amountInDecimal: data.airdropped.amountInDecimal,
+      amountInWei: data.airdropped.amountInWei,
+      value: data.airdropped.value,
+    },
+    available: {
+      amountInDecimal: data.available.amountInDecimal,
+      amountInWei: data.available.amountInWei,
+      value: data.available.value,
+    },
+    rnbwPrice: data.rnbwPrice,
+    message: data.message,
   };
 }

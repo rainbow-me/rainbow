@@ -2,7 +2,7 @@ import { memo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Box, globalColors, Text, TextIcon, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
-import { ClaimSteps, useRnbwAirdropContext } from '@/features/rnbw-rewards/context/RnbwAirdropContext';
+import { ClaimSteps, useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/context/RnbwRewardsTransitionContext';
 import Animated from 'react-native-reanimated';
 import { time } from '@/utils/time';
 import {
@@ -19,7 +19,7 @@ const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();
 
 export const ClaimAirdropStep = memo(function ClaimAirdropStep() {
   const { isDarkMode } = useColorMode();
-  const { setActiveStep } = useRnbwAirdropContext();
+  const { setActiveStep } = useRnbwRewardsTransitionContext();
 
   const [isClaiming, setIsClaiming] = useState(false);
 
@@ -56,12 +56,12 @@ export const ClaimAirdropStep = memo(function ClaimAirdropStep() {
             label="Hold to Claim"
             onLongPress={() => {
               'worklet';
-              setIsClaiming(true);
-
-              setTimeout(() => {
-                setActiveStep(ClaimSteps.NothingToClaim);
-                setIsClaiming(false);
-              }, 500);
+              // setIsClaiming(true);
+              setActiveStep(ClaimSteps.ClaimingAirdrop);
+              // setTimeout(() => {
+              //   setActiveStep(ClaimSteps.NothingToClaim);
+              //   setIsClaiming(false);
+              // }, 500);
             }}
             backgroundColor={isDarkMode ? globalColors.white100 : globalColors.grey100}
             disabledBackgroundColor={isDarkMode ? globalColors.white100 : globalColors.grey100}

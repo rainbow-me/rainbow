@@ -43,12 +43,14 @@ export const useRnbwRewardsStore = createQueryStore<RnbwRewardsData, RnbwRewards
       const data = get().getData();
       const currency = userAssetsStoreManager.getState().currency;
 
-      if (!data)
+      if (!data) {
         return {
           tokenAmount: '0',
-          nativeCurrencyAmount: '0',
+          nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(0, currency, false),
         };
+      }
       const isZero = Number(data.claimableValueInCurrency) === 0;
+      console.log('claimableValueInCurrency', data.claimableValueInCurrency);
       return {
         tokenAmount: convertRawAmountToDecimalFormat(data.claimableRnbw, data.decimals),
         nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(data.claimableValueInCurrency, currency, !isZero),

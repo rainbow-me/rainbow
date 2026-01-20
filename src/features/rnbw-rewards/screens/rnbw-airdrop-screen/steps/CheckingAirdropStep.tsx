@@ -2,7 +2,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Text } from '@/design-system';
-import { ClaimSteps, useRnbwAirdropContext } from '@/features/rnbw-rewards/context/RnbwAirdropContext';
+import { ClaimStep, ClaimSteps, useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/context/RnbwRewardsTransitionContext';
 import { time } from '@/utils/time';
 import {
   createScaleOutFadeOutSlideExitAnimation,
@@ -13,17 +13,26 @@ import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-aird
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: -24 });
 const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();
 
-export const CheckingAirdropStep = memo(function CheckingAirdropStep() {
-  const { setActiveStep } = useRnbwAirdropContext();
+type LoadingStep = {
+  labels: string[];
+  onComplete?: () => void;
+};
 
-  const progressLabels = ['Calculating Rewards...', 'Checking Historical Activity...', 'Checking Eligibility...', ''];
+export const LoadingStep = memo(function LoadingStep({ labels, onComplete }: LoadingStep) {
   const [progressLabelIndex, setProgressLabelIndex] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const effectiveLabels = [...labels, ''];
+  const labelCount = effectiveLabels.length;
+
+  useEffect(() => {
+    setProgressLabelIndex(0);
+  }, [labels]);
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       setProgressLabelIndex(prev => {
-        if (prev < progressLabels.length - 1) {
+        if (prev < labelCount - 1) {
           return prev + 1;
         }
         return 0;
@@ -34,26 +43,31 @@ export const CheckingAirdropStep = memo(function CheckingAirdropStep() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [progressLabels.length]);
+  }, [labelCount]);
 
   useEffect(() => {
-    if (progressLabelIndex === progressLabels.length - 1) {
+    if (progressLabelIndex === labelCount - 1) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
 
-      setTimeout(() => {
-        setActiveStep(ClaimSteps.Claim);
+      timeoutRef.current = setTimeout(() => {
+        onComplete?.();
       }, time.seconds(1));
     }
-  }, [progressLabelIndex, setActiveStep, progressLabels.length]);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [labelCount, onComplete, progressLabelIndex]);
 
   return (
     <View style={styles.container}>
-      {progressLabels.map((label, index) => {
+      {effectiveLabels.map((label, index) => {
         if (index === progressLabelIndex) {
           return (
-            <Animated.View key={label} entering={enteringAnimation} exiting={exitingAnimation}>
+            <Animated.View key={`${label}-${index}`} entering={enteringAnimation} exiting={exitingAnimation}>
               <Text color={{ custom: '#858585' }} size="20pt" weight="heavy">
                 {label}
               </Text>
