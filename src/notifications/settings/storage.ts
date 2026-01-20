@@ -46,7 +46,8 @@ export const getAllWalletNotificationSettingsFromStorage = () => {
  */
 export const getNotificationSettingsForWalletWithAddress = (address: string) => {
   const allSettings = getAllWalletNotificationSettingsFromStorage();
-  return allSettings.find((wallet: WalletNotificationSettings) => wallet.address === address);
+  const normalizedAddress = address.toLowerCase();
+  return allSettings.find((wallet: WalletNotificationSettings) => wallet.address?.toLowerCase() === normalizedAddress);
 };
 
 /**
