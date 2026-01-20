@@ -17,17 +17,12 @@ import { ClaimAirdropStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-s
 import { AirdropClaimFinishedStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/AirdropClaimFinished';
 import { RnbwRewardsStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/RewardsStep';
 import { Navbar } from '@/components/navbar/Navbar';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
-  const safeAreaInsets = useSafeAreaInsets();
   return (
     <RnbwRewardsTransitionContextProvider initialStep={ClaimSteps.Rewards}>
       <View style={styles.container}>
-        <View style={[StyleSheet.absoluteFill, { top: safeAreaInsets.top }]}>
-          <BottomGradientGlow />
-          <RnbwCoin />
-          <FloatingCoins />
-        </View>
         <RnbwRewardsContent />
       </View>
     </RnbwRewardsTransitionContextProvider>
@@ -35,11 +30,25 @@ export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
 });
 
 function RnbwRewardsContent() {
+  const { scrollOffset } = useRnbwRewardsTransitionContext();
   const tabBarOffset = useTabBarOffset();
   const safeAreaInsets = useSafeAreaInsets();
 
+  const rnbwCoinAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: -scrollOffset.value }],
+    };
+  }, [scrollOffset]);
+
   return (
     <View style={[{ flex: 1, paddingTop: safeAreaInsets.top, paddingBottom: tabBarOffset }]}>
+      <View style={[StyleSheet.absoluteFill, { top: safeAreaInsets.top }]}>
+        <BottomGradientGlow />
+        <Animated.View style={rnbwCoinAnimatedStyle}>
+          <RnbwCoin />
+        </Animated.View>
+        <FloatingCoins />
+      </View>
       <Navbar leftComponent={<AccountImage />} floating />
       <RnbwRewardsSceneSteps />
     </View>

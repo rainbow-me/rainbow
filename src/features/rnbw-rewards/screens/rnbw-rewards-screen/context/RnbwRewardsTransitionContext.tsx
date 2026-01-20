@@ -1,6 +1,6 @@
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
-import { SharedValue, useSharedValue } from 'react-native-reanimated';
+import { SharedValue, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 
 export const ClaimSteps = {
   AirdropIntroduction: 'airdrop-introduction',
@@ -18,6 +18,8 @@ type RnbwRewardsTransitionContextType = {
   activeStep: SharedValue<ClaimStep>;
   activeStepState: ClaimStep;
   setActiveStep: (step: ClaimStep) => void;
+  scrollHandler: ReturnType<typeof useAnimatedScrollHandler>;
+  scrollOffset: SharedValue<number>;
 };
 
 const RnbwRewardsTransitionContext = createContext<RnbwRewardsTransitionContextType | null>(null);
@@ -33,6 +35,10 @@ export function RnbwRewardsTransitionContextProvider({
 }: RnbwRewardsTransitionContextProviderProps) {
   const activeStep = useSharedValue<ClaimStep>(initialStep);
   const [activeStepState, setActiveStepState] = useState<ClaimStep>(initialStep);
+  const scrollOffset = useSharedValue(0);
+  const scrollHandler = useAnimatedScrollHandler(event => {
+    scrollOffset.value = event.contentOffset.y;
+  });
 
   useSyncSharedValue({
     compareDepth: 'shallow',
@@ -51,7 +57,10 @@ export function RnbwRewardsTransitionContextProvider({
     [activeStep]
   );
 
-  const value = useMemo(() => ({ activeStep, activeStepState, setActiveStep }), [activeStep, activeStepState, setActiveStep]);
+  const value = useMemo(
+    () => ({ activeStep, activeStepState, setActiveStep, scrollHandler, scrollOffset }),
+    [activeStep, activeStepState, setActiveStep, scrollHandler, scrollOffset]
+  );
 
   return <RnbwRewardsTransitionContext.Provider value={value}>{children}</RnbwRewardsTransitionContext.Provider>;
 }

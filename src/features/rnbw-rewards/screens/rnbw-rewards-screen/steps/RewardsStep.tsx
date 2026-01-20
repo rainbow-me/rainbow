@@ -1,5 +1,5 @@
 import { memo, useCallback, useState } from 'react';
-import { View, ScrollView, RefreshControl, Alert } from 'react-native';
+import { View, RefreshControl, Alert } from 'react-native';
 import { Box, Text } from '@/design-system';
 import { useRnbwRewardsStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsStore';
 import { AirdropCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/AirdropCard';
@@ -22,7 +22,7 @@ import { defaultExitAnimation, createScaleInFadeInSlideEnterAnimation } from '@/
 const enterAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 
 export const RnbwRewardsStep = function RnbwRewardsStep() {
-  const { setActiveStep } = useRnbwRewardsTransitionContext();
+  const { setActiveStep, scrollHandler } = useRnbwRewardsTransitionContext();
   const [refreshing, setRefreshing] = useState(false);
   const hasClaimedAirdrop = useRnbwAirdropStore(state => state.hasClaimed());
   const address = useWalletsStore(state => state.accountAddress);
@@ -51,12 +51,13 @@ export const RnbwRewardsStep = function RnbwRewardsStep() {
 
   return (
     <Animated.View style={{ flex: 1 }} entering={enterAnimation} exiting={defaultExitAnimation}>
-      <ScrollView
+      <Animated.ScrollView
+        onScroll={scrollHandler}
         contentContainerStyle={{ paddingHorizontal: 20 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
       >
         <RnbwRewardsBalance onClaimRewards={handleClaimRewards} />
-      </ScrollView>
+      </Animated.ScrollView>
       {!hasClaimedAirdrop && (
         <View style={{ paddingBottom: 32, paddingHorizontal: 20 }}>
           <AirdropCard />
