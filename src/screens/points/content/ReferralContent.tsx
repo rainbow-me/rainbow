@@ -48,7 +48,7 @@ const parseReferralCodeFromLink = (code: string) => {
     const [, refCode] = code.split('=');
     if (!refCode) return;
 
-    const trimmed = refCode.replace(/-/g, '').slice(0, 6).toLocaleUpperCase();
+    const trimmed = refCode.replace(/-/g, '').slice(0, 6).toUpperCase();
 
     return trimmed;
   }
@@ -135,7 +135,7 @@ export function ReferralContent() {
     if (externalReferralCode) {
       setDeeplinked(true);
       setReferralCodeDisplay(externalReferralCode);
-      validateReferralCode(externalReferralCode.replace(/-/g, '').slice(0, 6).toLocaleUpperCase());
+      validateReferralCode(externalReferralCode.replace(/-/g, '').slice(0, 6).toUpperCase());
     }
   }, [externalReferralCode, validateReferralCode]);
 
@@ -194,7 +194,7 @@ export function ReferralContent() {
         return;
       }
 
-      const rawCode = code.replace(/-/g, '').slice(0, 6).toLocaleUpperCase();
+      const rawCode = code.replace(/-/g, '').slice(0, 6).toUpperCase();
       let formattedCode = rawCode;
 
       // If the user backspaces over the hyphen, remove the character before the hyphen
