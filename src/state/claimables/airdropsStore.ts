@@ -228,8 +228,8 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
           airdrops: newAirdrops,
           queryCache: newCacheEntry ? { ...queryCache, [queryKey]: newCacheEntry } : queryCache,
           recentlyClaimed: {
-            ...recentlyClaimed,
-            [accountAddress]: { ...recentlyClaimed?.[accountAddress], [uniqueId]: Date.now() },
+            ...(recentlyClaimed ?? {}),
+            [accountAddress]: { ...(recentlyClaimed?.[accountAddress] ?? {}), [uniqueId]: Date.now() },
           },
         };
       });
