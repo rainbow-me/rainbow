@@ -35,5 +35,5 @@ export const getWidgetURL: GetWidgetURL = (id, query) => {
 };
 
 export function getProviders() {
-  return f2cClient.get<{ providers: ProviderConfig[] }>('/v1/providers/list');
+  return f2cClient.get<{ providers: ProviderConfig[] }>('/v2/providers/list');
 }
