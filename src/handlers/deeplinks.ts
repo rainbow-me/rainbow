@@ -385,8 +385,9 @@ function isValidGasSpeed(s: string | undefined): s is GasSpeed {
 async function setFromWallet(address: string | undefined) {
   if (!address || !isAddress(address)) return;
 
-  const userWallets = getWallets()!;
-  const wallet = Object.values(userWallets).find(w => w.addresses.some(a => a.address === address));
+  const userWallets = getWallets() as Record<string, { addresses: { address: string }[] }>;
+  const normalizedAddress = address.toLowerCase();
+  const wallet = Object.values(userWallets).find(w => w.addresses.some(a => a.address.toLowerCase() === normalizedAddress));
 
   if (!wallet) return;
 
