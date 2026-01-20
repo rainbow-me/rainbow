@@ -47,3 +47,6 @@ export function createScaleInFadeInSlideEnterAnimation({ delay = 0, translateY =
     };
   };
 }
+
+export const defaultExitAnimation = createScaleOutFadeOutSlideExitAnimation();
+export const defaultEnterAnimation = createScaleInFadeInSlideEnterAnimation();

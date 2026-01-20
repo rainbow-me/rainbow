@@ -2,19 +2,23 @@ import { memo, useRef } from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import Animated, { FadeIn, FadeOut, useAnimatedReaction, useAnimatedStyle, withDelay, withTiming } from 'react-native-reanimated';
-import { ClaimStep, ClaimSteps, useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/context/RnbwRewardsTransitionContext';
+import {
+  ClaimStep,
+  ClaimSteps,
+  useRnbwRewardsTransitionContext,
+} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { time } from '@/utils/time';
 import { transitionEasing } from '@/features/rnbw-rewards/animations/layoutAnimations';
-import { LoadingSpinner } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/components/LoadingSpinner';
+import { LoadingSpinner } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/LoadingSpinner';
 import concentricCircleImage from '@/features/rnbw-rewards/assets/radial-circle.png';
-import { SpinnableCoin, SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/components/SpinnableCoin';
+import { SpinnableCoin, SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/SpinnableCoin';
 import { BlurView } from 'react-native-blur-view';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
 const COIN_SIZE = 160;
 const SMALL_COIN_SIZE = 90;
-const MEDIUM_COIN_SIZE = 120;
+const MEDIUM_COIN_SIZE = 108;
 const LOADING_SPINNER_SIZE = 112;
 const SMALL_COIN_SCALE = SMALL_COIN_SIZE / COIN_SIZE;
 const MEDIUM_COIN_SCALE = MEDIUM_COIN_SIZE / COIN_SIZE;
@@ -28,7 +32,7 @@ const BLUR_CIRCLE_SIZE = 224;
 const STEP_TRANSITION_DELAY = time.ms(100);
 
 const stepsConfig: Record<ClaimStep, { scale: number; translateY: number }> = {
-  [ClaimSteps.Introduction]: {
+  [ClaimSteps.AirdropIntroduction]: {
     scale: 1,
     translateY: 88,
   },
@@ -36,12 +40,12 @@ const stepsConfig: Record<ClaimStep, { scale: number; translateY: number }> = {
     scale: SMALL_COIN_SCALE,
     translateY: 275,
   },
-  [ClaimSteps.Claim]: {
+  [ClaimSteps.ClaimAirdrop]: {
     scale: 1,
     translateY: 88,
   },
   [ClaimSteps.Rewards]: {
-    scale: 108 / COIN_SIZE,
+    scale: MEDIUM_COIN_SCALE,
     translateY: 81,
   },
   [ClaimSteps.ClaimingAirdrop]: {
@@ -52,13 +56,9 @@ const stepsConfig: Record<ClaimStep, { scale: number; translateY: number }> = {
     scale: SMALL_COIN_SCALE,
     translateY: 275,
   },
-  [ClaimSteps.AirdropClaimFinished]: {
-    scale: 108 / COIN_SIZE,
-    translateY: 245,
-  },
-  [ClaimSteps.NothingToClaim]: {
+  [ClaimSteps.ClaimAirdropFinished]: {
     scale: MEDIUM_COIN_SCALE,
-    translateY: 72,
+    translateY: 245,
   },
 };
 
@@ -77,11 +77,11 @@ export const RnbwCoin = memo(function RnbwCoin() {
   useAnimatedReaction(
     () => activeStep.value,
     (current, previous) => {
-      if (current === ClaimSteps.CheckingAirdrop && previous === ClaimSteps.Introduction) {
+      if (current === ClaimSteps.CheckingAirdrop && previous === ClaimSteps.AirdropIntroduction) {
         coinRef.current?.spin({ turns: 0.5, durationMs: time.seconds(1.8) });
-      } else if (current === ClaimSteps.Claim && previous === ClaimSteps.CheckingAirdrop) {
+      } else if (current === ClaimSteps.ClaimAirdrop && previous === ClaimSteps.CheckingAirdrop) {
         coinRef.current?.spin({ turns: 2, durationMs: time.seconds(3) });
-      } else if (current === ClaimSteps.NothingToClaim && previous === ClaimSteps.Claim) {
+      } else if (current === ClaimSteps.ClaimAirdropFinished && previous === ClaimSteps.ClaimAirdrop) {
         coinRef.current?.spin({ turns: 0.5, durationMs: time.seconds(1.8) });
       } else if (current === ClaimSteps.Rewards && previous === ClaimSteps.ClaimingRewards) {
         coinRef.current?.spin({ turns: 0.5, durationMs: time.seconds(1.8) });

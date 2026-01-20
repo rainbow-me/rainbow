@@ -3,24 +3,32 @@ import { View, StyleSheet } from 'react-native';
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
-import { ClaimSteps, useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/context/RnbwRewardsTransitionContext';
+import {
+  ClaimSteps,
+  useRnbwRewardsTransitionContext,
+} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
 import Animated from 'react-native-reanimated';
 import { time } from '@/utils/time';
-import { createScaleOutFadeOutSlideExitAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
+import {
+  createScaleInFadeInSlideEnterAnimation,
+  createScaleOutFadeOutSlideExitAnimation,
+} from '@/features/rnbw-rewards/animations/layoutAnimations';
 
-const customExitingFirstTranche = createScaleOutFadeOutSlideExitAnimation({ delay: time.ms(20) });
-const customExitingSecondTranche = createScaleOutFadeOutSlideExitAnimation({ delay: time.ms(120) });
-const customExitingThirdTranche = createScaleOutFadeOutSlideExitAnimation({ delay: time.ms(240) });
+const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 
-export const IntroductionStep = memo(function IntroductionStep() {
+const exitingAnimationFirstTranche = createScaleOutFadeOutSlideExitAnimation({ delay: time.ms(20) });
+const exitingAnimationSecondTranche = createScaleOutFadeOutSlideExitAnimation({ delay: time.ms(120) });
+const exitingAnimationThirdTranche = createScaleOutFadeOutSlideExitAnimation({ delay: time.ms(240) });
+
+export const AirdropIntroductionStep = memo(function AirdropIntroductionStep() {
   const { isDarkMode } = useColorMode();
   const { setActiveStep } = useRnbwRewardsTransitionContext();
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={styles.container} entering={enteringAnimation}>
       <Box gap={24} alignItems="center" paddingHorizontal={{ custom: 40 }}>
         <Box gap={24}>
-          <Animated.View exiting={customExitingFirstTranche}>
+          <Animated.View exiting={exitingAnimationFirstTranche}>
             <Box gap={20}>
               <Text color="labelQuaternary" size="22pt" weight="heavy" align="center">
                 {i18n.t(i18n.l.rnbw_rewards.introduction.introducing)}
@@ -30,13 +38,13 @@ export const IntroductionStep = memo(function IntroductionStep() {
               </Text>
             </Box>
           </Animated.View>
-          <Animated.View exiting={customExitingSecondTranche}>
+          <Animated.View exiting={exitingAnimationSecondTranche}>
             <Text color={{ custom: '#989A9E' }} size="17pt / 150%" weight="semibold" align="center">
               {i18n.t(i18n.l.rnbw_rewards.introduction.description)}
             </Text>
           </Animated.View>
         </Box>
-        <Animated.View exiting={customExitingThirdTranche}>
+        <Animated.View exiting={exitingAnimationThirdTranche}>
           <ButtonPressAnimation
             style={[styles.button, { backgroundColor: isDarkMode ? globalColors.white100 : globalColors.grey100 }]}
             onPress={() => {
@@ -50,7 +58,7 @@ export const IntroductionStep = memo(function IntroductionStep() {
           </ButtonPressAnimation>
         </Animated.View>
       </Box>
-    </View>
+    </Animated.View>
   );
 });
 

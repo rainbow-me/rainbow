@@ -3,14 +3,13 @@ import { createContext, ReactNode, useCallback, useContext, useMemo, useState } 
 import { SharedValue, useSharedValue } from 'react-native-reanimated';
 
 export const ClaimSteps = {
-  Introduction: 'introduction',
+  AirdropIntroduction: 'airdrop-introduction',
   CheckingAirdrop: 'checking-airdrop',
   ClaimingAirdrop: 'claiming-airdrop',
   ClaimingRewards: 'claiming-rewards',
-  Claim: 'claim',
-  AirdropClaimFinished: 'airdrop-claim-finished',
+  ClaimAirdrop: 'claim-airdrop',
+  ClaimAirdropFinished: 'claim-airdrop-finished',
   Rewards: 'rewards',
-  NothingToClaim: 'nothing-to-claim',
 } as const;
 
 export type ClaimStep = (typeof ClaimSteps)[keyof typeof ClaimSteps];
@@ -30,7 +29,7 @@ type RnbwRewardsTransitionContextProviderProps = {
 
 export function RnbwRewardsTransitionContextProvider({
   children,
-  initialStep = ClaimSteps.Introduction,
+  initialStep = ClaimSteps.AirdropIntroduction,
 }: RnbwRewardsTransitionContextProviderProps) {
   const activeStep = useSharedValue<ClaimStep>(initialStep);
   const [activeStepState, setActiveStepState] = useState<ClaimStep>(initialStep);

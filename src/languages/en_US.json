@@ -3853,6 +3853,10 @@
         "based_on_your_swaps": "Based on Your Swaps and the %{points} Rainbow Points you've Earned Over Time. You're Ranked #%{rank} on the Leaderboard.",
         "claim_failed_title": "Error Claiming Rewards",
         "claim_failed_message": "Please try again."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "Airdrop Claimed",
+        "you_claimed": "You claimed"
       }
     }
   }

@@ -1,15 +1,18 @@
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Box, globalColors, Text, TextIcon, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
-import { ClaimSteps, useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/context/RnbwRewardsTransitionContext';
+import {
+  ClaimSteps,
+  useRnbwRewardsTransitionContext,
+} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
 import Animated from 'react-native-reanimated';
 import { time } from '@/utils/time';
 import {
   createScaleOutFadeOutSlideExitAnimation,
   createScaleInFadeInSlideEnterAnimation,
 } from '@/features/rnbw-rewards/animations/layoutAnimations';
-import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/components/RnbwCoin';
+import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwCoin';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -21,11 +24,9 @@ export const ClaimAirdropStep = memo(function ClaimAirdropStep() {
   const { isDarkMode } = useColorMode();
   const { setActiveStep } = useRnbwRewardsTransitionContext();
 
-  const [isClaiming, setIsClaiming] = useState(false);
-
   const handleClaimLater = () => {
     'worklet';
-    setActiveStep(ClaimSteps.NothingToClaim);
+    setActiveStep(ClaimSteps.Rewards);
   };
 
   // TODO: testing values
@@ -56,17 +57,12 @@ export const ClaimAirdropStep = memo(function ClaimAirdropStep() {
             label="Hold to Claim"
             onLongPress={() => {
               'worklet';
-              // setIsClaiming(true);
               setActiveStep(ClaimSteps.ClaimingAirdrop);
-              // setTimeout(() => {
-              //   setActiveStep(ClaimSteps.NothingToClaim);
-              //   setIsClaiming(false);
-              // }, 500);
             }}
             backgroundColor={isDarkMode ? globalColors.white100 : globalColors.grey100}
             disabledBackgroundColor={isDarkMode ? globalColors.white100 : globalColors.grey100}
-            disabled={isClaiming}
-            isProcessing={isClaiming}
+            disabled={false}
+            isProcessing={false}
             processingLabel="Claiming..."
             showBiometryIcon={false}
             progressColor="black"
@@ -105,7 +101,7 @@ const styles = StyleSheet.create({
   },
   amountContainer: {
     position: 'absolute',
-    top: getCoinBottomPosition(ClaimSteps.Claim) + 32,
+    top: getCoinBottomPosition(ClaimSteps.ClaimAirdrop) + 32,
     width: '100%',
   },
 });

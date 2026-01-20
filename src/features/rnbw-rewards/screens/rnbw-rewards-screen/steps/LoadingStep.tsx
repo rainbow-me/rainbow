@@ -2,13 +2,13 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Text } from '@/design-system';
-import { ClaimStep, ClaimSteps, useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/context/RnbwRewardsTransitionContext';
+import { ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
 import { time } from '@/utils/time';
 import {
   createScaleOutFadeOutSlideExitAnimation,
   createScaleInFadeInSlideEnterAnimation,
 } from '@/features/rnbw-rewards/animations/layoutAnimations';
-import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/components/RnbwCoin';
+import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwCoin';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: -24 });
 const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();

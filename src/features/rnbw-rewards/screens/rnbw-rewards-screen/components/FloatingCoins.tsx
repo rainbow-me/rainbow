@@ -17,8 +17,11 @@ import Animated, {
 import { BlurView } from 'react-native-blur-view';
 import rnbwCoin from '@/assets/rnbw.png';
 import { time } from '@/utils/time';
-import { ClaimSteps, useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/context/RnbwRewardsTransitionContext';
-import { getCoinCenterPosition } from '@/features/rnbw-rewards/screens/rnbw-airdrop-screen/components/RnbwCoin';
+import {
+  ClaimSteps,
+  useRnbwRewardsTransitionContext,
+} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
+import { getCoinCenterPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwCoin';
 
 // Original design dimensions
 const DESIGN_WIDTH = 393;
@@ -28,7 +31,7 @@ const FLOAT_EASING = Easing.inOut(Easing.ease);
 const EXIT_EASING = Easing.bezier(0.2, 0.9, 0.2, 1);
 const EXIT_DURATION = time.seconds(1);
 
-const CLAIMED_CENTER = getCoinCenterPosition(ClaimSteps.NothingToClaim);
+const CLAIMED_CENTER = getCoinCenterPosition(ClaimSteps.ClaimAirdropFinished);
 
 const FLOAT_PATTERNS = {
   a: { x: 16, y: -18 },
@@ -251,12 +254,12 @@ export const FloatingCoins = memo(function FloatingCoins() {
   const { activeStep } = useRnbwRewardsTransitionContext();
   const state = useDerivedValue(() => {
     switch (activeStep.value) {
-      case ClaimSteps.Introduction:
-      case ClaimSteps.Claim:
+      case ClaimSteps.AirdropIntroduction:
+      case ClaimSteps.ClaimAirdrop:
         return 'visible';
       case ClaimSteps.CheckingAirdrop:
         return 'hidden';
-      case ClaimSteps.NothingToClaim:
+      case ClaimSteps.ClaimAirdropFinished:
         return 'claimed';
       default:
         return 'hidden';

@@ -55,7 +55,7 @@ type AirdropResponseData = {
 
 type AirdropResponse = PlatformResponse<AirdropResponseData>;
 
-export const useAirdropStore = createQueryStore<AirdropResponseData, AirdropParams, AirdropStore>(
+export const useRnbwAirdropStore = createQueryStore<AirdropResponseData, AirdropParams, AirdropStore>(
   {
     fetcher: fetchAirdrop,
     cacheTime: time.days(0),

@@ -1,4 +1,8 @@
-import { ClaimStep, ClaimSteps, useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/context/RnbwRewardsTransitionContext';
+import {
+  ClaimStep,
+  ClaimSteps,
+  useRnbwRewardsTransitionContext,
+} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
 import { Blur, Canvas, Group, LinearGradient, RoundedRect, vec } from '@shopify/react-native-skia';
 import { interpolate, interpolateColor, useAnimatedReaction, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { memo } from 'react';
@@ -24,13 +28,13 @@ const DRAW_OFFSET = CANVAS_PADDING - GLOW.blurRadius;
 const ANIMATION_DURATION_MS = 300;
 const VISIBLE_OPACITY = 0.2;
 
-const CLAIM_GRADIENT: GradientConfig = {
+const AIRDROP_CLAIM_GRADIENT: GradientConfig = {
   colors: ['#3887F2', '#40F5CC', '#FF9129', '#FFE636'],
   positions: [0.11, 0.4, 0.64, 0.9],
   start: { x: 0.02, y: 0.69 },
   end: { x: 0.98, y: 0.69 },
 };
-const NOTHING_TO_CLAIM_GRADIENT: GradientConfig = {
+const REWARDS_GRADIENT: GradientConfig = {
   colors: ['#C73BF2', '#40F5CC', '#3887F2', '#FFE636'],
   positions: [0.09, 0.29, 0.62, 0.91],
   start: { x: 0.26, y: 0.8 },
@@ -43,8 +47,8 @@ type StepGradient = {
 };
 
 const STEP_GRADIENTS: StepGradient[] = [
-  { step: ClaimSteps.Claim, gradient: CLAIM_GRADIENT },
-  { step: ClaimSteps.NothingToClaim, gradient: NOTHING_TO_CLAIM_GRADIENT },
+  { step: ClaimSteps.ClaimAirdrop, gradient: AIRDROP_CLAIM_GRADIENT },
+  { step: ClaimSteps.Rewards, gradient: REWARDS_GRADIENT },
 ];
 
 const INPUT_RANGE = STEP_GRADIENTS.map((_, index) => index);
