@@ -212,7 +212,7 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
           analytics.track(analytics.event.pointsReferralCodeDeeplinkOpened);
           queryClient.setQueryData(
             pointsReferralCodeQueryKey,
-            (referralCode.slice(0, 3) + '-' + referralCode.slice(3, 7)).toLocaleUpperCase()
+            (referralCode.slice(0, 3) + '-' + referralCode.slice(3, 7)).toUpperCase()
           );
         }
         break;
