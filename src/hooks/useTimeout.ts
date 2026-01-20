@@ -1,15 +1,23 @@
 import { MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 
-export default function useTimeout(): [(func: () => void, ms?: number) => void, () => void, MutableRefObject<NodeJS.Timeout | null>] {
-  const handle = useRef<NodeJS.Timeout | null>(null);
+export default function useTimeout(): [
+  (func: () => void, ms?: number) => void,
+  () => void,
+  MutableRefObject<ReturnType<typeof setTimeout> | null>,
+] {
+  const handle = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const start = useCallback((func: () => void, ms?: number) => {
+    if (handle.current) {
+      clearTimeout(handle.current);
+    }
     handle.current = setTimeout(func, ms);
   }, []);
 
   const stop = useCallback(() => {
     if (handle.current) {
       clearTimeout(handle.current);
+      handle.current = null;
     }
   }, []);
 
@@ -27,7 +35,7 @@ export function useTimeoutEffect(
     callback.current = onTimeout;
   }, [onTimeout]);
 
-  const timeoutRef = useRef<NodeJS.Timeout>(undefined);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!enabled) return;
     const startedAt = Date.now();
@@ -40,6 +48,7 @@ export function useTimeoutEffect(
     return () => {
       if (!timeoutRef.current) return;
       clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
       const elapsedTime = Date.now() - startedAt;
       if (elapsedTime < timeout) {
         callback.current({ cancelled: true, elapsedTime });
