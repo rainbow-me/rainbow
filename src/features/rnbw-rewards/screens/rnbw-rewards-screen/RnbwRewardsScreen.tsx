@@ -1,11 +1,11 @@
-import { memo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { memo, useCallback } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccountImage } from '@/components/AccountImage';
 import { BottomGradientGlow } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/BottomGradientGlow';
 import { RnbwCoin } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwCoin';
 import { FloatingCoins } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/FloatingCoins';
-import { LoadingStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/LoadingStep';
+import { LoadingStep, LoadingStepResult } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/LoadingStep';
 import {
   ClaimSteps,
   RnbwRewardsTransitionContextProvider,
@@ -18,6 +18,12 @@ import { AirdropClaimFinishedStep } from '@/features/rnbw-rewards/screens/rnbw-r
 import { RnbwRewardsStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/RewardsStep';
 import { Navbar } from '@/components/navbar/Navbar';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { claimRewards } from '@/features/rnbw-rewards/utils/claimRewards';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import * as i18n from '@/languages';
+import { claimAirdrop } from '@/features/rnbw-rewards/utils/claimAirdrop';
+import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwAirdropStore';
 
 export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
   return (
@@ -57,6 +63,43 @@ function RnbwRewardsContent() {
 
 function RnbwRewardsSceneSteps() {
   const { activeStepState, setActiveStep } = useRnbwRewardsTransitionContext();
+  const address = useWalletsStore(state => state.accountAddress);
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const airdropData = useRnbwAirdropStore(state => state.getData());
+
+  const showClaimError = useCallback(() => {
+    Alert.alert(i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_title), i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_message));
+  }, []);
+
+  const claimRewardsTask = useCallback(async () => {
+    return claimRewards({ address, currency: nativeCurrency });
+  }, [address, nativeCurrency]);
+
+  const claimAirdropTask = useCallback(async () => {
+    return claimAirdrop({ message: airdropData?.message ?? '', address, currency: nativeCurrency });
+  }, [address, nativeCurrency, airdropData]);
+
+  const handleClaimRewardsComplete = useCallback(
+    (result: LoadingStepResult) => {
+      if (result.status === 'error') {
+        showClaimError();
+      }
+      setActiveStep(ClaimSteps.Rewards);
+    },
+    [setActiveStep, showClaimError]
+  );
+
+  const handleClaimAirdropComplete = useCallback(
+    (result: LoadingStepResult) => {
+      if (result.status === 'error') {
+        showClaimError();
+        setActiveStep(ClaimSteps.ClaimAirdrop);
+        return;
+      }
+      setActiveStep(ClaimSteps.ClaimAirdropFinished);
+    },
+    [setActiveStep, showClaimError]
+  );
 
   return (
     <View style={styles.stepsContainer}>
@@ -71,12 +114,13 @@ function RnbwRewardsSceneSteps() {
       {activeStepState === ClaimSteps.ClaimingAirdrop && (
         <LoadingStep
           labels={['Claiming Airdrop...', 'Gathering Coins...']}
-          onComplete={() => setActiveStep(ClaimSteps.ClaimAirdropFinished)}
+          task={claimAirdropTask}
+          onComplete={handleClaimAirdropComplete}
         />
       )}
       {activeStepState === ClaimSteps.ClaimAirdropFinished && <AirdropClaimFinishedStep />}
       {activeStepState === ClaimSteps.ClaimingRewards && (
-        <LoadingStep labels={['Claiming Rewards...']} onComplete={() => setActiveStep(ClaimSteps.Rewards)} />
+        <LoadingStep labels={['Claiming Rewards...']} task={claimRewardsTask} onComplete={handleClaimRewardsComplete} />
       )}
       {activeStepState === ClaimSteps.Rewards && <RnbwRewardsStep />}
     </View>
