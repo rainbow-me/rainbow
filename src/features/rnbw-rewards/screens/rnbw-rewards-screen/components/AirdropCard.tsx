@@ -2,7 +2,6 @@ import { memo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { Box, Text } from '@/design-system';
 import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwAirdropStore';
-import { convertAmountToBalanceDisplayWorklet } from '@/helpers/utilities';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
@@ -15,9 +14,9 @@ import {
 
 export const AirdropCard = memo(function AirdropCard() {
   const { setActiveStep } = useRnbwRewardsTransitionContext();
-  const { tokenAmount, nativeCurrencyAmount } = useRnbwAirdropStore(state => state.getBalance());
+  const { tokenAmount, nativeCurrencyAmount } = useRnbwAirdropStore(state => state.getFormattedBalance());
   return (
-    <ButtonPressAnimation onPress={() => setActiveStep(ClaimSteps.AirdropIntroduction)} scaleTo={0.96}>
+    <ButtonPressAnimation onPress={() => setActiveStep(ClaimSteps.ClaimAirdrop)} scaleTo={0.96}>
       <View style={{ overflow: 'visible' }}>
         <Box
           backgroundColor={opacityWorklet(ETH_COLOR_DARK, 0.06)}
@@ -41,7 +40,7 @@ export const AirdropCard = memo(function AirdropCard() {
                   {nativeCurrencyAmount}
                 </Text>
                 <Text size="17pt" weight="semibold" color="labelTertiary">
-                  {`${convertAmountToBalanceDisplayWorklet(tokenAmount, { decimals: 2, symbol: 'RNBW' })}`}
+                  {`${tokenAmount} RNBW`}
                 </Text>
               </Box>
             </Box>

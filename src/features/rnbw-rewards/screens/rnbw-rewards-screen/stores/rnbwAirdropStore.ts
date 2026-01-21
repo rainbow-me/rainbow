@@ -3,13 +3,12 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { PlatformResponse } from '@/resources/platform/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils/time';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { Address } from 'viem';
-import { convertAmountToNativeDisplayWorklet, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
+import { convertAmountToNativeDisplayWorklet, handleSignificantDecimalsWithThreshold } from '@/helpers/utilities';
 
 type AirdropStore = {
-  getBalance: () => {
+  getFormattedBalance: () => {
     tokenAmount: string;
     nativeCurrencyAmount: string;
   };
@@ -35,22 +34,6 @@ type AirdropResponseData = {
   };
   rnbwPrice: string;
   message?: string;
-  // TODO: why is this structured differently than other responses?
-  // "errors": [
-  //   "string"
-  // ],
-  // "message": "string",
-  // "metadata": {
-  //   "currency": "string",
-  //   "pagination": {
-  //     "next": "string"
-  //   },
-  //   "requestId": "string",
-  //   "requestTime": "2026-01-20T15:18:17.712Z",
-  //   "responseTime": "2026-01-20T15:18:17.712Z",
-  //   "success": true,
-  //   "version": "string"
-  // };
 };
 
 type AirdropResponse = PlatformResponse<AirdropResponseData>;
@@ -58,28 +41,22 @@ type AirdropResponse = PlatformResponse<AirdropResponseData>;
 export const useRnbwAirdropStore = createQueryStore<AirdropResponseData, AirdropParams, AirdropStore>(
   {
     fetcher: fetchAirdrop,
-    cacheTime: time.days(0),
     params: {
       currency: $ => $(userAssetsStoreManager).currency,
       address: $ => $(useWalletsStore).accountAddress,
     },
-    staleTime: time.minutes(10),
   },
-
   (_, get) => ({
-    getBalance: () => {
+    getFormattedBalance: () => {
       const data = get().getData();
       const currency = userAssetsStoreManager.getState().currency;
-      if (!data) {
-        return {
-          tokenAmount: '0',
-          nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(0, currency, false),
-        };
-      }
+      const tokenAmount = data?.available.amountInDecimal ?? '0';
+      const nativeCurrencyAmount = data?.available.value ?? '0';
+      const isZero = tokenAmount === '0';
+
       return {
-        tokenAmount: convertRawAmountToDecimalFormat(data.airdropped.amountInDecimal, 18),
-        nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(data.airdropped.value, currency, false),
-        // nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(data.claimableValueInCurrency, currency, !isZero),
+        tokenAmount: isZero ? '0' : handleSignificantDecimalsWithThreshold(tokenAmount, 2, 3, '0.01'),
+        nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(nativeCurrencyAmount, currency, !isZero),
       };
     },
     hasClaimed: () => {
@@ -91,7 +68,7 @@ export const useRnbwAirdropStore = createQueryStore<AirdropResponseData, Airdrop
       return data?.available.amountInDecimal !== '0';
     },
   }),
-  { storageKey: 'airdropStore', version: 1 }
+  { storageKey: 'airdropStore' }
 );
 
 async function fetchAirdrop({ address, currency }: AirdropParams): Promise<AirdropResponseData> {
@@ -102,21 +79,5 @@ async function fetchAirdrop({ address, currency }: AirdropParams): Promise<Airdr
     },
   });
 
-  // @ts-ignore - backend response shape needs to be fixed
-  const data = response.data as AirdropResponseData;
-
-  return {
-    airdropped: {
-      amountInDecimal: data.airdropped.amountInDecimal,
-      amountInWei: data.airdropped.amountInWei,
-      value: data.airdropped.value,
-    },
-    available: {
-      amountInDecimal: data.available.amountInDecimal,
-      amountInWei: data.available.amountInWei,
-      value: data.available.value,
-    },
-    rnbwPrice: data.rnbwPrice,
-    message: data.message,
-  };
+  return response.data.result;
 }

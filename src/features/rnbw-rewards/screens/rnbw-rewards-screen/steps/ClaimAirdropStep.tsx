@@ -8,43 +8,37 @@ import {
 } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
 import Animated from 'react-native-reanimated';
 import { time } from '@/utils/time';
-import {
-  createScaleOutFadeOutSlideExitAnimation,
-  createScaleInFadeInSlideEnterAnimation,
-} from '@/features/rnbw-rewards/animations/layoutAnimations';
+import { defaultExitAnimation, createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwCoin';
-import { formatCurrency, formatNumber } from '@/helpers/strings';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { ButtonPressAnimation } from '@/components/animations';
+import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwAirdropStore';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: 24, delay: time.ms(200) });
-const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();
 
 export const ClaimAirdropStep = memo(function ClaimAirdropStep() {
   const { isDarkMode } = useColorMode();
   const { setActiveStep } = useRnbwRewardsTransitionContext();
+  const { tokenAmount, nativeCurrencyAmount } = useRnbwAirdropStore(state => state.getFormattedBalance());
+  const hasClaimableAirdrop = useRnbwAirdropStore(state => state.hasClaimableAirdrop());
 
   const handleClaimLater = () => {
     'worklet';
     setActiveStep(ClaimSteps.Rewards);
   };
 
-  // TODO: testing values
-  const availableToClaim = 560.1234451;
-  const availableToClaimNativeCurrency = 1234.56;
-
   return (
-    <Animated.View style={styles.container} entering={enteringAnimation} exiting={exitingAnimation}>
+    <Animated.View style={styles.container} entering={enteringAnimation} exiting={defaultExitAnimation}>
       <View style={styles.amountContainer}>
         <Box gap={16} alignItems="center" width="full">
           <Text size="22pt" weight="heavy" color="labelQuaternary" align="center">
             {i18n.t(i18n.l.rnbw_rewards.claim.your_airdrop).toUpperCase()}
           </Text>
           <Text size="20pt" weight="heavy" color="label" align="center" style={{ fontSize: 64, lineHeight: 72 }}>
-            {formatCurrency(availableToClaimNativeCurrency)}
+            {nativeCurrencyAmount}
           </Text>
-          <Text size="20pt" weight="bold" color={availableToClaim > 0 ? 'label' : 'labelQuaternary'} align="center">
-            {`${formatNumber(availableToClaim, { decimals: 2 })} RNBW`}
+          <Text size="20pt" weight="bold" color={hasClaimableAirdrop ? 'label' : 'labelQuaternary'} align="center">
+            {`${tokenAmount} RNBW`}
           </Text>
         </Box>
       </View>

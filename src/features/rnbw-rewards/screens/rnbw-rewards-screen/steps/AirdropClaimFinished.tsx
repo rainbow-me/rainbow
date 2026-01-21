@@ -21,7 +21,7 @@ const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();
 
 export const AirdropClaimFinishedStep = memo(function AirdropClaimFinishedStep() {
   const { setActiveStep } = useRnbwRewardsTransitionContext();
-  const { tokenAmount } = useRnbwAirdropStore(state => state.getBalance());
+  const { tokenAmount } = useRnbwAirdropStore(state => state.getFormattedBalance());
 
   useEffect(() => {
     // TODO: product question - should we do this automatically or have explicit button?
