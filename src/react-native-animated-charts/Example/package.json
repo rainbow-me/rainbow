@@ -13,7 +13,7 @@
     "babel-plugin-module-resolver": "^4.0.0",
     "bignumber.js": "^9.0.0",
     "chroma-js": "^2.1.0",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.23",
     "react": "16.13.1",
     "react-native": "0.63.2",
     "react-native-gesture-handler": "^1.7.0",
