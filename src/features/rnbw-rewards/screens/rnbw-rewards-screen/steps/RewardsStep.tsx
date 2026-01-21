@@ -60,8 +60,8 @@ export const RnbwRewardsStep = function RnbwRewardsStep() {
 };
 
 const RnbwRewardsBalance = memo(function RnbwRewardsBalance({ onClaimRewards }: { onClaimRewards: () => void }) {
-  const { tokenAmount, nativeCurrencyAmount } = useRnbwRewardsStore(state => state.getBalance());
-  const hasClaimableRewards = Number(tokenAmount) > 0;
+  const { tokenAmount, nativeCurrencyAmount } = useRnbwRewardsStore(state => state.getFormattedBalance());
+  const hasClaimableRewards = useRnbwRewardsStore(state => state.hasClaimableRewards());
 
   return (
     <View style={{ paddingTop: getCoinBottomPosition(ClaimSteps.Rewards) + 20 }}>
@@ -77,7 +77,7 @@ const RnbwRewardsBalance = memo(function RnbwRewardsBalance({ onClaimRewards }: 
             {nativeCurrencyAmount}
           </Text>
           <Text size="17pt" weight="bold" color={hasClaimableRewards ? 'label' : 'labelSecondary'} align="center">
-            {convertAmountToBalanceDisplayWorklet(tokenAmount, { decimals: 2, symbol: 'RNBW' })}
+            {`${tokenAmount} RNBW`}
           </Text>
         </Box>
         {hasClaimableRewards ? (

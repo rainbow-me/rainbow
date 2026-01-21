@@ -3,17 +3,17 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { PlatformResponse } from '@/resources/platform/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils/time';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { Address } from 'viem';
-import { convertAmountToNativeDisplayWorklet, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
+import { convertAmountToNativeDisplayWorklet, handleSignificantDecimalsWithThreshold } from '@/helpers/utilities';
 import { ChainId } from '@/state/backendNetworks/types';
 
 type RnbwRewardsStore = {
-  getBalance: () => {
+  getFormattedBalance: () => {
     tokenAmount: string;
     nativeCurrencyAmount: string;
   };
+  hasClaimableRewards: () => boolean;
 };
 
 type RnbwRewardsData = {
@@ -31,30 +31,27 @@ type RnbwRewardsParams = {
 export const useRnbwRewardsStore = createQueryStore<RnbwRewardsData, RnbwRewardsParams, RnbwRewardsStore>(
   {
     fetcher: fetchRnbwRewards,
-    cacheTime: time.days(1),
     params: {
       currency: $ => $(userAssetsStoreManager).currency,
       address: $ => $(useWalletsStore).accountAddress,
     },
   },
-
   (_, get) => ({
-    getBalance: () => {
+    getFormattedBalance: () => {
       const data = get().getData();
       const currency = userAssetsStoreManager.getState().currency;
+      const tokenAmount = data?.claimableRnbw ?? '0';
+      const nativeCurrencyAmount = data?.claimableValueInCurrency ?? '0';
+      const isZero = tokenAmount === '0';
 
-      if (!data) {
-        return {
-          tokenAmount: '0',
-          nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(0, currency, false),
-        };
-      }
-      const isZero = Number(data.claimableValueInCurrency) === 0;
-      console.log('claimableValueInCurrency', data.claimableValueInCurrency);
       return {
-        tokenAmount: convertRawAmountToDecimalFormat(data.claimableRnbw, data.decimals),
-        nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(data.claimableValueInCurrency, currency, !isZero),
+        tokenAmount: isZero ? '0' : handleSignificantDecimalsWithThreshold(tokenAmount, 2, 3, '0.01'),
+        nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(nativeCurrencyAmount, currency, !isZero),
       };
+    },
+    hasClaimableRewards: () => {
+      const data = get().getData();
+      return data?.claimableRnbw !== '0';
     },
   }),
 
