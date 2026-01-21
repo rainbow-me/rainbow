@@ -39,6 +39,10 @@ export async function claimRewards({ address, currency }: { address: Address; cu
   let pollResult: ClaimStatusPollResult | undefined;
 
   try {
+    if (!address) {
+      throw new Error('Missing wallet address');
+    }
+
     intentResponse = await platformClient.get<GetClaimIntentResponse>('/rewards/GetClaimIntent', {
       params: {
         walletAddress: address,
