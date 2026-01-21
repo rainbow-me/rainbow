@@ -22,7 +22,9 @@
 4. Install project dependencies: `yarn setup`
 
 **Note:** On future terminal sessions, run `nvm use` to activate the correct Node.js version. Alternatively,
-set up [automatic nvm switching](https://github.com/nvm-sh/nvm#deeper-shell-integration) in your shell.
+set up [automatic nvm switching](https://github.com/nvm-sh/nvm#deeper-shell-integration) in your shell. 
+If you’ve just installed `nvm` or Node.js and commands like `nvm` are not available, you may need to restart your terminal or reload your shell configuration (e.g. `source ~/.zshrc` or `source ~/.bashrc`).
+
 
 ### MacOS
 
