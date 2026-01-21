@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import * as i18n from '@/languages';
 import { Image, StyleSheet, View } from 'react-native';
 import { Box, Text } from '@/design-system';
 import ethImage from '@/features/rnbw-rewards/assets/rnbw-reward-methods/eth.png';
@@ -29,10 +30,10 @@ export const HowToEarnCard = memo(function HowToEarnCard() {
 
       <Box gap={20} paddingTop={{ custom: 32 + 24 }} paddingHorizontal={'36px'}>
         <Text size="26pt" weight="heavy" color="label" align="center">
-          {'Swap To Earn'}
+          {i18n.t(i18n.l.rnbw_rewards.how_to_earn.swap_to_earn)}
         </Text>
         <Text size="17pt / 135%" weight="semibold" color="labelSecondary" align="center">
-          {'You Can Earn $RNBW by Swapping Tokens. Rewards for Perps and Predictions are Coming Later.'}
+          {i18n.t(i18n.l.rnbw_rewards.how_to_earn.swap_to_earn_description)}
         </Text>
       </Box>
     </Box>

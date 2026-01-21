@@ -11,30 +11,24 @@ import {
   createScaleInFadeInSlideEnterAnimation,
 } from '@/features/rnbw-rewards/animations/layoutAnimations';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwCoin';
-import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwAirdropStore';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: -24 });
 const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();
 
-export const AirdropClaimFinishedStep = memo(function AirdropClaimFinishedStep() {
+export const NoAirdropToClaimStep = memo(function NoAirdropToClaimStep() {
   const { setActiveStep } = useRnbwRewardsTransitionContext();
-  const { tokenAmount } = useRnbwAirdropStore(state => state.getFormattedBalance());
 
   return (
     <Animated.View style={styles.container} entering={enteringAnimation} exiting={exitingAnimation}>
       <Box gap={24} alignItems="center" style={styles.claimInfoContainer}>
         <Text color="label" size="30pt" weight="heavy" align="center">
-          {i18n.t(i18n.l.rnbw_rewards.airdrop_claim_finished.airdrop_claimed)}
+          {i18n.t(i18n.l.rnbw_rewards.airdrop.nothing_to_claim)}
         </Text>
         <Text color="labelTertiary" size="17pt / 135%" weight="semibold" align="center">
-          {i18n.t(i18n.l.rnbw_rewards.airdrop_claim_finished.you_claimed)}
-          <Text color="label" size="17pt" weight="bold" align="center">
-            {` ${tokenAmount} ${RNBW_SYMBOL}`}
-          </Text>
+          {i18n.t(i18n.l.rnbw_rewards.airdrop.nothing_to_claim_description)}
         </Text>
       </Box>
       <ButtonPressAnimation onPress={() => setActiveStep(ClaimSteps.Rewards)} scaleTo={0.96} style={styles.button}>

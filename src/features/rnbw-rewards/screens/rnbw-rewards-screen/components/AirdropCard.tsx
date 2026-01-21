@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
+import * as i18n from '@/languages';
 import { Box, Text } from '@/design-system';
 import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwAirdropStore';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -11,12 +12,21 @@ import {
   ClaimSteps,
   useRnbwRewardsTransitionContext,
 } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
+import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 
 export const AirdropCard = memo(function AirdropCard() {
   const { setActiveStep } = useRnbwRewardsTransitionContext();
   const { tokenAmount, nativeCurrencyAmount } = useRnbwAirdropStore(state => state.getFormattedBalance());
   return (
-    <ButtonPressAnimation onPress={() => setActiveStep(ClaimSteps.ClaimAirdrop)} scaleTo={0.96}>
+    <ButtonPressAnimation
+      onPress={() => {
+        'worklet';
+        setActiveStep(ClaimSteps.ClaimAirdrop);
+        // TESTING
+        // setActiveStep(ClaimSteps.AirdropIntroduction);
+      }}
+      scaleTo={0.96}
+    >
       <View style={{ overflow: 'visible' }}>
         <Box
           backgroundColor={opacityWorklet(ETH_COLOR_DARK, 0.06)}
@@ -30,7 +40,7 @@ export const AirdropCard = memo(function AirdropCard() {
           <Box gap={20}>
             <Box paddingLeft={'4px'}>
               <Text size="15pt" weight="heavy" color="labelTertiary">
-                {'YOUR AIRDROP'}
+                {i18n.t(i18n.l.rnbw_rewards.airdrop_card.your_airdrop).toUpperCase()}
               </Text>
             </Box>
             <Box flexDirection="row" alignItems="center" gap={12}>
@@ -40,7 +50,7 @@ export const AirdropCard = memo(function AirdropCard() {
                   {nativeCurrencyAmount}
                 </Text>
                 <Text size="17pt" weight="semibold" color="labelTertiary">
-                  {`${tokenAmount} RNBW`}
+                  {`${tokenAmount} ${RNBW_SYMBOL}`}
                 </Text>
               </Box>
             </Box>

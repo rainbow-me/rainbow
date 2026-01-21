@@ -4,7 +4,6 @@ import { Box, Text } from '@/design-system';
 import { useRnbwRewardsStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsStore';
 import { AirdropCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/AirdropCard';
 import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwAirdropStore';
-import { convertAmountToBalanceDisplayWorklet } from '@/helpers/utilities';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwCoin';
@@ -17,6 +16,8 @@ import Animated from 'react-native-reanimated';
 import { defaultExitAnimation, createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { HowToEarnCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/HowToEarnCard';
+import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+import * as i18n from '@/languages';
 
 const enterAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 
@@ -24,6 +25,8 @@ export const RnbwRewardsStep = function RnbwRewardsStep() {
   const { setActiveStep, scrollHandler } = useRnbwRewardsTransitionContext();
   const [refreshing, setRefreshing] = useState(false);
   const hasClaimedAirdrop = useRnbwAirdropStore(state => state.hasClaimed());
+  // TESTING
+  // const hasClaimedAirdrop = false;
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
@@ -77,24 +80,24 @@ const RnbwRewardsBalance = memo(function RnbwRewardsBalance({ onClaimRewards }: 
             {nativeCurrencyAmount}
           </Text>
           <Text size="17pt" weight="bold" color={hasClaimableRewards ? 'label' : 'labelSecondary'} align="center">
-            {`${tokenAmount} RNBW`}
+            {`${tokenAmount} ${RNBW_SYMBOL}`}
           </Text>
         </Box>
         {hasClaimableRewards ? (
           <HoldToActivateButton
-            label="Claim Rewards"
+            label={i18n.t(i18n.l.button.hold_to_authorize.hold_to_claim)}
             onLongPress={onClaimRewards}
             backgroundColor="white"
             disabledBackgroundColor="white"
             isProcessing={false}
-            processingLabel="Claiming Rewards..."
+            processingLabel={i18n.t(i18n.l.rnbw_rewards.rewards.claiming_rewards)}
             showBiometryIcon={true}
           />
         ) : (
           <Box paddingHorizontal={'16px'} gap={20}>
             <View style={{ height: 1, width: '100%', backgroundColor: opacityWorklet('#F5F8FF', 0.0625) }} />
             <Text size="15pt / 135%" weight="semibold" color="labelTertiary" align="center">
-              {'You Can Earn $RNBW by Swapping Tokens. Other Ways to Earn Coming Soon.'}
+              {i18n.t(i18n.l.rnbw_rewards.rewards.empty_rewards_description)}
             </Text>
           </Box>
         )}

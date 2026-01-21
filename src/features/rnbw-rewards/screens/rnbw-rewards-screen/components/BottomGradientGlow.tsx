@@ -49,6 +49,7 @@ type StepGradient = {
 const STEP_GRADIENTS: StepGradient[] = [
   { step: ClaimSteps.ClaimAirdrop, gradient: AIRDROP_CLAIM_GRADIENT },
   { step: ClaimSteps.Rewards, gradient: REWARDS_GRADIENT },
+  { step: ClaimSteps.ClaimAirdropFinished, gradient: AIRDROP_CLAIM_GRADIENT },
 ];
 
 const INPUT_RANGE = STEP_GRADIENTS.map((_, index) => index);

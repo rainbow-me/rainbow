@@ -1,7 +1,17 @@
 import { memo, useRef } from 'react';
 import { View, StyleSheet, Image } from 'react-native';
+import { Box, globalColors, Text } from '@/design-system';
 import rnbwCoinImage from '@/assets/rnbw.png';
-import Animated, { FadeIn, FadeOut, useAnimatedReaction, useAnimatedStyle, withDelay, withTiming } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  withDelay,
+  withTiming,
+  ZoomIn,
+  ZoomOut,
+} from 'react-native-reanimated';
 import {
   ClaimStep,
   ClaimSteps,
@@ -15,6 +25,8 @@ import concentricCircleImage from '@/features/rnbw-rewards/assets/radial-circle.
 import { SpinnableCoin, SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/SpinnableCoin';
 import { BlurView } from 'react-native-blur-view';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 
 const COIN_SIZE = 160;
 const SMALL_COIN_SIZE = 90;
@@ -60,6 +72,10 @@ const stepsConfig: Record<ClaimStep, { scale: number; translateY: number }> = {
     scale: MEDIUM_COIN_SCALE,
     translateY: 245,
   },
+  [ClaimSteps.NoAirdropToClaim]: {
+    scale: MEDIUM_COIN_SCALE,
+    translateY: 245,
+  },
 };
 
 const loadingSpinnerTop =
@@ -70,8 +86,13 @@ const timingConfig = { duration: time.seconds(1), easing: transitionEasing };
 const loadingSpinnerEnteringAnimation = FadeIn.delay(timingConfig.duration * 0.5).easing(transitionEasing);
 const loadingSpinnerExitingAnimation = FadeOut.easing(transitionEasing);
 
+const successIconEnterAnimation = ZoomIn.duration(timingConfig.duration * 0.25)
+  .delay(timingConfig.duration * 0.25)
+  .easing(transitionEasing);
+const successIconExitAnimation = ZoomOut.easing(transitionEasing);
+
 export const RnbwCoin = memo(function RnbwCoin() {
-  const { activeStep } = useRnbwRewardsTransitionContext();
+  const { activeStep, activeStepState } = useRnbwRewardsTransitionContext();
   const coinRef = useRef<SpinnableCoinHandle>(null);
 
   useAnimatedReaction(
@@ -158,6 +179,26 @@ export const RnbwCoin = memo(function RnbwCoin() {
 
       <Animated.View style={[styles.coinContainer, coinAnimatedStyle]}>
         <SpinnableCoin ref={coinRef} source={rnbwCoinImage} size={COIN_SIZE} />
+        {activeStepState === ClaimSteps.ClaimAirdropFinished && (
+          <Animated.View style={styles.successIcon} entering={successIconEnterAnimation} exiting={successIconExitAnimation}>
+            <Box
+              backgroundColor="#1F9E39"
+              width={52}
+              height={52}
+              borderRadius={26}
+              justifyContent="center"
+              alignItems="center"
+              borderWidth={THICK_BORDER_WIDTH}
+              borderColor={{ custom: opacityWorklet(globalColors.white100, 0.12) }}
+              shadow={'24px'}
+            >
+              <InnerShadow color={opacityWorklet(globalColors.white100, 0.28)} width={52} height={52} blur={3.5} dx={0} dy={6} />
+              <Text color="label" size="26pt" weight="heavy" align="center">
+                {'􀆅'}
+              </Text>
+            </Box>
+          </Animated.View>
+        )}
       </Animated.View>
 
       <CoinLoadingSpinner />
@@ -263,5 +304,10 @@ const styles = StyleSheet.create({
   },
   blurView: {
     position: 'absolute',
+  },
+  successIcon: {
+    position: 'absolute',
+    bottom: 0,
+    right: -4,
   },
 });

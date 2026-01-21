@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Box, globalColors, Text, TextIcon, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
@@ -13,6 +13,7 @@ import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewa
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwAirdropStore';
+import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: 24, delay: time.ms(200) });
 
@@ -27,6 +28,14 @@ export const ClaimAirdropStep = memo(function ClaimAirdropStep() {
     setActiveStep(ClaimSteps.Rewards);
   };
 
+  const claimAirdropDescription = useMemo(() => {
+    // TODO: confirm this is the description we want to use
+    return i18n.t(i18n.l.rnbw_rewards.claim.based_on_your_swaps, {
+      points: '45,788',
+      rank: '4,566',
+    });
+  }, []);
+
   return (
     <Animated.View style={styles.container} entering={enteringAnimation} exiting={defaultExitAnimation}>
       <View style={styles.amountContainer}>
@@ -38,17 +47,17 @@ export const ClaimAirdropStep = memo(function ClaimAirdropStep() {
             {nativeCurrencyAmount}
           </Text>
           <Text size="20pt" weight="bold" color={hasClaimableAirdrop ? 'label' : 'labelQuaternary'} align="center">
-            {`${tokenAmount} RNBW`}
+            {`${tokenAmount} ${RNBW_SYMBOL}`}
           </Text>
         </Box>
       </View>
       <Box gap={24} alignItems="center" paddingHorizontal={{ custom: 40 }}>
         <Text color={{ custom: '#989A9E' }} size="17pt / 150%" weight="semibold" align="center">
-          {"Based on Your Swaps and the 45,788 Rainbow Points you've Earned Over Time. You're Ranked #4,566 on the Leaderboard."}
+          {claimAirdropDescription}
         </Text>
         <Box gap={28}>
           <HoldToActivateButton
-            label="Hold to Claim"
+            label={i18n.t(i18n.l.button.hold_to_authorize.hold_to_claim)}
             onLongPress={() => {
               'worklet';
               setActiveStep(ClaimSteps.ClaimingAirdrop);
@@ -57,7 +66,7 @@ export const ClaimAirdropStep = memo(function ClaimAirdropStep() {
             disabledBackgroundColor={isDarkMode ? globalColors.white100 : globalColors.grey100}
             disabled={false}
             isProcessing={false}
-            processingLabel="Claiming..."
+            processingLabel={i18n.t(i18n.l.button.hold_to_authorize.claiming)}
             showBiometryIcon={false}
             progressColor="black"
             style={styles.button}
@@ -69,7 +78,7 @@ export const ClaimAirdropStep = memo(function ClaimAirdropStep() {
           <ButtonPressAnimation onPress={handleClaimLater} scaleTo={0.96}>
             <Box flexDirection="row" gap={8} alignItems="center" justifyContent="center">
               <Text color="labelTertiary" size="17pt" weight="bold" align="center">
-                {'Claim Later'}
+                {i18n.t(i18n.l.rnbw_rewards.claim.claim_later)}
               </Text>
               <TextIcon color="labelQuaternary" size="icon 13px" weight="bold" align="center">
                 {'􀆊'}

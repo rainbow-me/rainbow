@@ -324,7 +324,9 @@
         "authorizing": "Authorizing",
         "confirming_on_ledger": "Confirming on Ledger",
         "hold_keyword": "Hold",
-        "tap_keyword": "Tap"
+        "tap_keyword": "Tap",
+        "hold_to_claim": "Hold to Claim",
+        "claiming": "Claiming..."
       },
       "hold_to_send": "Hold to Send",
       "import": "Import",
@@ -3852,11 +3854,28 @@
         "your_airdrop": "Your Airdrop",
         "based_on_your_swaps": "Based on Your Swaps and the %{points} Rainbow Points you've Earned Over Time. You're Ranked #%{rank} on the Leaderboard.",
         "claim_failed_title": "Error Claiming Rewards",
-        "claim_failed_message": "Please try again."
+        "claim_failed_message": "Please try again.",
+        "claim_later": "Claim Later",
+        "please_be_patient": "Please be patient..."
       },
       "airdrop_claim_finished": {
         "airdrop_claimed": "Airdrop Claimed",
         "you_claimed": "You claimed"
+      },
+      "airdrop": {
+        "nothing_to_claim": "Nothing to Claim",
+        "nothing_to_claim_description": "Sorry, you did not qualify for the airdrop."
+      },
+      "airdrop_card": {
+        "your_airdrop": "Your Airdrop"
+      },
+      "how_to_earn": {
+        "swap_to_earn": "Swap To Earn",
+        "swap_to_earn_description": "You Can Earn $RNBW by Swapping Tokens. Rewards for Perps and Predictions are Coming Later."
+      },
+      "rewards": {
+        "empty_rewards_description": "You Can Earn $RNBW by Swapping Tokens. Rewards for Perps and Predictions are Coming Later.",
+        "claiming_rewards": "Claiming Rewards..."
       }
     }
   }

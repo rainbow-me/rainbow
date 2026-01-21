@@ -1,5 +1,7 @@
+import { HAS_COMPLETED_AIRDROP_FLOW_KEY } from '@/features/rnbw-rewards/constants';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
+import { useMMKVBoolean } from 'react-native-mmkv';
 import { SharedValue, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 
 export const ClaimSteps = {
@@ -9,6 +11,7 @@ export const ClaimSteps = {
   ClaimingRewards: 'claiming-rewards',
   ClaimAirdrop: 'claim-airdrop',
   ClaimAirdropFinished: 'claim-airdrop-finished',
+  NoAirdropToClaim: 'no-airdrop-to-claim',
   Rewards: 'rewards',
 } as const;
 
@@ -39,6 +42,7 @@ export function RnbwRewardsTransitionContextProvider({
   const scrollHandler = useAnimatedScrollHandler(event => {
     scrollOffset.value = event.contentOffset.y;
   });
+  const [hasCompletedAirdropFlow, setHasCompletedAirdropFlow] = useMMKVBoolean(HAS_COMPLETED_AIRDROP_FLOW_KEY);
 
   useSyncSharedValue({
     compareDepth: 'shallow',
@@ -53,8 +57,14 @@ export function RnbwRewardsTransitionContextProvider({
     (step: ClaimStep) => {
       'worklet';
       activeStep.value = step;
+      if (
+        (step === ClaimSteps.ClaimAirdropFinished || step === ClaimSteps.NoAirdropToClaim || step === ClaimSteps.Rewards) &&
+        !hasCompletedAirdropFlow
+      ) {
+        setHasCompletedAirdropFlow(true);
+      }
     },
-    [activeStep]
+    [activeStep, hasCompletedAirdropFlow, setHasCompletedAirdropFlow]
   );
 
   const value = useMemo(

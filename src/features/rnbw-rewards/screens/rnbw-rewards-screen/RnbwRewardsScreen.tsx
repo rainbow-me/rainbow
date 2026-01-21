@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccountImage } from '@/components/AccountImage';
@@ -26,10 +26,19 @@ import { claimAirdrop } from '@/features/rnbw-rewards/utils/claimAirdrop';
 import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwAirdropStore';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
+import { NoAirdropToClaimStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/NoAirdropToClaimStep';
+import { useMMKVBoolean } from 'react-native-mmkv';
+import { HAS_COMPLETED_AIRDROP_FLOW_KEY } from '@/features/rnbw-rewards/constants';
 
 export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
+  const [hasCompletedAirdropFlow] = useMMKVBoolean(HAS_COMPLETED_AIRDROP_FLOW_KEY);
+
+  const initialStep = useMemo(() => {
+    return hasCompletedAirdropFlow ? ClaimSteps.Rewards : ClaimSteps.AirdropIntroduction;
+  }, [hasCompletedAirdropFlow]);
+
   return (
-    <RnbwRewardsTransitionContextProvider initialStep={ClaimSteps.Rewards}>
+    <RnbwRewardsTransitionContextProvider initialStep={initialStep}>
       <View style={styles.container}>
         <RnbwRewardsContent />
       </View>
@@ -64,7 +73,50 @@ function RnbwRewardsContent() {
 }
 
 function RnbwRewardsSceneSteps() {
-  const { activeStepState, setActiveStep } = useRnbwRewardsTransitionContext();
+  const { activeStepState } = useRnbwRewardsTransitionContext();
+
+  return (
+    <View style={styles.stepsContainer}>
+      {activeStepState === ClaimSteps.AirdropIntroduction && <AirdropIntroductionStep />}
+      {activeStepState === ClaimSteps.CheckingAirdrop && <CheckingAirdropLoadingStep />}
+      {activeStepState === ClaimSteps.ClaimAirdrop && <ClaimAirdropStep />}
+      {activeStepState === ClaimSteps.ClaimingAirdrop && <ClaimingAirdropLoadingStep />}
+      {activeStepState === ClaimSteps.ClaimAirdropFinished && <AirdropClaimFinishedStep />}
+      {activeStepState === ClaimSteps.ClaimingRewards && <ClaimingRewardsLoadingStep />}
+      {activeStepState === ClaimSteps.NoAirdropToClaim && <NoAirdropToClaimStep />}
+      {activeStepState === ClaimSteps.Rewards && <RnbwRewardsStep />}
+    </View>
+  );
+}
+
+function CheckingAirdropLoadingStep() {
+  const { setActiveStep } = useRnbwRewardsTransitionContext();
+  const airdropData = useRnbwAirdropStore(state => state.getData());
+
+  const checkAirdropEligibilityTask = useCallback(async () => {
+    // We already have fetched the airdrop data, this is purely visual
+    await delay(time.seconds(1));
+  }, []);
+
+  const handleCheckAirdropEligibilityComplete = useCallback(() => {
+    if (airdropData?.available.amountInDecimal === '0') {
+      setActiveStep(ClaimSteps.NoAirdropToClaim);
+    } else {
+      setActiveStep(ClaimSteps.ClaimAirdrop);
+    }
+  }, [setActiveStep, airdropData]);
+
+  return (
+    <LoadingStep
+      labels={['Calculating Rewards...', 'Checking Historical Activity...', 'Checking Eligibility...']}
+      task={checkAirdropEligibilityTask}
+      onComplete={handleCheckAirdropEligibilityComplete}
+    />
+  );
+}
+
+function ClaimingAirdropLoadingStep() {
+  const { setActiveStep } = useRnbwRewardsTransitionContext();
   const address = useWalletsStore(state => state.accountAddress);
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const airdropData = useRnbwAirdropStore(state => state.getData());
@@ -73,23 +125,9 @@ function RnbwRewardsSceneSteps() {
     Alert.alert(i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_title), i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_message));
   }, []);
 
-  const claimRewardsTask = useCallback(async () => {
-    return claimRewards({ address, currency: nativeCurrency });
-  }, [address, nativeCurrency]);
-
-  const claimAirdropTask = useCallback(async () => {
+  const claimAirdropTask = useCallback(() => {
     return claimAirdrop({ message: airdropData?.message ?? '', address, currency: nativeCurrency });
   }, [address, nativeCurrency, airdropData]);
-
-  const handleClaimRewardsComplete = useCallback(
-    (result: LoadingStepResult<Awaited<ReturnType<typeof claimRewards>>>) => {
-      if (result.status === 'error') {
-        showClaimError();
-      }
-      setActiveStep(ClaimSteps.Rewards);
-    },
-    [setActiveStep, showClaimError]
-  );
 
   const handleClaimAirdropComplete = useCallback(
     (result: LoadingStepResult<Awaited<ReturnType<typeof claimAirdrop>>>) => {
@@ -103,36 +141,35 @@ function RnbwRewardsSceneSteps() {
     [setActiveStep, showClaimError]
   );
 
-  const checkAirdropEligibilityTask = useCallback(async () => {
-    // We already have fetched the airdrop data, this is purely visual
-    return delay(time.seconds(1));
+  return (
+    <LoadingStep labels={['Claiming Airdrop...', 'Gathering Coins...']} task={claimAirdropTask} onComplete={handleClaimAirdropComplete} />
+  );
+}
+
+function ClaimingRewardsLoadingStep() {
+  const { setActiveStep } = useRnbwRewardsTransitionContext();
+  const address = useWalletsStore(state => state.accountAddress);
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+
+  const showClaimError = useCallback(() => {
+    Alert.alert(i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_title), i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_message));
   }, []);
 
-  return (
-    <View style={styles.stepsContainer}>
-      {activeStepState === ClaimSteps.AirdropIntroduction && <AirdropIntroductionStep />}
-      {activeStepState === ClaimSteps.CheckingAirdrop && (
-        <LoadingStep
-          labels={['Calculating Rewards...', 'Checking Historical Activity...', 'Checking Eligibility...']}
-          task={checkAirdropEligibilityTask}
-          onComplete={() => setActiveStep(ClaimSteps.ClaimAirdrop)}
-        />
-      )}
-      {activeStepState === ClaimSteps.ClaimAirdrop && <ClaimAirdropStep />}
-      {activeStepState === ClaimSteps.ClaimingAirdrop && (
-        <LoadingStep
-          labels={['Claiming Airdrop...', 'Gathering Coins...']}
-          task={claimAirdropTask}
-          onComplete={handleClaimAirdropComplete}
-        />
-      )}
-      {activeStepState === ClaimSteps.ClaimAirdropFinished && <AirdropClaimFinishedStep />}
-      {activeStepState === ClaimSteps.ClaimingRewards && (
-        <LoadingStep labels={['Claiming Rewards...']} task={claimRewardsTask} onComplete={handleClaimRewardsComplete} />
-      )}
-      {activeStepState === ClaimSteps.Rewards && <RnbwRewardsStep />}
-    </View>
+  const claimRewardsTask = useCallback(() => {
+    return claimRewards({ address, currency: nativeCurrency });
+  }, [address, nativeCurrency]);
+
+  const handleClaimRewardsComplete = useCallback(
+    (result: LoadingStepResult<Awaited<ReturnType<typeof claimRewards>>>) => {
+      if (result.status === 'error') {
+        showClaimError();
+      }
+      setActiveStep(ClaimSteps.Rewards);
+    },
+    [setActiveStep, showClaimError]
   );
+
+  return <LoadingStep labels={['Claiming Rewards...']} task={claimRewardsTask} onComplete={handleClaimRewardsComplete} />;
 }
 
 const styles = StyleSheet.create({

@@ -9,7 +9,10 @@ import {
   createScaleInFadeInSlideEnterAnimation,
 } from '@/features/rnbw-rewards/animations/layoutAnimations';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwCoin';
+import * as i18n from '@/languages';
 
+const EXIT_ANIMATION_DURATION = time.ms(500);
+const LABEL_CYCLE_INTERVAL = time.seconds(2);
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: -24 });
 const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();
 
@@ -21,53 +24,75 @@ type LoadingStepProps<T> = {
   onComplete?: (result: LoadingStepResult<T>) => void;
 };
 
-export function LoadingStep<T>({ labels: baseLabels, task, onComplete }: LoadingStepProps<T>) {
-  const [currentLabelIndex, setCurrentLabelIndex] = useState(0);
+type DisplayState = { type: 'label'; index: number } | { type: 'fallback' } | { type: 'exiting' };
+
+export function LoadingStep<T>({ labels, task, onComplete }: LoadingStepProps<T>) {
+  const fallbackLabel = i18n.t(i18n.l.rnbw_rewards.claim.please_be_patient);
+  const [displayState, setDisplayState] = useState<DisplayState>({ type: 'label', index: 0 });
   const taskResultRef = useRef<LoadingStepResult<T> | null>(null);
-  // Empty string as last label allows final real label to exit animate before unmount
-  const labels = [...baseLabels, ''];
 
   // Run the task
   useEffect(() => {
-    setCurrentLabelIndex(0);
+    setDisplayState({ type: 'label', index: 0 });
     taskResultRef.current = null;
 
     task()
       .then(data => {
         taskResultRef.current = { status: 'success', data };
+        setDisplayState(prev => (prev.type === 'fallback' ? { type: 'exiting' } : prev));
       })
       .catch(error => {
         taskResultRef.current = { status: 'error', error };
+        setDisplayState(prev => (prev.type === 'fallback' ? { type: 'exiting' } : prev));
       });
   }, [task]);
 
-  // Cycle through labels and fire completion when lables cycled + task is settled
+  // Cycle through labels
   useEffect(() => {
-    let didComplete = false;
-
     const interval = setInterval(() => {
-      setCurrentLabelIndex(prev => {
-        const next = prev + 1;
-        if (next >= labels.length) {
+      setDisplayState(prev => {
+        if (prev.type !== 'label') {
           clearInterval(interval);
-          if (taskResultRef.current && !didComplete) {
-            didComplete = true;
-            onComplete?.(taskResultRef.current);
-          }
           return prev;
         }
-        return next;
+
+        const next = prev.index + 1;
+        if (next >= labels.length) {
+          clearInterval(interval);
+          if (taskResultRef.current) {
+            return { type: 'exiting' };
+          } else {
+            return { type: 'fallback' };
+          }
+        }
+        return { type: 'label', index: next };
       });
-    }, time.seconds(2));
+    }, LABEL_CYCLE_INTERVAL);
 
     return () => clearInterval(interval);
-  }, [labels.length, onComplete]);
+  }, [labels.length]);
 
-  const currentLabel = labels[currentLabelIndex] ?? '';
+  useEffect(() => {
+    if (displayState.type !== 'exiting') return;
+
+    const timeout = setTimeout(() => {
+      if (taskResultRef.current) {
+        onComplete?.(taskResultRef.current);
+      }
+    }, EXIT_ANIMATION_DURATION);
+
+    return () => clearTimeout(timeout);
+  }, [displayState.type, onComplete]);
+
+  const currentLabel =
+    displayState.type === 'label' ? labels[displayState.index] ?? '' : displayState.type === 'fallback' ? fallbackLabel : '';
+
+  const animationKey =
+    displayState.type === 'label' ? `label-${displayState.index}` : displayState.type === 'fallback' ? 'fallback' : 'exiting';
 
   return (
     <View style={styles.container}>
-      <Animated.View key={`${currentLabel}-${currentLabelIndex}`} entering={enteringAnimation} exiting={exitingAnimation}>
+      <Animated.View key={animationKey} entering={enteringAnimation} exiting={exitingAnimation}>
         <Text color={{ custom: '#858585' }} size="20pt" weight="heavy">
           {currentLabel}
         </Text>
