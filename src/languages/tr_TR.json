@@ -977,7 +977,7 @@
       "redacted_title": "Redacted Rainbow'un kilidini açtınız",
       "baggy_description": "Sokaklardan zincire, bu küçük çanta Rainbow havasının taşınabilir dozunu taşır. Renklerin tadına bak ve farkı hisset.",
       "baggy_title": "Kazandınız\n Rainbow Baggy",
-      "chonks_description": "101'de süzülürken, Rainbow saçlarınızda rüzgarı hayal edin, Chonky hissiyle.",
+      "chonks_description": "Rainbow saçınızda rüzgarı hayal edin, 101 boyunca Chonky hissederek araba kullanıyorsunuz.",
       "chonks_title": "En Chonky Simgeyi\n Açtınız",
       "mog_description": "Renklerde kolay kozmik dünya hakimiyeti.",
       "mog_title": "Kazandınız\n Rainbow Mogs",
@@ -1634,7 +1634,7 @@
       "markets": {
         "title": "Piyasalar",
         "view_all": "Hepsini Gör",
-        "up_to": "UP TO",
+        "up_to": "KADAR",
         "already_open": "Zaten Açık"
       },
       "deposit": {
