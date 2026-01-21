@@ -195,7 +195,7 @@
     "immer": "9.0.6",
     "inherits": "2.0.4",
     "lint-staged": "10.4.0",
-    "lodash": "4.17.21",
+    "lodash": "4.17.23",
     "make-color-more-chill": "0.2.2",
     "match-sorter": "6.3.0",
     "mipd": "0.0.5",
