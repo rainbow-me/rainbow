@@ -24,6 +24,8 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import * as i18n from '@/languages';
 import { claimAirdrop } from '@/features/rnbw-rewards/utils/claimAirdrop';
 import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwAirdropStore';
+import { delay } from '@/utils/delay';
+import { time } from '@/utils/time';
 
 export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
   return (
@@ -80,7 +82,7 @@ function RnbwRewardsSceneSteps() {
   }, [address, nativeCurrency, airdropData]);
 
   const handleClaimRewardsComplete = useCallback(
-    (result: LoadingStepResult) => {
+    (result: LoadingStepResult<Awaited<ReturnType<typeof claimRewards>>>) => {
       if (result.status === 'error') {
         showClaimError();
       }
@@ -90,7 +92,7 @@ function RnbwRewardsSceneSteps() {
   );
 
   const handleClaimAirdropComplete = useCallback(
-    (result: LoadingStepResult) => {
+    (result: LoadingStepResult<Awaited<ReturnType<typeof claimAirdrop>>>) => {
       if (result.status === 'error') {
         showClaimError();
         setActiveStep(ClaimSteps.ClaimAirdrop);
@@ -101,12 +103,18 @@ function RnbwRewardsSceneSteps() {
     [setActiveStep, showClaimError]
   );
 
+  const checkAirdropEligibilityTask = useCallback(async () => {
+    // We already have fetched the airdrop data, this is purely visual
+    return delay(time.seconds(1));
+  }, []);
+
   return (
     <View style={styles.stepsContainer}>
       {activeStepState === ClaimSteps.AirdropIntroduction && <AirdropIntroductionStep />}
       {activeStepState === ClaimSteps.CheckingAirdrop && (
         <LoadingStep
           labels={['Calculating Rewards...', 'Checking Historical Activity...', 'Checking Eligibility...']}
+          task={checkAirdropEligibilityTask}
           onComplete={() => setActiveStep(ClaimSteps.ClaimAirdrop)}
         />
       )}

@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Text } from '@/design-system';
@@ -13,71 +13,68 @@ import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewa
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: -24 });
 const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();
 
-type LoadingStep = {
+export type LoadingStepResult<T> = { status: 'success'; data: T } | { status: 'error'; error: unknown };
+
+type LoadingStepProps<T> = {
   labels: string[];
-  onComplete?: () => void;
+  task: () => Promise<T>;
+  onComplete?: (result: LoadingStepResult<T>) => void;
 };
 
-export const LoadingStep = memo(function LoadingStep({ labels, onComplete }: LoadingStep) {
-  const [progressLabelIndex, setProgressLabelIndex] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const effectiveLabels = [...labels, ''];
-  const labelCount = effectiveLabels.length;
+export function LoadingStep<T>({ labels: baseLabels, task, onComplete }: LoadingStepProps<T>) {
+  const [currentLabelIndex, setCurrentLabelIndex] = useState(0);
+  const taskResultRef = useRef<LoadingStepResult<T> | null>(null);
+  // Empty string as last label allows final real label to exit animate before unmount
+  const labels = [...baseLabels, ''];
 
+  // Run the task
   useEffect(() => {
-    setProgressLabelIndex(0);
-  }, [labels]);
+    setCurrentLabelIndex(0);
+    taskResultRef.current = null;
 
+    task()
+      .then(data => {
+        taskResultRef.current = { status: 'success', data };
+      })
+      .catch(error => {
+        taskResultRef.current = { status: 'error', error };
+      });
+  }, [task]);
+
+  // Cycle through labels and fire completion when lables cycled + task is settled
   useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setProgressLabelIndex(prev => {
-        if (prev < labelCount - 1) {
-          return prev + 1;
+    let didComplete = false;
+
+    const interval = setInterval(() => {
+      setCurrentLabelIndex(prev => {
+        const next = prev + 1;
+        if (next >= labels.length) {
+          clearInterval(interval);
+          if (taskResultRef.current && !didComplete) {
+            didComplete = true;
+            onComplete?.(taskResultRef.current);
+          }
+          return prev;
         }
-        return 0;
+        return next;
       });
     }, time.seconds(2));
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [labelCount]);
 
-  useEffect(() => {
-    if (progressLabelIndex === labelCount - 1) {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+    return () => clearInterval(interval);
+  }, [labels.length, onComplete]);
 
-      timeoutRef.current = setTimeout(() => {
-        onComplete?.();
-      }, time.seconds(1));
-    }
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [labelCount, onComplete, progressLabelIndex]);
+  const currentLabel = labels[currentLabelIndex] ?? '';
 
   return (
     <View style={styles.container}>
-      {effectiveLabels.map((label, index) => {
-        if (index === progressLabelIndex) {
-          return (
-            <Animated.View key={`${label}-${index}`} entering={enteringAnimation} exiting={exitingAnimation}>
-              <Text color={{ custom: '#858585' }} size="20pt" weight="heavy">
-                {label}
-              </Text>
-            </Animated.View>
-          );
-        }
-      })}
+      <Animated.View key={`${currentLabel}-${currentLabelIndex}`} entering={enteringAnimation} exiting={exitingAnimation}>
+        <Text color={{ custom: '#858585' }} size="20pt" weight="heavy">
+          {currentLabel}
+        </Text>
+      </Animated.View>
     </View>
   );
-});
+}
 
 const styles = StyleSheet.create({
   container: {
