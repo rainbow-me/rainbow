@@ -43,38 +43,39 @@ const BLUR_CIRCLE_SIZE = 224;
 
 const STEP_TRANSITION_DELAY = time.ms(100);
 
+// These translations are relative to the bottom of the navbar on the rewards screen
 const stepsConfig: Record<ClaimStep, { scale: number; translateY: number }> = {
   [ClaimSteps.AirdropIntroduction]: {
     scale: 1,
-    translateY: 88,
+    translateY: 15,
   },
   [ClaimSteps.CheckingAirdrop]: {
     scale: SMALL_COIN_SCALE,
-    translateY: 275,
+    translateY: 202,
   },
   [ClaimSteps.ClaimAirdrop]: {
     scale: 1,
-    translateY: 88,
+    translateY: 15,
   },
   [ClaimSteps.Rewards]: {
     scale: MEDIUM_COIN_SCALE,
-    translateY: 81,
+    translateY: 24,
   },
   [ClaimSteps.ClaimingAirdrop]: {
     scale: SMALL_COIN_SCALE,
-    translateY: 275,
+    translateY: 202,
   },
   [ClaimSteps.ClaimingRewards]: {
     scale: SMALL_COIN_SCALE,
-    translateY: 275,
+    translateY: 202,
   },
   [ClaimSteps.ClaimAirdropFinished]: {
     scale: MEDIUM_COIN_SCALE,
-    translateY: 245,
+    translateY: 186,
   },
   [ClaimSteps.NoAirdropToClaim]: {
     scale: MEDIUM_COIN_SCALE,
-    translateY: 245,
+    translateY: 186,
   },
 };
 

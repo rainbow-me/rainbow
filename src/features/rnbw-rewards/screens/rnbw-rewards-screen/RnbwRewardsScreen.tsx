@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, Image, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccountImage } from '@/components/AccountImage';
 import { BottomGradientGlow } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/BottomGradientGlow';
@@ -16,7 +16,7 @@ import { AirdropIntroductionStep } from '@/features/rnbw-rewards/screens/rnbw-re
 import { ClaimAirdropStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/ClaimAirdropStep';
 import { AirdropClaimFinishedStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/AirdropClaimFinished';
 import { RnbwRewardsStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/RewardsStep';
-import { Navbar } from '@/components/navbar/Navbar';
+import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { claimRewards } from '@/features/rnbw-rewards/utils/claimRewards';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
@@ -28,6 +28,9 @@ import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
 import { NoAirdropToClaimStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/NoAirdropToClaimStep';
 import { useHasCompletedAirdrop } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/hooks/useHasCompletedAirdrop';
+import { Box, Text } from '@/design-system';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import rnbwCoinImage from '@/assets/rnbw.png';
 
 export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
   const [hasCompletedAirdropFlow] = useHasCompletedAirdrop();
@@ -46,7 +49,7 @@ export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
 });
 
 function RnbwRewardsContent() {
-  const { scrollOffset } = useRnbwRewardsTransitionContext();
+  const { scrollOffset, activeStepState } = useRnbwRewardsTransitionContext();
   const tabBarOffset = useTabBarOffset();
   const safeAreaInsets = useSafeAreaInsets();
 
@@ -56,18 +59,46 @@ function RnbwRewardsContent() {
     };
   }, [scrollOffset]);
 
+  const title = useMemo(() => {
+    return activeStepState === ClaimSteps.Rewards ? 'Rewards' : '';
+  }, [activeStepState]);
+
   return (
-    <View style={[{ flex: 1, paddingTop: safeAreaInsets.top, paddingBottom: tabBarOffset }]}>
-      <View style={[StyleSheet.absoluteFill, { top: safeAreaInsets.top }]}>
+    <View style={styles.flex}>
+      <Navbar title={title} leftComponent={<AccountImage />} rightComponent={<NavbarRnbwBalance />} floating />
+      <View style={{ flex: 1, paddingBottom: tabBarOffset, paddingTop: safeAreaInsets.top + navbarHeight }}>
         <BottomGradientGlow />
         <Animated.View style={rnbwCoinAnimatedStyle}>
           <RnbwCoin />
         </Animated.View>
         <FloatingCoins />
+        <RnbwRewardsSceneSteps />
       </View>
-      <Navbar leftComponent={<AccountImage />} floating />
-      <RnbwRewardsSceneSteps />
     </View>
+  );
+}
+
+function NavbarRnbwBalance() {
+  // TODO: This will require knowing the RNBW token contract address
+  const rnbwBalance = 123.5;
+  return (
+    <Box
+      paddingVertical={'8px'}
+      paddingLeft={'8px'}
+      paddingRight={'10px'}
+      borderWidth={1}
+      borderColor="separatorTertiary"
+      borderRadius={32}
+      backgroundColor={opacityWorklet('#F5F8FF', 0.06)}
+      flexDirection="row"
+      alignItems="center"
+      gap={4}
+    >
+      <Image source={rnbwCoinImage} style={{ width: 22, height: 22 }} />
+      <Text size="15pt" weight="bold" color="label">
+        {rnbwBalance}
+      </Text>
+    </Box>
   );
 }
 
@@ -75,7 +106,7 @@ function RnbwRewardsSceneSteps() {
   const { activeStepState } = useRnbwRewardsTransitionContext();
 
   return (
-    <View style={styles.stepsContainer}>
+    <View style={styles.flex}>
       {activeStepState === ClaimSteps.AirdropIntroduction && <AirdropIntroductionStep />}
       {activeStepState === ClaimSteps.CheckingAirdrop && <CheckingAirdropLoadingStep />}
       {activeStepState === ClaimSteps.ClaimAirdrop && <ClaimAirdropStep />}
@@ -176,7 +207,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0D0D0D',
   },
-  stepsContainer: {
+  flex: {
     flex: 1,
   },
 });

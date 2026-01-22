@@ -28,6 +28,11 @@ export const ClaimAirdropStep = memo(function ClaimAirdropStep() {
     setActiveStep(ClaimSteps.Rewards);
   };
 
+  const handleClaimAirdrop = () => {
+    'worklet';
+    setActiveStep(ClaimSteps.ClaimingAirdrop);
+  };
+
   const claimAirdropDescription = useMemo(() => {
     // TODO: confirm this is the description we want to use
     return i18n.t(i18n.l.rnbw_rewards.claim.based_on_your_swaps, {
@@ -58,10 +63,7 @@ export const ClaimAirdropStep = memo(function ClaimAirdropStep() {
         <Box gap={28}>
           <HoldToActivateButton
             label={i18n.t(i18n.l.button.hold_to_authorize.hold_to_claim)}
-            onLongPress={() => {
-              'worklet';
-              setActiveStep(ClaimSteps.ClaimingAirdrop);
-            }}
+            onLongPress={handleClaimAirdrop}
             backgroundColor={isDarkMode ? globalColors.white100 : globalColors.grey100}
             disabledBackgroundColor={isDarkMode ? globalColors.white100 : globalColors.grey100}
             disabled={false}

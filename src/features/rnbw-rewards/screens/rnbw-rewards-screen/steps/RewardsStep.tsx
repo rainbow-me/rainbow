@@ -105,7 +105,7 @@ const RnbwRewardsBalance = memo(function RnbwRewardsBalance() {
             style={{ width: 251 }}
           />
         ) : (
-          <Box paddingHorizontal={'16px'} gap={20}>
+          <Box paddingHorizontal={'16px'} gap={20} width={'full'}>
             <View style={{ height: 1, width: '100%', backgroundColor: opacityWorklet('#F5F8FF', 0.0625) }} />
             <Text size="15pt / 135%" weight="semibold" color="labelTertiary" align="center">
               {i18n.t(i18n.l.rnbw_rewards.rewards.empty_rewards_description)}
