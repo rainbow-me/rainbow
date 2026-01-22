@@ -9,15 +9,10 @@ const APP_ICON = 'appIcon';
 const LANGUAGE = 'language';
 const NATIVE_CURRENCY = 'nativeCurrency';
 const CHAIN_ID = 'chainId';
-const KEYCHAIN_INTEGRITY_STATE = 'keychainIntegrityState';
 const AUTH_TIMELOCK = 'authTimelock';
 const PIN_AUTH_ATTEMPTS_LEFT = 'pinAuthAttemptsLeft';
 const TRANSACTION_SIGNATURES = 'transactionSignatures';
 const TESTNETS_ENABLED = 'testnetsEnabled';
-
-export const getKeychainIntegrityState = () => getGlobal(KEYCHAIN_INTEGRITY_STATE, null);
-
-export const saveKeychainIntegrityState = (state: any) => saveGlobal(KEYCHAIN_INTEGRITY_STATE, state);
 
 export const getAuthTimelock = () => getGlobal(AUTH_TIMELOCK, null);
 

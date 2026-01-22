@@ -24,6 +24,7 @@
       "tab_savings": "储蓄",
       "tab_showcase": "展示",
       "tab_perps": "Perps",
+      "tab_polymarket": "预测",
       "tab_points": "积分",
       "tab_positions": "持仓",
       "tab_rewards": "奖励",
@@ -559,7 +560,8 @@
       "restart_app": "重新启动应用",
       "reset_experimental_config": "重置实验配置",
       "status": "状态",
-      "sync_codepush": "同步 CodePush"
+      "sync_codepush": "同步 CodePush",
+      "simulate_device_transfer": "模拟设备传输"
     },
     "discover": {
       "pulse": {
@@ -757,6 +759,13 @@
         },
         "about": {
           "title": "关于",
+          "created_by": "创建者",
+          "protocol": "协议",
+          "created_via": "创建方式",
+          "what_is": "%{assetName} 是什么？"
+        },
+        "details": {
+          "title": "详细信息",
           "what_is": "%{assetName} 是什么？"
         },
         "history": {
@@ -970,6 +979,8 @@
       "baggy_title": "您已解锁\n Rainbow Baggy",
       "chonks_description": "想象一下风在你的Rainbow头发中飘扬，驾驶着101，感受Chonky。",
       "chonks_title": "您已解锁\n 最巨大的图标",
+      "mog_description": "轻松地征服宇宙，以缤纷的色彩令人惊艳。",
+      "mog_title": "您已解锁\nRainbow Mogs",
       "button": "解锁图标"
     },
     "explain": {
@@ -1604,8 +1615,8 @@
         "liq": "清算"
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "添加到仓位",
+        "new_total": "新总数"
       },
       "feature_card": {
         "title": "Perps",
@@ -1638,7 +1649,8 @@
         "confirm_button_over_balance_text": "资金不足",
         "confirm_button_error_text": "报价错误",
         "quote_error": "􀇿 没有报价可用",
-        "insufficient_balance": "􀫲 资金不足"
+        "insufficient_balance": "􀫲 资金不足",
+        "insufficient_gas": "Gas不足"
       },
       "withdraw": {
         "title": "提款",
@@ -2930,12 +2942,7 @@
         "no_price": "小额余额"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "您当前的身份验证方法（面部识别）不够安全，请去\"设置 > 生物识别 & 安全\"启用其他生物识别方法，如指纹或虹膜。",
-          "error": "错误"
-        },
-        "please": "请进行身份验证",
-        "please_seed_phrase": "请进行身份验证以查看私钥"
+        "please": "请进行身份验证"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} 钱包",
@@ -3736,6 +3743,157 @@
           }
         }
       }
+    },
+    "predictions": {
+      "feature_card": {
+        "title": "预测",
+        "subtitle": "对现实世界事件的投注"
+      },
+      "explain_sheet": {
+        "next": "下一步",
+        "get_started": "开始",
+        "title": "预测",
+        "steps": {
+          "step_1": {
+            "title": "预测",
+            "subtitle_parts": [
+              "尝试一种新的方式来跟踪市场动态。由Polymarket提供支持"
+            ]
+          },
+          "step_2": {
+            "title": "几乎可以投注任何事情",
+            "subtitle_parts": [
+              "选择一个喜欢的市场，放下你的立场，看它的走势。"
+            ]
+          },
+          "step_3": {
+            "title": "选择你的结果",
+            "subtitle_parts": [
+              "每个市场都有明确的选项。选择你相信的那个，跟踪它的表现。"
+            ]
+          }
+        }
+      },
+      "navbar": {
+        "title": "预测"
+      },
+      "new_position": {
+        "title": "下注",
+        "amount": "金额",
+        "chance_of_outcome": "结果可能性",
+        "to_win": "赢得",
+        "spread": "差价",
+        "hold_to_place_bet": "按住下注",
+        "placing_bet": "下注中...",
+        "confirming_order": "订单确认中...",
+        "deposit_funds": "存款资金",
+        "average_price": "平均价格",
+        "errors": {
+          "not_enough_liquidity": "没有足够的流动性来完成整个订单。",
+          "please_lower_amount": "请减少金额后再试。",
+          "no_liquidity_at_price": "此价格没有流动性。"
+        }
+      },
+      "manage_position": {
+        "hold_to_claim": "长按领取",
+        "hold_to_clear": "长按清除",
+        "hold_to_cash_out": "按住兑现",
+        "claiming": "认领中...",
+        "clearing": "清除中...",
+        "cashing_out": "兑现中...",
+        "confirming_order": "订单确认中...",
+        "position_value": "仓位价值"
+      },
+      "cash_out": {
+        "title": "兑现赌注",
+        "current_price": "当前价格",
+        "average_price": "平均价格",
+        "profit_loss": "利润/损失",
+        "receive": "接收",
+        "spread": "差价",
+        "cash_out": "兑现"
+      },
+      "search": {
+        "placeholder": "搜索预测市场",
+        "input_placeholder": "搜索市场",
+        "no_results": "未找到结果"
+      },
+      "event": {
+        "outcomes": "结果",
+        "about": "关于",
+        "show_rules": "显示规则",
+        "rules": "规则",
+        "end_date": "结束日期",
+        "resolution_source": "分辨率来源",
+        "category": "类别",
+        "hide_resolved": "隐藏已解决",
+        "show_resolved": "显示已解决",
+        "open_positions": "持仓",
+        "market_resolved": "市场已解决",
+        "volume_suffix": "交易量",
+        "show_less": "显示较少",
+        "show_more": "显示更多",
+        "resolved": "已解析"
+      },
+      "position": {
+        "outcome": "结果",
+        "odds": "赔率",
+        "bet": "下注",
+        "won": "赢",
+        "to_win": "赢得",
+        "claim": "领取",
+        "clear": "清除",
+        "cash_out": "兑现",
+        "no_open_positions": "没有开放的头寸",
+        "won_badge": "赢了",
+        "lost_badge": "输了",
+        "learn_more": "了解更多关于预测的信息"
+      },
+      "tabs": {
+        "browse": "浏览",
+        "portfolio": "投资组合"
+      },
+      "market": {
+        "buy_outcome": "购买 %{outcome}"
+      },
+      "bet_types": {
+        "winner": "赢家",
+        "spreads": "差价",
+        "totals": "总计",
+        "other": "其他"
+      },
+      "sports": {
+        "vs": "对",
+        "live": "直播",
+        "game_best_of": "游戏 %{currentPeriod} - 最佳 %{bestOf}",
+        "final": "最终",
+        "no_games": "今天或明天没有比赛"
+      },
+      "outcomes": {
+        "yes": "是",
+        "yes_badge": "是",
+        "no_badge": "否"
+      },
+      "errors": {
+        "title": "错误",
+        "failed_to_place_bet": "下注失败。请再试一次。",
+        "failed_to_cash_out": "兑现头寸失败。请再试一次。",
+        "failed_to_claim": "认领头寸失败。请再试一次。"
+      },
+      "account": {
+        "hide_lost_bets": "隐藏输掉的赌注",
+        "show_lost_bets": "显示输掉的赌注",
+        "lost_bets_dont_clear": "输掉的赌注不会自动清除。您可以在下面清除它们。"
+      }
+    },
+    "wallet_error_sheet": {
+      "title": "恢复你的钱包",
+      "restore": "恢复",
+      "dismiss": "关闭",
+      "cause_passcode_disabled": "看起来你可能已经禁用密码。",
+      "cause_switched_devices": "看起来你可能已经切换设备。",
+      "resolution_enable_passcode": "要使用你的钱包，请在设备设置中重新启用它。",
+      "resolution_restore_backup": "要使用你的钱包，请从备份恢复或重新导入你的秘密恢复短语。"
     }
   }
 }

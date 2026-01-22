@@ -1,6 +1,6 @@
 import { getColorValueForThemeWorklet, ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { palettes } from '@/design-system/color/palettes';
-import { isDrawMarket } from '@/features/polymarket/screens/polymarket-event-screen/SportsEventMarkets';
+import { isDrawMarket } from '@/features/polymarket/utils/sports';
 import { PolymarketPosition, PolymarketTeamInfo } from '@/features/polymarket/types';
 import { PolymarketMarket, RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam';

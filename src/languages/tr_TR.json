@@ -24,6 +24,7 @@
       "tab_savings": "Tasarruflar",
       "tab_showcase": "Vitrin",
       "tab_perps": "Vadeli İşlemler",
+      "tab_polymarket": "Tahminler",
       "tab_points": "Noktalar",
       "tab_positions": "Pozisyonlar",
       "tab_rewards": "Ödüller",
@@ -559,7 +560,8 @@
       "restart_app": "Uygulamayı Yeniden Başlat",
       "reset_experimental_config": "Deneysel Yapılandırmayı Sıfırla",
       "status": "Durum",
-      "sync_codepush": "CodePush'u Senkronize Et"
+      "sync_codepush": "CodePush'u Senkronize Et",
+      "simulate_device_transfer": "Cihaz Transferini Simüle Et"
     },
     "discover": {
       "pulse": {
@@ -757,6 +759,13 @@
         },
         "about": {
           "title": "Hakkında",
+          "created_by": "Oluşturan kişi",
+          "protocol": "Protokol",
+          "created_via": "Aracılığıyla oluşturuldu",
+          "what_is": "%{assetName} nedir?"
+        },
+        "details": {
+          "title": "Detaylar",
           "what_is": "%{assetName} nedir?"
         },
         "history": {
@@ -970,6 +979,8 @@
       "baggy_title": "Kazandınız\n Rainbow Baggy",
       "chonks_description": "101'de süzülürken, Rainbow saçlarınızda rüzgarı hayal edin, Chonky hissiyle.",
       "chonks_title": "En Chonky Simgeyi\n Açtınız",
+      "mog_description": "Renklerde kolay kozmik dünya hakimiyeti.",
+      "mog_title": "Kazandınız\n Rainbow Mogs",
       "button": "Simgeyi Yakala"
     },
     "explain": {
@@ -1604,12 +1615,12 @@
         "liq": "likit"
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "Pozisyona Ekle",
+        "new_total": "Yeni Toplam"
       },
       "feature_card": {
         "title": "Vadeli İşlemler",
-        "subtitle": "Yüksek risk, yüksek getiri ticareti"
+        "subtitle": "Yüksek risk, yüksek ödüllü ticaret"
       },
       "actions": {
         "fund_wallet": "Cüzdanı Fonla",
@@ -1638,7 +1649,8 @@
         "confirm_button_over_balance_text": "Yetersiz Bakiye",
         "confirm_button_error_text": "Teklif Hatası",
         "quote_error": "􀇿 Alıntı bulunamadı",
-        "insufficient_balance": "􀫲 Yetersiz Bakiye"
+        "insufficient_balance": "􀫲 Yetersiz Bakiye",
+        "insufficient_gas": "Yetersiz Gaz"
       },
       "withdraw": {
         "title": "Çekme",
@@ -2930,12 +2942,7 @@
         "no_price": "Küçük Bakiyeler"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "Mevcut kimlik doğrulama yönteminiz (Yüz Tanıma) yeterince güvenli değil, lütfen \"Ayarlar > Biyometrik & Güvenlik\" bölümüne gidin ve Alternatif bir biyometrik yöntem olan Parmak izi veya Iris'i etkinleştirin.",
-          "error": "Hata"
-        },
-        "please": "Lütfen kimlik doğrulaması yapın",
-        "please_seed_phrase": "Lütfen özel anahtarı görüntülemek için kimlik doğrulayın"
+        "please": "Lütfen kimlik doğrulaması yapın"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} cüzdan",
@@ -3736,6 +3743,157 @@
           }
         }
       }
+    },
+    "predictions": {
+      "feature_card": {
+        "title": "Tahminler",
+        "subtitle": "Gerçek dünya olaylarına bahis yapın"
+      },
+      "explain_sheet": {
+        "next": "Sonraki",
+        "get_started": "Başlayın",
+        "title": "Tahminler",
+        "steps": {
+          "step_1": {
+            "title": "Tahminler",
+            "subtitle_parts": [
+              "Piyasalarda neler olduğunu takip etmenin yeni bir yolunu deneyin. Polymarket tarafından desteklenmektedir"
+            ]
+          },
+          "step_2": {
+            "title": "Neredeyse Her Şeye Bahis",
+            "subtitle_parts": [
+              "Sevdiğiniz bir pazarı seçin, konumunuzu belirleyin ve nasıl ilerlediğini görün."
+            ]
+          },
+          "step_3": {
+            "title": "Sonucunuzu Seçin",
+            "subtitle_parts": [
+              "Her piyasada net seçenekler mevcuttur. İnandığınız seçeneği seçin ve nasıl performans gösterdiğini takip edin."
+            ]
+          }
+        }
+      },
+      "navbar": {
+        "title": "Tahminler"
+      },
+      "new_position": {
+        "title": "Bahis Yap",
+        "amount": "Miktar",
+        "chance_of_outcome": "Sonuç Şansı",
+        "to_win": "Kazanmak İçin",
+        "spread": "Spread",
+        "hold_to_place_bet": "Bahis Yapmak İçin Basılı Tutun",
+        "placing_bet": "Bahis Yapılıyor...",
+        "confirming_order": "Sipariş Onaylanıyor...",
+        "deposit_funds": "Fon Yatırma",
+        "average_price": "Ortalama Fiyat",
+        "errors": {
+          "not_enough_liquidity": "Tam sipariş vermek için yeterli likidite yok.",
+          "please_lower_amount": "Lütfen miktarı azaltın ve tekrar deneyin.",
+          "no_liquidity_at_price": "Bu fiyatta likidite yok."
+        }
+      },
+      "manage_position": {
+        "hold_to_claim": "Talep Etmek İçin Basılı Tutun",
+        "hold_to_clear": "Temizlemek İçin Basılı Tutun",
+        "hold_to_cash_out": "Nakit Çıkışı İçin Basılı Tutun",
+        "claiming": "Talep Ediliyor...",
+        "clearing": "Temizleniyor...",
+        "cashing_out": "Nakit Çıkışı Yapılıyor...",
+        "confirming_order": "Sipariş Onaylanıyor...",
+        "position_value": "Pozisyon Değeri"
+      },
+      "cash_out": {
+        "title": "Bahisten Nakit Çıkışı",
+        "current_price": "Mevcut Fiyat",
+        "average_price": "Ortalama Fiyat",
+        "profit_loss": "Kâr / Zarar",
+        "receive": "Al",
+        "spread": "Spread",
+        "cash_out": "Nakit Çıkışı"
+      },
+      "search": {
+        "placeholder": "Tahmin Pazarlarını Ara",
+        "input_placeholder": "Piyasaları ara",
+        "no_results": "Sonuç bulunamadı"
+      },
+      "event": {
+        "outcomes": "Sonuçlar",
+        "about": "Hakkında",
+        "show_rules": "Kuralları Göster",
+        "rules": "Kurallar",
+        "end_date": "Bitiş Tarihi",
+        "resolution_source": "Çözüm Kaynağı",
+        "category": "Kategori",
+        "hide_resolved": "Çözümlenmişi Gizle",
+        "show_resolved": "Çözümlenmişi Göster",
+        "open_positions": "Açık Pozisyonlar",
+        "market_resolved": "PAZAR ÇÖZÜLDÜ",
+        "volume_suffix": "HACİM",
+        "show_less": "Daha Az Göster",
+        "show_more": "Daha Fazla Göster",
+        "resolved": "Çözüldü"
+      },
+      "position": {
+        "outcome": "Sonuç",
+        "odds": "Katsayılar",
+        "bet": "Bahis",
+        "won": "Kazandı",
+        "to_win": "Kazanmak İçin",
+        "claim": "Talep Et",
+        "clear": "Temizle",
+        "cash_out": "Nakit Çıkışı",
+        "no_open_positions": "Açık Pozisyon Yok",
+        "won_badge": "KAZANDI",
+        "lost_badge": "KAYBETTİ",
+        "learn_more": "Tahminler Hakkında Daha Fazla Bilgi Edinin"
+      },
+      "tabs": {
+        "browse": "Göz At",
+        "portfolio": "Portföy"
+      },
+      "market": {
+        "buy_outcome": "%{outcome} Satın Alın"
+      },
+      "bet_types": {
+        "winner": "Kazanan",
+        "spreads": "Spreadler",
+        "totals": "Toplamlar",
+        "other": "Diğer"
+      },
+      "sports": {
+        "vs": "vs",
+        "live": "Canlı",
+        "game_best_of": "Oyun %{currentPeriod} - %{bestOf} En İyi",
+        "final": "Final",
+        "no_games": "Bugün veya yarın oyun yok"
+      },
+      "outcomes": {
+        "yes": "Evet",
+        "yes_badge": "EVET",
+        "no_badge": "HAYIR"
+      },
+      "errors": {
+        "title": "Hata",
+        "failed_to_place_bet": "Bahis yapılamadı. Lütfen tekrar deneyin.",
+        "failed_to_cash_out": "Pozisyondan nakit çıkışı yapılamadı. Lütfen tekrar deneyin.",
+        "failed_to_claim": "Pozisyon talep edilemedi. Lütfen tekrar deneyin."
+      },
+      "account": {
+        "hide_lost_bets": "Kaybedilen Bahisleri Gizle",
+        "show_lost_bets": "Kaybedilen Bahisleri Göster",
+        "lost_bets_dont_clear": "Kaybedilen bahisler otomatik olarak kaldırılmaz. Aşağıda temizleyebilirsiniz."
+      }
+    },
+    "wallet_error_sheet": {
+      "title": "Cüzdanınızı geri yükleyin",
+      "restore": "Geri Yükle",
+      "dismiss": "İptal Et",
+      "cause_passcode_disabled": "Görünüşe göre şifrenizi devre dışı bırakmış olabilirsiniz.",
+      "cause_switched_devices": "Görünüşe göre cihaz değiştirmiş olabilirsiniz.",
+      "resolution_enable_passcode": "Cüzdanınızı kullanmak için cihaz ayarlarında yeniden etkinleştirin.",
+      "resolution_restore_backup": "Cüzdanınızı kullanmak için yedekten geri yükleyin veya gizli kurtarma cümlenizi yeniden aktarın."
     }
   }
 }

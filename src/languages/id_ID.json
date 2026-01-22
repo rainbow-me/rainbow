@@ -24,6 +24,7 @@
       "tab_savings": "Tabungan",
       "tab_showcase": "Pameran",
       "tab_perps": "Perps",
+      "tab_polymarket": "Prediksi",
       "tab_points": "Poin",
       "tab_positions": "Posisi",
       "tab_rewards": "Hadiah",
@@ -559,7 +560,8 @@
       "restart_app": "Mulai Ulang Aplikasi",
       "reset_experimental_config": "Atur Ulang Konfigurasi Eksperimental",
       "status": "Status",
-      "sync_codepush": "Sinkronisasi CodePush"
+      "sync_codepush": "Sinkronisasi CodePush",
+      "simulate_device_transfer": "Simulasikan Transfer Perangkat"
     },
     "discover": {
       "pulse": {
@@ -757,6 +759,13 @@
         },
         "about": {
           "title": "Tentang",
+          "created_by": "Pembuat",
+          "protocol": "Protokol",
+          "created_via": "Dibuat Melalui",
+          "what_is": "Apa itu %{assetName}?"
+        },
+        "details": {
+          "title": "Rincian",
           "what_is": "Apa itu %{assetName}?"
         },
         "history": {
@@ -970,6 +979,8 @@
       "baggy_title": "Anda telah membuka\n Rainbow Baggy",
       "chonks_description": "Bayangkan angin di rambut Rainbow Anda, mengemudi di 101, merasakan Chonky.",
       "chonks_title": "Anda telah membuka\n Ikon Chonkiest",
+      "mog_description": "Dominasi dunia kosmik yang mudah, berpakaian dalam warna.",
+      "mog_title": "Anda telah membuka\nRainbow Mogs",
       "button": "Ambil ikon"
     },
     "explain": {
@@ -1604,8 +1615,8 @@
         "liq": "liq"
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "Tambahkan ke Posisi",
+        "new_total": "Total Baru"
       },
       "feature_card": {
         "title": "Perps",
@@ -1638,7 +1649,8 @@
         "confirm_button_over_balance_text": "Dana Tidak Cukup",
         "confirm_button_error_text": "Kesalahan Kutipan",
         "quote_error": "􀇿 Tidak ada penawaran yang tersedia",
-        "insufficient_balance": "􀫲 Dana Tidak Cukup"
+        "insufficient_balance": "􀫲 Dana Tidak Cukup",
+        "insufficient_gas": "Gas Tidak Cukup"
       },
       "withdraw": {
         "title": "Tarik",
@@ -2930,12 +2942,7 @@
         "no_price": "Saldo Kecil"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "Metode autentikasi Anda saat ini (Pengenalan Wajah) tidak cukup aman, silakan pergi ke \"Pengaturan > Biometrik & Keamanan\" dan aktifkan metode biometrik alternatif seperti Sidik Jari atau Iris.",
-          "error": "Kesalahan"
-        },
-        "please": "Silakan otentifikasi",
-        "please_seed_phrase": "Harap otentikasi untuk melihat kunci privat"
+        "please": "Silakan otentifikasi"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} dompet",
@@ -3736,6 +3743,157 @@
           }
         }
       }
+    },
+    "predictions": {
+      "feature_card": {
+        "title": "Prediksi",
+        "subtitle": "Taruhan pada acara di dunia nyata"
+      },
+      "explain_sheet": {
+        "next": "Selanjutnya",
+        "get_started": "Mulai",
+        "title": "Prediksi",
+        "steps": {
+          "step_1": {
+            "title": "Prediksi",
+            "subtitle_parts": [
+              "Coba cara baru untuk mengikuti apa yang terjadi di pasar. Didukung oleh Polymarket"
+            ]
+          },
+          "step_2": {
+            "title": "Taruhan pada Hampir Apa Saja",
+            "subtitle_parts": [
+              "Pilih pasar yang Anda suka, tempatkan posisi Anda, dan lihat perkembangannya."
+            ]
+          },
+          "step_3": {
+            "title": "Pilih Hasil Anda",
+            "subtitle_parts": [
+              "Setiap pasar memiliki opsi yang jelas. Pilih yang Anda yakin dan pantau kinerja."
+            ]
+          }
+        }
+      },
+      "navbar": {
+        "title": "Prediksi"
+      },
+      "new_position": {
+        "title": "Pasang Taruhan",
+        "amount": "Jumlah",
+        "chance_of_outcome": "Kemungkinan Hasil",
+        "to_win": "Untuk Menang",
+        "spread": "Penyebaran",
+        "hold_to_place_bet": "Tahan untuk Pasang Taruhan",
+        "placing_bet": "Memasang Taruhan...",
+        "confirming_order": "Mengonfirmasi Pesanan...",
+        "deposit_funds": "Deposit Dana",
+        "average_price": "Harga Rata-rata",
+        "errors": {
+          "not_enough_liquidity": "Likuiditas tidak cukup untuk melakukan pemesanan penuh.",
+          "please_lower_amount": "Silakan kurangi jumlahnya dan coba lagi.",
+          "no_liquidity_at_price": "Tidak ada likuiditas pada harga ini."
+        }
+      },
+      "manage_position": {
+        "hold_to_claim": "Tahan untuk Mengklaim",
+        "hold_to_clear": "Tahan untuk Menghapus",
+        "hold_to_cash_out": "Tahan untuk Mencairkan",
+        "claiming": "Mengklaim...",
+        "clearing": "Menghapus...",
+        "cashing_out": "Mencairkan...",
+        "confirming_order": "Mengonfirmasi Pesanan...",
+        "position_value": "Nilai Posisi"
+      },
+      "cash_out": {
+        "title": "Cairkan Taruhan",
+        "current_price": "Harga Saat Ini",
+        "average_price": "Harga Rata-rata",
+        "profit_loss": "Keuntungan / Kerugian",
+        "receive": "Terima",
+        "spread": "Penyebaran",
+        "cash_out": "Cairkan"
+      },
+      "search": {
+        "placeholder": "Cari pasar prediksi",
+        "input_placeholder": "Cari pasar",
+        "no_results": "Tidak ada hasil ditemukan"
+      },
+      "event": {
+        "outcomes": "Hasil",
+        "about": "Tentang",
+        "show_rules": "Tampilkan Aturan",
+        "rules": "Aturan",
+        "end_date": "Tanggal Berakhir",
+        "resolution_source": "Sumber Resolusi",
+        "category": "Kategori",
+        "hide_resolved": "Sembunyikan yang Terjawab",
+        "show_resolved": "Tampilkan yang Terjawab",
+        "open_positions": "Posisi Terbuka",
+        "market_resolved": "PASAR YANG TERJAWAB",
+        "volume_suffix": "VOL",
+        "show_less": "Tampilkan Lebih Sedikit",
+        "show_more": "Tampilkan Lebih Banyak",
+        "resolved": "Terjawab"
+      },
+      "position": {
+        "outcome": "Hasil",
+        "odds": "Peluang",
+        "bet": "Taruhan",
+        "won": "Menang",
+        "to_win": "Untuk Menang",
+        "claim": "Klaim",
+        "clear": "Hapus",
+        "cash_out": "Cairkan",
+        "no_open_positions": "Tidak ada posisi terbuka",
+        "won_badge": "MENANG",
+        "lost_badge": "KALAH",
+        "learn_more": "Pelajari lebih lanjut tentang Prediksi"
+      },
+      "tabs": {
+        "browse": "Jelajahi",
+        "portfolio": "Portofolio"
+      },
+      "market": {
+        "buy_outcome": "Beli %{outcome}"
+      },
+      "bet_types": {
+        "winner": "Pemenang",
+        "spreads": "Penyebaran",
+        "totals": "Jumlah Total",
+        "other": "Lainnya"
+      },
+      "sports": {
+        "vs": "vs",
+        "live": "Langsung",
+        "game_best_of": "Permainan %{currentPeriod} - Terbaik dari %{bestOf}",
+        "final": "Final",
+        "no_games": "Tidak ada permainan hari ini atau besok"
+      },
+      "outcomes": {
+        "yes": "Ya",
+        "yes_badge": "YA",
+        "no_badge": "TIDAK"
+      },
+      "errors": {
+        "title": "Kesalahan",
+        "failed_to_place_bet": "Gagal memasang taruhan. Silakan coba lagi.",
+        "failed_to_cash_out": "Gagal mencairkan posisi. Silakan coba lagi.",
+        "failed_to_claim": "Gagal mengklaim posisi. Silakan coba lagi."
+      },
+      "account": {
+        "hide_lost_bets": "Sembunyikan Taruhan yang Kalah",
+        "show_lost_bets": "Tampilkan Taruhan yang Kalah",
+        "lost_bets_dont_clear": "Taruhan yang kalah tidak dihapus secara otomatis. Anda dapat menghapusnya di bawah ini."
+      }
+    },
+    "wallet_error_sheet": {
+      "title": "Pulihkan dompet Anda",
+      "restore": "Pulihkan",
+      "dismiss": "Tutup",
+      "cause_passcode_disabled": "Sepertinya Anda mungkin telah menonaktifkan kode sandi Anda.",
+      "cause_switched_devices": "Sepertinya Anda mungkin telah mengganti perangkat.",
+      "resolution_enable_passcode": "Untuk menggunakan dompet Anda, aktifkan kembali di pengaturan perangkat Anda.",
+      "resolution_restore_backup": "Untuk menggunakan dompet Anda, pulihkan dari cadangan atau impor ulang frasa pemulihan rahasia Anda."
     }
   }
 }

@@ -1,4 +1,5 @@
 import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
+import { PolymarketNavigation } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
 import { VirtualNavigator } from '@/navigation/createVirtualNavigator';
 import Routes, { Route } from '@/navigation/routesNames';
 import { deepFreeze } from '@/utils/deepFreeze';
@@ -9,4 +10,5 @@ type VirtualNavigators = Readonly<{
 
 export const VIRTUAL_NAVIGATORS = deepFreeze<VirtualNavigators>({
   [Routes.PERPS_NAVIGATOR]: PerpsNavigation,
+  [Routes.POLYMARKET_NAVIGATOR]: PolymarketNavigation,
 });

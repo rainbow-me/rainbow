@@ -1,0 +1,4 @@
+{
+  "tsConfig": "tsconfig.json",
+  "fileExtensions": ["ts", "tsx", "js", "jsx"]
+}

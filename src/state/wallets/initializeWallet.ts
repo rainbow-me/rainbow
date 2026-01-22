@@ -107,7 +107,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     });
 
     // Capture wallet context in telemetry
-    // walletType maybe undefied after initial wallet creation
+    // walletType maybe undefined after initial wallet creation
     const { walletType, walletAddressHash } = await getWalletContext(walletAddress as Address);
     const [deviceId] = await getOrCreateDeviceId();
     if (shouldCancel()) return null;
@@ -126,7 +126,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     if (!switching) {
       // Run keychain integrity checks right after walletInit
       // Except when switching wallets!
-      await runKeychainIntegrityChecks();
+      runKeychainIntegrityChecks();
       if (shouldCancel()) return null;
 
       if (seedPhrase || isNew) {
@@ -182,7 +182,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     });
     // TODO specify error states more granular
     if (!switching) {
-      await runKeychainIntegrityChecks();
+      runKeychainIntegrityChecks();
     }
 
     try {

@@ -24,6 +24,7 @@
       "tab_savings": "저축",
       "tab_showcase": "쇼케이스",
       "tab_perps": "Perps",
+      "tab_polymarket": "예측",
       "tab_points": "포인트",
       "tab_positions": "포지션",
       "tab_rewards": "보상",
@@ -559,7 +560,8 @@
       "restart_app": "앱 재시작",
       "reset_experimental_config": "실험 설정 재설정",
       "status": "상태",
-      "sync_codepush": "CodePush 동기화"
+      "sync_codepush": "CodePush 동기화",
+      "simulate_device_transfer": "디바이스 전송 시뮬레이션"
     },
     "discover": {
       "pulse": {
@@ -757,6 +759,13 @@
         },
         "about": {
           "title": "정보",
+          "created_by": "제작자",
+          "protocol": "프로토콜",
+          "created_via": "생성 방법",
+          "what_is": "%{assetName}에 대해 알고 싶으세요?"
+        },
+        "details": {
+          "title": "세부정보",
           "what_is": "%{assetName}에 대해 알고 싶으세요?"
         },
         "history": {
@@ -970,6 +979,8 @@
       "baggy_title": "잠금 해제\n Rainbow Baggy",
       "chonks_description": "Rainbow 헤어를 휘날리며 101번 도로를 달릴 때, Chonky의 기분을 느껴보세요.",
       "chonks_title": "당신은 가장 Chonky한 아이콘을 열었습니다",
+      "mog_description": "노력 없이 우주적 세계 지배, 색깔로 모깅.",
+      "mog_title": "잠금 해제 Rainbow Mogs",
       "button": "아이콘 잡기"
     },
     "explain": {
@@ -1604,12 +1615,12 @@
         "liq": "청산"
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "포지션에 추가",
+        "new_total": "새 총계"
       },
       "feature_card": {
         "title": "Perps",
-        "subtitle": "고위험, 고수익 거래"
+        "subtitle": "고위험, 고보상 거래"
       },
       "actions": {
         "fund_wallet": "내 지갑 충전하기",
@@ -1638,7 +1649,8 @@
         "confirm_button_over_balance_text": "자금이 부족합니다",
         "confirm_button_error_text": "견적 오류",
         "quote_error": "􀇿 견적이 없음",
-        "insufficient_balance": "􀫲 자금이 부족합니다"
+        "insufficient_balance": "􀫲 자금이 부족합니다",
+        "insufficient_gas": "가스가 충분하지 않습니다"
       },
       "withdraw": {
         "title": "철수",
@@ -2930,12 +2942,7 @@
         "no_price": "소액 잔액"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "현재의 인증 방법 (얼굴 인식)은 충분히 안전하지 않습니다, \"설정 > 생체인식 및 보안\"으로 가서 지문이나 홍채 같은 다른 생체 인식 방법을 활성화해 주세요.",
-          "error": "오류"
-        },
-        "please": "인증해 주세요",
-        "please_seed_phrase": "비공개 키를 보려면 인증해 주세요"
+        "please": "인증해 주세요"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} 지갑",
@@ -3736,6 +3743,157 @@
           }
         }
       }
+    },
+    "predictions": {
+      "feature_card": {
+        "title": "예측",
+        "subtitle": "실제 세계의 사건에 베팅하기"
+      },
+      "explain_sheet": {
+        "next": "다음",
+        "get_started": "시작하기",
+        "title": "예측",
+        "steps": {
+          "step_1": {
+            "title": "예측",
+            "subtitle_parts": [
+              "시장의 동향을 따르는 새로운 방법을 시도하세요. 파워드 바이 폴리마켓"
+            ]
+          },
+          "step_2": {
+            "title": "거의 모든 것에 베팅하기",
+            "subtitle_parts": [
+              "좋아하는 시장을 선택하고, 입장을 정하고, 그 결과를 지켜보세요."
+            ]
+          },
+          "step_3": {
+            "title": "결과 선택하기",
+            "subtitle_parts": [
+              "각 시장에는 명확한 옵션이 있습니다. 믿는 것을 선택하고 그것이 어떻게 수행되는지 추적하세요."
+            ]
+          }
+        }
+      },
+      "navbar": {
+        "title": "예측"
+      },
+      "new_position": {
+        "title": "베팅하기",
+        "amount": "금액",
+        "chance_of_outcome": "결과 확률",
+        "to_win": "승리에 대해",
+        "spread": "스프레드",
+        "hold_to_place_bet": "베팅하기 위해 계속 누르세요",
+        "placing_bet": "베팅 중...",
+        "confirming_order": "주문 확인 중...",
+        "deposit_funds": "자금 입금",
+        "average_price": "평균 가격",
+        "errors": {
+          "not_enough_liquidity": "전체 주문을 하기에는 유동성이 부족합니다.",
+          "please_lower_amount": "금액을 낮추고 다시 시도하세요.",
+          "no_liquidity_at_price": "이 가격에 유동성이 없습니다."
+        }
+      },
+      "manage_position": {
+        "hold_to_claim": "청구하려면 유지",
+        "hold_to_clear": "삭제하려면 길게 누르세요.",
+        "hold_to_cash_out": "현금화 하려면 계속 누르세요",
+        "claiming": "청구 중...",
+        "clearing": "삭제 중...",
+        "cashing_out": "현금화 중...",
+        "confirming_order": "주문 확인 중...",
+        "position_value": "포지션 가치"
+      },
+      "cash_out": {
+        "title": "베팅 현금화",
+        "current_price": "현재 가격",
+        "average_price": "평균 가격",
+        "profit_loss": "이익 / 손실",
+        "receive": "받기",
+        "spread": "스프레드",
+        "cash_out": "현금화"
+      },
+      "search": {
+        "placeholder": "예측 시장 검색하기",
+        "input_placeholder": "시장 검색",
+        "no_results": "결과가 없습니다"
+      },
+      "event": {
+        "outcomes": "결과들",
+        "about": "정보",
+        "show_rules": "규칙 보기",
+        "rules": "규칙",
+        "end_date": "종료 날짜",
+        "resolution_source": "해결 출처",
+        "category": "카테고리",
+        "hide_resolved": "해결 숨기기",
+        "show_resolved": "해결 보기",
+        "open_positions": "열린 포지션",
+        "market_resolved": "시장 해결됨",
+        "volume_suffix": "VOL",
+        "show_less": "줄이기",
+        "show_more": "더 보기",
+        "resolved": "해결됨"
+      },
+      "position": {
+        "outcome": "결과",
+        "odds": "배당률",
+        "bet": "베팅",
+        "won": "승리함",
+        "to_win": "승리에 대해",
+        "claim": "청구",
+        "clear": "삭제",
+        "cash_out": "현금화",
+        "no_open_positions": "열려 있는 포지션이 없습니다",
+        "won_badge": "승리함",
+        "lost_badge": "패배함",
+        "learn_more": "예측에 대해 더 알아보기"
+      },
+      "tabs": {
+        "browse": "둘러보기",
+        "portfolio": "포트폴리오"
+      },
+      "market": {
+        "buy_outcome": "%{outcome} 구매"
+      },
+      "bet_types": {
+        "winner": "승자",
+        "spreads": "스프레드",
+        "totals": "총계",
+        "other": "기타"
+      },
+      "sports": {
+        "vs": "대",
+        "live": "라이브",
+        "game_best_of": "게임 %{currentPeriod} - %{bestOf} 중 최고",
+        "final": "최종",
+        "no_games": "오늘과 내일 경기가 없습니다."
+      },
+      "outcomes": {
+        "yes": "예",
+        "yes_badge": "예",
+        "no_badge": "아니요"
+      },
+      "errors": {
+        "title": "오류",
+        "failed_to_place_bet": "베팅하는 데 실패했습니다. 다시 시도해 주세요.",
+        "failed_to_cash_out": "포지션 현금화에 실패했습니다. 다시 시도해 주세요.",
+        "failed_to_claim": "포지션 청구에 실패했습니다. 다시 시도해 주세요."
+      },
+      "account": {
+        "hide_lost_bets": "패배한 배팅 숨기기",
+        "show_lost_bets": "패배한 배팅 표시하기",
+        "lost_bets_dont_clear": "패배한 배팅은 자동으로 제거되지 않습니다. 아래에서 삭제할 수 있습니다."
+      }
+    },
+    "wallet_error_sheet": {
+      "title": "지갑 복원",
+      "restore": "복원",
+      "dismiss": "거부",
+      "cause_passcode_disabled": "암호가 비활성화된 것 같습니다.",
+      "cause_switched_devices": "디바이스를 변경한 것 같습니다.",
+      "resolution_enable_passcode": "지갑을 사용하려면 디바이스 설정에서 다시 활성화하십시오.",
+      "resolution_restore_backup": "지갑을 사용하려면 백업에서 복원하거나 비밀 복구 구문을 다시 가져오십시오."
     }
   }
 }

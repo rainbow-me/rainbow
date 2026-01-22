@@ -24,6 +24,7 @@
       "tab_savings": "Сбережения",
       "tab_showcase": "Витрина",
       "tab_perps": "Perps",
+      "tab_polymarket": "Прогнозы",
       "tab_points": "Очки",
       "tab_positions": "Позиции",
       "tab_rewards": "Награды",
@@ -559,7 +560,8 @@
       "restart_app": "Перезагрузить приложение",
       "reset_experimental_config": "Сбросить экспериментальную конфигурацию",
       "status": "Статус",
-      "sync_codepush": "Синхронизировать CodePush"
+      "sync_codepush": "Синхронизировать CodePush",
+      "simulate_device_transfer": "Симуляция передачи устройства"
     },
     "discover": {
       "pulse": {
@@ -757,6 +759,13 @@
         },
         "about": {
           "title": "О компании",
+          "created_by": "Создатель",
+          "protocol": "Протокол",
+          "created_via": "Создан через",
+          "what_is": "Что такое %{assetName}?"
+        },
+        "details": {
+          "title": "Подробности",
           "what_is": "Что такое %{assetName}?"
         },
         "history": {
@@ -970,6 +979,8 @@
       "baggy_title": "Вы разблокировали\nRainbow Baggy",
       "chonks_description": "Представьте ветер в ваших Rainbow волосах, когда вы едете по трассе 101 и чувствуете себя Чонки.",
       "chonks_title": "Вы разблокировали\n Самую Чонкую Иконку",
+      "mog_description": "Легкое космическое покорение мира, выделение цветов.",
+      "mog_title": "Вы разблокировали\nRainbow Mogs",
       "button": "Разблокировать значок"
     },
     "explain": {
@@ -1604,8 +1615,8 @@
         "liq": "ликв."
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "Добавить к позиции",
+        "new_total": "Новая сумма"
       },
       "feature_card": {
         "title": "Perps",
@@ -1638,7 +1649,8 @@
         "confirm_button_over_balance_text": "Недостаточно средств",
         "confirm_button_error_text": "Ошибка котировки",
         "quote_error": "􀇿 Нет доступной цитаты",
-        "insufficient_balance": "􀫲 Недостаточно средств"
+        "insufficient_balance": "􀫲 Недостаточно средств",
+        "insufficient_gas": "Недостаточно газа"
       },
       "withdraw": {
         "title": "Вывести",
@@ -2930,12 +2942,7 @@
         "no_price": "Маленький баланс"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "Ваш текущий метод аутентификации (распознавание лица) недостаточно безопасен, пройдите в \"Настройки > Биометрия и безопасность\" и включите альтернативный биометрический метод, такой как отпечаток пальца или ирис.",
-          "error": "Ошибка"
-        },
-        "please": "Пожалуйста, аутентифицируйтесь",
-        "please_seed_phrase": "Пожалуйста, аутентифицируйтесь, чтобы посмотреть приватный ключ"
+        "please": "Пожалуйста, аутентифицируйтесь"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} кошелек",
@@ -3736,6 +3743,157 @@
           }
         }
       }
+    },
+    "predictions": {
+      "feature_card": {
+        "title": "Прогнозы",
+        "subtitle": "Ставьте на события в реальном мире"
+      },
+      "explain_sheet": {
+        "next": "Далее",
+        "get_started": "Начать",
+        "title": "Прогнозы",
+        "steps": {
+          "step_1": {
+            "title": "Прогнозы",
+            "subtitle_parts": [
+              "Попробуйте новый способ следить за рыночными событиями. Работает на Polymarket"
+            ]
+          },
+          "step_2": {
+            "title": "Делайте ставки на почти что угодно",
+            "subtitle_parts": [
+              "Выберите рынок, который нравится, разместите свою позицию и следите за изменениями."
+            ]
+          },
+          "step_3": {
+            "title": "Выберите результат",
+            "subtitle_parts": [
+              "Каждый рынок имеет четкие варианты. Выберите тот, в который вы верите, и следите за его результатами."
+            ]
+          }
+        }
+      },
+      "navbar": {
+        "title": "Прогнозы"
+      },
+      "new_position": {
+        "title": "Сделать ставку",
+        "amount": "Сумма",
+        "chance_of_outcome": "Вероятность исхода",
+        "to_win": "Чтобы выиграть",
+        "spread": "Спред",
+        "hold_to_place_bet": "Удерживайте, чтобы сделать ставку",
+        "placing_bet": "Размещение ставки...",
+        "confirming_order": "Подтверждение заказа...",
+        "deposit_funds": "Пополнить средства",
+        "average_price": "Средняя цена",
+        "errors": {
+          "not_enough_liquidity": "Недостаточно ликвидности для размещения полного заказа.",
+          "please_lower_amount": "Пожалуйста, уменьшите сумму и попробуйте снова.",
+          "no_liquidity_at_price": "Нет ликвидности по этой цене."
+        }
+      },
+      "manage_position": {
+        "hold_to_claim": "Удерживайте, чтобы получить",
+        "hold_to_clear": "Удерживайте для очистки",
+        "hold_to_cash_out": "Удерживайте, чтобы вывести",
+        "claiming": "Получение...",
+        "clearing": "Очистка...",
+        "cashing_out": "Вывод средств...",
+        "confirming_order": "Подтверждение заказа...",
+        "position_value": "Стоимость позиции"
+      },
+      "cash_out": {
+        "title": "Вывести ставку",
+        "current_price": "Текущая цена",
+        "average_price": "Средняя цена",
+        "profit_loss": "Прибыль / Убыток",
+        "receive": "Получить",
+        "spread": "Спред",
+        "cash_out": "Вывод средств"
+      },
+      "search": {
+        "placeholder": "Искать рынки предсказаний",
+        "input_placeholder": "Поиск рынков",
+        "no_results": "Результаты не найдены"
+      },
+      "event": {
+        "outcomes": "Итоги",
+        "about": "О компании",
+        "show_rules": "Показать правила",
+        "rules": "Правила",
+        "end_date": "Дата окончания",
+        "resolution_source": "Источник резолюции",
+        "category": "Категория",
+        "hide_resolved": "Скрыть решенные",
+        "show_resolved": "Показать решенные",
+        "open_positions": "Открытые позиции",
+        "market_resolved": "РЫНОК РЕШЕН",
+        "volume_suffix": "ОБЪЕМ",
+        "show_less": "Показать меньше",
+        "show_more": "Показать больше",
+        "resolved": "Решено"
+      },
+      "position": {
+        "outcome": "Исход",
+        "odds": "Коэффициенты",
+        "bet": "Ставка",
+        "won": "Выиграл",
+        "to_win": "Чтобы выиграть",
+        "claim": "Получить",
+        "clear": "Очистить",
+        "cash_out": "Вывод средств",
+        "no_open_positions": "Нет открытых позиций",
+        "won_badge": "ВЫИГРАЛ",
+        "lost_badge": "ПРОИГРАЛ",
+        "learn_more": "Узнайте больше о предсказаниях"
+      },
+      "tabs": {
+        "browse": "Обзор",
+        "portfolio": "Портфель"
+      },
+      "market": {
+        "buy_outcome": "Купить %{outcome}"
+      },
+      "bet_types": {
+        "winner": "Победитель",
+        "spreads": "Спреды",
+        "totals": "Всего",
+        "other": "Другие"
+      },
+      "sports": {
+        "vs": "против",
+        "live": "В прямом эфире",
+        "game_best_of": "Игра %{currentPeriod} - Лучший из %{bestOf}",
+        "final": "Финал",
+        "no_games": "Нет игр сегодня и завтра"
+      },
+      "outcomes": {
+        "yes": "Да",
+        "yes_badge": "ДА",
+        "no_badge": "НЕТ"
+      },
+      "errors": {
+        "title": "Ошибка",
+        "failed_to_place_bet": "Не удалось сделать ставку. Пожалуйста, попробуйте еще раз.",
+        "failed_to_cash_out": "Не удалось вывести позицию. Пожалуйста, попробуйте еще раз.",
+        "failed_to_claim": "Не удалось получить позицию. Пожалуйста, попробуйте еще раз."
+      },
+      "account": {
+        "hide_lost_bets": "Скрыть проигранные ставки",
+        "show_lost_bets": "Показать проигранные ставки",
+        "lost_bets_dont_clear": "Проигранные ставки не удаляются автоматически. Вы можете очистить их ниже."
+      }
+    },
+    "wallet_error_sheet": {
+      "title": "Восстановите ваш кошелек",
+      "restore": "Восстановить",
+      "dismiss": "Отклонить",
+      "cause_passcode_disabled": "Похоже, вы отключили код-пароль.",
+      "cause_switched_devices": "Похоже, вы сменили устройство.",
+      "resolution_enable_passcode": "Чтобы использовать ваш кошелек, включите его в настройках устройства.",
+      "resolution_restore_backup": "Чтобы использовать ваш кошелек, восстановите его из резервной копии или импортируйте вашу секретную фразу восстановления."
     }
   }
 }

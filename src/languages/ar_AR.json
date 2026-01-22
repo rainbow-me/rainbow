@@ -24,6 +24,7 @@
       "tab_savings": "التوفير",
       "tab_showcase": "عرض",
       "tab_perps": "الرافعات المالية",
+      "tab_polymarket": "التنبؤات",
       "tab_points": "النقاط",
       "tab_positions": "المواقف",
       "tab_rewards": "المكافآت",
@@ -559,7 +560,8 @@
       "restart_app": "إعادة تشغيل التطبيق",
       "reset_experimental_config": "إعادة تعيين التكوين التجريبي",
       "status": "الحالة",
-      "sync_codepush": "مز synchrony CodePush"
+      "sync_codepush": "مز synchrony CodePush",
+      "simulate_device_transfer": "محاكاة نقل الجهاز"
     },
     "discover": {
       "pulse": {
@@ -757,6 +759,13 @@
         },
         "about": {
           "title": "حول",
+          "created_by": "المنشئ",
+          "protocol": "البروتوكول",
+          "created_via": "تم الإنشاء عبر",
+          "what_is": "ما هو %{assetName}؟"
+        },
+        "details": {
+          "title": "تفاصيل",
           "what_is": "ما هو %{assetName}؟"
         },
         "history": {
@@ -970,6 +979,8 @@
       "baggy_title": "لقد قمت بفتح\nRainbow Baggy",
       "chonks_description": "تخيل الرياح في شعرك الRainbow، واقود على الطريق 101، تشعر بالChonky.",
       "chonks_title": "لقد قمت بإلغاء القفل\n أيقونة الChonkiest",
+      "mog_description": "السيطرة الكونية بكل سهولة، التفوق بالألوان.",
+      "mog_title": "لقد قمت بفتح\nRainbow Mogs",
       "button": "Snag the icon"
     },
     "explain": {
@@ -1609,7 +1620,7 @@
       },
       "feature_card": {
         "title": "الرافعات المالية",
-        "subtitle": "التداول عالي المخاطر، عالي المكافأة"
+        "subtitle": "تداول عالي المخاطرة وعالي المكافأة"
       },
       "actions": {
         "fund_wallet": "تمويل المحفظة",
@@ -1638,7 +1649,8 @@
         "confirm_button_over_balance_text": "أموال غير كافية",
         "confirm_button_error_text": "خطأ في عرض السعر",
         "quote_error": "􀇿 لا يوجد اقتباس متاح",
-        "insufficient_balance": "􀫲 أموال غير كافية"
+        "insufficient_balance": "􀫲 أموال غير كافية",
+        "insufficient_gas": "غاز غير كافٍ"
       },
       "withdraw": {
         "title": "سحب",
@@ -2930,12 +2942,7 @@
         "no_price": "الأرصدة الصغيرة"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "وسيلة المصادقة الحالية لك (التعرف على الوجه) غير آمنة بما يكفي ، يرجى الانتقال إلى \"الإعدادات > القياسات الحيوية والأمان\" وتمكين وسيلة بيومترية بديلة مثل البصمة أو القزحية.",
-          "error": "خطأ"
-        },
-        "please": "يرجى المصادقة",
-        "please_seed_phrase": "يرجى المصادقة لعرض المفتاح الخاص"
+        "please": "يرجى المصادقة"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} محفظة",
@@ -3736,6 +3743,157 @@
           }
         }
       }
+    },
+    "predictions": {
+      "feature_card": {
+        "title": "التنبؤات",
+        "subtitle": "المراهنة على الأحداث الواقعية"
+      },
+      "explain_sheet": {
+        "next": "التالي",
+        "get_started": "ابدأ الآن",
+        "title": "التنبؤات",
+        "steps": {
+          "step_1": {
+            "title": "التنبؤات",
+            "subtitle_parts": [
+              "جرب طريقة جديدة لمتابعة ما يحدث في الأسواق. مدعوم من Polymarket"
+            ]
+          },
+          "step_2": {
+            "title": "المراهنة على كل شيء تقريبًا",
+            "subtitle_parts": [
+              "اختر السوق الذي تفضله، ضع رهانك، وشاهد إلى أين يتجه."
+            ]
+          },
+          "step_3": {
+            "title": "اختر نتيجتك",
+            "subtitle_parts": [
+              "كل سوق لديه خيارات واضحة. اختر الذي تؤمن به وتتبع أدائه."
+            ]
+          }
+        }
+      },
+      "navbar": {
+        "title": "التنبؤات"
+      },
+      "new_position": {
+        "title": "ضع الرهان",
+        "amount": "الكمية",
+        "chance_of_outcome": "فرصة النتيجة",
+        "to_win": "للفوز",
+        "spread": "الانتشار",
+        "hold_to_place_bet": "اضغط للاستمرار في الرهان",
+        "placing_bet": "جارٍ وضع الرهان...",
+        "confirming_order": "جارٍ تأكيد الطلب...",
+        "deposit_funds": "إيداع الأموال",
+        "average_price": "السعر المتوسط",
+        "errors": {
+          "not_enough_liquidity": "لا يوجد سيولة كافية لتنفيذ الطلب بالكامل.",
+          "please_lower_amount": "يرجى تقليل الكمية والمحاولة مرة أخرى.",
+          "no_liquidity_at_price": "لا توجد سيولة عند هذا السعر."
+        }
+      },
+      "manage_position": {
+        "hold_to_claim": "اضغط للمطالبة",
+        "hold_to_clear": "اضغط للتنظيف",
+        "hold_to_cash_out": "اضغط لسحب الأموال",
+        "claiming": "جارٍ المطالبة...",
+        "clearing": "جاري المسح...",
+        "cashing_out": "سحب الأموال...",
+        "confirming_order": "جارٍ تأكيد الطلب...",
+        "position_value": "قيمة الموقع"
+      },
+      "cash_out": {
+        "title": "سحب الرهان",
+        "current_price": "السعر الحالي",
+        "average_price": "السعر المتوسط",
+        "profit_loss": "الربح / الخسارة",
+        "receive": "استلم",
+        "spread": "الانتشار",
+        "cash_out": "سحب النقد"
+      },
+      "search": {
+        "placeholder": "ابحث عن أسواق التنبؤ",
+        "input_placeholder": "البحث في الأسواق",
+        "no_results": "لم يتم العثور على نتائج"
+      },
+      "event": {
+        "outcomes": "النتائج",
+        "about": "حول",
+        "show_rules": "عرض القواعد",
+        "rules": "القواعد",
+        "end_date": "تاريخ الانتهاء",
+        "resolution_source": "مصدر الحل",
+        "category": "الفئة",
+        "hide_resolved": "إخفاء المحلولين",
+        "show_resolved": "عرض المحلولين",
+        "open_positions": "المواقع المفتوحة",
+        "market_resolved": "السوق محلول",
+        "volume_suffix": "الحجم",
+        "show_less": "اعرض أقل",
+        "show_more": "أظهر المزيد",
+        "resolved": "محلول"
+      },
+      "position": {
+        "outcome": "النتيجة",
+        "odds": "الاحتمالات",
+        "bet": "الرهان",
+        "won": "فاز",
+        "to_win": "للفوز",
+        "claim": "المطالبة",
+        "clear": "مسح",
+        "cash_out": "سحب النقد",
+        "no_open_positions": "لا توجد مواقف مفتوحة",
+        "won_badge": "فاز",
+        "lost_badge": "خسر",
+        "learn_more": "تعرف على المزيد عن التنبؤات"
+      },
+      "tabs": {
+        "browse": "تصفح",
+        "portfolio": "المحفظة"
+      },
+      "market": {
+        "buy_outcome": "اشتري %{outcome}"
+      },
+      "bet_types": {
+        "winner": "الفائز",
+        "spreads": "الانتشارات",
+        "totals": "الإجماليات",
+        "other": "آخر"
+      },
+      "sports": {
+        "vs": "مقابل",
+        "live": "مباشر",
+        "game_best_of": "اللعبة %{currentPeriod} - الأفضل من %{bestOf}",
+        "final": "نهائي",
+        "no_games": "لا توجد مباريات اليوم أو غدًا"
+      },
+      "outcomes": {
+        "yes": "نعم",
+        "yes_badge": "نعم",
+        "no_badge": "لا"
+      },
+      "errors": {
+        "title": "خطأ",
+        "failed_to_place_bet": "فشل في وضع الرهان. يرجى المحاولة مرة أخرى.",
+        "failed_to_cash_out": "فشل في سحب الموقف. يرجى المحاولة مرة أخرى.",
+        "failed_to_claim": "فشل في المطالبة بالموقف. يرجى المحاولة مرة أخرى."
+      },
+      "account": {
+        "hide_lost_bets": "إخفاء الرهانات الخاسرة",
+        "show_lost_bets": "عرض الرهانات الخاسرة",
+        "lost_bets_dont_clear": "لا تتم إزالة الرهانات الخاسرة تلقائيًا. يمكنك مسحها أدناه."
+      }
+    },
+    "wallet_error_sheet": {
+      "title": "استعادة محفظتك",
+      "restore": "استعادة",
+      "dismiss": "رفض",
+      "cause_passcode_disabled": "يبدو أنك قد قمت بتعطيل رمز المرور الخاص بك.",
+      "cause_switched_devices": "يبدو أنك قد قمت بتبديل الأجهزة.",
+      "resolution_enable_passcode": "لإستخدام محفظتك، أعد تفعيلها في إعدادات جهازك.",
+      "resolution_restore_backup": "لإستخدام محفظتك، قم بالاستعادة من نسخة احتياطية أو أعد استيراد عبارة الاسترداد السرية الخاصة بك."
     }
   }
 }

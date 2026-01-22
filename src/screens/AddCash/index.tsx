@@ -9,26 +9,18 @@ import { deviceUtils } from '@/utils';
 import { useDimensions } from '@/hooks';
 import { borders } from '@/styles';
 import { Box, Text, Separator, useForegroundColor, useBackgroundColor } from '@/design-system';
-import { getProviders } from '@/resources/f2c';
+import { getProviders, getWidgetURL } from '@/resources/f2c';
 import Skeleton from '@/components/skeleton/Skeleton';
 import Navigation from '@/navigation/Navigation';
 import { WrappedAlert } from '@/helpers/alert';
 import { logger, RainbowError } from '@/logger';
 
-import { Ramp } from '@/screens/AddCash/providers/Ramp';
-import { Coinbase } from '@/screens/AddCash/providers/Coinbase';
-import { Moonpay } from '@/screens/AddCash/providers/Moonpay';
-import { FiatProviderName } from '@/entities/f2c';
 import * as i18n from '@/languages';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { ProviderListItem } from './ProviderListItem';
+import { FiatProviderName } from '@/entities/f2c';
 
 const deviceHeight = deviceUtils.dimensions.height;
-
-const providerComponents = {
-  [FiatProviderName.Ramp]: Ramp,
-  [FiatProviderName.Coinbase]: Coinbase,
-  [FiatProviderName.Moonpay]: Moonpay,
-};
 
 export function AddCashSheet() {
   const { isNarrowPhone } = useDimensions();
@@ -45,9 +37,9 @@ export function AddCashSheet() {
   } = useQuery(
     ['f2c', 'providers'],
     async () => {
-      const [{ data, error }] = await wait(1000, [await getProviders()]);
+      const [{ data }] = await wait(1000, [await getProviders()]);
 
-      if (!data || error) {
+      if (!data) {
         const e = new RainbowError('[AddCash]: failed to fetch providers');
 
         logger.error(e);
@@ -56,7 +48,7 @@ export function AddCashSheet() {
         throw new Error(e.message);
       }
 
-      return data.providers;
+      return data.providers?.filter(p => Object.values(FiatProviderName).includes(p.id));
     },
     {
       staleTime: 1000 * 60, // one min
@@ -119,10 +111,9 @@ export function AddCashSheet() {
             {!isLoading && providers?.length ? (
               <>
                 {providers.map(provider => {
-                  const Comp = providerComponents[provider.id];
                   return (
                     <Box key={provider.id} paddingTop="20px">
-                      <Comp accountAddress={accountAddress} config={provider} />
+                      <ProviderListItem accountAddress={accountAddress} config={provider} getWidgetURL={getWidgetURL} />
                     </Box>
                   );
                 })}

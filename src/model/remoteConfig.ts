@@ -86,7 +86,6 @@ export interface RainbowConfig
   nfts_enabled: boolean;
 
   trending_tokens_enabled: boolean;
-  new_discover_cards_enabled: boolean;
   rainbow_trending_tokens_list_enabled: boolean;
   prince_of_the_hill_enabled: boolean;
   king_of_the_hill_enabled: boolean;
@@ -219,7 +218,6 @@ export const DEFAULT_CONFIG = {
   nfts_enabled: true,
 
   trending_tokens_enabled: false,
-  new_discover_cards_enabled: false,
   rainbow_trending_tokens_list_enabled: false,
   king_of_the_hill2_enabled: false,
   king_of_the_hill_enabled: false,

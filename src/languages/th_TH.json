@@ -24,6 +24,7 @@
       "tab_savings": "เงินออม",
       "tab_showcase": "โชว์เคส",
       "tab_perps": "Perps",
+      "tab_polymarket": "การพยากรณ์",
       "tab_points": "แต้ม",
       "tab_positions": "ตำแหน่ง",
       "tab_rewards": "รางวัล",
@@ -559,7 +560,8 @@
       "restart_app": "เริ่มแอปใหม่",
       "reset_experimental_config": "ตั้งค่าคอนฟิกการทดลองใหม่",
       "status": "สถานะ",
-      "sync_codepush": "ซิงค์ CodePush"
+      "sync_codepush": "ซิงค์ CodePush",
+      "simulate_device_transfer": "จำลองการโอนถ่ายอุปกรณ์"
     },
     "discover": {
       "pulse": {
@@ -757,6 +759,13 @@
         },
         "about": {
           "title": "เกี่ยวกับ",
+          "created_by": "ผู้สร้าง",
+          "protocol": "โปรโตคอล",
+          "created_via": "สร้างผ่าน",
+          "what_is": "%{assetName} คืออะไร?"
+        },
+        "details": {
+          "title": "รายละเอียด",
           "what_is": "%{assetName} คืออะไร?"
         },
         "history": {
@@ -970,6 +979,8 @@
       "baggy_title": "คุณได้ปลดล็อก \n กระเป๋า Rainbow",
       "chonks_description": "ลองนึกภาพลมพัดผ่านเส้นผม Rainbow ของคุณ ขณะที่คุณขับรถมาตามถนน 101 รู้สึกถึง Chonky",
       "chonks_title": "คุณได้ปลดล็อก\nไอคอนที่ Chonky ที่สุด",
+      "mog_description": "การครอบงําจักรวาลอย่างไร้ขีดจํากัดในสีสันอันตระการตา",
+      "mog_title": "คุณได้ปลดล็อก\nRainbow Mogs",
       "button": "ปลดล็อคไอคอน"
     },
     "explain": {
@@ -1604,12 +1615,12 @@
         "liq": "liquid."
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "เพิ่มไปยังตำแหน่ง",
+        "new_total": "ยอดรวมใหม่"
       },
       "feature_card": {
         "title": "Perps",
-        "subtitle": "การซื้อขายที่มีความเสี่ยงสูงและผลตอบแทนสูง"
+        "subtitle": "การซื้อขายที่มีความเสี่ยงสูง ได้ผลตอบแทนสูง"
       },
       "actions": {
         "fund_wallet": "เติมเงินในกระเป๋าของฉัน",
@@ -1638,7 +1649,8 @@
         "confirm_button_over_balance_text": "เงินทุนไม่เพียงพอ",
         "confirm_button_error_text": "ข้อผิดพลาดของราคาที่เสนอ",
         "quote_error": "􀇿 ไม่มีใบเสนอราคา",
-        "insufficient_balance": "􀫲 เงินทุนไม่เพียงพอ"
+        "insufficient_balance": "􀫲 เงินทุนไม่เพียงพอ",
+        "insufficient_gas": "แก๊สไม่เพียงพอ"
       },
       "withdraw": {
         "title": "ถอน",
@@ -2930,12 +2942,7 @@
         "no_price": "ยอดเงินคงเหลือเล็กน้อย"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "วิธีการยืนยันตัวตนปัจจุบันของคุณ (การรู้จำใบหน้า) ไม่ปลอดภัยเพียงพอ โปรดไปที่ \"การตั้งค่า > ชีวภาพ & ความปลอดภัย\" และเปิดใช้การยืนยันตัวตนทางชีวภาพทางเลือกอื่นๆ เช่น ลายนิ้วมือหรือตา",
-          "error": "ข้อผิดพลาด"
-        },
-        "please": "กรุณายืนยันตัวตน",
-        "please_seed_phrase": "กรุณาตรวจสอบสิทธิ์เพื่อดูคีย์ส่วนตัว"
+        "please": "กรุณายืนยันตัวตน"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} กระเป๋าเงิน",
@@ -3736,6 +3743,157 @@
           }
         }
       }
+    },
+    "predictions": {
+      "feature_card": {
+        "title": "การพยากรณ์",
+        "subtitle": "เดิมพันกับเหตุการณ์ในโลกจริง"
+      },
+      "explain_sheet": {
+        "next": "ถัดไป",
+        "get_started": "เริ่มต้นใช้งาน",
+        "title": "การพยากรณ์",
+        "steps": {
+          "step_1": {
+            "title": "การพยากรณ์",
+            "subtitle_parts": [
+              "ลองวิธีใหม่ในการติดตามเหตุการณ์ในตลาด ขับเคลื่อนโดย Polymarket"
+            ]
+          },
+          "step_2": {
+            "title": "เดิมพันได้ทุกอย่าง",
+            "subtitle_parts": [
+              "เลือกตลาดที่คุณชอบ วางตำแหน่งของคุณ และดูว่ามันไปทางไหน"
+            ]
+          },
+          "step_3": {
+            "title": "เลือกผลลัพธ์ของคุณ",
+            "subtitle_parts": [
+              "แต่ละตลาดมีตัวเลือกที่ชัดเจน เลือกสิ่งที่คุณเชื่อและติดตามความคืบหน้า"
+            ]
+          }
+        }
+      },
+      "navbar": {
+        "title": "การพยากรณ์"
+      },
+      "new_position": {
+        "title": "วางเดิมพัน",
+        "amount": "จำนวน",
+        "chance_of_outcome": "โอกาสของผลลัพธ์",
+        "to_win": "เพื่อชนะ",
+        "spread": "สเปรด",
+        "hold_to_place_bet": "กดค้างเพื่อวางเดิมพัน",
+        "placing_bet": "กำลังวางเดิมพัน...",
+        "confirming_order": "กำลังยืนยันคำสั่ง...",
+        "deposit_funds": "ฝากเงิน",
+        "average_price": "ราคาเฉลี่ย",
+        "errors": {
+          "not_enough_liquidity": "ไม่มีสภาพคล่องเพียงพอในการสั่งซื้อตามจำนวนเต็ม.",
+          "please_lower_amount": "กรุณาลดจำนวนเงินและลองอีกครั้ง.",
+          "no_liquidity_at_price": "ไม่มีสภาพคล่องในราคานี้."
+        }
+      },
+      "manage_position": {
+        "hold_to_claim": "กดค้างเพื่อรับแบบอัตโนมัติ",
+        "hold_to_clear": "กดค้างเพื่อล้าง",
+        "hold_to_cash_out": "กดค้างเพื่อขึ้นเงินออก",
+        "claiming": "กำลังเรียกร้อง...",
+        "clearing": "กำลังล้าง...",
+        "cashing_out": "กำลังขึ้นเงินออก...",
+        "confirming_order": "กำลังยืนยันคำสั่ง...",
+        "position_value": "ค่าตำแหน่ง"
+      },
+      "cash_out": {
+        "title": "ขึ้นเงินออกเดิมพัน",
+        "current_price": "ราคาปัจจุบัน",
+        "average_price": "ราคาเฉลี่ย",
+        "profit_loss": "กำไร / ขาดทุน",
+        "receive": "รับ",
+        "spread": "สเปรด",
+        "cash_out": "ขึ้นเงินออก"
+      },
+      "search": {
+        "placeholder": "ค้นหาตลาดการพยากรณ์",
+        "input_placeholder": "ค้นหาตลาด",
+        "no_results": "ไม่พบผลลัพธ์"
+      },
+      "event": {
+        "outcomes": "ผลลัพธ์",
+        "about": "เกี่ยวกับ",
+        "show_rules": "แสดงกฎ",
+        "rules": "กฎ",
+        "end_date": "วันที่สิ้นสุด",
+        "resolution_source": "ที่มาของการแก้ไข",
+        "category": "หมวดหมู่",
+        "hide_resolved": "ซ่อนไอเทมที่แก้ไขแล้ว",
+        "show_resolved": "แสดงไอเทมที่แก้ไขแล้ว",
+        "open_positions": "ตำแหน่งที่เปิดอยู่",
+        "market_resolved": "ตลาดที่แก้ไขแล้ว",
+        "volume_suffix": "VOL",
+        "show_less": "แสดงน้อยลง",
+        "show_more": "แสดงเพิ่มเติม",
+        "resolved": "แก้ไขแล้ว"
+      },
+      "position": {
+        "outcome": "ผลลัพธ์",
+        "odds": "อัตราต่อรอง",
+        "bet": "เดิมพัน",
+        "won": "ชนะ",
+        "to_win": "เพื่อชนะ",
+        "claim": "เคลม",
+        "clear": "ยกเลิก",
+        "cash_out": "ขึ้นเงินออก",
+        "no_open_positions": "ไม่มีตำแหน่งเปิด",
+        "won_badge": "ชนะ",
+        "lost_badge": "แพ้",
+        "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับการพยากรณ์"
+      },
+      "tabs": {
+        "browse": "เรียกดู",
+        "portfolio": "พอร์ตโฟลิโอ"
+      },
+      "market": {
+        "buy_outcome": "ซื้อ %{outcome}"
+      },
+      "bet_types": {
+        "winner": "ผู้ชนะ",
+        "spreads": "สเปรด",
+        "totals": "ทั้งหมด",
+        "other": "อื่น ๆ"
+      },
+      "sports": {
+        "vs": "เทียบกับ",
+        "live": "ถ่ายทอดสด",
+        "game_best_of": "เกม %{currentPeriod} - ดีที่สุดจาก %{bestOf}",
+        "final": "รอบชิงชนะเลิศ",
+        "no_games": "ไม่มีการแข่งขันวันนี้หรือพรุ่งนี้"
+      },
+      "outcomes": {
+        "yes": "ใช่",
+        "yes_badge": "ใช่",
+        "no_badge": "ไม่"
+      },
+      "errors": {
+        "title": "ข้อผิดพลาด",
+        "failed_to_place_bet": "การวางเดิมพันไม่สำเร็จ กรุณาลองอีกครั้ง",
+        "failed_to_cash_out": "การขึ้นเงินออกไม่สำเร็จ กรุณาลองอีกครั้ง",
+        "failed_to_claim": "การเรียกร้องตำแหน่งไม่สำเร็จ กรุณาลองอีกครั้ง"
+      },
+      "account": {
+        "hide_lost_bets": "ซ่อนการเดิมพันที่แพ้",
+        "show_lost_bets": "แสดงการเดิมพันที่แพ้",
+        "lost_bets_dont_clear": "การเดิมพันที่แพ้ไม่ได้ถูกลบโดยอัตโนมัติ. คุณสามารถลบได้ด้านล่าง."
+      }
+    },
+    "wallet_error_sheet": {
+      "title": "กู้คืนกระเป๋าเงินของคุณ",
+      "restore": "คืนสภาพ",
+      "dismiss": "ยกเลิก",
+      "cause_passcode_disabled": "ดูเหมือนว่าคุณอาจจะปิดรหัสผ่านของคุณ",
+      "cause_switched_devices": "ดูเหมือนว่าคุณอาจจะเปลี่ยนอุปกรณ์",
+      "resolution_enable_passcode": "เพื่อใช้กระเป๋าเงินของคุณ เปิดใช้งานอีกครั้งในการตั้งค่าอุปกรณ์ของคุณ",
+      "resolution_restore_backup": "เพื่อใช้กระเป๋าเงินของคุณ กู้คืนจากการสำรองข้อมูลหรือคืนค่าประโยคการกู้คืนลับของคุณ"
     }
   }
 }

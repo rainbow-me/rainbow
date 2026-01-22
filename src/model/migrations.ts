@@ -18,6 +18,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { getSelectedWallet, getWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
 import { ethereumUtils, profileUtils } from '@/utils';
 import { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
+import * as kc from '@/keychain';
 import { captureException } from '@sentry/react-native';
 import { findKey, isEmpty, isNumber, keys } from 'lodash';
 import uniq from 'lodash/uniq';
@@ -44,7 +45,8 @@ import {
   signingWalletAddress,
 } from '../utils/keychainConstants';
 import { hasKey, loadString, publicAccessControlOptions, saveString } from './keychain';
-import { DEFAULT_WALLET_NAME, getAllWallets, loadAddress, RainbowAccount, RainbowWallet, saveAddress } from './wallet';
+import { DEFAULT_WALLET_NAME, EncryptionType, getAllWallets, loadAddress, RainbowAccount, RainbowWallet, saveAddress } from './wallet';
+import { IS_IOS } from '@/env';
 
 export default async function runMigrations() {
   // get current version
@@ -99,6 +101,7 @@ export default async function runMigrations() {
           name: DEFAULT_WALLET_NAME,
           primary: true,
           type: WalletTypes.mnemonic,
+          encryptionType: EncryptionType.keychain,
         };
 
         const wallets = { [id]: currentWallet };
@@ -815,6 +818,45 @@ export default async function runMigrations() {
   };
 
   migrations.push(v29);
+
+  /**
+   *************** Migration v30 ******************
+   * Set the encryptionType field.
+   */
+  const v30 = async () => {
+    const wallets = getWallets();
+    if (!wallets) {
+      logger.debug('[runMigrations]: v30 migration - no wallets found');
+      return;
+    }
+
+    if (IS_IOS) {
+      for (const wallet of Object.values(wallets)) {
+        if (!wallet.encryptionType) {
+          // On iOS only keychain is supported.
+          wallet.encryptionType = EncryptionType.keychain;
+        }
+      }
+    } else {
+      // This is not 100% accurate since it is possible the user created the wallet initially with a rainbow pin
+      // then added a passcode later, however this is good enough for the usage we have of this field right now.
+      const hasPasscode = await kc.isPasscodeAuthAvailable();
+      for (const wallet of Object.values(wallets)) {
+        if (!wallet.encryptionType) {
+          wallet.encryptionType =
+            wallet.type === WalletTypes.readOnly || wallet.type === WalletTypes.bluetooth
+              ? EncryptionType.none
+              : hasPasscode
+                ? EncryptionType.keychain
+                : EncryptionType.rainbowPin;
+        }
+      }
+    }
+
+    await updateWallets(wallets);
+  };
+
+  migrations.push(v30);
 
   logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);

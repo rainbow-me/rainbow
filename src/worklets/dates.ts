@@ -73,10 +73,10 @@ function formatDateDigits(value: number, prefixWithZero: boolean): string {
 
 // ============ Timestamp Formatter ============================================ //
 
-export function formatTimestamp(
+export function formatTimestampParts(
   timestamp: number,
   { case: caseOption = 'normal', prefixSingleDigitsWithZero = true, useTodayYesterday = true }: FormatTimestampOptions = {}
-): string {
+): { time: string; date: string } {
   'worklet';
   const date = new Date(timestamp * 1000);
   const now = new Date();
@@ -100,11 +100,11 @@ export function formatTimestamp(
 
   if (useTodayYesterday) {
     if (date.toDateString() === now.toDateString()) {
-      return `${timeString} ${I18N.today[caseOption]}`;
+      return { time: timeString, date: I18N.today[caseOption] };
     }
     now.setDate(now.getDate() - 1);
     if (date.toDateString() === now.toDateString()) {
-      return `${timeString} ${I18N.yesterday[caseOption]}`;
+      return { time: timeString, date: I18N.yesterday[caseOption] };
     }
   }
 
@@ -119,7 +119,13 @@ export function formatTimestamp(
   const y = date.getFullYear();
   if (y !== CURRENT_YEAR) dateString += ', ' + y;
 
-  return `${timeString} ${dateString}`;
+  return { time: timeString, date: dateString };
+}
+
+export function formatTimestamp(timestamp: number, options: FormatTimestampOptions = {}): string {
+  'worklet';
+  const { time, date } = formatTimestampParts(timestamp, options);
+  return `${time} ${date}`;
 }
 
 export function toUnixTime(date: string | number | Date): number {

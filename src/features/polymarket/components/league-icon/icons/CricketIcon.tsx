@@ -1,0 +1,12 @@
+import * as React from 'react';
+import Svg, { Path } from 'react-native-svg';
+import { IconProps, DEFAULT_SIZE } from '../LeagueIcon';
+
+export const CricketIcon = ({ color, width = DEFAULT_SIZE, height = DEFAULT_SIZE }: IconProps) => (
+  <Svg viewBox="0 0 24 24" width={width} height={height} fill="none">
+    <Path
+      fill={color}
+      d="M6.001 6.748c.14-.16.287-.32.44-.466a12.5 12.5 0 0 1 7.166 2.687l-.026-.02a17.94 17.94 0 0 1 5.205 7.211l.042.122q-.194.316-.419.61l.013-.017c-1.142-2.745-2.825-5.062-4.933-6.908l-.021-.019a13.88 13.88 0 0 0-7.402-3.194zM4.955 8.215a12.5 12.5 0 0 1 7.531 2.942l-.018-.015a17.5 17.5 0 0 1 4.727 6.794l.04.119A7.96 7.96 0 0 1 12 20.005 8 8 0 0 1 4.976 8.172zm3.333-3.287A7.9 7.9 0 0 1 12 4.015 8 8 0 0 1 19.639 14.4l.015-.057c-1.229-2.656-2.97-4.885-5.114-6.64l-.032-.027A13.73 13.73 0 0 0 8.35 4.94l-.082-.011z"
+    />
+  </Svg>
+);

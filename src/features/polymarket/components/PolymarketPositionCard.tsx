@@ -28,6 +28,7 @@ import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/
 import { greaterThan } from '@/helpers/utilities';
 import ConditionalWrap from 'conditional-wrap';
 import { IS_IOS } from '@/env';
+import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 
 export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   position,
@@ -45,6 +46,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   const accentColors = useMemo(() => {
     return createOpacityPalette(accentColor, [0, 4, 6, 12, 14, 20, 24, 70, 100]);
   }, [accentColor]);
+  const eventTitle = position.market.events[0]?.title ?? '';
 
   const buttonBackgroundColor = isDarkMode
     ? getSolidColorEquivalent({
@@ -62,8 +64,8 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
     switch (actionButtonType) {
       case PositionAction.CLAIM:
         return i18n.t(i18n.l.predictions.position.claim);
-      case PositionAction.BURN:
-        return i18n.t(i18n.l.predictions.position.burn);
+      case PositionAction.CLEAR:
+        return i18n.t(i18n.l.predictions.position.clear);
       case PositionAction.CASH_OUT:
         return i18n.t(i18n.l.predictions.position.cash_out);
     }
@@ -90,11 +92,14 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   }, [position.market.clobTokenIds, position.outcomes, position.outcome]);
 
   const outcomeTitle = useMemo(() => {
-    if (position.market.groupItemTitle) {
-      return position.market.groupItemTitle;
-    }
-    return position.outcome;
-  }, [position.market.groupItemTitle, position.outcome]);
+    const { subtitle } = getOutcomeDescriptions({
+      eventTitle,
+      market: position.market,
+      outcome: position.outcome,
+      outcomeIndex: position.outcomeIndex,
+    });
+    return subtitle;
+  }, [eventTitle, position.market, position.outcome, position.outcomeIndex]);
 
   const livePrice = useLiveTokenValue({
     tokenId: getPositionTokenId(position),
@@ -227,7 +232,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                         </Text>
                         {position.market.groupItemTitle && (
                           <Bleed vertical="4px">
-                            <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} />
+                            <OutcomeBadge outcome={position.outcome} outcomeIndex={position.outcomeIndex} color={accentColor} />
                           </Bleed>
                         )}
                       </Box>

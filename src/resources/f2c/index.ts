@@ -1,57 +1,39 @@
-import { create } from 'gretchen';
-import qs from 'query-string';
-
+import { RainbowFetchClient } from '@/rainbow-fetch';
 import { IS_PROD } from '@/env';
 import { ProviderConfig } from '@/screens/AddCash/types';
+import { Address } from 'viem';
+import { FiatProviderName } from '@/entities/f2c';
 
-type ErrorResponse = {
-  errors: {
-    message: string;
-  }[];
-};
+export type GetWidgetURL = (
+  id: FiatProviderName,
+  query: {
+    redirectUri?: string;
+    destinationAddress: Address;
+  }
+) => Promise<{ data: { url: string }; headers: Headers; status: number }>;
 
 const DEV_HOST = `http://localhost:8787`;
 const STAGING_HOST = `https://f2c.rainbowdotme.workers.dev`;
 const PROD_HOST = `https://f2c.rainbow.me`;
 
-const gretch = create({
+const f2cClient = new RainbowFetchClient({
   baseURL: IS_PROD ? PROD_HOST : STAGING_HOST,
 });
 
 export function ratioGetClientSession({ signingAddress, depositAddress }: { signingAddress: string; depositAddress: string }) {
-  return gretch<{ id: string }, ErrorResponse>('/v1/providers/ratio/client-session', {
-    method: 'POST',
-    json: {
-      signingAddress,
-      depositAddress,
-      signingNetwork: 'ETHEREUM',
-    },
-  }).json();
+  return f2cClient.post<{ id: string }>('/v1/providers/ratio/client-session', {
+    signingAddress,
+    depositAddress,
+    signingNetwork: 'ETHEREUM',
+  });
 }
 
-export function coinbaseGetWidgetURL({ depositAddress }: { depositAddress: string }) {
-  const query = qs.stringify({
-    destinationAddress: depositAddress,
+export const getWidgetURL: GetWidgetURL = (id, query) => {
+  return f2cClient.get<{ url: string }>(`/v1/providers/${id}/create-widget-url`, {
+    params: query as Record<string, string>,
   });
-  return gretch<{ url: string }, ErrorResponse>(`/v1/providers/coinbase/create-widget-url?${query}`).json();
-}
-
-export function moonpayGetWidgetURL({ depositAddress, redirectUri }: { depositAddress: string; redirectUri: string }) {
-  const query = qs.stringify({
-    destinationAddress: depositAddress,
-    redirectUri,
-  });
-  return gretch<{ url: string }, ErrorResponse>(`/v1/providers/moonpay/create-widget-url?${query}`).json();
-}
-
-export function rampGetWidgetURL({ depositAddress, redirectUri }: { depositAddress: string; redirectUri: string }) {
-  const query = qs.stringify({
-    destinationAddress: depositAddress,
-    redirectUri,
-  });
-  return gretch<{ url: string }, ErrorResponse>(`/v1/providers/ramp/create-widget-url?${query}`).json();
-}
+};
 
 export function getProviders() {
-  return gretch<{ providers: ProviderConfig[] }, ErrorResponse>(`/v1/providers/list`).json();
+  return f2cClient.get<{ providers: ProviderConfig[] }>('/v1/providers/list');
 }

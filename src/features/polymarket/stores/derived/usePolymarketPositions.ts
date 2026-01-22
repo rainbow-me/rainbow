@@ -7,6 +7,7 @@ export type PolymarketPositions = {
   positions: PolymarketPosition[];
   activePositions: PolymarketPosition[];
   redeemablePositions: PolymarketPosition[];
+  lostPositions: PolymarketPosition[];
   hasPositions: boolean;
 };
 
@@ -16,6 +17,7 @@ const EMPTY_RESULT: PolymarketPositions = {
   positions: [],
   activePositions: [],
   redeemablePositions: [],
+  lostPositions: [],
   hasPositions: false,
 };
 
@@ -27,12 +29,14 @@ export const usePolymarketPositions = createDerivedStore<PolymarketPositions>(
 
     const activePositions = positions.filter(position => !(position.redeemable && position.currentValue === 0));
     const redeemablePositions = positions.filter(position => position.redeemable);
+    const lostPositions = positions.filter(position => position.redeemable && position.currentValue === 0);
 
     return {
       positions,
       activePositions,
       redeemablePositions,
-      hasPositions: positions.length > 0,
+      lostPositions,
+      hasPositions: true,
     };
   },
 

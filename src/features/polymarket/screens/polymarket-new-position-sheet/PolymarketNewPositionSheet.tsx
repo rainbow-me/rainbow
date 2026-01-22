@@ -21,12 +21,13 @@ import { marketBuyToken } from '@/features/polymarket/utils/orders';
 import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/safe-math/SafeMath';
 import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
+import { POLYMARKET_CLOB_API_ERRORS } from '@/features/polymarket/errors';
 import { analytics } from '@/analytics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
-import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeTitles';
+import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
@@ -94,16 +95,29 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
         },
       });
       await waitForPositionSizeUpdate(tokenId);
-      if (fromRoute === Routes.POLYMARKET_EVENT_SCREEN) {
+      if (fromRoute === Routes.POLYMARKET_MARKET_SHEET) {
+        Navigation.goBack();
         Navigation.goBack();
       } else {
-        Navigation.goBack();
         Navigation.goBack();
       }
     } catch (e) {
       const error = ensureError(e);
       logger.error(new RainbowError('[PolymarketNewPositionSheet] Error buying position', error));
-      Alert.alert(i18n.t(i18n.l.predictions.errors.title), i18n.t(i18n.l.predictions.errors.failed_to_place_bet));
+
+      if (error.message === POLYMARKET_CLOB_API_ERRORS.FOK_ORDER_NOT_FILLED) {
+        Alert.alert(
+          i18n.t(i18n.l.predictions.new_position.errors.not_enough_liquidity),
+          i18n.t(i18n.l.predictions.new_position.errors.please_lower_amount)
+        );
+      } else if (error.message === POLYMARKET_CLOB_API_ERRORS.NO_MATCH) {
+        Alert.alert(
+          i18n.t(i18n.l.predictions.new_position.errors.no_liquidity_at_price),
+          i18n.t(i18n.l.predictions.new_position.errors.please_lower_amount)
+        );
+      } else {
+        Alert.alert(i18n.t(i18n.l.predictions.errors.title), i18n.t(i18n.l.predictions.errors.failed_to_place_bet));
+      }
 
       analytics.track(analytics.event.predictionsPlaceOrderFailed, {
         eventSlug: event.slug,

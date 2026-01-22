@@ -1,4 +1,4 @@
-import { SetOptions, GetOptions, Result, UserCredentials } from 'react-native-keychain';
+import { SetOptions, GetOptions, UserCredentials } from 'react-native-keychain';
 import * as kc from '@/keychain';
 
 /**
@@ -103,7 +103,7 @@ export async function loadAllKeys(): Promise<null | UserCredentials[]> {
  *    import { has } from '@/keychain'
  *    await has(key)
  */
-export async function hasKey(key: string): Promise<boolean | Result> {
+export async function hasKey(key: string): Promise<boolean> {
   return kc.has(key);
 }
 

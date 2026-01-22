@@ -24,6 +24,7 @@
       "tab_savings": "Économies",
       "tab_showcase": "Showcase",
       "tab_perps": "Perps",
+      "tab_polymarket": "Prédictions",
       "tab_points": "Points",
       "tab_positions": "Positions",
       "tab_rewards": "Récompenses",
@@ -559,7 +560,8 @@
       "restart_app": "Redémarrer l'Appli",
       "reset_experimental_config": "Réinitialiser la Conf Expérimentale",
       "status": "Statut",
-      "sync_codepush": "Synchroniser CodePush"
+      "sync_codepush": "Synchroniser CodePush",
+      "simulate_device_transfer": "Simuler le transfert d'appareil"
     },
     "discover": {
       "pulse": {
@@ -757,6 +759,13 @@
         },
         "about": {
           "title": "À propos",
+          "created_by": "Créateur",
+          "protocol": "Protocole",
+          "created_via": "Créé via",
+          "what_is": "Qu'est-ce que %{assetName}?"
+        },
+        "details": {
+          "title": "Détails",
           "what_is": "Qu'est-ce que %{assetName}?"
         },
         "history": {
@@ -970,6 +979,8 @@
       "baggy_title": "Vous avez débloqué\nRainbow Baggy",
       "chonks_description": "Imagine le vent dans vos cheveux Rainbow, conduisant sur la 101, ressentant le Chonky.",
       "chonks_title": "Vous avez débloqué\nL'icône la plus Chonky",
+      "mog_description": "Domination cosmique sans effort, prendre l'avantage en couleurs.",
+      "mog_title": "Vous avez déverrouillé\nRainbow Mogs",
       "button": "Snag the icon :)"
     },
     "explain": {
@@ -1609,7 +1620,7 @@
       },
       "feature_card": {
         "title": "Perps",
-        "subtitle": "Trading à haut risque et haute récompense"
+        "subtitle": "Trading à haut risque, haute récompense"
       },
       "actions": {
         "fund_wallet": "Financer mon portefeuille",
@@ -1638,7 +1649,8 @@
         "confirm_button_over_balance_text": "Fonds insuffisants",
         "confirm_button_error_text": "Erreur de Devis",
         "quote_error": "􀇿 Aucun devis disponible",
-        "insufficient_balance": "􀫲 Fonds insuffisants"
+        "insufficient_balance": "􀫲 Fonds insuffisants",
+        "insufficient_gas": "Gaz insuffisant"
       },
       "withdraw": {
         "title": "Retirer",
@@ -2930,12 +2942,7 @@
         "no_price": "Petits soldes"
       },
       "authenticate": {
-        "alert": {
-          "current_authentication_not_secure_enough": "Votre méthode d'authentification actuelle (Reconnaissance faciale) n'est pas assez sécurisée, veuillez vous rendre à \"Paramètres > Biométrie & Sécurité\" et activer une autre méthode biométrique comme l'empreinte digitale ou l'iris.",
-          "error": "Erreur"
-        },
-        "please": "Veuillez vous authentifier pour afficher votre clé mnémonique",
-        "please_seed_phrase": "Veuillez vous authentifier pour voir la clé privée"
+        "please": "Veuillez vous authentifier pour afficher votre clé mnémonique"
       },
       "back_ups": {
         "wallet_count": "%{numAccounts} portefeuille",
@@ -3736,6 +3743,157 @@
           }
         }
       }
+    },
+    "predictions": {
+      "feature_card": {
+        "title": "Prédictions",
+        "subtitle": "Parier sur des événements du monde réel"
+      },
+      "explain_sheet": {
+        "next": "Suivant",
+        "get_started": "Commencer",
+        "title": "Prédictions",
+        "steps": {
+          "step_1": {
+            "title": "Prédictions",
+            "subtitle_parts": [
+              "Essayez une nouvelle façon de suivre ce qui se passe sur les marchés. Alimenté par Polymarket"
+            ]
+          },
+          "step_2": {
+            "title": "Pariez sur presque tout",
+            "subtitle_parts": [
+              "Choisissez un marché qui vous plaît, prenez votre position et voyez où elle va."
+            ]
+          },
+          "step_3": {
+            "title": "Choisissez votre résultat",
+            "subtitle_parts": [
+              "Chaque marché a des options claires. Choisissez celle à laquelle vous croyez et suivez sa performance."
+            ]
+          }
+        }
+      },
+      "navbar": {
+        "title": "Prédictions"
+      },
+      "new_position": {
+        "title": "Placer un pari",
+        "amount": "Montant",
+        "chance_of_outcome": "Chance de résultat",
+        "to_win": "Pour gagner",
+        "spread": "Écart",
+        "hold_to_place_bet": "Maintenir pour placer un pari",
+        "placing_bet": "Placement de pari...",
+        "confirming_order": "Confirmation de commande...",
+        "deposit_funds": "Déposer des fonds",
+        "average_price": "Prix moyen",
+        "errors": {
+          "not_enough_liquidity": "Pas assez de liquidité pour passer la commande complète.",
+          "please_lower_amount": "Veuillez réduire le montant et réessayer.",
+          "no_liquidity_at_price": "Pas de liquidité à ce prix."
+        }
+      },
+      "manage_position": {
+        "hold_to_claim": "Tenir pour Réclamer",
+        "hold_to_clear": "Tenir pour Effacer",
+        "hold_to_cash_out": "Maintenir pour encaisser",
+        "claiming": "Réclamation...",
+        "clearing": "Effacement...",
+        "cashing_out": "Encaissement en cours...",
+        "confirming_order": "Confirmation de commande...",
+        "position_value": "Valeur de la position"
+      },
+      "cash_out": {
+        "title": "Encaisser le pari",
+        "current_price": "Prix actuel",
+        "average_price": "Prix moyen",
+        "profit_loss": "Profit / Perte",
+        "receive": "Recevoir",
+        "spread": "Écart",
+        "cash_out": "Encaisser"
+      },
+      "search": {
+        "placeholder": "Rechercher des marchés de prédiction",
+        "input_placeholder": "Rechercher des marchés",
+        "no_results": "Aucun résultat trouvé"
+      },
+      "event": {
+        "outcomes": "Résultats",
+        "about": "À propos",
+        "show_rules": "Afficher les règles",
+        "rules": "Règles",
+        "end_date": "Date de fin",
+        "resolution_source": "Source de résolution",
+        "category": "Catégorie",
+        "hide_resolved": "Cacher résolu",
+        "show_resolved": "Afficher résolu",
+        "open_positions": "Positions ouvertes",
+        "market_resolved": "MARCHÉ RÉSOLU",
+        "volume_suffix": "VOL",
+        "show_less": "Afficher moins",
+        "show_more": "En voir plus",
+        "resolved": "Résolu"
+      },
+      "position": {
+        "outcome": "Résultat",
+        "odds": "Cotes",
+        "bet": "Pari",
+        "won": "Gagné",
+        "to_win": "Pour gagner",
+        "claim": "Réclamer",
+        "clear": "Effacer",
+        "cash_out": "Encaisser",
+        "no_open_positions": "Aucune position ouverte",
+        "won_badge": "GAGNÉ",
+        "lost_badge": "PERDU",
+        "learn_more": "En savoir plus sur les prévisions"
+      },
+      "tabs": {
+        "browse": "Parcourir",
+        "portfolio": "Portefeuille"
+      },
+      "market": {
+        "buy_outcome": "Acheter %{outcome}"
+      },
+      "bet_types": {
+        "winner": "Gagnant",
+        "spreads": "Écarts",
+        "totals": "Totaux",
+        "other": "Autre"
+      },
+      "sports": {
+        "vs": "contre",
+        "live": "En direct",
+        "game_best_of": "Jeu %{currentPeriod} - Meilleur de %{bestOf}",
+        "final": "Final",
+        "no_games": "Aucun jeu aujourd'hui ou demain"
+      },
+      "outcomes": {
+        "yes": "Yes :)",
+        "yes_badge": "OUI",
+        "no_badge": "NON"
+      },
+      "errors": {
+        "title": "Erreur",
+        "failed_to_place_bet": "Échec du placement du pari. Veuillez réessayer.",
+        "failed_to_cash_out": "Échec de l'encaissement de la position. Veuillez réessayer.",
+        "failed_to_claim": "Échec de la réclamation de la position. Veuillez réessayer."
+      },
+      "account": {
+        "hide_lost_bets": "Masquer les paris perdus",
+        "show_lost_bets": "Afficher les paris perdus",
+        "lost_bets_dont_clear": "Les paris perdus ne sont pas supprimés automatiquement. Vous pouvez les effacer ci-dessous."
+      }
+    },
+    "wallet_error_sheet": {
+      "title": "Restaurer votre portefeuille",
+      "restore": "Restaurer",
+      "dismiss": "Rejeter",
+      "cause_passcode_disabled": "Il semble que vous ayez désactivé votre code d'accès.",
+      "cause_switched_devices": "Il semble que vous ayez changé d'appareil.",
+      "resolution_enable_passcode": "Pour utiliser votre portefeuille, réactivez-le dans les paramètres de votre appareil.",
+      "resolution_restore_backup": "Pour utiliser votre portefeuille, restaurez-le à partir d'une sauvegarde ou réimportez votre phrase secrète de récupération."
     }
   }
 }
