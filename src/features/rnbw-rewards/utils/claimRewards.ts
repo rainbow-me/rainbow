@@ -1,32 +1,23 @@
 import { analytics } from '@/analytics';
 import { NativeCurrencyKey } from '@/entities';
 import { useRnbwRewardsStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsStore';
+import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResult';
+import { pollClaimStatus, type PollClaimStatusResult } from '@/features/rnbw-rewards/utils/pollClaimStatus';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet, signTypedDataMessage } from '@/model/wallet';
-import type { RainbowFetchResponse } from '@/rainbow-fetch';
+import { RainbowFetchResponse } from '@/rainbow-fetch';
 import { getPlatformClient } from '@/resources/platform/client';
-import { delay } from '@/utils/delay';
-import { time } from '@/utils/time';
 import { ChainId } from '@rainbow-me/swaps';
 import { Address } from 'viem';
-import type {
+import {
+  ClaimRewardsResult,
   ClaimRewardsResponse,
   GetClaimIntentResponse,
   GetClaimIntentResult,
-  PlatformResponseShape,
 } from '@/features/rnbw-rewards/types/claimRewardsTypes';
 
-const CLAIM_POLL_INTERVAL = time.seconds(1);
-const CLAIM_POLL_TIMEOUT = time.minutes(1);
-const CLAIM_PENDING_STATUSES = new Set(['CLAIM_STATUS_UNSPECIFIED', 'CLAIM_STATUS_PENDING']);
-// TODO: Ask Maks for all exact types
-const CLAIM_FAILURE_STATUSES = new Set(['CLAIM_STATUS_FAILED']);
-
-type ClaimStatusPollResult = {
-  attempts: number;
-  response: RainbowFetchResponse<ClaimRewardsResponse>;
-};
+type ClaimStatusPollResult = PollClaimStatusResult<ClaimRewardsResult, ClaimRewardsResponse>;
 
 export async function claimRewards({ address, currency }: { address: Address; currency: NativeCurrencyKey }) {
   // Only base is supported for now
@@ -71,12 +62,8 @@ export async function claimRewards({ address, currency }: { address: Address; cu
     if (!claimId) {
       throw new Error('ClaimRewards response is missing claimId');
     }
-    if (claimResult.errorMessage) {
-      throw new Error(`${claimResult.errorMessage}`);
-    }
-
     pollResult = await pollForClaimStatus({ claimId, address, currency, chainId });
-    const finalClaimResult = getPlatformResult(pollResult.response, 'GetClaimStatus');
+    const finalClaimResult = pollResult.result;
 
     await useRnbwRewardsStore.getState().fetch(undefined, { force: true });
 
@@ -157,59 +144,16 @@ async function pollForClaimStatus({
   currency: NativeCurrencyKey;
   chainId: ChainId;
 }): Promise<ClaimStatusPollResult> {
-  let attempts = 0;
-
-  const fetchClaimStatus = async () => {
-    const response = await getPlatformClient().get<ClaimRewardsResponse>('/rewards/GetClaimStatus', {
-      params: {
-        claimId,
-        walletAddress: address,
-        chainId: String(chainId),
-        currency,
-      },
-    });
-    attempts += 1;
-    return response;
-  };
-
-  const startedAt = Date.now();
-  let lastResponse = await fetchClaimStatus();
-  let claimResult = getPlatformResult(lastResponse, 'GetClaimStatus');
-  let status = claimResult.status;
-
-  while (status && CLAIM_PENDING_STATUSES.has(status)) {
-    if (Date.now() - startedAt > CLAIM_POLL_TIMEOUT) {
-      throw new Error('Timed out waiting for claim status');
-    }
-    await delay(CLAIM_POLL_INTERVAL);
-    lastResponse = await fetchClaimStatus();
-    claimResult = getPlatformResult(lastResponse, 'GetClaimStatus');
-    // eslint-disable-next-line require-atomic-updates
-    status = claimResult.status;
-  }
-
-  if (!status) {
-    throw new Error('Claim status missing in response');
-  }
-  if (claimResult.errorMessage) {
-    throw new Error(claimResult.errorMessage);
-  }
-  if (CLAIM_FAILURE_STATUSES.has(status)) {
-    throw new Error(`Claim failed with status: ${status}`);
-  }
-
-  return { attempts, response: lastResponse };
-}
-
-function getPlatformResult<T>(response: { data?: PlatformResponseShape<T> }, context: string): T {
-  if (!response?.data) {
-    throw new Error(`[${context}]: response is missing data`);
-  }
-  if (response.data.metadata?.success === false) {
-    throw new Error(`[${context}]: response was unsuccessful`);
-  }
-  if (response.data.result == null) {
-    throw new Error(`[${context}]: response is missing result`);
-  }
-  return response.data.result;
+  return pollClaimStatus({
+    fetchStatus: () =>
+      getPlatformClient().get<ClaimRewardsResponse>('/rewards/GetClaimStatus', {
+        params: {
+          claimId,
+          walletAddress: address,
+          chainId: String(chainId),
+          currency,
+        },
+      }),
+    getResult: response => getPlatformResult(response, 'GetClaimStatus'),
+  });
 }

@@ -4,17 +4,12 @@ import {
   claimRewardsResultSchema,
   claimRewardsResponseSchema,
   getClaimIntentResponseSchema,
-  platformMetadataSchema,
 } from '@/features/rnbw-rewards/schemas/claimRewardsSchemas';
-
-export type PlatformMetadata = z.infer<typeof platformMetadataSchema>;
-
-export type PlatformResponseShape<T> = {
-  metadata: PlatformMetadata;
-  result: T;
-};
+import { claimStatusSchema } from '@/features/rnbw-rewards/schemas/claimAirdropSchemas';
 
 export type GetClaimIntentResult = z.infer<typeof claimIntentResultSchema>;
 export type ClaimRewardsResult = z.infer<typeof claimRewardsResultSchema>;
 export type GetClaimIntentResponse = z.infer<typeof getClaimIntentResponseSchema>;
 export type ClaimRewardsResponse = z.infer<typeof claimRewardsResponseSchema>;
+
+export type ClaimStatus = z.infer<typeof claimStatusSchema>;

@@ -1420,7 +1420,11 @@ export type EventProperties = {
     txHash?: string;
     tenderlyUrl?: string;
     durationMs: number;
-    platformRequestId?: string;
+    pollAttempts: number;
+    platformRequestIds: {
+      claim?: string;
+      status?: string;
+    };
   };
   [event.rnbwAirdropClaimFailed]: {
     chainId: number;
@@ -1428,6 +1432,9 @@ export type EventProperties = {
     status?: string;
     errorMessage: string;
     durationMs: number;
-    platformRequestId?: string;
+    platformRequestIds: {
+      claim?: string;
+      status?: string;
+    };
   };
 };

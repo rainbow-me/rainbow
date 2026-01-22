@@ -1,28 +1,18 @@
 import { analytics } from '@/analytics';
 import { NativeCurrencyKey } from '@/entities';
 import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwAirdropStore';
+import { ClaimAirdropResponse, ClaimAirdropResult } from '@/features/rnbw-rewards/types/claimAirdropTypes';
+import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResult';
+import { pollClaimStatus, PollClaimStatusResult } from '@/features/rnbw-rewards/utils/pollClaimStatus';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet, signPersonalMessage } from '@/model/wallet';
-import type { RainbowFetchResponse } from '@/rainbow-fetch';
+import { RainbowFetchResponse } from '@/rainbow-fetch';
 import { getPlatformClient } from '@/resources/platform/client';
 import { ChainId } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 
-type ClaimAirdropResponse = {
-  chainId: string;
-  claimId: string;
-  claimedRnbw: string;
-  claimedValueInCurrency: string;
-  createdAt: string;
-  decimals: number;
-  errorMessage: string;
-  processedAt: string;
-  status: string;
-  tenderlyUrl: string;
-  txHash: string;
-  walletAddress: string;
-};
+type ClaimStatusPollResult = PollClaimStatusResult<ClaimAirdropResult, ClaimAirdropResponse>;
 
 export async function claimAirdrop({ message, address, currency }: { message: string; address: Address; currency: NativeCurrencyKey }) {
   const chainId = ChainId.base;
@@ -30,6 +20,7 @@ export async function claimAirdrop({ message, address, currency }: { message: st
   const platformClient = getPlatformClient();
 
   let claimResponse: RainbowFetchResponse<ClaimAirdropResponse> | undefined;
+  let pollResult: ClaimStatusPollResult | undefined;
 
   try {
     if (!address) {
@@ -48,37 +39,48 @@ export async function claimAirdrop({ message, address, currency }: { message: st
       messageSigned: signedMessage,
     });
 
-    const claimResult = claimResponse.data;
-    if (claimResult.errorMessage) {
-      throw new Error(claimResult.errorMessage);
+    const claimResult = getPlatformResult(claimResponse, 'ClaimAirdrop');
+    const claimId = claimResult.claimId;
+    if (!claimId) {
+      throw new Error('ClaimAirdrop response is missing claimId');
     }
+    pollResult = await pollForClaimStatus({ claimId, address, currency, chainId });
+    const finalClaimResult = pollResult.result;
 
     await useRnbwAirdropStore.getState().fetch(undefined, { force: true });
 
     analytics.track(analytics.event.rnbwAirdropClaim, {
       chainId,
-      claimId: claimResult.claimId,
-      claimedRnbw: claimResult.claimedRnbw,
-      claimedValueInCurrency: claimResult.claimedValueInCurrency,
-      decimals: claimResult.decimals,
-      status: claimResult.status,
-      txHash: claimResult.txHash,
-      tenderlyUrl: claimResult.tenderlyUrl,
+      claimId,
+      claimedRnbw: finalClaimResult.claimedRnbw,
+      claimedValueInCurrency: finalClaimResult.claimedValueInCurrency,
+      decimals: finalClaimResult.decimals,
+      status: finalClaimResult.status,
+      txHash: finalClaimResult.txHash ?? undefined,
+      tenderlyUrl: finalClaimResult.tenderlyUrl ?? undefined,
       durationMs: Date.now() - startedAt,
-      platformRequestId: claimResponse.headers?.get('x-request-id') ?? undefined,
+      pollAttempts: pollResult.attempts,
+      platformRequestIds: {
+        claim: claimResponse.headers?.get('x-request-id') ?? undefined,
+        status: pollResult.response.headers?.get('x-request-id') ?? undefined,
+      },
     });
 
-    return claimResult;
+    return finalClaimResult;
   } catch (e) {
     const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+    const lastStatus = pollResult?.response?.data?.result?.status ?? claimResponse?.data?.result?.status;
 
     analytics.track(analytics.event.rnbwAirdropClaimFailed, {
       chainId,
-      claimId: claimResponse?.data?.claimId,
-      status: claimResponse?.data?.status,
+      claimId: claimResponse?.data?.result?.claimId,
+      status: lastStatus,
       errorMessage,
       durationMs: Date.now() - startedAt,
-      platformRequestId: claimResponse?.headers?.get('x-request-id') ?? undefined,
+      platformRequestIds: {
+        claim: claimResponse?.headers?.get('x-request-id') ?? undefined,
+        status: pollResult?.response?.headers?.get('x-request-id') ?? undefined,
+      },
     });
 
     logger.error(new RainbowError('[claimAirdrop]: Failed to claim airdrop', e));
@@ -97,4 +99,29 @@ async function signMessage({ message, address }: { message: string; address: Add
     throw new Error(`Failed to sign message: ${signedMessage?.error?.message ?? 'Unknown error'}`);
   }
   return signedMessage.result;
+}
+
+async function pollForClaimStatus({
+  claimId,
+  address,
+  currency,
+  chainId,
+}: {
+  claimId: string;
+  address: Address;
+  currency: NativeCurrencyKey;
+  chainId: ChainId;
+}): Promise<ClaimStatusPollResult> {
+  return pollClaimStatus({
+    fetchStatus: () =>
+      getPlatformClient().get<ClaimAirdropResponse>('/rewards/GetAirdropClaimStatus', {
+        params: {
+          claimId,
+          walletAddress: address,
+          chainId: String(chainId),
+          currency,
+        },
+      }),
+    getResult: response => getPlatformResult(response, 'GetAirdropClaimStatus'),
+  });
 }
