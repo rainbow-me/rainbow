@@ -13,7 +13,7 @@ export interface ENSRegistrationRecords {
 export interface TransactionRegistrationParameters {
   commitTransactionHash?: string;
   commitTransactionConfirmedAt?: number;
-  registerTransactionHash?: number;
+  registerTransactionHash?: string;
 }
 
 export interface RegistrationParameters extends TransactionRegistrationParameters {
