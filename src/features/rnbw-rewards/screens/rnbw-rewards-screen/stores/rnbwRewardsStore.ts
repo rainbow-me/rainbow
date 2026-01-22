@@ -5,7 +5,7 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { Address } from 'viem';
-import { convertAmountToNativeDisplayWorklet, handleSignificantDecimalsWithThreshold } from '@/helpers/utilities';
+import { convertAmountToNativeDisplayWorklet, convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { ChainId } from '@/state/backendNetworks/types';
 
 type RnbwRewardsStore = {
@@ -40,12 +40,15 @@ export const useRnbwRewardsStore = createQueryStore<RnbwRewardsData, RnbwRewards
     getFormattedBalance: () => {
       const data = get().getData();
       const currency = userAssetsStoreManager.getState().currency;
-      const tokenAmount = data?.claimableRnbw ?? '0';
+      const rawTokenAmount = data?.claimableRnbw ?? '0';
       const nativeCurrencyAmount = data?.claimableValueInCurrency ?? '0';
-      const isZero = tokenAmount === '0';
+      const decimals = data?.decimals ?? 18;
+      const isZero = rawTokenAmount === '0';
+      const tokenAmount = convertRawAmountToDecimalFormat(rawTokenAmount, decimals);
+      const formattedTokenAmount = truncateToDecimalsWithThreshold({ value: tokenAmount, decimals: 1, threshold: '0.01' });
 
       return {
-        tokenAmount: isZero ? '0' : handleSignificantDecimalsWithThreshold(tokenAmount, 2, 3, '0.01'),
+        tokenAmount: isZero ? '0' : formattedTokenAmount,
         nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(nativeCurrencyAmount, currency, !isZero),
       };
     },

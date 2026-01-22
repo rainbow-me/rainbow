@@ -59,13 +59,17 @@ function RnbwRewardsContent() {
     };
   }, [scrollOffset]);
 
-  const title = useMemo(() => {
+  const navbarTitle = useMemo(() => {
     return activeStepState === ClaimSteps.Rewards ? 'Rewards' : '';
+  }, [activeStepState]);
+
+  const navbarRightComponent = useMemo(() => {
+    return activeStepState === ClaimSteps.Rewards ? <NavbarRnbwBalance /> : null;
   }, [activeStepState]);
 
   return (
     <View style={styles.flex}>
-      <Navbar title={title} leftComponent={<AccountImage />} rightComponent={<NavbarRnbwBalance />} floating />
+      <Navbar title={navbarTitle} leftComponent={<AccountImage />} rightComponent={navbarRightComponent} floating />
       <View style={{ flex: 1, paddingBottom: tabBarOffset, paddingTop: safeAreaInsets.top + navbarHeight }}>
         <BottomGradientGlow />
         <Animated.View style={rnbwCoinAnimatedStyle}>

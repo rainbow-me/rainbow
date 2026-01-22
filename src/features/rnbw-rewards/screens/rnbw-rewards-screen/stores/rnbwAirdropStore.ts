@@ -5,7 +5,7 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { Address } from 'viem';
-import { convertAmountToNativeDisplayWorklet, handleSignificantDecimalsWithThreshold } from '@/helpers/utilities';
+import { convertAmountToNativeDisplayWorklet, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 
 type AirdropStore = {
   getFormattedBalance: () => {
@@ -53,9 +53,10 @@ export const useRnbwAirdropStore = createQueryStore<AirdropResponseData, Airdrop
       const tokenAmount = data?.available.amountInDecimal ?? '0';
       const nativeCurrencyAmount = data?.available.value ?? '0';
       const isZero = tokenAmount === '0';
+      const formattedTokenAmount = truncateToDecimalsWithThreshold({ value: tokenAmount, decimals: 1, threshold: '0.01' });
 
       return {
-        tokenAmount: isZero ? '0' : handleSignificantDecimalsWithThreshold(tokenAmount, 2, 3, '0.01'),
+        tokenAmount: isZero ? '0' : formattedTokenAmount,
         nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(nativeCurrencyAmount, currency, !isZero),
       };
     },
