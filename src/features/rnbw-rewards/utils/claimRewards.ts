@@ -111,7 +111,7 @@ export async function claimRewards({ address, currency }: { address: Address; cu
 
 async function signIntent({ address, intent, chainId }: { address: Address; intent: GetClaimIntentResult['intent']; chainId: ChainId }) {
   const provider = getProvider({ chainId });
-  const signer = await loadWallet({ address, provider, showErrorIfNotLoaded: false });
+  const signer = await loadWallet({ address, provider });
   if (!signer) {
     throw new Error('Failed to load wallet');
   }

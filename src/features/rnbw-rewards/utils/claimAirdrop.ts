@@ -90,7 +90,7 @@ export async function claimAirdrop({ message, address, currency }: { message: st
 
 async function signMessage({ message, address }: { message: string; address: Address }) {
   const provider = getProvider({ chainId: ChainId.base });
-  const signer = await loadWallet({ address, provider, showErrorIfNotLoaded: false });
+  const signer = await loadWallet({ address, provider });
   if (!signer) {
     throw new Error('Failed to load wallet');
   }
