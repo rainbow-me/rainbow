@@ -1,3 +1,20 @@
+diff --git a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
+index 4138429..eb65bbd 100644
+--- a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
++++ b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
+@@ -28,7 +28,11 @@ - (READisplayLink *)getDisplayLink
+   if (!_displayLink) {
+     _displayLink = [READisplayLink displayLinkWithTarget:self selector:@selector(onAnimationFrame:)];
+ #if !TARGET_OS_OSX
+-    _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
++    if (@available(iOS 15.0, *)) {
++      _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(80, 120, 120);
++    } else {
++      _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
++    }
+ #endif // TARGET_OS_OSX
+     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+   }
 diff --git a/node_modules/react-native-reanimated/src/common/style/processors/colors.ts b/node_modules/react-native-reanimated/src/common/style/processors/colors.ts
 index 42d2c09..974708a 100644
 --- a/node_modules/react-native-reanimated/src/common/style/processors/colors.ts
