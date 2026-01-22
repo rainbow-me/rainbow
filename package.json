@@ -43,7 +43,7 @@
     "lint:js": "eslint --cache . --quiet",
     "lint:js:ci": "eslint --quiet",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
-    "check:cycles": "./scripts/check-cycles.sh 2086",
+    "check:cycles": "./scripts/check-cycles.sh 2124",
     "postinstall": "./scripts/postinstall.sh",
     "start": "react-native start",
     "start:client-logs": "react-native start --client-logs",
@@ -65,7 +65,7 @@
     "// Fetch backend networks": "",
     "fetch:networks": "node ./scripts/networks.js"
   },
-  "dependencies": {
+  "depenencies": {
     "@bankify/react-native-animate-number": "0.2.1",
     "@bradgarropy/use-countdown": "1.4.1",
     "@candlefinance/faster-image": "1.6.2",
