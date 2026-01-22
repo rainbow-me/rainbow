@@ -11,7 +11,7 @@ import {
   TAB_BAR_INNER_PADDING,
   TAB_BAR_WIDTH,
 } from '@/components/tab-bar/dimensions';
-import { DAPP_BROWSER, LAZY_TABS, POINTS, useExperimentalFlag } from '@/config';
+import { DAPP_BROWSER, LAZY_TABS, POINTS, RNBW_REWARDS, useExperimentalFlag } from '@/config';
 import { Box, Columns, globalColors, useColorMode, Column } from '@/design-system';
 import { IS_IOS, IS_TEST } from '@/env';
 import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions } from '@/hooks';
@@ -114,10 +114,12 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
 
   const { dapp_browser, points_enabled, rnbw_rewards_enabled } = useRemoteConfig('dapp_browser', 'points_enabled', 'rnbw_rewards_enabled');
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
-  const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || rnbw_rewards_enabled || IS_TEST;
-  const rewardsRouteName = rnbw_rewards_enabled ? Routes.RNBW_REWARDS_SCREEN : Routes.POINTS_SCREEN;
+  const showPointsTab = useExperimentalFlag(POINTS) || points_enabled;
+  const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
+  const showRnbwRewardsOrPointsTab = showPointsTab || showRnbwRewardsTab || IS_TEST;
+  const rewardsRouteName = showRnbwRewardsTab ? Routes.RNBW_REWARDS_SCREEN : Routes.POINTS_SCREEN;
 
-  const numberOfTabs = 3 + (showPointsTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
+  const numberOfTabs = 3 + (showRnbwRewardsOrPointsTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
   const tabWidth = (deviceWidth - TAB_BAR_HORIZONTAL_INSET * 2 - TAB_BAR_INNER_PADDING * 2) / numberOfTabs;
   const tabPillStartPosition = (tabWidth - TAB_BAR_PILL_WIDTH) / 2 + TAB_BAR_INNER_PADDING;
 
@@ -250,7 +252,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
       stateRef.current.routes.map((route: RouteProp<ParamListBase, string>, index: number) => {
         if (
           (!showDappBrowserTab && route.name === Routes.DAPP_BROWSER_SCREEN) ||
-          (!showPointsTab && (route.name === Routes.POINTS_SCREEN || route.name === Routes.RNBW_REWARDS_SCREEN))
+          (!showRnbwRewardsOrPointsTab && (route.name === Routes.POINTS_SCREEN || route.name === Routes.RNBW_REWARDS_SCREEN))
         ) {
           return null;
         }
@@ -294,7 +296,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
       reanimatedPosition,
       showBrowserNavButtons,
       showDappBrowserTab,
-      showPointsTab,
+      showRnbwRewardsOrPointsTab,
       stateRef,
     ]
   );
@@ -625,7 +627,9 @@ function SwipeNavigatorScreens() {
   const { dapp_browser, points_enabled, rnbw_rewards_enabled } = useRemoteConfig('dapp_browser', 'points_enabled', 'rnbw_rewards_enabled');
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showKingOfTheHillTab = useShowKingOfTheHill();
-  const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || rnbw_rewards_enabled || IS_TEST;
+  const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
+  const showPointsTab = useExperimentalFlag(POINTS) || points_enabled;
+  const showRnbwRewardsOrPointsTab = showPointsTab || showRnbwRewardsTab || IS_TEST;
 
   const { language } = useAccountSettings();
 
@@ -667,8 +671,8 @@ function SwipeNavigatorScreens() {
       ) : (
         <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.PROFILE_SCREEN] }} />
       )}
-      {showPointsTab &&
-        (rnbw_rewards_enabled ? (
+      {showRnbwRewardsOrPointsTab &&
+        (showRnbwRewardsTab ? (
           <Swipe.Screen
             component={RnbwRewardsScreen}
             name={Routes.RNBW_REWARDS_SCREEN}

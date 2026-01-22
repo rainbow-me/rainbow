@@ -227,7 +227,7 @@ export const DEFAULT_CONFIG = {
   perps_enabled: false,
   polymarket_enabled: false,
   dev_section_enabled: IS_DEV || false,
-  rnbw_rewards_enabled: IS_DEV || false,
+  rnbw_rewards_enabled: false,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
