@@ -22,7 +22,7 @@ const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();
 
 export const AirdropClaimFinishedStep = memo(function AirdropClaimFinishedStep() {
   const { setActiveStep } = useRnbwRewardsTransitionContext();
-  const { tokenAmount } = useRnbwAirdropStore(state => state.getFormattedBalance());
+  const { tokenAmount } = useRnbwAirdropStore(state => state.getFormattedAirdroppedBalance());
 
   return (
     <Animated.View style={styles.container} entering={enteringAnimation} exiting={exitingAnimation}>

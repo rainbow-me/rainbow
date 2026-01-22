@@ -149,19 +149,19 @@ function CheckingAirdropLoadingStep() {
   );
 }
 
-function ClaimingAirdropLoadingStep() {
+const ClaimingAirdropLoadingStep = memo(function ClaimingAirdropLoadingStep() {
   const { setActiveStep } = useRnbwRewardsTransitionContext();
   const address = useWalletsStore(state => state.accountAddress);
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const airdropData = useRnbwAirdropStore(state => state.getData());
+  const messageToSign = useRnbwAirdropStore(state => state.getMessageToSign());
 
   const showClaimError = useCallback(() => {
     Alert.alert(i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_title), i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_message));
   }, []);
 
   const claimAirdropTask = useCallback(() => {
-    return claimAirdrop({ message: airdropData?.message ?? '', address, currency: nativeCurrency });
-  }, [address, nativeCurrency, airdropData]);
+    return claimAirdrop({ message: messageToSign ?? '', address, currency: nativeCurrency });
+  }, [address, nativeCurrency, messageToSign]);
 
   const handleClaimAirdropComplete = useCallback(
     (result: LoadingStepResult<Awaited<ReturnType<typeof claimAirdrop>>>) => {
@@ -178,9 +178,9 @@ function ClaimingAirdropLoadingStep() {
   return (
     <LoadingStep labels={['Claiming Airdrop...', 'Gathering Coins...']} task={claimAirdropTask} onComplete={handleClaimAirdropComplete} />
   );
-}
+});
 
-function ClaimingRewardsLoadingStep() {
+const ClaimingRewardsLoadingStep = memo(function ClaimingRewardsLoadingStep() {
   const { setActiveStep } = useRnbwRewardsTransitionContext();
   const address = useWalletsStore(state => state.accountAddress);
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
@@ -203,8 +203,10 @@ function ClaimingRewardsLoadingStep() {
     [setActiveStep, showClaimError]
   );
 
-  return <LoadingStep labels={['Claiming Rewards...']} task={claimRewardsTask} onComplete={handleClaimRewardsComplete} />;
-}
+  return (
+    <LoadingStep labels={['Claiming Rewards...', 'Gathering Coins...']} task={claimRewardsTask} onComplete={handleClaimRewardsComplete} />
+  );
+});
 
 const styles = StyleSheet.create({
   container: {

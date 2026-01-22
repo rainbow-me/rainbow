@@ -12,6 +12,11 @@ type AirdropStore = {
     tokenAmount: string;
     nativeCurrencyAmount: string;
   };
+  getFormattedAirdroppedBalance: () => {
+    tokenAmount: string;
+    nativeCurrencyAmount: string;
+  };
+  getMessageToSign: () => string | undefined;
   hasClaimed: () => boolean;
   hasClaimableAirdrop: () => boolean;
 };
@@ -59,6 +64,23 @@ export const useRnbwAirdropStore = createQueryStore<AirdropResponseData, Airdrop
         tokenAmount: isZero ? '0' : formattedTokenAmount,
         nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(nativeCurrencyAmount, currency, !isZero),
       };
+    },
+    getFormattedAirdroppedBalance: () => {
+      const data = get().getData();
+      const currency = userAssetsStoreManager.getState().currency;
+      const tokenAmount = data?.airdropped.amountInDecimal ?? '0';
+      const nativeCurrencyAmount = data?.airdropped.value ?? '0';
+      const isZero = tokenAmount === '0';
+      const formattedTokenAmount = truncateToDecimalsWithThreshold({ value: tokenAmount, decimals: 1, threshold: '0.01' });
+
+      return {
+        tokenAmount: isZero ? '0' : formattedTokenAmount,
+        nativeCurrencyAmount: convertAmountToNativeDisplayWorklet(nativeCurrencyAmount, currency, !isZero),
+      };
+    },
+    getMessageToSign: () => {
+      const data = get().getData();
+      return data?.message ?? undefined;
     },
     hasClaimed: () => {
       const data = get().getData();

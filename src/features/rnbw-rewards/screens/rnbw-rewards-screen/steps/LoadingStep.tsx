@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useRunOnce } from '@/hooks/useRunOnce';
 import { View, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Text } from '@/design-system';
@@ -31,11 +32,7 @@ export function LoadingStep<T>({ labels, task, onComplete }: LoadingStepProps<T>
   const [displayState, setDisplayState] = useState<DisplayState>({ type: 'label', index: 0 });
   const taskResultRef = useRef<LoadingStepResult<T> | null>(null);
 
-  // Run the task
-  useEffect(() => {
-    setDisplayState({ type: 'label', index: 0 });
-    taskResultRef.current = null;
-
+  useRunOnce(() => {
     task()
       .then(data => {
         taskResultRef.current = { status: 'success', data };
@@ -45,7 +42,7 @@ export function LoadingStep<T>({ labels, task, onComplete }: LoadingStepProps<T>
         taskResultRef.current = { status: 'error', error };
         setDisplayState(prev => (prev.type === 'fallback' ? { type: 'exiting' } : prev));
       });
-  }, [task]);
+  });
 
   // Cycle through labels
   useEffect(() => {

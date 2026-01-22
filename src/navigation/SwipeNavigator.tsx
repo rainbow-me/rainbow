@@ -647,10 +647,27 @@ function SwipeNavigatorScreens() {
     [isCoinListEdited, lazy]
   );
 
+  const key = useMemo(() => {
+    let key = 'swipe-navigator';
+    if (showKingOfTheHillTab) {
+      key += '-koth';
+    }
+    if (showRnbwRewardsTab) {
+      key += '-rnbw-rewards';
+    }
+    if (showPointsTab) {
+      key += '-points';
+    }
+    if (language) {
+      key += `-${language}`;
+    }
+    return key;
+  }, [showKingOfTheHillTab, showRnbwRewardsTab, showPointsTab, language]);
+
   return (
     <Swipe.Navigator
-      // required to force re-render when showKingOfTheHillTab or language changes
-      key={`swipe-navigator-${showKingOfTheHillTab ? 'koth' : 'profile'}-${language}`}
+      // required to force re-render when showKingOfTheHillTab, showRnbwRewardsTab, showPointsTab or language changes
+      key={key}
       initialLayout={deviceUtils.dimensions}
       initialRouteName={Routes.WALLET_SCREEN}
       screenOptions={getScreenOptions}

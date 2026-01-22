@@ -1,5 +1,6 @@
 import { useHasCompletedAirdrop } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/hooks/useHasCompletedAirdrop';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { SharedValue, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 
@@ -35,6 +36,7 @@ export function RnbwRewardsTransitionContextProvider({
   children,
   initialStep = ClaimSteps.AirdropIntroduction,
 }: RnbwRewardsTransitionContextProviderProps) {
+  const accountAddress = useAccountAddress();
   const activeStep = useSharedValue<ClaimStep>(initialStep);
   const [activeStepState, setActiveStepState] = useState<ClaimStep>(initialStep);
   const scrollOffset = useSharedValue(0);
@@ -66,10 +68,11 @@ export function RnbwRewardsTransitionContextProvider({
     [activeStep, hasCompletedAirdropFlow, setHasCompletedAirdropFlow]
   );
 
-  // Initial step can change when user switches wallet
+  // Should reset the initial step when user switches wallet
   useEffect(() => {
     setActiveStep(initialStep);
-  }, [initialStep, setActiveStep]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountAddress]);
 
   const value = useMemo(
     () => ({ activeStep, activeStepState, setActiveStep, scrollHandler, scrollOffset }),
