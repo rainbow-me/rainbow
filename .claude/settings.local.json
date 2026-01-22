@@ -2,11 +2,18 @@
   "permissions": {
     "allow": [
       "Bash(do echo \"=== $file ===\")",
-      "Bash(grep:*)",
       "Bash(done)",
-      "Bash(yarn lint:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh release list:*)",
+      "Bash(gh release view:*)",
+      "Bash(gh repo view:*)",
+      "Bash(gh search:*)",
+      "Bash(git show:*)",
+      "Bash(grep:*)",
+      "Bash(npm view:*)",
       "Bash(yarn graphql-codegen:*)",
-      "Bash(yarn lint:ts:*)"
+      "Bash(yarn lint:*)"
     ],
     "deny": []
   }
