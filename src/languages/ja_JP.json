@@ -24,6 +24,7 @@
       "tab_savings": "貯蓄",
       "tab_showcase": "ショーケース",
       "tab_perps": "\"Perps\"",
+      "tab_polymarket": "予測",
       "tab_points": "ポイント",
       "tab_positions": "ポジション",
       "tab_rewards": "報酬",
@@ -559,7 +560,8 @@
       "restart_app": "アプリを再起動",
       "reset_experimental_config": "実験的なコンフィグをリセット",
       "status": "ステータス",
-      "sync_codepush": "CodePushを同期"
+      "sync_codepush": "CodePushを同期",
+      "simulate_device_transfer": "デバイス転送をシミュレートする"
     },
     "discover": {
       "pulse": {
@@ -757,6 +759,13 @@
         },
         "about": {
           "title": "概要",
+          "created_by": "作成者",
+          "protocol": "プロトコル",
+          "created_via": "経由で作成",
+          "what_is": "%{assetName}とは何ですか？"
+        },
+        "details": {
+          "title": "詳細",
           "what_is": "%{assetName}とは何ですか？"
         },
         "history": {
@@ -970,6 +979,8 @@
       "baggy_title": "アンロック\n Rainbow Baggy",
       "chonks_description": "レインボーの髪で風を感じながら、101号線を走り、チョンキーを感じるイメージ。",
       "chonks_title": "チョンキエスト アイコンをアンロックしました。",
+      "mog_description": "簡単に宇宙を支配し、色でモッグします。",
+      "mog_title": "アンロック\nRainbow Mogs",
       "button": "アイコンをキャッチ"
     },
     "explain": {
@@ -1604,12 +1615,12 @@
         "liq": "清算"
       },
       "add_to_position": {
-        "title": "Add to Position",
-        "new_total": "New Total"
+        "title": "ポジションに追加",
+        "new_total": "新しい合計"
       },
       "feature_card": {
         "title": "\"Perps\"",
-        "subtitle": "ハイリスク・ハイリターンの取引"
+        "subtitle": "ハイリスク、高報酬の取引"
       },
       "actions": {
         "fund_wallet": "ウォレットに資金を追加",
@@ -1638,7 +1649,8 @@
         "confirm_button_over_balance_text": "資金が不足しています",
         "confirm_button_error_text": "見積りエラー",
         "quote_error": "􀇿 見積もりは利用できません",
-        "insufficient_balance": "􀫲 資金が不足しています"
+        "insufficient_balance": "􀫲 資金が不足しています",
+        "insufficient_gas": "ガスが不足しています"
       },
       "withdraw": {
         "title": "引き出す",
@@ -3731,6 +3743,157 @@
           }
         }
       }
+    },
+    "predictions": {
+      "feature_card": {
+        "title": "予測",
+        "subtitle": "現実の出来事に賭ける"
+      },
+      "explain_sheet": {
+        "next": "次へ",
+        "get_started": "始める",
+        "title": "予測",
+        "steps": {
+          "step_1": {
+            "title": "予測",
+            "subtitle_parts": [
+              "市場での動向を新しい方法で追う。Polymarketによってパワーアップ"
+            ]
+          },
+          "step_2": {
+            "title": "ほとんど何にでも賭ける",
+            "subtitle_parts": [
+              "好きな市場を選び、ポジションを決め、追跡しましょう。"
+            ]
+          },
+          "step_3": {
+            "title": "結果を選択",
+            "subtitle_parts": [
+              "各市場には明確な選択肢があります。信じるオプションを選び、その結果を追跡しましょう。"
+            ]
+          }
+        }
+      },
+      "navbar": {
+        "title": "予測"
+      },
+      "new_position": {
+        "title": "賭けを行う",
+        "amount": "金額",
+        "chance_of_outcome": "結果の確率",
+        "to_win": "勝つために",
+        "spread": "スプレッド",
+        "hold_to_place_bet": "賭けを行うために保持",
+        "placing_bet": "賭けを行っています...",
+        "confirming_order": "注文確認中...",
+        "deposit_funds": "資金の預け入れ",
+        "average_price": "平均価格",
+        "errors": {
+          "not_enough_liquidity": "十分な流動性がないため、注文を完全に実行できません。",
+          "please_lower_amount": "金額を下げてもう一度お試しください。",
+          "no_liquidity_at_price": "この価格では流動性がありません。"
+        }
+      },
+      "manage_position": {
+        "hold_to_claim": "主張するまでホールド",
+        "hold_to_clear": "クリアするまで保持",
+        "hold_to_cash_out": "キャッシュアウトするために保持",
+        "claiming": "請求中...",
+        "clearing": "クリア中...",
+        "cashing_out": "キャッシュアウト中...",
+        "confirming_order": "注文確認中...",
+        "position_value": "ポジションバリュー"
+      },
+      "cash_out": {
+        "title": "ベットのキャッシュアウト",
+        "current_price": "現在の価格",
+        "average_price": "平均価格",
+        "profit_loss": "利益 / 損失",
+        "receive": "受け取る",
+        "spread": "スプレッド",
+        "cash_out": "キャッシュアウト"
+      },
+      "search": {
+        "placeholder": "予測市場を検索",
+        "input_placeholder": "マーケットを検索",
+        "no_results": "結果が見つかりません"
+      },
+      "event": {
+        "outcomes": "結果",
+        "about": "概要",
+        "show_rules": "ルールを表示する",
+        "rules": "ルール",
+        "end_date": "終了日",
+        "resolution_source": "解決元",
+        "category": "カテゴリー",
+        "hide_resolved": "解決済みを隠す",
+        "show_resolved": "解決済みを表示する",
+        "open_positions": "オープンポジション",
+        "market_resolved": "市場が解決済み",
+        "volume_suffix": "ボリューム",
+        "show_less": "表示を減らす",
+        "show_more": "さらに表示",
+        "resolved": "解決済み"
+      },
+      "position": {
+        "outcome": "結果",
+        "odds": "オッズ",
+        "bet": "賭け",
+        "won": "勝利",
+        "to_win": "勝つために",
+        "claim": "請求",
+        "clear": "クリア",
+        "cash_out": "キャッシュアウト",
+        "no_open_positions": "オープンポジションなし",
+        "won_badge": "勝利",
+        "lost_badge": "敗北",
+        "learn_more": "予測についてもっと学ぶ"
+      },
+      "tabs": {
+        "browse": "ブラウズ",
+        "portfolio": "ポートフォリオ"
+      },
+      "market": {
+        "buy_outcome": "購入します %{outcome}"
+      },
+      "bet_types": {
+        "winner": "勝者",
+        "spreads": "スプレッズ",
+        "totals": "合計",
+        "other": "その他"
+      },
+      "sports": {
+        "vs": "対",
+        "live": "ライブ",
+        "game_best_of": "ゲーム %{currentPeriod} - ベストオブ %{bestOf}",
+        "final": "最終",
+        "no_games": "今日や明日のゲームはありません。"
+      },
+      "outcomes": {
+        "yes": "はい",
+        "yes_badge": "はい",
+        "no_badge": "いいえ"
+      },
+      "errors": {
+        "title": "エラー",
+        "failed_to_place_bet": "賭けの配置に失敗しました。もう一度お試しください。",
+        "failed_to_cash_out": "ポジションのキャッシュアウトに失敗しました。もう一度試してください。",
+        "failed_to_claim": "ポジションの請求に失敗しました。もう一度試してください。"
+      },
+      "account": {
+        "hide_lost_bets": "失った賭けを隠す",
+        "show_lost_bets": "失った賭けを表示する",
+        "lost_bets_dont_clear": "負けた賭けは自動的にクリアされません。下でそれらをクリアできます。"
+      }
+    },
+    "wallet_error_sheet": {
+      "title": "ウォレットを復元する",
+      "restore": "復元",
+      "dismiss": "閉じる",
+      "cause_passcode_disabled": "パスコードが無効になっている可能性があります。",
+      "cause_switched_devices": "デバイスを切り替えた可能性があります。",
+      "resolution_enable_passcode": "ウォレットを使用するには、デバイス設定で再度有効にしてください。",
+      "resolution_restore_backup": "ウォレットを使用するには、バックアップから復元するか、シークレットリカバリーフレーズを再インポートしてください。"
     }
   }
 }
