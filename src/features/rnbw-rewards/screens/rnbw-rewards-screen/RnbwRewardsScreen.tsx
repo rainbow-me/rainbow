@@ -27,11 +27,10 @@ import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-reward
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
 import { NoAirdropToClaimStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/NoAirdropToClaimStep';
-import { useMMKVBoolean } from 'react-native-mmkv';
-import { HAS_COMPLETED_AIRDROP_FLOW_KEY } from '@/features/rnbw-rewards/constants';
+import { useHasCompletedAirdrop } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/hooks/useHasCompletedAirdrop';
 
 export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
-  const [hasCompletedAirdropFlow] = useMMKVBoolean(HAS_COMPLETED_AIRDROP_FLOW_KEY);
+  const [hasCompletedAirdropFlow] = useHasCompletedAirdrop();
 
   const initialStep = useMemo(() => {
     return hasCompletedAirdropFlow ? ClaimSteps.Rewards : ClaimSteps.AirdropIntroduction;

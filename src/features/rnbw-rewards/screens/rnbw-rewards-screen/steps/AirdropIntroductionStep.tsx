@@ -1,18 +1,20 @@
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
-import { Box, globalColors, Text, useColorMode } from '@/design-system';
+import { Box, globalColors, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
 import {
   ClaimSteps,
   useRnbwRewardsTransitionContext,
 } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
-import Animated from 'react-native-reanimated';
+import Animated, { runOnJS } from 'react-native-reanimated';
 import { time } from '@/utils/time';
 import {
   createScaleInFadeInSlideEnterAnimation,
   createScaleOutFadeOutSlideExitAnimation,
 } from '@/features/rnbw-rewards/animations/layoutAnimations';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import watchingAlert from '@/utils/watchingAlert';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 
@@ -21,8 +23,17 @@ const exitingAnimationSecondTranche = createScaleOutFadeOutSlideExitAnimation({ 
 const exitingAnimationThirdTranche = createScaleOutFadeOutSlideExitAnimation({ delay: time.ms(240) });
 
 export const AirdropIntroductionStep = memo(function AirdropIntroductionStep() {
-  const { isDarkMode } = useColorMode();
   const { setActiveStep } = useRnbwRewardsTransitionContext();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
+
+  const handleCheckEligibility = useCallback(() => {
+    'worklet';
+    if (isReadOnlyWallet) {
+      runOnJS(watchingAlert)();
+      return;
+    }
+    setActiveStep(ClaimSteps.CheckingAirdrop);
+  }, [isReadOnlyWallet, setActiveStep]);
 
   return (
     <Animated.View style={styles.container} entering={enteringAnimation}>
@@ -45,13 +56,7 @@ export const AirdropIntroductionStep = memo(function AirdropIntroductionStep() {
           </Animated.View>
         </Box>
         <Animated.View exiting={exitingAnimationThirdTranche}>
-          <ButtonPressAnimation
-            style={[styles.button, { backgroundColor: isDarkMode ? globalColors.white100 : globalColors.grey100 }]}
-            onPress={() => {
-              'worklet';
-              setActiveStep(ClaimSteps.CheckingAirdrop);
-            }}
-          >
+          <ButtonPressAnimation style={styles.button} onPress={handleCheckEligibility}>
             <Text color="black" size="22pt" weight="heavy">
               {i18n.t(i18n.l.rnbw_rewards.introduction.check_eligibility)}
             </Text>
@@ -74,5 +79,6 @@ const styles = StyleSheet.create({
     borderRadius: 26,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: globalColors.white100,
   },
 });

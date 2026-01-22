@@ -1,5 +1,5 @@
 import { memo, useCallback, useState } from 'react';
-import { View, RefreshControl } from 'react-native';
+import { View, RefreshControl, StyleSheet } from 'react-native';
 import { Box, Text } from '@/design-system';
 import { useRnbwRewardsStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsStore';
 import { AirdropCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/AirdropCard';
@@ -12,17 +12,19 @@ import {
   useRnbwRewardsTransitionContext,
 } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
-import Animated from 'react-native-reanimated';
+import Animated, { runOnJS } from 'react-native-reanimated';
 import { defaultExitAnimation, createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { HowToEarnCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/HowToEarnCard';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import * as i18n from '@/languages';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import watchingAlert from '@/utils/watchingAlert';
 
 const enterAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 
 export const RnbwRewardsStep = function RnbwRewardsStep() {
-  const { setActiveStep, scrollHandler } = useRnbwRewardsTransitionContext();
+  const { scrollHandler } = useRnbwRewardsTransitionContext();
   const [refreshing, setRefreshing] = useState(false);
   const hasClaimedAirdrop = useRnbwAirdropStore(state => state.hasClaimed());
   // TESTING
@@ -36,25 +38,21 @@ export const RnbwRewardsStep = function RnbwRewardsStep() {
     }
   }, []);
 
-  const handleClaimRewards = useCallback(() => {
-    setActiveStep(ClaimSteps.ClaimingRewards);
-  }, [setActiveStep]);
-
   return (
-    <Animated.View style={{ flex: 1 }} entering={enterAnimation} exiting={defaultExitAnimation}>
+    <Animated.View style={styles.flex} entering={enterAnimation} exiting={defaultExitAnimation}>
       <Animated.ScrollView
         onScroll={scrollHandler}
-        contentContainerStyle={{ paddingHorizontal: 20 }}
+        contentContainerStyle={styles.scrollViewContainer}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
       >
-        <RnbwRewardsBalance onClaimRewards={handleClaimRewards} />
+        <RnbwRewardsBalance />
       </Animated.ScrollView>
       {hasClaimedAirdrop ? (
-        <View style={{ paddingBottom: 32, paddingHorizontal: 20 }}>
+        <View style={styles.cardContainer}>
           <HowToEarnCard />
         </View>
       ) : (
-        <View style={{ paddingBottom: 32, paddingHorizontal: 20 }}>
+        <View style={styles.cardContainer}>
           <AirdropCard />
         </View>
       )}
@@ -62,13 +60,24 @@ export const RnbwRewardsStep = function RnbwRewardsStep() {
   );
 };
 
-const RnbwRewardsBalance = memo(function RnbwRewardsBalance({ onClaimRewards }: { onClaimRewards: () => void }) {
+const RnbwRewardsBalance = memo(function RnbwRewardsBalance() {
+  const { setActiveStep } = useRnbwRewardsTransitionContext();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { tokenAmount, nativeCurrencyAmount } = useRnbwRewardsStore(state => state.getFormattedBalance());
   const hasClaimableRewards = useRnbwRewardsStore(state => state.hasClaimableRewards());
 
+  const handleClaimRewards = useCallback(() => {
+    'worklet';
+    if (isReadOnlyWallet) {
+      runOnJS(watchingAlert)();
+      return;
+    }
+    setActiveStep(ClaimSteps.ClaimingRewards);
+  }, [isReadOnlyWallet, setActiveStep]);
+
   return (
-    <View style={{ paddingTop: getCoinBottomPosition(ClaimSteps.Rewards) + 20 }}>
-      <Box gap={24}>
+    <View style={styles.rewardsBalanceContainer}>
+      <Box gap={24} alignItems="center">
         <Box gap={16}>
           <Text
             size="44pt"
@@ -86,12 +95,14 @@ const RnbwRewardsBalance = memo(function RnbwRewardsBalance({ onClaimRewards }: 
         {hasClaimableRewards ? (
           <HoldToActivateButton
             label={i18n.t(i18n.l.button.hold_to_authorize.hold_to_claim)}
-            onLongPress={onClaimRewards}
+            onLongPress={handleClaimRewards}
             backgroundColor="white"
             disabledBackgroundColor="white"
+            progressColor="black"
             isProcessing={false}
             processingLabel={i18n.t(i18n.l.rnbw_rewards.rewards.claiming_rewards)}
             showBiometryIcon={true}
+            style={{ width: 251 }}
           />
         ) : (
           <Box paddingHorizontal={'16px'} gap={20}>
@@ -104,4 +115,20 @@ const RnbwRewardsBalance = memo(function RnbwRewardsBalance({ onClaimRewards }: 
       </Box>
     </View>
   );
+});
+
+const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
+  rewardsBalanceContainer: {
+    paddingTop: getCoinBottomPosition(ClaimSteps.Rewards) + 20,
+  },
+  cardContainer: {
+    paddingBottom: 32,
+    paddingHorizontal: 20,
+  },
+  scrollViewContainer: {
+    paddingHorizontal: 20,
+  },
 });

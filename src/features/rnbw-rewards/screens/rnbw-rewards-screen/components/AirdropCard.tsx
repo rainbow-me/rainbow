@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import * as i18n from '@/languages';
 import { Box, Text } from '@/design-system';
@@ -13,20 +13,26 @@ import {
   useRnbwRewardsTransitionContext,
 } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { runOnJS } from 'react-native-reanimated';
+import watchingAlert from '@/utils/watchingAlert';
 
 export const AirdropCard = memo(function AirdropCard() {
   const { setActiveStep } = useRnbwRewardsTransitionContext();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { tokenAmount, nativeCurrencyAmount } = useRnbwAirdropStore(state => state.getFormattedBalance());
+
+  const handleNavigateToClaimAirdrop = useCallback(() => {
+    'worklet';
+    if (isReadOnlyWallet) {
+      runOnJS(watchingAlert)();
+      return;
+    }
+    setActiveStep(ClaimSteps.ClaimAirdrop);
+  }, [isReadOnlyWallet, setActiveStep]);
+
   return (
-    <ButtonPressAnimation
-      onPress={() => {
-        'worklet';
-        setActiveStep(ClaimSteps.ClaimAirdrop);
-        // TESTING
-        // setActiveStep(ClaimSteps.AirdropIntroduction);
-      }}
-      scaleTo={0.96}
-    >
+    <ButtonPressAnimation onPress={handleNavigateToClaimAirdrop} scaleTo={0.96}>
       <View style={{ overflow: 'visible' }}>
         <Box
           backgroundColor={opacityWorklet(ETH_COLOR_DARK, 0.06)}
