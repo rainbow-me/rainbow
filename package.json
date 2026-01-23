@@ -3,7 +3,7 @@
   "version": "2.0.18-1",
   "private": true,
   "scripts": {
-    "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn graphql-codegen && yarn fetch:networks",
+    "setup": "yarn graphql-codegen:install && yarn ds:install && yarn graphql-codegen && yarn fetch:networks",
     "setup-ci": "./scripts/setup-ci.sh",
     "adb-all": "adb devices | tail -n +2 | cut -sf 1 | xargs -I {} adb -s {}",
     "android": "react-native run-android --main-activity MainActivityog",
