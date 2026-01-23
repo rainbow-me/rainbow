@@ -113,7 +113,7 @@ export const ensClient = getEnsSdk(getFetchRequester(config.ens.schema.url));
 export const metadataClient = getMetadataSdk(
   getFetchRequester(config.metadata.schema.url)
 );
-+ export const exampleClient = getEnsSdk(getFetchRequester(config.example.schema.url));
++ export const exampleClient = getExampleSdk(getFetchRequester(config.example.schema.url));
 ```
 
 #### 5. Consume!
