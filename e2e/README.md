@@ -4,7 +4,7 @@
 
 #### iOS
 
-1. Set `IS_TESTING=true` in your `.env` file.
+1. Set `IS_TESTING=true` in your `.env` file. Enables test-specific behavior and skips production-only checks or protections when running tests.
 
 2. Build and run the app in release mode: `yarn ios --mode Release`. It is also possible to run it in development mode to make debugging easier, but will diverge from what is ran on CI.
 
@@ -12,7 +12,7 @@
 
 #### Android
 
-1. Set `IS_TESTING=true` in your `.env` file.
+1. Set `IS_TESTING=true` in your `.env` file. Enables test-specific behavior and skips production-only checks or protections when running tests.
 
 2. Build and run the app in release mode: `yarn android --mode Release`. It is also possible to run it in development mode to make debugging easier, but will diverge from what is ran on CI.
 
