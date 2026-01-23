@@ -4,8 +4,8 @@ import {
   claimRewardsResultSchema,
   claimRewardsResponseSchema,
   getClaimIntentResponseSchema,
-} from '@/features/rnbw-rewards/schemas/claimRewardsSchemas';
-import { claimStatusSchema } from '@/features/rnbw-rewards/schemas/claimAirdropSchemas';
+} from '@/features/rnbw-rewards/schemas/rewardsClaimSchemas';
+import { claimStatusSchema } from '@/features/rnbw-rewards/schemas/airdropClaimSchemas';
 
 export type GetClaimIntentResult = z.infer<typeof claimIntentResultSchema>;
 export type ClaimRewardsResult = z.infer<typeof claimRewardsResultSchema>;

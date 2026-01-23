@@ -8,7 +8,7 @@ import bridgeImage from '@/features/rnbw-rewards/assets/rnbw-reward-methods/brid
 import baseImage from '@/features/rnbw-rewards/assets/rnbw-reward-methods/base.png';
 import btcImage from '@/features/rnbw-rewards/assets/rnbw-reward-methods/btc.png';
 
-export const HowToEarnCard = memo(function HowToEarnCard() {
+export const RewardsHowToEarnCard = memo(function RewardsHowToEarnCard() {
   return (
     <Box
       height={188}

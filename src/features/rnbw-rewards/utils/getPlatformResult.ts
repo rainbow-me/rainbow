@@ -1,4 +1,4 @@
-import { PlatformResponse } from '@/features/rnbw-rewards/types/platformRequestTypes';
+import { PlatformResponse } from '@/features/rnbw-rewards/types/platformResponseTypes';
 import { RainbowFetchResponse } from '@/rainbow-fetch';
 
 /**

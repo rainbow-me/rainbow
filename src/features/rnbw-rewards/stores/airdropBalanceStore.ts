@@ -7,7 +7,7 @@ import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { Address } from 'viem';
 import { convertAmountToNativeDisplayWorklet, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 
-type AirdropStore = {
+type AirdropBalanceStore = {
   getFormattedBalance: () => {
     tokenAmount: string;
     nativeCurrencyAmount: string;
@@ -43,7 +43,7 @@ type AirdropResponseData = {
 
 type AirdropResponse = PlatformResponse<AirdropResponseData>;
 
-export const useRnbwAirdropStore = createQueryStore<AirdropResponseData, AirdropParams, AirdropStore>(
+export const useAirdropBalanceStore = createQueryStore<AirdropResponseData, AirdropParams, AirdropBalanceStore>(
   {
     fetcher: fetchAirdrop,
     params: {

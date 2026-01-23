@@ -1,5 +1,5 @@
-import { ClaimStep, ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/claimSteps';
-import { useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
+import { RnbwRewardsScene, RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
 import { Blur, Canvas, Group, LinearGradient, RoundedRect, vec } from '@shopify/react-native-skia';
 import { interpolate, interpolateColor, useAnimatedReaction, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { memo } from 'react';
@@ -38,27 +38,27 @@ const REWARDS_GRADIENT: GradientConfig = {
   end: { x: 1.31, y: 0.67 },
 };
 
-type StepGradient = {
-  step: ClaimStep;
+type SceneGradient = {
+  scene: RnbwRewardsScene;
   gradient: GradientConfig;
 };
 
-const STEP_GRADIENTS: StepGradient[] = [
-  { step: ClaimSteps.ClaimAirdrop, gradient: AIRDROP_CLAIM_GRADIENT },
-  { step: ClaimSteps.Rewards, gradient: REWARDS_GRADIENT },
-  { step: ClaimSteps.ClaimAirdropFinished, gradient: AIRDROP_CLAIM_GRADIENT },
+const SCENE_GRADIENTS: SceneGradient[] = [
+  { scene: RnbwRewardsScenes.AirdropClaimPrompt, gradient: AIRDROP_CLAIM_GRADIENT },
+  { scene: RnbwRewardsScenes.RewardsOverview, gradient: REWARDS_GRADIENT },
+  { scene: RnbwRewardsScenes.AirdropClaimed, gradient: AIRDROP_CLAIM_GRADIENT },
 ];
 
-const INPUT_RANGE = STEP_GRADIENTS.map((_, index) => index);
-const STEP_INDEX = STEP_GRADIENTS.reduce<Partial<Record<ClaimStep, number>>>(
+const INPUT_RANGE = SCENE_GRADIENTS.map((_, index) => index);
+const SCENE_INDEX = SCENE_GRADIENTS.reduce<Partial<Record<RnbwRewardsScene, number>>>(
   (acc, item, index) => {
-    acc[item.step] = index;
+    acc[item.scene] = index;
     return acc;
   },
-  {} as Partial<Record<ClaimStep, number>>
+  {} as Partial<Record<RnbwRewardsScene, number>>
 );
 
-const GRADIENT_SEQUENCE = STEP_GRADIENTS.map(item => item.gradient);
+const GRADIENT_SEQUENCE = SCENE_GRADIENTS.map(item => item.gradient);
 
 const buildStopOutputRanges = <T,>(configs: GradientConfig[], selector: (config: GradientConfig) => readonly T[]) => {
   const stopCount = selector(configs[0]).length;
@@ -79,65 +79,65 @@ const START_Y = GRADIENT_SEQUENCE.map(config => config.start.y);
 const END_X = GRADIENT_SEQUENCE.map(config => config.end.x);
 const END_Y = GRADIENT_SEQUENCE.map(config => config.end.y);
 
-export const BottomGradientGlow = memo(function BottomGradientGlow() {
+export const RewardsSceneGlow = memo(function RewardsSceneGlow() {
   const { width: screenWidth, height: screenHeight } = useDimensions();
-  const { activeStep } = useRnbwRewardsTransitionContext();
+  const { activeScene } = useRnbwRewardsFlowContext();
 
-  const stepProgress = useSharedValue(0);
+  const sceneProgress = useSharedValue(0);
   const opacity = useSharedValue(0);
 
   useAnimatedReaction(
-    () => activeStep.value,
-    step => {
+    () => activeScene.value,
+    scene => {
       'worklet';
-      const targetIndex = STEP_INDEX[step];
+      const targetIndex = SCENE_INDEX[scene];
       if (targetIndex !== undefined) {
-        stepProgress.value = withTiming(targetIndex, { duration: ANIMATION_DURATION_MS });
+        sceneProgress.value = withTiming(targetIndex, { duration: ANIMATION_DURATION_MS });
         opacity.value = withTiming(VISIBLE_OPACITY, { duration: ANIMATION_DURATION_MS });
         return;
       }
       opacity.value = withTiming(0, { duration: ANIMATION_DURATION_MS });
     },
-    [activeStep]
+    [activeScene]
   );
 
   const colors = useDerivedValue(() => {
     'worklet';
-    const value = stepProgress.value;
+    const value = sceneProgress.value;
     const result = new Array(COLOR_STOPS.length);
     for (let i = 0; i < COLOR_STOPS.length; i += 1) {
       result[i] = interpolateColor(value, INPUT_RANGE, COLOR_STOPS[i]);
     }
     return result;
-  }, [stepProgress]);
+  }, [sceneProgress]);
 
   const positions = useDerivedValue(() => {
     'worklet';
-    const value = stepProgress.value;
+    const value = sceneProgress.value;
     const result = new Array(POSITION_STOPS.length);
     for (let i = 0; i < POSITION_STOPS.length; i += 1) {
       result[i] = interpolate(value, INPUT_RANGE, POSITION_STOPS[i]);
     }
     return result;
-  }, [stepProgress]);
+  }, [sceneProgress]);
 
   const start = useDerivedValue(() => {
     'worklet';
-    const value = stepProgress.value;
+    const value = sceneProgress.value;
     return vec(
       GLOW.blurRadius + GLOW.width * interpolate(value, INPUT_RANGE, START_X),
       GLOW.blurRadius + GLOW.height * interpolate(value, INPUT_RANGE, START_Y)
     );
-  }, [stepProgress]);
+  }, [sceneProgress]);
 
   const end = useDerivedValue(() => {
     'worklet';
-    const value = stepProgress.value;
+    const value = sceneProgress.value;
     return vec(
       GLOW.blurRadius + GLOW.width * interpolate(value, INPUT_RANGE, END_X),
       GLOW.blurRadius + GLOW.height * interpolate(value, INPUT_RANGE, END_Y)
     );
-  }, [stepProgress]);
+  }, [sceneProgress]);
 
   const canvasWidth = GLOW.width + CANVAS_PADDING * 2;
   const canvasHeight = GLOW.height + CANVAS_PADDING * 2;

@@ -2,53 +2,53 @@ import { memo, useMemo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccountImage } from '@/components/AccountImage';
-import { BottomGradientGlow } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/BottomGradientGlow';
-import { RnbwCoin } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwCoin';
-import { FloatingCoins } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/FloatingCoins';
+import { RewardsSceneGlow } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RewardsSceneGlow';
+import { RnbwHeroCoin } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
+import { AmbientCoins } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/AmbientCoins';
 import {
-  CheckingAirdropLoadingStep,
-  ClaimingAirdropLoadingStep,
-  ClaimingRewardsLoadingStep,
-} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/LoadingSteps';
+  AirdropEligibilityScene,
+  AirdropClaimingScene,
+  RewardsClaimingScene,
+} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/ActionStatusScenes';
 import {
-  RnbwRewardsTransitionContextProvider,
-  useRnbwRewardsTransitionContext,
-} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
-import { ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/claimSteps';
+  RnbwRewardsFlowContextProvider,
+  useRnbwRewardsFlowContext,
+} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
+import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
-import { AirdropIntroductionStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/AirdropIntroductionStep';
-import { ClaimAirdropStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/ClaimAirdropStep';
-import { AirdropClaimFinishedStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/AirdropClaimFinished';
-import { RnbwRewardsStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/RewardsStep';
+import { AirdropIntroScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropIntroScene';
+import { AirdropClaimPromptScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropClaimPromptScene';
+import { AirdropClaimedScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropClaimedScene';
+import { RewardsOverviewScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/RewardsOverviewScene';
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { NoAirdropToClaimStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/NoAirdropToClaimStep';
-import { useHasCompletedAirdrop } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/hooks/useHasCompletedAirdrop';
+import { AirdropUnavailableScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropUnavailableScene';
+import { useHasCompletedAirdropFlow } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/hooks/useHasCompletedAirdropFlow';
 import { Box, ColorModeProvider, Text } from '@/design-system';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import rnbwCoinImage from '@/assets/rnbw.png';
-import { useRnbwRewardsFlowStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsFlowStore';
+import { useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 
 export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
-  const [hasCompletedAirdropFlow] = useHasCompletedAirdrop();
+  const [hasCompletedAirdropFlow] = useHasCompletedAirdropFlow();
 
-  const initialStep = useMemo(() => {
-    return hasCompletedAirdropFlow ? ClaimSteps.Rewards : ClaimSteps.AirdropIntroduction;
+  const initialScene = useMemo(() => {
+    return hasCompletedAirdropFlow ? RnbwRewardsScenes.RewardsOverview : RnbwRewardsScenes.AirdropIntro;
   }, [hasCompletedAirdropFlow]);
 
   return (
     <ColorModeProvider value="dark">
-      <RnbwRewardsTransitionContextProvider initialStep={initialStep}>
+      <RnbwRewardsFlowContextProvider initialScene={initialScene}>
         <View style={styles.container}>
           <RnbwRewardsContent />
         </View>
-      </RnbwRewardsTransitionContextProvider>
+      </RnbwRewardsFlowContextProvider>
     </ColorModeProvider>
   );
 });
 
 function RnbwRewardsContent() {
-  const { scrollOffset } = useRnbwRewardsTransitionContext();
+  const { scrollOffset } = useRnbwRewardsFlowContext();
   const tabBarOffset = useTabBarOffset();
   const safeAreaInsets = useSafeAreaInsets();
 
@@ -62,27 +62,27 @@ function RnbwRewardsContent() {
     <View style={styles.flex}>
       <RnbwRewardsNavbar />
       <View style={{ flex: 1, paddingBottom: tabBarOffset, paddingTop: safeAreaInsets.top + navbarHeight }}>
-        <BottomGradientGlow />
+        <RewardsSceneGlow />
         <Animated.View style={rnbwCoinAnimatedStyle}>
-          <RnbwCoin />
+          <RnbwHeroCoin />
         </Animated.View>
-        <FloatingCoins />
-        <RnbwRewardsSceneSteps />
+        <AmbientCoins />
+        <RnbwRewardsSceneRouter />
       </View>
     </View>
   );
 }
 
 const RnbwRewardsNavbar = memo(function RnbwRewardsNavbar() {
-  const activeStepState = useRnbwRewardsFlowStore(state => state.activeStep);
+  const activeScene = useRewardsFlowStore(state => state.activeScene);
 
   const navbarTitle = useMemo(() => {
-    return activeStepState === ClaimSteps.Rewards ? 'Rewards' : '';
-  }, [activeStepState]);
+    return activeScene === RnbwRewardsScenes.RewardsOverview ? 'Rewards' : '';
+  }, [activeScene]);
 
   const navbarRightComponent = useMemo(() => {
-    return activeStepState === ClaimSteps.Rewards ? <NavbarRnbwBalance /> : null;
-  }, [activeStepState]);
+    return activeScene === RnbwRewardsScenes.RewardsOverview ? <NavbarRnbwBalance /> : null;
+  }, [activeScene]);
 
   return <Navbar title={navbarTitle} leftComponent={<AccountImage />} rightComponent={navbarRightComponent} floating />;
 });
@@ -111,19 +111,19 @@ function NavbarRnbwBalance() {
   );
 }
 
-function RnbwRewardsSceneSteps() {
-  const activeStepState = useRnbwRewardsFlowStore(state => state.activeStep);
+function RnbwRewardsSceneRouter() {
+  const activeScene = useRewardsFlowStore(state => state.activeScene);
 
   return (
     <View style={styles.flex}>
-      {activeStepState === ClaimSteps.AirdropIntroduction && <AirdropIntroductionStep />}
-      {activeStepState === ClaimSteps.CheckingAirdrop && <CheckingAirdropLoadingStep />}
-      {activeStepState === ClaimSteps.ClaimAirdrop && <ClaimAirdropStep />}
-      {activeStepState === ClaimSteps.ClaimingAirdrop && <ClaimingAirdropLoadingStep />}
-      {activeStepState === ClaimSteps.ClaimAirdropFinished && <AirdropClaimFinishedStep />}
-      {activeStepState === ClaimSteps.ClaimingRewards && <ClaimingRewardsLoadingStep />}
-      {activeStepState === ClaimSteps.NoAirdropToClaim && <NoAirdropToClaimStep />}
-      {activeStepState === ClaimSteps.Rewards && <RnbwRewardsStep />}
+      {activeScene === RnbwRewardsScenes.AirdropIntro && <AirdropIntroScene />}
+      {activeScene === RnbwRewardsScenes.AirdropEligibility && <AirdropEligibilityScene />}
+      {activeScene === RnbwRewardsScenes.AirdropClaimPrompt && <AirdropClaimPromptScene />}
+      {activeScene === RnbwRewardsScenes.AirdropClaiming && <AirdropClaimingScene />}
+      {activeScene === RnbwRewardsScenes.AirdropClaimed && <AirdropClaimedScene />}
+      {activeScene === RnbwRewardsScenes.RewardsClaiming && <RewardsClaimingScene />}
+      {activeScene === RnbwRewardsScenes.AirdropUnavailable && <AirdropUnavailableScene />}
+      {activeScene === RnbwRewardsScenes.RewardsOverview && <RewardsOverviewScene />}
     </View>
   );
 }

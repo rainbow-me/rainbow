@@ -1,6 +1,6 @@
 import { analytics } from '@/analytics';
 import { NativeCurrencyKey } from '@/entities';
-import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwAirdropStore';
+import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { ClaimAirdropResponse, ClaimAirdropResult } from '@/features/rnbw-rewards/types/claimAirdropTypes';
 import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResult';
 import { pollClaimStatus, PollClaimStatusResult } from '@/features/rnbw-rewards/utils/pollClaimStatus';
@@ -47,7 +47,7 @@ export async function claimAirdrop({ message, address, currency }: { message: st
     pollResult = await pollForClaimStatus({ claimId, address, currency, chainId });
     const finalClaimResult = pollResult.result;
 
-    await useRnbwAirdropStore.getState().fetch(undefined, { force: true });
+    await useAirdropBalanceStore.getState().fetch(undefined, { force: true });
 
     analytics.track(analytics.event.rnbwAirdropClaim, {
       chainId,

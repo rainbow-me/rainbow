@@ -3,17 +3,17 @@ import { StyleSheet } from 'react-native';
 import { Box, globalColors, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
-import { ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/claimSteps';
-import { useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
+import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
 import Animated, { runOnJS } from 'react-native-reanimated';
 import { time } from '@/utils/time';
 import {
   createScaleInFadeInSlideEnterAnimation,
   createScaleOutFadeOutSlideExitAnimation,
-} from '@/features/rnbw-rewards/animations/layoutAnimations';
+} from '@/features/rnbw-rewards/animations/sceneTransitions';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import watchingAlert from '@/utils/watchingAlert';
-import { rnbwRewardsFlowActions } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsFlowStore';
+import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 
@@ -21,8 +21,8 @@ const exitingAnimationFirstTranche = createScaleOutFadeOutSlideExitAnimation({ d
 const exitingAnimationSecondTranche = createScaleOutFadeOutSlideExitAnimation({ delay: time.ms(120) });
 const exitingAnimationThirdTranche = createScaleOutFadeOutSlideExitAnimation({ delay: time.ms(240) });
 
-export const AirdropIntroductionStep = memo(function AirdropIntroductionStep() {
-  const { setActiveStep } = useRnbwRewardsTransitionContext();
+export const AirdropIntroScene = memo(function AirdropIntroScene() {
+  const { setActiveScene } = useRnbwRewardsFlowContext();
   const isReadOnlyWallet = useIsReadOnlyWallet();
 
   const handleCheckEligibility = useCallback(() => {
@@ -31,9 +31,9 @@ export const AirdropIntroductionStep = memo(function AirdropIntroductionStep() {
       runOnJS(watchingAlert)();
       return;
     }
-    rnbwRewardsFlowActions.startCheckingAirdrop();
-    setActiveStep(ClaimSteps.CheckingAirdrop);
-  }, [isReadOnlyWallet, setActiveStep]);
+    rewardsFlowActions.startAirdropEligibilityCheck();
+    setActiveScene(RnbwRewardsScenes.AirdropEligibility);
+  }, [isReadOnlyWallet, setActiveScene]);
 
   return (
     <Animated.View style={styles.container} entering={enteringAnimation}>

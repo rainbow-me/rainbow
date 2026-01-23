@@ -1,6 +1,6 @@
 import { analytics } from '@/analytics';
 import { NativeCurrencyKey } from '@/entities';
-import { useRnbwRewardsStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsStore';
+import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResult';
 import { pollClaimStatus, type PollClaimStatusResult } from '@/features/rnbw-rewards/utils/pollClaimStatus';
 import { getProvider } from '@/handlers/web3';
@@ -65,7 +65,7 @@ export async function claimRewards({ address, currency }: { address: Address; cu
     pollResult = await pollForClaimStatus({ claimId, address, currency, chainId });
     const finalClaimResult = pollResult.result;
 
-    await useRnbwRewardsStore.getState().fetch(undefined, { force: true });
+    await useRewardsBalanceStore.getState().fetch(undefined, { force: true });
 
     analytics.track(analytics.event.rnbwRewardsClaim, {
       chainId,

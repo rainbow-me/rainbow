@@ -2,23 +2,23 @@ import { memo, useCallback } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import * as i18n from '@/languages';
 import { Box, Text } from '@/design-system';
-import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwAirdropStore';
+import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import { BlurView } from 'react-native-blur-view';
-import { ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/claimSteps';
-import { useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
+import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { runOnJS } from 'react-native-reanimated';
 import watchingAlert from '@/utils/watchingAlert';
 
-export const AirdropCard = memo(function AirdropCard() {
-  const { setActiveStep } = useRnbwRewardsTransitionContext();
+export const AirdropSummaryCard = memo(function AirdropSummaryCard() {
+  const { setActiveScene } = useRnbwRewardsFlowContext();
   const isReadOnlyWallet = useIsReadOnlyWallet();
-  const { tokenAmount, nativeCurrencyAmount } = useRnbwAirdropStore(state => state.getFormattedBalance());
+  const { tokenAmount, nativeCurrencyAmount } = useAirdropBalanceStore(state => state.getFormattedBalance());
 
   const handleNavigateToClaimAirdrop = useCallback(() => {
     'worklet';
@@ -26,8 +26,8 @@ export const AirdropCard = memo(function AirdropCard() {
       runOnJS(watchingAlert)();
       return;
     }
-    setActiveStep(ClaimSteps.ClaimAirdrop);
-  }, [isReadOnlyWallet, setActiveStep]);
+    setActiveScene(RnbwRewardsScenes.AirdropClaimPrompt);
+  }, [isReadOnlyWallet, setActiveScene]);
 
   return (
     <ButtonPressAnimation onPress={handleNavigateToClaimAirdrop} scaleTo={0.96}>

@@ -17,9 +17,9 @@ import Animated, {
 import { BlurView } from 'react-native-blur-view';
 import rnbwCoin from '@/assets/rnbw.png';
 import { time } from '@/utils/time';
-import { ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/claimSteps';
-import { useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
-import { getCoinCenterPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwCoin';
+import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
+import { getCoinCenterPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 
 // Original design dimensions
 const DESIGN_WIDTH = 393;
@@ -29,7 +29,7 @@ const FLOAT_EASING = Easing.inOut(Easing.ease);
 const EXIT_EASING = Easing.bezier(0.2, 0.9, 0.2, 1);
 const EXIT_DURATION = time.seconds(1);
 
-const CLAIMED_CENTER = getCoinCenterPosition(ClaimSteps.ClaimAirdropFinished);
+const CLAIMED_CENTER = getCoinCenterPosition(RnbwRewardsScenes.AirdropClaimed);
 
 const FLOAT_PATTERNS = {
   a: { x: 16, y: -18 },
@@ -124,9 +124,9 @@ const COINS: CoinConfig[] = [
   },
 ];
 
-type FloatingCoinsState = 'visible' | 'hidden' | 'claimed';
+type AmbientCoinsState = 'visible' | 'hidden' | 'claimed';
 
-const FloatingCoin = memo(function FloatingCoin({ config, state }: { config: CoinConfig; state: SharedValue<FloatingCoinsState> }) {
+const AmbientCoin = memo(function AmbientCoin({ config, state }: { config: CoinConfig; state: SharedValue<AmbientCoinsState> }) {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const exitProgress = useSharedValue(0);
@@ -247,22 +247,22 @@ const FloatingCoin = memo(function FloatingCoin({ config, state }: { config: Coi
   );
 });
 
-export const FloatingCoins = memo(function FloatingCoins() {
+export const AmbientCoins = memo(function AmbientCoins() {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
-  const { activeStep } = useRnbwRewardsTransitionContext();
+  const { activeScene } = useRnbwRewardsFlowContext();
   const state = useDerivedValue(() => {
-    switch (activeStep.value) {
-      case ClaimSteps.AirdropIntroduction:
-      case ClaimSteps.ClaimAirdrop:
+    switch (activeScene.value) {
+      case RnbwRewardsScenes.AirdropIntro:
+      case RnbwRewardsScenes.AirdropClaimPrompt:
         return 'visible';
-      case ClaimSteps.CheckingAirdrop:
+      case RnbwRewardsScenes.AirdropEligibility:
         return 'hidden';
-      case ClaimSteps.ClaimAirdropFinished:
+      case RnbwRewardsScenes.AirdropClaimed:
         return 'claimed';
       default:
         return 'hidden';
     }
-  }, [activeStep]);
+  }, [activeScene]);
 
   const scaledCoins: CoinConfig[] = useMemo(() => {
     const scaleX = screenWidth / DESIGN_WIDTH;
@@ -281,7 +281,7 @@ export const FloatingCoins = memo(function FloatingCoins() {
   return (
     <View style={styles.container} pointerEvents="none">
       {scaledCoins.map((config, index) => (
-        <FloatingCoin key={index} config={config} state={state} />
+        <AmbientCoin key={index} config={config} state={state} />
       ))}
     </View>
   );

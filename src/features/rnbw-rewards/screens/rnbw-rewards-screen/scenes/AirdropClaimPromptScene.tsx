@@ -2,35 +2,35 @@ import { memo, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Box, globalColors, Text, TextIcon, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
-import { ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/claimSteps';
-import { useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
+import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
 import Animated from 'react-native-reanimated';
 import { time } from '@/utils/time';
-import { defaultExitAnimation, createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
-import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwCoin';
+import { defaultExitAnimation, createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
+import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwAirdropStore';
+import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
-import { rnbwRewardsFlowActions } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsFlowStore';
+import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: 24, delay: time.ms(200) });
 
-export const ClaimAirdropStep = memo(function ClaimAirdropStep() {
+export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
   const { isDarkMode } = useColorMode();
-  const { setActiveStep } = useRnbwRewardsTransitionContext();
-  const { tokenAmount, nativeCurrencyAmount } = useRnbwAirdropStore(state => state.getFormattedBalance());
-  const hasClaimableAirdrop = useRnbwAirdropStore(state => state.hasClaimableAirdrop());
+  const { setActiveScene } = useRnbwRewardsFlowContext();
+  const { tokenAmount, nativeCurrencyAmount } = useAirdropBalanceStore(state => state.getFormattedBalance());
+  const hasClaimableAirdrop = useAirdropBalanceStore(state => state.hasClaimableAirdrop());
 
   const handleClaimLater = () => {
     'worklet';
-    setActiveStep(ClaimSteps.Rewards);
+    setActiveScene(RnbwRewardsScenes.RewardsOverview);
   };
 
   const handleClaimAirdrop = () => {
     'worklet';
-    rnbwRewardsFlowActions.startClaimAirdrop();
-    setActiveStep(ClaimSteps.ClaimingAirdrop);
+    rewardsFlowActions.startAirdropClaim();
+    setActiveScene(RnbwRewardsScenes.AirdropClaiming);
   };
 
   const claimAirdropDescription = useMemo(() => {
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   },
   amountContainer: {
     position: 'absolute',
-    top: getCoinBottomPosition(ClaimSteps.ClaimAirdrop) + 32,
+    top: getCoinBottomPosition(RnbwRewardsScenes.AirdropClaimPrompt) + 32,
     width: '100%',
   },
 });

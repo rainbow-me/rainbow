@@ -1,37 +1,37 @@
 import { memo, useCallback, useState } from 'react';
 import { View, RefreshControl, StyleSheet } from 'react-native';
 import { Box, Text } from '@/design-system';
-import { useRnbwRewardsStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsStore';
-import { AirdropCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/AirdropCard';
-import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwAirdropStore';
+import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
+import { AirdropSummaryCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/AirdropSummaryCard';
+import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
-import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwCoin';
-import { ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/claimSteps';
-import { useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
+import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
+import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import Animated, { runOnJS } from 'react-native-reanimated';
-import { defaultExitAnimation, createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
+import { defaultExitAnimation, createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { HowToEarnCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/HowToEarnCard';
+import { RewardsHowToEarnCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RewardsHowToEarnCard';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import * as i18n from '@/languages';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import watchingAlert from '@/utils/watchingAlert';
-import { rnbwRewardsFlowActions } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsFlowStore';
+import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 
 const enterAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 
-export const RnbwRewardsStep = function RnbwRewardsStep() {
-  const { scrollHandler } = useRnbwRewardsTransitionContext();
+export const RewardsOverviewScene = function RewardsOverviewScene() {
+  const { scrollHandler } = useRnbwRewardsFlowContext();
   const [refreshing, setRefreshing] = useState(false);
-  const hasClaimedAirdrop = useRnbwAirdropStore(state => state.hasClaimed());
+  const hasClaimedAirdrop = useAirdropBalanceStore(state => state.hasClaimed());
   // TESTING
   // const hasClaimedAirdrop = false;
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await Promise.allSettled([useRnbwRewardsStore.getState().fetch(undefined, { force: true }), delay(time.seconds(1))]);
+      await Promise.allSettled([useRewardsBalanceStore.getState().fetch(undefined, { force: true }), delay(time.seconds(1))]);
     } finally {
       setRefreshing(false);
     }
@@ -48,11 +48,11 @@ export const RnbwRewardsStep = function RnbwRewardsStep() {
       </Animated.ScrollView>
       {hasClaimedAirdrop ? (
         <View style={styles.cardContainer}>
-          <HowToEarnCard />
+          <RewardsHowToEarnCard />
         </View>
       ) : (
         <View style={styles.cardContainer}>
-          <AirdropCard />
+          <AirdropSummaryCard />
         </View>
       )}
     </Animated.View>
@@ -60,10 +60,10 @@ export const RnbwRewardsStep = function RnbwRewardsStep() {
 };
 
 const RnbwRewardsBalance = memo(function RnbwRewardsBalance() {
-  const { setActiveStep } = useRnbwRewardsTransitionContext();
+  const { setActiveScene } = useRnbwRewardsFlowContext();
   const isReadOnlyWallet = useIsReadOnlyWallet();
-  const { tokenAmount, nativeCurrencyAmount } = useRnbwRewardsStore(state => state.getFormattedBalance());
-  const hasClaimableRewards = useRnbwRewardsStore(state => state.hasClaimableRewards());
+  const { tokenAmount, nativeCurrencyAmount } = useRewardsBalanceStore(state => state.getFormattedBalance());
+  const hasClaimableRewards = useRewardsBalanceStore(state => state.hasClaimableRewards());
 
   const handleClaimRewards = useCallback(() => {
     'worklet';
@@ -71,9 +71,9 @@ const RnbwRewardsBalance = memo(function RnbwRewardsBalance() {
       runOnJS(watchingAlert)();
       return;
     }
-    rnbwRewardsFlowActions.startClaimRewards();
-    setActiveStep(ClaimSteps.ClaimingRewards);
-  }, [isReadOnlyWallet, setActiveStep]);
+    rewardsFlowActions.startRewardsClaim();
+    setActiveScene(RnbwRewardsScenes.RewardsClaiming);
+  }, [isReadOnlyWallet, setActiveScene]);
 
   return (
     <View style={styles.rewardsBalanceContainer}>
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   rewardsBalanceContainer: {
-    paddingTop: getCoinBottomPosition(ClaimSteps.Rewards) + 20,
+    paddingTop: getCoinBottomPosition(RnbwRewardsScenes.RewardsOverview) + 20,
   },
   cardContainer: {
     paddingBottom: 32,

@@ -12,11 +12,11 @@ import Animated, {
   ZoomIn,
   ZoomOut,
 } from 'react-native-reanimated';
-import { ClaimStep, ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/claimSteps';
-import { useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
+import { RnbwRewardsScene, RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { time } from '@/utils/time';
-import { transitionEasing } from '@/features/rnbw-rewards/animations/layoutAnimations';
+import { transitionEasing } from '@/features/rnbw-rewards/animations/sceneTransitions';
 import { LoadingSpinner } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/LoadingSpinner';
 import concentricCircleImage from '@/features/rnbw-rewards/assets/radial-circle.png';
 import { SpinnableCoin, SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/SpinnableCoin';
@@ -24,7 +24,7 @@ import { BlurView } from 'react-native-blur-view';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { useRnbwRewardsFlowStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsFlowStore';
+import { useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 
 const COIN_SIZE = 160;
 const SMALL_COIN_SIZE = 90;
@@ -42,44 +42,44 @@ const BLUR_CIRCLE_SIZE = 224;
 const STEP_TRANSITION_DELAY = time.ms(100);
 
 // These translations are relative to the bottom of the navbar on the rewards screen
-const stepsConfig: Record<ClaimStep, { scale: number; translateY: number }> = {
-  [ClaimSteps.AirdropIntroduction]: {
+const scenesConfig: Record<RnbwRewardsScene, { scale: number; translateY: number }> = {
+  [RnbwRewardsScenes.AirdropIntro]: {
     scale: 1,
     translateY: 15,
   },
-  [ClaimSteps.CheckingAirdrop]: {
+  [RnbwRewardsScenes.AirdropEligibility]: {
     scale: SMALL_COIN_SCALE,
     translateY: 202,
   },
-  [ClaimSteps.ClaimAirdrop]: {
+  [RnbwRewardsScenes.AirdropClaimPrompt]: {
     scale: 1,
     translateY: 15,
   },
-  [ClaimSteps.Rewards]: {
+  [RnbwRewardsScenes.RewardsOverview]: {
     scale: MEDIUM_COIN_SCALE,
     translateY: 24,
   },
-  [ClaimSteps.ClaimingAirdrop]: {
+  [RnbwRewardsScenes.AirdropClaiming]: {
     scale: SMALL_COIN_SCALE,
     translateY: 202,
   },
-  [ClaimSteps.ClaimingRewards]: {
+  [RnbwRewardsScenes.RewardsClaiming]: {
     scale: SMALL_COIN_SCALE,
     translateY: 202,
   },
-  [ClaimSteps.ClaimAirdropFinished]: {
+  [RnbwRewardsScenes.AirdropClaimed]: {
     scale: MEDIUM_COIN_SCALE,
     translateY: 186,
   },
-  [ClaimSteps.NoAirdropToClaim]: {
+  [RnbwRewardsScenes.AirdropUnavailable]: {
     scale: MEDIUM_COIN_SCALE,
     translateY: 186,
   },
 };
 
 const loadingSpinnerTop =
-  stepsConfig[ClaimSteps.CheckingAirdrop].translateY -
-  (LOADING_SPINNER_SIZE - COIN_SIZE * stepsConfig[ClaimSteps.CheckingAirdrop].scale) / 2;
+  scenesConfig[RnbwRewardsScenes.AirdropEligibility].translateY -
+  (LOADING_SPINNER_SIZE - COIN_SIZE * scenesConfig[RnbwRewardsScenes.AirdropEligibility].scale) / 2;
 
 const timingConfig = { duration: time.seconds(1), easing: transitionEasing };
 const loadingSpinnerEnteringAnimation = FadeIn.delay(timingConfig.duration * 0.5).easing(transitionEasing);
@@ -90,23 +90,23 @@ const successIconEnterAnimation = ZoomIn.duration(timingConfig.duration * 0.25)
   .easing(transitionEasing);
 const successIconExitAnimation = ZoomOut.easing(transitionEasing);
 
-export const RnbwCoin = memo(function RnbwCoin() {
-  const { activeStep } = useRnbwRewardsTransitionContext();
-  const activeStepState = useRnbwRewardsFlowStore(state => state.activeStep);
+export const RnbwHeroCoin = memo(function RnbwHeroCoin() {
+  const { activeScene } = useRnbwRewardsFlowContext();
+  const activeSceneState = useRewardsFlowStore(state => state.activeScene);
   const coinRef = useRef<SpinnableCoinHandle>(null);
 
   useAnimatedReaction(
-    () => activeStep.value,
+    () => activeScene.value,
     (current, previous) => {
-      if (current === ClaimSteps.CheckingAirdrop && previous === ClaimSteps.AirdropIntroduction) {
+      if (current === RnbwRewardsScenes.AirdropEligibility && previous === RnbwRewardsScenes.AirdropIntro) {
         coinRef.current?.spin({ turns: 0.5, durationMs: time.seconds(1.8) });
-      } else if (current === ClaimSteps.ClaimAirdrop && previous === ClaimSteps.CheckingAirdrop) {
+      } else if (current === RnbwRewardsScenes.AirdropClaimPrompt && previous === RnbwRewardsScenes.AirdropEligibility) {
         coinRef.current?.spin({ turns: 2, durationMs: time.seconds(3) });
-      } else if (current === ClaimSteps.ClaimAirdropFinished && previous === ClaimSteps.ClaimAirdrop) {
+      } else if (current === RnbwRewardsScenes.AirdropClaimed && previous === RnbwRewardsScenes.AirdropClaimPrompt) {
         coinRef.current?.spin({ turns: 0.5, durationMs: time.seconds(1.8) });
-      } else if (current === ClaimSteps.Rewards && previous === ClaimSteps.ClaimingRewards) {
+      } else if (current === RnbwRewardsScenes.RewardsOverview && previous === RnbwRewardsScenes.RewardsClaiming) {
         coinRef.current?.spin({ turns: 0.5, durationMs: time.seconds(1.8) });
-      } else if (current === ClaimSteps.ClaimingRewards && previous === ClaimSteps.Rewards) {
+      } else if (current === RnbwRewardsScenes.RewardsClaiming && previous === RnbwRewardsScenes.RewardsOverview) {
         coinRef.current?.spin({ turns: 0.5, durationMs: time.seconds(3) });
       }
     },
@@ -114,17 +114,17 @@ export const RnbwCoin = memo(function RnbwCoin() {
   );
 
   const coinAnimatedStyle = useAnimatedStyle(() => {
-    const config = stepsConfig[activeStep.value];
+    const config = scenesConfig[activeScene.value];
     return {
       transform: [
         { translateY: withDelay(STEP_TRANSITION_DELAY, withTiming(config.translateY, timingConfig)) },
         { scale: withDelay(STEP_TRANSITION_DELAY, withTiming(config.scale, timingConfig)) },
       ],
     };
-  }, [activeStep]);
+  }, [activeScene]);
 
   const concentricCircleAnimatedStyle = useAnimatedStyle(() => {
-    const config = stepsConfig[activeStep.value];
+    const config = scenesConfig[activeScene.value];
     const coinSize = COIN_SIZE * config.scale;
     const coinRadius = coinSize / 2;
     const coinTopY = config.translateY;
@@ -139,20 +139,20 @@ export const RnbwCoin = memo(function RnbwCoin() {
         { scale: withDelay(STEP_TRANSITION_DELAY, withTiming(config.scale, timingConfig)) },
       ],
     };
-  }, [activeStep]);
+  }, [activeScene]);
 
   const blurAnimatedStyle = useAnimatedStyle(() => {
-    const config = stepsConfig[activeStep.value];
+    const config = scenesConfig[activeScene.value];
     const coinSize = COIN_SIZE * config.scale;
     const top = config.translateY + coinSize / 2 - BLUR_CIRCLE_SIZE / 2;
-    const opacity = activeStep.value === ClaimSteps.CheckingAirdrop ? 0 : 1;
+    const opacity = activeScene.value === RnbwRewardsScenes.AirdropEligibility ? 0 : 1;
 
     return {
       opacity: withDelay(STEP_TRANSITION_DELAY, withTiming(opacity, timingConfig)),
       top: withDelay(STEP_TRANSITION_DELAY, withTiming(top, timingConfig)),
       transform: [{ scale: withDelay(STEP_TRANSITION_DELAY, withTiming(config.scale, timingConfig)) }],
     };
-  }, [activeStep]);
+  }, [activeScene]);
 
   return (
     <View style={styles.container}>
@@ -179,7 +179,7 @@ export const RnbwCoin = memo(function RnbwCoin() {
 
       <Animated.View style={[styles.coinContainer, coinAnimatedStyle]}>
         <SpinnableCoin ref={coinRef} source={rnbwCoinImage} size={COIN_SIZE} />
-        {activeStepState === ClaimSteps.ClaimAirdropFinished && (
+        {activeSceneState === RnbwRewardsScenes.AirdropClaimed && (
           <Animated.View style={styles.successIcon} entering={successIconEnterAnimation} exiting={successIconExitAnimation}>
             <Box
               backgroundColor="#1F9E39"
@@ -207,11 +207,11 @@ export const RnbwCoin = memo(function RnbwCoin() {
 });
 
 function CoinLoadingSpinner() {
-  const activeStepState = useRnbwRewardsFlowStore(state => state.activeStep);
+  const activeSceneState = useRewardsFlowStore(state => state.activeScene);
   const isLoading =
-    activeStepState === ClaimSteps.CheckingAirdrop ||
-    activeStepState === ClaimSteps.ClaimingAirdrop ||
-    activeStepState === ClaimSteps.ClaimingRewards;
+    activeSceneState === RnbwRewardsScenes.AirdropEligibility ||
+    activeSceneState === RnbwRewardsScenes.AirdropClaiming ||
+    activeSceneState === RnbwRewardsScenes.RewardsClaiming;
   if (!isLoading) return null;
   return (
     <Animated.View style={styles.loadingSpinner} entering={loadingSpinnerEnteringAnimation} exiting={loadingSpinnerExitingAnimation}>
@@ -243,13 +243,13 @@ function getCircleRelativeCenterPoint(size: number) {
 }
 
 // TODO: bad name
-export function getCoinBottomPosition(step: ClaimStep) {
-  const config = stepsConfig[step];
+export function getCoinBottomPosition(scene: RnbwRewardsScene) {
+  const config = scenesConfig[scene];
   return config.translateY + COIN_SIZE * config.scale;
 }
 
-export function getCoinCenterPosition(step: ClaimStep) {
-  const config = stepsConfig[step];
+export function getCoinCenterPosition(scene: RnbwRewardsScene) {
+  const config = scenesConfig[scene];
   const coinSize = COIN_SIZE * config.scale;
   return {
     x: DEVICE_WIDTH / 2,

@@ -2,7 +2,7 @@ import { HAS_COMPLETED_AIRDROP_FLOW_KEY } from '@/features/rnbw-rewards/constant
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useMMKVBoolean } from 'react-native-mmkv';
 
-export const useHasCompletedAirdrop = () => {
+export const useHasCompletedAirdropFlow = () => {
   const walletAddress = useAccountAddress();
   return useMMKVBoolean(`${HAS_COMPLETED_AIRDROP_FLOW_KEY}-${walletAddress}`);
 };

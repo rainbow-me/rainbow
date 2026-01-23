@@ -8,7 +8,7 @@ import { Address } from 'viem';
 import { convertAmountToNativeDisplayWorklet, convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { ChainId } from '@/state/backendNetworks/types';
 
-type RnbwRewardsStore = {
+type RewardsBalanceStore = {
   getFormattedBalance: () => {
     tokenAmount: string;
     nativeCurrencyAmount: string;
@@ -16,21 +16,21 @@ type RnbwRewardsStore = {
   hasClaimableRewards: () => boolean;
 };
 
-type RnbwRewardsData = {
+type RewardsBalanceData = {
   claimableRnbw: string;
   claimableValueInCurrency: string;
   decimals: number;
   hasPendingClaim: boolean;
 };
 
-type RnbwRewardsParams = {
+type RewardsBalanceParams = {
   currency: NativeCurrencyKey;
   address: Address;
 };
 
-export const useRnbwRewardsStore = createQueryStore<RnbwRewardsData, RnbwRewardsParams, RnbwRewardsStore>(
+export const useRewardsBalanceStore = createQueryStore<RewardsBalanceData, RewardsBalanceParams, RewardsBalanceStore>(
   {
-    fetcher: fetchRnbwRewards,
+    fetcher: fetchRewardsBalance,
     params: {
       currency: $ => $(userAssetsStoreManager).currency,
       address: $ => $(useWalletsStore).accountAddress,
@@ -61,15 +61,15 @@ export const useRnbwRewardsStore = createQueryStore<RnbwRewardsData, RnbwRewards
   { storageKey: 'rnbwRewardsStore' }
 );
 
-type RnbwRewardsResponse = PlatformResponse<{
+type RewardsBalanceResponse = PlatformResponse<{
   claimableRnbw: string;
   claimableValueInCurrency: string;
   decimals: number;
   hasPendingClaim: boolean;
 }>;
 
-async function fetchRnbwRewards({ currency, address }: RnbwRewardsParams): Promise<RnbwRewardsData> {
-  const response = await getPlatformClient().get<RnbwRewardsResponse>('/rewards/GetRewardsBalance', {
+async function fetchRewardsBalance({ currency, address }: RewardsBalanceParams): Promise<RewardsBalanceData> {
+  const response = await getPlatformClient().get<RewardsBalanceResponse>('/rewards/GetRewardsBalance', {
     params: {
       walletAddress: address,
       chainId: String(ChainId.base),

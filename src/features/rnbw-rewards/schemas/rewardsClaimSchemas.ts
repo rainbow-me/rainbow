@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { platformResponseSchema } from '@/features/rnbw-rewards/schemas/platformResponseSchemas';
-import { claimStatusSchema } from '@/features/rnbw-rewards/schemas/claimAirdropSchemas';
+import { claimStatusSchema } from '@/features/rnbw-rewards/schemas/airdropClaimSchemas';
 
 const typedDataFieldSchema = z.object({
   name: z.string(),
