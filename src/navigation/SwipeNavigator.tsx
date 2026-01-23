@@ -12,7 +12,7 @@ import {
   TAB_BAR_WIDTH,
 } from '@/components/tab-bar/dimensions';
 import { DAPP_BROWSER, LAZY_TABS, POINTS, RNBW_REWARDS, useExperimentalFlag } from '@/config';
-import { Box, Columns, globalColors, useColorMode, Column } from '@/design-system';
+import { Box, Columns, globalColors, useColorMode, Column, ColorModeProvider } from '@/design-system';
 import { IS_IOS, IS_TEST } from '@/env';
 import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -585,6 +585,9 @@ const LazyPlaceholder = memo(function LazyPlaceholder({ route }: { route: RouteP
 const Swipe = createMaterialTopTabNavigator();
 
 const TabBarContainer = ({ descriptors, jumpTo, navigation, state }: MaterialTopTabBarProps) => {
+  const { rnbw_rewards_enabled } = useRemoteConfig('rnbw_rewards_enabled');
+  const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
+  const colorMode = useColorMode();
   const descriptorsRef = useRef(descriptors);
   const stateRef = useRef(state);
 
@@ -607,15 +610,22 @@ const TabBarContainer = ({ descriptors, jumpTo, navigation, state }: MaterialTop
     [focusedIndexRef]
   );
 
+  const shouldForceDarkMode = useMemo(() => {
+    // If current route is RnbwRewardsScreen, use dark mode
+    return state.index === 4 && showRnbwRewardsTab;
+  }, [state.index, showRnbwRewardsTab]);
+
   return (
-    <TabBar
-      activeIndex={activeIndex}
-      descriptorsRef={descriptorsRef}
-      getIsFocused={getIsFocused}
-      jumpTo={jumpTo}
-      navigation={navigation}
-      stateRef={stateRef}
-    />
+    <ColorModeProvider value={shouldForceDarkMode ? 'dark' : colorMode.colorMode}>
+      <TabBar
+        activeIndex={activeIndex}
+        descriptorsRef={descriptorsRef}
+        getIsFocused={getIsFocused}
+        jumpTo={jumpTo}
+        navigation={navigation}
+        stateRef={stateRef}
+      />
+    </ColorModeProvider>
   );
 };
 
