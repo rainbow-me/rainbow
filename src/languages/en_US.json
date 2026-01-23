@@ -3864,7 +3864,7 @@
         "claim_failed_title": "Error Claiming Rewards",
         "claim_failed_message": "Please try again.",
         "claim_later": "Claim Later",
-        "please_be_patient": "Please be patient..."
+        "almost_there": "Almost there..."
       },
       "airdrop_claim_finished": {
         "airdrop_claimed": "Airdrop Claimed",
@@ -3892,7 +3892,8 @@
         "claiming_rewards": "Claiming Rewards...",
         "gathering_coins": "Gathering Coins...",
         "claiming_airdrop": "Claiming Airdrop..."
-      }
+      },
+      "longer_than_usual": "Claiming is taking longer than usual. It may take up to 2 minutes."
     },
     "wallet_error_sheet": {
       "title": "Restore your wallet",

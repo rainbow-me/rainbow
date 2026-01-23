@@ -1,15 +1,24 @@
-import { memo, useCallback } from 'react';
-import { Alert } from 'react-native';
+import { memo, useCallback, useEffect, useState } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
+import { Box, Text, TextIcon } from '@/design-system';
 import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
-import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { RnbwRewardsScenes, type RnbwRewardsScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { ActionStatusScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/ActionStatusScene';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
-import { useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
+import { type AsyncActionState, useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import * as i18n from '@/languages';
+import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
+import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { time } from '@/utils/time';
+import Animated from 'react-native-reanimated';
+import { defaultEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
+
+const LONGER_THAN_USUAL_TIME = time.seconds(10);
 
 export function AirdropEligibilityScene() {
   const { setActiveScene } = useRnbwRewardsFlowContext();
-  const airdropData = useAirdropBalanceStore(state => state.getData());
+  const hasClaimableAirdrop = useAirdropBalanceStore(state => state.hasClaimableAirdrop());
   const airdropEligibilityRequest = useRewardsFlowStore(state => state.airdropEligibilityRequest);
   const labels = [
     i18n.t(i18n.l.rnbw_rewards.loading_labels.calculating_rewards),
@@ -18,14 +27,21 @@ export function AirdropEligibilityScene() {
   ];
 
   const handleCheckAirdropEligibilityComplete = useCallback(() => {
-    if (airdropData?.available.amountInDecimal === '0') {
-      setActiveScene(RnbwRewardsScenes.AirdropUnavailable);
-    } else {
+    if (hasClaimableAirdrop) {
       setActiveScene(RnbwRewardsScenes.AirdropClaimPrompt);
+    } else {
+      setActiveScene(RnbwRewardsScenes.AirdropUnavailable);
     }
-  }, [setActiveScene, airdropData]);
+  }, [setActiveScene, hasClaimableAirdrop]);
 
-  return <ActionStatusScene labels={labels} task={airdropEligibilityRequest} onComplete={handleCheckAirdropEligibilityComplete} />;
+  return (
+    <ActionStatusSceneWithLongerThanUsual
+      scene={RnbwRewardsScenes.AirdropEligibility}
+      labels={labels}
+      task={airdropEligibilityRequest}
+      onComplete={handleCheckAirdropEligibilityComplete}
+    />
+  );
 }
 
 export const AirdropClaimingScene = memo(function AirdropClaimingScene() {
@@ -49,7 +65,14 @@ export const AirdropClaimingScene = memo(function AirdropClaimingScene() {
     [setActiveScene, showClaimError]
   );
 
-  return <ActionStatusScene labels={labels} task={airdropClaimRequest} onComplete={handleClaimAirdropComplete} />;
+  return (
+    <ActionStatusSceneWithLongerThanUsual
+      scene={RnbwRewardsScenes.AirdropClaiming}
+      labels={labels}
+      task={airdropClaimRequest}
+      onComplete={handleClaimAirdropComplete}
+    />
+  );
 });
 
 export const RewardsClaimingScene = memo(function RewardsClaimingScene() {
@@ -71,5 +94,87 @@ export const RewardsClaimingScene = memo(function RewardsClaimingScene() {
     [setActiveScene, showClaimError]
   );
 
-  return <ActionStatusScene labels={labels} task={rewardsClaimRequest} onComplete={handleClaimRewardsComplete} />;
+  return (
+    <ActionStatusSceneWithLongerThanUsual
+      scene={RnbwRewardsScenes.RewardsClaiming}
+      labels={labels}
+      task={rewardsClaimRequest}
+      onComplete={handleClaimRewardsComplete}
+    />
+  );
+});
+
+type ActionStatusSceneWithLongerThanUsualProps<T> = {
+  scene: RnbwRewardsScene;
+  labels: string[];
+  task: AsyncActionState<T>;
+  onComplete?: (taskStatus: 'success' | 'error') => void;
+};
+
+const ActionStatusSceneWithLongerThanUsual = memo(function ActionStatusSceneWithLongerThanUsual<T>({
+  scene,
+  labels,
+  task,
+  onComplete,
+}: ActionStatusSceneWithLongerThanUsualProps<T>) {
+  const shouldShowLongerThanUsualInfoCard = useLongerThanUsualInfoCard();
+
+  return (
+    <View style={[styles.contentContainer, { paddingTop: getCoinBottomPosition(scene) + 32 }]}>
+      <ActionStatusScene labels={labels} task={task} onComplete={onComplete} />
+      {shouldShowLongerThanUsualInfoCard && <LongerThanUsualInfoCard />}
+    </View>
+  );
+});
+
+function useLongerThanUsualInfoCard() {
+  const [shouldShowLongerThanUsualInfoCard, setShouldShowLongerThanUsualInfoCard] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShouldShowLongerThanUsualInfoCard(true);
+    }, LONGER_THAN_USUAL_TIME);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  return shouldShowLongerThanUsualInfoCard;
+}
+
+const LongerThanUsualInfoCard = memo(function LongerThanUsualInfoCard() {
+  const backgroundColor = opacityWorklet(ETH_COLOR_DARK, 0.06);
+  return (
+    <Animated.View entering={defaultEnterAnimation} exiting={defaultExitAnimation}>
+      <Box
+        backgroundColor={backgroundColor}
+        width={'full'}
+        height={100}
+        borderColor={{ custom: backgroundColor }}
+        borderWidth={1}
+        justifyContent="center"
+        alignItems="center"
+        borderRadius={32}
+        padding={'24px'}
+      >
+        <Box flexDirection="row" alignItems="center" gap={12}>
+          <TextIcon size="icon 21px" color="labelQuaternary" weight="bold">
+            {'􀐫'}
+          </TextIcon>
+          <Text color="labelQuaternary" size="15pt / 135%" weight="bold">
+            {i18n.t(i18n.l.rnbw_rewards.longer_than_usual)}
+          </Text>
+        </Box>
+      </Box>
+    </Animated.View>
+  );
+});
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingBottom: 32,
+  },
 });
