@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-import { useRunOnce } from '@/hooks/useRunOnce';
+import { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Text } from '@/design-system';
-import { ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
+import { ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/claimSteps';
+import { TaskState } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsFlowStore';
 import { time } from '@/utils/time';
 import {
   createScaleOutFadeOutSlideExitAnimation,
@@ -17,79 +17,43 @@ const LABEL_CYCLE_INTERVAL = time.seconds(2);
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: -24 });
 const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();
 
-export type LoadingStepResult<T> = { status: 'success'; data: T } | { status: 'error'; error: unknown };
-
 type LoadingStepProps<T> = {
   labels: string[];
-  task: () => Promise<T>;
-  onComplete?: (result: LoadingStepResult<T>) => void;
+  task?: TaskState<T> | null;
+  onComplete?: (taskStatus: 'success' | 'error') => void;
 };
-
-type DisplayState = { type: 'label'; index: number } | { type: 'fallback' } | { type: 'exiting' };
 
 export function LoadingStep<T>({ labels, task, onComplete }: LoadingStepProps<T>) {
   const fallbackLabel = i18n.t(i18n.l.rnbw_rewards.claim.please_be_patient);
-  const [displayState, setDisplayState] = useState<DisplayState>({ type: 'label', index: 0 });
-  const taskResultRef = useRef<LoadingStepResult<T> | null>(null);
+  const [labelIndex, setLabelIndex] = useState(0);
+  const [isExiting, setIsExiting] = useState(false);
 
-  useRunOnce(() => {
-    task()
-      .then(data => {
-        taskResultRef.current = { status: 'success', data };
-        setDisplayState(prev => (prev.type === 'fallback' ? { type: 'exiting' } : prev));
-      })
-      .catch(error => {
-        taskResultRef.current = { status: 'error', error };
-        setDisplayState(prev => (prev.type === 'fallback' ? { type: 'exiting' } : prev));
-      });
-  });
+  const isTaskCompleted = task?.status === 'success' || task?.status === 'error';
 
-  // Cycle through labels
   useEffect(() => {
     const interval = setInterval(() => {
-      setDisplayState(prev => {
-        if (prev.type !== 'label') {
-          clearInterval(interval);
-          return prev;
-        }
-
-        const next = prev.index + 1;
-        if (next >= labels.length) {
-          clearInterval(interval);
-          if (taskResultRef.current) {
-            return { type: 'exiting' };
-          } else {
-            return { type: 'fallback' };
-          }
-        }
-        return { type: 'label', index: next };
-      });
+      // Not labels.length - 1 to allow for the fallback label
+      const labelsDone = labelIndex === labels.length;
+      if (labelsDone || isExiting) return;
+      setLabelIndex(prev => prev + 1);
     }, LABEL_CYCLE_INTERVAL);
 
     return () => clearInterval(interval);
-  }, [labels.length]);
+  }, [isExiting, labelIndex, labels.length]);
 
   useEffect(() => {
-    if (displayState.type !== 'exiting') return;
-
-    const timeout = setTimeout(() => {
-      if (taskResultRef.current) {
-        onComplete?.(taskResultRef.current);
-      }
+    if (isExiting || !isTaskCompleted) return;
+    setIsExiting(true);
+    setTimeout(() => {
+      onComplete?.(task.status);
     }, EXIT_ANIMATION_DURATION);
+  }, [isExiting, onComplete, isTaskCompleted, task?.status]);
 
-    return () => clearTimeout(timeout);
-  }, [displayState.type, onComplete]);
-
-  const currentLabel =
-    displayState.type === 'label' ? labels[displayState.index] ?? '' : displayState.type === 'fallback' ? fallbackLabel : '';
-
-  const animationKey =
-    displayState.type === 'label' ? `label-${displayState.index}` : displayState.type === 'fallback' ? 'fallback' : 'exiting';
+  const currentLabel = isExiting ? '' : labels[labelIndex] ?? fallbackLabel;
 
   return (
     <View style={styles.container}>
-      <Animated.View key={animationKey} entering={enteringAnimation} exiting={exitingAnimation}>
+      <Animated.View key={currentLabel} entering={enteringAnimation} exiting={exitingAnimation}>
         <Text color={{ custom: '#858585' }} size="20pt" weight="heavy">
           {currentLabel}
         </Text>

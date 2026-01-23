@@ -2,10 +2,8 @@ import { memo, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Box, globalColors, Text, TextIcon, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
-import {
-  ClaimSteps,
-  useRnbwRewardsTransitionContext,
-} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
+import { ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/claimSteps';
+import { useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
 import Animated from 'react-native-reanimated';
 import { time } from '@/utils/time';
 import { defaultExitAnimation, createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
@@ -14,6 +12,7 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import { ButtonPressAnimation } from '@/components/animations';
 import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwAirdropStore';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+import { rnbwRewardsFlowActions } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsFlowStore';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: 24, delay: time.ms(200) });
 
@@ -30,6 +29,7 @@ export const ClaimAirdropStep = memo(function ClaimAirdropStep() {
 
   const handleClaimAirdrop = () => {
     'worklet';
+    rnbwRewardsFlowActions.startClaimAirdrop();
     setActiveStep(ClaimSteps.ClaimingAirdrop);
   };
 

@@ -3884,6 +3884,14 @@
       "rewards": {
         "empty_rewards_description": "You Can Earn $RNBW by Swapping Tokens. Rewards for Perps and Predictions are Coming Later.",
         "claiming_rewards": "Claiming Rewards..."
+      },
+      "loading_labels": {
+        "calculating_rewards": "Calculating Rewards...",
+        "checking_historical_activity": "Checking Historical Activity...",
+        "checking_eligibility": "Checking Eligibility...",
+        "claiming_rewards": "Claiming Rewards...",
+        "gathering_coins": "Gathering Coins...",
+        "claiming_airdrop": "Claiming Airdrop..."
       }
     },
     "wallet_error_sheet": {

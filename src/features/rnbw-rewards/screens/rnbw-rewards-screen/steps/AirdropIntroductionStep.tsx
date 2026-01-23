@@ -3,10 +3,8 @@ import { StyleSheet } from 'react-native';
 import { Box, globalColors, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
-import {
-  ClaimSteps,
-  useRnbwRewardsTransitionContext,
-} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
+import { ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/claimSteps';
+import { useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
 import Animated, { runOnJS } from 'react-native-reanimated';
 import { time } from '@/utils/time';
 import {
@@ -15,6 +13,7 @@ import {
 } from '@/features/rnbw-rewards/animations/layoutAnimations';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import watchingAlert from '@/utils/watchingAlert';
+import { rnbwRewardsFlowActions } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsFlowStore';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 
@@ -32,6 +31,7 @@ export const AirdropIntroductionStep = memo(function AirdropIntroductionStep() {
       runOnJS(watchingAlert)();
       return;
     }
+    rnbwRewardsFlowActions.startCheckingAirdrop();
     setActiveStep(ClaimSteps.CheckingAirdrop);
   }, [isReadOnlyWallet, setActiveStep]);
 

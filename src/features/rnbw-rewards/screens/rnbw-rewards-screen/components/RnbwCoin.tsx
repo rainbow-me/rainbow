@@ -12,11 +12,8 @@ import Animated, {
   ZoomIn,
   ZoomOut,
 } from 'react-native-reanimated';
-import {
-  ClaimStep,
-  ClaimSteps,
-  useRnbwRewardsTransitionContext,
-} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
+import { ClaimStep, ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/claimSteps';
+import { useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { time } from '@/utils/time';
 import { transitionEasing } from '@/features/rnbw-rewards/animations/layoutAnimations';
@@ -27,6 +24,7 @@ import { BlurView } from 'react-native-blur-view';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { useRnbwRewardsFlowStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsFlowStore';
 
 const COIN_SIZE = 160;
 const SMALL_COIN_SIZE = 90;
@@ -93,7 +91,8 @@ const successIconEnterAnimation = ZoomIn.duration(timingConfig.duration * 0.25)
 const successIconExitAnimation = ZoomOut.easing(transitionEasing);
 
 export const RnbwCoin = memo(function RnbwCoin() {
-  const { activeStep, activeStepState } = useRnbwRewardsTransitionContext();
+  const { activeStep } = useRnbwRewardsTransitionContext();
+  const activeStepState = useRnbwRewardsFlowStore(state => state.activeStep);
   const coinRef = useRef<SpinnableCoinHandle>(null);
 
   useAnimatedReaction(
@@ -208,7 +207,7 @@ export const RnbwCoin = memo(function RnbwCoin() {
 });
 
 function CoinLoadingSpinner() {
-  const { activeStepState } = useRnbwRewardsTransitionContext();
+  const activeStepState = useRnbwRewardsFlowStore(state => state.activeStep);
   const isLoading =
     activeStepState === ClaimSteps.CheckingAirdrop ||
     activeStepState === ClaimSteps.ClaimingAirdrop ||

@@ -8,10 +8,8 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import { BlurView } from 'react-native-blur-view';
-import {
-  ClaimSteps,
-  useRnbwRewardsTransitionContext,
-} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
+import { ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/claimSteps';
+import { useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { runOnJS } from 'react-native-reanimated';

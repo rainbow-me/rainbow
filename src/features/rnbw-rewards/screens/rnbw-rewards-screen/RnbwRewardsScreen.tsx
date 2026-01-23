@@ -1,16 +1,20 @@
-import { memo, useCallback, useMemo } from 'react';
-import { Alert, Image, StyleSheet, View } from 'react-native';
+import { memo, useMemo } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccountImage } from '@/components/AccountImage';
 import { BottomGradientGlow } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/BottomGradientGlow';
 import { RnbwCoin } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwCoin';
 import { FloatingCoins } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/FloatingCoins';
-import { LoadingStep, LoadingStepResult } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/LoadingStep';
 import {
-  ClaimSteps,
+  CheckingAirdropLoadingStep,
+  ClaimingAirdropLoadingStep,
+  ClaimingRewardsLoadingStep,
+} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/LoadingSteps';
+import {
   RnbwRewardsTransitionContextProvider,
   useRnbwRewardsTransitionContext,
 } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
+import { ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/claimSteps';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 import { AirdropIntroductionStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/AirdropIntroductionStep';
 import { ClaimAirdropStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/ClaimAirdropStep';
@@ -18,19 +22,12 @@ import { AirdropClaimFinishedStep } from '@/features/rnbw-rewards/screens/rnbw-r
 import { RnbwRewardsStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/RewardsStep';
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { claimRewards } from '@/features/rnbw-rewards/utils/claimRewards';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import * as i18n from '@/languages';
-import { claimAirdrop } from '@/features/rnbw-rewards/utils/claimAirdrop';
-import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwAirdropStore';
-import { delay } from '@/utils/delay';
-import { time } from '@/utils/time';
 import { NoAirdropToClaimStep } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/steps/NoAirdropToClaimStep';
 import { useHasCompletedAirdrop } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/hooks/useHasCompletedAirdrop';
-import { Box, Text } from '@/design-system';
+import { Box, ColorModeProvider, Text } from '@/design-system';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import rnbwCoinImage from '@/assets/rnbw.png';
+import { useRnbwRewardsFlowStore } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsFlowStore';
 
 export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
   const [hasCompletedAirdropFlow] = useHasCompletedAirdrop();
@@ -40,16 +37,18 @@ export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
   }, [hasCompletedAirdropFlow]);
 
   return (
-    <RnbwRewardsTransitionContextProvider initialStep={initialStep}>
-      <View style={styles.container}>
-        <RnbwRewardsContent />
-      </View>
-    </RnbwRewardsTransitionContextProvider>
+    <ColorModeProvider value="dark">
+      <RnbwRewardsTransitionContextProvider initialStep={initialStep}>
+        <View style={styles.container}>
+          <RnbwRewardsContent />
+        </View>
+      </RnbwRewardsTransitionContextProvider>
+    </ColorModeProvider>
   );
 });
 
 function RnbwRewardsContent() {
-  const { scrollOffset, activeStepState } = useRnbwRewardsTransitionContext();
+  const { scrollOffset } = useRnbwRewardsTransitionContext();
   const tabBarOffset = useTabBarOffset();
   const safeAreaInsets = useSafeAreaInsets();
 
@@ -59,17 +58,9 @@ function RnbwRewardsContent() {
     };
   }, [scrollOffset]);
 
-  const navbarTitle = useMemo(() => {
-    return activeStepState === ClaimSteps.Rewards ? 'Rewards' : '';
-  }, [activeStepState]);
-
-  const navbarRightComponent = useMemo(() => {
-    return activeStepState === ClaimSteps.Rewards ? <NavbarRnbwBalance /> : null;
-  }, [activeStepState]);
-
   return (
     <View style={styles.flex}>
-      <Navbar title={navbarTitle} leftComponent={<AccountImage />} rightComponent={navbarRightComponent} floating />
+      <RnbwRewardsNavbar />
       <View style={{ flex: 1, paddingBottom: tabBarOffset, paddingTop: safeAreaInsets.top + navbarHeight }}>
         <BottomGradientGlow />
         <Animated.View style={rnbwCoinAnimatedStyle}>
@@ -81,6 +72,20 @@ function RnbwRewardsContent() {
     </View>
   );
 }
+
+const RnbwRewardsNavbar = memo(function RnbwRewardsNavbar() {
+  const activeStepState = useRnbwRewardsFlowStore(state => state.activeStep);
+
+  const navbarTitle = useMemo(() => {
+    return activeStepState === ClaimSteps.Rewards ? 'Rewards' : '';
+  }, [activeStepState]);
+
+  const navbarRightComponent = useMemo(() => {
+    return activeStepState === ClaimSteps.Rewards ? <NavbarRnbwBalance /> : null;
+  }, [activeStepState]);
+
+  return <Navbar title={navbarTitle} leftComponent={<AccountImage />} rightComponent={navbarRightComponent} floating />;
+});
 
 function NavbarRnbwBalance() {
   // TODO: This will require knowing the RNBW token contract address
@@ -107,7 +112,7 @@ function NavbarRnbwBalance() {
 }
 
 function RnbwRewardsSceneSteps() {
-  const { activeStepState } = useRnbwRewardsTransitionContext();
+  const activeStepState = useRnbwRewardsFlowStore(state => state.activeStep);
 
   return (
     <View style={styles.flex}>
@@ -122,91 +127,6 @@ function RnbwRewardsSceneSteps() {
     </View>
   );
 }
-
-function CheckingAirdropLoadingStep() {
-  const { setActiveStep } = useRnbwRewardsTransitionContext();
-  const airdropData = useRnbwAirdropStore(state => state.getData());
-
-  const checkAirdropEligibilityTask = useCallback(async () => {
-    // We already have fetched the airdrop data, this is purely visual
-    await delay(time.seconds(1));
-  }, []);
-
-  const handleCheckAirdropEligibilityComplete = useCallback(() => {
-    if (airdropData?.available.amountInDecimal === '0') {
-      setActiveStep(ClaimSteps.NoAirdropToClaim);
-    } else {
-      setActiveStep(ClaimSteps.ClaimAirdrop);
-    }
-  }, [setActiveStep, airdropData]);
-
-  return (
-    <LoadingStep
-      labels={['Calculating Rewards...', 'Checking Historical Activity...', 'Checking Eligibility...']}
-      task={checkAirdropEligibilityTask}
-      onComplete={handleCheckAirdropEligibilityComplete}
-    />
-  );
-}
-
-const ClaimingAirdropLoadingStep = memo(function ClaimingAirdropLoadingStep() {
-  const { setActiveStep } = useRnbwRewardsTransitionContext();
-  const address = useWalletsStore(state => state.accountAddress);
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const messageToSign = useRnbwAirdropStore(state => state.getMessageToSign());
-
-  const showClaimError = useCallback(() => {
-    Alert.alert(i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_title), i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_message));
-  }, []);
-
-  const claimAirdropTask = useCallback(() => {
-    return claimAirdrop({ message: messageToSign ?? '', address, currency: nativeCurrency });
-  }, [address, nativeCurrency, messageToSign]);
-
-  const handleClaimAirdropComplete = useCallback(
-    (result: LoadingStepResult<Awaited<ReturnType<typeof claimAirdrop>>>) => {
-      if (result.status === 'error') {
-        showClaimError();
-        setActiveStep(ClaimSteps.ClaimAirdrop);
-        return;
-      }
-      setActiveStep(ClaimSteps.ClaimAirdropFinished);
-    },
-    [setActiveStep, showClaimError]
-  );
-
-  return (
-    <LoadingStep labels={['Claiming Airdrop...', 'Gathering Coins...']} task={claimAirdropTask} onComplete={handleClaimAirdropComplete} />
-  );
-});
-
-const ClaimingRewardsLoadingStep = memo(function ClaimingRewardsLoadingStep() {
-  const { setActiveStep } = useRnbwRewardsTransitionContext();
-  const address = useWalletsStore(state => state.accountAddress);
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
-
-  const showClaimError = useCallback(() => {
-    Alert.alert(i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_title), i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_message));
-  }, []);
-
-  const claimRewardsTask = useCallback(() => {
-    return claimRewards({ address, currency: nativeCurrency });
-  }, [address, nativeCurrency]);
-
-  const handleClaimRewardsComplete = useCallback(
-    (result: LoadingStepResult<Awaited<ReturnType<typeof claimRewards>>>) => {
-      if (result.status === 'error') {
-        showClaimError();
-      }
-      setActiveStep(ClaimSteps.Rewards);
-    },
-    [setActiveStep, showClaimError]
-  );
-
-  return (
-    <LoadingStep labels={['Claiming Rewards...', 'Gathering Coins...']} task={claimRewardsTask} onComplete={handleClaimRewardsComplete} />
-  );
-});
 
 const styles = StyleSheet.create({
   container: {

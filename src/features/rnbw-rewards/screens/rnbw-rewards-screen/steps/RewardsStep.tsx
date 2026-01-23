@@ -7,10 +7,8 @@ import { useRnbwAirdropStore } from '@/features/rnbw-rewards/screens/rnbw-reward
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwCoin';
-import {
-  ClaimSteps,
-  useRnbwRewardsTransitionContext,
-} from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
+import { ClaimSteps } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/claimSteps';
+import { useRnbwRewardsTransitionContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsTransitionContext';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import Animated, { runOnJS } from 'react-native-reanimated';
 import { defaultExitAnimation, createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/layoutAnimations';
@@ -20,6 +18,7 @@ import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import * as i18n from '@/languages';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import watchingAlert from '@/utils/watchingAlert';
+import { rnbwRewardsFlowActions } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/stores/rnbwRewardsFlowStore';
 
 const enterAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 
@@ -72,6 +71,7 @@ const RnbwRewardsBalance = memo(function RnbwRewardsBalance() {
       runOnJS(watchingAlert)();
       return;
     }
+    rnbwRewardsFlowActions.startClaimRewards();
     setActiveStep(ClaimSteps.ClaimingRewards);
   }, [isReadOnlyWallet, setActiveStep]);
 
