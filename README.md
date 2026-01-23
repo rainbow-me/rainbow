@@ -19,7 +19,11 @@
 1. Install nvm: https://github.com/creationix/nvm
 2. Install required Node.js version: `nvm install`
 3. Enable yarn: `corepack enable`
-4. Install project dependencies: `yarn setup`
+4. Run initial setup and install project dependencies: `yarn setup`
+
+**Note:** After initial setup, you can use `yarn install` for routine dependency updates.
+The project uses [@lavamoat/allow-scripts](https://github.com/LavaMoat/LavaMoat/tree/main/packages/allow-scripts)
+via a Yarn plugin to automatically run whitelisted postinstall scripts securely.
 
 **Note:** On future terminal sessions, run `nvm use` to activate the correct Node.js version. Alternatively,
 set up [automatic nvm switching](https://github.com/nvm-sh/nvm#deeper-shell-integration) in your shell.
