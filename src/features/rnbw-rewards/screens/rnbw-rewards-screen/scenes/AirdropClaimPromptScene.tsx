@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Box, globalColors, Text, TextIcon, useColorMode } from '@/design-system';
+import { Box, globalColors, Text, TextIcon } from '@/design-system';
 import * as i18n from '@/languages';
 import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
@@ -20,7 +20,6 @@ import { getNumberFormatter } from '@/helpers/intl';
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: 24, delay: time.ms(200) });
 
 export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
-  const { isDarkMode } = useColorMode();
   const { setActiveScene } = useRnbwRewardsFlowContext();
   const { tokenAmount, nativeCurrencyAmount } = useAirdropBalanceStore(state => state.getFormattedBalance());
   const hasClaimableAirdrop = useAirdropBalanceStore(state => state.hasClaimableAirdrop());
@@ -79,8 +78,8 @@ export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
           <HoldToActivateButton
             label={i18n.t(i18n.l.button.hold_to_authorize.hold_to_claim)}
             onLongPress={handleClaimAirdrop}
-            backgroundColor={isDarkMode ? globalColors.white100 : globalColors.grey100}
-            disabledBackgroundColor={isDarkMode ? globalColors.white100 : globalColors.grey100}
+            backgroundColor={globalColors.white100}
+            disabledBackgroundColor={globalColors.white30}
             disabled={false}
             isProcessing={false}
             processingLabel={i18n.t(i18n.l.button.hold_to_authorize.claiming)}
