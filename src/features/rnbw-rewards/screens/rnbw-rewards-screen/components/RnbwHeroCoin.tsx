@@ -270,6 +270,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: DEVICE_WIDTH / 2 - COIN_SIZE / 2,
     transformOrigin: 'center top',
+    shadowColor: opacityWorklet(globalColors.grey100, 0.27),
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 17,
   },
   coin: {
     width: COIN_SIZE,

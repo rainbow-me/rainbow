@@ -14,6 +14,10 @@ import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { runOnJS } from 'react-native-reanimated';
 import watchingAlert from '@/utils/watchingAlert';
+import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native-skia';
+import { useStableValue } from '@/hooks/useStableValue';
+
+const BORDER_RADIUS = 32;
 
 export const AirdropSummaryCard = memo(function AirdropSummaryCard() {
   const { setActiveScene } = useRnbwRewardsFlowContext();
@@ -35,11 +39,14 @@ export const AirdropSummaryCard = memo(function AirdropSummaryCard() {
         <Box
           backgroundColor={opacityWorklet(ETH_COLOR_DARK, 0.06)}
           borderColor={{ custom: opacityWorklet(ETH_COLOR_DARK_ACCENT, 0.06) }}
-          borderRadius={32}
+          borderRadius={BORDER_RADIUS}
           paddingVertical="24px"
           paddingHorizontal="20px"
           style={{ overflow: 'visible' }}
         >
+          <View style={styles.gradientFillContainer}>
+            <GradientFill />
+          </View>
           <BackgroundCoins />
           <Box gap={20}>
             <Box paddingLeft={'4px'}>
@@ -65,38 +72,133 @@ export const AirdropSummaryCard = memo(function AirdropSummaryCard() {
   );
 });
 
-// TODO: clean styles / blur config
-const BackgroundCoins = memo(function BackgroundCoins() {
+const BLUE_ORANGE_GRADIENT = {
+  colors: ['#3887F2', '#40F5CC', '#FF9129', '#FFE636'],
+  positions: [0.11, 0.4, 0.64, 0.9],
+  start: { x: 0.02, y: 0.69 },
+  end: { x: 0.98, y: 0.69 },
+};
+
+const GLOW = {
+  width: 448,
+  height: 695,
+  borderRadius: 180,
+  blurRadius: 40,
+} as const;
+
+const BLUR_PADDING = GLOW.blurRadius * 2;
+const GRADIENT_TOP_OFFSET = 55;
+
+function GradientFill() {
+  const canvasWidth = GLOW.width + BLUR_PADDING * 2;
+  const canvasHeight = GLOW.height + BLUR_PADDING * 2;
+
   return (
-    <View style={[StyleSheet.absoluteFill]}>
-      <View style={StyleSheet.absoluteFill}>
-        <View style={{ position: 'absolute', top: -21, right: 59, transform: [{ rotate: '11.11deg' }], opacity: 0.9 }}>
-          <Image source={rnbwCoinImage} style={{ width: 61, height: 61 }} />
-          <BlurView
-            style={{ position: 'absolute', top: -1.5 * 3, left: -1.5 * 3, right: -1.5 * 3, bottom: -1.5 * 3 }}
-            blurStyle="plain"
-            blurIntensity={1.5}
+    <View style={styles.canvasWrapper}>
+      <Canvas
+        style={{
+          width: canvasWidth,
+          height: canvasHeight,
+        }}
+      >
+        <RoundedRect x={BLUR_PADDING} y={BLUR_PADDING} width={GLOW.width} height={GLOW.height} r={GLOW.borderRadius} opacity={0.15}>
+          <LinearGradient
+            colors={BLUE_ORANGE_GRADIENT.colors}
+            positions={BLUE_ORANGE_GRADIENT.positions}
+            start={{
+              x: BLUR_PADDING + GLOW.width * BLUE_ORANGE_GRADIENT.start.x,
+              y: BLUR_PADDING + GLOW.height * BLUE_ORANGE_GRADIENT.start.y,
+            }}
+            end={{
+              x: BLUR_PADDING + GLOW.width * BLUE_ORANGE_GRADIENT.end.x,
+              y: BLUR_PADDING + GLOW.height * BLUE_ORANGE_GRADIENT.end.y,
+            }}
           />
+          <Blur blur={GLOW.blurRadius} />
+        </RoundedRect>
+      </Canvas>
+    </View>
+  );
+}
+
+const BackgroundCoins = memo(function BackgroundCoins() {
+  const BACKGROUND_COIN_LAYERS = useStableValue(() => [
+    {
+      id: 'outer',
+      containerStyle: styles.backgroundCoinLayer,
+      coins: [
+        {
+          id: 'top-right',
+          position: { top: -21, right: 59 },
+          size: 61,
+          rotation: '11.11deg',
+          opacity: 0.9,
+          blurIntensity: 1.5,
+        },
+      ],
+    },
+    {
+      id: 'clipped',
+      containerStyle: styles.backgroundCoinLayerClipped,
+      coins: [
+        {
+          id: 'bottom-right',
+          position: { bottom: -40, right: -30 },
+          size: 122,
+          rotation: '-13.39deg',
+          opacity: 0.7,
+          blurIntensity: 2,
+        },
+        {
+          id: 'bottom-center',
+          position: { bottom: 14, right: 100 },
+          size: 31,
+          rotation: '23.77deg',
+          opacity: 1,
+          blurIntensity: 1,
+        },
+      ],
+    },
+  ]);
+
+  return (
+    <View style={styles.backgroundCoinWrapper}>
+      {BACKGROUND_COIN_LAYERS.map(layer => (
+        <View key={layer.id} style={layer.containerStyle}>
+          {layer.coins.map(coin => {
+            const blurPadding = coin.blurIntensity * 3;
+
+            return (
+              <View
+                key={coin.id}
+                style={[
+                  styles.backgroundCoin,
+                  coin.position,
+                  {
+                    transform: [{ rotate: coin.rotation }],
+                    opacity: coin.opacity,
+                  },
+                ]}
+              >
+                <Image source={rnbwCoinImage} style={{ width: coin.size, height: coin.size }} />
+                <BlurView
+                  style={[
+                    styles.backgroundCoinBlur,
+                    {
+                      top: -blurPadding,
+                      left: -blurPadding,
+                      right: -blurPadding,
+                      bottom: -blurPadding,
+                    },
+                  ]}
+                  blurStyle="plain"
+                  blurIntensity={coin.blurIntensity}
+                />
+              </View>
+            );
+          })}
         </View>
-      </View>
-      <View style={[StyleSheet.absoluteFill, { borderRadius: 32, overflow: 'hidden' }]}>
-        <View style={{ position: 'absolute', bottom: -40, right: -30, transform: [{ rotate: '-13.39deg' }], opacity: 0.7 }}>
-          <Image source={rnbwCoinImage} style={{ width: 122, height: 122 }} />
-          <BlurView
-            style={{ position: 'absolute', top: -2 * 3, left: -2 * 3, right: -2 * 3, bottom: -2 * 3 }}
-            blurStyle="plain"
-            blurIntensity={2}
-          />
-        </View>
-        <View style={{ position: 'absolute', bottom: 14, right: 100, transform: [{ rotate: '23.77deg' }] }}>
-          <Image source={rnbwCoinImage} style={{ width: 31, height: 31 }} />
-          <BlurView
-            style={{ position: 'absolute', top: -1 * 3, left: -1 * 3, right: -1 * 3, bottom: -1 * 3 }}
-            blurStyle="plain"
-            blurIntensity={1}
-          />
-        </View>
-      </View>
+      ))}
     </View>
   );
 });
@@ -106,5 +208,34 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     resizeMode: 'contain',
+  },
+  gradientFillContainer: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: BORDER_RADIUS,
+    overflow: 'hidden',
+  },
+  canvasWrapper: {
+    position: 'absolute',
+    top: -BLUR_PADDING + GRADIENT_TOP_OFFSET,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  backgroundCoinWrapper: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  backgroundCoinLayer: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  backgroundCoinLayerClipped: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: BORDER_RADIUS,
+    overflow: 'hidden',
+  },
+  backgroundCoin: {
+    position: 'absolute',
+  },
+  backgroundCoinBlur: {
+    position: 'absolute',
   },
 });
