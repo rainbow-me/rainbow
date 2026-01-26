@@ -13,6 +13,9 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
+import { usePoints } from '@/resources/points';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { getNumberFormatter } from '@/helpers/intl';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: 24, delay: time.ms(200) });
 
@@ -21,6 +24,12 @@ export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
   const { setActiveScene } = useRnbwRewardsFlowContext();
   const { tokenAmount, nativeCurrencyAmount } = useAirdropBalanceStore(state => state.getFormattedBalance());
   const hasClaimableAirdrop = useAirdropBalanceStore(state => state.hasClaimableAirdrop());
+
+  const accountAddress = useAccountAddress();
+  const { data: pointsData } = usePoints({ walletAddress: accountAddress });
+  const totalPoints = pointsData?.points?.user?.earnings?.total;
+  const rank = pointsData?.points?.user?.stats?.position?.current;
+  const isUnranked = pointsData?.points?.user?.stats?.position?.unranked;
 
   const handleClaimLater = () => {
     'worklet';
@@ -33,13 +42,11 @@ export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
     setActiveScene(RnbwRewardsScenes.AirdropClaiming);
   };
 
-  const claimAirdropDescription = useMemo(() => {
-    // TODO: confirm this is the description we want to use
-    return i18n.t(i18n.l.rnbw_rewards.claim.based_on_your_swaps, {
-      points: '45,788',
-      rank: '4,566',
-    });
-  }, []);
+  const formattedPoints = useMemo(() => (totalPoints != null ? getNumberFormatter('en-US').format(totalPoints) : '—'), [totalPoints]);
+  const formattedRank = useMemo(
+    () => (rank != null && !isUnranked ? `#${getNumberFormatter('en-US').format(rank)}` : '—'),
+    [rank, isUnranked]
+  );
 
   return (
     <Animated.View style={styles.container} entering={enteringAnimation} exiting={defaultExitAnimation}>
@@ -58,7 +65,15 @@ export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
       </View>
       <Box gap={24} alignItems="center" paddingHorizontal={{ custom: 40 }}>
         <Text color={{ custom: '#989A9E' }} size="17pt / 150%" weight="semibold" align="center">
-          {claimAirdropDescription}
+          {i18n.t(i18n.l.rnbw_rewards.claim.based_on_your_swaps_prefix)}
+          <Text color="label" weight="bold" size="17pt / 150%">
+            {formattedPoints}
+          </Text>
+          {i18n.t(i18n.l.rnbw_rewards.claim.based_on_your_swaps_middle)}
+          <Text color="label" weight="bold" size="17pt / 150%">
+            {formattedRank}
+          </Text>
+          {i18n.t(i18n.l.rnbw_rewards.claim.based_on_your_swaps_suffix)}
         </Text>
         <Box gap={28}>
           <HoldToActivateButton
