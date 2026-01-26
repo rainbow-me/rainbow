@@ -4,6 +4,7 @@ import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
 import { getProvider, toHex } from '@/handlers/web3';
 import { Address, erc20Abi, erc721Abi } from 'viem';
+import { supportsDelegation } from '@rainbow-me/delegation';
 
 import { ChainId } from '@/state/backendNetworks/types';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
@@ -18,6 +19,30 @@ import { overrideWithFastSpeedIfNeeded } from './../utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { getRemoteConfig } from '@/model/remoteConfig';
+import { DELEGATION, getExperimentalFlag } from '@/config/experimental';
+
+/**
+ * Determines the approval amount based on delegation support.
+ * If the address supports delegation (EIP-7702), use finite approvals for better security.
+ * Otherwise, use unlimited approvals (MaxUint256) for better UX.
+ */
+const getApprovalAmount = async ({
+  address,
+  chainId,
+  amount,
+}: {
+  address: Address;
+  chainId: ChainId;
+  amount: string;
+}): Promise<{ approvalAmount: string; isUnlimited: boolean }> => {
+  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
+  const { supported: delegationSupported } = await supportsDelegation({ address, chainId });
+  if (delegationEnabled && delegationSupported) {
+    return { approvalAmount: amount, isUnlimited: false };
+  }
+  return { approvalAmount: MaxUint256.toString(), isUnlimited: true };
+};
 
 export const getAssetRawAllowance = async ({
   owner,
@@ -88,9 +113,10 @@ export const populateApprove = async ({
   amount: string;
 }): Promise<PopulatedTransaction | null> => {
   try {
+    const { approvalAmount } = await getApprovalAmount({ address: owner, chainId, amount });
     const provider = getProvider({ chainId });
     const tokenContract = new Contract(tokenAddress, erc20Abi, provider);
-    const approveTransaction = await tokenContract.populateTransaction.approve(spender, amount, {
+    const approveTransaction = await tokenContract.populateTransaction.approve(spender, approvalAmount, {
       from: owner,
     });
     return approveTransaction;
@@ -221,6 +247,12 @@ export const unlock = async ({
 
   const nonce = baseNonce ? baseNonce + index : undefined;
 
+  const { approvalAmount, isUnlimited } = await getApprovalAmount({
+    address: parameters.fromAddress,
+    chainId,
+    amount: parameters.amount,
+  });
+
   let approval;
   try {
     approval = await executeApprove({
@@ -231,7 +263,7 @@ export const unlock = async ({
       wallet,
       nonce,
       chainId,
-      amount: parameters.amount,
+      amount: approvalAmount,
     });
   } catch (e) {
     logger.error(new RainbowError('[raps/unlock]: error executeApprove'), {
@@ -261,7 +293,7 @@ export const unlock = async ({
     nonce: approval.nonce,
     status: TransactionStatus.pending,
     type: 'approve',
-    approvalAmount: parameters.amount,
+    approvalAmount: isUnlimited ? 'UNLIMITED' : approvalAmount,
     ...gasParams,
   } satisfies NewTransaction;
 
