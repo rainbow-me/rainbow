@@ -2,11 +2,11 @@ import { RnbwRewardsScene, RnbwRewardsScenes } from '@/features/rnbw-rewards/scr
 import { useHasCompletedAirdropFlow } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/hooks/useHasCompletedAirdropFlow';
 import { rewardsFlowActions, useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import usePrevious from '@/hooks/usePrevious';
-import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { createContext, ReactNode, useContext, useEffect, useLayoutEffect, useMemo } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useMemo } from 'react';
 import { SharedValue, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
 type RnbwRewardsFlowContextType = {
   activeScene: SharedValue<RnbwRewardsScene>;
@@ -28,11 +28,11 @@ export function RnbwRewardsFlowContextProvider({ children }: RnbwRewardsFlowCont
     return hasCompletedAirdropFlow ? RnbwRewardsScenes.RewardsOverview : RnbwRewardsScenes.AirdropIntro;
   }, [hasCompletedAirdropFlow]);
 
-  const activeScene = useSharedValue<RnbwRewardsScene>(initialScene);
   const scrollOffset = useSharedValue(0);
   const scrollHandler = useAnimatedScrollHandler(event => {
     scrollOffset.value = event.contentOffset.y;
   });
+  const activeScene = useStoreSharedValue(useRewardsFlowStore, state => state.activeScene, { fireImmediately: true });
 
   const value = useMemo(
     () => ({ activeScene, setActiveScene: rewardsFlowActions.setActiveScene, scrollHandler, scrollOffset }),
@@ -60,21 +60,14 @@ type RnbwRewardsFlowSideEffectsProps = {
   initialScene: RnbwRewardsScene;
 };
 
-function RnbwRewardsFlowSideEffects({ activeScene, initialScene }: RnbwRewardsFlowSideEffectsProps) {
+function RnbwRewardsFlowSideEffects({ initialScene }: RnbwRewardsFlowSideEffectsProps) {
   const accountAddress = useAccountAddress();
   const activeSceneState = useRewardsFlowStore(state => state.activeScene);
   const [hasCompletedAirdropFlow, setHasCompletedAirdropFlow] = useHasCompletedAirdropFlow();
   const previousAccountAddress = usePrevious(accountAddress);
   const hasClaimedAirdrop = useAirdropBalanceStore(state => state.hasClaimedAirdrop() === true);
 
-  useSyncSharedValue({
-    compareDepth: 'shallow',
-    sharedValue: activeScene,
-    state: activeSceneState,
-    syncDirection: 'stateToSharedValue',
-  });
-
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (previousAccountAddress === accountAddress) return;
     rewardsFlowActions.resetFlow(initialScene);
   }, [accountAddress, initialScene, previousAccountAddress]);
