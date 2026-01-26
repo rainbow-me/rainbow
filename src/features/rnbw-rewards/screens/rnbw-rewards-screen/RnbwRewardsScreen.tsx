@@ -23,22 +23,15 @@ import { RewardsOverviewScene } from '@/features/rnbw-rewards/screens/rnbw-rewar
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { AirdropUnavailableScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropUnavailableScene';
-import { useHasCompletedAirdropFlow } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/hooks/useHasCompletedAirdropFlow';
 import { Box, ColorModeProvider, Text } from '@/design-system';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import { useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 
 export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
-  const [hasCompletedAirdropFlow] = useHasCompletedAirdropFlow();
-
-  const initialScene = useMemo(() => {
-    return hasCompletedAirdropFlow ? RnbwRewardsScenes.RewardsOverview : RnbwRewardsScenes.AirdropIntro;
-  }, [hasCompletedAirdropFlow]);
-
   return (
     <ColorModeProvider value="dark">
-      <RnbwRewardsFlowContextProvider initialScene={initialScene}>
+      <RnbwRewardsFlowContextProvider>
         <View style={styles.container}>
           <RnbwRewardsContent />
         </View>

@@ -17,9 +17,9 @@ type AirdropBalanceStore = {
     nativeCurrencyAmount: string;
   };
   getMessageToSign: () => string | undefined;
-  hasClaimed: () => boolean;
-  hasClaimableAirdrop: () => boolean;
-  wasEverAirdropped: () => boolean;
+  hasClaimedAirdrop: () => boolean | undefined;
+  hasClaimableAirdrop: () => boolean | undefined;
+  wasEverAirdropped: () => boolean | undefined;
 };
 
 type AirdropParams = {
@@ -83,17 +83,20 @@ export const useAirdropBalanceStore = createQueryStore<AirdropResponseData, Aird
       const data = get().getData();
       return data?.message ?? undefined;
     },
-    hasClaimed: () => {
+    hasClaimedAirdrop: () => {
       const data = get().getData();
-      return data?.available.amountInDecimal !== data?.airdropped.amountInDecimal;
+      if (!data) return undefined;
+      return data.available.amountInDecimal !== data.airdropped.amountInDecimal;
     },
     hasClaimableAirdrop: () => {
       const data = get().getData();
-      return data?.available.amountInDecimal !== '0';
+      if (!data) return undefined;
+      return data.available.amountInDecimal !== '0';
     },
     wasEverAirdropped: () => {
       const data = get().getData();
-      return data?.airdropped.amountInDecimal !== '0';
+      if (!data) return undefined;
+      return data.airdropped.amountInDecimal !== '0';
     },
   }),
   { storageKey: 'airdropStore' }
