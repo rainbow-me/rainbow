@@ -25,7 +25,7 @@ const enterAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(2
 export const RewardsOverviewScene = function RewardsOverviewScene() {
   const { scrollHandler } = useRnbwRewardsFlowContext();
   const [refreshing, setRefreshing] = useState(false);
-  const hasClaimedAirdrop = useAirdropBalanceStore(state => state.hasClaimed());
+  const hasClaimableAirdrop = useAirdropBalanceStore(state => state.hasClaimableAirdrop());
   // TESTING
   // const hasClaimedAirdrop = false;
   const handleRefresh = useCallback(async () => {
@@ -46,13 +46,13 @@ export const RewardsOverviewScene = function RewardsOverviewScene() {
       >
         <RnbwRewardsBalance />
       </Animated.ScrollView>
-      {hasClaimedAirdrop ? (
+      {hasClaimableAirdrop ? (
         <View style={styles.cardContainer}>
-          <RewardsHowToEarnCard />
+          <AirdropSummaryCard />
         </View>
       ) : (
         <View style={styles.cardContainer}>
-          <AirdropSummaryCard />
+          <RewardsHowToEarnCard />
         </View>
       )}
     </Animated.View>

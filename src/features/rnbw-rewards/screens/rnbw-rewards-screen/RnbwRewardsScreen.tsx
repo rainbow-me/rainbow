@@ -2,7 +2,7 @@ import { memo, useMemo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccountImage } from '@/components/AccountImage';
-import { RewardsSceneGlow } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RewardsSceneGlow';
+import { BottomGradientGlow } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/BottomGradientGlow';
 import { RnbwHeroCoin } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 import { AmbientCoins } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/AmbientCoins';
 import {
@@ -62,7 +62,7 @@ function RnbwRewardsContent() {
     <View style={styles.flex}>
       <RnbwRewardsNavbar />
       <View style={{ flex: 1, paddingBottom: tabBarOffset, paddingTop: safeAreaInsets.top + navbarHeight }}>
-        <RewardsSceneGlow />
+        <BottomGradientGlow />
         <Animated.View style={rnbwCoinAnimatedStyle}>
           <RnbwHeroCoin />
         </Animated.View>
