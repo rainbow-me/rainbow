@@ -247,7 +247,6 @@ function getCircleRelativeCenterPoint(size: number) {
   };
 }
 
-// TODO: bad name
 export function getCoinBottomPosition(scene: RnbwRewardsScene) {
   const config = scenesConfig[scene];
   return config.translateY + COIN_SIZE * config.scale;
