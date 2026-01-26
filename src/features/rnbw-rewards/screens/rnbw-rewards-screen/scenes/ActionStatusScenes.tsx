@@ -21,9 +21,9 @@ export function AirdropEligibilityScene() {
   const hasClaimableAirdrop = useAirdropBalanceStore(state => state.hasClaimableAirdrop());
   const airdropEligibilityRequest = useRewardsFlowStore(state => state.airdropEligibilityRequest);
   const labels = [
-    i18n.t(i18n.l.rnbw_rewards.loading_labels.calculating_rewards),
     i18n.t(i18n.l.rnbw_rewards.loading_labels.checking_historical_activity),
-    i18n.t(i18n.l.rnbw_rewards.loading_labels.checking_eligibility),
+    i18n.t(i18n.l.rnbw_rewards.loading_labels.reviewing_perps_and_predictions),
+    i18n.t(i18n.l.rnbw_rewards.loading_labels.calculating_rewards),
   ];
 
   const handleCheckAirdropEligibilityComplete = useCallback(() => {

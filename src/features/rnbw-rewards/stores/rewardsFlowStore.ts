@@ -50,7 +50,7 @@ export const useRewardsFlowStore = createRainbowStore<RewardsFlowStore>((set, ge
     const runId = get().airdropEligibilityRequest.runId + 1;
     set(state => ({ ...state, airdropEligibilityRequest: { status: 'running', runId } }));
     try {
-      await delay(time.seconds(1));
+      await delay(time.seconds(3));
       if (get().airdropEligibilityRequest.runId !== runId) return;
       set(state => ({ ...state, airdropEligibilityRequest: { status: 'success', runId, data: undefined } }));
     } catch (error) {
