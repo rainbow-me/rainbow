@@ -149,8 +149,10 @@ export const RnbwHeroCoin = memo(function RnbwHeroCoin() {
 
     return {
       opacity: withDelay(STEP_TRANSITION_DELAY, withTiming(opacity, timingConfig)),
-      top: withDelay(STEP_TRANSITION_DELAY, withTiming(top, timingConfig)),
-      transform: [{ scale: withDelay(STEP_TRANSITION_DELAY, withTiming(config.scale, timingConfig)) }],
+      transform: [
+        { translateY: withDelay(STEP_TRANSITION_DELAY, withTiming(top, timingConfig)) },
+        { scale: withDelay(STEP_TRANSITION_DELAY, withTiming(config.scale, timingConfig)) },
+      ],
     };
   }, [activeScene]);
 
@@ -292,6 +294,7 @@ const styles = StyleSheet.create({
   },
   blurContainer: {
     position: 'absolute',
+    top: 0,
     left: DEVICE_WIDTH / 2 - BLUR_CIRCLE_SIZE / 2,
     width: BLUR_CIRCLE_SIZE,
     height: BLUR_CIRCLE_SIZE,
