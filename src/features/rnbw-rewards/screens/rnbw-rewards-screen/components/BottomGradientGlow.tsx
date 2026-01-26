@@ -1,6 +1,6 @@
 import { RnbwRewardsScene, RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
-import { Blur, Canvas, Group, LinearGradient, RoundedRect, vec } from '@shopify/react-native-skia';
+import { Blur, Canvas, LinearGradient, RoundedRect, vec } from '@shopify/react-native-skia';
 import { interpolate, interpolateColor, useAnimatedReaction, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { memo, useMemo } from 'react';
 import useDimensions from '@/hooks/useDimensions';
@@ -28,8 +28,7 @@ const GLOW = {
 } as const;
 
 const CANVAS_OFFSET_FROM_BOTTOM = 271;
-const CANVAS_PADDING = GLOW.blurRadius * 2;
-const DRAW_OFFSET = CANVAS_PADDING - GLOW.blurRadius;
+const BLUR_PADDING = GLOW.blurRadius * 2;
 const ANIMATION_DURATION_MS = time.ms(300);
 
 const BLUE_ORANGE_GRADIENT: GradientConfig = {
@@ -38,13 +37,6 @@ const BLUE_ORANGE_GRADIENT: GradientConfig = {
   start: { x: 0.02, y: 0.69 },
   end: { x: 0.98, y: 0.69 },
 };
-
-// const PURPLE_BLUE_GRADIENT: GradientConfig = {
-//   colors: ['#C73BF2', '#40F5CC', '#3887F2', '#FFE636'],
-//   positions: [0.09, 0.29, 0.62, 0.91],
-//   start: { x: 0.26, y: 0.8 },
-//   end: { x: 1.31, y: 0.67 },
-// };
 
 export const BottomGradientGlow = memo(function BottomGradientGlow() {
   const { width: screenWidth, height: screenHeight } = useDimensions();
@@ -147,21 +139,21 @@ export const BottomGradientGlow = memo(function BottomGradientGlow() {
   const start = useDerivedValue(() => {
     const value = sceneProgress.value;
     return vec(
-      GLOW.blurRadius + GLOW.width * interpolate(value, config.inputRange, config.startX),
-      GLOW.blurRadius + GLOW.height * interpolate(value, config.inputRange, config.startY)
+      BLUR_PADDING + GLOW.width * interpolate(value, config.inputRange, config.startX),
+      BLUR_PADDING + GLOW.height * interpolate(value, config.inputRange, config.startY)
     );
   }, [sceneProgress, config]);
 
   const end = useDerivedValue(() => {
     const value = sceneProgress.value;
     return vec(
-      GLOW.blurRadius + GLOW.width * interpolate(value, config.inputRange, config.endX),
-      GLOW.blurRadius + GLOW.height * interpolate(value, config.inputRange, config.endY)
+      BLUR_PADDING + GLOW.width * interpolate(value, config.inputRange, config.endX),
+      BLUR_PADDING + GLOW.height * interpolate(value, config.inputRange, config.endY)
     );
   }, [sceneProgress, config]);
 
-  const canvasWidth = GLOW.width + CANVAS_PADDING * 2;
-  const canvasHeight = GLOW.height + CANVAS_PADDING * 2;
+  const canvasWidth = GLOW.width + BLUR_PADDING * 2;
+  const canvasHeight = GLOW.height + BLUR_PADDING * 2;
 
   return (
     <Canvas
@@ -169,23 +161,14 @@ export const BottomGradientGlow = memo(function BottomGradientGlow() {
         position: 'absolute',
         width: canvasWidth,
         height: canvasHeight,
-        top: screenHeight - CANVAS_OFFSET_FROM_BOTTOM - CANVAS_PADDING,
-        left: screenWidth / 2 - GLOW.width / 2 - CANVAS_PADDING,
+        top: screenHeight - CANVAS_OFFSET_FROM_BOTTOM - BLUR_PADDING,
+        left: screenWidth / 2 - GLOW.width / 2 - BLUR_PADDING,
       }}
     >
-      <Group transform={[{ translateX: DRAW_OFFSET }, { translateY: DRAW_OFFSET }]}>
-        <RoundedRect
-          x={GLOW.blurRadius}
-          y={GLOW.blurRadius}
-          width={GLOW.width}
-          height={GLOW.height}
-          r={GLOW.borderRadius}
-          opacity={opacity}
-        >
-          <LinearGradient start={start} end={end} colors={colors} positions={positions} />
-          <Blur blur={GLOW.blurRadius} />
-        </RoundedRect>
-      </Group>
+      <RoundedRect x={BLUR_PADDING} y={BLUR_PADDING} width={GLOW.width} height={GLOW.height} r={GLOW.borderRadius} opacity={opacity}>
+        <LinearGradient start={start} end={end} colors={colors} positions={positions} />
+        <Blur blur={GLOW.blurRadius} />
+      </RoundedRect>
     </Canvas>
   );
 });

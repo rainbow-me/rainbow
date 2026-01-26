@@ -26,8 +26,6 @@ export const RewardsOverviewScene = function RewardsOverviewScene() {
   const { scrollHandler } = useRnbwRewardsFlowContext();
   const [refreshing, setRefreshing] = useState(false);
   const hasClaimableAirdrop = useAirdropBalanceStore(state => state.hasClaimableAirdrop());
-  // TESTING
-  // const hasClaimedAirdrop = false;
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
