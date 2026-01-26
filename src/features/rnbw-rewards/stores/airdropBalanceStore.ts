@@ -19,6 +19,7 @@ type AirdropBalanceStore = {
   getMessageToSign: () => string | undefined;
   hasClaimed: () => boolean;
   hasClaimableAirdrop: () => boolean;
+  wasEverAirdropped: () => boolean;
 };
 
 type AirdropParams = {
@@ -89,6 +90,10 @@ export const useAirdropBalanceStore = createQueryStore<AirdropResponseData, Aird
     hasClaimableAirdrop: () => {
       const data = get().getData();
       return data?.available.amountInDecimal !== '0';
+    },
+    wasEverAirdropped: () => {
+      const data = get().getData();
+      return data?.airdropped.amountInDecimal !== '0';
     },
   }),
   { storageKey: 'airdropStore' }

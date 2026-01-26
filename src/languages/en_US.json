@@ -3872,7 +3872,9 @@
       },
       "airdrop": {
         "nothing_to_claim": "Nothing to Claim",
-        "nothing_to_claim_description": "Sorry, you did not qualify for the airdrop."
+        "nothing_to_claim_description": "Sorry, you did not qualify for the airdrop.",
+        "already_claimed": "Already Claimed",
+        "already_claimed_description": "You've already claimed your airdrop."
       },
       "airdrop_card": {
         "your_airdrop": "Your Airdrop"

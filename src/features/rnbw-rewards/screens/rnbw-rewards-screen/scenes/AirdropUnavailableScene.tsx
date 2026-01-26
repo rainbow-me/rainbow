@@ -12,21 +12,31 @@ import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewa
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: -24 });
 const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();
 
 export const AirdropUnavailableScene = memo(function AirdropUnavailableScene() {
   const { setActiveScene } = useRnbwRewardsFlowContext();
+  const wasEverAirdropped = useAirdropBalanceStore(state => state.wasEverAirdropped());
+
+  const title = wasEverAirdropped
+    ? i18n.t(i18n.l.rnbw_rewards.airdrop.already_claimed)
+    : i18n.t(i18n.l.rnbw_rewards.airdrop.nothing_to_claim);
+
+  const description = wasEverAirdropped
+    ? i18n.t(i18n.l.rnbw_rewards.airdrop.already_claimed_description)
+    : i18n.t(i18n.l.rnbw_rewards.airdrop.nothing_to_claim_description);
 
   return (
     <Animated.View style={styles.container} entering={enteringAnimation} exiting={exitingAnimation}>
       <Box gap={24} alignItems="center" style={styles.claimInfoContainer}>
         <Text color="label" size="30pt" weight="heavy" align="center">
-          {i18n.t(i18n.l.rnbw_rewards.airdrop.nothing_to_claim)}
+          {title}
         </Text>
         <Text color="labelTertiary" size="17pt / 135%" weight="semibold" align="center">
-          {i18n.t(i18n.l.rnbw_rewards.airdrop.nothing_to_claim_description)}
+          {description}
         </Text>
       </Box>
       <ButtonPressAnimation onPress={() => setActiveScene(RnbwRewardsScenes.RewardsOverview)} scaleTo={0.96} style={styles.button}>
