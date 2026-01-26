@@ -37,6 +37,7 @@ interface TransactionSimulationCardProps {
   isLoading: boolean;
   txSimulationApiError: unknown;
   isPersonalSignRequest: boolean;
+  isTypedDataRequest: boolean;
   noChanges: boolean;
   simulation: TransactionSimulationResult | undefined;
   simulationError: TransactionErrorType | undefined;
@@ -51,6 +52,7 @@ export const TransactionSimulationCard = ({
   isLoading,
   txSimulationApiError,
   isPersonalSignRequest,
+  isTypedDataRequest,
   noChanges,
   simulation,
   simulationError,
@@ -60,6 +62,7 @@ export const TransactionSimulationCard = ({
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
   const contentHeight = useSharedValue(COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2);
   const spinnerRotation = useSharedValue(0);
+  const isSimulationUnavailable = isPersonalSignRequest || isTypedDataRequest;
 
   const listStyle = useAnimatedStyle(() => ({
     opacity: noChanges
@@ -81,18 +84,18 @@ export const TransactionSimulationCard = ({
   });
 
   useAnimatedReaction(
-    () => ({ isLoading, isPersonalSignRequest }),
-    ({ isLoading, isPersonalSignRequest }, previous = { isLoading: false, isPersonalSignRequest: false }) => {
+    () => ({ isLoading, isSimulationUnavailable }),
+    ({ isLoading, isSimulationUnavailable }, previous = { isLoading: false, isSimulationUnavailable: false }) => {
       if (isLoading && !previous?.isLoading) {
         spinnerRotation.value = withRepeat(withTiming(360, rotationConfig), -1, false);
       } else if (
         (!isLoading && previous?.isLoading) ||
-        (isPersonalSignRequest && !previous?.isPersonalSignRequest && previous?.isLoading)
+        (isSimulationUnavailable && !previous?.isSimulationUnavailable && previous?.isLoading)
       ) {
         spinnerRotation.value = withTiming(360, timingConfig);
       }
     },
-    [isLoading, isPersonalSignRequest]
+    [isLoading, isSimulationUnavailable]
   );
   const renderSimulationEventRows = useMemo(() => {
     if (isBalanceEnough === false) return null;
@@ -142,7 +145,7 @@ export const TransactionSimulationCard = ({
     if (isBalanceEnough === false) {
       return 'blue';
     }
-    if (noChanges || isPersonalSignRequest || txSimulationApiError) {
+    if (noChanges || isSimulationUnavailable || txSimulationApiError) {
       return 'labelQuaternary';
     }
     if (simulationScanResult === TransactionScanResultType.Warning) {
@@ -152,7 +155,7 @@ export const TransactionSimulationCard = ({
       return 'red';
     }
     return 'label';
-  }, [isBalanceEnough, isLoading, noChanges, simulationError, simulationScanResult, isPersonalSignRequest, txSimulationApiError]);
+  }, [isBalanceEnough, isLoading, noChanges, simulationError, simulationScanResult, isSimulationUnavailable, txSimulationApiError]);
 
   const titleText = useMemo(() => {
     if (isLoading) {
@@ -161,7 +164,7 @@ export const TransactionSimulationCard = ({
     if (isBalanceEnough === false) {
       return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.not_enough_native_balance, { symbol: nativeAsset.symbol });
     }
-    if (txSimulationApiError || isPersonalSignRequest) {
+    if (txSimulationApiError || isSimulationUnavailable) {
       return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.simulation_unavailable);
     }
     if (simulationScanResult === TransactionScanResultType.Warning) {
@@ -181,7 +184,7 @@ export const TransactionSimulationCard = ({
     isLoading,
     isBalanceEnough,
     txSimulationApiError,
-    isPersonalSignRequest,
+    isSimulationUnavailable,
     simulationScanResult,
     noChanges,
     simulationError,
@@ -189,12 +192,12 @@ export const TransactionSimulationCard = ({
   ]);
 
   const isExpanded = useMemo(() => {
-    if (isLoading || isPersonalSignRequest) {
+    if (isLoading || isSimulationUnavailable) {
       return false;
     }
     const shouldExpandOnLoad = isBalanceEnough === false || (!isEmpty(simulation) && !noChanges) || !!simulationError;
     return shouldExpandOnLoad;
-  }, [isBalanceEnough, isLoading, isPersonalSignRequest, noChanges, simulation, simulationError]);
+  }, [isBalanceEnough, isLoading, isSimulationUnavailable, noChanges, simulation, simulationError]);
 
   return (
     <FadedScrollCard
@@ -219,7 +222,7 @@ export const TransactionSimulationCard = ({
               />
             ) : (
               <IconContainer>
-                {!isLoading && noChanges && !isPersonalSignRequest ? (
+                {!isLoading && noChanges && !isSimulationUnavailable ? (
                   <Text align="center" color="labelQuaternary" size="icon 17px" weight="bold">
                     {/* The extra space avoids icon clipping */}
                     {'􀻾 '}
@@ -228,7 +231,7 @@ export const TransactionSimulationCard = ({
                   <Animated.View style={spinnerStyle}>
                     <Text
                       align="center"
-                      color={isLoading ? 'label' : isPersonalSignRequest ? 'labelQuaternary' : 'label'}
+                      color={isLoading ? 'label' : isSimulationUnavailable ? 'labelQuaternary' : 'label'}
                       size="icon 15px"
                       weight="bold"
                     >
@@ -275,6 +278,13 @@ export const TransactionSimulationCard = ({
                   <Box style={{ opacity: 0.6 }}>
                     <Text color="labelQuaternary" size="13pt" weight="semibold">
                       {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.unavailable_personal_sign)}
+                    </Text>
+                  </Box>
+                )}
+                {isTypedDataRequest && (
+                  <Box style={{ opacity: 0.6 }}>
+                    <Text color="labelQuaternary" size="13pt" weight="semibold">
+                      {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.unavailable_typed_data)}
                     </Text>
                   </Box>
                 )}
