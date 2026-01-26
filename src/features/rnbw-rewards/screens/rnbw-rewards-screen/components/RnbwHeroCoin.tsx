@@ -20,11 +20,11 @@ import { transitionEasing } from '@/features/rnbw-rewards/animations/sceneTransi
 import { LoadingSpinner } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/LoadingSpinner';
 import concentricCircleImage from '@/features/rnbw-rewards/assets/radial-circle.png';
 import { SpinnableCoin, SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/SpinnableCoin';
-import { BlurView } from 'react-native-blur-view';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
+import { Blur, Canvas, RoundedRect } from '@shopify/react-native-skia';
 
 const COIN_SIZE = 160;
 const SMALL_COIN_SIZE = 90;
@@ -35,7 +35,7 @@ const MEDIUM_COIN_SCALE = MEDIUM_COIN_SIZE / COIN_SIZE;
 
 const CONCENTRIC_CIRCLE_SIZE = 633;
 const INNERMOST_CIRCLE_SIZE = 182;
-const BLUR_INTENSITY = 94 / 2;
+const BLUR_INTENSITY = 47;
 const BLUR_EXTENT = BLUR_INTENSITY * 3;
 const BLUR_CIRCLE_SIZE = 224;
 
@@ -157,20 +157,23 @@ export const RnbwHeroCoin = memo(function RnbwHeroCoin() {
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.blurContainer, blurAnimatedStyle]}>
-        <View style={styles.blurCircle} />
-        <BlurView
-          style={[
-            styles.blurView,
-            {
-              top: -BLUR_EXTENT,
-              left: -BLUR_EXTENT,
-              right: -BLUR_EXTENT,
-              bottom: -BLUR_EXTENT,
-            },
-          ]}
-          blurStyle="plain"
-          blurIntensity={BLUR_INTENSITY}
-        />
+        <Canvas
+          style={{
+            width: BLUR_CIRCLE_SIZE + BLUR_EXTENT * 2,
+            height: BLUR_CIRCLE_SIZE + BLUR_EXTENT * 2,
+          }}
+        >
+          <RoundedRect
+            x={BLUR_EXTENT}
+            y={BLUR_EXTENT}
+            width={BLUR_CIRCLE_SIZE}
+            height={BLUR_CIRCLE_SIZE}
+            r={BLUR_CIRCLE_SIZE / 2}
+            color={opacityWorklet('#F6D56B', 0.2)}
+          >
+            <Blur blur={BLUR_INTENSITY} />
+          </RoundedRect>
+        </Canvas>
       </Animated.View>
 
       <Animated.View style={[styles.concentricCircleContainer, concentricCircleAnimatedStyle]}>
@@ -295,15 +298,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'visible',
-  },
-  blurCircle: {
-    width: BLUR_CIRCLE_SIZE,
-    height: BLUR_CIRCLE_SIZE,
-    borderRadius: BLUR_CIRCLE_SIZE / 2,
-    backgroundColor: opacityWorklet('#F6D56B', 0.2),
-  },
-  blurView: {
-    position: 'absolute',
   },
   successIcon: {
     position: 'absolute',
