@@ -3,7 +3,7 @@ import * as i18n from '@/languages';
 import { Linking } from 'react-native';
 import { Alert } from '../components/alerts';
 import useAppVersion from './useAppVersion';
-import { ios } from '@/env';
+import { IS_IOS } from '@/env';
 
 const FeedbackEmailAddress = 'support@rainbow.me';
 
@@ -26,7 +26,7 @@ const FeedbackErrorAlert = () =>
   });
 
 function buildMailtoUrl(appVersion: string): string {
-  const subject = encodeURIComponent(`🌈️ Rainbow Feedback - ${ios ? 'iOS' : 'Android'} ${appVersion}`);
+  const subject = encodeURIComponent(`🌈️ Rainbow Feedback - ${IS_IOS ? 'iOS' : 'Android'} ${appVersion}`);
   return `mailto:${FeedbackEmailAddress}?subject=${subject}`;
 }
 
