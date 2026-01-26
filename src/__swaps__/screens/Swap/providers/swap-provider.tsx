@@ -310,9 +310,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         metadata: { degenMode, chainId },
       })({ address: parameters.quote.from, chainId });
 
-      // Check if atomic swap should be used
-      // TODO: Add UI toggle check here when available
-      const atomic = getExperimentalFlag(ATOMIC_SWAPS) && !isHardwareWallet;
+      // Flag if atomic swaps are enabled and supported by the wallet
+      // Upon execution, we do the same for delegation specifically
+      const atomicSwapsEnabled = getRemoteConfig().atomic_swaps_enabled || getExperimentalFlag(ATOMIC_SWAPS);
 
       const { errorMessage } = await executeFn(walletExecuteRap, {
         screen: Screens.SWAPS,
@@ -324,7 +324,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         chainId,
         gasParams,
         gasFeeParamsBySpeed,
-        atomic,
+        atomic: atomicSwapsEnabled && !isHardwareWallet,
       });
 
       isSwapping.value = false;
