@@ -54,7 +54,7 @@ export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
           <Text size="22pt" weight="heavy" color="labelQuaternary" align="center">
             {i18n.t(i18n.l.rnbw_rewards.claim.your_airdrop).toUpperCase()}
           </Text>
-          <Text size="20pt" weight="heavy" color="label" align="center" style={{ fontSize: 64, lineHeight: 72 }}>
+          <Text size="64pt" weight="heavy" color="label" align="center">
             {nativeCurrencyAmount}
           </Text>
           <Text size="20pt" weight="bold" color={hasClaimableAirdrop ? 'label' : 'labelQuaternary'} align="center">
@@ -86,10 +86,9 @@ export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
             showBiometryIcon={false}
             progressColor="black"
             style={styles.button}
-            size="22pt"
             weight="black"
             color="black"
-            textStyle={{ color: 'black', fontSize: 24, fontWeight: '900' }}
+            size="24pt"
           />
           <ButtonPressAnimation onPress={handleClaimLater} scaleTo={0.96}>
             <Box flexDirection="row" gap={8} alignItems="center" justifyContent="center">

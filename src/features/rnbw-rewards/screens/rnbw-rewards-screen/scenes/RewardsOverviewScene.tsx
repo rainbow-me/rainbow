@@ -77,13 +77,7 @@ const RnbwRewardsBalance = memo(function RnbwRewardsBalance() {
     <View style={styles.rewardsBalanceContainer}>
       <Box gap={24} alignItems="center">
         <Box gap={16}>
-          <Text
-            size="44pt"
-            weight="heavy"
-            color={hasClaimableRewards ? 'label' : 'labelSecondary'}
-            align="center"
-            style={{ fontSize: 54, lineHeight: 60 }}
-          >
+          <Text size="54pt" weight="heavy" color={hasClaimableRewards ? 'label' : 'labelSecondary'} align="center">
             {nativeCurrencyAmount}
           </Text>
           <Text size="17pt" weight="bold" color={hasClaimableRewards ? 'label' : 'labelSecondary'} align="center">

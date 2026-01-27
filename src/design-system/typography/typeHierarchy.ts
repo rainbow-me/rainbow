@@ -382,6 +382,17 @@ export const typeHierarchy = {
         ios: -0.3,
       },
     },
+    '24pt': {
+      // ⚠️ IMPORTANT: When modifying these values,
+      // please read the note at the top of this file.
+      fontSize: 24,
+      letterSpacing: 0.35,
+      lineHeight: 30,
+      marginCorrection: {
+        android: 0,
+        ios: -0.3,
+      },
+    },
     '26pt': {
       // ⚠️ IMPORTANT: When modifying these values,
       // please read the note at the top of this file.
@@ -421,6 +432,28 @@ export const typeHierarchy = {
       fontSize: 44,
       letterSpacing: 0.37,
       lineHeight: 52,
+      marginCorrection: {
+        android: 0,
+        ios: 0,
+      },
+    },
+    '54pt': {
+      // ⚠️ IMPORTANT: When modifying these values,
+      // please read the note at the top of this file.
+      fontSize: 54,
+      letterSpacing: 0.37,
+      lineHeight: 64,
+      marginCorrection: {
+        android: 0,
+        ios: 0,
+      },
+    },
+    '64pt': {
+      // ⚠️ IMPORTANT: When modifying these values,
+      // please read the note at the top of this file.
+      fontSize: 64,
+      letterSpacing: 0.37,
+      lineHeight: 76,
       marginCorrection: {
         android: 0,
         ios: 0,
