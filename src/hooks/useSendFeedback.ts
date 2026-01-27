@@ -1,13 +1,16 @@
 import Clipboard from '@react-native-clipboard/clipboard';
+import * as DeviceInfo from 'react-native-device-info';
 import * as i18n from '@/languages';
-import { debounce } from 'lodash';
-import { useCallback } from 'react';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
-import Mailer from 'react-native-mail';
+import { Linking } from 'react-native';
 import { Alert } from '../components/alerts';
 import useAppVersion from './useAppVersion';
+import { IS_IOS } from '@/env';
+import { device } from '@/storage';
+import { getWalletAddresses, getWallets } from '@/state/wallets/walletsStore';
+import { capitalize } from 'lodash';
 
 const FeedbackEmailAddress = 'support@rainbow.me';
+const platform = IS_IOS ? 'iOS' : 'Android';
 
 const setClipboardToFeedbackEmail = () => Clipboard.setString(FeedbackEmailAddress);
 
@@ -27,17 +30,36 @@ const FeedbackErrorAlert = () =>
     title: i18n.t(i18n.l.send_feedback.email_error.title),
   });
 
-const handleMailError = debounce(error => (error ? FeedbackErrorAlert() : null), 250);
+function buildDebugInfo(appVersion: string): string {
+  const deviceModel = IS_IOS ? DeviceInfo.getModel() : `${capitalize(DeviceInfo.getBrand())} ${DeviceInfo.getModel()}`;
+  const osVersion = DeviceInfo.getSystemVersion();
+  const deviceId = device.get(['id']) ?? 'unknown';
+  const walletAddresses = getWalletAddresses(getWallets());
+  const formattedAddresses = walletAddresses.join(', ') || 'none';
 
-function feedbackEmailOptions(appVersion: string) {
-  return {
-    recipients: [FeedbackEmailAddress],
-    subject: `🌈️ Rainbow Feedback - ${ios ? 'iOS' : 'Android'} ${appVersion}`,
-  };
+  return [
+    '---',
+    'Debug Info (please do not delete):',
+    `App: ${appVersion}`,
+    `Platform: ${platform}`,
+    `Device: ${deviceModel}`,
+    `OS: ${platform} ${osVersion}`,
+    `Device ID: ${deviceId}`,
+    `Wallets: ${formattedAddresses}`,
+  ].join('\n');
+}
+
+function buildMailtoUrl(appVersion: string): string {
+  const subject = encodeURIComponent(`🌈️ Rainbow Feedback - ${platform} ${appVersion}`);
+  const debugInfo = buildDebugInfo(appVersion);
+  const body = encodeURIComponent(`\n\n\n${debugInfo}`);
+  return `mailto:${FeedbackEmailAddress}?subject=${subject}&body=${body}`;
 }
 
 export default function useSendFeedback() {
   const appVersion = useAppVersion();
-  const onSendFeedback = useCallback(() => Mailer.mail(feedbackEmailOptions(appVersion), handleMailError), [appVersion]);
-  return onSendFeedback;
+
+  return () => {
+    Linking.openURL(buildMailtoUrl(appVersion)).catch(FeedbackErrorAlert);
+  };
 }

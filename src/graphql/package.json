@@ -2,6 +2,7 @@
   "name": "@rainbow-me/graphql-client",
   "private": true,
   "scripts": {
+    "allow-scripts": "echo 'Skipping: handled by root workspace'",
     "codegen": "graphql-codegen --config codegen.config.js"
   },
   "devDependencies": {

@@ -1753,8 +1753,6 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-mail (4.1.0):
-    - React
   - react-native-menu (1.2.3):
     - React
   - react-native-minimizer (1.3.5):
@@ -1821,7 +1819,7 @@ PODS:
     - React-Core
   - react-native-safe-area-context (5.4.0):
     - React-Core
-  - react-native-screen-corner-radius (0.2.2):
+  - react-native-screen-corner-radius (0.2.3):
     - React
   - react-native-skia (2.4.7):
     - DoubleConversion
@@ -2748,7 +2746,6 @@ DEPENDENCIES:
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-ios-context-menu (from `../node_modules/react-native-ios-context-menu`)
   - react-native-keyboard-controller (from `../node_modules/react-native-keyboard-controller`)
-  - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-menu (from `../node_modules/@react-native-menu/menu`)"
   - react-native-minimizer (from `../node_modules/react-native-minimizer`)
   - react-native-mmkv (from `../node_modules/react-native-mmkv`)
@@ -3022,8 +3019,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-ios-context-menu"
   react-native-keyboard-controller:
     :path: "../node_modules/react-native-keyboard-controller"
-  react-native-mail:
-    :path: "../node_modules/react-native-mail"
   react-native-menu:
     :path: "../node_modules/@react-native-menu/menu"
   react-native-minimizer:
@@ -3299,7 +3294,6 @@ SPEC CHECKSUMS:
   react-native-get-random-values: 04e59f21c9076958ba50576bdd51878fac5b35ef
   react-native-ios-context-menu: 986da6dcba70094bcc2a8049f68410fe7d25aff1
   react-native-keyboard-controller: 06bc109064d91d6b18c43b7b36b1a67a1ec4bf69
-  react-native-mail: 824fe88e2323c1ce0a93e5f46db4056abf432928
   react-native-menu: 70a2aeaeb0a6da0db4e08d8531cdf1d20b702cbf
   react-native-minimizer: d6db020c36a58447adba28f969f70a7098cfadb8
   react-native-mmkv: c72597014b52bbbbeac6b996fe4199007bffefdb
@@ -3310,7 +3304,7 @@ SPEC CHECKSUMS:
   react-native-randombytes: 4a00fba06ca0d80a7c02a6b73cfe58ffa4a093a0
   react-native-restart: f6f591aeb40194c41b9b5013901f00e6cf7d0f29
   react-native-safe-area-context: 9d72abf6d8473da73033b597090a80b709c0b2f1
-  react-native-screen-corner-radius: 81229df69e6f990502b813b92a0e8267c64d9dd9
+  react-native-screen-corner-radius: ebd0d3258fcc894571b41d25ee3db7569d375153
   react-native-skia: 3467bce4be38029a4af437022b88a45e68f4210e
   react-native-text-input-mask: b83b8b571cba4bf18fb9b7a0bb8319a14201db9e
   react-native-udp: 33844c2b4a0430271e46cd069a6152cc4c482095

@@ -10138,7 +10138,6 @@ __metadata:
     react-native-keychain: "npm:10.0.0"
     react-native-level-fs: "npm:3.0.1"
     react-native-linear-gradient: "npm:2.8.3"
-    react-native-mail: "npm:4.1.0"
     react-native-markdown-display: "npm:7.0.0-alpha.2"
     react-native-minimizer: "rainbow-me/react-native-minimizer#26ae6dce10d353de701cebc3a1ae126729bf87f0"
     react-native-mmkv: "npm:2.12.2"
@@ -24540,13 +24539,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/cd41bf28e9f468173f1e5e768685128ebf8bbf9077710e43b63482c1a76f37bff8ab3d1d6adfd7b4d54e648672356c02bea46c47cdbdb1844ebe5c5caf720114
-  languageName: node
-  linkType: hard
-
-"react-native-mail@npm:4.1.0":
-  version: 4.1.0
-  resolution: "react-native-mail@npm:4.1.0"
-  checksum: 10c0/b9a6ecbae79741f41cc3b71afa49dc7ff65b9dae8be69a30b3072ebd9cd1e99a172210a96f73f4860189025371af2f43e087ab30c6f639a7b3b2321782c0aae8
   languageName: node
   linkType: hard
 
