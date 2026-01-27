@@ -1,11 +1,9 @@
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as i18n from '@/languages';
-import { debounce } from 'lodash';
-import { useCallback } from 'react';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
-import Mailer from 'react-native-mail';
+import { Linking } from 'react-native';
 import { Alert } from '../components/alerts';
 import useAppVersion from './useAppVersion';
+import { IS_IOS } from '@/env';
 
 const FeedbackEmailAddress = 'support@rainbow.me';
 
@@ -27,17 +25,15 @@ const FeedbackErrorAlert = () =>
     title: i18n.t(i18n.l.send_feedback.email_error.title),
   });
 
-const handleMailError = debounce(error => (error ? FeedbackErrorAlert() : null), 250);
-
-function feedbackEmailOptions(appVersion: string) {
-  return {
-    recipients: [FeedbackEmailAddress],
-    subject: `🌈️ Rainbow Feedback - ${ios ? 'iOS' : 'Android'} ${appVersion}`,
-  };
+function buildMailtoUrl(appVersion: string): string {
+  const subject = encodeURIComponent(`🌈️ Rainbow Feedback - ${IS_IOS ? 'iOS' : 'Android'} ${appVersion}`);
+  return `mailto:${FeedbackEmailAddress}?subject=${subject}`;
 }
 
 export default function useSendFeedback() {
   const appVersion = useAppVersion();
-  const onSendFeedback = useCallback(() => Mailer.mail(feedbackEmailOptions(appVersion), handleMailError), [appVersion]);
-  return onSendFeedback;
+
+  return () => {
+    Linking.openURL(buildMailtoUrl(appVersion)).catch(FeedbackErrorAlert);
+  };
 }
