@@ -44,49 +44,61 @@ export const useRewardsFlowStore = createRainbowStore<RewardsFlowStore>((set, ge
       rewardsClaimRequest: { status: 'idle', runId: state.rewardsClaimRequest.runId + 1 },
     })),
 
-  setActiveScene: scene => set(state => ({ ...state, activeScene: scene })),
+  setActiveScene: scene => set(() => ({ activeScene: scene })),
 
   startAirdropEligibilityCheck: async () => {
-    const runId = get().airdropEligibilityRequest.runId + 1;
-    set(state => ({ ...state, airdropEligibilityRequest: { status: 'running', runId } }));
+    set(state => ({ airdropEligibilityRequest: { status: 'running', runId: state.airdropEligibilityRequest.runId + 1 } }));
+    const runId = get().airdropEligibilityRequest.runId;
     try {
       await delay(time.seconds(3));
-      if (get().airdropEligibilityRequest.runId !== runId) return;
-      set(state => ({ ...state, airdropEligibilityRequest: { status: 'success', runId, data: undefined } }));
+      set(state => {
+        if (state.airdropEligibilityRequest.runId !== runId) return state;
+        return { airdropEligibilityRequest: { status: 'success', runId, data: undefined } };
+      });
     } catch (error) {
-      if (get().airdropEligibilityRequest.runId !== runId) return;
-      set(state => ({ ...state, airdropEligibilityRequest: { status: 'error', runId, error } }));
+      set(state => {
+        if (state.airdropEligibilityRequest.runId !== runId) return state;
+        return { airdropEligibilityRequest: { status: 'error', runId, error } };
+      });
     }
   },
 
   startAirdropClaim: async () => {
-    const runId = get().airdropClaimRequest.runId + 1;
-    set(state => ({ ...state, airdropClaimRequest: { status: 'running', runId } }));
+    set(state => ({ airdropClaimRequest: { status: 'running', runId: state.airdropClaimRequest.runId + 1 } }));
+    const runId = get().airdropClaimRequest.runId;
     try {
       const address = useWalletsStore.getState().accountAddress;
       const currency = userAssetsStoreManager.getState().currency;
       const message = useAirdropBalanceStore.getState().getMessageToSign() ?? '';
       const data = await claimAirdrop({ message, address, currency });
-      if (get().airdropClaimRequest.runId !== runId) return;
-      set(state => ({ ...state, airdropClaimRequest: { status: 'success', runId, data } }));
+      set(state => {
+        if (state.airdropClaimRequest.runId !== runId) return state;
+        return { airdropClaimRequest: { status: 'success', runId, data } };
+      });
     } catch (error) {
-      if (get().airdropClaimRequest.runId !== runId) return;
-      set(state => ({ ...state, airdropClaimRequest: { status: 'error', runId, error } }));
+      set(state => {
+        if (state.airdropClaimRequest.runId !== runId) return state;
+        return { airdropClaimRequest: { status: 'error', runId, error } };
+      });
     }
   },
 
   startRewardsClaim: async () => {
-    const runId = get().rewardsClaimRequest.runId + 1;
-    set(state => ({ ...state, rewardsClaimRequest: { status: 'running', runId } }));
+    set(state => ({ rewardsClaimRequest: { status: 'running', runId: state.rewardsClaimRequest.runId + 1 } }));
+    const runId = get().rewardsClaimRequest.runId;
     try {
       const address = useWalletsStore.getState().accountAddress;
       const currency = userAssetsStoreManager.getState().currency;
       const data = await claimRewards({ address, currency });
-      if (get().rewardsClaimRequest.runId !== runId) return;
-      set(state => ({ ...state, rewardsClaimRequest: { status: 'success', runId, data } }));
+      set(state => {
+        if (state.rewardsClaimRequest.runId !== runId) return state;
+        return { rewardsClaimRequest: { status: 'success', runId, data } };
+      });
     } catch (error) {
-      if (get().rewardsClaimRequest.runId !== runId) return;
-      set(state => ({ ...state, rewardsClaimRequest: { status: 'error', runId, error } }));
+      set(state => {
+        if (state.rewardsClaimRequest.runId !== runId) return state;
+        return { rewardsClaimRequest: { status: 'error', runId, error } };
+      });
     }
   },
 }));
