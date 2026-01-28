@@ -3,7 +3,6 @@ import { View, StyleSheet } from 'react-native';
 import { Box, globalColors, Text, TextIcon } from '@/design-system';
 import * as i18n from '@/languages';
 import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
-import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
 import Animated from 'react-native-reanimated';
 import { time } from '@/utils/time';
 import { defaultExitAnimation, createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
@@ -20,7 +19,6 @@ import { getNumberFormatter } from '@/helpers/intl';
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: 24, delay: time.ms(200) });
 
 export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
-  const { setActiveScene } = useRnbwRewardsFlowContext();
   const { tokenAmount, nativeCurrencyAmount } = useAirdropBalanceStore(state => state.getFormattedBalance());
   const hasClaimableAirdrop = useAirdropBalanceStore(state => state.hasClaimableAirdrop());
 
@@ -32,13 +30,13 @@ export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
 
   const handleClaimLater = () => {
     'worklet';
-    setActiveScene(RnbwRewardsScenes.RewardsOverview);
+    rewardsFlowActions.setActiveScene(RnbwRewardsScenes.RewardsOverview);
   };
 
   const handleClaimAirdrop = () => {
     'worklet';
     rewardsFlowActions.startAirdropClaim();
-    setActiveScene(RnbwRewardsScenes.AirdropClaiming);
+    rewardsFlowActions.setActiveScene(RnbwRewardsScenes.AirdropClaiming);
   };
 
   const formattedPoints = useMemo(() => (totalPoints != null ? getNumberFormatter('en-US').format(totalPoints) : '—'), [totalPoints]);
@@ -88,7 +86,7 @@ export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
             style={styles.button}
             weight="black"
             color="black"
-            size="24pt"
+            size="22pt"
           />
           <ButtonPressAnimation onPress={handleClaimLater} scaleTo={0.96}>
             <Box flexDirection="row" gap={8} alignItems="center" justifyContent="center">

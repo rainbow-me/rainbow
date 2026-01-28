@@ -58,7 +58,6 @@ export const RewardsOverviewScene = function RewardsOverviewScene() {
 };
 
 const RnbwRewardsBalance = memo(function RnbwRewardsBalance() {
-  const { setActiveScene } = useRnbwRewardsFlowContext();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const { tokenAmount, nativeCurrencyAmount } = useRewardsBalanceStore(state => state.getFormattedBalance());
   const hasClaimableRewards = useRewardsBalanceStore(state => state.hasClaimableRewards());
@@ -70,8 +69,8 @@ const RnbwRewardsBalance = memo(function RnbwRewardsBalance() {
       return;
     }
     rewardsFlowActions.startRewardsClaim();
-    setActiveScene(RnbwRewardsScenes.RewardsClaiming);
-  }, [isReadOnlyWallet, setActiveScene]);
+    rewardsFlowActions.setActiveScene(RnbwRewardsScenes.RewardsClaiming);
+  }, [isReadOnlyWallet]);
 
   return (
     <View style={styles.rewardsBalanceContainer}>

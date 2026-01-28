@@ -3,22 +3,18 @@ import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Box, Text } from '@/design-system';
 import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
-import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
-import {
-  createScaleOutFadeOutSlideExitAnimation,
-  createScaleInFadeInSlideEnterAnimation,
-} from '@/features/rnbw-rewards/animations/sceneTransitions';
+import { createScaleInFadeInSlideEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
+import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: -24 });
-const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();
+const exitingAnimation = defaultExitAnimation;
 
 export const AirdropUnavailableScene = memo(function AirdropUnavailableScene() {
-  const { setActiveScene } = useRnbwRewardsFlowContext();
   const wasEverAirdropped = useAirdropBalanceStore(state => state.wasEverAirdropped());
 
   const title = wasEverAirdropped
@@ -39,7 +35,11 @@ export const AirdropUnavailableScene = memo(function AirdropUnavailableScene() {
           {description}
         </Text>
       </Box>
-      <ButtonPressAnimation onPress={() => setActiveScene(RnbwRewardsScenes.RewardsOverview)} scaleTo={0.96} style={styles.button}>
+      <ButtonPressAnimation
+        onPress={() => rewardsFlowActions.setActiveScene(RnbwRewardsScenes.RewardsOverview)}
+        scaleTo={0.96}
+        style={styles.button}
+      >
         <Box
           backgroundColor={opacityWorklet('#F5F8FF', 0.06)}
           width="full"

@@ -1,11 +1,10 @@
 import { memo, useCallback, useEffect, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { Box, Text, TextIcon } from '@/design-system';
-import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
-import { RnbwRewardsScenes, type RnbwRewardsScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { RnbwRewardsScenes, RnbwRewardsScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { ActionStatusScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/ActionStatusScene';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
-import { type AsyncActionState, useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
+import { AsyncActionState, useRewardsFlowStore, rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import * as i18n from '@/languages';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
@@ -17,7 +16,6 @@ import { defaultEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rew
 const LONGER_THAN_USUAL_TIME = time.seconds(10);
 
 export function AirdropEligibilityScene() {
-  const { setActiveScene } = useRnbwRewardsFlowContext();
   const hasClaimableAirdrop = useAirdropBalanceStore(state => state.hasClaimableAirdrop());
   const airdropEligibilityRequest = useRewardsFlowStore(state => state.airdropEligibilityRequest);
   const labels = [
@@ -28,11 +26,11 @@ export function AirdropEligibilityScene() {
 
   const handleCheckAirdropEligibilityComplete = useCallback(() => {
     if (hasClaimableAirdrop) {
-      setActiveScene(RnbwRewardsScenes.AirdropClaimPrompt);
+      rewardsFlowActions.setActiveScene(RnbwRewardsScenes.AirdropClaimPrompt);
     } else {
-      setActiveScene(RnbwRewardsScenes.AirdropUnavailable);
+      rewardsFlowActions.setActiveScene(RnbwRewardsScenes.AirdropUnavailable);
     }
-  }, [setActiveScene, hasClaimableAirdrop]);
+  }, [hasClaimableAirdrop]);
 
   return (
     <ActionStatusSceneWithLongerThanUsual
@@ -45,7 +43,6 @@ export function AirdropEligibilityScene() {
 }
 
 export const AirdropClaimingScene = memo(function AirdropClaimingScene() {
-  const { setActiveScene } = useRnbwRewardsFlowContext();
   const airdropClaimRequest = useRewardsFlowStore(state => state.airdropClaimRequest);
   const labels = [i18n.t(i18n.l.rnbw_rewards.loading_labels.claiming_airdrop), i18n.t(i18n.l.rnbw_rewards.loading_labels.gathering_coins)];
 
@@ -57,12 +54,12 @@ export const AirdropClaimingScene = memo(function AirdropClaimingScene() {
     (taskStatus: 'success' | 'error') => {
       if (taskStatus === 'error') {
         showClaimError();
-        setActiveScene(RnbwRewardsScenes.AirdropClaimPrompt);
+        rewardsFlowActions.setActiveScene(RnbwRewardsScenes.AirdropClaimPrompt);
         return;
       }
-      setActiveScene(RnbwRewardsScenes.AirdropClaimed);
+      rewardsFlowActions.setActiveScene(RnbwRewardsScenes.AirdropClaimed);
     },
-    [setActiveScene, showClaimError]
+    [showClaimError]
   );
 
   return (
@@ -76,7 +73,6 @@ export const AirdropClaimingScene = memo(function AirdropClaimingScene() {
 });
 
 export const RewardsClaimingScene = memo(function RewardsClaimingScene() {
-  const { setActiveScene } = useRnbwRewardsFlowContext();
   const rewardsClaimRequest = useRewardsFlowStore(state => state.rewardsClaimRequest);
   const labels = [i18n.t(i18n.l.rnbw_rewards.loading_labels.claiming_rewards), i18n.t(i18n.l.rnbw_rewards.loading_labels.gathering_coins)];
 
@@ -89,9 +85,9 @@ export const RewardsClaimingScene = memo(function RewardsClaimingScene() {
       if (taskStatus === 'error') {
         showClaimError();
       }
-      setActiveScene(RnbwRewardsScenes.RewardsOverview);
+      rewardsFlowActions.setActiveScene(RnbwRewardsScenes.RewardsOverview);
     },
-    [setActiveScene, showClaimError]
+    [showClaimError]
   );
 
   return (
