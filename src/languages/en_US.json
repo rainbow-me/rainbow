@@ -3862,7 +3862,7 @@
         "your_airdrop": "Your Airdrop",
         "points_description_prefix": "Based on your previous activity and ",
         "points_description_suffix": " Rainbow Points you've Earned Over Time.",
-        "leaderboard_description_prefix": "You were ranked ",
+        "leaderboard_description_prefix": " You were ranked ",
         "leaderboard_description_suffix": " in the Points Leaderboard.",
         "claim_failed_title": "Error Claiming Rewards",
         "claim_failed_message": "Please try again.",
