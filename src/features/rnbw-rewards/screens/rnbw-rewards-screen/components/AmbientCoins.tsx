@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, useWindowDimensions, View, Image } from 'react-native';
 import Animated, {
   cancelAnimation,
@@ -11,7 +11,6 @@ import Animated, {
   useSharedValue,
   withDelay,
   withRepeat,
-  withSequence,
   withTiming,
 } from 'react-native-reanimated';
 import { BlurView } from 'react-native-blur-view';
@@ -127,8 +126,7 @@ const COINS: CoinConfig[] = [
 type AmbientCoinsState = 'visible' | 'hidden' | 'claimed';
 
 const AmbientCoin = memo(function AmbientCoin({ config, state }: { config: CoinConfig; state: SharedValue<AmbientCoinsState> }) {
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
+  const floatProgress = useSharedValue(0);
   const exitProgress = useSharedValue(0);
 
   const { left, top, size } = config;
@@ -138,21 +136,26 @@ const AmbientCoin = memo(function AmbientCoin({ config, state }: { config: CoinC
 
   const startFloatingAnimation = useCallback(() => {
     'worklet';
-    const pattern = FLOAT_PATTERNS[config.pattern];
-    const x = config.reverse ? -pattern.x : pattern.x;
-    const y = config.reverse ? -pattern.y : pattern.y;
-
     const timingConfig = { duration: config.duration / 2, easing: FLOAT_EASING };
-
-    translateX.value = withRepeat(withSequence(withTiming(x, timingConfig), withTiming(0, timingConfig)), -1);
-    translateY.value = withRepeat(withSequence(withTiming(y, timingConfig), withTiming(0, timingConfig)), -1);
-  }, [config.pattern, config.reverse, translateX, translateY, config.duration]);
+    floatProgress.value = withRepeat(withTiming(1, timingConfig), -1, true);
+  }, [config.duration, floatProgress]);
 
   const stopFloatingAnimation = useCallback(() => {
     'worklet';
-    cancelAnimation(translateX);
-    cancelAnimation(translateY);
-  }, [translateX, translateY]);
+    cancelAnimation(floatProgress);
+  }, [floatProgress]);
+
+  const floatX = useDerivedValue(() => {
+    const pattern = FLOAT_PATTERNS[config.pattern];
+    const x = config.reverse ? -pattern.x : pattern.x;
+    return interpolate(floatProgress.value, [0, 1], [0, x]);
+  }, [config.pattern, config.reverse]);
+
+  const floatY = useDerivedValue(() => {
+    const pattern = FLOAT_PATTERNS[config.pattern];
+    const y = config.reverse ? -pattern.y : pattern.y;
+    return interpolate(floatProgress.value, [0, 1], [0, y]);
+  }, [config.pattern, config.reverse]);
 
   useAnimatedReaction(
     () => state.value,
@@ -166,6 +169,13 @@ const AmbientCoin = memo(function AmbientCoin({ config, state }: { config: CoinC
     },
     [startFloatingAnimation, stopFloatingAnimation]
   );
+
+  useEffect(() => {
+    return () => {
+      stopFloatingAnimation();
+      cancelAnimation(exitProgress);
+    };
+  }, [exitProgress, stopFloatingAnimation]);
 
   // Animate off screen for 'hidden' and behind primary coin icon for 'claimed' state
   useAnimatedReaction(
@@ -189,7 +199,7 @@ const AmbientCoin = memo(function AmbientCoin({ config, state }: { config: CoinC
         })
       );
     },
-    [state, exitProgress]
+    [exitProgress, claimedLeft, claimedTop, left, top]
   );
 
   const containerStyle = useAnimatedStyle(() => {
@@ -197,14 +207,14 @@ const AmbientCoin = memo(function AmbientCoin({ config, state }: { config: CoinC
       return {
         left: interpolate(exitProgress.value, [0, 1], [left, claimedLeft]),
         top: interpolate(exitProgress.value, [0, 1], [top, claimedTop]),
-        transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
+        transform: [{ translateX: floatX.value }, { translateY: floatY.value }],
       };
     }
 
     return {
       left,
       top,
-      transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
+      transform: [{ translateX: floatX.value }, { translateY: floatY.value }],
     };
   });
 
