@@ -1,6 +1,7 @@
 import { analytics } from '@/analytics';
 import { NativeCurrencyKey } from '@/entities';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResult';
 import { pollClaimStatus, type PollClaimStatusResult } from '@/features/rnbw-rewards/utils/pollClaimStatus';
 import { getProvider } from '@/handlers/web3';
@@ -16,6 +17,7 @@ import {
   GetClaimIntentResponse,
   GetClaimIntentResult,
 } from '@/features/rnbw-rewards/types/claimRewardsTypes';
+import { time } from '@/utils/time';
 
 type ClaimStatusPollResult = PollClaimStatusResult<ClaimRewardsResult, ClaimRewardsResponse>;
 
@@ -85,6 +87,9 @@ export async function claimRewards({ address, currency }: { address: Address; cu
         status: pollResult?.response?.headers?.get('x-request-id') ?? undefined,
       },
     });
+
+    await useUserAssetsStore.getState().fetch(undefined, { force: true });
+    setTimeout(() => useUserAssetsStore.getState().fetch(undefined, { force: true }), time.seconds(5));
 
     return claimResult;
   } catch (e) {

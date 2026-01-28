@@ -1,6 +1,7 @@
 import { analytics } from '@/analytics';
 import { NativeCurrencyKey } from '@/entities';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ClaimAirdropResponse, ClaimAirdropResult } from '@/features/rnbw-rewards/types/claimAirdropTypes';
 import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResult';
 import { pollClaimStatus, PollClaimStatusResult } from '@/features/rnbw-rewards/utils/pollClaimStatus';
@@ -11,6 +12,7 @@ import { RainbowFetchResponse } from '@/rainbow-fetch';
 import { getPlatformClient } from '@/resources/platform/client';
 import { ChainId } from '@rainbow-me/swaps';
 import { Address } from 'viem';
+import { time } from '@/utils/time';
 
 type ClaimStatusPollResult = PollClaimStatusResult<ClaimAirdropResult, ClaimAirdropResponse>;
 
@@ -48,7 +50,6 @@ export async function claimAirdrop({ message, address, currency }: { message: st
     const finalClaimResult = pollResult.result;
 
     await useAirdropBalanceStore.getState().fetch(undefined, { force: true });
-
     analytics.track(analytics.event.rnbwAirdropClaim, {
       chainId,
       claimId,
@@ -65,6 +66,9 @@ export async function claimAirdrop({ message, address, currency }: { message: st
         status: pollResult.response.headers?.get('x-request-id') ?? undefined,
       },
     });
+
+    await useUserAssetsStore.getState().fetch(undefined, { force: true });
+    setTimeout(() => useUserAssetsStore.getState().fetch(undefined, { force: true }), time.seconds(5));
 
     return finalClaimResult;
   } catch (e) {
