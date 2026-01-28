@@ -20,7 +20,7 @@ import useTimeout from '@/hooks/useTimeout';
 import { time } from '@/utils/time';
 import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
-import { getCoinCenterPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
+import { getCoinBottomPosition, getCoinCenterPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 
 // Original design dimensions
 const DESIGN_WIDTH = 393;
@@ -31,8 +31,6 @@ const EXIT_EASING = Easing.bezier(0.2, 0.9, 0.2, 1);
 const EXIT_DURATION = time.seconds(1);
 // Buffer past exit duration to ensure coins finish animating off-screen before unmount.
 const HIDDEN_UNMOUNT_DELAY = EXIT_DURATION + time.ms(200);
-
-const CLAIMED_CENTER = getCoinCenterPosition(RnbwRewardsScenes.AirdropClaimed);
 
 const FLOAT_PATTERNS = {
   a: { x: 16, y: -18 },
@@ -143,8 +141,8 @@ const AmbientCoin = memo(function AmbientCoin({
 
   const { left, top, size } = config;
 
-  const claimedLeft = CLAIMED_CENTER.x - size / 2;
-  const claimedTop = CLAIMED_CENTER.y;
+  const claimedLeft = getCoinCenterPosition(RnbwRewardsScenes.AirdropClaimed).x - size / 2;
+  const claimedTop = getCoinBottomPosition(RnbwRewardsScenes.AirdropClaimed);
 
   const startFloatingAnimation = useCallback(() => {
     'worklet';
