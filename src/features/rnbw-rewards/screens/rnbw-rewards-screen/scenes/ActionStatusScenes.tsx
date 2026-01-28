@@ -84,8 +84,10 @@ export const RewardsClaimingScene = memo(function RewardsClaimingScene() {
     (taskStatus: 'success' | 'error') => {
       if (taskStatus === 'error') {
         showClaimError();
+        rewardsFlowActions.setActiveScene(RnbwRewardsScenes.RewardsOverview);
+        return;
       }
-      rewardsFlowActions.setActiveScene(RnbwRewardsScenes.RewardsOverview);
+      rewardsFlowActions.setActiveScene(RnbwRewardsScenes.RewardsClaimed);
     },
     [showClaimError]
   );

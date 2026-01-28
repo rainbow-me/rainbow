@@ -3873,6 +3873,10 @@
         "airdrop_claimed": "Airdrop Claimed",
         "you_claimed": "You claimed"
       },
+      "rewards_claim_finished": {
+        "rewards_claimed": "Rewards Claimed",
+        "you_claimed": "You claimed"
+      },
       "airdrop": {
         "nothing_to_claim": "Nothing to Claim",
         "nothing_to_claim_description": "Sorry, you did not qualify for the airdrop.",

@@ -71,6 +71,10 @@ const scenesConfig: Record<RnbwRewardsScene, { scale: number; translateY: number
     scale: MEDIUM_COIN_SCALE,
     translateY: 186,
   },
+  [RnbwRewardsScenes.RewardsClaimed]: {
+    scale: MEDIUM_COIN_SCALE,
+    translateY: 186,
+  },
   [RnbwRewardsScenes.AirdropUnavailable]: {
     scale: MEDIUM_COIN_SCALE,
     translateY: 186,
@@ -184,7 +188,7 @@ export const RnbwHeroCoin = memo(function RnbwHeroCoin() {
 
       <Animated.View style={[styles.coinContainer, coinAnimatedStyle]}>
         <SpinnableCoin ref={coinRef} source={rnbwCoinImage} size={COIN_SIZE} />
-        {activeSceneState === RnbwRewardsScenes.AirdropClaimed && (
+        {(activeSceneState === RnbwRewardsScenes.AirdropClaimed || activeSceneState === RnbwRewardsScenes.RewardsClaimed) && (
           <Animated.View style={styles.successIcon} entering={successIconEnterAnimation} exiting={successIconExitAnimation}>
             <Box
               backgroundColor="#1F9E39"

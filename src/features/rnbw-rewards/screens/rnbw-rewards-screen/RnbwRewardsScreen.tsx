@@ -19,6 +19,7 @@ import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 import { AirdropIntroScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropIntroScene';
 import { AirdropClaimPromptScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropClaimPromptScene';
 import { AirdropClaimedScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropClaimedScene';
+import { RewardsClaimedScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/RewardsClaimedScene';
 import { RewardsOverviewScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/RewardsOverviewScene';
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
@@ -115,6 +116,7 @@ function RnbwRewardsSceneRouter() {
       {activeScene === RnbwRewardsScenes.AirdropClaiming && <AirdropClaimingScene />}
       {activeScene === RnbwRewardsScenes.AirdropClaimed && <AirdropClaimedScene />}
       {activeScene === RnbwRewardsScenes.RewardsClaiming && <RewardsClaimingScene />}
+      {activeScene === RnbwRewardsScenes.RewardsClaimed && <RewardsClaimedScene />}
       {activeScene === RnbwRewardsScenes.AirdropUnavailable && <AirdropUnavailableScene />}
       {activeScene === RnbwRewardsScenes.RewardsOverview && <RewardsOverviewScene />}
     </View>
