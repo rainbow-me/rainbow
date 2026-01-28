@@ -41,7 +41,7 @@ export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
 
   const formattedPoints = useMemo(() => (totalPoints != null ? getNumberFormatter('en-US').format(totalPoints) : '—'), [totalPoints]);
   const formattedRank = useMemo(
-    () => (rank != null && !isUnranked ? `#${getNumberFormatter('en-US').format(rank)}` : '—'),
+    () => (rank != null && !isUnranked ? `#${getNumberFormatter('en-US').format(rank)}` : null),
     [rank, isUnranked]
   );
 
@@ -62,15 +62,20 @@ export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
       </View>
       <Box gap={24} alignItems="center" paddingHorizontal={{ custom: 40 }}>
         <Text color={{ custom: '#989A9E' }} size="17pt / 150%" weight="semibold" align="center">
-          {i18n.t(i18n.l.rnbw_rewards.claim.based_on_your_swaps_prefix)}
+          {i18n.t(i18n.l.rnbw_rewards.claim.points_description_prefix)}
           <Text color="label" weight="bold" size="17pt / 150%">
             {formattedPoints}
           </Text>
-          {i18n.t(i18n.l.rnbw_rewards.claim.based_on_your_swaps_middle)}
-          <Text color="label" weight="bold" size="17pt / 150%">
-            {formattedRank}
-          </Text>
-          {i18n.t(i18n.l.rnbw_rewards.claim.based_on_your_swaps_suffix)}
+          {i18n.t(i18n.l.rnbw_rewards.claim.points_description_suffix)}
+          {formattedRank != null && (
+            <>
+              {i18n.t(i18n.l.rnbw_rewards.claim.leaderboard_description_prefix)}
+              <Text color="label" weight="bold" size="17pt / 150%">
+                {formattedRank}
+              </Text>
+              {i18n.t(i18n.l.rnbw_rewards.claim.leaderboard_description_suffix)}
+            </>
+          )}
         </Text>
         <Box gap={28}>
           <HoldToActivateButton

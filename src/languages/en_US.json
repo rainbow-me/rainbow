@@ -3860,9 +3860,10 @@
       "claim": {
         "available_to_claim": "Available to Claim",
         "your_airdrop": "Your Airdrop",
-        "based_on_your_swaps_prefix": "Based on your previous activity and ",
-        "based_on_your_swaps_middle": " Rainbow Points. you've Earned Over Time. You're ranked ",
-        "based_on_your_swaps_suffix": " on the Leaderboard.",
+        "points_description_prefix": "Based on your previous activity and ",
+        "points_description_suffix": " Rainbow Points you've Earned Over Time.",
+        "leaderboard_description_prefix": "You were ranked ",
+        "leaderboard_description_suffix": " in the Points Leaderboard.",
         "claim_failed_title": "Error Claiming Rewards",
         "claim_failed_message": "Please try again.",
         "claim_later": "Claim Later",
