@@ -72,8 +72,8 @@ import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 import { RnbwRewardsScreen } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen';
+import { BASE_TAB_BAR_HEIGHT } from '@/navigation/constants';
 
-export const BASE_TAB_BAR_HEIGHT = 52;
 export const TAB_BAR_HEIGHT = getTabBarHeight();
 
 function getTabBarHeight() {
