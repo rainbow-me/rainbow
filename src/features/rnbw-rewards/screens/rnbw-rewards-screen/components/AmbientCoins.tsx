@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, useWindowDimensions, View, Image } from 'react-native';
 import Animated, {
   cancelAnimation,
@@ -16,6 +16,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { BlurView } from 'react-native-blur-view';
 import rnbwCoin from '@/assets/rnbw.png';
+import useTimeout from '@/hooks/useTimeout';
 import { time } from '@/utils/time';
 import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
@@ -131,15 +132,14 @@ type AmbientCoinsState = 'visible' | 'hidden' | 'claimed';
 const AmbientCoin = memo(function AmbientCoin({
   config,
   state,
-  entering,
+  initialExitProgress,
 }: {
   config: CoinConfig;
   state: SharedValue<AmbientCoinsState>;
-  entering: boolean;
+  initialExitProgress: number;
 }) {
   const floatProgress = useSharedValue(0);
-  const exitProgress = useSharedValue(0);
-  const didEnter = useSharedValue(false);
+  const exitProgress = useSharedValue(initialExitProgress);
 
   const { left, top, size } = config;
 
@@ -201,12 +201,6 @@ const AmbientCoin = memo(function AmbientCoin({
         delay = normalizedDistance * time.ms(100);
       }
 
-      if (current === 'visible' && entering && !didEnter.value) {
-        // Start from hidden when remounting after being offscreen.
-        exitProgress.value = 1;
-        didEnter.value = true;
-      }
-
       exitProgress.value = withDelay(
         delay,
         withTiming(current === 'visible' ? 0 : 1, {
@@ -215,7 +209,7 @@ const AmbientCoin = memo(function AmbientCoin({
         })
       );
     },
-    [entering, exitProgress, claimedLeft, claimedTop, left, top]
+    [exitProgress, claimedLeft, claimedTop, left, top]
   );
 
   const containerStyle = useAnimatedStyle(() => {
@@ -293,7 +287,7 @@ const _AmbientCoins = memo(function _AmbientCoins({ state, entering }: { state: 
   return (
     <View style={styles.container} pointerEvents="none">
       {scaledCoins.map((config, index) => (
-        <AmbientCoin key={index} config={config} state={state} entering={entering} />
+        <AmbientCoin key={index} config={config} state={state} initialExitProgress={entering ? 1 : 0} />
       ))}
     </View>
   );
@@ -301,10 +295,8 @@ const _AmbientCoins = memo(function _AmbientCoins({ state, entering }: { state: 
 
 export const AmbientCoins = memo(function AmbientCoins() {
   const { activeScene } = useRnbwRewardsFlowContext();
-  const [shouldRender, setShouldRender] = useState(true);
-  const [shouldAnimateIn, setShouldAnimateIn] = useState(false);
-  const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const shouldRenderRef = useRef(shouldRender);
+  const [mountState, setMountState] = useState({ shouldRender: true, entering: false });
+  const [startHideTimeout, stopHideTimeout] = useTimeout();
 
   const state = useDerivedValue(() => {
     switch (activeScene.value) {
@@ -320,34 +312,26 @@ export const AmbientCoins = memo(function AmbientCoins() {
     }
   }, [activeScene]);
 
-  const clearHideTimeout = useCallback(() => {
-    if (hideTimeoutRef.current) {
-      clearTimeout(hideTimeoutRef.current);
-      hideTimeoutRef.current = null;
-    }
-  }, []);
-
   const show = useCallback(
     (nextState: AmbientCoinsState) => {
-      clearHideTimeout();
-      if (nextState === 'visible' && !shouldRenderRef.current) {
-        setShouldAnimateIn(true);
-      }
-      shouldRenderRef.current = true;
-      setShouldRender(true);
+      stopHideTimeout();
+      setMountState(prev => {
+        if (prev.shouldRender) return prev;
+        return {
+          shouldRender: true,
+          entering: nextState === 'visible',
+        };
+      });
     },
-    [clearHideTimeout]
+    [stopHideTimeout]
   );
 
   const scheduleHide = useCallback(() => {
-    clearHideTimeout();
-    hideTimeoutRef.current = setTimeout(() => {
-      shouldRenderRef.current = false;
-      setShouldRender(false);
-      setShouldAnimateIn(false);
-      hideTimeoutRef.current = null;
+    stopHideTimeout();
+    startHideTimeout(() => {
+      setMountState({ shouldRender: false, entering: false });
     }, HIDDEN_UNMOUNT_DELAY);
-  }, [clearHideTimeout]);
+  }, [startHideTimeout, stopHideTimeout]);
 
   useAnimatedReaction(
     () => state.value,
@@ -362,13 +346,9 @@ export const AmbientCoins = memo(function AmbientCoins() {
     [scheduleHide, show]
   );
 
-  useEffect(() => {
-    return () => clearHideTimeout();
-  }, [clearHideTimeout]);
+  if (!mountState.shouldRender) return null;
 
-  if (!shouldRender) return null;
-
-  return <_AmbientCoins state={state} entering={shouldAnimateIn} />;
+  return <_AmbientCoins state={state} entering={mountState.entering} />;
 });
 
 const styles = StyleSheet.create({
