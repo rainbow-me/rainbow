@@ -46,6 +46,8 @@ tags:
           when:
             platform: Android
           commands:
+            - runScript:
+                file: ../../utils/parseBalance.js
             - swipe:
                 from:
                   id: wallet-screen
@@ -54,6 +56,7 @@ tags:
             - copyTextFrom:
                 id: balance-coin-row-value-Dai
             - evalScript: ${output.beforeValue = maestro.copiedText}
+            - evalScript: ${output.beforeValueNum = output.parseBalance(output.beforeValue)}
 
 # Open Discover screen select DAI then go to swap screen
 - runScript:
@@ -93,6 +96,7 @@ tags:
             - copyTextFrom:
                 id: balance-coin-row-value-Dai
             - evalScript: ${output.afterValue = maestro.copiedText}
+            - evalScript: ${output.afterValueNum = output.parseBalance(output.afterValue)}
 
             # Check if the balance went down post swap (success)
             - runFlow:
