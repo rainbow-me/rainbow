@@ -1,9 +1,10 @@
-import { memo, useCallback, useEffect, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, useWindowDimensions, View, Image } from 'react-native';
 import Animated, {
   cancelAnimation,
   Easing,
   interpolate,
+  runOnJS,
   SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
@@ -27,6 +28,8 @@ const DESIGN_HEIGHT = 852;
 const FLOAT_EASING = Easing.inOut(Easing.ease);
 const EXIT_EASING = Easing.bezier(0.2, 0.9, 0.2, 1);
 const EXIT_DURATION = time.seconds(1);
+// Buffer past exit duration to ensure coins finish animating off-screen before unmount.
+const HIDDEN_UNMOUNT_DELAY = EXIT_DURATION + time.ms(200);
 
 const CLAIMED_CENTER = getCoinCenterPosition(RnbwRewardsScenes.AirdropClaimed);
 
@@ -125,9 +128,18 @@ const COINS: CoinConfig[] = [
 
 type AmbientCoinsState = 'visible' | 'hidden' | 'claimed';
 
-const AmbientCoin = memo(function AmbientCoin({ config, state }: { config: CoinConfig; state: SharedValue<AmbientCoinsState> }) {
+const AmbientCoin = memo(function AmbientCoin({
+  config,
+  state,
+  entering,
+}: {
+  config: CoinConfig;
+  state: SharedValue<AmbientCoinsState>;
+  entering: boolean;
+}) {
   const floatProgress = useSharedValue(0);
   const exitProgress = useSharedValue(0);
+  const didEnter = useSharedValue(false);
 
   const { left, top, size } = config;
 
@@ -179,9 +191,7 @@ const AmbientCoin = memo(function AmbientCoin({ config, state }: { config: CoinC
 
   // Animate off screen for 'hidden' and behind primary coin icon for 'claimed' state
   useAnimatedReaction(
-    () => {
-      return state.value;
-    },
+    () => state.value,
     current => {
       let delay = 0;
       if (current === 'claimed') {
@@ -189,6 +199,12 @@ const AmbientCoin = memo(function AmbientCoin({ config, state }: { config: CoinC
         // Normalize distance to 0-1 from 200-300
         const normalizedDistance = Math.max(0, Math.min(1, (distanceFromClaimPosition - 200) / 100));
         delay = normalizedDistance * time.ms(100);
+      }
+
+      if (current === 'visible' && entering && !didEnter.value) {
+        // Start from hidden when remounting after being offscreen.
+        exitProgress.value = 1;
+        didEnter.value = true;
       }
 
       exitProgress.value = withDelay(
@@ -199,7 +215,7 @@ const AmbientCoin = memo(function AmbientCoin({ config, state }: { config: CoinC
         })
       );
     },
-    [exitProgress, claimedLeft, claimedTop, left, top]
+    [entering, exitProgress, claimedLeft, claimedTop, left, top]
   );
 
   const containerStyle = useAnimatedStyle(() => {
@@ -257,22 +273,8 @@ const AmbientCoin = memo(function AmbientCoin({ config, state }: { config: CoinC
   );
 });
 
-export const AmbientCoins = memo(function AmbientCoins() {
+const _AmbientCoins = memo(function _AmbientCoins({ state, entering }: { state: SharedValue<AmbientCoinsState>; entering: boolean }) {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
-  const { activeScene } = useRnbwRewardsFlowContext();
-  const state = useDerivedValue(() => {
-    switch (activeScene.value) {
-      case RnbwRewardsScenes.AirdropIntro:
-      case RnbwRewardsScenes.AirdropClaimPrompt:
-        return 'visible';
-      case RnbwRewardsScenes.AirdropEligibility:
-        return 'hidden';
-      case RnbwRewardsScenes.AirdropClaimed:
-        return 'claimed';
-      default:
-        return 'hidden';
-    }
-  }, [activeScene]);
 
   const scaledCoins: CoinConfig[] = useMemo(() => {
     const scaleX = screenWidth / DESIGN_WIDTH;
@@ -291,10 +293,82 @@ export const AmbientCoins = memo(function AmbientCoins() {
   return (
     <View style={styles.container} pointerEvents="none">
       {scaledCoins.map((config, index) => (
-        <AmbientCoin key={index} config={config} state={state} />
+        <AmbientCoin key={index} config={config} state={state} entering={entering} />
       ))}
     </View>
   );
+});
+
+export const AmbientCoins = memo(function AmbientCoins() {
+  const { activeScene } = useRnbwRewardsFlowContext();
+  const [shouldRender, setShouldRender] = useState(true);
+  const [shouldAnimateIn, setShouldAnimateIn] = useState(false);
+  const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const shouldRenderRef = useRef(shouldRender);
+
+  const state = useDerivedValue(() => {
+    switch (activeScene.value) {
+      case RnbwRewardsScenes.AirdropIntro:
+      case RnbwRewardsScenes.AirdropClaimPrompt:
+        return 'visible';
+      case RnbwRewardsScenes.AirdropEligibility:
+        return 'hidden';
+      case RnbwRewardsScenes.AirdropClaimed:
+        return 'claimed';
+      default:
+        return 'hidden';
+    }
+  }, [activeScene]);
+
+  const clearHideTimeout = useCallback(() => {
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+  }, []);
+
+  const show = useCallback(
+    (nextState: AmbientCoinsState) => {
+      clearHideTimeout();
+      if (nextState === 'visible' && !shouldRenderRef.current) {
+        setShouldAnimateIn(true);
+      }
+      shouldRenderRef.current = true;
+      setShouldRender(true);
+    },
+    [clearHideTimeout]
+  );
+
+  const scheduleHide = useCallback(() => {
+    clearHideTimeout();
+    hideTimeoutRef.current = setTimeout(() => {
+      shouldRenderRef.current = false;
+      setShouldRender(false);
+      setShouldAnimateIn(false);
+      hideTimeoutRef.current = null;
+    }, HIDDEN_UNMOUNT_DELAY);
+  }, [clearHideTimeout]);
+
+  useAnimatedReaction(
+    () => state.value,
+    (current, previous) => {
+      if (current === previous) return;
+      if (current === 'hidden') {
+        runOnJS(scheduleHide)();
+      } else {
+        runOnJS(show)(current);
+      }
+    },
+    [scheduleHide, show]
+  );
+
+  useEffect(() => {
+    return () => clearHideTimeout();
+  }, [clearHideTimeout]);
+
+  if (!shouldRender) return null;
+
+  return <_AmbientCoins state={state} entering={shouldAnimateIn} />;
 });
 
 const styles = StyleSheet.create({
