@@ -2488,8 +2488,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-mail (4.1.0):
-    - React
   - react-native-menu (2.0.0):
     - boost
     - DoubleConversion
@@ -4108,7 +4106,6 @@ DEPENDENCIES:
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-ios-context-menu (from `../node_modules/react-native-ios-context-menu`)
   - react-native-keyboard-controller (from `../node_modules/react-native-keyboard-controller`)
-  - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-menu (from `../node_modules/@react-native-menu/menu`)"
   - react-native-minimizer (from `../node_modules/react-native-minimizer`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
@@ -4396,8 +4393,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-ios-context-menu"
   react-native-keyboard-controller:
     :path: "../node_modules/react-native-keyboard-controller"
-  react-native-mail:
-    :path: "../node_modules/react-native-mail"
   react-native-menu:
     :path: "../node_modules/@react-native-menu/menu"
   react-native-minimizer:
@@ -4676,7 +4671,6 @@ SPEC CHECKSUMS:
   react-native-get-random-values: 04e59f21c9076958ba50576bdd51878fac5b35ef
   react-native-ios-context-menu: 986da6dcba70094bcc2a8049f68410fe7d25aff1
   react-native-keyboard-controller: bac5843c58ad18f3e450b4ccb1d0635a03eea706
-  react-native-mail: 824fe88e2323c1ce0a93e5f46db4056abf432928
   react-native-menu: 8d2c831a735c9e6528c28b26ca14e57591d87e14
   react-native-minimizer: d6db020c36a58447adba28f969f70a7098cfadb8
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187

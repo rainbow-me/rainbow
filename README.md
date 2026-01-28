@@ -19,7 +19,7 @@
 1. Install nvm: https://github.com/creationix/nvm
 2. Install required Node.js version: `nvm install`
 3. Enable yarn: `corepack enable`
-4. Install project dependencies: `yarn setup`
+4. Install dependencies and run setup: `yarn install && yarn setup`
 
 **Note:** On future terminal sessions, run `nvm use` to activate the correct Node.js version. Alternatively,
 set up [automatic nvm switching](https://github.com/nvm-sh/nvm#deeper-shell-integration) in your shell.
