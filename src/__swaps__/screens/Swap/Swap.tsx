@@ -159,19 +159,19 @@ const SliderAndKeyboardAndBottomControls = () => {
 
   const { AnimatedSwapStyles } = useSwapContext();
 
-  // Maestro test logic. The view needs to be rendered and fully on screen to be interactable.
-  const shouldMountTestWrapper = IS_TEST ? true : shouldMount;
-  if (!shouldMountTestWrapper) {
+  if (!shouldMount) {
     return null;
   }
 
   return (
     <Box
       as={Animated.View}
-      width="full"
       position="absolute"
       bottom="0px"
-      style={AnimatedSwapStyles.hideWhenInputsExpanded && IS_TEST && { bottom: 50, height: 200 }}
+      width="full"
+      // Hack for e2e tests, views need to be at least 1 px for overflowing content to be interactable.
+      height={{ custom: 1 }}
+      style={AnimatedSwapStyles.hideWhenInputsExpanded}
     >
       <SliderAndKeyboard />
       <SwapBottomPanel />

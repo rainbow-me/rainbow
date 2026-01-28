@@ -53,12 +53,11 @@ export function SettingsPanel() {
 
   const styles = useAnimatedStyle(() => {
     return {
-      display: configProgress.value !== NavigationSteps.SHOW_SETTINGS ? 'none' : 'flex',
+      // We used to use display: none here, but it causes issues with reanimated where the GestureHandlerButton
+      // does not work. Instead we use position absolute, pointerEvents and opacity to hide the panel.
+      position: configProgress.value !== NavigationSteps.SHOW_SETTINGS ? 'absolute' : 'relative',
       pointerEvents: configProgress.value !== NavigationSteps.SHOW_SETTINGS ? 'none' : 'auto',
-      opacity:
-        configProgress.value === NavigationSteps.SHOW_SETTINGS
-          ? withDelay(120, withSpring(1, SPRING_CONFIGS.springConfig))
-          : withSpring(0, SPRING_CONFIGS.springConfig),
+      opacity: configProgress.value === NavigationSteps.SHOW_SETTINGS ? withDelay(120, withSpring(1, SPRING_CONFIGS.springConfig)) : 0,
     };
   });
 
