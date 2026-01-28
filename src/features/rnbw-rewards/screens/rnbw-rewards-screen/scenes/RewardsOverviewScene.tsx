@@ -19,13 +19,16 @@ import * as i18n from '@/languages';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import watchingAlert from '@/utils/watchingAlert';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
+import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 
 const enterAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 
 export const RewardsOverviewScene = function RewardsOverviewScene() {
+  const tabBarOffset = useTabBarOffset();
   const { scrollHandler } = useRnbwRewardsFlowContext();
   const [refreshing, setRefreshing] = useState(false);
   const hasClaimableAirdrop = useAirdropBalanceStore(state => state.hasClaimableAirdrop());
+
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
@@ -36,23 +39,15 @@ export const RewardsOverviewScene = function RewardsOverviewScene() {
   }, []);
 
   return (
-    <Animated.View style={styles.flex} entering={enterAnimation} exiting={defaultExitAnimation}>
+    <Animated.View style={[styles.flex, { marginBottom: -tabBarOffset }]} entering={enterAnimation} exiting={defaultExitAnimation}>
       <Animated.ScrollView
         onScroll={scrollHandler}
-        contentContainerStyle={styles.scrollViewContainer}
+        contentContainerStyle={{ flex: 1, paddingHorizontal: 20, paddingBottom: tabBarOffset }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
       >
         <RnbwRewardsBalance />
+        <View style={styles.cardContainer}>{hasClaimableAirdrop ? <AirdropSummaryCard /> : <RewardsHowToEarnCard />}</View>
       </Animated.ScrollView>
-      {hasClaimableAirdrop ? (
-        <View style={styles.cardContainer}>
-          <AirdropSummaryCard />
-        </View>
-      ) : (
-        <View style={styles.cardContainer}>
-          <RewardsHowToEarnCard />
-        </View>
-      )}
     </Animated.View>
   );
 };
@@ -122,9 +117,7 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     paddingBottom: 32,
-    paddingHorizontal: 20,
-  },
-  scrollViewContainer: {
-    paddingHorizontal: 20,
+    flex: 1,
+    justifyContent: 'flex-end',
   },
 });
