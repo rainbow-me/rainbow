@@ -29,6 +29,7 @@ import { logger, RainbowError } from '@/logger';
 import { IS_TEST } from '@/env';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import * as i18n from '@/languages';
+import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;
 
@@ -105,10 +106,14 @@ export function SwapBottomPanel() {
   }, [configProgress.value, navigate, SwapNavigation]);
 
   const handleRewardsInfoPress = useCallback(() => {
-    navigate(Routes.RNBW_REWARDS_ESTIMATE, {
-      estimatedAmount: Number(rewardsEstimate?.rewardRnbw ?? 0),
+    const rawTokenAmount = Number(rewardsEstimate?.rewardRnbw ?? 0);
+    const decimals = rewardsEstimate?.decimals ?? 18;
+    const tokenAmount = convertRawAmountToDecimalFormat(rawTokenAmount, decimals);
+    const formattedTokenAmount = truncateToDecimalsWithThreshold({ value: tokenAmount, decimals: 1, threshold: '0.01' });
+    navigate(Routes.RNBW_REWARDS_ESTIMATE_SHEET, {
+      estimatedAmount: formattedTokenAmount,
     });
-  }, [navigate, rewardsEstimate?.rewardRnbw]);
+  }, [navigate, rewardsEstimate?.rewardRnbw, rewardsEstimate?.decimals]);
 
   return (
     <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler}>

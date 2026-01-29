@@ -2442,6 +2442,7 @@
       "actions": {
         "hold_to_swap": "Hold to Swap",
         "hold_to_bridge": "Hold to Bridge",
+        "earning_rewards": "Earning Rewards",
         "save": "Save",
         "enter_amount": "Enter Amount",
         "review": "Review",
@@ -3909,6 +3910,10 @@
       "cause_switched_devices": "It looks like you may have switched devices.",
       "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
       "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "Earning Rewards",
+      "this_transaction_earns": "This Transactions Earns"
     }
   }
 }

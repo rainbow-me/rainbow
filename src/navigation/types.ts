@@ -703,6 +703,9 @@ type RouteParams = {
   [Routes.POLYMARKET_EXPLAIN_SHEET]: {
     onDismiss?: () => void;
   };
+  [Routes.RNBW_REWARDS_ESTIMATE_SHEET]: {
+    estimatedAmount: string;
+  };
 };
 
 /**
