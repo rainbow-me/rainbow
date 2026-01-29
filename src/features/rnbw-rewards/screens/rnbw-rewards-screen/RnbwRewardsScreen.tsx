@@ -81,11 +81,10 @@ const RnbwRewardsNavbar = memo(function RnbwRewardsNavbar() {
 
   return (
     <Navbar
+      floating
       title={navbarTitle}
       leftComponent={<AccountImage />}
       // rightComponent={navbarRightComponent}
-
-      floating
     />
   );
 });

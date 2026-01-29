@@ -18,6 +18,8 @@ import {
   GetClaimIntentResult,
 } from '@/features/rnbw-rewards/types/claimRewardsTypes';
 import { time } from '@/utils/time';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { Navigation } from '@/navigation';
 
 type ClaimStatusPollResult = PollClaimStatusResult<ClaimRewardsResult, ClaimRewardsResponse>;
 
@@ -132,6 +134,13 @@ async function signIntent({ address, intent, chainId }: { address: Address; inte
     message: intent.message,
   };
   const signedIntent = await signTypedDataMessage(messageToSign, provider, signer);
+
+  // If the wallet is a hardware wallet, the hardware wallet navigator modal will be open
+  const isHardwareWallet = signer instanceof LedgerSigner;
+  if (isHardwareWallet) {
+    Navigation.goBack();
+  }
+
   if (!signedIntent?.result || signedIntent?.error) {
     throw new Error(`Failed to sign intent: ${signedIntent?.error?.message ?? 'Unknown error'}`);
   }

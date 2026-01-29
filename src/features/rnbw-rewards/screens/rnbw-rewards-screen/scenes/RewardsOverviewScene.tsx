@@ -16,10 +16,12 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { RewardsHowToEarnCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RewardsHowToEarnCard';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import * as i18n from '@/languages';
-import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { useIsHardwareWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import watchingAlert from '@/utils/watchingAlert';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 const enterAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 
@@ -54,8 +56,15 @@ export const RewardsOverviewScene = function RewardsOverviewScene() {
 
 const RnbwRewardsBalance = memo(function RnbwRewardsBalance() {
   const isReadOnlyWallet = useIsReadOnlyWallet();
+  const isHardwareWallet = useIsHardwareWallet();
   const { tokenAmount, nativeCurrencyAmount } = useRewardsBalanceStore(state => state.getFormattedBalance());
   const hasClaimableRewards = useRewardsBalanceStore(state => state.hasClaimableRewards());
+  const { navigate } = useNavigation();
+
+  const startClaimRewards = useCallback(() => {
+    rewardsFlowActions.startRewardsClaim();
+    rewardsFlowActions.setActiveScene(RnbwRewardsScenes.RewardsClaiming);
+  }, []);
 
   const handleClaimRewards = useCallback(() => {
     'worklet';
@@ -63,9 +72,12 @@ const RnbwRewardsBalance = memo(function RnbwRewardsBalance() {
       runOnJS(watchingAlert)();
       return;
     }
-    rewardsFlowActions.startRewardsClaim();
-    rewardsFlowActions.setActiveScene(RnbwRewardsScenes.RewardsClaiming);
-  }, [isReadOnlyWallet]);
+    if (isHardwareWallet) {
+      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: startClaimRewards });
+    } else {
+      startClaimRewards();
+    }
+  }, [isReadOnlyWallet, isHardwareWallet, navigate, startClaimRewards]);
 
   return (
     <View style={styles.rewardsBalanceContainer}>

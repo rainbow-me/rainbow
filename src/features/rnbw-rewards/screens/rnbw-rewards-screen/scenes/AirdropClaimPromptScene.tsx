@@ -13,30 +13,40 @@ import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBa
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { usePoints } from '@/resources/points';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { getNumberFormatter } from '@/helpers/intl';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: 24, delay: time.ms(200) });
 
 export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
   const { tokenAmount, nativeCurrencyAmount } = useAirdropBalanceStore(state => state.getFormattedBalance());
   const hasClaimableAirdrop = useAirdropBalanceStore(state => state.hasClaimableAirdrop());
+  const { navigate } = useNavigation();
 
   const accountAddress = useAccountAddress();
+  const isHardwareWallet = useIsHardwareWallet();
   const { data: pointsData } = usePoints({ walletAddress: accountAddress });
   const totalPoints = pointsData?.points?.user?.earnings?.total;
   const rank = pointsData?.points?.user?.stats?.position?.current;
   const isUnranked = pointsData?.points?.user?.stats?.position?.unranked;
 
   const handleClaimLater = () => {
-    'worklet';
     rewardsFlowActions.setActiveScene(RnbwRewardsScenes.RewardsOverview);
   };
 
-  const handleClaimAirdrop = () => {
-    'worklet';
+  const startClaimAirdrop = () => {
     rewardsFlowActions.startAirdropClaim();
     rewardsFlowActions.setActiveScene(RnbwRewardsScenes.AirdropClaiming);
+  };
+
+  const handleClaimAirdrop = () => {
+    if (isHardwareWallet) {
+      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: startClaimAirdrop });
+    } else {
+      startClaimAirdrop();
+    }
   };
 
   const formattedPoints = useMemo(() => (totalPoints != null ? getNumberFormatter('en-US').format(totalPoints) : '—'), [totalPoints]);

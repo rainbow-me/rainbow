@@ -13,6 +13,8 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { ChainId } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 import { time } from '@/utils/time';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { Navigation } from '@/navigation';
 
 type ClaimStatusPollResult = PollClaimStatusResult<ClaimAirdropResult, ClaimAirdropResponse>;
 
@@ -99,6 +101,13 @@ async function signMessage({ message, address }: { message: string; address: Add
     throw new Error('Failed to load wallet');
   }
   const signedMessage = await signPersonalMessage(message, provider, signer);
+
+  // If the wallet is a hardware wallet, the hardware wallet navigator modal will be open
+  const isHardwareWallet = signer instanceof LedgerSigner;
+  if (isHardwareWallet) {
+    Navigation.goBack();
+  }
+
   if (!signedMessage?.result || signedMessage?.error) {
     throw new Error(`Failed to sign message: ${signedMessage?.error?.message ?? 'Unknown error'}`);
   }
