@@ -3,14 +3,13 @@ import { useHasCompletedAirdropFlow } from '@/features/rnbw-rewards/screens/rnbw
 import { rewardsFlowActions, useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import usePrevious from '@/hooks/usePrevious';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { createContext, ReactNode, useContext, useEffect, useMemo } from 'react';
+import { createContext, ReactNode, useContext, useEffect } from 'react';
 import { SharedValue, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
 type RnbwRewardsFlowContextType = {
   activeScene: SharedValue<RnbwRewardsScene>;
-  setActiveScene: (scene: RnbwRewardsScene) => void;
   scrollHandler: ReturnType<typeof useAnimatedScrollHandler>;
   scrollOffset: SharedValue<number>;
 };
@@ -24,9 +23,7 @@ type RnbwRewardsFlowContextProviderProps = {
 export function RnbwRewardsFlowContextProvider({ children }: RnbwRewardsFlowContextProviderProps) {
   const [hasCompletedAirdropFlow] = useHasCompletedAirdropFlow();
 
-  const initialScene = useMemo(() => {
-    return hasCompletedAirdropFlow ? RnbwRewardsScenes.RewardsOverview : RnbwRewardsScenes.AirdropIntro;
-  }, [hasCompletedAirdropFlow]);
+  const initialScene = hasCompletedAirdropFlow ? RnbwRewardsScenes.RewardsOverview : RnbwRewardsScenes.AirdropIntro;
 
   const scrollOffset = useSharedValue(0);
   const scrollHandler = useAnimatedScrollHandler(event => {
@@ -34,13 +31,14 @@ export function RnbwRewardsFlowContextProvider({ children }: RnbwRewardsFlowCont
   });
   const activeScene = useStoreSharedValue(useRewardsFlowStore, state => state.activeScene, { fireImmediately: true });
 
-  const value = useMemo(
-    () => ({ activeScene, setActiveScene: rewardsFlowActions.setActiveScene, scrollHandler, scrollOffset }),
-    [activeScene, scrollHandler, scrollOffset]
-  );
-
   return (
-    <RnbwRewardsFlowContext.Provider value={value}>
+    <RnbwRewardsFlowContext.Provider
+      value={{
+        activeScene,
+        scrollHandler,
+        scrollOffset,
+      }}
+    >
       {children}
       <RnbwRewardsFlowSideEffects activeScene={activeScene} initialScene={initialScene} />
     </RnbwRewardsFlowContext.Provider>

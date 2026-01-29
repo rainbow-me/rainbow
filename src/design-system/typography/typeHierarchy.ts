@@ -382,17 +382,6 @@ export const typeHierarchy = {
         ios: -0.3,
       },
     },
-    '24pt': {
-      // ⚠️ IMPORTANT: When modifying these values,
-      // please read the note at the top of this file.
-      fontSize: 24,
-      letterSpacing: 0.35,
-      lineHeight: 30,
-      marginCorrection: {
-        android: 0,
-        ios: -0.3,
-      },
-    },
     '26pt': {
       // ⚠️ IMPORTANT: When modifying these values,
       // please read the note at the top of this file.

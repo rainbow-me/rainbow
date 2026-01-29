@@ -1,6 +1,7 @@
 import { analytics } from '@/analytics';
 import { NativeCurrencyKey } from '@/entities';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResult';
 import { pollClaimStatus, type PollClaimStatusResult } from '@/features/rnbw-rewards/utils/pollClaimStatus';
 import { getProvider } from '@/handlers/web3';
@@ -16,18 +17,26 @@ import {
   GetClaimIntentResponse,
   GetClaimIntentResult,
 } from '@/features/rnbw-rewards/types/claimRewardsTypes';
+import { time } from '@/utils/time';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { Navigation } from '@/navigation';
 
 type ClaimStatusPollResult = PollClaimStatusResult<ClaimRewardsResult, ClaimRewardsResponse>;
 
-export async function claimRewards({ address, currency }: { address: Address; currency: NativeCurrencyKey }) {
+export type PreparedRewardsClaim = {
+  address: Address;
+  chainId: ChainId;
+  intentId: string;
+  signedIntent: string;
+};
+
+export async function prepareRewardsClaim({ address }: { address: Address }): Promise<PreparedRewardsClaim> {
   // Only base is supported for now
   const chainId = ChainId.base;
   const startedAt = Date.now();
   const platformClient = getPlatformClient();
 
   let intentResponse: RainbowFetchResponse<GetClaimIntentResponse> | undefined;
-  let claimResponse: RainbowFetchResponse<ClaimRewardsResponse> | undefined;
-  let pollResult: ClaimStatusPollResult | undefined;
 
   try {
     if (!address) {
@@ -49,6 +58,44 @@ export async function claimRewards({ address, currency }: { address: Address; cu
 
     const signedIntent = await signIntent({ address, intent: intentResult.intent, chainId });
 
+    return {
+      address,
+      chainId,
+      intentId,
+      signedIntent,
+    };
+  } catch (e) {
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+
+    analytics.track(analytics.event.rnbwRewardsClaimFailed, {
+      chainId,
+      intentId: intentResponse?.data?.result?.intentId,
+      errorMessage,
+      durationMs: Date.now() - startedAt,
+      platformRequestIds: {
+        intent: intentResponse?.headers?.get('x-request-id') ?? undefined,
+      },
+    });
+    logger.error(new RainbowError('[prepareRewardsClaim]: Failed to prepare rewards claim', e));
+    throw e;
+  }
+}
+
+export async function submitRewardsClaim({
+  preparedClaim,
+  currency,
+}: {
+  preparedClaim: PreparedRewardsClaim;
+  currency: NativeCurrencyKey;
+}): Promise<ClaimRewardsResult> {
+  const { address, chainId, intentId, signedIntent } = preparedClaim;
+  const platformClient = getPlatformClient();
+
+  let claimResponse: RainbowFetchResponse<ClaimRewardsResponse> | undefined;
+  let pollResult: ClaimStatusPollResult | undefined;
+  const startedAt = Date.now();
+
+  try {
     claimResponse = await platformClient.post<ClaimRewardsResponse>('/rewards/ClaimRewards', {
       chainId: String(chainId),
       currency,
@@ -80,31 +127,32 @@ export async function claimRewards({ address, currency }: { address: Address; cu
       durationMs: Date.now() - startedAt,
       pollAttempts: pollResult.attempts,
       platformRequestIds: {
-        intent: intentResponse?.headers?.get('x-request-id') ?? undefined,
         claim: claimResponse?.headers?.get('x-request-id') ?? undefined,
         status: pollResult?.response?.headers?.get('x-request-id') ?? undefined,
       },
     });
 
-    return claimResult;
+    await useUserAssetsStore.getState().fetch(undefined, { force: true });
+    setTimeout(() => useUserAssetsStore.getState().fetch(undefined, { force: true }), time.seconds(5));
+
+    return finalClaimResult;
   } catch (e) {
     const errorMessage = e instanceof Error ? e.message : 'Unknown error';
     const lastStatus = pollResult?.response?.data?.result?.status ?? claimResponse?.data?.result?.status;
 
     analytics.track(analytics.event.rnbwRewardsClaimFailed, {
       chainId,
-      intentId: intentResponse?.data?.result?.intentId,
+      intentId,
       claimId: claimResponse?.data?.result?.claimId,
       status: lastStatus,
       errorMessage,
       durationMs: Date.now() - startedAt,
       platformRequestIds: {
-        intent: intentResponse?.headers?.get('x-request-id') ?? undefined,
         claim: claimResponse?.headers?.get('x-request-id') ?? undefined,
         status: pollResult?.response?.headers?.get('x-request-id') ?? undefined,
       },
     });
-    logger.error(new RainbowError('[claimRewards]: Failed to claim rewards', e));
+    logger.error(new RainbowError('[submitRewardsClaim]: Failed to claim rewards', e));
     throw e;
   }
 }
@@ -127,6 +175,13 @@ async function signIntent({ address, intent, chainId }: { address: Address; inte
     message: intent.message,
   };
   const signedIntent = await signTypedDataMessage(messageToSign, provider, signer);
+
+  // If the wallet is a hardware wallet, the hardware wallet navigator modal will be open
+  const isHardwareWallet = signer instanceof LedgerSigner;
+  if (isHardwareWallet) {
+    Navigation.goBack();
+  }
+
   if (!signedIntent?.result || signedIntent?.error) {
     throw new Error(`Failed to sign intent: ${signedIntent?.error?.message ?? 'Unknown error'}`);
   }

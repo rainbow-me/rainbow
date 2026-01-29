@@ -48,6 +48,7 @@ export const BottomGradientGlow = memo(function BottomGradientGlow() {
       { scene: RnbwRewardsScenes.AirdropClaimPrompt, gradient: BLUE_ORANGE_GRADIENT, opacity: 0.2 },
       ...(hasClaimableAirdrop ? [{ scene: RnbwRewardsScenes.RewardsOverview, gradient: BLUE_ORANGE_GRADIENT, opacity: 0.12 }] : []),
       { scene: RnbwRewardsScenes.AirdropClaimed, gradient: BLUE_ORANGE_GRADIENT, opacity: 0.12 },
+      { scene: RnbwRewardsScenes.RewardsClaimed, gradient: BLUE_ORANGE_GRADIENT, opacity: 0.12 },
     ];
 
     const inputRange = sceneGradients.map((_, index) => index);

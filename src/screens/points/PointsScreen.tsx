@@ -11,7 +11,7 @@ import { IS_TEST } from '@/env';
 import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
-import { useRemoteConfig } from '@/model/remoteConfig';
+import { useRemoteConfig, useRemoteConfigUpdates } from '@/model/remoteConfig';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { usePoints, usePointsReferralCode } from '@/resources/points';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
@@ -61,6 +61,8 @@ export function PointsScreen() {
         .then(() => resetReferralCode());
     }
   }, [data, isOnboarded, pointsEnabled, referralCode, resetReferralCode]);
+
+  useRemoteConfigUpdates();
 
   return (
     <Box

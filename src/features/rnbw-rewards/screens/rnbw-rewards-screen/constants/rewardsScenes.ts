@@ -1,12 +1,13 @@
 export const RnbwRewardsScenes = {
-  AirdropIntro: 'airdrop-introduction',
-  AirdropEligibility: 'checking-airdrop',
-  AirdropClaiming: 'claiming-airdrop',
-  RewardsClaiming: 'claiming-rewards',
-  AirdropClaimPrompt: 'claim-airdrop',
-  AirdropClaimed: 'claim-airdrop-finished',
-  AirdropUnavailable: 'no-airdrop-to-claim',
-  RewardsOverview: 'rewards',
+  AirdropIntro: 'airdrop-intro',
+  AirdropEligibility: 'airdrop-eligibility',
+  AirdropClaiming: 'airdrop-claiming',
+  RewardsClaiming: 'rewards-claiming',
+  AirdropClaimPrompt: 'airdrop-claim-prompt',
+  AirdropClaimed: 'airdrop-claimed',
+  RewardsClaimed: 'rewards-claimed',
+  AirdropUnavailable: 'airdrop-unavailable',
+  RewardsOverview: 'rewards-overview',
 } as const;
 
 export type RnbwRewardsScene = (typeof RnbwRewardsScenes)[keyof typeof RnbwRewardsScenes];

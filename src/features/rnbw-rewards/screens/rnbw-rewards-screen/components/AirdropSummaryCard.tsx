@@ -9,18 +9,17 @@ import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/
 import rnbwCoinImage from '@/assets/rnbw.png';
 import { BlurView } from 'react-native-blur-view';
 import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
-import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { runOnJS } from 'react-native-reanimated';
 import watchingAlert from '@/utils/watchingAlert';
 import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native-skia';
 import { useStableValue } from '@/hooks/useStableValue';
+import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 
 const BORDER_RADIUS = 32;
 
 export const AirdropSummaryCard = memo(function AirdropSummaryCard() {
-  const { setActiveScene } = useRnbwRewardsFlowContext();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const { tokenAmount, nativeCurrencyAmount } = useAirdropBalanceStore(state => state.getFormattedBalance());
 
@@ -30,8 +29,8 @@ export const AirdropSummaryCard = memo(function AirdropSummaryCard() {
       runOnJS(watchingAlert)();
       return;
     }
-    setActiveScene(RnbwRewardsScenes.AirdropClaimPrompt);
-  }, [isReadOnlyWallet, setActiveScene]);
+    rewardsFlowActions.setActiveScene(RnbwRewardsScenes.AirdropClaimPrompt);
+  }, [isReadOnlyWallet]);
 
   return (
     <ButtonPressAnimation onPress={handleNavigateToClaimAirdrop} scaleTo={0.96}>
