@@ -1,4 +1,5 @@
 import remoteConfig, { FirebaseRemoteConfigTypes } from '@react-native-firebase/remote-config';
+import { useEffect } from 'react';
 import { dequal } from 'dequal';
 import { IS_DEV } from '@/env';
 import isTestFlight from '@/helpers/isTestFlight';
@@ -320,6 +321,19 @@ export function useRemoteConfig<const K extends readonly RemoteConfigKey[]>(...k
     state => (keys.length ? selectRemoteConfigKeys(state, keys) : state.config),
     keys.length ? shallowEqual : undefined
   );
+}
+
+export function useRemoteConfigUpdates(): void {
+  useEffect(() => {
+    const rc = remoteConfig();
+    const unsubscribe = rc.onConfigUpdated(async (_, error) => {
+      if (error) return;
+
+      await useRemoteConfigStore.getState().fetch(undefined, { force: true });
+    });
+
+    return unsubscribe;
+  }, []);
 }
 
 // ============ Fetcher ======================================================== //
