@@ -1,5 +1,5 @@
 import { memo, useCallback, useState } from 'react';
-import { View, RefreshControl, StyleSheet } from 'react-native';
+import { Alert, View, RefreshControl, StyleSheet } from 'react-native';
 import { Box, Text } from '@/design-system';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { AirdropSummaryCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/AirdropSummaryCard';
@@ -16,12 +16,13 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { RewardsHowToEarnCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RewardsHowToEarnCard';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import * as i18n from '@/languages';
-import { useIsHardwareWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useIsHardwareWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import watchingAlert from '@/utils/watchingAlert';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { prepareRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
 
 const enterAnimation = createScaleInFadeInSlideEnterAnimation({ delay: time.ms(200) });
 
@@ -55,16 +56,29 @@ export const RewardsOverviewScene = function RewardsOverviewScene() {
 };
 
 const RnbwRewardsBalance = memo(function RnbwRewardsBalance() {
+  const accountAddress = useAccountAddress();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const isHardwareWallet = useIsHardwareWallet();
   const { tokenAmount, nativeCurrencyAmount } = useRewardsBalanceStore(state => state.getFormattedBalance());
   const hasClaimableRewards = useRewardsBalanceStore(state => state.hasClaimableRewards());
   const { navigate } = useNavigation();
+  const [isPreparingClaim, setIsPreparingClaim] = useState(false);
 
-  const startClaimRewards = useCallback(() => {
-    rewardsFlowActions.startRewardsClaim();
-    rewardsFlowActions.setActiveScene(RnbwRewardsScenes.RewardsClaiming);
+  const showClaimError = useCallback(() => {
+    Alert.alert(i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_title), i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_message));
   }, []);
+
+  const startClaimRewards = useCallback(async () => {
+    setIsPreparingClaim(true);
+    try {
+      const preparedClaim = await prepareRewardsClaim({ address: accountAddress });
+      rewardsFlowActions.startRewardsClaimSubmission(preparedClaim);
+      rewardsFlowActions.setActiveScene(RnbwRewardsScenes.RewardsClaiming);
+    } catch (error) {
+      showClaimError();
+      setIsPreparingClaim(false);
+    }
+  }, [accountAddress, showClaimError]);
 
   const handleClaimRewards = useCallback(() => {
     'worklet';
@@ -98,8 +112,8 @@ const RnbwRewardsBalance = memo(function RnbwRewardsBalance() {
               backgroundColor="white"
               disabledBackgroundColor="white"
               progressColor="black"
-              isProcessing={false}
-              processingLabel={i18n.t(i18n.l.rnbw_rewards.rewards.claiming_rewards)}
+              isProcessing={isPreparingClaim}
+              processingLabel={i18n.t(i18n.l.rnbw_rewards.rewards.claiming)}
               showBiometryIcon={true}
               style={{ width: '100%' }}
             />

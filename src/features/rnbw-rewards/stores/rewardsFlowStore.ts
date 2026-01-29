@@ -1,6 +1,6 @@
 import { RnbwRewardsScene, RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { claimAirdrop } from '@/features/rnbw-rewards/utils/claimAirdrop';
-import { claimRewards } from '@/features/rnbw-rewards/utils/claimRewards';
+import { submitRewardsClaim, type PreparedRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
@@ -20,12 +20,12 @@ type RewardsFlowStore = {
   activeScene: RnbwRewardsScene;
   airdropEligibilityRequest: AsyncActionState<void>;
   airdropClaimRequest: AsyncActionState<Awaited<ReturnType<typeof claimAirdrop>>>;
-  rewardsClaimRequest: AsyncActionState<Awaited<ReturnType<typeof claimRewards>>>;
+  rewardsClaimRequest: AsyncActionState<Awaited<ReturnType<typeof submitRewardsClaim>>>;
   resetFlow: (initialScene: RnbwRewardsScene) => void;
   setActiveScene: (scene: RnbwRewardsScene) => void;
   startAirdropEligibilityCheck: () => Promise<void>;
   startAirdropClaim: () => Promise<void>;
-  startRewardsClaim: () => Promise<void>;
+  startRewardsClaimSubmission: (preparedClaim: PreparedRewardsClaim) => Promise<void>;
 };
 
 const createIdleAction = <T>(): AsyncActionState<T> => ({ status: 'idle', runId: 0 });
@@ -83,13 +83,12 @@ export const useRewardsFlowStore = createRainbowStore<RewardsFlowStore>((set, ge
     }
   },
 
-  startRewardsClaim: async () => {
+  startRewardsClaimSubmission: async preparedClaim => {
     set(state => ({ rewardsClaimRequest: { status: 'running', runId: state.rewardsClaimRequest.runId + 1 } }));
     const runId = get().rewardsClaimRequest.runId;
     try {
-      const address = useWalletsStore.getState().accountAddress;
       const currency = userAssetsStoreManager.getState().currency;
-      const data = await claimRewards({ address, currency });
+      const data = await submitRewardsClaim({ preparedClaim, currency });
       set(state => {
         if (state.rewardsClaimRequest.runId !== runId) return state;
         return { rewardsClaimRequest: { status: 'success', runId, data } };
