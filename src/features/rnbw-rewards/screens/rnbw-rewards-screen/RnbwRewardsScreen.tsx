@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccountImage } from '@/components/AccountImage';
 import { BottomGradientGlow } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/BottomGradientGlow';
@@ -24,9 +24,7 @@ import { RewardsOverviewScene } from '@/features/rnbw-rewards/screens/rnbw-rewar
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { AirdropUnavailableScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/AirdropUnavailableScene';
-import { Box, ColorModeProvider, Text } from '@/design-system';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import rnbwCoinImage from '@/assets/rnbw.png';
+import { ColorModeProvider } from '@/design-system';
 import { useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 
 export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
@@ -74,36 +72,50 @@ const RnbwRewardsNavbar = memo(function RnbwRewardsNavbar() {
     return activeScene === RnbwRewardsScenes.RewardsOverview ? 'Rewards' : '';
   }, [activeScene]);
 
-  const navbarRightComponent = useMemo(() => {
-    return activeScene === RnbwRewardsScenes.RewardsOverview ? <NavbarRnbwBalance /> : null;
-  }, [activeScene]);
+  /**
+   * Temporarily disabled until we have a final token contract address
+   */
+  // const navbarRightComponent = useMemo(() => {
+  //   return activeScene === RnbwRewardsScenes.RewardsOverview ? <NavbarRnbwBalance /> : null;
+  // }, [activeScene]);
 
-  return <Navbar title={navbarTitle} leftComponent={<AccountImage />} rightComponent={navbarRightComponent} floating />;
+  return (
+    <Navbar
+      title={navbarTitle}
+      leftComponent={<AccountImage />}
+      // rightComponent={navbarRightComponent}
+
+      floating
+    />
+  );
 });
 
-function NavbarRnbwBalance() {
-  // TODO: This will require knowing the RNBW token contract address
-  const rnbwBalance = 123.5;
-  return (
-    <Box
-      paddingVertical={'8px'}
-      paddingLeft={'8px'}
-      paddingRight={'10px'}
-      borderWidth={1}
-      borderColor="separatorTertiary"
-      borderRadius={32}
-      backgroundColor={opacityWorklet('#F5F8FF', 0.06)}
-      flexDirection="row"
-      alignItems="center"
-      gap={4}
-    >
-      <Image source={rnbwCoinImage} style={{ width: 22, height: 22 }} />
-      <Text size="15pt" weight="bold" color="label">
-        {rnbwBalance}
-      </Text>
-    </Box>
-  );
-}
+/**
+ * Temporarily disabled until we have a final token contract address
+ */
+// function NavbarRnbwBalance() {
+//   // TODO: Subscribe to assets store for RNBW address.
+//   const rnbwBalance = 123.5;
+//   return (
+//     <Box
+//       paddingVertical={'8px'}
+//       paddingLeft={'8px'}
+//       paddingRight={'10px'}
+//       borderWidth={1}
+//       borderColor="separatorTertiary"
+//       borderRadius={32}
+//       backgroundColor={opacityWorklet('#F5F8FF', 0.06)}
+//       flexDirection="row"
+//       alignItems="center"
+//       gap={4}
+//     >
+//       <Image source={rnbwCoinImage} style={{ width: 22, height: 22 }} />
+//       <Text size="15pt" weight="bold" color="label">
+//         {rnbwBalance}
+//       </Text>
+//     </Box>
+//   );
+// }
 
 function RnbwRewardsSceneRouter() {
   const activeScene = useRewardsFlowStore(state => state.activeScene);
