@@ -21,6 +21,27 @@ function waiter(duration: number): Promise<void> {
   });
 }
 
+/**
+ * Converts a signature component to a hex string.
+ * Handles multiple formats that Ledger libraries may return:
+ * - Hex string (with or without 0x prefix)
+ * - Buffer/Uint8Array
+ * - Comma-separated decimal string (e.g., "40,126,97,42,...")
+ */
+function sigComponentToHex(value: string | Buffer | Uint8Array): string {
+  if (typeof value === 'string') {
+    // Comma-separated decimal string
+    if (value.includes(',')) {
+      const bytes = new Uint8Array(value.split(',').map(Number));
+      return hexlify(bytes);
+    }
+    // Already a hex string
+    return value.startsWith('0x') ? value : '0x' + value;
+  }
+  // Buffer or Uint8Array
+  return hexlify(value);
+}
+
 export class LedgerSigner extends Signer {
   readonly path: string | undefined;
   readonly privateKey: null | undefined;
@@ -107,8 +128,8 @@ export class LedgerSigner extends Signer {
     const messageHex = hexlify(message).substring(2);
 
     const sig = await this._retry(eth => eth.signPersonalMessage(this.path!, messageHex));
-    sig.r = '0x' + sig.r;
-    sig.s = '0x' + sig.s;
+    sig.r = sigComponentToHex(sig.r);
+    sig.s = sigComponentToHex(sig.s);
     return joinSignature(sig);
   }
 
@@ -127,8 +148,8 @@ export class LedgerSigner extends Signer {
     ).toString('hex');
 
     const sig = await this._retry(eth => eth.signEIP712HashedMessage(this.path!, domainSeparatorHex, hashStructMessageHex));
-    sig.r = '0x' + sig.r;
-    sig.s = '0x' + sig.s;
+    sig.r = sigComponentToHex(sig.r);
+    sig.s = sigComponentToHex(sig.s);
     return joinSignature(sig);
   }
 
@@ -160,9 +181,9 @@ export class LedgerSigner extends Signer {
     );
     const sig = await this._retry(eth => eth.signTransaction(this.path!, unsignedTx, resolution));
     return serialize(baseTx, {
-      r: '0x' + sig.r,
-      s: '0x' + sig.s,
-      v: BigNumber.from('0x' + sig.v).toNumber(),
+      r: sigComponentToHex(sig.r),
+      s: sigComponentToHex(sig.s),
+      v: BigNumber.from(sigComponentToHex(sig.v)).toNumber(),
     });
   }
 
