@@ -54,7 +54,8 @@ export const useRewardsBalanceStore = createQueryStore<RewardsBalanceData, Rewar
     },
     hasClaimableRewards: () => {
       const data = get().getData();
-      return data?.claimableRnbw !== '0';
+      if (!data) return false;
+      return data.claimableRnbw !== '0';
     },
   }),
 
