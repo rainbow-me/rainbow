@@ -27,6 +27,8 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
 import { IS_TEST } from '@/env';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import * as i18n from '@/languages';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;
 
@@ -41,6 +43,10 @@ export function SwapBottomPanel() {
     internalSelectedOutputAsset,
     quoteFetchingInterval,
   } = useSwapContext();
+
+  const isRewardEligible = useSwapsStore(state => state.rewardsEstimate?.eligible === true);
+  const rewardsEstimate = useSwapsStore(state => state.rewardsEstimate);
+  const showRewards = isRewardEligible && confirmButtonProps.value.type === 'hold';
 
   const { swipeToDismissGestureHandler, gestureY } = useBottomPanelGestureHandler();
 
@@ -98,6 +104,12 @@ export function SwapBottomPanel() {
     }
   }, [configProgress.value, navigate, SwapNavigation]);
 
+  const handleRewardsInfoPress = useCallback(() => {
+    navigate(Routes.RNBW_REWARDS_ESTIMATE, {
+      estimatedAmount: Number(rewardsEstimate?.rewardRnbw ?? 0),
+    });
+  }, [navigate, rewardsEstimate?.rewardRnbw]);
+
   return (
     <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler}>
       <Animated.View
@@ -152,6 +164,8 @@ export function SwapBottomPanel() {
               icon={icon}
               iconStyle={confirmButtonIconStyle}
               label={label}
+              subtitle={showRewards ? i18n.t(i18n.l.swap.actions.earning_rewards) : undefined}
+              rightIcon={showRewards ? '􀅴' : undefined}
               longPressDuration={HOLD_TO_SWAP_DURATION_MS}
               disabled={finalDisabled}
               onPressWorklet={() => {
@@ -191,6 +205,7 @@ export function SwapBottomPanel() {
                 }
               }}
               opacity={finalOpacity}
+              onPressRightIconJS={showRewards ? handleRewardsInfoPress : undefined}
               scaleTo={0.9}
             />
           </Box>

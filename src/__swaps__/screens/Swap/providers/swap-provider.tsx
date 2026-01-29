@@ -54,6 +54,7 @@ import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
+import { SyncSwapRewardsEstimate } from './SyncSwapRewardsEstimate';
 import { executeFn, Screens, TimeToSignOperation, startTimeToSignTracking } from '@/state/performance/performance';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -939,6 +940,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     >
       {children}
       <SyncQuoteSharedValuesToState />
+      <SyncSwapRewardsEstimate />
       <SyncGasStateToSharedValues />
     </SwapContext.Provider>
   );

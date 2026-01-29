@@ -8,6 +8,7 @@ import { ExtendedAnimatedAssetWithColors, UniqueId } from '@/__swaps__/types/ass
 import { RecentSwap } from '@/__swaps__/types/swap';
 import { clamp, getDefaultSlippage } from '@/__swaps__/utils/swaps';
 import { time } from '@/utils';
+import { EstimateRewardResult } from '@/features/rnbw-rewards/utils/estimateReward';
 
 export interface SwapsState {
   // assets
@@ -20,6 +21,7 @@ export interface SwapsState {
   percentageToSell: number; // Value between 0 and 1, e.g., 0.5, 0.1, 0.25
   setPercentageToSell: (percentageToSell: number) => void; // Accepts values from 0 to 1
   quote: Quote | CrosschainQuote | QuoteError | null;
+  rewardsEstimate: EstimateRewardResult | null;
   selectedOutputChainId: ChainId;
 
   // settings
@@ -122,6 +124,7 @@ export const swapsStore = createRainbowStore<SwapsState, SwapsStateToPersist>(
     outputAsset: null,
 
     quote: null,
+    rewardsEstimate: null,
 
     selectedOutputChainId: ChainId.mainnet,
 
