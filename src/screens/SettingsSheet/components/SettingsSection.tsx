@@ -17,7 +17,7 @@ import { AppVersionStamp } from '@/components/AppVersionStamp';
 import useExperimentalFlag, { LANGUAGE_SETTINGS, NOTIFICATIONS } from '@/config/experimentalHooks';
 import { Box } from '@/design-system';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
-import { useAccountSettings, useSendFeedback } from '@/hooks';
+import { useAccountSettings } from '@/hooks';
 import * as i18n from '@/languages';
 import { backupsStore } from '@/state/backups/backups';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
@@ -47,6 +47,7 @@ interface SettingsSectionProps {
   onPressNetwork: () => void;
   onPressPrivacy: () => void;
   onPressNotifications: () => void;
+  onPressSupport: () => void;
 }
 
 const SettingsSection = ({
@@ -58,6 +59,7 @@ const SettingsSection = ({
   onPressLanguage,
   onPressPrivacy,
   onPressNotifications,
+  onPressSupport,
 }: SettingsSectionProps) => {
   const { dev_section_enabled } = useRemoteConfig();
   const isReadOnlyWallet = useIsReadOnlyWallet();
@@ -69,8 +71,6 @@ const SettingsSection = ({
   const backups = backupsStore(state => state.backups);
 
   const { isDarkMode, setTheme, colorScheme } = useTheme();
-
-  const onSendFeedback = useSendFeedback();
 
   const onPressReview = useCallback(async () => {
     if (ios) {
@@ -264,6 +264,14 @@ const SettingsSection = ({
       </Menu>
       <Menu>
         <MenuItem
+          hasRightArrow
+          leftComponent={<MenuItem.TextIcon icon="💬" isEmoji />}
+          onPress={onPressSupport}
+          size={52}
+          testID="feedback-section"
+          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.support.title)} />}
+        />
+        <MenuItem
           leftComponent={<MenuItem.TextIcon icon="🌈" isEmoji />}
           onPress={onPressShare}
           size={52}
@@ -287,15 +295,6 @@ const SettingsSection = ({
           size={52}
           testID="twitter-section"
           titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.follow_us_on_twitter)} />}
-        />
-        <MenuItem
-          leftComponent={<MenuItem.TextIcon icon="💬" isEmoji />}
-          onPress={onSendFeedback}
-          size={52}
-          testID="feedback-section"
-          titleComponent={
-            <MenuItem.Title text={ios ? i18n.t(i18n.l.settings.feedback_and_support) : i18n.t(i18n.l.settings.feedback_and_support)} />
-          }
         />
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon="❤️" isEmoji />}

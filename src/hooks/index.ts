@@ -69,7 +69,6 @@ export { default as useFetchOpenCollectionsOnMount } from './useFetchOpenCollect
 export { default as useSelectImageMenu } from './useSelectImageMenu';
 export { default as useSendSheetInputRefs } from './useSendSheetInputRefs';
 export { default as useSendableUniqueTokens } from './useSendableUniqueTokens';
-export { default as useSendFeedback } from './useSendFeedback';
 export { default as useShakeAnimation } from './useShakeAnimation';
 export { default as useShowcaseTokens } from './useShowcaseTokens';
 export { default as useStepper } from './useStepper';

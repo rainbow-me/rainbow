@@ -8,6 +8,7 @@ export const SettingsExternalURLs = {
     url: 'https://learn.rainbow.me',
     query: { campaign: LearnUTMCampaign.Settings },
   }),
+  rainbowSupport: 'https://rainbow.me/support',
   review: 'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
   twitterWebUrl: 'https://x.com/rainbowdotme',
 };
