@@ -1,7 +1,8 @@
 import React, { RefObject, useMemo } from 'react';
 import { Insets, LayoutChangeEvent, StyleProp, ViewProps, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector, GestureType, LongPressGesture, TapGesture } from 'react-native-gesture-handler';
-import Animated, { AnimatedStyle, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { AnimatedStyle, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 import { HapticType, triggerHaptics } from 'react-native-turbo-haptics';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { LONG_PRESS_DURATION_IN_MS } from '@/components/buttons/hold-to-authorize/constants';
@@ -29,7 +30,7 @@ export type GestureHandlerButtonProps = {
   scaleTo?: number;
   simultaneousWithExternalGesture?: RefObject<GestureType>;
   style?: StyleProp<ViewStyle> | AnimatedStyle;
-  tapRef?: RefObject<TapGesture>;
+  tapRef?: RefObject<TapGesture | undefined>;
   testID?: string;
 };
 
@@ -94,11 +95,12 @@ export function GestureHandlerButton({
         if (!disableHaptics && hapticTrigger === 'tap-start') triggerHaptics(hapticType);
         onPressStartWorklet?.();
       })
+      .runOnJS(true)
       .onEnd(() => {
         if (!disableScale) isPressed.value = false;
         if (!disableHaptics && hapticTrigger === 'tap-end') triggerHaptics(hapticType);
         onPressWorklet?.();
-        if (onPressJS) runOnJS(onPressJS)();
+        if (onPressJS) scheduleOnRN(onPressJS);
       })
       .onFinalize(() => {
         if (!disableScale) isPressed.value = false;
@@ -123,7 +125,7 @@ export function GestureHandlerButton({
       .onStart(() => {
         if (!disableScale) isPressed.value = true;
         onLongPressWorklet?.();
-        if (onLongPressJS) runOnJS(onLongPressJS)();
+        if (onLongPressJS) scheduleOnRN(onLongPressJS);
       })
       .onFinalize((_, success) => {
         if (!disableScale) isPressed.value = false;

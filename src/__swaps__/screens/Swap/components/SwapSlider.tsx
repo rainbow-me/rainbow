@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import * as i18n from '@/languages';
-import { Gesture, GestureDetector, GestureType } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, TapGesture } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
   interpolateColor,
@@ -32,7 +32,7 @@ import {
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { clamp, getColorValueForThemeWorklet, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
-import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -65,7 +65,7 @@ export const SwapSlider = ({
     swapInfo,
   } = useSwapContext();
 
-  const maxButtonRef = useRef<GestureType | undefined>(undefined);
+  const maxButtonRef = useRef<TapGesture | undefined>(undefined);
 
   const fillSecondary = useForegroundColor('fillSecondary');
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -455,15 +455,15 @@ export const SwapSlider = ({
                 </Inline>
               </Inline>
               <Column width="content">
-                <GestureHandlerV1Button
+                <GestureHandlerButton
                   onPressWorklet={setValueToMaxSwappableAmount}
-                  gestureRef={maxButtonRef}
+                  tapRef={maxButtonRef}
                   style={{ margin: -12, padding: 12 }}
                 >
                   <AnimatedText align="center" size="15pt" style={maxTextColor} weight="heavy">
                     {MAX_LABEL}
                   </AnimatedText>
-                </GestureHandlerV1Button>
+                </GestureHandlerButton>
               </Column>
             </Columns>
           </View>
