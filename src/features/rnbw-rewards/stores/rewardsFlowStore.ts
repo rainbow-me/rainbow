@@ -1,6 +1,7 @@
 import { RnbwRewardsScene, RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { submitAirdropClaim, type PreparedAirdropClaim } from '@/features/rnbw-rewards/utils/claimAirdrop';
 import { submitRewardsClaim, type PreparedRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
+import { ensureError } from '@/logger';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
@@ -10,7 +11,7 @@ import { time } from '@/utils/time';
 type TaskIdle = { status: 'idle'; runId: number };
 type TaskRunning = { status: 'running'; runId: number };
 type TaskSuccess<T> = { status: 'success'; runId: number; data: T };
-type TaskError = { status: 'error'; runId: number; error: unknown };
+type TaskError = { status: 'error'; runId: number; error: string };
 
 export type AsyncActionState<T> = TaskIdle | TaskRunning | TaskSuccess<T> | TaskError;
 
@@ -54,9 +55,10 @@ export const useRewardsFlowStore = createRainbowStore<RewardsFlowStore>((set, ge
         return { airdropEligibilityRequest: { status: 'success', runId, data: undefined } };
       });
     } catch (error) {
+      const errorMessage = ensureError(error).message;
       set(state => {
         if (state.airdropEligibilityRequest.runId !== runId) return state;
-        return { airdropEligibilityRequest: { status: 'error', runId, error } };
+        return { airdropEligibilityRequest: { status: 'error', runId, error: errorMessage } };
       });
     }
   },
@@ -72,9 +74,10 @@ export const useRewardsFlowStore = createRainbowStore<RewardsFlowStore>((set, ge
         return { airdropClaimRequest: { status: 'success', runId, data } };
       });
     } catch (error) {
+      const errorMessage = ensureError(error).message;
       set(state => {
         if (state.airdropClaimRequest.runId !== runId) return state;
-        return { airdropClaimRequest: { status: 'error', runId, error } };
+        return { airdropClaimRequest: { status: 'error', runId, error: errorMessage } };
       });
     }
   },
@@ -90,9 +93,10 @@ export const useRewardsFlowStore = createRainbowStore<RewardsFlowStore>((set, ge
         return { rewardsClaimRequest: { status: 'success', runId, data } };
       });
     } catch (error) {
+      const errorMessage = ensureError(error).message;
       set(state => {
         if (state.rewardsClaimRequest.runId !== runId) return state;
-        return { rewardsClaimRequest: { status: 'error', runId, error } };
+        return { rewardsClaimRequest: { status: 'error', runId, error: errorMessage } };
       });
     }
   },
