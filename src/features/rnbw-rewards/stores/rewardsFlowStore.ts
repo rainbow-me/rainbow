@@ -1,13 +1,11 @@
 import { RnbwRewardsScene, RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
-import { claimAirdrop } from '@/features/rnbw-rewards/utils/claimAirdrop';
+import { submitAirdropClaim, type PreparedAirdropClaim } from '@/features/rnbw-rewards/utils/claimAirdrop';
 import { submitRewardsClaim, type PreparedRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
-import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 
 type TaskIdle = { status: 'idle'; runId: number };
 type TaskRunning = { status: 'running'; runId: number };
@@ -19,12 +17,12 @@ export type AsyncActionState<T> = TaskIdle | TaskRunning | TaskSuccess<T> | Task
 type RewardsFlowStore = {
   activeScene: RnbwRewardsScene;
   airdropEligibilityRequest: AsyncActionState<void>;
-  airdropClaimRequest: AsyncActionState<Awaited<ReturnType<typeof claimAirdrop>>>;
+  airdropClaimRequest: AsyncActionState<Awaited<ReturnType<typeof submitAirdropClaim>>>;
   rewardsClaimRequest: AsyncActionState<Awaited<ReturnType<typeof submitRewardsClaim>>>;
   resetFlow: (initialScene: RnbwRewardsScene) => void;
   setActiveScene: (scene: RnbwRewardsScene) => void;
   startAirdropEligibilityCheck: () => Promise<void>;
-  startAirdropClaim: () => Promise<void>;
+  startAirdropClaimSubmission: (preparedClaim: PreparedAirdropClaim) => Promise<void>;
   startRewardsClaimSubmission: (preparedClaim: PreparedRewardsClaim) => Promise<void>;
 };
 
@@ -63,14 +61,12 @@ export const useRewardsFlowStore = createRainbowStore<RewardsFlowStore>((set, ge
     }
   },
 
-  startAirdropClaim: async () => {
+  startAirdropClaimSubmission: async preparedClaim => {
     set(state => ({ airdropClaimRequest: { status: 'running', runId: state.airdropClaimRequest.runId + 1 } }));
     const runId = get().airdropClaimRequest.runId;
     try {
-      const address = useWalletsStore.getState().accountAddress;
       const currency = userAssetsStoreManager.getState().currency;
-      const message = useAirdropBalanceStore.getState().getMessageToSign() ?? '';
-      const data = await claimAirdrop({ message, address, currency });
+      const data = await submitAirdropClaim({ preparedClaim, currency });
       set(state => {
         if (state.airdropClaimRequest.runId !== runId) return state;
         return { airdropClaimRequest: { status: 'success', runId, data } };

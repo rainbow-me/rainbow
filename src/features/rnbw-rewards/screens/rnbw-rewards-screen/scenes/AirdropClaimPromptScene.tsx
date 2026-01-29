@@ -1,5 +1,5 @@
-import { memo, useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { memo, useCallback, useMemo, useState } from 'react';
+import { Alert, View, StyleSheet } from 'react-native';
 import { Box, globalColors, Text, TextIcon } from '@/design-system';
 import * as i18n from '@/languages';
 import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
@@ -17,12 +17,14 @@ import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsS
 import { getNumberFormatter } from '@/helpers/intl';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { prepareAirdropClaim } from '@/features/rnbw-rewards/utils/claimAirdrop';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: 24, delay: time.ms(200) });
 
 export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
   const { tokenAmount, nativeCurrencyAmount } = useAirdropBalanceStore(state => state.getFormattedBalance());
   const hasClaimableAirdrop = useAirdropBalanceStore(state => state.hasClaimableAirdrop());
+  const getMessageToSign = useAirdropBalanceStore(state => state.getMessageToSign);
   const { navigate } = useNavigation();
 
   const accountAddress = useAccountAddress();
@@ -31,15 +33,28 @@ export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
   const totalPoints = pointsData?.points?.user?.earnings?.total;
   const rank = pointsData?.points?.user?.stats?.position?.current;
   const isUnranked = pointsData?.points?.user?.stats?.position?.unranked;
+  const [isPreparingClaim, setIsPreparingClaim] = useState(false);
 
   const handleClaimLater = () => {
     rewardsFlowActions.setActiveScene(RnbwRewardsScenes.RewardsOverview);
   };
 
-  const startClaimAirdrop = () => {
-    rewardsFlowActions.startAirdropClaim();
-    rewardsFlowActions.setActiveScene(RnbwRewardsScenes.AirdropClaiming);
-  };
+  const showClaimError = useCallback(() => {
+    Alert.alert(i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_title), i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_message));
+  }, []);
+
+  const startClaimAirdrop = useCallback(async () => {
+    setIsPreparingClaim(true);
+    try {
+      const message = getMessageToSign() ?? '';
+      const preparedClaim = await prepareAirdropClaim({ message, address: accountAddress });
+      rewardsFlowActions.startAirdropClaimSubmission(preparedClaim);
+      rewardsFlowActions.setActiveScene(RnbwRewardsScenes.AirdropClaiming);
+    } catch (error) {
+      showClaimError();
+      setIsPreparingClaim(false);
+    }
+  }, [accountAddress, getMessageToSign, showClaimError]);
 
   const handleClaimAirdrop = () => {
     if (isHardwareWallet) {
@@ -94,7 +109,7 @@ export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
             backgroundColor={globalColors.white100}
             disabledBackgroundColor={globalColors.white30}
             disabled={false}
-            isProcessing={false}
+            isProcessing={isPreparingClaim}
             processingLabel={i18n.t(i18n.l.button.hold_to_authorize.claiming)}
             showBiometryIcon={false}
             progressColor="black"

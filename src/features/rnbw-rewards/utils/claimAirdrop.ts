@@ -18,13 +18,13 @@ import { Navigation } from '@/navigation';
 
 type ClaimStatusPollResult = PollClaimStatusResult<ClaimAirdropResult, ClaimAirdropResponse>;
 
-export async function claimAirdrop({ message, address, currency }: { message: string; address: Address; currency: NativeCurrencyKey }) {
-  const chainId = ChainId.base;
-  const startedAt = Date.now();
-  const platformClient = getPlatformClient();
+export type PreparedAirdropClaim = {
+  address: Address;
+  signedMessage: string;
+};
 
-  let claimResponse: RainbowFetchResponse<ClaimAirdropResponse> | undefined;
-  let pollResult: ClaimStatusPollResult | undefined;
+export async function prepareAirdropClaim({ message, address }: { message: string; address: Address }): Promise<PreparedAirdropClaim> {
+  const startedAt = Date.now();
 
   try {
     if (!address) {
@@ -37,6 +37,40 @@ export async function claimAirdrop({ message, address, currency }: { message: st
 
     const signedMessage = await signMessage({ message, address });
 
+    return {
+      address,
+      signedMessage,
+    };
+  } catch (e) {
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+
+    analytics.track(analytics.event.rnbwAirdropClaimFailed, {
+      chainId: ChainId.base,
+      errorMessage,
+      durationMs: Date.now() - startedAt,
+      platformRequestIds: {},
+    });
+    logger.error(new RainbowError('[prepareAirdropClaim]: Failed to prepare airdrop claim', e));
+    throw e;
+  }
+}
+
+export async function submitAirdropClaim({
+  preparedClaim,
+  currency,
+}: {
+  preparedClaim: PreparedAirdropClaim;
+  currency: NativeCurrencyKey;
+}): Promise<ClaimAirdropResult> {
+  const { address, signedMessage } = preparedClaim;
+  const chainId = ChainId.base;
+  const startedAt = Date.now();
+  const platformClient = getPlatformClient();
+
+  let claimResponse: RainbowFetchResponse<ClaimAirdropResponse> | undefined;
+  let pollResult: ClaimStatusPollResult | undefined;
+
+  try {
     claimResponse = await platformClient.post<ClaimAirdropResponse>('/rewards/ClaimAirdrop', {
       currency,
       walletAddress: address,
@@ -89,7 +123,7 @@ export async function claimAirdrop({ message, address, currency }: { message: st
       },
     });
 
-    logger.error(new RainbowError('[claimAirdrop]: Failed to claim airdrop', e));
+    logger.error(new RainbowError('[submitAirdropClaim]: Failed to claim airdrop', e));
     throw e;
   }
 }
