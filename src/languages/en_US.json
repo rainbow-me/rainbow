@@ -3858,6 +3858,9 @@
         "description": "Say hello to $RNBW. Claim your airdrop today. New features and experiences built for $RNBW coming soon.",
         "check_eligibility": "Check Eligibility"
       },
+      "feature_card": {
+        "subtitle": "Say hello to $RNBW, now available to claim."
+      },
       "claim": {
         "available_to_claim": "Available to Claim",
         "your_airdrop": "Your Airdrop",
