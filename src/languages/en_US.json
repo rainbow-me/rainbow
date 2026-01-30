@@ -3855,16 +3855,14 @@
       "introduction": {
         "introducing": "Introducing",
         "rainbow_token": "Rainbow Token",
-        "description": "Say hello to $RNBW. Claim your airdrop today. New features and experiences built for $RNBW coming soon.",
+        "description_prefix": "Say hello to ",
+        "description_suffix": " Check if you’re eligible for the airdrop now.",
         "check_eligibility": "Check Eligibility"
       },
       "claim": {
         "available_to_claim": "Available to Claim",
         "your_airdrop": "Your Airdrop",
-        "points_description_prefix": "Based on your previous activity and ",
-        "points_description_suffix": " Rainbow Points you've Earned Over Time.",
-        "leaderboard_description_prefix": " You were ranked ",
-        "leaderboard_description_suffix": " in the Points Leaderboard.",
+        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
         "claim_failed_title": "Error Claiming Rewards",
         "claim_failed_message": "Please try again.",
         "claim_later": "Claim Later",
@@ -3879,8 +3877,8 @@
         "you_claimed": "You claimed"
       },
       "airdrop": {
-        "nothing_to_claim": "Nothing to Claim",
-        "nothing_to_claim_description": "Sorry, you did not qualify for the airdrop.",
+        "no_airdrop": "No Airdrop",
+        "no_airdrop_description": "This wallet did not receive an airdrop.",
         "already_claimed": "Already Claimed",
         "already_claimed_description": "You've already claimed your airdrop."
       },
@@ -3888,24 +3886,19 @@
         "your_airdrop": "Your Airdrop"
       },
       "how_to_earn": {
-        "swap_to_earn": "Swap To Earn",
-        "swap_to_earn_description": "Rewards for Perps and Predictions are Coming Soon."
-      },
-      "rewards": {
-        "empty_rewards_description": "You Can Earn $RNBW by Swapping Tokens. Rewards for Perps and Predictions are Coming Later.",
-        "claiming": "Claiming...",
-        "claim_rewards_description": "Based on your swap activity. More ways to earn rewards coming soon"
+        "earn_rewards": "Earn Rewards",
+        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
       },
       "loading_labels": {
-        "calculating_rewards": "Calculating Rewards...",
         "checking_historical_activity": "Checking Historical Activity...",
         "checking_eligibility": "Checking Eligibility...",
         "claiming_rewards": "Claiming Rewards...",
-        "gathering_coins": "Gathering Coins...",
+        "submitting_transaction": "Submitting Transaction...",
         "claiming_airdrop": "Claiming Airdrop...",
-        "reviewing_perps_and_predictions": "Reviewing Perps & Predictions..."
+        "counting_your_points": "Counting your Points...",
+        "oh_i_see": "Oh I see..."
       },
-      "longer_than_usual": "Claiming is taking longer than usual. It may take up to 2 minutes."
+      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
     },
     "wallet_error_sheet": {
       "title": "Restore your wallet",

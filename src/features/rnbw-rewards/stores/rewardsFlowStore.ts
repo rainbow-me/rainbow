@@ -36,12 +36,14 @@ export const useRewardsFlowStore = createRainbowStore<RewardsFlowStore>((set, ge
   rewardsClaimRequest: createIdleAction(),
 
   resetFlow: initialScene =>
-    set(state => ({
-      activeScene: initialScene,
-      airdropEligibilityRequest: { status: 'idle', runId: state.airdropEligibilityRequest.runId + 1 },
-      airdropClaimRequest: { status: 'idle', runId: state.airdropClaimRequest.runId + 1 },
-      rewardsClaimRequest: { status: 'idle', runId: state.rewardsClaimRequest.runId + 1 },
-    })),
+    set(state => {
+      return {
+        activeScene: initialScene,
+        airdropEligibilityRequest: { status: 'idle', runId: state.airdropEligibilityRequest.runId + 1 },
+        airdropClaimRequest: { status: 'idle', runId: state.airdropClaimRequest.runId + 1 },
+        rewardsClaimRequest: { status: 'idle', runId: state.rewardsClaimRequest.runId + 1 },
+      };
+    }),
 
   setActiveScene: scene => set(() => ({ activeScene: scene })),
 

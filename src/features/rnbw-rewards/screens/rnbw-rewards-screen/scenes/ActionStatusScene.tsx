@@ -22,7 +22,7 @@ type ActionStatusSceneProps<T> = {
 };
 
 export function ActionStatusScene<T>({ labels, task, onComplete }: ActionStatusSceneProps<T>) {
-  const fallbackLabel = i18n.t(i18n.l.rnbw_rewards.claim.almost_there);
+  const fallbackLabel = labels[labels.length - 1];
   const [labelIndex, setLabelIndex] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
   const allLabelsDisplayed = labelIndex >= labels.length - 1;

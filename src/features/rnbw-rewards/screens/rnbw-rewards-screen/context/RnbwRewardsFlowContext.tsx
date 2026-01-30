@@ -21,10 +21,6 @@ type RnbwRewardsFlowContextProviderProps = {
 };
 
 export function RnbwRewardsFlowContextProvider({ children }: RnbwRewardsFlowContextProviderProps) {
-  const [hasCompletedAirdropFlow] = useHasCompletedAirdropFlow();
-
-  const initialScene = hasCompletedAirdropFlow ? RnbwRewardsScenes.RewardsOverview : RnbwRewardsScenes.AirdropIntro;
-
   const scrollOffset = useSharedValue(0);
   const scrollHandler = useAnimatedScrollHandler(event => {
     scrollOffset.value = event.contentOffset.y;
@@ -40,7 +36,7 @@ export function RnbwRewardsFlowContextProvider({ children }: RnbwRewardsFlowCont
       }}
     >
       {children}
-      <RnbwRewardsFlowSideEffects activeScene={activeScene} initialScene={initialScene} />
+      <RnbwRewardsFlowSideEffects />
     </RnbwRewardsFlowContext.Provider>
   );
 }
@@ -53,17 +49,13 @@ export function useRnbwRewardsFlowContext(): RnbwRewardsFlowContextType {
   return context;
 }
 
-type RnbwRewardsFlowSideEffectsProps = {
-  activeScene: SharedValue<RnbwRewardsScene>;
-  initialScene: RnbwRewardsScene;
-};
-
-function RnbwRewardsFlowSideEffects({ initialScene }: RnbwRewardsFlowSideEffectsProps) {
+function RnbwRewardsFlowSideEffects() {
   const accountAddress = useAccountAddress();
   const activeSceneState = useRewardsFlowStore(state => state.activeScene);
-  const [hasCompletedAirdropFlow, setHasCompletedAirdropFlow] = useHasCompletedAirdropFlow();
+  const [hasCompletedAirdropFlow, setHasCompletedAirdropFlow] = useHasCompletedAirdropFlow(accountAddress);
   const previousAccountAddress = usePrevious(accountAddress);
   const hasClaimedAirdrop = useAirdropBalanceStore(state => state.hasClaimedAirdrop() === true);
+  const initialScene = hasCompletedAirdropFlow ? RnbwRewardsScenes.RewardsOverview : RnbwRewardsScenes.AirdropIntro;
 
   useEffect(() => {
     if (previousAccountAddress === accountAddress) return;
@@ -72,7 +64,7 @@ function RnbwRewardsFlowSideEffects({ initialScene }: RnbwRewardsFlowSideEffects
 
   useEffect(() => {
     if (hasCompletedAirdropFlow) return;
-    if (activeSceneState === RnbwRewardsScenes.RewardsOverview) {
+    if (activeSceneState === RnbwRewardsScenes.RewardsOverview && (!previousAccountAddress || previousAccountAddress === accountAddress)) {
       setHasCompletedAirdropFlow(true);
     }
     // This handles the case where the user re-downloads after previously claiming the airdrop
@@ -80,7 +72,7 @@ function RnbwRewardsFlowSideEffects({ initialScene }: RnbwRewardsFlowSideEffects
       setHasCompletedAirdropFlow(true);
       rewardsFlowActions.resetFlow(RnbwRewardsScenes.RewardsOverview);
     }
-  }, [activeSceneState, hasCompletedAirdropFlow, hasClaimedAirdrop, setHasCompletedAirdropFlow]);
+  }, [activeSceneState, hasCompletedAirdropFlow, hasClaimedAirdrop, setHasCompletedAirdropFlow, previousAccountAddress, accountAddress]);
 
   return null;
 }
