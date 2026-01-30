@@ -45,16 +45,18 @@ export function buildEstimateRewardPayload({
   const feeTokenAsset = quote.feeTokenAsset;
   const feeTokenChainId = feeTokenAsset?.chainId;
   const feeTokenAddress = feeTokenChainId && feeTokenAsset?.networks[feeTokenChainId]?.address;
+  const sellToken = quote.sellTokenAsset;
+  const buyToken = quote.buyTokenAsset;
 
-  if (!feeTokenAddress || !feeTokenChainId || !targetRouter) return null;
+  if (!feeTokenAddress || !feeTokenChainId || !targetRouter || !sellToken || !buyToken) return null;
 
   const inputToken = {
     address: quote.sellTokenAddress,
-    chainId: String(quote.chainId),
+    chainId: String(sellToken.chainId),
   };
   const outputToken = {
     address: quote.buyTokenAddress,
-    chainId: String(quote.chainId),
+    chainId: String(buyToken.chainId),
   };
   const feeToken = {
     address: feeTokenAddress,
