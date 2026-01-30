@@ -1,6 +1,7 @@
 import { analytics } from '@/analytics';
 import { NativeCurrencyKey } from '@/entities';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ClaimAirdropResponse, ClaimAirdropResult } from '@/features/rnbw-rewards/types/claimAirdropTypes';
 import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResult';
 import { pollClaimStatus, PollClaimStatusResult } from '@/features/rnbw-rewards/utils/pollClaimStatus';
@@ -11,16 +12,19 @@ import { RainbowFetchResponse } from '@/rainbow-fetch';
 import { getPlatformClient } from '@/resources/platform/client';
 import { ChainId } from '@rainbow-me/swaps';
 import { Address } from 'viem';
+import { time } from '@/utils/time';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { Navigation } from '@/navigation';
 
 type ClaimStatusPollResult = PollClaimStatusResult<ClaimAirdropResult, ClaimAirdropResponse>;
 
-export async function claimAirdrop({ message, address, currency }: { message: string; address: Address; currency: NativeCurrencyKey }) {
-  const chainId = ChainId.base;
-  const startedAt = Date.now();
-  const platformClient = getPlatformClient();
+export type PreparedAirdropClaim = {
+  address: Address;
+  signedMessage: string;
+};
 
-  let claimResponse: RainbowFetchResponse<ClaimAirdropResponse> | undefined;
-  let pollResult: ClaimStatusPollResult | undefined;
+export async function prepareAirdropClaim({ message, address }: { message: string; address: Address }): Promise<PreparedAirdropClaim> {
+  const startedAt = Date.now();
 
   try {
     if (!address) {
@@ -33,6 +37,40 @@ export async function claimAirdrop({ message, address, currency }: { message: st
 
     const signedMessage = await signMessage({ message, address });
 
+    return {
+      address,
+      signedMessage,
+    };
+  } catch (e) {
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+
+    analytics.track(analytics.event.rnbwAirdropClaimFailed, {
+      chainId: ChainId.base,
+      errorMessage,
+      durationMs: Date.now() - startedAt,
+      platformRequestIds: {},
+    });
+    logger.error(new RainbowError('[prepareAirdropClaim]: Failed to prepare airdrop claim', e));
+    throw e;
+  }
+}
+
+export async function submitAirdropClaim({
+  preparedClaim,
+  currency,
+}: {
+  preparedClaim: PreparedAirdropClaim;
+  currency: NativeCurrencyKey;
+}): Promise<ClaimAirdropResult> {
+  const { address, signedMessage } = preparedClaim;
+  const chainId = ChainId.base;
+  const startedAt = Date.now();
+  const platformClient = getPlatformClient();
+
+  let claimResponse: RainbowFetchResponse<ClaimAirdropResponse> | undefined;
+  let pollResult: ClaimStatusPollResult | undefined;
+
+  try {
     claimResponse = await platformClient.post<ClaimAirdropResponse>('/rewards/ClaimAirdrop', {
       currency,
       walletAddress: address,
@@ -48,7 +86,6 @@ export async function claimAirdrop({ message, address, currency }: { message: st
     const finalClaimResult = pollResult.result;
 
     await useAirdropBalanceStore.getState().fetch(undefined, { force: true });
-
     analytics.track(analytics.event.rnbwAirdropClaim, {
       chainId,
       claimId,
@@ -65,6 +102,9 @@ export async function claimAirdrop({ message, address, currency }: { message: st
         status: pollResult.response.headers?.get('x-request-id') ?? undefined,
       },
     });
+
+    await useUserAssetsStore.getState().fetch(undefined, { force: true });
+    setTimeout(() => useUserAssetsStore.getState().fetch(undefined, { force: true }), time.seconds(5));
 
     return finalClaimResult;
   } catch (e) {
@@ -83,7 +123,7 @@ export async function claimAirdrop({ message, address, currency }: { message: st
       },
     });
 
-    logger.error(new RainbowError('[claimAirdrop]: Failed to claim airdrop', e));
+    logger.error(new RainbowError('[submitAirdropClaim]: Failed to claim airdrop', e));
     throw e;
   }
 }
@@ -95,6 +135,13 @@ async function signMessage({ message, address }: { message: string; address: Add
     throw new Error('Failed to load wallet');
   }
   const signedMessage = await signPersonalMessage(message, provider, signer);
+
+  // If the wallet is a hardware wallet, the hardware wallet navigator modal will be open
+  const isHardwareWallet = signer instanceof LedgerSigner;
+  if (isHardwareWallet) {
+    Navigation.goBack();
+  }
+
   if (!signedMessage?.result || signedMessage?.error) {
     throw new Error(`Failed to sign message: ${signedMessage?.error?.message ?? 'Unknown error'}`);
   }

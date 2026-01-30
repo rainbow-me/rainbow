@@ -3,23 +3,19 @@ import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Box, Text } from '@/design-system';
 import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
-import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
-import {
-  createScaleOutFadeOutSlideExitAnimation,
-  createScaleInFadeInSlideEnterAnimation,
-} from '@/features/rnbw-rewards/animations/sceneTransitions';
+import { createScaleInFadeInSlideEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
+import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 
 const enteringAnimation = createScaleInFadeInSlideEnterAnimation({ translateY: -24 });
-const exitingAnimation = createScaleOutFadeOutSlideExitAnimation();
+const exitingAnimation = defaultExitAnimation;
 
 export const AirdropClaimedScene = memo(function AirdropClaimedScene() {
-  const { setActiveScene } = useRnbwRewardsFlowContext();
   const { tokenAmount } = useAirdropBalanceStore(state => state.getFormattedAirdroppedBalance());
 
   return (
@@ -35,7 +31,11 @@ export const AirdropClaimedScene = memo(function AirdropClaimedScene() {
           </Text>
         </Text>
       </Box>
-      <ButtonPressAnimation onPress={() => setActiveScene(RnbwRewardsScenes.RewardsOverview)} scaleTo={0.96} style={styles.button}>
+      <ButtonPressAnimation
+        onPress={() => rewardsFlowActions.setActiveScene(RnbwRewardsScenes.RewardsOverview)}
+        scaleTo={0.96}
+        style={styles.button}
+      >
         <Box
           backgroundColor={opacityWorklet('#F5F8FF', 0.06)}
           width="full"

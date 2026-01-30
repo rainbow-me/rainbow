@@ -4,7 +4,6 @@ import { Box, globalColors, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
 import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
-import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
 import Animated, { runOnJS } from 'react-native-reanimated';
 import { time } from '@/utils/time';
 import {
@@ -22,7 +21,6 @@ const exitingAnimationSecondTranche = createScaleOutFadeOutSlideExitAnimation({ 
 const exitingAnimationThirdTranche = createScaleOutFadeOutSlideExitAnimation({ delay: time.ms(240) });
 
 export const AirdropIntroScene = memo(function AirdropIntroScene() {
-  const { setActiveScene } = useRnbwRewardsFlowContext();
   const isReadOnlyWallet = useIsReadOnlyWallet();
 
   const handleCheckEligibility = useCallback(() => {
@@ -32,8 +30,8 @@ export const AirdropIntroScene = memo(function AirdropIntroScene() {
       return;
     }
     rewardsFlowActions.startAirdropEligibilityCheck();
-    setActiveScene(RnbwRewardsScenes.AirdropEligibility);
-  }, [isReadOnlyWallet, setActiveScene]);
+    rewardsFlowActions.setActiveScene(RnbwRewardsScenes.AirdropEligibility);
+  }, [isReadOnlyWallet]);
 
   return (
     <Animated.View style={styles.container} entering={enteringAnimation}>
@@ -51,7 +49,11 @@ export const AirdropIntroScene = memo(function AirdropIntroScene() {
           </Animated.View>
           <Animated.View exiting={exitingAnimationSecondTranche}>
             <Text color={{ custom: '#989A9E' }} size="17pt / 150%" weight="semibold" align="center">
-              {i18n.t(i18n.l.rnbw_rewards.introduction.description)}
+              {i18n.t(i18n.l.rnbw_rewards.introduction.description_prefix)}
+              <Text color="label" size="17pt / 150%" weight="bold">
+                {'$RNBW.'}
+              </Text>
+              {i18n.t(i18n.l.rnbw_rewards.introduction.description_suffix)}
             </Text>
           </Animated.View>
         </Box>
