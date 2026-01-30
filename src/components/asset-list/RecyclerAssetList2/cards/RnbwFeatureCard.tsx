@@ -12,21 +12,13 @@ import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPr
 import { ETH_COLOR_DARK_ACCENT, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { IS_IOS } from '@/env';
 
 export const RNBW_FEATURE_CARD_HEIGHT = 131;
 const BORDER_RADIUS = 28;
 
 export const RnbwFeatureCard = memo(function RnbwFeatureCard() {
   const { isDarkMode } = useColorMode();
-  const { dismiss } = useRnbwFeatureCard();
-
-  const onDismiss = (e: ButtonPressAnimationTouchEvent) => {
-    if (e && 'stopPropagation' in e) {
-      e.stopPropagation();
-    }
-    dismiss();
-  };
-
   const navigateToRnbwRewards = () => {
     Navigation.handleAction(Routes.RNBW_REWARDS_SCREEN);
   };
@@ -48,10 +40,10 @@ export const RnbwFeatureCard = memo(function RnbwFeatureCard() {
           {/* Coin Layer */}
           <FloatingCoins />
           {/* Content layer */}
-          <Box style={StyleSheet.absoluteFill} paddingLeft={{ custom: 18 }} paddingRight={'44px'} paddingVertical="24px">
+          <Box style={StyleSheet.absoluteFill} paddingLeft={{ custom: 18 }} paddingVertical="24px">
             <Box flexDirection="row" alignItems="center" gap={12}>
               <Image source={rnbwCoinImage} style={styles.coinImage} />
-              <Box gap={14} style={{ flex: 1 }}>
+              <Box gap={14} style={{ maxWidth: 192 }}>
                 <Text size="13pt" weight="heavy" color={isDarkMode ? { custom: opacityWorklet('#F5F8FF', 0.4) } : 'labelSecondary'}>
                   {i18n.t(i18n.l.rnbw_rewards.introduction.introducing).toUpperCase()}
                 </Text>
@@ -74,27 +66,43 @@ export const RnbwFeatureCard = memo(function RnbwFeatureCard() {
             </Box>
           </Box>
         </View>
+        {IS_IOS && <DismissButton />}
       </ButtonPressAnimation>
-      <View style={styles.dismissButton}>
-        <ButtonPressAnimation onPress={onDismiss} scaleTo={0.8}>
-          <Box
-            width={28}
-            height={28}
-            backgroundColor={opacityWorklet(globalColors.grey100, 0.32)}
-            borderRadius={14}
-            justifyContent="center"
-            alignItems="center"
-            hitSlop={12}
-          >
-            <TextIcon size="icon 13px" weight="bold" color="white">
-              {'􀆄'}
-            </TextIcon>
-          </Box>
-        </ButtonPressAnimation>
-      </View>
+      {!IS_IOS && <DismissButton />}
     </View>
   );
 });
+
+function DismissButton() {
+  const { dismiss } = useRnbwFeatureCard();
+
+  const onDismiss = (e: ButtonPressAnimationTouchEvent) => {
+    if (e && 'stopPropagation' in e) {
+      e.stopPropagation();
+    }
+    dismiss();
+  };
+
+  return (
+    <View style={styles.dismissButton}>
+      <ButtonPressAnimation onPress={onDismiss} scaleTo={0.8}>
+        <Box
+          width={28}
+          height={28}
+          backgroundColor={opacityWorklet(globalColors.grey100, 0.32)}
+          borderRadius={14}
+          justifyContent="center"
+          alignItems="center"
+          hitSlop={12}
+        >
+          <TextIcon size="icon 13px" weight="bold" color="white">
+            {'􀆄'}
+          </TextIcon>
+        </Box>
+      </ButtonPressAnimation>
+    </View>
+  );
+}
 
 const gradientConfig = {
   gradient: {
