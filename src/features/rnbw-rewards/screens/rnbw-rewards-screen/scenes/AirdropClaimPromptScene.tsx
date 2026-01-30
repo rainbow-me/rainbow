@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { Alert, View, StyleSheet } from 'react-native';
 import { Box, globalColors, Text, TextIcon } from '@/design-system';
 import * as i18n from '@/languages';
@@ -12,9 +12,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
-import { usePoints } from '@/resources/points';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
-import { getNumberFormatter } from '@/helpers/intl';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { prepareAirdropClaim } from '@/features/rnbw-rewards/utils/claimAirdrop';
@@ -29,10 +27,6 @@ export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
 
   const accountAddress = useAccountAddress();
   const isHardwareWallet = useIsHardwareWallet();
-  const { data: pointsData } = usePoints({ walletAddress: accountAddress });
-  const totalPoints = pointsData?.points?.user?.earnings?.total;
-  const rank = pointsData?.points?.user?.stats?.position?.current;
-  const isUnranked = pointsData?.points?.user?.stats?.position?.unranked;
   const [isPreparingClaim, setIsPreparingClaim] = useState(false);
 
   const handleClaimLater = () => {
@@ -64,12 +58,6 @@ export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
     }
   };
 
-  const formattedPoints = useMemo(() => (totalPoints != null ? getNumberFormatter('en-US').format(totalPoints) : '—'), [totalPoints]);
-  const formattedRank = useMemo(
-    () => (rank != null && !isUnranked ? `#${getNumberFormatter('en-US').format(rank)}` : null),
-    [rank, isUnranked]
-  );
-
   return (
     <Animated.View style={styles.container} entering={enteringAnimation} exiting={defaultExitAnimation}>
       <View style={styles.amountContainer}>
@@ -87,20 +75,7 @@ export const AirdropClaimPromptScene = memo(function AirdropClaimPromptScene() {
       </View>
       <Box gap={24} alignItems="center" paddingHorizontal={{ custom: 40 }}>
         <Text color={{ custom: '#989A9E' }} size="17pt / 150%" weight="semibold" align="center">
-          {i18n.t(i18n.l.rnbw_rewards.claim.points_description_prefix)}
-          <Text color="label" weight="bold" size="17pt / 150%">
-            {formattedPoints}
-          </Text>
-          {i18n.t(i18n.l.rnbw_rewards.claim.points_description_suffix)}
-          {formattedRank != null && (
-            <>
-              {i18n.t(i18n.l.rnbw_rewards.claim.leaderboard_description_prefix)}
-              <Text color="label" weight="bold" size="17pt / 150%">
-                {formattedRank}
-              </Text>
-              {i18n.t(i18n.l.rnbw_rewards.claim.leaderboard_description_suffix)}
-            </>
-          )}
+          {i18n.t(i18n.l.rnbw_rewards.claim.your_airdrop_description)}
         </Text>
         <Box gap={28}>
           <HoldToActivateButton

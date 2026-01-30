@@ -61,6 +61,7 @@ const RnbwRewardsBalance = memo(function RnbwRewardsBalance() {
   const isHardwareWallet = useIsHardwareWallet();
   const { tokenAmount, nativeCurrencyAmount } = useRewardsBalanceStore(state => state.getFormattedBalance());
   const hasClaimableRewards = useRewardsBalanceStore(state => state.hasClaimableRewards());
+  const hasClaimableAirdrop = useAirdropBalanceStore(state => state.hasClaimableAirdrop());
   const { navigate } = useNavigation();
   const [isPreparingClaim, setIsPreparingClaim] = useState(false);
 
@@ -104,28 +105,24 @@ const RnbwRewardsBalance = memo(function RnbwRewardsBalance() {
             {`${tokenAmount} ${RNBW_SYMBOL}`}
           </Text>
         </Box>
-        {hasClaimableRewards ? (
-          <Box gap={16} alignItems="center" style={{ width: 251 }}>
-            <HoldToActivateButton
-              label={i18n.t(i18n.l.button.hold_to_authorize.hold_to_claim)}
-              onLongPress={handleClaimRewards}
-              backgroundColor="white"
-              disabledBackgroundColor="white"
-              progressColor="black"
-              isProcessing={isPreparingClaim}
-              processingLabel={i18n.t(i18n.l.rnbw_rewards.rewards.claiming)}
-              showBiometryIcon={true}
-              style={{ width: '100%' }}
-            />
-            <Text size="15pt / 135%" weight="semibold" color={{ custom: opacityWorklet('#F5F8FF', 0.56) }} align="center">
-              {i18n.t(i18n.l.rnbw_rewards.rewards.claim_rewards_description)}
-            </Text>
-          </Box>
-        ) : (
+        {hasClaimableRewards && (
+          <HoldToActivateButton
+            label={i18n.t(i18n.l.button.hold_to_authorize.hold_to_claim)}
+            onLongPress={handleClaimRewards}
+            backgroundColor="white"
+            disabledBackgroundColor="white"
+            progressColor="black"
+            isProcessing={isPreparingClaim}
+            processingLabel={i18n.t(i18n.l.button.hold_to_authorize.claiming)}
+            showBiometryIcon={true}
+            style={{ width: '100%' }}
+          />
+        )}
+        {hasClaimableAirdrop && (
           <Box paddingHorizontal={'16px'} gap={20} width={'full'}>
             <View style={{ height: 1, width: '100%', backgroundColor: opacityWorklet('#F5F8FF', 0.0625) }} />
             <Text size="15pt / 135%" weight="semibold" color="labelTertiary" align="center">
-              {i18n.t(i18n.l.rnbw_rewards.rewards.empty_rewards_description)}
+              {i18n.t(i18n.l.rnbw_rewards.how_to_earn.description)}
             </Text>
           </Box>
         )}

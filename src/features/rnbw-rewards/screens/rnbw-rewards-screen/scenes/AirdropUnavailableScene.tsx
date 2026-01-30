@@ -17,13 +17,11 @@ const exitingAnimation = defaultExitAnimation;
 export const AirdropUnavailableScene = memo(function AirdropUnavailableScene() {
   const wasEverAirdropped = useAirdropBalanceStore(state => state.wasEverAirdropped());
 
-  const title = wasEverAirdropped
-    ? i18n.t(i18n.l.rnbw_rewards.airdrop.already_claimed)
-    : i18n.t(i18n.l.rnbw_rewards.airdrop.nothing_to_claim);
+  const title = wasEverAirdropped ? i18n.t(i18n.l.rnbw_rewards.airdrop.already_claimed) : i18n.t(i18n.l.rnbw_rewards.airdrop.no_airdrop);
 
   const description = wasEverAirdropped
     ? i18n.t(i18n.l.rnbw_rewards.airdrop.already_claimed_description)
-    : i18n.t(i18n.l.rnbw_rewards.airdrop.nothing_to_claim_description);
+    : i18n.t(i18n.l.rnbw_rewards.airdrop.no_airdrop_description);
 
   return (
     <Animated.View style={styles.container} entering={enteringAnimation} exiting={exitingAnimation}>

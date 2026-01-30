@@ -20,8 +20,8 @@ export function AirdropEligibilityScene() {
   const airdropEligibilityRequest = useRewardsFlowStore(state => state.airdropEligibilityRequest);
   const labels = [
     i18n.t(i18n.l.rnbw_rewards.loading_labels.checking_historical_activity),
-    i18n.t(i18n.l.rnbw_rewards.loading_labels.reviewing_perps_and_predictions),
-    i18n.t(i18n.l.rnbw_rewards.loading_labels.calculating_rewards),
+    i18n.t(i18n.l.rnbw_rewards.loading_labels.counting_your_points),
+    i18n.t(i18n.l.rnbw_rewards.loading_labels.oh_i_see),
   ];
 
   const handleCheckAirdropEligibilityComplete = useCallback(() => {
@@ -44,7 +44,10 @@ export function AirdropEligibilityScene() {
 
 export const AirdropClaimingScene = memo(function AirdropClaimingScene() {
   const airdropClaimRequest = useRewardsFlowStore(state => state.airdropClaimRequest);
-  const labels = [i18n.t(i18n.l.rnbw_rewards.loading_labels.claiming_airdrop), i18n.t(i18n.l.rnbw_rewards.loading_labels.gathering_coins)];
+  const labels = [
+    i18n.t(i18n.l.rnbw_rewards.loading_labels.claiming_airdrop),
+    i18n.t(i18n.l.rnbw_rewards.loading_labels.submitting_transaction),
+  ];
 
   const showClaimError = useCallback(() => {
     Alert.alert(i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_title), i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_message));
@@ -74,7 +77,10 @@ export const AirdropClaimingScene = memo(function AirdropClaimingScene() {
 
 export const RewardsClaimingScene = memo(function RewardsClaimingScene() {
   const rewardsClaimRequest = useRewardsFlowStore(state => state.rewardsClaimRequest);
-  const labels = [i18n.t(i18n.l.rnbw_rewards.loading_labels.claiming_rewards), i18n.t(i18n.l.rnbw_rewards.loading_labels.gathering_coins)];
+  const labels = [
+    i18n.t(i18n.l.rnbw_rewards.loading_labels.claiming_rewards),
+    i18n.t(i18n.l.rnbw_rewards.loading_labels.submitting_transaction),
+  ];
 
   const showClaimError = useCallback(() => {
     Alert.alert(i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_title), i18n.t(i18n.l.rnbw_rewards.claim.claim_failed_message));

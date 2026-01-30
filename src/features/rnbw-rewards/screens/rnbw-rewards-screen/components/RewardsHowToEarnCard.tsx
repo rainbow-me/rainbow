@@ -38,10 +38,10 @@ export const RewardsHowToEarnCard = memo(function RewardsHowToEarnCard() {
 
       <Box gap={20} paddingTop={{ custom: ICON_MAX_SIZE / 2 + 24 }} paddingHorizontal={'36px'}>
         <Text size="26pt" weight="heavy" color="label" align="center">
-          {i18n.t(i18n.l.rnbw_rewards.how_to_earn.swap_to_earn)}
+          {i18n.t(i18n.l.rnbw_rewards.how_to_earn.earn_rewards)}
         </Text>
         <Text size="17pt / 135%" weight="semibold" color="labelSecondary" align="center">
-          {i18n.t(i18n.l.rnbw_rewards.how_to_earn.swap_to_earn_description)}
+          {i18n.t(i18n.l.rnbw_rewards.how_to_earn.description)}
         </Text>
       </Box>
     </Box>

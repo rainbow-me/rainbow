@@ -49,7 +49,11 @@ export const AirdropIntroScene = memo(function AirdropIntroScene() {
           </Animated.View>
           <Animated.View exiting={exitingAnimationSecondTranche}>
             <Text color={{ custom: '#989A9E' }} size="17pt / 150%" weight="semibold" align="center">
-              {i18n.t(i18n.l.rnbw_rewards.introduction.description)}
+              {i18n.t(i18n.l.rnbw_rewards.introduction.description_prefix)}
+              <Text color="label" size="17pt / 150%" weight="bold">
+                {'$RNBW.'}
+              </Text>
+              {i18n.t(i18n.l.rnbw_rewards.introduction.description_suffix)}
             </Text>
           </Animated.View>
         </Box>
