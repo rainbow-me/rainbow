@@ -324,7 +324,9 @@
         "authorizing": "Авторизация",
         "confirming_on_ledger": "Подтверждение на Ledger",
         "hold_keyword": "Удерживать",
-        "tap_keyword": "Коснуться"
+        "tap_keyword": "Коснуться",
+        "hold_to_claim": "Удерживайте, чтобы получить",
+        "claiming": "Получение..."
       },
       "hold_to_send": "Удерживать для отправки",
       "import": "Импорт",
@@ -2384,7 +2386,6 @@
       "developer": "Настройки разработчика",
       "done": "Готово",
       "feedback_and_reports": "Отзывы и сообщения об ошибках",
-      "feedback_and_support": "Обратная связь и поддержка",
       "follow_us_on_twitter": "Подпишитесь на нас в X",
       "hey_friend_message": "👋️ Привет, друг! Тебе следует скачать Rainbow, это мой любимый кошелек Ethereum 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Настройки",
@@ -2445,6 +2446,52 @@
         "warning": "Изменение иконки может привести к перезапуску Rainbow.",
         "confirm": "Подтвердить",
         "cancel": "Отменить"
+      },
+      "support": {
+        "title": "Поддержка и обратная связь",
+        "entry": {
+          "contact_support": "Обратитесь в службу поддержки",
+          "contact_support_description": "Персональная поддержка по электронной почте для решения вопросов, проблем и срочных обращений",
+          "get_started": "Начать",
+          "category_picker_description": "С чем вам нужна помощь?",
+          "share_feedback": "Отправить отзыв",
+          "share_feedback_description": "Напишите нам идеи или просто поздоровайтесь",
+          "faqs_and_guides": "Часто задаваемые вопросы и руководства"
+        },
+        "category": {
+          "getting_started": {
+            "name": "Начало работы",
+            "description": "Настройка, основы, сети"
+          },
+          "backup_recovery": {
+            "name": "Резервное копирование и восстановление",
+            "description": "Восстановление, создание резервных копий"
+          },
+          "tokens_transactions": {
+            "name": "Токены и операции",
+            "description": "Отсутствующие токены, балансы"
+          },
+          "bridge_swap": {
+            "name": "Бридж и обмен",
+            "description": "Кроссчейн, проблемы с обменом"
+          },
+          "points_rewards": {
+            "name": "Очки и вознаграждения",
+            "description": "Очки, airdrop, запуски"
+          },
+          "security": {
+            "name": "Проблемы с безопасностью",
+            "description": "Компрометированный кошелек, потерянная фраза"
+          },
+          "partnership": {
+            "name": "Запрос на партнерство",
+            "description": "Бизнес, интеграции"
+          },
+          "other": {
+            "name": "Другое",
+            "description": "Другие вопросы"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2458,6 +2505,7 @@
       "actions": {
         "hold_to_swap": "Удерживайте для обмена",
         "hold_to_bridge": "Удерживайте для моста",
+        "earning_rewards": "Earning Rewards",
         "save": "Сохранить",
         "enter_amount": "Введите сумму",
         "review": "Просмотр",
@@ -3886,6 +3934,58 @@
         "lost_bets_dont_clear": "Проигранные ставки не удаляются автоматически. Вы можете очистить их ниже."
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "Introducing",
+        "rainbow_token": "Rainbow Token",
+        "description_prefix": "Say hello to ",
+        "description_suffix": " Check if you’re eligible for the airdrop now.",
+        "check_eligibility": "Check Eligibility"
+      },
+      "feature_card": {
+        "subtitle": "Say hello to $RNBW, check your eligibility now."
+      },
+      "claim": {
+        "available_to_claim": "Доступно для получения",
+        "your_airdrop": "Your Airdrop",
+        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
+        "claim_failed_title": "Error Claiming Rewards",
+        "claim_failed_message": "Попробуйте снова.",
+        "claim_later": "Claim Later",
+        "almost_there": "Almost there..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "Airdrop Claimed",
+        "you_claimed": "You claimed"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "Rewards Claimed",
+        "you_claimed": "You claimed"
+      },
+      "airdrop": {
+        "no_airdrop": "No Airdrop",
+        "no_airdrop_description": "This wallet did not receive an airdrop.",
+        "already_claimed": "Already Claimed",
+        "already_claimed_description": "You've already claimed your airdrop."
+      },
+      "airdrop_card": {
+        "your_airdrop": "Your Airdrop"
+      },
+      "how_to_earn": {
+        "earn_rewards": "Earn Rewards",
+        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+      },
+      "loading_labels": {
+        "checking_historical_activity": "Checking Historical Activity...",
+        "checking_eligibility": "Checking Eligibility...",
+        "claiming_rewards": "Claiming Rewards...",
+        "submitting_transaction": "Submitting Transaction...",
+        "claiming_airdrop": "Claiming Airdrop...",
+        "counting_your_points": "Counting your Points...",
+        "oh_i_see": "Oh I see..."
+      },
+      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+    },
     "wallet_error_sheet": {
       "title": "Восстановите ваш кошелек",
       "restore": "Восстановить",
@@ -3894,6 +3994,10 @@
       "cause_switched_devices": "Похоже, вы сменили устройство.",
       "resolution_enable_passcode": "Чтобы использовать ваш кошелек, включите его в настройках устройства.",
       "resolution_restore_backup": "Чтобы использовать ваш кошелек, восстановите его из резервной копии или импортируйте вашу секретную фразу восстановления."
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "Earning Rewards",
+      "this_transaction_will_earn": "This transaction will earn approximately "
     }
   }
 }
