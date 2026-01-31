@@ -1,6 +1,6 @@
 import chroma from 'chroma-js';
 import React, { useState } from 'react';
-import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import Animated, {
   DerivedValue,
   interpolate,
@@ -12,7 +12,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedText, Box, Column, Columns, Cover, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText, Box, Column, Columns, Cover, Stack, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
 import { IS_IOS } from '@/env';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
@@ -20,6 +20,12 @@ import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { DepositContextType } from '@/systems/funding/types';
 import { useSwapContext } from '../providers/swap-provider';
 import { GestureHandlerButton, GestureHandlerButtonProps } from './GestureHandlerButton';
+
+const getSwapButtonPadding = ({ outline, rightIcon, small }: { outline?: boolean; rightIcon?: string; small?: boolean }) => {
+  const horizontalPadding = small ? 14 : 20 - (outline ? 2 : 0);
+  const rightPadding = small && rightIcon ? 10 : horizontalPadding;
+  return { horizontalPadding, rightPadding };
+};
 
 function SwapButton({
   asset,
@@ -33,6 +39,8 @@ function SwapButton({
   small,
   disabled,
   opacity,
+  isRightIconPressable,
+  subtitle,
   children,
   testID,
 }: {
@@ -47,6 +55,8 @@ function SwapButton({
   small?: boolean;
   disabled?: DerivedValue<boolean | undefined>;
   opacity?: DerivedValue<number | undefined>;
+  isRightIconPressable?: boolean;
+  subtitle?: string;
   children?: React.ReactNode;
   testID?: string;
 }) {
@@ -104,7 +114,20 @@ function SwapButton({
   });
 
   const rightIconValue = useDerivedValue(() => {
-    return rightIcon;
+    return disabled?.value ? '' : rightIcon;
+  });
+
+  const showAbsoluteRightIcon = Boolean(isRightIconPressable && rightIcon);
+  const { horizontalPadding, rightPadding } = getSwapButtonPadding({ outline, rightIcon, small });
+
+  const subtitleValue = useDerivedValue(() => {
+    return disabled?.value ? '' : subtitle;
+  });
+
+  const subtitleTextStyles = useAnimatedStyle(() => {
+    return {
+      display: disabled?.value ? 'none' : 'flex',
+    };
   });
 
   return (
@@ -112,9 +135,9 @@ function SwapButton({
       <Box
         testID={testID}
         as={Animated.View}
-        paddingHorizontal={{ custom: small ? 14 : 20 - (outline ? 2 : 0) }}
+        paddingHorizontal={{ custom: horizontalPadding }}
         paddingLeft={small && icon ? '10px' : undefined}
-        paddingRight={small && rightIcon ? '10px' : undefined}
+        paddingRight={small && rightIcon ? { custom: rightPadding } : undefined}
         style={[
           feedActionButtonStyles.button,
           outline && feedActionButtonStyles.outlineButton,
@@ -127,36 +150,73 @@ function SwapButton({
         ]}
       >
         {children}
-        <Columns alignHorizontal="center" alignVertical="center" space="6px">
+        <Columns alignHorizontal="justify" alignVertical="center" space="6px">
           {icon && (
             <Column width="content">
-              <AnimatedText align="center" size={small ? '15pt' : '17pt'} style={[iconStyle, textStyles]} weight="heavy">
+              <AnimatedText align="center" size={small ? '17pt' : '20pt'} style={[iconStyle, textStyles]} weight="heavy">
                 {iconValue}
               </AnimatedText>
             </Column>
           )}
           {typeof label !== 'undefined' && (
             <Column width="content">
-              <AnimatedText
-                testID={`${testID}-text`}
-                align="center"
-                style={textStyles}
-                numberOfLines={1}
-                size={small ? '17pt' : '20pt'}
-                weight="heavy"
-              >
-                {labelValue}
-              </AnimatedText>
+              <Stack alignHorizontal="center" space="6px">
+                <AnimatedText
+                  testID={`${testID}-text`}
+                  align="center"
+                  style={textStyles}
+                  numberOfLines={1}
+                  size={small ? '17pt' : '20pt'}
+                  weight="heavy"
+                >
+                  {labelValue}
+                </AnimatedText>
+                {subtitle && (
+                  <AnimatedText
+                    align="center"
+                    numberOfLines={1}
+                    size={small ? '10pt' : '13pt'}
+                    style={[textStyles, secondaryTextStyles, subtitleTextStyles]}
+                    weight="bold"
+                  >
+                    {subtitleValue}
+                  </AnimatedText>
+                )}
+              </Stack>
             </Column>
           )}
-          {rightIcon && (
+          {rightIcon ? (
             <Column width="content">
-              <AnimatedText align="center" style={[textStyles, secondaryTextStyles]} size={small ? '15pt' : '17pt'} weight="bold">
-                {rightIconValue}
-              </AnimatedText>
+              <Box pointerEvents="none">
+                <AnimatedText
+                  align="center"
+                  style={[textStyles, secondaryTextStyles, showAbsoluteRightIcon && feedActionButtonStyles.rightIconPlaceholder]}
+                  size={small ? '15pt' : '17pt'}
+                  weight="bold"
+                >
+                  {rightIconValue}
+                </AnimatedText>
+              </Box>
             </Column>
+          ) : (
+            <Column width="content" />
           )}
         </Columns>
+        {showAbsoluteRightIcon && (
+          <Box
+            pointerEvents="none"
+            style={[
+              feedActionButtonStyles.rightIconAbsolute,
+              {
+                right: rightPadding,
+              },
+            ]}
+          >
+            <AnimatedText align="center" style={[textStyles, secondaryTextStyles]} size={small ? '15pt' : '17pt'} weight="bold">
+              {rightIconValue}
+            </AnimatedText>
+          </Box>
+        )}
       </Box>
     </Animated.View>
   );
@@ -235,6 +295,8 @@ export const SwapActionButton = ({
   style,
   disabled,
   testID,
+  onPressRightIconJS,
+  rightIcon,
   ...props
 }: {
   asset: DerivedValue<ExtendedAnimatedAssetWithColors | null> | DepositContextType['minifiedAsset'];
@@ -251,15 +313,23 @@ export const SwapActionButton = ({
   onPressJS?: GestureHandlerButtonProps['onPressJS'];
   onPressStartWorklet?: GestureHandlerButtonProps['onPressStartWorklet'];
   onPressWorklet?: GestureHandlerButtonProps['onPressWorklet'];
+  onPressRightIconJS?: GestureHandlerButtonProps['onPressJS'];
   outline?: boolean;
   rightIcon?: string;
   scaleTo?: number;
   small?: boolean;
+  subtitle?: string;
   style?: ViewStyle;
   disabled?: DerivedValue<boolean | undefined>;
   opacity?: DerivedValue<number | undefined>;
   testID?: string;
 }) => {
+  const { rightPadding } = getSwapButtonPadding({
+    outline: props?.outline,
+    rightIcon: rightIcon,
+    small: props?.small,
+  });
+  const isRightIconPressable = Boolean(onPressRightIconJS && rightIcon);
   const disabledWrapper = useAnimatedStyle(() => {
     return {
       pointerEvents: disabled && disabled?.value ? 'none' : 'auto',
@@ -268,22 +338,50 @@ export const SwapActionButton = ({
 
   return (
     <Animated.View style={disabledWrapper}>
-      <GestureHandlerButton
-        longPressDuration={longPressDuration}
-        onLongPressEndWorklet={onLongPressEndWorklet}
-        onLongPressWorklet={onLongPressWorklet}
-        onPressJS={onPressJS}
-        onPressStartWorklet={onPressStartWorklet}
-        onPressWorklet={onPressWorklet}
-        scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
-        style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
-        testID={testID}
-      >
-        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <SwapButton {...props} disabled={disabled}>
-          {holdProgress && <HoldProgress holdProgress={holdProgress} />}
-        </SwapButton>
-      </GestureHandlerButton>
+      <View style={feedActionButtonStyles.overlayContainer}>
+        <GestureHandlerButton
+          longPressDuration={longPressDuration}
+          onLongPressEndWorklet={onLongPressEndWorklet}
+          onLongPressWorklet={onLongPressWorklet}
+          onPressJS={onPressJS}
+          onPressStartWorklet={onPressStartWorklet}
+          onPressWorklet={onPressWorklet}
+          scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
+          style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
+          testID={testID}
+        >
+          <SwapButton
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...props}
+            disabled={disabled}
+            isRightIconPressable={isRightIconPressable}
+            rightIcon={rightIcon}
+          >
+            {holdProgress && <HoldProgress holdProgress={holdProgress} />}
+          </SwapButton>
+        </GestureHandlerButton>
+        {isRightIconPressable ? (
+          <View
+            style={[
+              feedActionButtonStyles.rightIconOverlay,
+              {
+                right: rightPadding,
+              },
+            ]}
+          >
+            <GestureHandlerButton onPressJS={onPressRightIconJS}>
+              <AnimatedText
+                align="center"
+                size={props?.small ? '15pt' : '17pt'}
+                style={feedActionButtonStyles.rightIconTapText}
+                weight="bold"
+              >
+                {rightIcon}
+              </AnimatedText>
+            </GestureHandlerButton>
+          </View>
+        ) : null}
+      </View>
     </Animated.View>
   );
 };
@@ -299,5 +397,29 @@ const feedActionButtonStyles = StyleSheet.create({
   },
   outlineButton: {
     borderWidth: 2,
+  },
+  overlayContainer: {
+    position: 'relative',
+  },
+  rightIconOverlay: {
+    position: 'absolute',
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    top: 0,
+    zIndex: 10,
+  },
+  rightIconAbsolute: {
+    position: 'absolute',
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    top: 0,
+  },
+  rightIconPlaceholder: {
+    opacity: 0,
+  },
+  rightIconTapText: {
+    opacity: 0,
   },
 });

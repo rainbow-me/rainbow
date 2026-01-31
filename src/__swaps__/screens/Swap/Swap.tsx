@@ -105,6 +105,7 @@ const useCleanupOnUnmount = () => {
           lastNavigatedTrendingToken: undefined,
           outputAsset: null,
           quote: null,
+          rewardsEstimate: null,
           selectedOutputChainId: inputAsset?.chainId ?? state.preferredNetwork ?? ChainId.mainnet,
         };
       });

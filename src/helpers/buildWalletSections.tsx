@@ -42,6 +42,7 @@ const EMPTY_WALLET_CONTENT: CellTypes[] = [
 ];
 
 const ONLY_NFTS_CONTENT: CellTypes[] = [{ type: CellType.ETH_CARD, uid: 'eth-card' }];
+const EMPTY_ARRAY: CellTypes[] = [];
 
 export type WalletSectionsState = {
   sortedAssets: ParsedAddressAsset[];
@@ -68,11 +69,13 @@ export type WalletSectionsState = {
   perpsData: PerpsWalletListData;
   polymarketData: PolymarketWalletListData;
   remoteCards: string[];
+  rnbwRewardsEnabled: boolean;
   hasMoreCollections: boolean;
   isShowcaseDataMigrated: boolean;
   isHiddenDataMigrated: boolean;
   isDismissedPerpsFeatureCard?: boolean;
   isDismissedPolymarketFeatureCard?: boolean;
+  isDismissedRnbwFeatureCard?: boolean;
 };
 
 const sortedAssetsSelector = (state: WalletSectionsState) => state.sortedAssets;
@@ -93,6 +96,7 @@ const claimablesSelector = (state: WalletSectionsState) => state.claimables;
 const perpsDataSelector = (state: WalletSectionsState) => state.perpsData;
 const polymarketDataSelector = (state: WalletSectionsState) => state.polymarketData;
 const remoteCardsSelector = (state: WalletSectionsState) => state.remoteCards;
+const rnbwRewardsEnabledSelector = (state: WalletSectionsState) => state.rnbwRewardsEnabled;
 const hasMoreCollectionsSelector = (state: WalletSectionsState) => state.hasMoreCollections;
 const isShowcaseDataMigratedSelector = (state: WalletSectionsState) => state.isShowcaseDataMigrated;
 const isHiddenDataMigratedSelector = (state: WalletSectionsState) => state.isHiddenDataMigrated;
@@ -100,6 +104,7 @@ const listTypeSelector = (state: WalletSectionsState) => state.listType;
 const isReadOnlyWalletSelector = (state: WalletSectionsState) => state.isReadOnlyWallet;
 const isDismissedPerpsFeatureCardSelector = (state: WalletSectionsState) => state.isDismissedPerpsFeatureCard;
 const isDismissedPolymarketFeatureCardSelector = (state: WalletSectionsState) => state.isDismissedPolymarketFeatureCard;
+const isDismissedRnbwFeatureCardSelector = (state: WalletSectionsState) => state.isDismissedRnbwFeatureCard;
 
 interface BalanceSectionData {
   headerSection: CellTypes[];
@@ -132,8 +137,10 @@ const buildBriefWalletSections = (
   positions: RainbowPositions | null,
   perpsData: PerpsWalletListData,
   polymarketData: PolymarketWalletListData,
+  rnbwRewardsEnabled: boolean,
   isDismissedPerpsFeatureCard?: boolean,
-  isDismissedPolymarketFeatureCard?: boolean
+  isDismissedPolymarketFeatureCard?: boolean,
+  isDismissedRnbwFeatureCard?: boolean
 ): BriefWalletSectionsResult => {
   const { isEmpty, headerSection, contentSection, isLoadingUserAssets } = balanceSectionData;
 
@@ -144,15 +151,19 @@ const buildBriefWalletSections = (
   const polymarketSection = withPolymarketSection(polymarketData);
   const hasPerpsContent = (perpsData?.hasBalance || perpsData?.hasPositions) && perpsData.enabled;
   const hasPolymarketContent = (polymarketData?.hasBalance || polymarketData?.hasPositions) && polymarketData.enabled;
-  const shouldShowPolymarketFeatureCard = polymarketData?.enabled && !isDismissedPolymarketFeatureCard;
-  const polymarketFeatureCardSection = shouldShowPolymarketFeatureCard ? withPolymarketFeatureCardSection() : [];
+  const shouldShowRnbwFeatureCard = rnbwRewardsEnabled && !isDismissedRnbwFeatureCard;
+  const rnbwFeatureCardSection = shouldShowRnbwFeatureCard ? withRnbwFeatureCardSection() : EMPTY_ARRAY;
+  // const shouldShowPolymarketFeatureCard = polymarketData?.enabled && !isDismissedPolymarketFeatureCard;
+  // const polymarketFeatureCardSection = shouldShowPolymarketFeatureCard ? withPolymarketFeatureCardSection() : [];
+  // NOTE: Only showing RNBW feature card for now. Polymarket logic preserved for future use.
+  const featureCardSection = [...rnbwFeatureCardSection];
   const tokensHeaderSection = withTokensHeaderSection({ contentSection, perpsSection });
 
   if (hasPerpsContent && hasPolymarketContent) {
     return {
       briefSectionsData: [
         ...headerSection,
-        ...polymarketFeatureCardSection,
+        ...featureCardSection,
         ...perpsSection,
         ...polymarketSection,
         ...tokensHeaderSection,
@@ -168,7 +179,7 @@ const buildBriefWalletSections = (
     return {
       briefSectionsData: [
         ...headerSection,
-        ...polymarketFeatureCardSection,
+        ...featureCardSection,
         ...perpsSection,
         ...tokensHeaderSection,
         ...contentSection,
@@ -183,7 +194,7 @@ const buildBriefWalletSections = (
   return {
     briefSectionsData: [
       ...headerSection,
-      ...polymarketFeatureCardSection,
+      ...featureCardSection,
       ...contentSection,
       ...perpsSection,
       ...polymarketSection,
@@ -195,15 +206,20 @@ const buildBriefWalletSections = (
   };
 };
 
-const withPolymarketFeatureCardSection = (): CellTypes[] => {
+const withRnbwFeatureCardSection = (): CellTypes[] => {
   return [
     {
-      type: CellType.POLYMARKET_FEATURE_CARD,
-      uid: 'polymarket-feature-card',
+      type: CellType.SPACER,
+      uid: 'rnbw-feature-card-before-spacer',
+      height: 16,
+    },
+    {
+      type: CellType.RNBW_FEATURE_CARD,
+      uid: 'rnbw-feature-card',
     },
     {
       type: CellType.SPACER,
-      uid: 'polymarket-feature-card-after-spacer',
+      uid: 'rnbw-feature-card-after-spacer',
       height: 24,
     },
   ];
@@ -554,8 +570,10 @@ export const buildBriefWalletSectionsSelector = createSelector(
     positionsSelector,
     perpsDataSelector,
     polymarketDataSelector,
+    rnbwRewardsEnabledSelector,
     isDismissedPerpsFeatureCardSelector,
     isDismissedPolymarketFeatureCardSelector,
+    isDismissedRnbwFeatureCardSelector,
   ],
   buildBriefWalletSections
 );
