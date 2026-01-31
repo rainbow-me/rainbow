@@ -2448,48 +2448,48 @@
         "cancel": "إلغاء"
       },
       "support": {
-        "title": "الدعم والتعليقات",
+        "title": "الدعم والملاحظات",
         "entry": {
           "contact_support": "اتصل بالدعم",
-          "contact_support_description": "دعم البريد الإلكتروني الشخصي للمشكلات والاستفسارات أو الأمور العاجلة",
+          "contact_support_description": "دعم عبر البريد الإلكتروني مُخصّص للمشكلات أو الأسئلة أو الحالات العاجلة",
           "get_started": "ابدأ الآن",
-          "category_picker_description": "ما الذي تحتاج إلى المساعدة فيه؟",
+          "category_picker_description": "بماذا تحتاج المساعدة؟",
           "share_feedback": "شارك الرأي",
-          "share_feedback_description": "أرسل لنا الأفكار عبر البريد الإلكتروني أو حيينا ببساطة",
-          "faqs_and_guides": "الأسئلة الشائعة والإرشادات"
+          "share_feedback_description": "أرسل لنا أفكارك عبر البريد الإلكتروني أو فقط قل مرحبًا",
+          "faqs_and_guides": "الأسئلة الشائعة والأدلة"
         },
         "category": {
           "getting_started": {
             "name": "بدء الاستخدام",
-            "description": "الإعدادات، الأساسيات، الشبكات"
+            "description": "الإعداد، الأساسيات، الشبكات"
           },
           "backup_recovery": {
-            "name": "النسخ الاحتياطي والاسترداد",
-            "description": "الاستعادة، إنشاء النسخ الاحتياطية"
+            "name": "النسخ الاحتياطي والاستعادة",
+            "description": "الاستعادة، إنشاء نسخ احتياطية"
           },
           "tokens_transactions": {
-            "name": "الرموز والمعاملات",
-            "description": "الرموز المفقودة، الأرصدة"
+            "name": "العملات والمعاملات",
+            "description": "عملات مفقودة، أرصدة"
           },
           "bridge_swap": {
-            "name": "الجسور والمبادلة",
-            "description": "مشاكل عبر السلاسل، مشاكل المبادلة"
+            "name": "الجسر والمبادلة",
+            "description": "عبر السلاسل، مشكلات المبادلة"
           },
           "points_rewards": {
             "name": "النقاط والمكافآت",
-            "description": "النقاط، الأيردروب، الإطلاقات"
+            "description": "النقاط، الإسقاطات الجوية، الإطلاقات"
           },
           "security": {
-            "name": "المخاوف الأمنية",
-            "description": "المحفظة المخترقة، فقدان العبارة السرية"
+            "name": "مخاوف أمنية",
+            "description": "محفظة مخترقة، عبارة مفقودة"
           },
           "partnership": {
-            "name": "استفسار عن الشراكة",
-            "description": "الأعمال، التكاملات"
+            "name": "استفسار شراكة",
+            "description": "الأعمال، عمليات التكامل"
           },
           "other": {
             "name": "شيء آخر",
-            "description": "استفسارات أخرى"
+            "description": "أسئلة أخرى"
           }
         }
       }
@@ -2505,7 +2505,7 @@
       "actions": {
         "hold_to_swap": "اضغط مع الاستمرار للتبديل",
         "hold_to_bridge": "اضغط مع الاستمرار للربط",
-        "earning_rewards": "Earning Rewards",
+        "earning_rewards": "كسب المكافآت",
         "save": "حفظ",
         "enter_amount": "أدخل كمية",
         "review": "مراجعة",
@@ -3936,55 +3936,55 @@
     },
     "rnbw_rewards": {
       "introduction": {
-        "introducing": "Introducing",
-        "rainbow_token": "Rainbow Token",
-        "description_prefix": "Say hello to ",
-        "description_suffix": " Check if you’re eligible for the airdrop now.",
-        "check_eligibility": "Check Eligibility"
+        "introducing": "تقديم",
+        "rainbow_token": "رمز Rainbow",
+        "description_prefix": "قل مرحبًا لـ ",
+        "description_suffix": " تحقّق مما إذا كنت مؤهلًا للإسقاط الجوي الآن.",
+        "check_eligibility": "تحقق من الأهلية"
       },
       "feature_card": {
-        "subtitle": "Say hello to $RNBW, check your eligibility now."
+        "subtitle": "قل مرحبًا لـ $RNBW، تحقّق من أهليتك الآن."
       },
       "claim": {
         "available_to_claim": "متاح للمطالبة",
-        "your_airdrop": "Your Airdrop",
-        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
-        "claim_failed_title": "Error Claiming Rewards",
+        "your_airdrop": "الإسقاط الجوي الخاص بك",
+        "your_airdrop_description": "شكرًا لاستخدامك Rainbow. يتم احتساب الإسقاط الجوي الخاص بك بناءً على نشاطك السابق.",
+        "claim_failed_title": "خطأ أثناء المطالبة بالمكافآت",
         "claim_failed_message": "يرجى المحاولة مرة أخرى.",
-        "claim_later": "Claim Later",
-        "almost_there": "Almost there..."
+        "claim_later": "المطالبة لاحقًا",
+        "almost_there": "أوشكت على الانتهاء..."
       },
       "airdrop_claim_finished": {
-        "airdrop_claimed": "Airdrop Claimed",
-        "you_claimed": "You claimed"
+        "airdrop_claimed": "تمت المطالبة بالإسقاط الجوي",
+        "you_claimed": "لقد طالبت بـ"
       },
       "rewards_claim_finished": {
-        "rewards_claimed": "Rewards Claimed",
-        "you_claimed": "You claimed"
+        "rewards_claimed": "تمت المطالبة بالمكافآت",
+        "you_claimed": "لقد طالبت بـ"
       },
       "airdrop": {
-        "no_airdrop": "No Airdrop",
-        "no_airdrop_description": "This wallet did not receive an airdrop.",
-        "already_claimed": "Already Claimed",
-        "already_claimed_description": "You've already claimed your airdrop."
+        "no_airdrop": "لا يوجد إسقاط جوي",
+        "no_airdrop_description": "لم تتلقَّ هذه المحفظة إسقاطًا جويًا.",
+        "already_claimed": "تمت المطالبة بالفعل",
+        "already_claimed_description": "لقد قمت بالفعل بالمطالبة بالإسقاط الجوي الخاص بك."
       },
       "airdrop_card": {
-        "your_airdrop": "Your Airdrop"
+        "your_airdrop": "الإسقاط الجوي الخاص بك"
       },
       "how_to_earn": {
-        "earn_rewards": "Earn Rewards",
-        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+        "earn_rewards": "اكسب مكافآت",
+        "description": "اكسب $RNBW من خلال مبادلة العملات. ستتوفر قريبًا المزيد من طرق الكسب."
       },
       "loading_labels": {
-        "checking_historical_activity": "Checking Historical Activity...",
-        "checking_eligibility": "Checking Eligibility...",
-        "claiming_rewards": "Claiming Rewards...",
-        "submitting_transaction": "Submitting Transaction...",
-        "claiming_airdrop": "Claiming Airdrop...",
-        "counting_your_points": "Counting your Points...",
-        "oh_i_see": "Oh I see..."
+        "checking_historical_activity": "جارٍ التحقق من النشاط السابق...",
+        "checking_eligibility": "جارٍ التحقق من الأهلية...",
+        "claiming_rewards": "جارٍ المطالبة بالمكافآت...",
+        "submitting_transaction": "جارٍ إرسال المعاملة...",
+        "claiming_airdrop": "جارٍ المطالبة بالإسقاط الجوي...",
+        "counting_your_points": "جارٍ احتساب نقاطك...",
+        "oh_i_see": "أوه، فهمت..."
       },
-      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+      "longer_than_usual": "تستغرق المطالبة وقتًا أطول من المعتاد. قد يستغرق ذلك ما يصل إلى دقيقة واحدة."
     },
     "wallet_error_sheet": {
       "title": "استعادة محفظتك",
@@ -3996,8 +3996,8 @@
       "resolution_restore_backup": "لإستخدام محفظتك، قم بالاستعادة من نسخة احتياطية أو أعد استيراد عبارة الاسترداد السرية الخاصة بك."
     },
     "rnbw_rewards_estimate_sheet": {
-      "earning_rewards": "Earning Rewards",
-      "this_transaction_will_earn": "This transaction will earn approximately "
+      "earning_rewards": "كسب المكافآت",
+      "this_transaction_will_earn": "ستكسب هذه المعاملة تقريبًا "
     }
   }
 }
