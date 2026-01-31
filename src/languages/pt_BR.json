@@ -324,7 +324,9 @@
         "authorizing": "Autorizando",
         "confirming_on_ledger": "Confirmar no Ledger",
         "hold_keyword": "Segurar",
-        "tap_keyword": "Toque"
+        "tap_keyword": "Toque",
+        "hold_to_claim": "Pressione para Solicitar",
+        "claiming": "Reivindicando..."
       },
       "hold_to_send": "Segurar para Enviar",
       "import": "Importar",
@@ -2384,7 +2386,6 @@
       "developer": "Configurações de Desenvolvedor",
       "done": "Concluído",
       "feedback_and_reports": "Feedback e Relatos de Erros",
-      "feedback_and_support": "Feedback e Suporte",
       "follow_us_on_twitter": "Siga-nos no X",
       "hey_friend_message": "👋️ Olá amigo! Você deveria baixar o Rainbow, é minha carteira Ethereum favorita 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Configurações",
@@ -2445,6 +2446,52 @@
         "warning": "A alteração do seu ícone pode fazer com que o Rainbow seja reiniciado.",
         "confirm": "Confirmar",
         "cancel": "Cancelar"
+      },
+      "support": {
+        "title": "Suporte e Feedback",
+        "entry": {
+          "contact_support": "Contactar Suporte",
+          "contact_support_description": "Suporte por e-mail personalizado para problemas, dúvidas ou preocupações urgentes",
+          "get_started": "Comece Agora",
+          "category_picker_description": "Com o que você precisa de ajuda?",
+          "share_feedback": "Compartilhar Feedback",
+          "share_feedback_description": "Envie-nos ideias ou apenas diga olá",
+          "faqs_and_guides": "FAQs e Guias"
+        },
+        "category": {
+          "getting_started": {
+            "name": "Introdução",
+            "description": "Configuração, noções básicas, redes"
+          },
+          "backup_recovery": {
+            "name": "Backup & Recuperação",
+            "description": "Restaurar, criar backups"
+          },
+          "tokens_transactions": {
+            "name": "Tokens & Transações",
+            "description": "Tokens faltando, saldos"
+          },
+          "bridge_swap": {
+            "name": "Ponte & Troca",
+            "description": "Cross-chain, problemas de troca"
+          },
+          "points_rewards": {
+            "name": "Pontos & Recompensas",
+            "description": "Pontos, airdrops, lançamentos"
+          },
+          "security": {
+            "name": "Preocupações com Segurança",
+            "description": "Carteira comprometida, frase perdida"
+          },
+          "partnership": {
+            "name": "Consulta de Parceria",
+            "description": "Negócios, integrações"
+          },
+          "other": {
+            "name": "Algo Mais",
+            "description": "Outras perguntas"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2458,6 +2505,7 @@
       "actions": {
         "hold_to_swap": "Segure para Trocar",
         "hold_to_bridge": "Segure para Transferir",
+        "earning_rewards": "Earning Rewards",
         "save": "Salvar",
         "enter_amount": "Insira um valor",
         "review": "Revisão",
@@ -3886,6 +3934,58 @@
         "lost_bets_dont_clear": "As apostas perdidas não são removidas automaticamente. Você pode limpá-las abaixo."
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "Introducing",
+        "rainbow_token": "Rainbow Token",
+        "description_prefix": "Say hello to ",
+        "description_suffix": " Check if you’re eligible for the airdrop now.",
+        "check_eligibility": "Check Eligibility"
+      },
+      "feature_card": {
+        "subtitle": "Say hello to $RNBW, check your eligibility now."
+      },
+      "claim": {
+        "available_to_claim": "Disponível para Reivindicação",
+        "your_airdrop": "Your Airdrop",
+        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
+        "claim_failed_title": "Error Claiming Rewards",
+        "claim_failed_message": "Por favor, tente novamente.",
+        "claim_later": "Claim Later",
+        "almost_there": "Almost there..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "Airdrop Claimed",
+        "you_claimed": "You claimed"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "Rewards Claimed",
+        "you_claimed": "You claimed"
+      },
+      "airdrop": {
+        "no_airdrop": "No Airdrop",
+        "no_airdrop_description": "This wallet did not receive an airdrop.",
+        "already_claimed": "Already Claimed",
+        "already_claimed_description": "You've already claimed your airdrop."
+      },
+      "airdrop_card": {
+        "your_airdrop": "Your Airdrop"
+      },
+      "how_to_earn": {
+        "earn_rewards": "Earn Rewards",
+        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+      },
+      "loading_labels": {
+        "checking_historical_activity": "Checking Historical Activity...",
+        "checking_eligibility": "Checking Eligibility...",
+        "claiming_rewards": "Claiming Rewards...",
+        "submitting_transaction": "Submitting Transaction...",
+        "claiming_airdrop": "Claiming Airdrop...",
+        "counting_your_points": "Counting your Points...",
+        "oh_i_see": "Oh I see..."
+      },
+      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+    },
     "wallet_error_sheet": {
       "title": "Restaurar sua carteira",
       "restore": "Restaurar",
@@ -3894,6 +3994,10 @@
       "cause_switched_devices": "Parece que você pode ter trocado de dispositivo.",
       "resolution_enable_passcode": "Para usar sua carteira, reative-a nas configurações do seu dispositivo.",
       "resolution_restore_backup": "Para usar sua carteira, restaure a partir de um backup ou reimporte sua frase secreta de recuperação."
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "Earning Rewards",
+      "this_transaction_will_earn": "This transaction will earn approximately "
     }
   }
 }
