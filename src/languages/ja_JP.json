@@ -2451,12 +2451,12 @@
         "title": "サポートとフィードバック",
         "entry": {
           "contact_support": "サポートに連絡",
-          "contact_support_description": "個別対応のメールサポート：問題や質問、急ぎの懸案",
+          "contact_support_description": "問題、質問、または緊急の懸念事項に対するパーソナライズされたメールサポート",
           "get_started": "始める",
-          "category_picker_description": "どのようなサポートが必要ですか?",
+          "category_picker_description": "どのようなことでお困りですか？",
           "share_feedback": "フィードバックを共有する",
-          "share_feedback_description": "アイデアをメールで送るか、気軽に挨拶してください",
-          "faqs_and_guides": "よくある質問 & ガイド"
+          "share_feedback_description": "アイデアをメールで送る、または気軽にご挨拶ください",
+          "faqs_and_guides": "よくある質問とガイド"
         },
         "category": {
           "getting_started": {
@@ -2464,12 +2464,12 @@
             "description": "セットアップ、基本、ネットワーク"
           },
           "backup_recovery": {
-            "name": "バックアップとリカバリー",
-            "description": "リストア、バックアップ作成"
+            "name": "バックアップと復元",
+            "description": "復元、バックアップの作成"
           },
           "tokens_transactions": {
             "name": "トークンとトランザクション",
-            "description": "欠落しているトークン、残高"
+            "description": "見つからないトークン、残高"
           },
           "bridge_swap": {
             "name": "ブリッジとスワップ",
@@ -2480,12 +2480,12 @@
             "description": "ポイント、エアドロップ、ローンチ"
           },
           "security": {
-            "name": "セキュリティの懸念",
-            "description": "漏洩したウォレット、失ったフレーズ"
+            "name": "セキュリティ上の懸念",
+            "description": "ウォレットの侵害、フレーズの紛失"
           },
           "partnership": {
-            "name": "パートナーシップのお問い合わせ",
-            "description": "ビジネス、統合"
+            "name": "パートナーシップに関するお問い合わせ",
+            "description": "ビジネス、連携"
           },
           "other": {
             "name": "その他",
@@ -2505,7 +2505,7 @@
       "actions": {
         "hold_to_swap": "スワップを保持",
         "hold_to_bridge": "ブリッジを保持",
-        "earning_rewards": "Earning Rewards",
+        "earning_rewards": "報酬を稼ぐ",
         "save": "保存する",
         "enter_amount": "金額を入力してください",
         "review": "レビュー",
@@ -3936,55 +3936,55 @@
     },
     "rnbw_rewards": {
       "introduction": {
-        "introducing": "Introducing",
-        "rainbow_token": "Rainbow Token",
-        "description_prefix": "Say hello to ",
-        "description_suffix": " Check if you’re eligible for the airdrop now.",
-        "check_eligibility": "Check Eligibility"
+        "introducing": "ご紹介",
+        "rainbow_token": "Rainbowトークン",
+        "description_prefix": "ようこそ、",
+        "description_suffix": " 今すぐエアドロップの対象かどうか確認してください。",
+        "check_eligibility": "対象状況を確認"
       },
       "feature_card": {
-        "subtitle": "Say hello to $RNBW, check your eligibility now."
+        "subtitle": "$RNBWへようこそ。今すぐ対象状況を確認してください。"
       },
       "claim": {
         "available_to_claim": "請求可能",
-        "your_airdrop": "Your Airdrop",
-        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
-        "claim_failed_title": "Error Claiming Rewards",
+        "your_airdrop": "あなたのエアドロップ",
+        "your_airdrop_description": "Rainbowをご利用いただきありがとうございます。エアドロップは、これまでのアクティビティに基づいて算出されます。",
+        "claim_failed_title": "報酬の請求中にエラーが発生しました",
         "claim_failed_message": "もう一度やり直してください。",
-        "claim_later": "Claim Later",
-        "almost_there": "Almost there..."
+        "claim_later": "後で請求する",
+        "almost_there": "もう少しです..."
       },
       "airdrop_claim_finished": {
-        "airdrop_claimed": "Airdrop Claimed",
-        "you_claimed": "You claimed"
+        "airdrop_claimed": "エアドロップを請求しました",
+        "you_claimed": "あなたが請求したのは"
       },
       "rewards_claim_finished": {
-        "rewards_claimed": "Rewards Claimed",
-        "you_claimed": "You claimed"
+        "rewards_claimed": "報酬を請求しました",
+        "you_claimed": "あなたが請求したのは"
       },
       "airdrop": {
-        "no_airdrop": "No Airdrop",
-        "no_airdrop_description": "This wallet did not receive an airdrop.",
-        "already_claimed": "Already Claimed",
-        "already_claimed_description": "You've already claimed your airdrop."
+        "no_airdrop": "エアドロップなし",
+        "no_airdrop_description": "このウォレットはエアドロップを受け取りませんでした。",
+        "already_claimed": "すでに請求済み",
+        "already_claimed_description": "エアドロップはすでに請求済みです。"
       },
       "airdrop_card": {
-        "your_airdrop": "Your Airdrop"
+        "your_airdrop": "あなたのエアドロップ"
       },
       "how_to_earn": {
-        "earn_rewards": "Earn Rewards",
-        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+        "earn_rewards": "報酬を稼ぐ",
+        "description": "トークンをスワップして$RNBWを獲得。さらに獲得できる方法も近日登場。"
       },
       "loading_labels": {
-        "checking_historical_activity": "Checking Historical Activity...",
-        "checking_eligibility": "Checking Eligibility...",
-        "claiming_rewards": "Claiming Rewards...",
-        "submitting_transaction": "Submitting Transaction...",
-        "claiming_airdrop": "Claiming Airdrop...",
-        "counting_your_points": "Counting your Points...",
-        "oh_i_see": "Oh I see..."
+        "checking_historical_activity": "過去のアクティビティを確認中...",
+        "checking_eligibility": "対象状況を確認中...",
+        "claiming_rewards": "報酬を請求中...",
+        "submitting_transaction": "トランザクションを送信中...",
+        "claiming_airdrop": "エアドロップを請求中...",
+        "counting_your_points": "ポイントを集計中...",
+        "oh_i_see": "なるほど..."
       },
-      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+      "longer_than_usual": "請求に通常より時間がかかっています。最大1分かかる場合があります。"
     },
     "wallet_error_sheet": {
       "title": "ウォレットを復元する",
@@ -3996,8 +3996,8 @@
       "resolution_restore_backup": "ウォレットを使用するには、バックアップから復元するか、シークレットリカバリーフレーズを再インポートしてください。"
     },
     "rnbw_rewards_estimate_sheet": {
-      "earning_rewards": "Earning Rewards",
-      "this_transaction_will_earn": "This transaction will earn approximately "
+      "earning_rewards": "報酬を稼ぐ",
+      "this_transaction_will_earn": "このトランザクションでは、およそ"
     }
   }
 }
