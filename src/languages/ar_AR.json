@@ -324,7 +324,9 @@
         "authorizing": "جارٍ التفويض",
         "confirming_on_ledger": "جارٍ التأكيد على Ledger",
         "hold_keyword": "استمر",
-        "tap_keyword": "اضغط"
+        "tap_keyword": "اضغط",
+        "hold_to_claim": "اضغط للمطالبة",
+        "claiming": "جارٍ المطالبة..."
       },
       "hold_to_send": "استمر للإرسال",
       "import": "استيراد",
@@ -2384,7 +2386,6 @@
       "developer": "إعدادات المطور",
       "done": "تم",
       "feedback_and_reports": "الملاحظات وتقارير الأخطاء",
-      "feedback_and_support": "التعليقات والدعم",
       "follow_us_on_twitter": "تابعنا على X",
       "hey_friend_message": "👋️ مرحبا صديقي! يجب أن تقوم بتنزيل Rainbow، فهو المحفظة المفضلة لدي في Ethereum 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "الإعدادات",
@@ -2445,6 +2446,52 @@
         "warning": "قد يتسبب تغيير الأيقونة في إعادة تشغيل Rainbow.",
         "confirm": "تأكيد",
         "cancel": "إلغاء"
+      },
+      "support": {
+        "title": "الدعم والتعليقات",
+        "entry": {
+          "contact_support": "اتصل بالدعم",
+          "contact_support_description": "دعم البريد الإلكتروني الشخصي للمشكلات والاستفسارات أو الأمور العاجلة",
+          "get_started": "ابدأ الآن",
+          "category_picker_description": "ما الذي تحتاج إلى المساعدة فيه؟",
+          "share_feedback": "شارك الرأي",
+          "share_feedback_description": "أرسل لنا الأفكار عبر البريد الإلكتروني أو حيينا ببساطة",
+          "faqs_and_guides": "الأسئلة الشائعة والإرشادات"
+        },
+        "category": {
+          "getting_started": {
+            "name": "بدء الاستخدام",
+            "description": "الإعدادات، الأساسيات، الشبكات"
+          },
+          "backup_recovery": {
+            "name": "النسخ الاحتياطي والاسترداد",
+            "description": "الاستعادة، إنشاء النسخ الاحتياطية"
+          },
+          "tokens_transactions": {
+            "name": "الرموز والمعاملات",
+            "description": "الرموز المفقودة، الأرصدة"
+          },
+          "bridge_swap": {
+            "name": "الجسور والمبادلة",
+            "description": "مشاكل عبر السلاسل، مشاكل المبادلة"
+          },
+          "points_rewards": {
+            "name": "النقاط والمكافآت",
+            "description": "النقاط، الأيردروب، الإطلاقات"
+          },
+          "security": {
+            "name": "المخاوف الأمنية",
+            "description": "المحفظة المخترقة، فقدان العبارة السرية"
+          },
+          "partnership": {
+            "name": "استفسار عن الشراكة",
+            "description": "الأعمال، التكاملات"
+          },
+          "other": {
+            "name": "شيء آخر",
+            "description": "استفسارات أخرى"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2458,6 +2505,7 @@
       "actions": {
         "hold_to_swap": "اضغط مع الاستمرار للتبديل",
         "hold_to_bridge": "اضغط مع الاستمرار للربط",
+        "earning_rewards": "Earning Rewards",
         "save": "حفظ",
         "enter_amount": "أدخل كمية",
         "review": "مراجعة",
@@ -3886,6 +3934,58 @@
         "lost_bets_dont_clear": "لا تتم إزالة الرهانات الخاسرة تلقائيًا. يمكنك مسحها أدناه."
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "Introducing",
+        "rainbow_token": "Rainbow Token",
+        "description_prefix": "Say hello to ",
+        "description_suffix": " Check if you’re eligible for the airdrop now.",
+        "check_eligibility": "Check Eligibility"
+      },
+      "feature_card": {
+        "subtitle": "Say hello to $RNBW, check your eligibility now."
+      },
+      "claim": {
+        "available_to_claim": "متاح للمطالبة",
+        "your_airdrop": "Your Airdrop",
+        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
+        "claim_failed_title": "Error Claiming Rewards",
+        "claim_failed_message": "يرجى المحاولة مرة أخرى.",
+        "claim_later": "Claim Later",
+        "almost_there": "Almost there..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "Airdrop Claimed",
+        "you_claimed": "You claimed"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "Rewards Claimed",
+        "you_claimed": "You claimed"
+      },
+      "airdrop": {
+        "no_airdrop": "No Airdrop",
+        "no_airdrop_description": "This wallet did not receive an airdrop.",
+        "already_claimed": "Already Claimed",
+        "already_claimed_description": "You've already claimed your airdrop."
+      },
+      "airdrop_card": {
+        "your_airdrop": "Your Airdrop"
+      },
+      "how_to_earn": {
+        "earn_rewards": "Earn Rewards",
+        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+      },
+      "loading_labels": {
+        "checking_historical_activity": "Checking Historical Activity...",
+        "checking_eligibility": "Checking Eligibility...",
+        "claiming_rewards": "Claiming Rewards...",
+        "submitting_transaction": "Submitting Transaction...",
+        "claiming_airdrop": "Claiming Airdrop...",
+        "counting_your_points": "Counting your Points...",
+        "oh_i_see": "Oh I see..."
+      },
+      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+    },
     "wallet_error_sheet": {
       "title": "استعادة محفظتك",
       "restore": "استعادة",
@@ -3894,6 +3994,10 @@
       "cause_switched_devices": "يبدو أنك قد قمت بتبديل الأجهزة.",
       "resolution_enable_passcode": "لإستخدام محفظتك، أعد تفعيلها في إعدادات جهازك.",
       "resolution_restore_backup": "لإستخدام محفظتك، قم بالاستعادة من نسخة احتياطية أو أعد استيراد عبارة الاسترداد السرية الخاصة بك."
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "Earning Rewards",
+      "this_transaction_will_earn": "This transaction will earn approximately "
     }
   }
 }
