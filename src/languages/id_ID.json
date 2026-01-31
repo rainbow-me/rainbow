@@ -2448,32 +2448,32 @@
         "cancel": "Batal"
       },
       "support": {
-        "title": "Dukungan dan Umpan Balik",
+        "title": "Dukungan dan Masukan",
         "entry": {
           "contact_support": "Hubungi Dukungan",
-          "contact_support_description": "Dukungan email personal untuk masalah, pertanyaan, atau kekhawatiran mendesak",
+          "contact_support_description": "Dukungan email yang dipersonalisasi untuk masalah, pertanyaan, atau kekhawatiran mendesak",
           "get_started": "Mulai",
-          "category_picker_description": "Apa yang Anda butuhkan bantuan?",
+          "category_picker_description": "Apa yang kamu butuhkan bantuannya?",
           "share_feedback": "Bagikan Masukan",
-          "share_feedback_description": "Kirimkan ide kepada kami atau hanya untuk menyapa",
+          "share_feedback_description": "Kirim ide lewat email atau sekadar menyapa",
           "faqs_and_guides": "FAQ & Panduan"
         },
         "category": {
           "getting_started": {
             "name": "Memulai",
-            "description": "Pengaturan, dasar, jaringan"
+            "description": "Penyiapan, dasar-dasar, jaringan"
           },
           "backup_recovery": {
-            "name": "Pencadangan & Pemulihan",
-            "description": "Mengembalikan, membuat cadangan"
+            "name": "Cadangan & Pemulihan",
+            "description": "Pulihkan, buat cadangan"
           },
           "tokens_transactions": {
             "name": "Token & Transaksi",
             "description": "Token hilang, saldo"
           },
           "bridge_swap": {
-            "name": "Jembatan & Penukaran",
-            "description": "Lintas rantai, masalah penukaran"
+            "name": "Bridge & Swap",
+            "description": "Lintas-chain, masalah swap"
           },
           "points_rewards": {
             "name": "Poin & Hadiah",
@@ -2481,15 +2481,15 @@
           },
           "security": {
             "name": "Kekhawatiran Keamanan",
-            "description": "Dompet dikompromi, frasa hilang"
+            "description": "Dompet dibobol, frasa hilang"
           },
           "partnership": {
-            "name": "Permohonan Kemitraan",
+            "name": "Pertanyaan Kemitraan",
             "description": "Bisnis, integrasi"
           },
           "other": {
-            "name": "Hal Lainnya",
-            "description": "Pertanyaan lainnya"
+            "name": "Hal Lain",
+            "description": "Pertanyaan lain"
           }
         }
       }
@@ -2505,7 +2505,7 @@
       "actions": {
         "hold_to_swap": "Tahan untuk Tukar",
         "hold_to_bridge": "Tahan untuk Jembatan",
-        "earning_rewards": "Earning Rewards",
+        "earning_rewards": "Mendapatkan Hadiah",
         "save": "Simpan",
         "enter_amount": "Masukkan Jumlah",
         "review": "Tinjau",
@@ -3936,55 +3936,55 @@
     },
     "rnbw_rewards": {
       "introduction": {
-        "introducing": "Introducing",
-        "rainbow_token": "Rainbow Token",
-        "description_prefix": "Say hello to ",
-        "description_suffix": " Check if you’re eligible for the airdrop now.",
-        "check_eligibility": "Check Eligibility"
+        "introducing": "Memperkenalkan",
+        "rainbow_token": "Token Rainbow",
+        "description_prefix": "Sapa ",
+        "description_suffix": " Periksa apakah kamu memenuhi syarat untuk airdrop sekarang.",
+        "check_eligibility": "Periksa Kelayakan"
       },
       "feature_card": {
-        "subtitle": "Say hello to $RNBW, check your eligibility now."
+        "subtitle": "Sapa $RNBW, periksa kelayakanmu sekarang."
       },
       "claim": {
         "available_to_claim": "Tersedia untuk Diklaim",
-        "your_airdrop": "Your Airdrop",
-        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
-        "claim_failed_title": "Error Claiming Rewards",
+        "your_airdrop": "Airdrop Kamu",
+        "your_airdrop_description": "Terima kasih telah menggunakan Rainbow. Airdrop kamu dihitung berdasarkan aktivitas kamu sebelumnya.",
+        "claim_failed_title": "Error saat Mengklaim Hadiah",
         "claim_failed_message": "Silakan coba lagi.",
-        "claim_later": "Claim Later",
-        "almost_there": "Almost there..."
+        "claim_later": "Klaim Nanti",
+        "almost_there": "Hampir selesai..."
       },
       "airdrop_claim_finished": {
-        "airdrop_claimed": "Airdrop Claimed",
-        "you_claimed": "You claimed"
+        "airdrop_claimed": "Airdrop Diklaim",
+        "you_claimed": "Kamu mengklaim"
       },
       "rewards_claim_finished": {
-        "rewards_claimed": "Rewards Claimed",
-        "you_claimed": "You claimed"
+        "rewards_claimed": "Hadiah Diklaim",
+        "you_claimed": "Kamu mengklaim"
       },
       "airdrop": {
-        "no_airdrop": "No Airdrop",
-        "no_airdrop_description": "This wallet did not receive an airdrop.",
-        "already_claimed": "Already Claimed",
-        "already_claimed_description": "You've already claimed your airdrop."
+        "no_airdrop": "Tidak Ada Airdrop",
+        "no_airdrop_description": "Dompet ini tidak menerima airdrop.",
+        "already_claimed": "Sudah Diklaim",
+        "already_claimed_description": "Kamu sudah mengklaim airdrop kamu."
       },
       "airdrop_card": {
-        "your_airdrop": "Your Airdrop"
+        "your_airdrop": "Airdrop Kamu"
       },
       "how_to_earn": {
-        "earn_rewards": "Earn Rewards",
-        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+        "earn_rewards": "Dapatkan Hadiah",
+        "description": "Dapatkan $RNBW dengan melakukan swap token. Lebih banyak cara untuk mendapatkan akan segera hadir."
       },
       "loading_labels": {
-        "checking_historical_activity": "Checking Historical Activity...",
-        "checking_eligibility": "Checking Eligibility...",
-        "claiming_rewards": "Claiming Rewards...",
-        "submitting_transaction": "Submitting Transaction...",
-        "claiming_airdrop": "Claiming Airdrop...",
-        "counting_your_points": "Counting your Points...",
-        "oh_i_see": "Oh I see..."
+        "checking_historical_activity": "Memeriksa Aktivitas Historis...",
+        "checking_eligibility": "Memeriksa Kelayakan...",
+        "claiming_rewards": "Mengklaim Hadiah...",
+        "submitting_transaction": "Mengirimkan Transaksi...",
+        "claiming_airdrop": "Mengklaim Airdrop...",
+        "counting_your_points": "Menghitung Poin kamu...",
+        "oh_i_see": "Oh begitu..."
       },
-      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+      "longer_than_usual": "Proses klaim memakan waktu lebih lama dari biasanya. Ini bisa memakan waktu hingga satu menit."
     },
     "wallet_error_sheet": {
       "title": "Pulihkan dompet Anda",
@@ -3996,8 +3996,8 @@
       "resolution_restore_backup": "Untuk menggunakan dompet Anda, pulihkan dari cadangan atau impor ulang frasa pemulihan rahasia Anda."
     },
     "rnbw_rewards_estimate_sheet": {
-      "earning_rewards": "Earning Rewards",
-      "this_transaction_will_earn": "This transaction will earn approximately "
+      "earning_rewards": "Mendapatkan Hadiah",
+      "this_transaction_will_earn": "Transaksi ini akan menghasilkan sekitar "
     }
   }
 }
