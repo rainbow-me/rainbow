@@ -42,6 +42,7 @@ const EMPTY_WALLET_CONTENT: CellTypes[] = [
 ];
 
 const ONLY_NFTS_CONTENT: CellTypes[] = [{ type: CellType.ETH_CARD, uid: 'eth-card' }];
+const EMPTY_ARRAY: CellTypes[] = [];
 
 export type WalletSectionsState = {
   sortedAssets: ParsedAddressAsset[];
@@ -151,7 +152,7 @@ const buildBriefWalletSections = (
   const hasPerpsContent = (perpsData?.hasBalance || perpsData?.hasPositions) && perpsData.enabled;
   const hasPolymarketContent = (polymarketData?.hasBalance || polymarketData?.hasPositions) && polymarketData.enabled;
   const shouldShowRnbwFeatureCard = rnbwRewardsEnabled && !isDismissedRnbwFeatureCard;
-  const rnbwFeatureCardSection = shouldShowRnbwFeatureCard ? withRnbwFeatureCardSection() : [];
+  const rnbwFeatureCardSection = shouldShowRnbwFeatureCard ? withRnbwFeatureCardSection() : EMPTY_ARRAY;
   // const shouldShowPolymarketFeatureCard = polymarketData?.enabled && !isDismissedPolymarketFeatureCard;
   // const polymarketFeatureCardSection = shouldShowPolymarketFeatureCard ? withPolymarketFeatureCardSection() : [];
   // NOTE: Only showing RNBW feature card for now. Polymarket logic preserved for future use.
