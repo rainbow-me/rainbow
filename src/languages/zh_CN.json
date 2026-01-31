@@ -2448,47 +2448,47 @@
         "cancel": "取消"
       },
       "support": {
-        "title": "支持和反馈",
+        "title": "支持与反馈",
         "entry": {
           "contact_support": "联系支持",
-          "contact_support_description": "个性化邮件支持，以解决问题、回答疑问或处理紧急事项",
+          "contact_support_description": "针对问题、疑问或紧急情况提供个性化的电子邮件支持",
           "get_started": "开始",
-          "category_picker_description": "您需要帮助解决什么问题？",
+          "category_picker_description": "您需要什么帮助？",
           "share_feedback": "分享反馈",
-          "share_feedback_description": "给我们发送想法或打个招呼",
+          "share_feedback_description": "通过电子邮件告诉我们想法，或只是打个招呼",
           "faqs_and_guides": "常见问题与指南"
         },
         "category": {
           "getting_started": {
             "name": "入门",
-            "description": "设置，基础知识，网络"
+            "description": "设置、基础知识、网络"
           },
           "backup_recovery": {
-            "name": "备份和恢复",
-            "description": "恢复，创建备份"
+            "name": "备份与恢复",
+            "description": "恢复、创建备份"
           },
           "tokens_transactions": {
-            "name": "代币和交易",
-            "description": "丢失的代币，余额"
+            "name": "代币与交易",
+            "description": "缺失的代币、余额"
           },
           "bridge_swap": {
-            "name": "桥接和兑换",
-            "description": "跨链，兑换问题"
+            "name": "桥接与兑换",
+            "description": "跨链、兑换问题"
           },
           "points_rewards": {
-            "name": "积分和奖励",
-            "description": "积分，空头，发布"
+            "name": "积分与奖励",
+            "description": "积分、空投、上线活动"
           },
           "security": {
             "name": "安全问题",
-            "description": "钱包被盗，丢失助记词"
+            "description": "钱包被入侵、助记词丢失"
           },
           "partnership": {
-            "name": "合作伙伴询问",
-            "description": "业务，集成"
+            "name": "合作咨询",
+            "description": "业务、集成"
           },
           "other": {
-            "name": "其他事项",
+            "name": "其他",
             "description": "其他问题"
           }
         }
@@ -2505,7 +2505,7 @@
       "actions": {
         "hold_to_swap": "按住以交换",
         "hold_to_bridge": "按住以桥接",
-        "earning_rewards": "Earning Rewards",
+        "earning_rewards": "赚取奖励",
         "save": "保存",
         "enter_amount": "输入金额",
         "review": "审阅",
@@ -3936,55 +3936,55 @@
     },
     "rnbw_rewards": {
       "introduction": {
-        "introducing": "Introducing",
-        "rainbow_token": "Rainbow Token",
-        "description_prefix": "Say hello to ",
-        "description_suffix": " Check if you’re eligible for the airdrop now.",
-        "check_eligibility": "Check Eligibility"
+        "introducing": "介绍",
+        "rainbow_token": "Rainbow 代币",
+        "description_prefix": "向您介绍 ",
+        "description_suffix": " 立即查看您是否有资格获得空投。",
+        "check_eligibility": "查看资格"
       },
       "feature_card": {
-        "subtitle": "Say hello to $RNBW, check your eligibility now."
+        "subtitle": "向您介绍 $RNBW，立即查看您的资格。"
       },
       "claim": {
         "available_to_claim": "可领取",
-        "your_airdrop": "Your Airdrop",
-        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
-        "claim_failed_title": "Error Claiming Rewards",
+        "your_airdrop": "您的空投",
+        "your_airdrop_description": "感谢您使用 Rainbow。您的空投将根据您此前的活动来计算。",
+        "claim_failed_title": "领取奖励出错",
         "claim_failed_message": "请再试一次。",
-        "claim_later": "Claim Later",
-        "almost_there": "Almost there..."
+        "claim_later": "稍后领取",
+        "almost_there": "快完成了..."
       },
       "airdrop_claim_finished": {
-        "airdrop_claimed": "Airdrop Claimed",
-        "you_claimed": "You claimed"
+        "airdrop_claimed": "空投已领取",
+        "you_claimed": "您已领取"
       },
       "rewards_claim_finished": {
-        "rewards_claimed": "Rewards Claimed",
-        "you_claimed": "You claimed"
+        "rewards_claimed": "奖励已领取",
+        "you_claimed": "您已领取"
       },
       "airdrop": {
-        "no_airdrop": "No Airdrop",
-        "no_airdrop_description": "This wallet did not receive an airdrop.",
-        "already_claimed": "Already Claimed",
-        "already_claimed_description": "You've already claimed your airdrop."
+        "no_airdrop": "无空投",
+        "no_airdrop_description": "该钱包未收到空投。",
+        "already_claimed": "已领取",
+        "already_claimed_description": "您已领取过您的空投。"
       },
       "airdrop_card": {
-        "your_airdrop": "Your Airdrop"
+        "your_airdrop": "您的空投"
       },
       "how_to_earn": {
-        "earn_rewards": "Earn Rewards",
-        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+        "earn_rewards": "赚取奖励",
+        "description": "通过兑换代币赚取 $RNBW。更多赚取方式即将推出。"
       },
       "loading_labels": {
-        "checking_historical_activity": "Checking Historical Activity...",
-        "checking_eligibility": "Checking Eligibility...",
-        "claiming_rewards": "Claiming Rewards...",
-        "submitting_transaction": "Submitting Transaction...",
-        "claiming_airdrop": "Claiming Airdrop...",
-        "counting_your_points": "Counting your Points...",
-        "oh_i_see": "Oh I see..."
+        "checking_historical_activity": "正在检查历史活动...",
+        "checking_eligibility": "正在检查资格...",
+        "claiming_rewards": "正在领取奖励...",
+        "submitting_transaction": "正在提交交易...",
+        "claiming_airdrop": "正在领取空投...",
+        "counting_your_points": "正在统计您的积分...",
+        "oh_i_see": "哦，我明白了..."
       },
-      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+      "longer_than_usual": "领取所需时间比平时更长。可能最多需要一分钟。"
     },
     "wallet_error_sheet": {
       "title": "恢复你的钱包",
@@ -3996,8 +3996,8 @@
       "resolution_restore_backup": "要使用你的钱包，请从备份恢复或重新导入你的秘密恢复短语。"
     },
     "rnbw_rewards_estimate_sheet": {
-      "earning_rewards": "Earning Rewards",
-      "this_transaction_will_earn": "This transaction will earn approximately "
+      "earning_rewards": "赚取奖励",
+      "this_transaction_will_earn": "此交易将大约赚取 "
     }
   }
 }
