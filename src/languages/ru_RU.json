@@ -2451,12 +2451,12 @@
         "title": "Поддержка и обратная связь",
         "entry": {
           "contact_support": "Обратитесь в службу поддержки",
-          "contact_support_description": "Персональная поддержка по электронной почте для решения вопросов, проблем и срочных обращений",
+          "contact_support_description": "Персональная поддержка по email по вопросам, вопросам и срочным обращениям",
           "get_started": "Начать",
           "category_picker_description": "С чем вам нужна помощь?",
           "share_feedback": "Отправить отзыв",
-          "share_feedback_description": "Напишите нам идеи или просто поздоровайтесь",
-          "faqs_and_guides": "Часто задаваемые вопросы и руководства"
+          "share_feedback_description": "Напишите нам идеи по email или просто скажите привет",
+          "faqs_and_guides": "FAQ и руководства"
         },
         "category": {
           "getting_started": {
@@ -2468,23 +2468,23 @@
             "description": "Восстановление, создание резервных копий"
           },
           "tokens_transactions": {
-            "name": "Токены и операции",
+            "name": "Токены и транзакции",
             "description": "Отсутствующие токены, балансы"
           },
           "bridge_swap": {
-            "name": "Бридж и обмен",
+            "name": "Мост и обмен",
             "description": "Кроссчейн, проблемы с обменом"
           },
           "points_rewards": {
-            "name": "Очки и вознаграждения",
-            "description": "Очки, airdrop, запуски"
+            "name": "Баллы и награды",
+            "description": "Баллы, аирдропы, запуски"
           },
           "security": {
-            "name": "Проблемы с безопасностью",
-            "description": "Компрометированный кошелек, потерянная фраза"
+            "name": "Проблемы безопасности",
+            "description": "Скомпрометированный кошелёк, утерянная фраза"
           },
           "partnership": {
-            "name": "Запрос на партнерство",
+            "name": "Запрос о партнёрстве",
             "description": "Бизнес, интеграции"
           },
           "other": {
@@ -2505,7 +2505,7 @@
       "actions": {
         "hold_to_swap": "Удерживайте для обмена",
         "hold_to_bridge": "Удерживайте для моста",
-        "earning_rewards": "Earning Rewards",
+        "earning_rewards": "Получение наград",
         "save": "Сохранить",
         "enter_amount": "Введите сумму",
         "review": "Просмотр",
@@ -3936,55 +3936,55 @@
     },
     "rnbw_rewards": {
       "introduction": {
-        "introducing": "Introducing",
-        "rainbow_token": "Rainbow Token",
-        "description_prefix": "Say hello to ",
-        "description_suffix": " Check if you’re eligible for the airdrop now.",
-        "check_eligibility": "Check Eligibility"
+        "introducing": "Представляем",
+        "rainbow_token": "Токен Rainbow",
+        "description_prefix": "Познакомьтесь с ",
+        "description_suffix": " Проверьте, подходите ли вы для аирдропа, прямо сейчас.",
+        "check_eligibility": "Проверить право на участие"
       },
       "feature_card": {
-        "subtitle": "Say hello to $RNBW, check your eligibility now."
+        "subtitle": "Познакомьтесь с $RNBW — проверьте своё право на участие прямо сейчас."
       },
       "claim": {
         "available_to_claim": "Доступно для получения",
-        "your_airdrop": "Your Airdrop",
-        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
-        "claim_failed_title": "Error Claiming Rewards",
+        "your_airdrop": "Ваш аирдроп",
+        "your_airdrop_description": "Спасибо, что пользуетесь Rainbow. Ваш аирдроп рассчитывается на основе вашей предыдущей активности.",
+        "claim_failed_title": "Ошибка при получении наград",
         "claim_failed_message": "Попробуйте снова.",
-        "claim_later": "Claim Later",
-        "almost_there": "Almost there..."
+        "claim_later": "Получить позже",
+        "almost_there": "Почти готово..."
       },
       "airdrop_claim_finished": {
-        "airdrop_claimed": "Airdrop Claimed",
-        "you_claimed": "You claimed"
+        "airdrop_claimed": "Аирдроп получен",
+        "you_claimed": "Вы получили"
       },
       "rewards_claim_finished": {
-        "rewards_claimed": "Rewards Claimed",
-        "you_claimed": "You claimed"
+        "rewards_claimed": "Награды получены",
+        "you_claimed": "Вы получили"
       },
       "airdrop": {
-        "no_airdrop": "No Airdrop",
-        "no_airdrop_description": "This wallet did not receive an airdrop.",
-        "already_claimed": "Already Claimed",
-        "already_claimed_description": "You've already claimed your airdrop."
+        "no_airdrop": "Нет аирдропа",
+        "no_airdrop_description": "Этот кошелёк не получил аирдроп.",
+        "already_claimed": "Уже получено",
+        "already_claimed_description": "Вы уже получили свой аирдроп."
       },
       "airdrop_card": {
-        "your_airdrop": "Your Airdrop"
+        "your_airdrop": "Ваш аирдроп"
       },
       "how_to_earn": {
-        "earn_rewards": "Earn Rewards",
-        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+        "earn_rewards": "Зарабатывать награды",
+        "description": "Зарабатывайте $RNBW, обменивая токены. Скоро появятся другие способы заработать."
       },
       "loading_labels": {
-        "checking_historical_activity": "Checking Historical Activity...",
-        "checking_eligibility": "Checking Eligibility...",
-        "claiming_rewards": "Claiming Rewards...",
-        "submitting_transaction": "Submitting Transaction...",
-        "claiming_airdrop": "Claiming Airdrop...",
-        "counting_your_points": "Counting your Points...",
-        "oh_i_see": "Oh I see..."
+        "checking_historical_activity": "Проверяем историческую активность...",
+        "checking_eligibility": "Проверяем право на участие...",
+        "claiming_rewards": "Получение наград...",
+        "submitting_transaction": "Отправка транзакции...",
+        "claiming_airdrop": "Получение аирдропа...",
+        "counting_your_points": "Считаем ваши баллы...",
+        "oh_i_see": "Ага, понятно..."
       },
-      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+      "longer_than_usual": "Получение занимает больше времени, чем обычно. Это может занять до одной минуты."
     },
     "wallet_error_sheet": {
       "title": "Восстановите ваш кошелек",
@@ -3996,8 +3996,8 @@
       "resolution_restore_backup": "Чтобы использовать ваш кошелек, восстановите его из резервной копии или импортируйте вашу секретную фразу восстановления."
     },
     "rnbw_rewards_estimate_sheet": {
-      "earning_rewards": "Earning Rewards",
-      "this_transaction_will_earn": "This transaction will earn approximately "
+      "earning_rewards": "Получение наград",
+      "this_transaction_will_earn": "Эта транзакция принесёт примерно "
     }
   }
 }
