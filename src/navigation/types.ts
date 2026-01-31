@@ -277,6 +277,10 @@ export type SettingsStackParams = {
   [Routes.SETTINGS_SECTION_NETWORK]: undefined;
   [Routes.SETTINGS_SECTION_NOTIFICATIONS]: undefined;
   [Routes.SETTINGS_SECTION_PRIVACY]: undefined;
+  [Routes.SETTINGS_SECTION_SUPPORT]: undefined;
+  [Routes.SETTINGS_SECTION_SUPPORT_CATEGORY_PICKER]: {
+    title: string;
+  };
   [Routes.SECRET_WARNING]: {
     title: string;
     walletId: string;
@@ -338,6 +342,9 @@ type RouteParams = {
   [Routes.SETTINGS_SECTION_BACKUP]: {
     walletId?: string;
     initialRoute?: string;
+  };
+  [Routes.SETTINGS_SECTION_SUPPORT_CATEGORY_PICKER]: {
+    title: string;
   };
   [Routes.BACKUP_SHEET]: {
     isFromWalletReadyPrompt?: boolean;

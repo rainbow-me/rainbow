@@ -102,13 +102,13 @@ export const RnbwHeroCoin = memo(function RnbwHeroCoin() {
   useAnimatedReaction(
     () => activeScene.value,
     (current, previous) => {
-      if (current === RnbwRewardsScenes.AirdropEligibility && previous === RnbwRewardsScenes.AirdropIntro) {
+      if (current === RnbwRewardsScenes.AirdropClaiming && previous === RnbwRewardsScenes.AirdropClaimPrompt) {
         coinRef.current?.spin({ turns: 0.5, durationMs: time.seconds(1.8) });
       } else if (current === RnbwRewardsScenes.AirdropClaimPrompt && previous === RnbwRewardsScenes.AirdropEligibility) {
         coinRef.current?.spin({ turns: 2, durationMs: time.seconds(3) });
-      } else if (current === RnbwRewardsScenes.AirdropClaimed && previous === RnbwRewardsScenes.AirdropClaimPrompt) {
+      } else if (current === RnbwRewardsScenes.RewardsOverview && previous === RnbwRewardsScenes.AirdropClaimed) {
         coinRef.current?.spin({ turns: 0.5, durationMs: time.seconds(1.8) });
-      } else if (current === RnbwRewardsScenes.RewardsOverview && previous === RnbwRewardsScenes.RewardsClaiming) {
+      } else if (current === RnbwRewardsScenes.RewardsOverview && previous === RnbwRewardsScenes.RewardsClaimed) {
         coinRef.current?.spin({ turns: 0.5, durationMs: time.seconds(1.8) });
       } else if (current === RnbwRewardsScenes.RewardsClaiming && previous === RnbwRewardsScenes.RewardsOverview) {
         coinRef.current?.spin({ turns: 0.5, durationMs: time.seconds(3) });

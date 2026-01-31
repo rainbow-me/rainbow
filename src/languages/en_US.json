@@ -2368,7 +2368,6 @@
       "developer": "Developer Settings",
       "done": "Done",
       "feedback_and_reports": "Feedback & Bug Reports",
-      "feedback_and_support": "Feedback and Support",
       "follow_us_on_twitter": "Follow us on X",
       "hey_friend_message": "👋️ Hey friend! You should download Rainbow, it's my favorite Ethereum wallet 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Settings",
@@ -2429,6 +2428,52 @@
         "warning": "Changing your icon may cause Rainbow to restart.",
         "confirm": "Confirm",
         "cancel": "Cancel"
+      },
+      "support": {
+        "title": "Support and Feedback",
+        "entry": {
+          "contact_support": "Contact Support",
+          "contact_support_description": "Personalized email support for issues, questions, or urgent concerns",
+          "get_started": "Get Started",
+          "category_picker_description": "What do you need help with?",
+          "share_feedback": "Share Feedback",
+          "share_feedback_description": "Email us ideas or just say hi",
+          "faqs_and_guides": "FAQs & Guides"
+        },
+        "category": {
+          "getting_started": {
+            "name": "Getting Started",
+            "description": "Setup, basics, networks"
+          },
+          "backup_recovery": {
+            "name": "Backup & Recovery",
+            "description": "Restore, create backups"
+          },
+          "tokens_transactions": {
+            "name": "Tokens & Transactions",
+            "description": "Missing tokens, balances"
+          },
+          "bridge_swap": {
+            "name": "Bridge & Swap",
+            "description": "Cross-chain, swap issues"
+          },
+          "points_rewards": {
+            "name": "Points & Rewards",
+            "description": "Points, airdrops, launches"
+          },
+          "security": {
+            "name": "Security Concerns",
+            "description": "Compromised wallet, lost phrase"
+          },
+          "partnership": {
+            "name": "Partnership Inquiry",
+            "description": "Business, integrations"
+          },
+          "other": {
+            "name": "Something Else",
+            "description": "Other questions"
+          }
+        }
       }
     },
     "subscribe_form": {
