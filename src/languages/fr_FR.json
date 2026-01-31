@@ -324,7 +324,9 @@
         "authorizing": "Autorisation",
         "confirming_on_ledger": "Confirmation sur Ledger",
         "hold_keyword": "Tenir",
-        "tap_keyword": "Tapez"
+        "tap_keyword": "Tapez",
+        "hold_to_claim": "Tenir pour Réclamer",
+        "claiming": "Réclamation..."
       },
       "hold_to_send": "Tenir pour envoyer",
       "import": "Importer",
@@ -2384,7 +2386,6 @@
       "developer": "Paramètres du développeur",
       "done": "Terminé",
       "feedback_and_reports": "Retour & Rapports de bugs :)",
-      "feedback_and_support": "Retour d'information et soutien",
       "follow_us_on_twitter": "Suivez-nous sur X (Twitter :)",
       "hey_friend_message": "👋️ Salut ami! Tu devrais télécharger Rainbow, c'est mon portefeuille Ethereum préféré 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Paramètres",
@@ -2445,6 +2446,52 @@
         "warning": "Le changement de votre icône peut provoquer le redémarrage de Rainbow.",
         "confirm": "Confirmer",
         "cancel": "Annuler"
+      },
+      "support": {
+        "title": "Support et commentaires",
+        "entry": {
+          "contact_support": "Contacter le Support",
+          "contact_support_description": "Assistance par e-mail personnalisée pour les problèmes, questions ou préoccupations urgentes",
+          "get_started": "Commencer",
+          "category_picker_description": "De quoi avez-vous besoin d'aide ?",
+          "share_feedback": "Partager un retour",
+          "share_feedback_description": "Envoyez-nous des idées ou simplement dites bonjour",
+          "faqs_and_guides": "FAQs et guides"
+        },
+        "category": {
+          "getting_started": {
+            "name": "Prise en main",
+            "description": "Configuration, bases, réseaux"
+          },
+          "backup_recovery": {
+            "name": "Sauvegarde et Récupération",
+            "description": "Restauration, création de sauvegardes"
+          },
+          "tokens_transactions": {
+            "name": "Jetons et Transactions",
+            "description": "Jetons manquants, soldes"
+          },
+          "bridge_swap": {
+            "name": "Pont et Échange",
+            "description": "Problèmes de swap entre chaînes"
+          },
+          "points_rewards": {
+            "name": "Points et Récompenses",
+            "description": "Points, distributions, lancements"
+          },
+          "security": {
+            "name": "Problèmes de Sécurité",
+            "description": "Portefeuille compromis, phrase perdue"
+          },
+          "partnership": {
+            "name": "Demande de Partenariat",
+            "description": "Affaires, intégrations"
+          },
+          "other": {
+            "name": "Autre chose",
+            "description": "Autres questions"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2458,6 +2505,7 @@
       "actions": {
         "hold_to_swap": "Maintenir pour échanger",
         "hold_to_bridge": "Maintenir pour faire le pont",
+        "earning_rewards": "Earning Rewards",
         "save": "Sauvegarder",
         "enter_amount": "Entrez un Montant",
         "review": "Revoir",
@@ -3886,6 +3934,58 @@
         "lost_bets_dont_clear": "Les paris perdus ne sont pas supprimés automatiquement. Vous pouvez les effacer ci-dessous."
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "Introducing",
+        "rainbow_token": "Rainbow Token",
+        "description_prefix": "Say hello to ",
+        "description_suffix": " Check if you’re eligible for the airdrop now.",
+        "check_eligibility": "Check Eligibility"
+      },
+      "feature_card": {
+        "subtitle": "Say hello to $RNBW, check your eligibility now."
+      },
+      "claim": {
+        "available_to_claim": "Disponible à Réclamer",
+        "your_airdrop": "Your Airdrop",
+        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
+        "claim_failed_title": "Error Claiming Rewards",
+        "claim_failed_message": "Veuillez réessayer.",
+        "claim_later": "Claim Later",
+        "almost_there": "Almost there..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "Airdrop Claimed",
+        "you_claimed": "You claimed"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "Rewards Claimed",
+        "you_claimed": "You claimed"
+      },
+      "airdrop": {
+        "no_airdrop": "No Airdrop",
+        "no_airdrop_description": "This wallet did not receive an airdrop.",
+        "already_claimed": "Already Claimed",
+        "already_claimed_description": "You've already claimed your airdrop."
+      },
+      "airdrop_card": {
+        "your_airdrop": "Your Airdrop"
+      },
+      "how_to_earn": {
+        "earn_rewards": "Earn Rewards",
+        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+      },
+      "loading_labels": {
+        "checking_historical_activity": "Checking Historical Activity...",
+        "checking_eligibility": "Checking Eligibility...",
+        "claiming_rewards": "Claiming Rewards...",
+        "submitting_transaction": "Submitting Transaction...",
+        "claiming_airdrop": "Claiming Airdrop...",
+        "counting_your_points": "Counting your Points...",
+        "oh_i_see": "Oh I see..."
+      },
+      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+    },
     "wallet_error_sheet": {
       "title": "Restaurer votre portefeuille",
       "restore": "Restaurer",
@@ -3894,6 +3994,10 @@
       "cause_switched_devices": "Il semble que vous ayez changé d'appareil.",
       "resolution_enable_passcode": "Pour utiliser votre portefeuille, réactivez-le dans les paramètres de votre appareil.",
       "resolution_restore_backup": "Pour utiliser votre portefeuille, restaurez-le à partir d'une sauvegarde ou réimportez votre phrase secrète de récupération."
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "Earning Rewards",
+      "this_transaction_will_earn": "This transaction will earn approximately "
     }
   }
 }
