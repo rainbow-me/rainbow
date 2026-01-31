@@ -324,7 +324,9 @@
         "authorizing": "प्राधिकरण देना",
         "confirming_on_ledger": "लेजर पर पुष्टि कर रहा है",
         "hold_keyword": "रोकें",
-        "tap_keyword": "टैप करें"
+        "tap_keyword": "टैप करें",
+        "hold_to_claim": "दावे के लिए दबाए रखें",
+        "claiming": "दावा किया जा रहा है..."
       },
       "hold_to_send": "भेजने के लिए रोकें",
       "import": "आयात करें",
@@ -2384,7 +2386,6 @@
       "developer": "डेवलपर सेटिंग्स",
       "done": "हो गया",
       "feedback_and_reports": "प्रतिक्रिया और बग रिपोर्ट्स",
-      "feedback_and_support": "प्रतिक्रिया और समर्थन",
       "follow_us_on_twitter": "हमें एक्स पर फॉलो करें",
       "hey_friend_message": "👋️ हे मित्र! आपको रेनबो डाउनलोड करना चाहिए, यह मेरा पसंदीदा Ethereum वॉलेट है 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "सेटिंग्स",
@@ -2445,6 +2446,52 @@
         "warning": "आपका चिह्न परिवर्तन करने से Rainbow को पुनः शुरू होने का कारण बन सकता है।",
         "confirm": "पुष्टि करें",
         "cancel": "रद्द करें"
+      },
+      "support": {
+        "title": "समर्थन और प्रतिक्रिया",
+        "entry": {
+          "contact_support": "समर्थन से संपर्क करें",
+          "contact_support_description": "समस्याओं, प्रश्नों या तुरंत चिंताओं के लिए व्यक्तिगत ईमेल समर्थन",
+          "get_started": "शुरुआत करें",
+          "category_picker_description": "आपको किस बारे में सहायता की आवश्यकता है?",
+          "share_feedback": "फ़ीडबैक साझा करें",
+          "share_feedback_description": "हमें अपने विचार ईमेल करें या बस नमस्ते कहें",
+          "faqs_and_guides": "सामान्य प्रश्न & मार्गदर्शिकाएँ"
+        },
+        "category": {
+          "getting_started": {
+            "name": "आरंभ कैसे करें",
+            "description": "सेटअप, मूल बातें, नेटवर्क्स"
+          },
+          "backup_recovery": {
+            "name": "बैकअप और रिकवरी",
+            "description": "रिकवरी करें, बैकअप बनाएं"
+          },
+          "tokens_transactions": {
+            "name": "टोकन और लेन-देन",
+            "description": "गायब टोकन, बैलेंस"
+          },
+          "bridge_swap": {
+            "name": "ब्रिज और स्वैप",
+            "description": "क्रॉस-चेन, स्वैप समस्याएं"
+          },
+          "points_rewards": {
+            "name": "प्वाइंट्स और रिवॉर्ड्स",
+            "description": "प्वाइंट्स, एयरड्रॉप्स, लॉन्च"
+          },
+          "security": {
+            "name": "सुरक्षा चिंताएं",
+            "description": "संकटग्रस्त वॉलेट, खोया हुआ वाक्यांश"
+          },
+          "partnership": {
+            "name": "साझेदारी संबंधी पूछताछ",
+            "description": "व्यापार, एकीकरण"
+          },
+          "other": {
+            "name": "कुछ और",
+            "description": "अन्य प्रश्न"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2458,6 +2505,7 @@
       "actions": {
         "hold_to_swap": "बदलने के लिए होल्ड करें",
         "hold_to_bridge": "ब्रिज करने के लिए होल्ड करें",
+        "earning_rewards": "Earning Rewards",
         "save": "सहेजें",
         "enter_amount": "राशि दर्ज करें",
         "review": "समीक्षा करें",
@@ -3886,6 +3934,58 @@
         "lost_bets_dont_clear": "खोई हुई बाजियाँ स्वचालित रूप से नहीं हटती हैं। आप उन्हें नीचे साफ कर सकते हैं।"
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "Introducing",
+        "rainbow_token": "Rainbow Token",
+        "description_prefix": "Say hello to ",
+        "description_suffix": " Check if you’re eligible for the airdrop now.",
+        "check_eligibility": "Check Eligibility"
+      },
+      "feature_card": {
+        "subtitle": "Say hello to $RNBW, check your eligibility now."
+      },
+      "claim": {
+        "available_to_claim": "दावा करने के लिए उपलब्ध",
+        "your_airdrop": "Your Airdrop",
+        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
+        "claim_failed_title": "Error Claiming Rewards",
+        "claim_failed_message": "कृपया पुनः प्रयास करें।",
+        "claim_later": "Claim Later",
+        "almost_there": "Almost there..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "Airdrop Claimed",
+        "you_claimed": "You claimed"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "Rewards Claimed",
+        "you_claimed": "You claimed"
+      },
+      "airdrop": {
+        "no_airdrop": "No Airdrop",
+        "no_airdrop_description": "This wallet did not receive an airdrop.",
+        "already_claimed": "Already Claimed",
+        "already_claimed_description": "You've already claimed your airdrop."
+      },
+      "airdrop_card": {
+        "your_airdrop": "Your Airdrop"
+      },
+      "how_to_earn": {
+        "earn_rewards": "Earn Rewards",
+        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+      },
+      "loading_labels": {
+        "checking_historical_activity": "Checking Historical Activity...",
+        "checking_eligibility": "Checking Eligibility...",
+        "claiming_rewards": "Claiming Rewards...",
+        "submitting_transaction": "Submitting Transaction...",
+        "claiming_airdrop": "Claiming Airdrop...",
+        "counting_your_points": "Counting your Points...",
+        "oh_i_see": "Oh I see..."
+      },
+      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+    },
     "wallet_error_sheet": {
       "title": "अपने वॉलेट को पुनर्स्थापित करें",
       "restore": "पुनर्स्थापित करें",
@@ -3894,6 +3994,10 @@
       "cause_switched_devices": "ऐसा लगता है कि आपने डिवाइस बदल दिया है।",
       "resolution_enable_passcode": "अपना वॉलेट उपयोग करने के लिए, इसे अपने डिवाइस की सेटिंग्स में पुनः सक्षम करें।",
       "resolution_restore_backup": "अपना वॉलेट उपयोग करने के लिए, बैकअप से पुनर्स्थापित करें या अपना गुप्त पुनर्प्राप्ति वाक्यांश पुनः आयात करें।"
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "Earning Rewards",
+      "this_transaction_will_earn": "This transaction will earn approximately "
     }
   }
 }
