@@ -324,7 +324,9 @@
         "authorizing": "Yetkilendirme",
         "confirming_on_ledger": "Ledger'da Onaylanıyor",
         "hold_keyword": "Tut",
-        "tap_keyword": "Dokun"
+        "tap_keyword": "Dokun",
+        "hold_to_claim": "Talep Etmek İçin Basılı Tutun",
+        "claiming": "Talep Ediliyor..."
       },
       "hold_to_send": "Göndermek için Tut",
       "import": "İçe Aktar",
@@ -2384,7 +2386,6 @@
       "developer": "Geliştirici Ayarları",
       "done": "Tamamlandı",
       "feedback_and_reports": "Geri Bildirim & Hata Raporları",
-      "feedback_and_support": "Geri Bildirim ve Destek",
       "follow_us_on_twitter": "Bizi X'te takip edin",
       "hey_friend_message": "👋️ Hey dostum! Rainbow'u indirmelisin, benim en sevdiğim Ethereum cüzdanı 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Ayarlar",
@@ -2445,6 +2446,52 @@
         "warning": "Simgeyi değiştirmek Rainbow'un yeniden başlamasına neden olabilir.",
         "confirm": "Onayla",
         "cancel": "İptal"
+      },
+      "support": {
+        "title": "Destek ve Geribildirim",
+        "entry": {
+          "contact_support": "Desteğe Ulaşın",
+          "contact_support_description": "Sorunlar, sorular veya acil endişeler için kişiselleştirilmiş e-posta desteği",
+          "get_started": "Başlayın",
+          "category_picker_description": "Hangi konuda yardıma ihtiyacınız var?",
+          "share_feedback": "Geri Bildirim Paylaş",
+          "share_feedback_description": "Bize fikirlerinizi e-posta ile gönderin veya sadece merhaba deyin",
+          "faqs_and_guides": "SSS & Kılavuzlar"
+        },
+        "category": {
+          "getting_started": {
+            "name": "Başlarken",
+            "description": "Kurulum, temel bilgiler, ağlar"
+          },
+          "backup_recovery": {
+            "name": "Yedekleme & Kurtarma",
+            "description": "Geri Yükleme, yedek oluşturma"
+          },
+          "tokens_transactions": {
+            "name": "Token'lar & İşlemler",
+            "description": "Eksik token'lar, bakiyeler"
+          },
+          "bridge_swap": {
+            "name": "Köprü & Değişim",
+            "description": "Zincirler arası, değişim sorunları"
+          },
+          "points_rewards": {
+            "name": "Puanlar & Ödüller",
+            "description": "Puanlar, airdrop'lar, lansmanlar"
+          },
+          "security": {
+            "name": "Güvenlik Endişeleri",
+            "description": "Riskli cüzdan, kayıp kelime öbeği"
+          },
+          "partnership": {
+            "name": "Ortaklık Sorgusu",
+            "description": "İş, entegrasyonlar"
+          },
+          "other": {
+            "name": "Başka Bir Şey",
+            "description": "Diğer sorular"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2458,6 +2505,7 @@
       "actions": {
         "hold_to_swap": "Değiştirmek için Tut",
         "hold_to_bridge": "Köprülemek İçin Tut",
+        "earning_rewards": "Earning Rewards",
         "save": "Kaydet",
         "enter_amount": "Miktar Girin",
         "review": "İncele",
@@ -3886,6 +3934,58 @@
         "lost_bets_dont_clear": "Kaybedilen bahisler otomatik olarak kaldırılmaz. Aşağıda temizleyebilirsiniz."
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "Introducing",
+        "rainbow_token": "Rainbow Token",
+        "description_prefix": "Say hello to ",
+        "description_suffix": " Check if you’re eligible for the airdrop now.",
+        "check_eligibility": "Check Eligibility"
+      },
+      "feature_card": {
+        "subtitle": "Say hello to $RNBW, check your eligibility now."
+      },
+      "claim": {
+        "available_to_claim": "Talep Edilebilir",
+        "your_airdrop": "Your Airdrop",
+        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
+        "claim_failed_title": "Error Claiming Rewards",
+        "claim_failed_message": "Lütfen tekrar deneyin.",
+        "claim_later": "Claim Later",
+        "almost_there": "Almost there..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "Airdrop Claimed",
+        "you_claimed": "You claimed"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "Rewards Claimed",
+        "you_claimed": "You claimed"
+      },
+      "airdrop": {
+        "no_airdrop": "No Airdrop",
+        "no_airdrop_description": "This wallet did not receive an airdrop.",
+        "already_claimed": "Already Claimed",
+        "already_claimed_description": "You've already claimed your airdrop."
+      },
+      "airdrop_card": {
+        "your_airdrop": "Your Airdrop"
+      },
+      "how_to_earn": {
+        "earn_rewards": "Earn Rewards",
+        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+      },
+      "loading_labels": {
+        "checking_historical_activity": "Checking Historical Activity...",
+        "checking_eligibility": "Checking Eligibility...",
+        "claiming_rewards": "Claiming Rewards...",
+        "submitting_transaction": "Submitting Transaction...",
+        "claiming_airdrop": "Claiming Airdrop...",
+        "counting_your_points": "Counting your Points...",
+        "oh_i_see": "Oh I see..."
+      },
+      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+    },
     "wallet_error_sheet": {
       "title": "Cüzdanınızı geri yükleyin",
       "restore": "Geri Yükle",
@@ -3894,6 +3994,10 @@
       "cause_switched_devices": "Görünüşe göre cihaz değiştirmiş olabilirsiniz.",
       "resolution_enable_passcode": "Cüzdanınızı kullanmak için cihaz ayarlarında yeniden etkinleştirin.",
       "resolution_restore_backup": "Cüzdanınızı kullanmak için yedekten geri yükleyin veya gizli kurtarma cümlenizi yeniden aktarın."
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "Earning Rewards",
+      "this_transaction_will_earn": "This transaction will earn approximately "
     }
   }
 }
