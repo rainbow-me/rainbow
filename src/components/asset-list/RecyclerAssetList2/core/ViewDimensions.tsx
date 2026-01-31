@@ -16,6 +16,7 @@ import { RECEIVE_CARD_HEIGHT } from '@/components/cards/ReceiveAssetsCard';
 import { ETH_CARD_HEIGHT } from '@/components/cards/EthCard';
 import { LEARN_CARD_HEIGHT } from '@/components/cards/RotatingLearnCard';
 import { POLYMARKET_FEATURE_CARD_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/cards/PolymarketFeatureCard';
+import { RNBW_FEATURE_CARD_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/cards/RnbwFeatureCard';
 import { DISCOVER_MORE_BUTTON_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/core/DiscoverMoreButton';
 import { CardSize, UniqueTokenCardMargin } from '@/components/unique-token/CardSize';
 import { IS_IOS } from '@/env';
@@ -101,6 +102,7 @@ const ViewDimensions: Record<CellType, Dim> = {
     width: deviceUtils.dimensions.width,
   },
   [CellType.POLYMARKET_FEATURE_CARD]: { height: POLYMARKET_FEATURE_CARD_HEIGHT },
+  [CellType.RNBW_FEATURE_CARD]: { height: RNBW_FEATURE_CARD_HEIGHT },
   [CellType.TOKENS_HEADER]: { height: AssetListHeaderHeight },
   [CellType.REMOTE_CARD_CAROUSEL]: { height: 112 },
   [CellType.EMPTY_REMOTE_CARD_CAROUSEL]: { height: 0 },

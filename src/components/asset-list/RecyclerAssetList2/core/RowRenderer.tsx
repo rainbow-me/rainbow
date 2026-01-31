@@ -35,6 +35,7 @@ import { CardRowWrapper } from '../cards/CardRowWrapper';
 import { DiscoverMoreButton } from './DiscoverMoreButton';
 import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
 import { PolymarketFeatureCard } from '../cards/PolymarketFeatureCard';
+import { RnbwFeatureCard } from '../cards/RnbwFeatureCard';
 import WrappedPosition from '../WrappedPosition';
 import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
@@ -114,6 +115,13 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       return (
         <CardRowWrapper>
           <PolymarketFeatureCard />
+        </CardRowWrapper>
+      );
+    }
+    case CellType.RNBW_FEATURE_CARD: {
+      return (
+        <CardRowWrapper>
+          <RnbwFeatureCard />
         </CardRowWrapper>
       );
     }

@@ -3859,6 +3859,9 @@
         "description_suffix": " Check if you’re eligible for the airdrop now.",
         "check_eligibility": "Check Eligibility"
       },
+      "feature_card": {
+        "subtitle": "Say hello to $RNBW, check your eligibility now."
+      },
       "claim": {
         "available_to_claim": "Available to Claim",
         "your_airdrop": "Your Airdrop",

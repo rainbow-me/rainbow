@@ -9,7 +9,7 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useClaimablesStore } from '@/state/claimables/claimables';
-import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
+import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, RNBW_REWARDS, useExperimentalConfig } from '@/config/experimentalHooks';
 import { analytics } from '@/analytics';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
@@ -23,6 +23,7 @@ import { PerpsPositionsInfo, usePerpsPositionsInfo } from '@/features/perps/stor
 import { PerpsWalletListData } from '@/features/perps/types';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
 import { usePolymarketFeatureCard } from '@/features/polymarket/hooks/usePolymarketFeatureCard';
+import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
 import { shallowEqual } from '@/worklets/comparisons';
 import { PolymarketPosition, PolymarketWalletListData } from '@/features/polymarket/types';
 import { usePolymarketPositions } from '@/features/polymarket/stores/derived/usePolymarketPositions';
@@ -51,7 +52,7 @@ export default function useWalletSectionsData({
   const selectedWallet = useSelectedWallet();
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
-  const remoteConfig = useRemoteConfig('claimables', 'remote_cards_enabled', 'perps_enabled', 'polymarket_enabled');
+  const remoteConfig = useRemoteConfig('claimables', 'remote_cards_enabled', 'perps_enabled', 'polymarket_enabled', 'rnbw_rewards_enabled');
   const experimentalConfig = useExperimentalConfig();
   const isWalletEthZero = useIsWalletEthZero();
 
@@ -60,6 +61,7 @@ export default function useWalletSectionsData({
   const claimablesEnabled = (remoteConfig.claimables || experimentalConfig[CLAIMABLES]) && !IS_TEST;
   const perpsEnabled = remoteConfig.perps_enabled && !IS_TEST;
   const polymarketEnabled = remoteConfig.polymarket_enabled && !IS_TEST;
+  const rnbwRewardsEnabled = (remoteConfig.rnbw_rewards_enabled || experimentalConfig[RNBW_REWARDS]) && !IS_TEST;
 
   const cardIds = remoteCardsStore(state => state.getCardIdsForScreen('WALLET_SCREEN'));
   const remoteCards = useMemo(() => (remoteCardsEnabled ? cardIds : []), [cardIds, remoteCardsEnabled]);
@@ -113,6 +115,7 @@ export default function useWalletSectionsData({
   const { isCoinListEdited } = useCoinListEdited();
   const { isDismissed: isDismissedPerpsFeatureCard } = usePerpsFeatureCard();
   const { isDismissed: isDismissedPolymarketFeatureCard } = usePolymarketFeatureCard();
+  const { isDismissed: isDismissedRnbwFeatureCard } = useRnbwFeatureCard();
 
   useEffect(() => {
     if (isLoadingUserAssets || type !== 'wallet') return;
@@ -150,11 +153,13 @@ export default function useWalletSectionsData({
       perpsData,
       polymarketData,
       remoteCards,
+      rnbwRewardsEnabled,
       hasMoreCollections,
       isShowcaseDataMigrated,
       isHiddenDataMigrated,
       isDismissedPerpsFeatureCard,
       isDismissedPolymarketFeatureCard,
+      isDismissedRnbwFeatureCard,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(sections);
@@ -191,11 +196,13 @@ export default function useWalletSectionsData({
     perpsData,
     polymarketData,
     remoteCards,
+    rnbwRewardsEnabled,
     hasMoreCollections,
     isShowcaseDataMigrated,
     isHiddenDataMigrated,
     isDismissedPerpsFeatureCard,
     isDismissedPolymarketFeatureCard,
+    isDismissedRnbwFeatureCard,
   ]);
 }
 
