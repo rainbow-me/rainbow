@@ -324,7 +324,9 @@
         "authorizing": "正在授权",
         "confirming_on_ledger": "在Ledger上确认",
         "hold_keyword": "持有",
-        "tap_keyword": "点击"
+        "tap_keyword": "点击",
+        "hold_to_claim": "长按领取",
+        "claiming": "认领中..."
       },
       "hold_to_send": "长按以发送",
       "import": "导入",
@@ -2384,7 +2386,6 @@
       "developer": "开发者设置",
       "done": "完成",
       "feedback_and_reports": "反馈和错误报告",
-      "feedback_and_support": "反馈与支持",
       "follow_us_on_twitter": "在X上关注我们",
       "hey_friend_message": "👋️ 嘿，朋友！你应该下载Rainbow，这是我最喜欢的以太坊钱包 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "设置",
@@ -2445,6 +2446,52 @@
         "warning": "更改您的图标可能会导致Rainbow重新启动。",
         "confirm": "确认",
         "cancel": "取消"
+      },
+      "support": {
+        "title": "支持和反馈",
+        "entry": {
+          "contact_support": "联系支持",
+          "contact_support_description": "个性化邮件支持，以解决问题、回答疑问或处理紧急事项",
+          "get_started": "开始",
+          "category_picker_description": "您需要帮助解决什么问题？",
+          "share_feedback": "分享反馈",
+          "share_feedback_description": "给我们发送想法或打个招呼",
+          "faqs_and_guides": "常见问题与指南"
+        },
+        "category": {
+          "getting_started": {
+            "name": "入门",
+            "description": "设置，基础知识，网络"
+          },
+          "backup_recovery": {
+            "name": "备份和恢复",
+            "description": "恢复，创建备份"
+          },
+          "tokens_transactions": {
+            "name": "代币和交易",
+            "description": "丢失的代币，余额"
+          },
+          "bridge_swap": {
+            "name": "桥接和兑换",
+            "description": "跨链，兑换问题"
+          },
+          "points_rewards": {
+            "name": "积分和奖励",
+            "description": "积分，空头，发布"
+          },
+          "security": {
+            "name": "安全问题",
+            "description": "钱包被盗，丢失助记词"
+          },
+          "partnership": {
+            "name": "合作伙伴询问",
+            "description": "业务，集成"
+          },
+          "other": {
+            "name": "其他事项",
+            "description": "其他问题"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2458,6 +2505,7 @@
       "actions": {
         "hold_to_swap": "按住以交换",
         "hold_to_bridge": "按住以桥接",
+        "earning_rewards": "Earning Rewards",
         "save": "保存",
         "enter_amount": "输入金额",
         "review": "审阅",
@@ -3886,6 +3934,58 @@
         "lost_bets_dont_clear": "输掉的赌注不会自动清除。您可以在下面清除它们。"
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "Introducing",
+        "rainbow_token": "Rainbow Token",
+        "description_prefix": "Say hello to ",
+        "description_suffix": " Check if you’re eligible for the airdrop now.",
+        "check_eligibility": "Check Eligibility"
+      },
+      "feature_card": {
+        "subtitle": "Say hello to $RNBW, check your eligibility now."
+      },
+      "claim": {
+        "available_to_claim": "可领取",
+        "your_airdrop": "Your Airdrop",
+        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
+        "claim_failed_title": "Error Claiming Rewards",
+        "claim_failed_message": "请再试一次。",
+        "claim_later": "Claim Later",
+        "almost_there": "Almost there..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "Airdrop Claimed",
+        "you_claimed": "You claimed"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "Rewards Claimed",
+        "you_claimed": "You claimed"
+      },
+      "airdrop": {
+        "no_airdrop": "No Airdrop",
+        "no_airdrop_description": "This wallet did not receive an airdrop.",
+        "already_claimed": "Already Claimed",
+        "already_claimed_description": "You've already claimed your airdrop."
+      },
+      "airdrop_card": {
+        "your_airdrop": "Your Airdrop"
+      },
+      "how_to_earn": {
+        "earn_rewards": "Earn Rewards",
+        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+      },
+      "loading_labels": {
+        "checking_historical_activity": "Checking Historical Activity...",
+        "checking_eligibility": "Checking Eligibility...",
+        "claiming_rewards": "Claiming Rewards...",
+        "submitting_transaction": "Submitting Transaction...",
+        "claiming_airdrop": "Claiming Airdrop...",
+        "counting_your_points": "Counting your Points...",
+        "oh_i_see": "Oh I see..."
+      },
+      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+    },
     "wallet_error_sheet": {
       "title": "恢复你的钱包",
       "restore": "恢复",
@@ -3894,6 +3994,10 @@
       "cause_switched_devices": "看起来你可能已经切换设备。",
       "resolution_enable_passcode": "要使用你的钱包，请在设备设置中重新启用它。",
       "resolution_restore_backup": "要使用你的钱包，请从备份恢复或重新导入你的秘密恢复短语。"
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "Earning Rewards",
+      "this_transaction_will_earn": "This transaction will earn approximately "
     }
   }
 }
