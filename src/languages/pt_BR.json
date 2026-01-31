@@ -2451,11 +2451,11 @@
         "title": "Suporte e Feedback",
         "entry": {
           "contact_support": "Contactar Suporte",
-          "contact_support_description": "Suporte por e-mail personalizado para problemas, dúvidas ou preocupações urgentes",
+          "contact_support_description": "Suporte por e-mail personalizado para problemas, dúvidas ou questões urgentes",
           "get_started": "Comece Agora",
           "category_picker_description": "Com o que você precisa de ajuda?",
           "share_feedback": "Compartilhar Feedback",
-          "share_feedback_description": "Envie-nos ideias ou apenas diga olá",
+          "share_feedback_description": "Envie ideias por e-mail ou apenas diga oi",
           "faqs_and_guides": "FAQs e Guias"
         },
         "category": {
@@ -2464,23 +2464,23 @@
             "description": "Configuração, noções básicas, redes"
           },
           "backup_recovery": {
-            "name": "Backup & Recuperação",
+            "name": "Backup e Recuperação",
             "description": "Restaurar, criar backups"
           },
           "tokens_transactions": {
-            "name": "Tokens & Transações",
-            "description": "Tokens faltando, saldos"
+            "name": "Tokens e Transações",
+            "description": "Tokens ausentes, saldos"
           },
           "bridge_swap": {
-            "name": "Ponte & Troca",
-            "description": "Cross-chain, problemas de troca"
+            "name": "Bridge e Swap",
+            "description": "Cross-chain, problemas de swap"
           },
           "points_rewards": {
-            "name": "Pontos & Recompensas",
+            "name": "Pontos e Recompensas",
             "description": "Pontos, airdrops, lançamentos"
           },
           "security": {
-            "name": "Preocupações com Segurança",
+            "name": "Preocupações de Segurança",
             "description": "Carteira comprometida, frase perdida"
           },
           "partnership": {
@@ -2488,8 +2488,8 @@
             "description": "Negócios, integrações"
           },
           "other": {
-            "name": "Algo Mais",
-            "description": "Outras perguntas"
+            "name": "Outra Coisa",
+            "description": "Outras dúvidas"
           }
         }
       }
@@ -2505,7 +2505,7 @@
       "actions": {
         "hold_to_swap": "Segure para Trocar",
         "hold_to_bridge": "Segure para Transferir",
-        "earning_rewards": "Earning Rewards",
+        "earning_rewards": "Ganhar Recompensas",
         "save": "Salvar",
         "enter_amount": "Insira um valor",
         "review": "Revisão",
@@ -3936,55 +3936,55 @@
     },
     "rnbw_rewards": {
       "introduction": {
-        "introducing": "Introducing",
-        "rainbow_token": "Rainbow Token",
-        "description_prefix": "Say hello to ",
-        "description_suffix": " Check if you’re eligible for the airdrop now.",
-        "check_eligibility": "Check Eligibility"
+        "introducing": "Apresentando",
+        "rainbow_token": "Token Rainbow",
+        "description_prefix": "Diga olá para ",
+        "description_suffix": " Verifique agora se você está qualificado para o airdrop.",
+        "check_eligibility": "Verificar qualificação"
       },
       "feature_card": {
-        "subtitle": "Say hello to $RNBW, check your eligibility now."
+        "subtitle": "Diga olá para $RNBW, verifique sua qualificação agora."
       },
       "claim": {
         "available_to_claim": "Disponível para Reivindicação",
-        "your_airdrop": "Your Airdrop",
-        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
-        "claim_failed_title": "Error Claiming Rewards",
+        "your_airdrop": "Seu Airdrop",
+        "your_airdrop_description": "Obrigado por usar a Rainbow. Seu airdrop é calculado com base na sua atividade anterior.",
+        "claim_failed_title": "Erro ao reivindicar recompensas",
         "claim_failed_message": "Por favor, tente novamente.",
-        "claim_later": "Claim Later",
-        "almost_there": "Almost there..."
+        "claim_later": "Reivindicar depois",
+        "almost_there": "Quase lá..."
       },
       "airdrop_claim_finished": {
-        "airdrop_claimed": "Airdrop Claimed",
-        "you_claimed": "You claimed"
+        "airdrop_claimed": "Airdrop reivindicado",
+        "you_claimed": "Você reivindicou"
       },
       "rewards_claim_finished": {
-        "rewards_claimed": "Rewards Claimed",
-        "you_claimed": "You claimed"
+        "rewards_claimed": "Recompensas reivindicadas",
+        "you_claimed": "Você reivindicou"
       },
       "airdrop": {
-        "no_airdrop": "No Airdrop",
-        "no_airdrop_description": "This wallet did not receive an airdrop.",
-        "already_claimed": "Already Claimed",
-        "already_claimed_description": "You've already claimed your airdrop."
+        "no_airdrop": "Sem Airdrop",
+        "no_airdrop_description": "Esta carteira não recebeu um airdrop.",
+        "already_claimed": "Já reivindicado",
+        "already_claimed_description": "Você já reivindicou seu airdrop."
       },
       "airdrop_card": {
-        "your_airdrop": "Your Airdrop"
+        "your_airdrop": "Seu Airdrop"
       },
       "how_to_earn": {
-        "earn_rewards": "Earn Rewards",
-        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+        "earn_rewards": "Ganhar Recompensas",
+        "description": "Ganhe $RNBW fazendo swap de tokens. Mais formas de ganhar em breve."
       },
       "loading_labels": {
-        "checking_historical_activity": "Checking Historical Activity...",
-        "checking_eligibility": "Checking Eligibility...",
-        "claiming_rewards": "Claiming Rewards...",
-        "submitting_transaction": "Submitting Transaction...",
-        "claiming_airdrop": "Claiming Airdrop...",
-        "counting_your_points": "Counting your Points...",
-        "oh_i_see": "Oh I see..."
+        "checking_historical_activity": "Verificando atividade histórica...",
+        "checking_eligibility": "Verificando qualificação...",
+        "claiming_rewards": "Reivindicando recompensas...",
+        "submitting_transaction": "Enviando transação...",
+        "claiming_airdrop": "Reivindicando airdrop...",
+        "counting_your_points": "Contando seus pontos...",
+        "oh_i_see": "Ah, entendi..."
       },
-      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+      "longer_than_usual": "A reivindicação está demorando mais do que o normal. Pode levar até um minuto."
     },
     "wallet_error_sheet": {
       "title": "Restaurar sua carteira",
@@ -3996,8 +3996,8 @@
       "resolution_restore_backup": "Para usar sua carteira, restaure a partir de um backup ou reimporte sua frase secreta de recuperação."
     },
     "rnbw_rewards_estimate_sheet": {
-      "earning_rewards": "Earning Rewards",
-      "this_transaction_will_earn": "This transaction will earn approximately "
+      "earning_rewards": "Ganhar Recompensas",
+      "this_transaction_will_earn": "Esta transação renderá aproximadamente "
     }
   }
 }
