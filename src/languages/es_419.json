@@ -2448,47 +2448,47 @@
         "cancel": "Cancelar"
       },
       "support": {
-        "title": "Soporte y Retroalimentación",
+        "title": "Soporte y comentarios",
         "entry": {
           "contact_support": "Contactar Soporte",
-          "contact_support_description": "Soporte por correo electrónico personalizado para problemas, preguntas o inquietudes urgentes",
+          "contact_support_description": "Soporte personalizado por correo electrónico para problemas, preguntas o inquietudes urgentes",
           "get_started": "Comenzar",
           "category_picker_description": "¿Con qué necesitas ayuda?",
           "share_feedback": "Compartir comentarios",
-          "share_feedback_description": "Envíanos ideas o simplemente saluda",
-          "faqs_and_guides": "Preguntas Frecuentes y Guías"
+          "share_feedback_description": "Envíanos ideas por correo o simplemente saluda",
+          "faqs_and_guides": "Preguntas frecuentes y guías"
         },
         "category": {
           "getting_started": {
-            "name": "Primeros Pasos",
+            "name": "Primeros pasos",
             "description": "Configuración, conceptos básicos, redes"
           },
           "backup_recovery": {
-            "name": "Respaldo y Recuperación",
+            "name": "Respaldo y recuperación",
             "description": "Restaurar, crear respaldos"
           },
           "tokens_transactions": {
-            "name": "Tokens y Transacciones",
+            "name": "Tokens y transacciones",
             "description": "Tokens faltantes, saldos"
           },
           "bridge_swap": {
-            "name": "Puente e Intercambio",
-            "description": "Interoperabilidad entre cadenas, problemas de intercambio"
+            "name": "Puente e intercambio",
+            "description": "Entre cadenas, problemas de intercambio"
           },
           "points_rewards": {
-            "name": "Puntos y Recompensas",
-            "description": "Puntos, lanzamientos de airdrops"
+            "name": "Puntos y recompensas",
+            "description": "Puntos, airdrops, lanzamientos"
           },
           "security": {
-            "name": "Preocupaciones de Seguridad",
+            "name": "Preocupaciones de seguridad",
             "description": "Billetera comprometida, frase perdida"
           },
           "partnership": {
-            "name": "Consulta de Colaboración",
+            "name": "Consulta de partnership",
             "description": "Negocios, integraciones"
           },
           "other": {
-            "name": "Algo Más",
+            "name": "Algo más",
             "description": "Otras preguntas"
           }
         }
@@ -2505,7 +2505,7 @@
       "actions": {
         "hold_to_swap": "Mantener para Intercambiar",
         "hold_to_bridge": "Mantener para Transferir",
-        "earning_rewards": "Earning Rewards",
+        "earning_rewards": "Ganar recompensas",
         "save": "Guardar",
         "enter_amount": "Ingresa una cantidad",
         "review": "Revisar",
@@ -3936,55 +3936,55 @@
     },
     "rnbw_rewards": {
       "introduction": {
-        "introducing": "Introducing",
-        "rainbow_token": "Rainbow Token",
-        "description_prefix": "Say hello to ",
-        "description_suffix": " Check if you’re eligible for the airdrop now.",
-        "check_eligibility": "Check Eligibility"
+        "introducing": "Presentamos",
+        "rainbow_token": "Token de Rainbow",
+        "description_prefix": "Dale la bienvenida a ",
+        "description_suffix": " Verifica si eres elegible para el airdrop ahora.",
+        "check_eligibility": "Verificar elegibilidad"
       },
       "feature_card": {
-        "subtitle": "Say hello to $RNBW, check your eligibility now."
+        "subtitle": "Dale la bienvenida a $RNBW; verifica tu elegibilidad ahora."
       },
       "claim": {
         "available_to_claim": "Disponible para Reclamar",
-        "your_airdrop": "Your Airdrop",
-        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
-        "claim_failed_title": "Error Claiming Rewards",
+        "your_airdrop": "Tu airdrop",
+        "your_airdrop_description": "Gracias por usar Rainbow. Tu airdrop se calcula según tu actividad previa.",
+        "claim_failed_title": "Error al reclamar recompensas",
         "claim_failed_message": "Por favor inténtelo de nuevo.",
-        "claim_later": "Claim Later",
-        "almost_there": "Almost there..."
+        "claim_later": "Reclamar más tarde",
+        "almost_there": "Casi listo..."
       },
       "airdrop_claim_finished": {
-        "airdrop_claimed": "Airdrop Claimed",
-        "you_claimed": "You claimed"
+        "airdrop_claimed": "Airdrop reclamado",
+        "you_claimed": "Reclamaste"
       },
       "rewards_claim_finished": {
-        "rewards_claimed": "Rewards Claimed",
-        "you_claimed": "You claimed"
+        "rewards_claimed": "Recompensas reclamadas",
+        "you_claimed": "Reclamaste"
       },
       "airdrop": {
-        "no_airdrop": "No Airdrop",
-        "no_airdrop_description": "This wallet did not receive an airdrop.",
-        "already_claimed": "Already Claimed",
-        "already_claimed_description": "You've already claimed your airdrop."
+        "no_airdrop": "Sin airdrop",
+        "no_airdrop_description": "Esta billetera no recibió un airdrop.",
+        "already_claimed": "Ya reclamado",
+        "already_claimed_description": "Ya reclamaste tu airdrop."
       },
       "airdrop_card": {
-        "your_airdrop": "Your Airdrop"
+        "your_airdrop": "Tu airdrop"
       },
       "how_to_earn": {
-        "earn_rewards": "Earn Rewards",
-        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+        "earn_rewards": "Ganar recompensas",
+        "description": "Gana $RNBW intercambiando tokens. Próximamente habrá más formas de ganar."
       },
       "loading_labels": {
-        "checking_historical_activity": "Checking Historical Activity...",
-        "checking_eligibility": "Checking Eligibility...",
-        "claiming_rewards": "Claiming Rewards...",
-        "submitting_transaction": "Submitting Transaction...",
-        "claiming_airdrop": "Claiming Airdrop...",
-        "counting_your_points": "Counting your Points...",
-        "oh_i_see": "Oh I see..."
+        "checking_historical_activity": "Revisando actividad histórica...",
+        "checking_eligibility": "Verificando elegibilidad...",
+        "claiming_rewards": "Reclamando recompensas...",
+        "submitting_transaction": "Enviando transacción...",
+        "claiming_airdrop": "Reclamando airdrop...",
+        "counting_your_points": "Contando tus puntos...",
+        "oh_i_see": "Ah, ya veo..."
       },
-      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+      "longer_than_usual": "El reclamo está tardando más de lo usual. Puede tardar hasta un minuto."
     },
     "wallet_error_sheet": {
       "title": "Restaura tu billetera",
@@ -3996,8 +3996,8 @@
       "resolution_restore_backup": "Para usar su billetera, restaure desde una copia de seguridad o reimporte su frase de recuperación secreta."
     },
     "rnbw_rewards_estimate_sheet": {
-      "earning_rewards": "Earning Rewards",
-      "this_transaction_will_earn": "This transaction will earn approximately "
+      "earning_rewards": "Ganar recompensas",
+      "this_transaction_will_earn": "Esta transacción generará aproximadamente "
     }
   }
 }
