@@ -9,10 +9,13 @@ export interface RainbowFetchRequestOpts extends RequestInit {
 /**
  * rainbowFetch fetches data and handles response edge cases and error handling.
  */
-export async function rainbowFetch<T = any>(
-  url: RequestInfo,
-  opts: RainbowFetchRequestOpts
-): Promise<{ data: T; headers: Headers; status: number }> {
+export type RainbowFetchResponse<T> = {
+  data: T;
+  headers: Headers;
+  status: number;
+};
+
+export async function rainbowFetch<T>(url: RequestInfo, opts: RainbowFetchRequestOpts): Promise<RainbowFetchResponse<T>> {
   // eslint-disable-next-line no-param-reassign
   opts = {
     headers: {},

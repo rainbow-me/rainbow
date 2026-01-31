@@ -61,7 +61,7 @@ function LabelWithBiometryIcon({ label, showIcon = true, testID, color, size, we
   }, [color, colorMode, colors.appleBlue]);
 
   return (
-    <>
+    <Box alignItems="center" justifyContent="center" flexDirection="row" gap={8}>
       {/* TODO: note from Kane regarding the color of the Ledger icon potentially being off */}
       {isHardwareWallet && showIcon && <LedgerIcon color={stringColor} />}
       <Text
@@ -74,7 +74,7 @@ function LabelWithBiometryIcon({ label, showIcon = true, testID, color, size, we
       >
         {`${biometryIcon}${label}`}
       </Text>
-    </>
+    </Box>
   );
 }
 

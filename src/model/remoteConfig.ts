@@ -1,4 +1,5 @@
 import remoteConfig, { FirebaseRemoteConfigTypes } from '@react-native-firebase/remote-config';
+import { useEffect } from 'react';
 import { dequal } from 'dequal';
 import { IS_DEV } from '@/env';
 import isTestFlight from '@/helpers/isTestFlight';
@@ -94,6 +95,7 @@ export interface RainbowConfig
   king_of_the_hill2_enabled: boolean;
   perps_enabled: boolean;
   polymarket_enabled: boolean;
+  rnbw_rewards_enabled: boolean;
 }
 
 const Bips = {
@@ -226,6 +228,7 @@ export const DEFAULT_CONFIG = {
   perps_enabled: false,
   polymarket_enabled: false,
   dev_section_enabled: IS_DEV || false,
+  rnbw_rewards_enabled: false,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
@@ -318,6 +321,19 @@ export function useRemoteConfig<const K extends readonly RemoteConfigKey[]>(...k
     state => (keys.length ? selectRemoteConfigKeys(state, keys) : state.config),
     keys.length ? shallowEqual : undefined
   );
+}
+
+export function useRemoteConfigUpdates(): void {
+  useEffect(() => {
+    const rc = remoteConfig();
+    const unsubscribe = rc.onConfigUpdated(async (_, error) => {
+      if (error) return;
+
+      await useRemoteConfigStore.getState().fetch(undefined, { force: true });
+    });
+
+    return unsubscribe;
+  }, []);
 }
 
 // ============ Fetcher ======================================================== //

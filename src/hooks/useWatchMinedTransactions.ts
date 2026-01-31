@@ -8,6 +8,7 @@ import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useClaimablesStore } from '@/state/claimables/claimables';
+import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { useMinedTransactionsStore, MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
@@ -23,6 +24,7 @@ async function refetchOtherAssets({ address }: { address: string }) {
   await Promise.all([
     usePositionsStore.getState().fetch(undefined, { force: true }),
     useClaimablesStore.getState().fetch(undefined, { force: true }),
+    useRewardsBalanceStore.getState().fetch(undefined, { force: true }),
     invalidateAddressNftsQueries(address),
   ]);
 }

@@ -2,7 +2,14 @@ import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
 import { isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@/references';
-import { divWorklet, lessThanWorklet, orderOfMagnitudeWorklet, powWorklet } from '@/safe-math/SafeMath';
+import {
+  divWorklet,
+  lessThanWorklet,
+  orderOfMagnitudeWorklet,
+  powWorklet,
+  trimTrailingZeros,
+  truncateToDecimals,
+} from '@/safe-math/SafeMath';
 import { getNumberFormatter } from '@/helpers/intl';
 
 export type BigNumberish = number | string | BigNumber;
@@ -696,4 +703,21 @@ export function toSignificantDigits({
   }
 
   return sign + result;
+}
+
+export function truncateToDecimalsWithThreshold({
+  value,
+  decimals,
+  threshold,
+}: {
+  value: string;
+  decimals: number;
+  threshold: string;
+}): string {
+  'worklet';
+  const truncated = trimTrailingZeros(truncateToDecimals(value, decimals));
+  if (lessThanWorklet(truncated, threshold)) {
+    return `< ${threshold}`;
+  }
+  return getNumberFormatter('en-US').format(Number(truncated));
 }

@@ -11,9 +11,8 @@ import {
   TAB_BAR_INNER_PADDING,
   TAB_BAR_WIDTH,
 } from '@/components/tab-bar/dimensions';
-import { TestnetToast } from '@/components/toasts';
-import { DAPP_BROWSER, LAZY_TABS, POINTS, useExperimentalFlag } from '@/config';
-import { Box, Columns, globalColors, useColorMode, Column } from '@/design-system';
+import { DAPP_BROWSER, LAZY_TABS, POINTS, RNBW_REWARDS, useExperimentalFlag } from '@/config';
+import { Box, Columns, globalColors, useColorMode, Column, ColorModeProvider } from '@/design-system';
 import { IS_IOS, IS_TEST } from '@/env';
 import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -22,9 +21,7 @@ import {
   useRecyclerListViewScrollToTopContext,
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { DappBrowser } from '@/components/DappBrowser/DappBrowser';
-import { PointsScreen } from '@/screens/points/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen/WalletScreen';
-import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
 import {
@@ -54,6 +51,7 @@ import { useBrowserStore } from '@/state/browser/browserStore';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import ProfileScreen from '../screens/ProfileScreen';
 import DiscoverScreen from '@/screens/DiscoverScreen';
+import { PointsScreen } from '@/screens/points/PointsScreen';
 import { discoverScrollToTopFnRef, discoverOpenSearchFnRef } from '@/components/Discover/DiscoverScreenContext';
 import { MainListProvider, useMainList } from './MainListContext';
 import Routes, { Route } from './routesNames';
@@ -73,8 +71,9 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
+import { RnbwRewardsScreen } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen';
+import { BASE_TAB_BAR_HEIGHT } from '@/navigation/constants';
 
-export const BASE_TAB_BAR_HEIGHT = 52;
 export const TAB_BAR_HEIGHT = getTabBarHeight();
 
 function getTabBarHeight() {
@@ -91,6 +90,7 @@ const TAB_BAR_ICONS = {
   [Routes.PROFILE_SCREEN]: 'tabActivity',
   [Routes.KING_OF_THE_HILL]: 'tabKingOfTheHill',
   [Routes.POINTS_SCREEN]: 'tabPoints',
+  [Routes.RNBW_REWARDS_SCREEN]: 'tabPoints',
 } as const;
 
 type TabIconKey = (typeof TAB_BAR_ICONS)[keyof typeof TAB_BAR_ICONS];
@@ -112,11 +112,14 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const recyclerList = useRecyclerListViewScrollToTopContext();
   const mainList = useMainList();
 
-  const { dapp_browser, points_enabled } = useRemoteConfig('dapp_browser', 'points_enabled');
+  const { dapp_browser, points_enabled, rnbw_rewards_enabled } = useRemoteConfig('dapp_browser', 'points_enabled', 'rnbw_rewards_enabled');
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
-  const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
+  const showPointsTab = useExperimentalFlag(POINTS) || points_enabled;
+  const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
+  const showRnbwRewardsOrPointsTab = showPointsTab || showRnbwRewardsTab || IS_TEST;
+  const rewardsRouteName = showRnbwRewardsTab ? Routes.RNBW_REWARDS_SCREEN : Routes.POINTS_SCREEN;
 
-  const numberOfTabs = 3 + (showPointsTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
+  const numberOfTabs = 3 + (showRnbwRewardsOrPointsTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
   const tabWidth = (deviceWidth - TAB_BAR_HORIZONTAL_INSET * 2 - TAB_BAR_INNER_PADDING * 2) / numberOfTabs;
   const tabPillStartPosition = (tabWidth - TAB_BAR_PILL_WIDTH) / 2 + TAB_BAR_INNER_PADDING;
 
@@ -247,7 +250,10 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const renderedTabs = useMemo(
     () =>
       stateRef.current.routes.map((route: RouteProp<ParamListBase, string>, index: number) => {
-        if ((!showDappBrowserTab && route.name === Routes.DAPP_BROWSER_SCREEN) || (!showPointsTab && route.name === Routes.POINTS_SCREEN)) {
+        if (
+          (!showDappBrowserTab && route.name === Routes.DAPP_BROWSER_SCREEN) ||
+          (!showRnbwRewardsOrPointsTab && (route.name === Routes.POINTS_SCREEN || route.name === Routes.RNBW_REWARDS_SCREEN))
+        ) {
           return null;
         }
         const { options } = descriptorsRef.current[route.key];
@@ -290,7 +296,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
       reanimatedPosition,
       showBrowserNavButtons,
       showDappBrowserTab,
-      showPointsTab,
+      showRnbwRewardsOrPointsTab,
       stateRef,
     ]
   );
@@ -303,29 +309,38 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   });
 
   const gradientBackgroundStyle = useAnimatedStyle(() => {
-    const route = getRouteFromTabIndex(reanimatedPosition.value);
+    const route = getRouteFromTabIndex(reanimatedPosition.value, rewardsRouteName);
     return {
       backgroundColor: route === Routes.DAPP_BROWSER_SCREEN ? 'transparent' : getTabBackgroundColor(route, isDarkMode),
     };
   });
 
+  const gradientVisibilityStyle = useAnimatedStyle(() => {
+    const route = getRouteFromTabIndex(reanimatedPosition.value, rewardsRouteName);
+    return {
+      opacity: withTiming(route === Routes.RNBW_REWARDS_SCREEN ? 0 : 1, TIMING_CONFIGS.slowFadeConfig),
+    };
+  });
+
   return (
     <>
-      <MaskedView
-        maskElement={
-          <EasingGradient
-            easing={Easing.inOut(Easing.quad)}
-            endColor={globalColors.grey100}
-            endOpacity={0.92}
-            startColor={globalColors.grey100}
-            startOpacity={0}
-            style={styles.tabBarBackgroundFade}
-          />
-        }
-        style={styles.tabBarBackgroundFade}
-      >
-        <Animated.View style={[styles.tabBarBackgroundFade, gradientBackgroundStyle]} />
-      </MaskedView>
+      <Animated.View style={gradientVisibilityStyle}>
+        <MaskedView
+          maskElement={
+            <EasingGradient
+              easing={Easing.inOut(Easing.quad)}
+              endColor={globalColors.grey100}
+              endOpacity={0.92}
+              startColor={globalColors.grey100}
+              startOpacity={0}
+              style={styles.tabBarBackgroundFade}
+            />
+          }
+          style={styles.tabBarBackgroundFade}
+        >
+          <Animated.View style={[styles.tabBarBackgroundFade, gradientBackgroundStyle]} />
+        </MaskedView>
+      </Animated.View>
 
       <Animated.View style={[{ shadowColor: globalColors.grey100, shadowOffset: { width: 0, height: 12 }, shadowRadius: 18 }, shadowStyle]}>
         <Box
@@ -523,7 +538,10 @@ export const BrowserTabIconWrapper = memo(function BrowserTabIconWrapper({
   );
 });
 
-function getRouteFromTabIndex(index: number): RouteProp<ParamListBase, string>['name'] {
+function getRouteFromTabIndex(
+  index: number,
+  rewardsRouteName: RouteProp<ParamListBase, string>['name']
+): RouteProp<ParamListBase, string>['name'] {
   'worklet';
   switch (index) {
     case 0:
@@ -535,7 +553,7 @@ function getRouteFromTabIndex(index: number): RouteProp<ParamListBase, string>['
     case 3:
       return Routes.PROFILE_SCREEN;
     case 4:
-      return Routes.POINTS_SCREEN;
+      return rewardsRouteName;
     default:
       return Routes.WALLET_SCREEN;
   }
@@ -546,7 +564,7 @@ function getTabBackgroundColor(route: RouteProp<ParamListBase, string>['name'], 
   switch (route) {
     case Routes.DISCOVER_SCREEN:
     case Routes.DAPP_BROWSER_SCREEN:
-    case Routes.POINTS_SCREEN:
+    case Routes.RNBW_REWARDS_SCREEN:
       return isDarkMode ? BROWSER_BACKGROUND_COLOR_DARK : BROWSER_BACKGROUND_COLOR_LIGHT;
     default:
       return (isDarkMode ? darkModeThemeColors : lightModeThemeColors).white;
@@ -567,6 +585,9 @@ const LazyPlaceholder = memo(function LazyPlaceholder({ route }: { route: RouteP
 const Swipe = createMaterialTopTabNavigator();
 
 const TabBarContainer = ({ descriptors, jumpTo, navigation, state }: MaterialTopTabBarProps) => {
+  const { rnbw_rewards_enabled } = useRemoteConfig('rnbw_rewards_enabled');
+  const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
+  const colorMode = useColorMode();
   const descriptorsRef = useRef(descriptors);
   const stateRef = useRef(state);
 
@@ -589,15 +610,22 @@ const TabBarContainer = ({ descriptors, jumpTo, navigation, state }: MaterialTop
     [focusedIndexRef]
   );
 
+  const shouldForceDarkMode = useMemo(() => {
+    // If current route is RnbwRewardsScreen, use dark mode
+    return state.index === 4 && showRnbwRewardsTab;
+  }, [state.index, showRnbwRewardsTab]);
+
   return (
-    <TabBar
-      activeIndex={activeIndex}
-      descriptorsRef={descriptorsRef}
-      getIsFocused={getIsFocused}
-      jumpTo={jumpTo}
-      navigation={navigation}
-      stateRef={stateRef}
-    />
+    <ColorModeProvider value={shouldForceDarkMode ? 'dark' : colorMode.colorMode}>
+      <TabBar
+        activeIndex={activeIndex}
+        descriptorsRef={descriptorsRef}
+        getIsFocused={getIsFocused}
+        jumpTo={jumpTo}
+        navigation={navigation}
+        stateRef={stateRef}
+      />
+    </ColorModeProvider>
   );
 };
 
@@ -606,10 +634,12 @@ function SwipeNavigatorScreens() {
   const enableLazyTabs = useExperimentalFlag(LAZY_TABS);
   const lazy = useNavigationStore(state => enableLazyTabs || !state.isWalletScreenMounted);
 
-  const { dapp_browser, points_enabled } = useRemoteConfig('dapp_browser', 'points_enabled');
+  const { dapp_browser, points_enabled, rnbw_rewards_enabled } = useRemoteConfig('dapp_browser', 'points_enabled', 'rnbw_rewards_enabled');
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
-  const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
   const showKingOfTheHillTab = useShowKingOfTheHill();
+  const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
+  const showPointsTab = useExperimentalFlag(POINTS) || points_enabled;
+  const showRnbwRewardsOrPointsTab = showPointsTab || showRnbwRewardsTab || IS_TEST;
 
   const { language } = useAccountSettings();
 
@@ -627,10 +657,27 @@ function SwipeNavigatorScreens() {
     [isCoinListEdited, lazy]
   );
 
+  const key = useMemo(() => {
+    let key = 'swipe-navigator';
+    if (showKingOfTheHillTab) {
+      key += '-koth';
+    }
+    if (showRnbwRewardsTab) {
+      key += '-rnbw-rewards';
+    }
+    if (showPointsTab) {
+      key += '-points';
+    }
+    if (language) {
+      key += `-${language}`;
+    }
+    return key;
+  }, [showKingOfTheHillTab, showRnbwRewardsTab, showPointsTab, language]);
+
   return (
     <Swipe.Navigator
-      // required to force re-render when showKingOfTheHillTab or language changes
-      key={`swipe-navigator-${showKingOfTheHillTab ? 'koth' : 'profile'}-${language}`}
+      // required to force re-render when showKingOfTheHillTab, showRnbwRewardsTab, showPointsTab or language changes
+      key={key}
       initialLayout={deviceUtils.dimensions}
       initialRouteName={Routes.WALLET_SCREEN}
       screenOptions={getScreenOptions}
@@ -651,19 +698,23 @@ function SwipeNavigatorScreens() {
       ) : (
         <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.PROFILE_SCREEN] }} />
       )}
-      {showPointsTab && (
-        <Swipe.Screen component={PointsScreen} name={Routes.POINTS_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.POINTS_SCREEN] }} />
-      )}
+      {showRnbwRewardsOrPointsTab &&
+        (showRnbwRewardsTab ? (
+          <Swipe.Screen
+            component={RnbwRewardsScreen}
+            name={Routes.RNBW_REWARDS_SCREEN}
+            options={{ title: TAB_BAR_ICONS[Routes.RNBW_REWARDS_SCREEN] }}
+          />
+        ) : (
+          <Swipe.Screen component={PointsScreen} name={Routes.POINTS_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.POINTS_SCREEN] }} />
+        ))}
     </Swipe.Navigator>
   );
 }
 
 export function SwipeNavigator() {
-  const { chainId } = useAccountSettings();
-  const { colors } = useTheme();
-
   return (
-    <FlexItem backgroundColor={colors.white}>
+    <FlexItem backgroundColor={globalColors.white100}>
       <BrowserTabBarContextProvider>
         <MainListProvider>
           <RecyclerListViewScrollToTopProvider>
@@ -672,7 +723,6 @@ export function SwipeNavigator() {
         </MainListProvider>
       </BrowserTabBarContextProvider>
 
-      {/* <TestnetToast chainId={chainId} /> */}
       <PendingTransactionWatcher />
       <MinedTransactionWatcher />
     </FlexItem>

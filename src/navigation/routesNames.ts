@@ -149,6 +149,8 @@ const Routes = {
   POLYMARKET_MARKET_DESCRIPTION_SHEET: 'PolymarketMarketDescriptionSheet',
   POLYMARKET_EXPLAIN_SHEET: 'PolymarketExplainSheet',
   POLYMARKET_SELL_POSITION_SHEET: 'PolymarketSellPositionSheet',
+  RNBW_REWARDS_SCREEN: 'RnbwRewardsScreen',
+  RNBW_REWARDS_ESTIMATE_SHEET: 'RnbwRewardsEstimateSheet',
   WALLET_ERROR_SHEET: 'WalletErrorSheet',
 } as const;
 
