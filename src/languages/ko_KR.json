@@ -324,7 +324,9 @@
         "authorizing": "인증 중",
         "confirming_on_ledger": "렛저에서 확인 중",
         "hold_keyword": "보류",
-        "tap_keyword": "탭"
+        "tap_keyword": "탭",
+        "hold_to_claim": "청구하려면 유지",
+        "claiming": "청구 중..."
       },
       "hold_to_send": "전송을 위해 보류",
       "import": "가져오기",
@@ -2384,7 +2386,6 @@
       "developer": "개발자 설정",
       "done": "완료",
       "feedback_and_reports": "피드백 및 버그 보고",
-      "feedback_and_support": "피드백 및 지원",
       "follow_us_on_twitter": "X에서 팔로우하기",
       "hey_friend_message": "👋️ 안녕 친구! 이더리움 지갑인 레인보우를 다운로드 받아야 해, 내가 가장 좋아하는 거야 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "설정",
@@ -2445,6 +2446,52 @@
         "warning": "아이콘을 변경하면 Rainbow가 재시작될 수 있습니다.",
         "confirm": "확인",
         "cancel": "취소"
+      },
+      "support": {
+        "title": "지원 및 피드백",
+        "entry": {
+          "contact_support": "지원팀에 문의",
+          "contact_support_description": "문제, 질문 또는 긴급한 문제에 대한 개인 맞춤 이메일 지원",
+          "get_started": "시작하기",
+          "category_picker_description": "무엇을 도와드릴까요?",
+          "share_feedback": "피드백 공유",
+          "share_feedback_description": "아이디어를 보내거나 그냥 안부 인사를 이메일로 보내세요",
+          "faqs_and_guides": "자주 묻는 질문 & 가이드"
+        },
+        "category": {
+          "getting_started": {
+            "name": "시작하기",
+            "description": "설정, 기본, 네트워크"
+          },
+          "backup_recovery": {
+            "name": "백업 및 복구",
+            "description": "복원, 백업 생성"
+          },
+          "tokens_transactions": {
+            "name": "토큰 및 거래",
+            "description": "누락된 토큰, 잔액"
+          },
+          "bridge_swap": {
+            "name": "브릿지 및 스왑",
+            "description": "크로스 체인, 스왑 문제"
+          },
+          "points_rewards": {
+            "name": "포인트 및 리워드",
+            "description": "포인트, 에어드롭, 출범"
+          },
+          "security": {
+            "name": "보안 문제",
+            "description": "해킹된 지갑, 잃어버린 문구"
+          },
+          "partnership": {
+            "name": "파트너십 문의",
+            "description": "비즈니스, 통합"
+          },
+          "other": {
+            "name": "기타",
+            "description": "기타 질문"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2458,6 +2505,7 @@
       "actions": {
         "hold_to_swap": "스왑하기 위해 누르고 있기",
         "hold_to_bridge": "브리지하기 위해 누르고 있기",
+        "earning_rewards": "Earning Rewards",
         "save": "저장",
         "enter_amount": "금액 입력",
         "review": "리뷰",
@@ -3886,6 +3934,58 @@
         "lost_bets_dont_clear": "패배한 배팅은 자동으로 제거되지 않습니다. 아래에서 삭제할 수 있습니다."
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "Introducing",
+        "rainbow_token": "Rainbow Token",
+        "description_prefix": "Say hello to ",
+        "description_suffix": " Check if you’re eligible for the airdrop now.",
+        "check_eligibility": "Check Eligibility"
+      },
+      "feature_card": {
+        "subtitle": "Say hello to $RNBW, check your eligibility now."
+      },
+      "claim": {
+        "available_to_claim": "클레임 가능",
+        "your_airdrop": "Your Airdrop",
+        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
+        "claim_failed_title": "Error Claiming Rewards",
+        "claim_failed_message": "다시 시도하세요.",
+        "claim_later": "Claim Later",
+        "almost_there": "Almost there..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "Airdrop Claimed",
+        "you_claimed": "You claimed"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "Rewards Claimed",
+        "you_claimed": "You claimed"
+      },
+      "airdrop": {
+        "no_airdrop": "No Airdrop",
+        "no_airdrop_description": "This wallet did not receive an airdrop.",
+        "already_claimed": "Already Claimed",
+        "already_claimed_description": "You've already claimed your airdrop."
+      },
+      "airdrop_card": {
+        "your_airdrop": "Your Airdrop"
+      },
+      "how_to_earn": {
+        "earn_rewards": "Earn Rewards",
+        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+      },
+      "loading_labels": {
+        "checking_historical_activity": "Checking Historical Activity...",
+        "checking_eligibility": "Checking Eligibility...",
+        "claiming_rewards": "Claiming Rewards...",
+        "submitting_transaction": "Submitting Transaction...",
+        "claiming_airdrop": "Claiming Airdrop...",
+        "counting_your_points": "Counting your Points...",
+        "oh_i_see": "Oh I see..."
+      },
+      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+    },
     "wallet_error_sheet": {
       "title": "지갑 복원",
       "restore": "복원",
@@ -3894,6 +3994,10 @@
       "cause_switched_devices": "디바이스를 변경한 것 같습니다.",
       "resolution_enable_passcode": "지갑을 사용하려면 디바이스 설정에서 다시 활성화하십시오.",
       "resolution_restore_backup": "지갑을 사용하려면 백업에서 복원하거나 비밀 복구 구문을 다시 가져오십시오."
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "Earning Rewards",
+      "this_transaction_will_earn": "This transaction will earn approximately "
     }
   }
 }
