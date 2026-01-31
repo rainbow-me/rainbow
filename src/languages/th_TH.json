@@ -2448,48 +2448,48 @@
         "cancel": "ยกเลิก"
       },
       "support": {
-        "title": "การสนับสนุนและข้อเสนอแนะ",
+        "title": "การสนับสนุนและคำติชม",
         "entry": {
           "contact_support": "ติดต่อฝ่ายสนับสนุน",
-          "contact_support_description": "การสนับสนุนทางอีเมลแบบเฉพาะตัวสำหรับปัญหา คำถาม หรือข้อกังวลเร่งด่วน",
+          "contact_support_description": "การสนับสนุนทางอีเมลแบบเฉพาะบุคคลสำหรับปัญหา คำถาม หรือเรื่องเร่งด่วน",
           "get_started": "เริ่มทำงาน",
-          "category_picker_description": "คุณต้องการความช่วยเหลือกับอะไร?",
+          "category_picker_description": "คุณต้องการความช่วยเหลือเรื่องอะไร?",
           "share_feedback": "แชร์คำติชม",
-          "share_feedback_description": "ส่งอีเมลไอเดียถึงเราหรือทักทายได้เลย",
-          "faqs_and_guides": "คำถามที่พบบ่อย & คู่มือ"
+          "share_feedback_description": "ส่งไอเดียมาให้เราทางอีเมล หรือแค่ทักทายก็ได้",
+          "faqs_and_guides": "คำถามที่พบบ่อยและคู่มือ"
         },
         "category": {
           "getting_started": {
             "name": "เริ่มต้นใช้งาน",
-            "description": "การตั้งค่า, พื้นฐาน, เครือข่าย"
+            "description": "การตั้งค่า พื้นฐาน เครือข่าย"
           },
           "backup_recovery": {
-            "name": "การสำรองข้อมูล & การกู้คืน",
-            "description": "การกู้คืน, การสร้างข้อมูลสำรอง"
+            "name": "การสำรองข้อมูลและการกู้คืน",
+            "description": "กู้คืน สร้างการสำรองข้อมูล"
           },
           "tokens_transactions": {
-            "name": "โทเค็น & ธุรกรรม",
-            "description": "โทเค็นหายไป, ยอดคงเหลือ"
+            "name": "โทเค็นและธุรกรรม",
+            "description": "โทเค็นหาย ยอดคงเหลือ"
           },
           "bridge_swap": {
-            "name": "สะพาน & สวอป",
-            "description": "ข้ามสายโซ่, ปัญหาการแลกเปลี่ยน"
+            "name": "บริดจ์และสวอป",
+            "description": "ข้ามเชน ปัญหาการสวอป"
           },
           "points_rewards": {
-            "name": "คะแนน & รางวัล",
-            "description": "คะแนน, การแจกรางวัลอากาศ, การเปิดตัว"
+            "name": "พอยท์และรางวัล",
+            "description": "พอยท์, airdrops, การเปิดตัว"
           },
           "security": {
             "name": "ข้อกังวลด้านความปลอดภัย",
-            "description": "กระเป๋าเงินที่ถูกล่วงละเมิด, วลีสูญหาย"
+            "description": "กระเป๋าเงินถูกบุกรุก วลีหาย"
           },
           "partnership": {
-            "name": "ข้อสอบถามเกี่ยวกับการเป็นพันธมิตร",
-            "description": "ธุรกิจ, การรวมระบบ"
+            "name": "ติดต่อสอบถามพาร์ทเนอร์ชิป",
+            "description": "ธุรกิจ การผสานรวม"
           },
           "other": {
-            "name": "อื่น ๆ",
-            "description": "คำถามอื่น ๆ"
+            "name": "อย่างอื่น",
+            "description": "คำถามอื่นๆ"
           }
         }
       }
@@ -2505,7 +2505,7 @@
       "actions": {
         "hold_to_swap": "กดแลกเปลี่ยน",
         "hold_to_bridge": "กดที่สะพาน",
-        "earning_rewards": "Earning Rewards",
+        "earning_rewards": "รับรางวัล",
         "save": "บันทึก",
         "enter_amount": "ป้อนจำนวน",
         "review": "รีวิว",
@@ -3936,55 +3936,55 @@
     },
     "rnbw_rewards": {
       "introduction": {
-        "introducing": "Introducing",
-        "rainbow_token": "Rainbow Token",
-        "description_prefix": "Say hello to ",
-        "description_suffix": " Check if you’re eligible for the airdrop now.",
-        "check_eligibility": "Check Eligibility"
+        "introducing": "ขอแนะนำ",
+        "rainbow_token": "โทเค็น Rainbow",
+        "description_prefix": "ขอต้อนรับ ",
+        "description_suffix": " ตรวจสอบว่าคุณมีสิทธิ์รับ airdrop ตอนนี้หรือไม่",
+        "check_eligibility": "ตรวจสอบสิทธิ์"
       },
       "feature_card": {
-        "subtitle": "Say hello to $RNBW, check your eligibility now."
+        "subtitle": "ขอต้อนรับ $RNBW ตรวจสอบสิทธิ์ของคุณตอนนี้"
       },
       "claim": {
         "available_to_claim": "พร้อมสำหรับการรับ",
-        "your_airdrop": "Your Airdrop",
-        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
-        "claim_failed_title": "Error Claiming Rewards",
+        "your_airdrop": "Airdrop ของคุณ",
+        "your_airdrop_description": "ขอบคุณที่ใช้ Rainbow Airdrop ของคุณถูกคำนวณจากกิจกรรมก่อนหน้าของคุณ",
+        "claim_failed_title": "เกิดข้อผิดพลาดในการขอรับรางวัล",
         "claim_failed_message": "กรุณาลองอีกครั้ง.",
-        "claim_later": "Claim Later",
-        "almost_there": "Almost there..."
+        "claim_later": "ขอรับภายหลัง",
+        "almost_there": "ใกล้แล้ว..."
       },
       "airdrop_claim_finished": {
-        "airdrop_claimed": "Airdrop Claimed",
-        "you_claimed": "You claimed"
+        "airdrop_claimed": "ขอรับ Airdrop แล้ว",
+        "you_claimed": "คุณขอรับ"
       },
       "rewards_claim_finished": {
-        "rewards_claimed": "Rewards Claimed",
-        "you_claimed": "You claimed"
+        "rewards_claimed": "ขอรับรางวัลแล้ว",
+        "you_claimed": "คุณขอรับ"
       },
       "airdrop": {
-        "no_airdrop": "No Airdrop",
-        "no_airdrop_description": "This wallet did not receive an airdrop.",
-        "already_claimed": "Already Claimed",
-        "already_claimed_description": "You've already claimed your airdrop."
+        "no_airdrop": "ไม่มี Airdrop",
+        "no_airdrop_description": "กระเป๋าเงินนี้ไม่ได้รับ airdrop",
+        "already_claimed": "ขอรับแล้ว",
+        "already_claimed_description": "คุณได้ขอรับ airdrop ของคุณแล้ว"
       },
       "airdrop_card": {
-        "your_airdrop": "Your Airdrop"
+        "your_airdrop": "Airdrop ของคุณ"
       },
       "how_to_earn": {
-        "earn_rewards": "Earn Rewards",
-        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+        "earn_rewards": "รับรางวัล",
+        "description": "รับ $RNBW โดยการสวอปโทเค็น จะมีวิธีรับเพิ่มอีกเร็วๆ นี้"
       },
       "loading_labels": {
-        "checking_historical_activity": "Checking Historical Activity...",
-        "checking_eligibility": "Checking Eligibility...",
-        "claiming_rewards": "Claiming Rewards...",
-        "submitting_transaction": "Submitting Transaction...",
-        "claiming_airdrop": "Claiming Airdrop...",
-        "counting_your_points": "Counting your Points...",
-        "oh_i_see": "Oh I see..."
+        "checking_historical_activity": "กำลังตรวจสอบกิจกรรมย้อนหลัง...",
+        "checking_eligibility": "กำลังตรวจสอบสิทธิ์...",
+        "claiming_rewards": "กำลังขอรับรางวัล...",
+        "submitting_transaction": "กำลังส่งธุรกรรม...",
+        "claiming_airdrop": "กำลังขอรับ Airdrop...",
+        "counting_your_points": "กำลังนับพอยท์ของคุณ...",
+        "oh_i_see": "อ๋อ เข้าใจแล้ว..."
       },
-      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+      "longer_than_usual": "การขอรับใช้เวลานานกว่าปกติ อาจใช้เวลาสูงสุดหนึ่งนาที"
     },
     "wallet_error_sheet": {
       "title": "กู้คืนกระเป๋าเงินของคุณ",
@@ -3996,8 +3996,8 @@
       "resolution_restore_backup": "เพื่อใช้กระเป๋าเงินของคุณ กู้คืนจากการสำรองข้อมูลหรือคืนค่าประโยคการกู้คืนลับของคุณ"
     },
     "rnbw_rewards_estimate_sheet": {
-      "earning_rewards": "Earning Rewards",
-      "this_transaction_will_earn": "This transaction will earn approximately "
+      "earning_rewards": "รับรางวัล",
+      "this_transaction_will_earn": "ธุรกรรมนี้จะได้รับประมาณ "
     }
   }
 }
