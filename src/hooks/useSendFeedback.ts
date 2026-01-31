@@ -11,6 +11,33 @@ import { capitalize } from 'lodash';
 
 const FeedbackEmailAddress = 'support@rainbow.me';
 const platform = IS_IOS ? 'iOS' : 'Android';
+const categorySubjectMap: Record<SupportCategory, string> = {
+  getting_started: 'Getting Started',
+  backup_recovery: 'Backup & Recovery',
+  tokens_transactions: 'Tokens & Transactions',
+  bridge_swap: 'Bridge & Swap',
+  points_rewards: 'Points & Rewards',
+  security: 'Security',
+  partnership: 'Partnership',
+  other: 'Other',
+};
+
+export type SupportType = 'help' | 'feedback';
+
+export type SupportCategory =
+  | 'getting_started'
+  | 'backup_recovery'
+  | 'tokens_transactions'
+  | 'bridge_swap'
+  | 'points_rewards'
+  | 'security'
+  | 'partnership'
+  | 'other';
+
+export interface SendFeedbackOptions {
+  type: SupportType;
+  category?: SupportCategory;
+}
 
 const setClipboardToFeedbackEmail = () => Clipboard.setString(FeedbackEmailAddress);
 
@@ -49,17 +76,25 @@ function buildDebugInfo(appVersion: string): string {
   ].join('\n');
 }
 
-function buildMailtoUrl(appVersion: string): string {
-  const subject = encodeURIComponent(`🌈️ Rainbow Feedback - ${platform} ${appVersion}`);
+function buildMailtoUrl(appVersion: string, type: SupportType, category?: SupportCategory): string {
+  let subject: string;
+
+  if (type === 'help' && category) {
+    const categoryLabel = categorySubjectMap[category];
+    subject = `🌈 Help [${categoryLabel}] - ${platform} ${appVersion}`;
+  } else {
+    subject = `🌈 Feedback - ${platform} ${appVersion}`;
+  }
+
   const debugInfo = buildDebugInfo(appVersion);
   const body = encodeURIComponent(`\n\n\n${debugInfo}`);
-  return `mailto:${FeedbackEmailAddress}?subject=${subject}&body=${body}`;
+  return `mailto:${FeedbackEmailAddress}?subject=${encodeURIComponent(subject)}&body=${body}`;
 }
 
-export default function useSendFeedback() {
+export function useSendFeedback() {
   const appVersion = useAppVersion();
 
-  return () => {
-    Linking.openURL(buildMailtoUrl(appVersion)).catch(FeedbackErrorAlert);
+  return (options: SendFeedbackOptions) => {
+    Linking.openURL(buildMailtoUrl(appVersion, options.type, options.category)).catch(FeedbackErrorAlert);
   };
 }

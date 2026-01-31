@@ -10,6 +10,7 @@ import DevSection from './components/DevSection';
 import NetworkSection from './components/NetworkSection';
 import PrivacySection from './components/PrivacySection';
 import NotificationsSection from './components/NotificationsSection';
+import { SupportSection } from './components/support/SupportSection';
 
 export const SettingsPages = {
   appIcon: {
@@ -56,5 +57,10 @@ export const SettingsPages = {
     component: PrivacySection,
     getTitle: () => i18n.t(i18n.l.settings.privacy),
     key: Routes.SETTINGS_SECTION_PRIVACY,
+  },
+  support: {
+    component: SupportSection,
+    getTitle: () => i18n.t(i18n.l.settings.support.title),
+    key: Routes.SETTINGS_SECTION_SUPPORT,
   },
 };
