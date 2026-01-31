@@ -324,7 +324,9 @@
         "authorizing": "กำลังอนุมัติ",
         "confirming_on_ledger": "กำลังยืนยันบน Ledger",
         "hold_keyword": "ทน",
-        "tap_keyword": "แตะ"
+        "tap_keyword": "แตะ",
+        "hold_to_claim": "กดค้างเพื่อรับแบบอัตโนมัติ",
+        "claiming": "กำลังเรียกร้อง..."
       },
       "hold_to_send": "ทนเพื่อส่ง",
       "import": "นำเข้า",
@@ -2384,7 +2386,6 @@
       "developer": "การตั้งค่าของผู้พัฒนา",
       "done": "เสร็จสิ้น",
       "feedback_and_reports": "ข้อเสนอแนะและรายงานข้อผิดพลาด",
-      "feedback_and_support": "คำติชมและการสนับสนุน",
       "follow_us_on_twitter": "ติดตามเราบน X",
       "hey_friend_message": "👋️ สวัสดีเพื่อน! คุณควรดาวน์โหลด Rainbow, มันเป็นกระเป๋า Ethereum ที่ชื่นชอบ 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "การตั้งค่า",
@@ -2445,6 +2446,52 @@
         "warning": "การเปลี่ยนไอคอนของคุณอาจทำให้ Rainbow ทำการรีสตาร์ท",
         "confirm": "ยืนยัน",
         "cancel": "ยกเลิก"
+      },
+      "support": {
+        "title": "การสนับสนุนและข้อเสนอแนะ",
+        "entry": {
+          "contact_support": "ติดต่อฝ่ายสนับสนุน",
+          "contact_support_description": "การสนับสนุนทางอีเมลแบบเฉพาะตัวสำหรับปัญหา คำถาม หรือข้อกังวลเร่งด่วน",
+          "get_started": "เริ่มทำงาน",
+          "category_picker_description": "คุณต้องการความช่วยเหลือกับอะไร?",
+          "share_feedback": "แชร์คำติชม",
+          "share_feedback_description": "ส่งอีเมลไอเดียถึงเราหรือทักทายได้เลย",
+          "faqs_and_guides": "คำถามที่พบบ่อย & คู่มือ"
+        },
+        "category": {
+          "getting_started": {
+            "name": "เริ่มต้นใช้งาน",
+            "description": "การตั้งค่า, พื้นฐาน, เครือข่าย"
+          },
+          "backup_recovery": {
+            "name": "การสำรองข้อมูล & การกู้คืน",
+            "description": "การกู้คืน, การสร้างข้อมูลสำรอง"
+          },
+          "tokens_transactions": {
+            "name": "โทเค็น & ธุรกรรม",
+            "description": "โทเค็นหายไป, ยอดคงเหลือ"
+          },
+          "bridge_swap": {
+            "name": "สะพาน & สวอป",
+            "description": "ข้ามสายโซ่, ปัญหาการแลกเปลี่ยน"
+          },
+          "points_rewards": {
+            "name": "คะแนน & รางวัล",
+            "description": "คะแนน, การแจกรางวัลอากาศ, การเปิดตัว"
+          },
+          "security": {
+            "name": "ข้อกังวลด้านความปลอดภัย",
+            "description": "กระเป๋าเงินที่ถูกล่วงละเมิด, วลีสูญหาย"
+          },
+          "partnership": {
+            "name": "ข้อสอบถามเกี่ยวกับการเป็นพันธมิตร",
+            "description": "ธุรกิจ, การรวมระบบ"
+          },
+          "other": {
+            "name": "อื่น ๆ",
+            "description": "คำถามอื่น ๆ"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2458,6 +2505,7 @@
       "actions": {
         "hold_to_swap": "กดแลกเปลี่ยน",
         "hold_to_bridge": "กดที่สะพาน",
+        "earning_rewards": "Earning Rewards",
         "save": "บันทึก",
         "enter_amount": "ป้อนจำนวน",
         "review": "รีวิว",
@@ -3886,6 +3934,58 @@
         "lost_bets_dont_clear": "การเดิมพันที่แพ้ไม่ได้ถูกลบโดยอัตโนมัติ. คุณสามารถลบได้ด้านล่าง."
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "Introducing",
+        "rainbow_token": "Rainbow Token",
+        "description_prefix": "Say hello to ",
+        "description_suffix": " Check if you’re eligible for the airdrop now.",
+        "check_eligibility": "Check Eligibility"
+      },
+      "feature_card": {
+        "subtitle": "Say hello to $RNBW, check your eligibility now."
+      },
+      "claim": {
+        "available_to_claim": "พร้อมสำหรับการรับ",
+        "your_airdrop": "Your Airdrop",
+        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
+        "claim_failed_title": "Error Claiming Rewards",
+        "claim_failed_message": "กรุณาลองอีกครั้ง.",
+        "claim_later": "Claim Later",
+        "almost_there": "Almost there..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "Airdrop Claimed",
+        "you_claimed": "You claimed"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "Rewards Claimed",
+        "you_claimed": "You claimed"
+      },
+      "airdrop": {
+        "no_airdrop": "No Airdrop",
+        "no_airdrop_description": "This wallet did not receive an airdrop.",
+        "already_claimed": "Already Claimed",
+        "already_claimed_description": "You've already claimed your airdrop."
+      },
+      "airdrop_card": {
+        "your_airdrop": "Your Airdrop"
+      },
+      "how_to_earn": {
+        "earn_rewards": "Earn Rewards",
+        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+      },
+      "loading_labels": {
+        "checking_historical_activity": "Checking Historical Activity...",
+        "checking_eligibility": "Checking Eligibility...",
+        "claiming_rewards": "Claiming Rewards...",
+        "submitting_transaction": "Submitting Transaction...",
+        "claiming_airdrop": "Claiming Airdrop...",
+        "counting_your_points": "Counting your Points...",
+        "oh_i_see": "Oh I see..."
+      },
+      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+    },
     "wallet_error_sheet": {
       "title": "กู้คืนกระเป๋าเงินของคุณ",
       "restore": "คืนสภาพ",
@@ -3894,6 +3994,10 @@
       "cause_switched_devices": "ดูเหมือนว่าคุณอาจจะเปลี่ยนอุปกรณ์",
       "resolution_enable_passcode": "เพื่อใช้กระเป๋าเงินของคุณ เปิดใช้งานอีกครั้งในการตั้งค่าอุปกรณ์ของคุณ",
       "resolution_restore_backup": "เพื่อใช้กระเป๋าเงินของคุณ กู้คืนจากการสำรองข้อมูลหรือคืนค่าประโยคการกู้คืนลับของคุณ"
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "Earning Rewards",
+      "this_transaction_will_earn": "This transaction will earn approximately "
     }
   }
 }
