@@ -2448,44 +2448,44 @@
         "cancel": "रद्द करें"
       },
       "support": {
-        "title": "समर्थन और प्रतिक्रिया",
+        "title": "सहायता और प्रतिक्रिया",
         "entry": {
           "contact_support": "समर्थन से संपर्क करें",
-          "contact_support_description": "समस्याओं, प्रश्नों या तुरंत चिंताओं के लिए व्यक्तिगत ईमेल समर्थन",
+          "contact_support_description": "समस्याओं, प्रश्नों या तत्काल चिंताओं के लिए व्यक्तिगत ईमेल सहायता",
           "get_started": "शुरुआत करें",
-          "category_picker_description": "आपको किस बारे में सहायता की आवश्यकता है?",
+          "category_picker_description": "आपको किसमें मदद चाहिए?",
           "share_feedback": "फ़ीडबैक साझा करें",
           "share_feedback_description": "हमें अपने विचार ईमेल करें या बस नमस्ते कहें",
-          "faqs_and_guides": "सामान्य प्रश्न & मार्गदर्शिकाएँ"
+          "faqs_and_guides": "अक्सर पूछे जाने वाले सवाल और गाइड"
         },
         "category": {
           "getting_started": {
             "name": "आरंभ कैसे करें",
-            "description": "सेटअप, मूल बातें, नेटवर्क्स"
+            "description": "सेटअप, बुनियादी बातें, नेटवर्क"
           },
           "backup_recovery": {
             "name": "बैकअप और रिकवरी",
-            "description": "रिकवरी करें, बैकअप बनाएं"
+            "description": "पुनर्स्थापित करें, बैकअप बनाएं"
           },
           "tokens_transactions": {
             "name": "टोकन और लेन-देन",
-            "description": "गायब टोकन, बैलेंस"
+            "description": "गुम टोकन, बैलेंस"
           },
           "bridge_swap": {
             "name": "ब्रिज और स्वैप",
             "description": "क्रॉस-चेन, स्वैप समस्याएं"
           },
           "points_rewards": {
-            "name": "प्वाइंट्स और रिवॉर्ड्स",
-            "description": "प्वाइंट्स, एयरड्रॉप्स, लॉन्च"
+            "name": "पॉइंट्स और रिवार्ड्स",
+            "description": "पॉइंट्स, एयरड्रॉप, लॉन्च"
           },
           "security": {
-            "name": "सुरक्षा चिंताएं",
-            "description": "संकटग्रस्त वॉलेट, खोया हुआ वाक्यांश"
+            "name": "सुरक्षा संबंधी चिंताएँ",
+            "description": "समझौता किया गया वॉलेट, खोया हुआ फ़्रेज़"
           },
           "partnership": {
-            "name": "साझेदारी संबंधी पूछताछ",
-            "description": "व्यापार, एकीकरण"
+            "name": "पार्टनरशिप पूछताछ",
+            "description": "व्यवसाय, इंटीग्रेशन"
           },
           "other": {
             "name": "कुछ और",
@@ -2505,7 +2505,7 @@
       "actions": {
         "hold_to_swap": "बदलने के लिए होल्ड करें",
         "hold_to_bridge": "ब्रिज करने के लिए होल्ड करें",
-        "earning_rewards": "Earning Rewards",
+        "earning_rewards": "रिवार्ड्स अर्जित करना",
         "save": "सहेजें",
         "enter_amount": "राशि दर्ज करें",
         "review": "समीक्षा करें",
@@ -3936,55 +3936,55 @@
     },
     "rnbw_rewards": {
       "introduction": {
-        "introducing": "Introducing",
-        "rainbow_token": "Rainbow Token",
-        "description_prefix": "Say hello to ",
-        "description_suffix": " Check if you’re eligible for the airdrop now.",
-        "check_eligibility": "Check Eligibility"
+        "introducing": "परिचय",
+        "rainbow_token": "Rainbow टोकन",
+        "description_prefix": "नमस्ते कहें ",
+        "description_suffix": " अभी देखें कि आप एयरड्रॉप के लिए पात्र हैं या नहीं।",
+        "check_eligibility": "पात्रता जांचें"
       },
       "feature_card": {
-        "subtitle": "Say hello to $RNBW, check your eligibility now."
+        "subtitle": "$RNBW को नमस्ते कहें, अभी अपनी पात्रता जांचें।"
       },
       "claim": {
         "available_to_claim": "दावा करने के लिए उपलब्ध",
-        "your_airdrop": "Your Airdrop",
-        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
-        "claim_failed_title": "Error Claiming Rewards",
+        "your_airdrop": "आपका एयरड्रॉप",
+        "your_airdrop_description": "Rainbow इस्तेमाल करने के लिए धन्यवाद। आपका एयरड्रॉप आपकी पिछली गतिविधि के आधार पर गणना किया जाता है।",
+        "claim_failed_title": "रिवार्ड्स का दावा करने में त्रुटि",
         "claim_failed_message": "कृपया पुनः प्रयास करें।",
-        "claim_later": "Claim Later",
-        "almost_there": "Almost there..."
+        "claim_later": "बाद में दावा करें",
+        "almost_there": "बस थोड़ा सा..."
       },
       "airdrop_claim_finished": {
-        "airdrop_claimed": "Airdrop Claimed",
-        "you_claimed": "You claimed"
+        "airdrop_claimed": "एयरड्रॉप का दावा किया गया",
+        "you_claimed": "आपने दावा किया"
       },
       "rewards_claim_finished": {
-        "rewards_claimed": "Rewards Claimed",
-        "you_claimed": "You claimed"
+        "rewards_claimed": "रिवार्ड्स का दावा किया गया",
+        "you_claimed": "आपने दावा किया"
       },
       "airdrop": {
-        "no_airdrop": "No Airdrop",
-        "no_airdrop_description": "This wallet did not receive an airdrop.",
-        "already_claimed": "Already Claimed",
-        "already_claimed_description": "You've already claimed your airdrop."
+        "no_airdrop": "कोई एयरड्रॉप नहीं",
+        "no_airdrop_description": "इस वॉलेट को एयरड्रॉप नहीं मिला।",
+        "already_claimed": "पहले ही दावा किया गया",
+        "already_claimed_description": "आप पहले ही अपने एयरड्रॉप का दावा कर चुके हैं।"
       },
       "airdrop_card": {
-        "your_airdrop": "Your Airdrop"
+        "your_airdrop": "आपका एयरड्रॉप"
       },
       "how_to_earn": {
-        "earn_rewards": "Earn Rewards",
-        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+        "earn_rewards": "रिवार्ड्स अर्जित करें",
+        "description": "टोकन स्वैप करके $RNBW अर्जित करें। अर्जित करने के और तरीके जल्द आ रहे हैं।"
       },
       "loading_labels": {
-        "checking_historical_activity": "Checking Historical Activity...",
-        "checking_eligibility": "Checking Eligibility...",
-        "claiming_rewards": "Claiming Rewards...",
-        "submitting_transaction": "Submitting Transaction...",
-        "claiming_airdrop": "Claiming Airdrop...",
-        "counting_your_points": "Counting your Points...",
-        "oh_i_see": "Oh I see..."
+        "checking_historical_activity": "ऐतिहासिक गतिविधि जांची जा रही है...",
+        "checking_eligibility": "पात्रता जांची जा रही है...",
+        "claiming_rewards": "रिवार्ड्स का दावा किया जा रहा है...",
+        "submitting_transaction": "लेन-देन सबमिट किया जा रहा है...",
+        "claiming_airdrop": "एयरड्रॉप का दावा किया जा रहा है...",
+        "counting_your_points": "आपके पॉइंट्स गिने जा रहे हैं...",
+        "oh_i_see": "अच्छा, समझ गया..."
       },
-      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+      "longer_than_usual": "दावा करने में सामान्य से अधिक समय लग रहा है। इसमें एक मिनट तक लग सकता है।"
     },
     "wallet_error_sheet": {
       "title": "अपने वॉलेट को पुनर्स्थापित करें",
@@ -3996,8 +3996,8 @@
       "resolution_restore_backup": "अपना वॉलेट उपयोग करने के लिए, बैकअप से पुनर्स्थापित करें या अपना गुप्त पुनर्प्राप्ति वाक्यांश पुनः आयात करें।"
     },
     "rnbw_rewards_estimate_sheet": {
-      "earning_rewards": "Earning Rewards",
-      "this_transaction_will_earn": "This transaction will earn approximately "
+      "earning_rewards": "रिवार्ड्स अर्जित करना",
+      "this_transaction_will_earn": "यह लेन-देन लगभग "
     }
   }
 }
