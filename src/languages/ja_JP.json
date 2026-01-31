@@ -324,7 +324,9 @@
         "authorizing": "認証中",
         "confirming_on_ledger": "Ledgerで確認中",
         "hold_keyword": "保留中",
-        "tap_keyword": "タップ"
+        "tap_keyword": "タップ",
+        "hold_to_claim": "主張するまでホールド",
+        "claiming": "請求中..."
       },
       "hold_to_send": "送信のために保持",
       "import": "インポート",
@@ -2384,7 +2386,6 @@
       "developer": "Developer Settings",
       "done": "完了",
       "feedback_and_reports": "Feedback & Bug Reports",
-      "feedback_and_support": "Feedback and Support",
       "follow_us_on_twitter": "Xでフォローする",
       "hey_friend_message": "👋️ Hey friend! Rainbowをダウンロードするべきです。これは私のお気に入りのイーサリアムウォレットです 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "設定",
@@ -2445,6 +2446,52 @@
         "warning": "アイコンを変更すると、Rainbowが再起動される可能性があります。",
         "confirm": "確認",
         "cancel": "キャンセル"
+      },
+      "support": {
+        "title": "サポートとフィードバック",
+        "entry": {
+          "contact_support": "サポートに連絡",
+          "contact_support_description": "個別対応のメールサポート：問題や質問、急ぎの懸案",
+          "get_started": "始める",
+          "category_picker_description": "どのようなサポートが必要ですか?",
+          "share_feedback": "フィードバックを共有する",
+          "share_feedback_description": "アイデアをメールで送るか、気軽に挨拶してください",
+          "faqs_and_guides": "よくある質問 & ガイド"
+        },
+        "category": {
+          "getting_started": {
+            "name": "入門",
+            "description": "セットアップ、基本、ネットワーク"
+          },
+          "backup_recovery": {
+            "name": "バックアップとリカバリー",
+            "description": "リストア、バックアップ作成"
+          },
+          "tokens_transactions": {
+            "name": "トークンとトランザクション",
+            "description": "欠落しているトークン、残高"
+          },
+          "bridge_swap": {
+            "name": "ブリッジとスワップ",
+            "description": "クロスチェーン、スワップの問題"
+          },
+          "points_rewards": {
+            "name": "ポイントと報酬",
+            "description": "ポイント、エアドロップ、ローンチ"
+          },
+          "security": {
+            "name": "セキュリティの懸念",
+            "description": "漏洩したウォレット、失ったフレーズ"
+          },
+          "partnership": {
+            "name": "パートナーシップのお問い合わせ",
+            "description": "ビジネス、統合"
+          },
+          "other": {
+            "name": "その他",
+            "description": "その他の質問"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2458,6 +2505,7 @@
       "actions": {
         "hold_to_swap": "スワップを保持",
         "hold_to_bridge": "ブリッジを保持",
+        "earning_rewards": "Earning Rewards",
         "save": "保存する",
         "enter_amount": "金額を入力してください",
         "review": "レビュー",
@@ -3886,6 +3934,58 @@
         "lost_bets_dont_clear": "負けた賭けは自動的にクリアされません。下でそれらをクリアできます。"
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "Introducing",
+        "rainbow_token": "Rainbow Token",
+        "description_prefix": "Say hello to ",
+        "description_suffix": " Check if you’re eligible for the airdrop now.",
+        "check_eligibility": "Check Eligibility"
+      },
+      "feature_card": {
+        "subtitle": "Say hello to $RNBW, check your eligibility now."
+      },
+      "claim": {
+        "available_to_claim": "請求可能",
+        "your_airdrop": "Your Airdrop",
+        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
+        "claim_failed_title": "Error Claiming Rewards",
+        "claim_failed_message": "もう一度やり直してください。",
+        "claim_later": "Claim Later",
+        "almost_there": "Almost there..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "Airdrop Claimed",
+        "you_claimed": "You claimed"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "Rewards Claimed",
+        "you_claimed": "You claimed"
+      },
+      "airdrop": {
+        "no_airdrop": "No Airdrop",
+        "no_airdrop_description": "This wallet did not receive an airdrop.",
+        "already_claimed": "Already Claimed",
+        "already_claimed_description": "You've already claimed your airdrop."
+      },
+      "airdrop_card": {
+        "your_airdrop": "Your Airdrop"
+      },
+      "how_to_earn": {
+        "earn_rewards": "Earn Rewards",
+        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+      },
+      "loading_labels": {
+        "checking_historical_activity": "Checking Historical Activity...",
+        "checking_eligibility": "Checking Eligibility...",
+        "claiming_rewards": "Claiming Rewards...",
+        "submitting_transaction": "Submitting Transaction...",
+        "claiming_airdrop": "Claiming Airdrop...",
+        "counting_your_points": "Counting your Points...",
+        "oh_i_see": "Oh I see..."
+      },
+      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+    },
     "wallet_error_sheet": {
       "title": "ウォレットを復元する",
       "restore": "復元",
@@ -3894,6 +3994,10 @@
       "cause_switched_devices": "デバイスを切り替えた可能性があります。",
       "resolution_enable_passcode": "ウォレットを使用するには、デバイス設定で再度有効にしてください。",
       "resolution_restore_backup": "ウォレットを使用するには、バックアップから復元するか、シークレットリカバリーフレーズを再インポートしてください。"
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "Earning Rewards",
+      "this_transaction_will_earn": "This transaction will earn approximately "
     }
   }
 }
