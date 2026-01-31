@@ -3911,7 +3911,7 @@
     },
     "rnbw_rewards_estimate_sheet": {
       "earning_rewards": "Earning Rewards",
-      "this_transaction_earns": "This Transactions Earns"
+      "this_transaction_will_earn": "This transaction will earn approximately "
     }
   }
 }

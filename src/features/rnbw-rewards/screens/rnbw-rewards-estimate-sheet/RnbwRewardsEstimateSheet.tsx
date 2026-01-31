@@ -28,8 +28,7 @@ export const RnbwRewardsEstimateSheet = memo(function RnbwRewardsEstimateSheet()
               {i18n.t(i18n.l.rnbw_rewards_estimate_sheet.earning_rewards)}
             </Text>
             <Text align="center" color="labelSecondary" size="17pt / 150%" weight="semibold">
-              {i18n.t(i18n.l.rnbw_rewards_estimate_sheet.this_transaction_earns)}
-              {'\n'}
+              {i18n.t(i18n.l.rnbw_rewards_estimate_sheet.this_transaction_will_earn)}
               <Text color="label" size="17pt / 150%" weight="heavy">
                 {`~${estimatedAmount} ${RNBW_SYMBOL}`}
               </Text>
