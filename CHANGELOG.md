@@ -21,6 +21,46 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+
+## [2.0.18](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.18)
+### Added
+
+- Add dependency cycles check (https://github.com/rainbow-me/rainbow/pull/6984)
+- Add Stripe as a fiat provider (https://github.com/rainbow-me/rainbow/pull/6982)
+- Add debug info to feedback emails (https://github.com/rainbow-me/rainbow/pull/7056)
+- Add category selection to support email flow (https://github.com/rainbow-me/rainbow/pull/7063)
+- RNBW realtime rewards & airdrop claiming (https://github.com/rainbow-me/rainbow/pull/7011)
+
+### Changed
+
+- Remove unused skia-cards discover entry points (https://github.com/rainbow-me/rainbow/pull/6983)
+- Remove stale duplicate PR template (https://github.com/rainbow-me/rainbow/pull/7003)
+- Remove orphaned Jest mocks and disabled test files (https://github.com/rainbow-me/rainbow/pull/7004)
+- Remove unused Buck build system remnants (https://github.com/rainbow-me/rainbow/pull/7005)
+- Remove unused Detox artifacts (https://github.com/rainbow-me/rainbow/pull/7006)
+- Remove unused cspell.json (https://github.com/rainbow-me/rainbow/pull/7007)
+- Bump iOS and Android to v2.0.18 (https://github.com/rainbow-me/rainbow/pull/7010)
+- Remove global console override caused by rn-nodeify (https://github.com/rainbow-me/rainbow/pull/7008)
+- Consolidate logic to show Fiat Provider list items (https://github.com/rainbow-me/rainbow/pull/6981)
+- Migrate f2c api from gretchen (https://github.com/rainbow-me/rainbow/pull/7021)
+- Remove react-native-redash patch (https://github.com/rainbow-me/rainbow/pull/7025)
+- Remove react-native-screen-corner-radius patch (https://github.com/rainbow-me/rainbow/pull/7024)
+- Forbid barrel files (index.ts) (https://github.com/rainbow-me/rainbow/pull/7026)
+- Expand allowed bash commands (https://github.com/rainbow-me/rainbow/pull/7027)
+- Crowdin translations for prediction markets (https://github.com/rainbow-me/rainbow/pull/6941)
+- Regenerate Podfile.lock for react-native-screen-corner-radius 0.2.3 (https://github.com/rainbow-me/rainbow/pull/7050)
+- Auto-run allow-scripts via Yarn plugin (https://github.com/rainbow-me/rainbow/pull/7048)
+- Remove unused getExchangeIconUrl (https://github.com/rainbow-me/rainbow/pull/7057)
+
+### Fixed
+
+- Remove dependency cycle in polymarket to avoid crashes (https://github.com/rainbow-me/rainbow/pull/6985)
+- Fix crash with new f2c provider (https://github.com/rainbow-me/rainbow/pull/7022)
+- Support email flow broken on Android 11+ (https://github.com/rainbow-me/rainbow/pull/7053)
+- iOS driver timeout causing cascading test failures (https://github.com/rainbow-me/rainbow/pull/7058)
+- Update Anvil fork block to fix swap test flakiness (https://github.com/rainbow-me/rainbow/pull/7060)
+- Broken balance validation in SwapERC20Transaction test (https://github.com/rainbow-me/rainbow/pull/7061)
+
 ## [2.0.17](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.17)
 
 ### Added
