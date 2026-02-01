@@ -21,8 +21,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
-
 ## [2.0.18](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.18)
+
 ### Added
 
 - Add dependency cycles check (https://github.com/rainbow-me/rainbow/pull/6984)
