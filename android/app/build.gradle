@@ -139,7 +139,9 @@ android {
     def env = [:]
     envFile.eachLine {
         if (it.contains('=') && (!it.startsWith("#"))) {
-            def (key, value) = it.split('=')
+            def parts = it.split('=', 2)
+            def key = parts[0]
+            def value = parts.length > 1 ? parts[1] : ''
             env[key] = value
         }
     }
