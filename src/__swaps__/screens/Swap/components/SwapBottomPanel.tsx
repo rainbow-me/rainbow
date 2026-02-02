@@ -2,6 +2,8 @@ import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { Box, Separator, globalColors, useColorMode } from '@/design-system';
+import { RNBW_REWARDS, useExperimentalFlag } from '@/config';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
@@ -45,9 +47,12 @@ export function SwapBottomPanel() {
     quoteFetchingInterval,
   } = useSwapContext();
 
+  const { rnbw_rewards_enabled } = useRemoteConfig('rnbw_rewards_enabled');
+  const rnbwRewardsEnabled = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
+
   const isRewardEligible = useSwapsStore(state => state.rewardsEstimate?.eligible === true);
   const rewardsEstimate = useSwapsStore(state => state.rewardsEstimate);
-  const showRewards = isRewardEligible && confirmButtonProps.value.type === 'hold';
+  const showRewards = rnbwRewardsEnabled && isRewardEligible && confirmButtonProps.value.type === 'hold';
 
   const { swipeToDismissGestureHandler, gestureY } = useBottomPanelGestureHandler();
 
