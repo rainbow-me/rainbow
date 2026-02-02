@@ -7,6 +7,7 @@ import { fonts } from '@/styles';
 import { useTheme } from '@/theme';
 import { Categories } from './Categories';
 import { AllEmojiHeaderEntry } from './helpers/getFormattedAllEmojiList';
+import { opacity } from '@/data/opacity';
 
 const categoryKeys = Object.keys(Categories);
 
@@ -39,11 +40,11 @@ const EmojisStickyListItem = ({ index, scrollPosition, headerData }: Props) => {
             ]}
           >
             <BlurView blurStyle="light" blurIntensity={10} style={StyleSheet.absoluteFill} />
-            <Text style={[sx.sectionStickyHeader, { backgroundColor: colors.alpha(colors.white, 0.7) }]}>{headerData.title}</Text>
+            <Text style={[sx.sectionStickyHeader, { backgroundColor: opacity(colors.white, 0.7) }]}>{headerData.title}</Text>
           </View>
         ) : (
           <View style={sx.sectionStickyBlur}>
-            <Text style={[sx.sectionStickyHeader, { color: colors.alpha(colors.blueGreyDark, 0.5) }]}>{headerData.title}</Text>
+            <Text style={[sx.sectionStickyHeader, { color: opacity(colors.blueGreyDark, 0.5) }]}>{headerData.title}</Text>
           </View>
         )}
       </Animated.View>

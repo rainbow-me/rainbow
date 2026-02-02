@@ -308,7 +308,7 @@ const OutcomeInfo = ({ trade }: { trade: HlTrade }) => {
           strokeWidth={isDarkMode ? 2 : 2 / 3}
           // TODO: Temporarily disabled. Banding effect from the blur is too noticeable.
           // dropShadows={[
-          //   { dx: 0, dy: 8, blur: 12, color: opacityWorklet(trade.isLong ? '#1F9E39' : '#D53F35', 0.12) },
+          //   { dx: 0, dy: 8, blur: 12, color: opacity(trade.isLong ? '#1F9E39' : '#D53F35', 0.12) },
           //   { dx: 0, dy: 4, blur: 6, color: 'rgba(0, 0, 0, 0.06)' },
           // ]}
           innerShadows={[{ dx: 0, dy: 1, blur: 2.5, color: 'rgba(255, 255, 255, 0.28)' }]}

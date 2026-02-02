@@ -24,6 +24,7 @@ import { openInBrowser } from '@/utils/openInBrowser';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ExplainSheetRouteParams, RootStackParamList } from '@/navigation/types';
 import { logger } from '@/logger';
+import { opacity } from '@/data/opacity';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = 415 + SheetHandleFixedToTopHeight + safeAreaInsetValues.bottom;
@@ -85,7 +86,7 @@ const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }: WithThe
   weight: 'heavy',
 }))({
   ...padding.object(8, 12),
-  borderColor: ({ theme: { colors }, color }: WithTheme<{ color: string }>) => colors.alpha(color ?? colors.appleBlue, 0.06),
+  borderColor: ({ theme: { colors }, color }: WithTheme<{ color: string }>) => opacity(color ?? colors.appleBlue, 0.06),
   borderRadius: 20,
   borderWidth: 2,
   height: 40,
@@ -350,7 +351,7 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
         emoji: '⚠️',
         button: {
           label: i18n.t(i18n.l.button.continue),
-          bgColor: colors?.alpha(colors?.blueGreyDark80, 0.04),
+          bgColor: colors ? opacity(colors.blueGreyDark80, 0.04) : undefined,
           textColor: colors?.blueGreyDark80,
         },
         secondaryButton: { label: i18n.t(i18n.l.button.go_back_lowercase), textColor: colors?.appleBlue, bgColor: colors?.clearBlue },
@@ -538,7 +539,7 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
         extraHeight: 40,
         button: {
           label: i18n.t(i18n.l.explain.go_to_hop_with_icon.text),
-          bgColor: colors?.alpha(colors?.blueGreyDark80, 0.04),
+          bgColor: colors ? opacity(colors.blueGreyDark80, 0.04) : undefined,
           textColor: colors?.blueGreyDark80,
         },
         secondaryButton: {
@@ -717,7 +718,7 @@ const ExplainSheet = () => {
 
     const accentCta = (
       <SheetActionButton
-        color={explainSheetConfig?.button?.bgColor || theme.colors.alpha(theme.colors.appleBlue, 0.04)}
+        color={explainSheetConfig?.button?.bgColor || opacity(theme.colors.appleBlue, 0.04)}
         isTransparent
         label={explainSheetConfig?.button?.label || i18n.t(i18n.l.button.got_it)}
         onPress={onPrimaryPress}

@@ -3,6 +3,7 @@ import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Categories } from './Categories';
 import { avatarBuilderStyles } from './avatarBuilderStyles';
 import { useTheme } from '@/theme';
+import { opacity } from '@/data/opacity';
 
 const { width } = Dimensions.get('screen');
 
@@ -12,7 +13,7 @@ const EmojisLoader = () => {
   return (
     <View style={sx.loader}>
       <View style={[avatarBuilderStyles.sectionHeaderWrap, { backgroundColor: colors.white }]}>
-        <Text style={[avatarBuilderStyles.sectionHeader, { color: colors.alpha(colors.blueGreyDark, 0.5) }]}>
+        <Text style={[avatarBuilderStyles.sectionHeader, { color: opacity(colors.blueGreyDark, 0.5) }]}>
           {Categories.people.getTitle()}
         </Text>
       </View>

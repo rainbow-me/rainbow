@@ -8,6 +8,7 @@ import { analytics } from '@/analytics';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { Bleed, Separator } from '@/design-system';
+import { opacity } from '@/data/opacity';
 
 const Footer = styled(ColumnWithMargins).attrs({
   margin: 19,
@@ -73,7 +74,7 @@ export default function BackupSheetSection({
           onPress={onSecondaryAction}
           size="big"
           testID={secondaryButtonTestId}
-          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+          textColor={opacity(colors.blueGreyDark, 0.8)}
         />
       </Footer>
     </Fragment>

@@ -10,6 +10,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import { neverRerender } from '@/utils';
+import { opacity } from '@/data/opacity';
 
 const Container = styled(Centered).attrs({
   flex: IS_ANDROID ? 1 : undefined,
@@ -22,7 +23,7 @@ const Container = styled(Centered).attrs({
 
 const Overlay = styled(Centered)({
   ...padding.object(19, 19, 22),
-  backgroundColor: ({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.15),
+  backgroundColor: ({ theme: { colors } }) => opacity(colors.blueGreyDark, 0.15),
   borderRadius: 20,
   overflow: 'hidden',
 });

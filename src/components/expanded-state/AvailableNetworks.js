@@ -13,6 +13,7 @@ import Divider from '@/components/Divider';
 import { Text } from '../text';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { opacity } from '@/data/opacity';
 
 const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginHorizontal = 19, prominent }) => {
   const { colors } = useTheme();
@@ -72,7 +73,7 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginHorizontal = 
           </Row>
           <Column flex={1} justify="center" marginHorizontal={8}>
             <Text
-              color={prominent ? colors.alpha(colors.blueGreyDark, 0.8) : colors.alpha(colors.blueGreyDark, 0.6)}
+              color={prominent ? opacity(colors.blueGreyDark, 0.8) : opacity(colors.blueGreyDark, 0.6)}
               numberOfLines={2}
               size="smedium"
               weight={prominent ? 'heavy' : 'bold'}
@@ -87,7 +88,7 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginHorizontal = 
             </Text>
           </Column>
           <Column align="end" justify="center">
-            <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.3)} size="smedium" weight="heavy">
+            <Text align="center" color={opacity(colors.blueGreyDark, 0.3)} size="smedium" weight="heavy">
               􀅵
             </Text>
           </Column>

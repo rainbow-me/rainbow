@@ -6,6 +6,7 @@ import Animated from 'react-native-reanimated';
 import { Box, globalColors } from '@/design-system';
 
 import { useTheme } from '@/theme';
+import { opacity } from '@/data/opacity';
 
 type FadeGradientProps = { side: 'top' | 'bottom'; style?: StyleProp<Animated.AnimateStyle<StyleProp<ViewStyle>>> };
 
@@ -14,7 +15,7 @@ export const FadeGradient = ({ side, style }: FadeGradientProps) => {
 
   const isTop = side === 'top';
   const solidColor = isDarkMode ? globalColors.white10 : '#FBFCFD';
-  const transparentColor = colors.alpha(solidColor, 0);
+  const transparentColor = opacity(solidColor, 0);
 
   return (
     <Box

@@ -8,6 +8,7 @@ import { Centered, Column } from '../layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Text } from '../text';
 import styled from '@/styled-thing';
+import { opacity } from '@/data/opacity';
 
 const Container = styled(Column)({
   alignSelf: 'center',
@@ -41,7 +42,7 @@ const ActivityListEmptyState = ({
         <Centered>
           <Text
             align="center"
-            color={colors.alpha(colors.blueGreyDark, isDarkMode ? 0.4 : 0.3)}
+            color={opacity(colors.blueGreyDark, isDarkMode ? 0.4 : 0.3)}
             letterSpacing="roundedMedium"
             lineHeight={24}
             size="lmedium"

@@ -9,6 +9,7 @@ import { padding, position } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
 import * as i18n from '@/languages';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { opacity } from '@/data/opacity';
 
 const L2Disclaimer = ({
   chainId,
@@ -43,7 +44,7 @@ const L2Disclaimer = ({
           </Column>
           <Column flex={1} justify="center" marginHorizontal={8}>
             <Text
-              color={prominent ? colors.alpha(localColors.blueGreyDark, 0.8) : colors.alpha(localColors.blueGreyDark, 0.6)}
+              color={prominent ? opacity(localColors.blueGreyDark, 0.8) : opacity(localColors.blueGreyDark, 0.6)}
               numberOfLines={2}
               size="smedium"
               weight={prominent ? 'heavy' : 'bold'}
@@ -57,7 +58,7 @@ const L2Disclaimer = ({
             </Text>
           </Column>
           <Column align="end" justify="center">
-            <Text align="center" color={colors.alpha(localColors.blueGreyDark, 0.3)} size="smedium" weight="heavy">
+            <Text align="center" color={opacity(localColors.blueGreyDark, 0.3)} size="smedium" weight="heavy">
               􀅵
             </Text>
           </Column>

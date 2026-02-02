@@ -1,9 +1,10 @@
 import { TruncatedText } from '../text';
 import styled from '@/styled-thing';
+import { opacity } from '@/data/opacity';
 
 const BottomRowText = styled(TruncatedText).attrs(({ align = 'left', color, theme: { colors } }) => ({
   align,
-  color: color ?? colors.alpha(colors.blueGreyDark, 0.5),
+  color: color ?? opacity(colors.blueGreyDark, 0.5),
   size: 'smedium',
   weight: 'medium',
 }))({});

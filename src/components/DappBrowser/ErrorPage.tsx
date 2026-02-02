@@ -7,10 +7,11 @@ import { Colors } from '../../styles/colors';
 import { Box } from '@/design-system';
 import { useTheme } from '@/theme';
 import { View } from 'moti';
+import { opacity } from '@/data/opacity';
 
 const BodyText = styled(Text).attrs(({ theme: { colors } }: { theme: { colors: Colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.6),
+  color: opacity(colors.blueGreyDark, 0.6),
   lineHeight: 'loosest',
   size: 'medium',
 }))({

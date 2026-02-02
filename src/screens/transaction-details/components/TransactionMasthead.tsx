@@ -36,6 +36,7 @@ import * as i18n from '@/languages';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { checkForPendingSwap } from '@/helpers/transactions';
+import { opacity } from '@/data/opacity';
 
 const TransactionMastheadHeight = android ? 153 : 135;
 
@@ -54,7 +55,7 @@ const Container = styled(Box).attrs({
 });
 
 const Gradient = styled(Box).attrs(({ theme: { colors }, color }: { theme: ThemeContextProps; color: string }) => ({
-  backgroundColor: colors.alpha(color, 0.08),
+  backgroundColor: opacity(color, 0.08),
 }))({
   ...position.coverAsObject,
 });

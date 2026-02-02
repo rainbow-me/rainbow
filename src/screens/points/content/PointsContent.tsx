@@ -63,6 +63,7 @@ import { LeaderboardRow } from '../components/LeaderboardRow';
 import { RewardsActionButton } from '../components/RewardsActionButton';
 import { Skeleton } from '../components/Skeleton';
 import { getNumberFormatter } from '@/helpers/intl';
+import { opacity } from '@/data/opacity';
 
 const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined }) => {
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -615,7 +616,7 @@ export function PointsContent() {
   return (
     <Box height="full" as={Page} flex={1} style={{ backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}>
       <ScrollView
-        refreshControl={<RefreshControl onRefresh={refresh} refreshing={isRefreshing} tintColor={colors.alpha(colors.blueGreyDark, 0.4)} />}
+        refreshControl={<RefreshControl onRefresh={refresh} refreshing={isRefreshing} tintColor={opacity(colors.blueGreyDark, 0.4)} />}
         scrollIndicatorInsets={{
           bottom: TAB_BAR_HEIGHT - safeAreaInsetValues.bottom,
           top: 12,

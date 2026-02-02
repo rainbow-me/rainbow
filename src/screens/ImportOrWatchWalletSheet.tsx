@@ -13,6 +13,7 @@ import { LoadingOverlay } from '@/components/modal';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { Keyboard } from 'react-native';
+import { opacity } from '@/data/opacity';
 
 const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
 
@@ -105,7 +106,7 @@ export const ImportOrWatchWalletSheet = () => {
         </Box>
         <Box position="absolute" right="0px" bottom={{ custom: keyboardHeight }}>
           <Inset bottom="20px" right="20px">
-            <AccentColorProvider color={colors.alpha(globalColors.purple60, seedPhrase ? 1 : 0.1)}>
+            <AccentColorProvider color={opacity(globalColors.purple60, seedPhrase ? 1 : 0.1)}>
               <ButtonPressAnimation
                 disabled={buttonDisabled}
                 onPress={

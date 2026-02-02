@@ -22,6 +22,7 @@ import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { opacity } from '@/data/opacity';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
@@ -129,7 +130,7 @@ export const PositionSheet: React.FC = () => {
                   <ButtonPressAnimation onPress={openDapp}>
                     <Box
                       style={{
-                        backgroundColor: colors.alpha(positionColor, 0.08),
+                        backgroundColor: opacity(positionColor, 0.08),
                         borderRadius: 20,
                         height: 40,
                       }}

@@ -33,13 +33,14 @@ import { noop } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, InteractionManager } from 'react-native';
 import { Address } from 'viem';
+import { opacity } from '@/data/opacity';
 
 type WithThemeProps = {
   theme: ThemeContextProps;
 };
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }: WithThemeProps) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.3),
+  color: opacity(colors.blueGreyDark, 0.3),
   size: android ? 40 : 'large',
 }))({});
 
@@ -216,7 +217,7 @@ export function WalletConnectApprovalSheet() {
     if (!chain) {
       return {
         chainId: approvalChainId,
-        color: colors.alpha(colors.blueGreyDark, 0.3),
+        color: opacity(colors.blueGreyDark, 0.3),
         name: label || 'Unknown Network',
       };
     }
@@ -434,7 +435,7 @@ export function WalletConnectApprovalSheet() {
               label={i18n.t(i18n.l.button.cancel)}
               onPress={handleCancel}
               size="big"
-              textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+              textColor={opacity(colors.blueGreyDark, 0.8)}
               weight="bold"
             />
             <SheetActionButton

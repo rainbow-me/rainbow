@@ -25,6 +25,7 @@ import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
 import { GenericCard } from './GenericCard';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { opacity } from '@/data/opacity';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
@@ -255,7 +256,7 @@ export const EthCard = () => {
           </Box>
         ) : addCashEnabled ? (
           <ButtonPressAnimation onPress={handlePressBuy} testID="buy-eth-button" scaleTo={0.92}>
-            <AccentColorProvider color={colors.alpha(colorForAsset, 0.1)}>
+            <AccentColorProvider color={opacity(colorForAsset, 0.1)}>
               <Box width="full" height={{ custom: 36 }} borderRadius={99} alignItems="center" justifyContent="center" background="accent">
                 <Text color={{ custom: colorForAsset }} containsEmoji size="15pt" weight="bold">
                   {`􀍯 ${i18n.t(i18n.l.button.buy_eth)}`}

@@ -93,9 +93,9 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
         paddingHorizontal: 8,
         paddingVertical: 6,
         borderWidth: 1,
-        borderColor: colors.alpha('#F5F8FF', 0.03),
+        borderColor: opacity('#F5F8FF', 0.03),
       } as const,
-      colors: [colors.alpha(colors.blueGreyDark, 0.03), colors.alpha(colors.blueGreyDark, isDarkMode ? 0.02 : 0.06)],
+      colors: [opacity(colors.blueGreyDark, 0.03), opacity(colors.blueGreyDark, isDarkMode ? 0.02 : 0.06)],
       end: { x: 1, y: 1 },
       start: { x: 0, y: 0 },
     }),
@@ -126,7 +126,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
         <Inline alignVertical="center">
           {editMode && (
             <Box paddingRight="8px">
-              <Icon name="dragHandler" color={colors.alpha(colors.black, 0.2)} />
+              <Icon name="dragHandler" color={opacity(colors.black, 0.2)} />
             </Box>
           )}
           <Box

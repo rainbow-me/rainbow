@@ -16,6 +16,7 @@ import {
 } from 'react-native-reanimated';
 import { generateRainbowColors } from '../constants';
 import { fonts } from '@/styles';
+import { opacity as getOpacity } from '@/data/opacity';
 
 type AnimatedTextProps = {
   color?: { text: string; shadow: string };
@@ -73,7 +74,7 @@ export const AnimatedText = ({
       textShadowColor: disableShadow
         ? 'transparent'
         : shadowOpacity && rainbowTextColors?.[i]?.shadow
-          ? colors.alpha(rainbowTextColors?.[i]?.shadow, shadowOpacity)
+          ? getOpacity(rainbowTextColors?.[i]?.shadow, shadowOpacity)
           : rainbowTextColors?.[i]?.shadow,
     }),
     [colors, disableShadow, opacity, rainbowTextColors, shadowOpacity, textAlign]
@@ -90,7 +91,7 @@ export const AnimatedText = ({
         : rainbowText
           ? undefined
           : shadowOpacity && color?.shadow
-            ? colors.alpha(color?.shadow, shadowOpacity)
+            ? getOpacity(color?.shadow, shadowOpacity)
             : color?.shadow,
     }),
     [color, colors, disableShadow, opacity, rainbowText, shadowOpacity, textAlign, weight]

@@ -7,13 +7,14 @@ import { Row } from '../layout';
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import { padding, shadow } from '@/styles';
+import { opacity } from '@/data/opacity';
 
 const ButtonContent = styled(Row).attrs({
   justify: 'center',
 })(({ isActive, theme: { colors, isDarkMode } }) => ({
   ...padding.object(5, 10, 6),
   ...(isActive ? shadow.buildAsObject(0, 4, 12, isDarkMode ? colors.shadow : colors.appleBlue, 0.4) : {}),
-  backgroundColor: isActive ? colors.appleBlue : colors.alpha(colors.blueGreyDark, 0.06),
+  backgroundColor: isActive ? colors.appleBlue : opacity(colors.blueGreyDark, 0.06),
   borderRadius: 15,
   height: 30,
 }));
@@ -34,7 +35,7 @@ const CoinDividerEditButton = ({ isActive, isVisible, onPress, shouldReloadList,
         <ButtonContent isActive={isActive} style={style}>
           <Text
             align="center"
-            color={isActive ? colors.whiteLabel : colors.alpha(colors.blueGreyDark, 0.6)}
+            color={isActive ? colors.whiteLabel : opacity(colors.blueGreyDark, 0.6)}
             letterSpacing="roundedTight"
             opacity={textOpacityAlwaysOn || isActive ? 1 : 0.3333333333}
             size="lmedium"

@@ -4,6 +4,7 @@ import { Box, Space, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import { ImageSourcePropType } from 'react-native';
+import { opacity } from '@/data/opacity';
 
 interface ImageIconProps {
   size?: number;
@@ -80,19 +81,19 @@ const StatusIcon = ({ status, text }: StatusIconProps) => {
   const { colors, isDarkMode } = useTheme();
   const statusColors: { [key in StatusType]: StatusColors } = {
     'up-to-date': {
-      backgroundColor: colors.alpha(colors.green, 0.2),
+      backgroundColor: opacity(colors.green, 0.2),
       color: colors.green,
     },
     'not-enabled': {
-      backgroundColor: isDarkMode ? colors.alpha(colors.blueGreyDark, 0.1) : colors.alpha(colors.blueGreyDark, 0.1),
-      color: isDarkMode ? colors.alpha(colors.blueGreyDark, 0.6) : colors.alpha(colors.blueGreyDark, 0.8),
+      backgroundColor: isDarkMode ? opacity(colors.blueGreyDark, 0.1) : opacity(colors.blueGreyDark, 0.1),
+      color: isDarkMode ? opacity(colors.blueGreyDark, 0.6) : opacity(colors.blueGreyDark, 0.8),
     },
     'out-of-sync': {
-      backgroundColor: colors.alpha(colors.yellow, 0.2),
+      backgroundColor: opacity(colors.yellow, 0.2),
       color: colors.yellow,
     },
     'out-of-date': {
-      backgroundColor: colors.alpha(colors.brightRed, 0.2),
+      backgroundColor: opacity(colors.brightRed, 0.2),
       color: colors.brightRed,
     },
   };

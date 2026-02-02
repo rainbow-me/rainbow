@@ -5,6 +5,7 @@ import Link from '../../Link';
 import EdgeFade from '../../EdgeFade';
 import styled from '@/styled-thing';
 import { ethereumUtils } from '@/utils';
+import { opacity } from '@/data/opacity';
 
 const Carousel = styled.ScrollView.attrs({
   contentContainerStyle: {
@@ -18,7 +19,7 @@ const CommunityLink = styled(Link).attrs({
   scaleTo: 0.925,
   weight: 'heavy',
 })({
-  backgroundColor: ({ color, theme: { colors } }) => colors.alpha(color, 0.1),
+  backgroundColor: ({ color, theme: { colors } }) => opacity(color, 0.1),
   borderRadius: 20,
   height: 40,
   marginHorizontal: 6,

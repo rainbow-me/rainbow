@@ -14,6 +14,7 @@ import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { opacity } from '@/data/opacity';
 
 export function InfoRowSkeleton() {
   const { colors } = useTheme();
@@ -21,33 +22,25 @@ export function InfoRowSkeleton() {
     <Inline alignHorizontal="justify" horizontalSpace="24px" wrap={false}>
       <Box
         style={{
-          backgroundColor: colors.alpha(colors.blueGreyDark, 0.04),
+          backgroundColor: opacity(colors.blueGreyDark, 0.04),
           borderRadius: 12,
           height: 24,
           overflow: 'hidden',
           width: 100,
         }}
       >
-        <ShimmerAnimation
-          color={colors.alpha(colors.blueGreyDark, 0.06)}
-          enabled
-          gradientColor={colors.alpha(colors.blueGreyDark, 0.06) as any}
-        />
+        <ShimmerAnimation color={opacity(colors.blueGreyDark, 0.06)} enabled gradientColor={opacity(colors.blueGreyDark, 0.06) as any} />
       </Box>
       <Box
         style={{
-          backgroundColor: colors.alpha(colors.blueGreyDark, 0.04),
+          backgroundColor: opacity(colors.blueGreyDark, 0.04),
           borderRadius: 12,
           height: 24,
           overflow: 'hidden',
           width: 150,
         }}
       >
-        <ShimmerAnimation
-          color={colors.alpha(colors.blueGreyDark, 0.06)}
-          enabled
-          gradientColor={colors.alpha(colors.blueGreyDark, 0.06) as any}
-        />
+        <ShimmerAnimation color={opacity(colors.blueGreyDark, 0.06)} enabled gradientColor={opacity(colors.blueGreyDark, 0.06) as any} />
       </Box>
     </Inline>
   );

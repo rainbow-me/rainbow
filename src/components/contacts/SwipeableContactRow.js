@@ -11,6 +11,7 @@ import ContactRow from './ContactRow';
 import showDeleteContactActionSheet from './showDeleteContactActionSheet';
 import { ImgixImage } from '@/components/images';
 import { margin, position } from '@/styles';
+import { opacity } from '@/data/opacity';
 
 const AnimatedCentered = Animated.createAnimatedComponent(Centered);
 
@@ -31,7 +32,7 @@ const RightAction = ({ onPress, progress, text, type, x }) => {
         <ImgixImage source={isEdit ? EditIcon : DeleteIcon} style={styles} size={30} />
         <Text
           align="center"
-          color={colors.alpha(colors.blueGreyDark, 0.4)}
+          color={opacity(colors.blueGreyDark, 0.4)}
           letterSpacing="roundedTight"
           size="smaller"
           weight="semibold"

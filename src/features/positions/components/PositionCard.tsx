@@ -14,6 +14,7 @@ import { PositionAsset, RainbowPosition } from '@/features/positions/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { NativeCurrencyKeys } from '@/entities';
+import { opacity } from '@/data/opacity';
 
 type PositionCardProps = {
   position: RainbowPosition;
@@ -100,8 +101,8 @@ export const PositionCard = memo(function PositionCard({ position }: PositionCar
       <GenericCard
         type={'stretch'}
         onPress={onPressHandler}
-        color={colors.alpha(positionColor, 0.04)}
-        borderColor={colors.alpha(positionColor, 0.02)}
+        color={opacity(positionColor, 0.04)}
+        borderColor={opacity(positionColor, 0.02)}
         ignoreShadow={IS_ANDROID && isDarkMode}
         padding={'16px'}
       >
@@ -137,7 +138,7 @@ export const PositionCard = memo(function PositionCard({ position }: PositionCar
                     borderRadius={9}
                     padding={{ custom: 5.5 }}
                     style={{
-                      borderColor: colors.alpha(positionColor, 0.05),
+                      borderColor: opacity(positionColor, 0.05),
                       borderWidth: 2,
                       // offset vertical padding
                       marginVertical: -11,

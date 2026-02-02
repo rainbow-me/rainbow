@@ -4,6 +4,7 @@ import { ButtonPressAnimation } from '../../animations';
 import ConditionalWrap from 'conditional-wrap';
 import { colors } from '@/styles';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
+import { opacity } from '@/data/opacity';
 
 interface TintButtonProps {
   children: string;
@@ -22,7 +23,7 @@ export const TintButton = ({ children, height, loaded = true, onPress, width, te
     return (
       <ConditionalWrap
         condition={isDarkMode}
-        wrap={(children: React.ReactNode) => <AccentColorProvider color={colors.alpha(color, 0.1)}>{children}</AccentColorProvider>}
+        wrap={(children: React.ReactNode) => <AccentColorProvider color={opacity(color, 0.1)}>{children}</AccentColorProvider>}
       >
         <ButtonPressAnimation onPress={onPress} scaleTo={0.92} testID={testID}>
           <Box

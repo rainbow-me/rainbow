@@ -7,6 +7,7 @@ import { infoForEventType, motiTimingConfig } from '@/components/Transactions/co
 
 import { useTheme } from '@/theme';
 import { DetailInfo, EventInfo, EventType } from '@/components/Transactions/types';
+import { opacity } from '@/data/opacity';
 
 export const EventIcon = ({ eventType }: { eventType: EventType }) => {
   const eventInfo: EventInfo = infoForEventType[eventType];
@@ -59,25 +60,25 @@ export const DetailBadge = ({ type, value }: { type: 'function' | 'unknown' | 'u
   } = {
     function: {
       backgroundColor: 'transparent',
-      borderColor: isDarkMode ? separatorTertiary : colors.alpha(separatorTertiary, 0.025),
+      borderColor: isDarkMode ? separatorTertiary : opacity(separatorTertiary, 0.025),
       text: 'labelQuaternary',
     },
     unknown: {
       backgroundColor: 'transparent',
-      borderColor: isDarkMode ? separatorTertiary : colors.alpha(separatorTertiary, 0.025),
+      borderColor: isDarkMode ? separatorTertiary : opacity(separatorTertiary, 0.025),
       label: 'Unknown',
       text: 'labelQuaternary',
     },
     unverified: {
-      backgroundColor: isDarkMode ? colors.alpha(colors.red, 0.05) : globalColors.red10,
-      borderColor: colors.alpha(colors.red, 0.02),
+      backgroundColor: isDarkMode ? opacity(colors.red, 0.05) : globalColors.red10,
+      borderColor: opacity(colors.red, 0.02),
       label: 'Unverified',
       text: 'red',
       textOpacity: 0.76,
     },
     verified: {
-      backgroundColor: isDarkMode ? colors.alpha(colors.green, 0.05) : globalColors.green10,
-      borderColor: colors.alpha(colors.green, 0.02),
+      backgroundColor: isDarkMode ? opacity(colors.green, 0.05) : globalColors.green10,
+      borderColor: opacity(colors.green, 0.02),
       label: 'Verified',
       text: 'green',
       textOpacity: 0.76,

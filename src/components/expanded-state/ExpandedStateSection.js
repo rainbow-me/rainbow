@@ -3,6 +3,7 @@ import { ColumnWithMargins } from '../layout';
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
+import { opacity } from '@/data/opacity';
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
@@ -20,7 +21,7 @@ export default function ExpandedStateSection({ children, isNft, title, ...props 
         {title}
       </Text>
       {typeof children === 'string' ? (
-        <Text color={isNft ? colors.alpha(colors.whiteLabel, 0.5) : colors.alpha(colors.blueGreyDark, 0.5)} lineHeight="big" size="large">
+        <Text color={isNft ? opacity(colors.whiteLabel, 0.5) : opacity(colors.blueGreyDark, 0.5)} lineHeight="big" size="large">
           {children}
         </Text>
       ) : (

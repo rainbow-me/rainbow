@@ -15,6 +15,7 @@ import { Navigation } from '@/navigation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { toSignificantDigits } from '@/helpers/utilities';
 import { getLiquidityCappedBalance, TokenData } from '@/state/liveTokens/liveTokensStore';
+import { opacity } from '@/data/opacity';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -39,7 +40,7 @@ const CoinCheckButton = React.memo(function CoinCheckButton({ isHidden, isPinned
     <View style={sx.checkboxContainer}>
       <ButtonPressAnimation onPress={onPress}>
         <View style={sx.checkboxInnerContainer}>
-          {showOutline && <View style={[sx.circleOutline, { borderColor: colors.alpha(colors.blueGreyDark, 0.12) }]} />}
+          {showOutline && <View style={[sx.circleOutline, { borderColor: opacity(colors.blueGreyDark, 0.12) }]} />}
 
           {coinIconPlaceholder && <CoinIconIndicator isPinned={isPinned} style={sx.coinIconIndicator} theme={theme} />}
 

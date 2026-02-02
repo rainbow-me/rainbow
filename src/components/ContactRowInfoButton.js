@@ -13,6 +13,7 @@ import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding } from '@/styles';
 import { IS_TEST } from '@/env';
 import { abbreviations, ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
+import { opacity } from '@/data/opacity';
 
 const InfoButton = styled(Centered)({
   alignItems: 'center',
@@ -39,7 +40,7 @@ const Circle = styled(IS_TEST ? View : RadialGradient).attrs(({ theme: { colors 
 
 const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.3),
+  color: opacity(colors.blueGreyDark, 0.3),
   letterSpacing: 'zero',
   size: 'lmedium',
   weight: 'bold',

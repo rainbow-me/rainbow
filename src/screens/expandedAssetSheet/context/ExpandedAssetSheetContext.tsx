@@ -20,6 +20,7 @@ import { time } from '@/utils';
 import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { opacity } from '@/data/opacity';
 
 export enum SectionId {
   PROFIT = 'profit',
@@ -252,22 +253,22 @@ export function ExpandedAssetSheetContextProvider({
 
     return {
       opacity100: assetColor,
-      opacity80: colors.alpha(assetColor, 0.8),
-      opacity56: colors.alpha(assetColor, 0.56),
-      opacity24: colors.alpha(assetColor, 0.24),
-      opacity12: colors.alpha(assetColor, 0.12),
-      opacity10: colors.alpha(assetColor, 0.1),
-      opacity6: colors.alpha(assetColor, 0.06),
-      opacity4: colors.alpha(assetColor, 0.04),
-      opacity3: colors.alpha(assetColor, 0.03),
-      opacity2: colors.alpha(assetColor, 0.02),
-      opacity1: colors.alpha(assetColor, 0.01),
+      opacity80: opacity(assetColor, 0.8),
+      opacity56: opacity(assetColor, 0.56),
+      opacity24: opacity(assetColor, 0.24),
+      opacity12: opacity(assetColor, 0.12),
+      opacity10: opacity(assetColor, 0.1),
+      opacity6: opacity(assetColor, 0.06),
+      opacity4: opacity(assetColor, 0.04),
+      opacity3: opacity(assetColor, 0.03),
+      opacity2: opacity(assetColor, 0.02),
+      opacity1: opacity(assetColor, 0.01),
       color: assetColor,
       textOnAccent: textColor[isDarkMode ? 'dark' : 'light'],
-      border: colors.alpha(assetColor, 0.03),
-      borderSecondary: colors.alpha(assetColor, 0.02),
-      surface: colors.alpha(assetColor, 0.06),
-      surfaceSecondary: colors.alpha(assetColor, 0.03),
+      border: opacity(assetColor, 0.03),
+      borderSecondary: opacity(assetColor, 0.02),
+      surface: opacity(assetColor, 0.06),
+      surfaceSecondary: opacity(assetColor, 0.03),
       background: background,
     };
   }, [assetColor, colors, isDarkMode]);

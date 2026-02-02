@@ -23,6 +23,7 @@ import { ContextMenuButton } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
 import { TruncatedText } from '../text';
 import { isValidHex } from '@/handlers/web3';
+import { opacity } from '@/data/opacity';
 
 const CONTAINER_PADDING = 15;
 const VENDOR_LOGO_ICON_SIZE = 50;
@@ -176,7 +177,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
                 <TruncatedText
                   size="medium"
                   style={{
-                    color: colors.alpha(colors.blueGreyDark, 0.6),
+                    color: opacity(colors.blueGreyDark, 0.6),
                     paddingLeft: 5,
                     paddingRight: 19,
                     width: '100%',

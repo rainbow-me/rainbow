@@ -69,6 +69,7 @@ import { toChecksumAddress } from 'ethereumjs-util';
 import { switchWallet } from '@/state/wallets/switchWallet';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { Address } from 'viem';
+import { opacity } from '@/data/opacity';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -589,7 +590,7 @@ export const SignTransactionSheet = () => {
       }
     }
 
-    return colors.alpha(color, canPressConfirm ? 1 : 0.6);
+    return opacity(color, canPressConfirm ? 1 : 0.6);
   }, [colors, simulationResult?.simulationError, simulationResult?.simulationScanResult, canPressConfirm]);
 
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);

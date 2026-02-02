@@ -10,6 +10,7 @@ import { ButtonPressAnimation } from '../animations';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
+import { opacity } from '@/data/opacity';
 
 const AvatarCircleSize = 60;
 
@@ -58,7 +59,7 @@ export default function AvatarCircle({
     () => ({
       default: [
         [0, 2, 5, isDarkMode ? colors.trueBlack : colors.dark, 0.2],
-        [0, 6, 10, isDarkMode ? colors.trueBlack : colors.alpha(resolvedColor, 0.6)],
+        [0, 6, 10, isDarkMode ? colors.trueBlack : opacity(resolvedColor, 0.6)],
       ],
       overlay: [
         [0, 6, 10, isDarkMode ? colors.trueBlack : colors.shadowBlack, 0.08],

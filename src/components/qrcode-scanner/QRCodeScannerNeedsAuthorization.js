@@ -10,6 +10,7 @@ import { delay } from '@/utils/delay';
 import styled from '@/styled-thing';
 import { margin, padding, position } from '@/styles';
 import { Box } from '@/design-system';
+import { opacity } from '@/data/opacity';
 
 const Button = styled(ButtonPressAnimation).attrs({
   scaleTo: 1.08,
@@ -33,7 +34,7 @@ const QRIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
 
 const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(darkModeThemeColors.blueGreyDark, 0.6),
+  color: opacity(darkModeThemeColors.blueGreyDark, 0.6),
   size: 'smedium',
   weight: 'semibold',
 }))({});

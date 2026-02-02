@@ -12,6 +12,7 @@ import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ChainId } from '@/state/backendNetworks/types';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
+import { opacity } from '@/data/opacity';
 
 const SafeRadialGradient = (IS_TEST ? View : RadialGradient) as typeof RadialGradient;
 
@@ -33,16 +34,12 @@ export function FavStar({ toggleFavorite, favorite, theme }: FavStarProps) {
         center={[0, 15]}
         colors={
           favorite
-            ? [colors.alpha('#FFB200', isDarkMode ? 0.15 : 0), colors.alpha('#FFB200', isDarkMode ? 0.05 : 0.2)]
+            ? [opacity('#FFB200', isDarkMode ? 0.15 : 0), opacity('#FFB200', isDarkMode ? 0.05 : 0.2)]
             : colors.gradients.lightestGrey
         }
         style={[sx.actionIconContainer, sx.starIcon]}
       >
-        <TextIcon
-          color={{ custom: favorite ? colors.yellowFavorite : colors.alpha(colors.blueGreyDark, 0.2) }}
-          size="icon 13px"
-          weight="bold"
-        >
+        <TextIcon color={{ custom: favorite ? colors.yellowFavorite : opacity(colors.blueGreyDark, 0.2) }} size="icon 13px" weight="bold">
           {'􀋃'}
         </TextIcon>
       </SafeRadialGradient>
@@ -62,7 +59,7 @@ export function Info({ contextMenuProps, showFavoriteButton, theme }: InfoProps)
     <ContextMenuButton onPressMenuItem={contextMenuProps.handlePressMenuItem} {...contextMenuProps} style={showFavoriteButton && sx.info}>
       <ButtonPressAnimation>
         <SafeRadialGradient center={[0, 15]} colors={colors.gradients.lightestGrey} style={[sx.actionIconContainer, sx.infoIcon]}>
-          <TextIcon color={{ custom: colors.alpha(colors.blueGreyDark, 0.3) }} size="icon 16px" weight="bold">
+          <TextIcon color={{ custom: opacity(colors.blueGreyDark, 0.3) }} size="icon 16px" weight="bold">
             {'􀅳'}
           </TextIcon>
         </SafeRadialGradient>

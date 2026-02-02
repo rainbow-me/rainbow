@@ -11,6 +11,7 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { magicMemo, showActionSheetWithOptions } from '@/utils';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { opacity } from '@/data/opacity';
 
 const HairlineSpace = '\u200a';
 
@@ -50,7 +51,7 @@ const Container = styled(Column)({
 });
 
 const OuterBorder = styled(Centered)({
-  borderColor: ({ color, theme: { colors } }) => color || colors.alpha(colors.whiteLabel, 0.15),
+  borderColor: ({ color, theme: { colors } }) => color || opacity(colors.whiteLabel, 0.15),
   borderRadius: TagBorderRadius,
   borderWidth: 2,
   flex: 0,
@@ -67,7 +68,7 @@ const Text = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
 });
 
 const Title = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
-  color: color || colors.alpha(colors.whiteLabel, 0.5),
+  color: color || opacity(colors.whiteLabel, 0.5),
   size: 'tiny',
   weight: 'heavy',
 }))({

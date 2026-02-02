@@ -36,6 +36,7 @@ import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row } from '../components/layout';
 import { SheetActionButton, SheetActionButtonRow, SheetHandleFixedToTop, SheetKeyboardAnimation, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
+import { opacity } from '@/data/opacity';
 
 const { CUSTOM, URGENT } = gasUtils;
 
@@ -74,7 +75,7 @@ const ExtendedSheetBackground = styled(View)({
 });
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }: WithThemeContextProps) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.3),
+  color: opacity(colors.blueGreyDark, 0.3),
   size: 'large',
 }))({});
 
@@ -460,7 +461,7 @@ export default function SpeedUpAndCancelSheet() {
                     </Text>
                   </Column>
                   <Column marginBottom={30} maxWidth={375} paddingHorizontal={42}>
-                    <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.5)} lineHeight="looser" size="large" weight="regular">
+                    <Text align="center" color={opacity(colors.blueGreyDark, 0.5)} lineHeight="looser" size="large" weight="regular">
                       {text[type]}
                     </Text>
                   </Column>
@@ -484,7 +485,7 @@ export default function SpeedUpAndCancelSheet() {
                           label={i18n.t(i18n.l.button.close)}
                           onPress={goBack}
                           size="big"
-                          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+                          textColor={opacity(colors.blueGreyDark, 0.8)}
                           weight="bold"
                         />
                       </SheetActionButtonRow>
@@ -497,7 +498,7 @@ export default function SpeedUpAndCancelSheet() {
                         label={i18n.t(i18n.l.button.cancel)}
                         onPress={goBack}
                         size="big"
-                        textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+                        textColor={opacity(colors.blueGreyDark, 0.8)}
                         weight="bold"
                       />
                       <SheetActionButton

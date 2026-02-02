@@ -9,13 +9,14 @@ import { Text } from '../text';
 import { analytics } from '@/analytics';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
+import { opacity } from '@/data/opacity';
 
 const GradientBackground = styled(RadialGradient).attrs(({ colorForAsset, theme: { colors }, width }) => {
   const FieldWidth = width - 38;
 
   return {
     center: [0, (FieldWidth - 38) / 2],
-    colors: [colors.alpha(colorForAsset, 0), colors.alpha(colorForAsset, 0.06)],
+    colors: [opacity(colorForAsset, 0), opacity(colorForAsset, 0.06)],
     stops: [0, 1],
   };
 })({

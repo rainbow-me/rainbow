@@ -9,6 +9,7 @@ import { useTheme } from '@/theme';
 import { TextInput } from 'react-native';
 import { Box, Inline, Inset, Text } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
+import { opacity } from '@/data/opacity';
 
 type GweiInputPillProps = {
   color: string;
@@ -24,7 +25,7 @@ type GweiInputPillProps = {
 const GweiNumberInput = styled(TextInputMask).attrs(
   // @ts-expect-error
   ({ theme: { colors }, value }) => ({
-    color: !value && colors.alpha(colors.blueGreyDark, 0.4),
+    color: !value && opacity(colors.blueGreyDark, 0.4),
     interval: 1,
     keyboardAppearance: 'dark',
     keyboardType: 'decimal-pad',
@@ -87,7 +88,7 @@ function GweiInputPill(
               onChangeText={onChangeText}
               onFocus={onFocus}
               placeholder="0"
-              placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.4)}
+              placeholderTextColor={opacity(colors.blueGreyDark, 0.4)}
               ref={ref}
               selectionColor={color}
               spellCheck={false}

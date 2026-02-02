@@ -9,6 +9,7 @@ import {
 import { PositionAsset } from '@/features/positions/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ButtonPressAnimation } from '@/components/animations';
+import { opacity } from '@/data/opacity';
 
 type Props = {
   asset: PositionAsset;
@@ -87,7 +88,7 @@ export const PositionListItem: React.FC<Props> = ({ asset, apy, quantity, value,
                     <Bleed vertical={{ custom: 3 }}>
                       <Box
                         style={{
-                          backgroundColor: theme.colors.alpha(positionColor, 0.08),
+                          backgroundColor: opacity(positionColor, 0.08),
                           borderRadius: 7,
                           height: 18,
                         }}

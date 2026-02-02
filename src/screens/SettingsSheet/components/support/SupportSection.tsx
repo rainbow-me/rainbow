@@ -11,6 +11,7 @@ import MenuItem from '../MenuItem';
 import { SettingsExternalURLs } from '../../constants';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { useSendFeedback } from '@/hooks/useSendFeedback';
+import { opacity } from '@/data/opacity';
 
 export const SupportSection = () => {
   return (
@@ -61,7 +62,7 @@ const ContactSupportCard = () => {
 
 const ChooseTopicCTAButton = () => {
   const { colors } = useTheme();
-  const ctaButtonStyle = useMemo(() => ({ backgroundColor: colors.alpha(colors.appleBlue, 0.06) }), [colors]);
+  const ctaButtonStyle = useMemo(() => ({ backgroundColor: opacity(colors.appleBlue, 0.06) }), [colors]);
 
   return (
     <Box

@@ -19,6 +19,7 @@ import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { filterList, isLowerCaseMatch } from '@/utils';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { opacity } from '@/data/opacity';
 
 const KeyboardArea = styled.View({
   height: ({ keyboardHeight }) => keyboardHeight,
@@ -37,13 +38,13 @@ const SectionTitle = styled(Text).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })({
-  color: ({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.6),
+  color: ({ theme: { colors } }) => opacity(colors.blueGreyDark, 0.6),
   marginLeft: 19,
   marginTop: android ? 6 : 12,
 });
 
 const SectionWrapper = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
-  colors: [colors.white, colors.alpha(colors.white, 0)],
+  colors: [colors.white, opacity(colors.white, 0)],
   end: { x: 0.5, y: 1 },
   locations: [0.55, 1],
   start: { x: 0.5, y: 0 },

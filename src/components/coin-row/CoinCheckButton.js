@@ -7,6 +7,7 @@ import { Row } from '../layout';
 import { useCoinListFinishEditingOptions } from '@/hooks';
 import styled from '@/styled-thing';
 import { borders, padding, position, shadow } from '@/styles';
+import { opacity } from '@/data/opacity';
 
 const CoinIconSize = 40;
 
@@ -25,7 +26,7 @@ const Content = styled(Row).attrs({
 
 const CircleOutline = styled.View({
   ...borders.buildCircleAsObject(22),
-  borderColor: ({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.12),
+  borderColor: ({ theme: { colors } }) => opacity(colors.blueGreyDark, 0.12),
   borderWidth: 1.5,
   left: 19,
   position: 'absolute',

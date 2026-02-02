@@ -4,11 +4,12 @@ import { sheetVerticalOffset } from '../../navigation/effects';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { useTheme } from '@/theme';
+import { opacity } from '@/data/opacity';
 
 const SendEmptyState = () => {
   const { colors } = useTheme();
 
-  const icon = <Icon color={colors.alpha(colors.blueGreyDark, 0.06)} height={88} name="send" style={sx.icon} width={91} />;
+  const icon = <Icon color={opacity(colors.blueGreyDark, 0.06)} height={88} name="send" style={sx.icon} width={91} />;
 
   if (android) {
     return <View style={sx.androidContainer}>{icon}</View>;

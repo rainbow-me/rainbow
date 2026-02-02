@@ -10,6 +10,7 @@ import ActivityIndicator from '@/components/ActivityIndicator';
 import { Box, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
+import { opacity } from '@/data/opacity';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
@@ -50,9 +51,7 @@ export function DiagnosticsContent({
           {i18n.t(i18n.l.wallet.diagnostics.sheet_title)}
         </Text>
       </Box>
-
       {/* UUID access */}
-
       <Box paddingBottom="16px">
         <Stack space="10px">
           <Text size="20pt" weight="heavy" color="label">
@@ -63,7 +62,6 @@ export function DiagnosticsContent({
           </Text>
         </Stack>
       </Box>
-
       <Box paddingBottom="36px" justifyContent="center" alignItems="center">
         <ButtonPressAnimation onPress={copyUUID} overflowMargin={20}>
           <Text color="label" size="20pt" weight="semibold">
@@ -71,9 +69,7 @@ export function DiagnosticsContent({
           </Text>
         </ButtonPressAnimation>
       </Box>
-
       {/* App State Diagnostics */}
-
       <Box paddingBottom="16px">
         <Stack space="10px">
           <Text size="20pt" weight="heavy" color="label">
@@ -93,7 +89,6 @@ export function DiagnosticsContent({
           weight="heavy"
         />
       </Box>
-
       {/* PIN Auth to reveal secrets on Android */}
       {IS_ANDROID && keys && pinRequired && !userPin && (
         <>
@@ -118,9 +113,7 @@ export function DiagnosticsContent({
           </Box>
         </>
       )}
-
       {/* Details of all wallets stored in the app */}
-
       <Box paddingBottom="16px">
         <Text size="20pt" weight="heavy" color="label">
           {i18n.t(i18n.l.wallet.diagnostics.wallet_details_title)}
@@ -158,7 +151,7 @@ export function DiagnosticsContent({
       {keys && (
         <Box paddingBottom={IS_ANDROID ? '44px' : '16px'}>
           <SheetActionButton
-            color={colors.alpha(colors.appleBlue, 0.06)}
+            color={opacity(colors.appleBlue, 0.06)}
             isTransparent
             label={i18n.t(i18n.l.button.got_it)}
             onPress={onClose}
