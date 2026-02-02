@@ -11,6 +11,7 @@ import WiewWalletBackup from './components/Backups/ViewWalletBackup';
 import ShowSecretView from './components/Backups/ShowSecretView';
 import SecretWarning from './components/Backups/SecretWarning';
 import SettingsSection from './components/SettingsSection';
+import { SupportCategoryPickerView } from './components/support/SupportCategoryPickerView';
 import WalletNotificationsSettings from './components/WalletNotificationsSettings';
 import { settingsOptions } from '@/navigation/config';
 import ViewCloudBackups from './components/Backups/ViewCloudBackups';
@@ -65,6 +66,7 @@ export function SettingsSheet() {
                   onPressNetwork={sectionOnPressFactory(SettingsPages.network.key)}
                   onPressNotifications={sectionOnPressFactory(SettingsPages.notifications.key)}
                   onPressPrivacy={sectionOnPressFactory(SettingsPages.privacy.key)}
+                  onPressSupport={sectionOnPressFactory(SettingsPages.support.key)}
                 />
               )}
             </Stack.Screen>
@@ -119,6 +121,14 @@ export function SettingsSheet() {
             <Stack.Screen
               component={ShowSecretView}
               name={Routes.SHOW_SECRET}
+              options={({ route }: any) => ({
+                cardStyleInterpolator: settingsCardStyleInterpolator,
+                title: route.params?.title,
+              })}
+            />
+            <Stack.Screen
+              component={SupportCategoryPickerView}
+              name={Routes.SETTINGS_SECTION_SUPPORT_CATEGORY_PICKER}
               options={({ route }: any) => ({
                 cardStyleInterpolator: settingsCardStyleInterpolator,
                 title: route.params?.title,

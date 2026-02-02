@@ -324,7 +324,9 @@
         "authorizing": "Authorizing",
         "confirming_on_ledger": "Confirming on Ledger",
         "hold_keyword": "Hold",
-        "tap_keyword": "Tap"
+        "tap_keyword": "Tap",
+        "hold_to_claim": "Hold to Claim",
+        "claiming": "Claiming..."
       },
       "hold_to_send": "Hold to Send",
       "import": "Import",
@@ -2366,7 +2368,6 @@
       "developer": "Developer Settings",
       "done": "Done",
       "feedback_and_reports": "Feedback & Bug Reports",
-      "feedback_and_support": "Feedback and Support",
       "follow_us_on_twitter": "Follow us on X",
       "hey_friend_message": "👋️ Hey friend! You should download Rainbow, it's my favorite Ethereum wallet 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Settings",
@@ -2427,6 +2428,52 @@
         "warning": "Changing your icon may cause Rainbow to restart.",
         "confirm": "Confirm",
         "cancel": "Cancel"
+      },
+      "support": {
+        "title": "Support and Feedback",
+        "entry": {
+          "contact_support": "Contact Support",
+          "contact_support_description": "Personalized email support for issues, questions, or urgent concerns",
+          "get_started": "Get Started",
+          "category_picker_description": "What do you need help with?",
+          "share_feedback": "Share Feedback",
+          "share_feedback_description": "Email us ideas or just say hi",
+          "faqs_and_guides": "FAQs & Guides"
+        },
+        "category": {
+          "getting_started": {
+            "name": "Getting Started",
+            "description": "Setup, basics, networks"
+          },
+          "backup_recovery": {
+            "name": "Backup & Recovery",
+            "description": "Restore, create backups"
+          },
+          "tokens_transactions": {
+            "name": "Tokens & Transactions",
+            "description": "Missing tokens, balances"
+          },
+          "bridge_swap": {
+            "name": "Bridge & Swap",
+            "description": "Cross-chain, swap issues"
+          },
+          "points_rewards": {
+            "name": "Points & Rewards",
+            "description": "Points, airdrops, launches"
+          },
+          "security": {
+            "name": "Security Concerns",
+            "description": "Compromised wallet, lost phrase"
+          },
+          "partnership": {
+            "name": "Partnership Inquiry",
+            "description": "Business, integrations"
+          },
+          "other": {
+            "name": "Something Else",
+            "description": "Other questions"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2440,6 +2487,7 @@
       "actions": {
         "hold_to_swap": "Hold to Swap",
         "hold_to_bridge": "Hold to Bridge",
+        "earning_rewards": "Earning Rewards",
         "save": "Save",
         "enter_amount": "Enter Amount",
         "review": "Review",
@@ -3848,6 +3896,58 @@
         "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "Introducing",
+        "rainbow_token": "Rainbow Token",
+        "description_prefix": "Say hello to ",
+        "description_suffix": " Check if you’re eligible for the airdrop now.",
+        "check_eligibility": "Check Eligibility"
+      },
+      "feature_card": {
+        "subtitle": "Say hello to $RNBW, check your eligibility now."
+      },
+      "claim": {
+        "available_to_claim": "Available to Claim",
+        "your_airdrop": "Your Airdrop",
+        "your_airdrop_description": "Thanks for using Rainbow. Your airdrop is calculated based on your previous activity.",
+        "claim_failed_title": "Error Claiming Rewards",
+        "claim_failed_message": "Please try again.",
+        "claim_later": "Claim Later",
+        "almost_there": "Almost there..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "Airdrop Claimed",
+        "you_claimed": "You claimed"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "Rewards Claimed",
+        "you_claimed": "You claimed"
+      },
+      "airdrop": {
+        "no_airdrop": "No Airdrop",
+        "no_airdrop_description": "This wallet did not receive an airdrop.",
+        "already_claimed": "Already Claimed",
+        "already_claimed_description": "You've already claimed your airdrop."
+      },
+      "airdrop_card": {
+        "your_airdrop": "Your Airdrop"
+      },
+      "how_to_earn": {
+        "earn_rewards": "Earn Rewards",
+        "description": "Earn $RNBW by swapping tokens. More ways to earn coming soon."
+      },
+      "loading_labels": {
+        "checking_historical_activity": "Checking Historical Activity...",
+        "checking_eligibility": "Checking Eligibility...",
+        "claiming_rewards": "Claiming Rewards...",
+        "submitting_transaction": "Submitting Transaction...",
+        "claiming_airdrop": "Claiming Airdrop...",
+        "counting_your_points": "Counting your Points...",
+        "oh_i_see": "Oh I see..."
+      },
+      "longer_than_usual": "Claiming is taking longer than usual. It may take up to one minute."
+    },
     "wallet_error_sheet": {
       "title": "Restore your wallet",
       "restore": "Restore",
@@ -3856,6 +3956,10 @@
       "cause_switched_devices": "It looks like you may have switched devices.",
       "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
       "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "Earning Rewards",
+      "this_transaction_will_earn": "This transaction will earn approximately "
     }
   }
 }

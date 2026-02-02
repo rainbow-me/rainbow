@@ -111,6 +111,8 @@ const Routes = {
   SETTINGS_SECTION_NETWORK: 'NetworkSection',
   SETTINGS_SECTION_NOTIFICATIONS: 'NotificationsSection',
   SETTINGS_SECTION_PRIVACY: 'PrivacySection',
+  SETTINGS_SECTION_SUPPORT: 'SupportSection',
+  SETTINGS_SECTION_SUPPORT_CATEGORY_PICKER: 'SupportCategoryPickerView',
   VIEW_WALLET_BACKUP: 'ViewWalletBackup',
   VIEW_CLOUD_BACKUPS: 'ViewCloudBackups',
   SECRET_WARNING: 'SecretWarning',
@@ -147,6 +149,8 @@ const Routes = {
   POLYMARKET_MARKET_DESCRIPTION_SHEET: 'PolymarketMarketDescriptionSheet',
   POLYMARKET_EXPLAIN_SHEET: 'PolymarketExplainSheet',
   POLYMARKET_SELL_POSITION_SHEET: 'PolymarketSellPositionSheet',
+  RNBW_REWARDS_SCREEN: 'RnbwRewardsScreen',
+  RNBW_REWARDS_ESTIMATE_SHEET: 'RnbwRewardsEstimateSheet',
   WALLET_ERROR_SHEET: 'WalletErrorSheet',
 } as const;
 

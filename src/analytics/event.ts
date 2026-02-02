@@ -351,6 +351,14 @@ export const event = {
   predictionsWithdrawal: 'predictions.withdrawal',
   predictionsWithdrawalFailed: 'predictions.withdrawal.failed',
   predictionsOrderMatchFailed: 'predictions.order_match.failed',
+
+  // rnbw rewards
+  rnbwRewardsClaim: 'rnbw_rewards.claim',
+  rnbwRewardsClaimFailed: 'rnbw_rewards.claim.failed',
+
+  // rnbw airdrop
+  rnbwAirdropClaim: 'rnbw_airdrop.claim',
+  rnbwAirdropClaimFailed: 'rnbw_airdrop.claim.failed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -1368,5 +1376,67 @@ export type EventProperties = {
     reason: string;
     status: string;
     errorMessage?: string;
+  };
+
+  // rnbw rewards
+  [event.rnbwRewardsClaim]: {
+    chainId: number;
+    intentId: string;
+    claimId: string;
+    claimedRnbw: string;
+    claimedValueInCurrency: string;
+    decimals: number;
+    status: string;
+    txHash?: string | null;
+    tenderlyUrl?: string | null;
+    durationMs: number;
+    pollAttempts: number;
+    platformRequestIds?: {
+      intent?: string;
+      claim?: string;
+      status?: string;
+    };
+  };
+  [event.rnbwRewardsClaimFailed]: {
+    chainId: number;
+    intentId?: string;
+    claimId?: string;
+    status?: string;
+    errorMessage: string;
+    durationMs: number;
+    platformRequestIds?: {
+      intent?: string;
+      claim?: string;
+      status?: string;
+    };
+  };
+
+  // rnbw airdrop
+  [event.rnbwAirdropClaim]: {
+    chainId: number;
+    claimId: string;
+    claimedRnbw: string;
+    claimedValueInCurrency: string;
+    decimals: number;
+    status: string;
+    txHash?: string;
+    tenderlyUrl?: string;
+    durationMs: number;
+    pollAttempts: number;
+    platformRequestIds: {
+      claim?: string;
+      status?: string;
+    };
+  };
+  [event.rnbwAirdropClaimFailed]: {
+    chainId: number;
+    claimId?: string;
+    status?: string;
+    errorMessage: string;
+    durationMs: number;
+    platformRequestIds: {
+      claim?: string;
+      status?: string;
+    };
   };
 };

@@ -2,6 +2,8 @@ import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { Box, Separator, globalColors, useColorMode } from '@/design-system';
+import { RNBW_REWARDS, useExperimentalFlag } from '@/config';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureDetector } from 'react-native-gesture-handler';
@@ -26,6 +28,10 @@ import { getIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
+import { IS_TEST } from '@/env';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import * as i18n from '@/languages';
+import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;
 
@@ -42,6 +48,12 @@ export function SwapBottomPanel() {
   } = useSwapContext();
 
   const { swipeToDismissGesture, gestureY } = useBottomPanelGestureHandler();
+  const { rnbw_rewards_enabled } = useRemoteConfig('rnbw_rewards_enabled');
+  const rnbwRewardsEnabled = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
+
+  const isRewardEligible = useSwapsStore(state => state.rewardsEstimate?.eligible === true);
+  const rewardsEstimate = useSwapsStore(state => state.rewardsEstimate);
+  const showRewards = rnbwRewardsEnabled && isRewardEligible && confirmButtonProps.value.type === 'hold';
 
   const holdProgress = useSharedValue(0);
 
@@ -85,6 +97,16 @@ export function SwapBottomPanel() {
     }
   }, [configProgress.value, navigate, SwapNavigation]);
 
+  const handleRewardsInfoPress = useCallback(() => {
+    const rawTokenAmount = Number(rewardsEstimate?.rewardRnbw ?? 0);
+    const decimals = rewardsEstimate?.decimals ?? 18;
+    const tokenAmount = convertRawAmountToDecimalFormat(rawTokenAmount, decimals);
+    const formattedTokenAmount = truncateToDecimalsWithThreshold({ value: tokenAmount, decimals: 1, threshold: '0.01' });
+    navigate(Routes.RNBW_REWARDS_ESTIMATE_SHEET, {
+      estimatedAmount: formattedTokenAmount,
+    });
+  }, [navigate, rewardsEstimate?.rewardRnbw, rewardsEstimate?.decimals]);
+
   return (
     <GestureDetector gesture={swipeToDismissGesture}>
       <Animated.View
@@ -126,6 +148,8 @@ export function SwapBottomPanel() {
               icon={icon}
               iconStyle={confirmButtonIconStyle}
               label={label}
+              subtitle={showRewards ? i18n.t(i18n.l.swap.actions.earning_rewards) : undefined}
+              rightIcon={showRewards ? '􀅴' : undefined}
               longPressDuration={HOLD_TO_SWAP_DURATION_MS}
               disabled={disabled}
               onPressWorklet={() => {
@@ -165,6 +189,7 @@ export function SwapBottomPanel() {
                 }
               }}
               opacity={opacity}
+              onPressRightIconJS={showRewards ? handleRewardsInfoPress : undefined}
               scaleTo={0.9}
             />
           </Box>

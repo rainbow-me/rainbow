@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "2.0.18-1",
+  "version": "2.0.19-1",
   "private": true,
   "scripts": {
     "setup": "yarn graphql-codegen:install && yarn ds:install && yarn graphql-codegen && yarn fetch:networks",
@@ -43,7 +43,7 @@
     "lint:js": "eslint --cache . --quiet",
     "lint:js:ci": "eslint --quiet",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
-    "check:cycles": "./scripts/check-cycles.sh 2087",
+    "check:cycles": "./scripts/check-cycles.sh 2139",
     "postinstall": "./scripts/postinstall.sh",
     "start": "react-native start",
     "start:client-logs": "react-native start --client-logs",
