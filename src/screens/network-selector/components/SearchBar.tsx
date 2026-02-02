@@ -5,7 +5,7 @@ import { networkSwitcherStore } from '@/state/networkSwitcher/networkSwitcher';
 import { ButtonPressAnimation } from '@/components/animations';
 import { StyleSheet, TextInput } from 'react-native';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import * as i18n from '@/languages';
 

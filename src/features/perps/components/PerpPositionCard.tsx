@@ -4,7 +4,8 @@ import { PerpsPosition } from '@/features/perps/types';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
-import { getColorValueForThemeWorklet, getHighContrastColor, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, getHighContrastColor } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { abs } from '@/helpers/utilities';
 import { useStableValue } from '@/hooks/useStableValue';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
@@ -28,8 +29,8 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
   const backgroundColor = useMemo(
     () =>
       isDarkMode
-        ? opacityWorklet(getColorValueForThemeWorklet(getHighContrastColor(ETH_COLOR_DARK), isDarkMode), 0.08)
-        : opacityWorklet(globalColors.white100, 0.8),
+        ? opacity(getColorValueForThemeWorklet(getHighContrastColor(ETH_COLOR_DARK), isDarkMode), 0.08)
+        : opacity(globalColors.white100, 0.8),
     [isDarkMode]
   );
 

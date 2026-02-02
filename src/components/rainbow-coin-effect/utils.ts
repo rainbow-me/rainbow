@@ -4,7 +4,7 @@ import { ViewStyle } from 'react-native';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors } from '@/design-system';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { generateRainbowGradient } from '@/worklets/gradients';
 import { getCirclePath } from '@/worklets/skia';
 import { ANIMATION_CONFIGS, CANVAS_VIEW_BUFFER_FACTOR, INTERNAL_SPRING_CONFIGS } from './constants';

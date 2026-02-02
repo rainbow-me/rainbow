@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { LinearGradient } from 'react-native-linear-gradient';
 import { StyleSheet } from 'react-native';
 import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
@@ -73,11 +73,11 @@ export const ResolvedMarketRow = memo(function ResolvedMarketRow({
           justifyContent="center"
           alignItems="center"
           borderWidth={2}
-          borderColor={{ custom: opacityWorklet('#FFFFFF', 0.12) }}
+          borderColor={{ custom: opacity('#FFFFFF', 0.12) }}
           flexDirection="row"
           gap={6}
         >
-          <InnerShadow borderRadius={10} color={opacityWorklet(accentColor, 0.24)} blur={2.5} dx={0} dy={1} />
+          <InnerShadow borderRadius={10} color={opacity(accentColor, 0.24)} blur={2.5} dx={0} dy={1} />
           <Box flexDirection="row" alignItems="center" justifyContent="center" gap={6}>
             <Text size="icon 13px" weight="heavy" color="white">
               {isWinningOutcome ? '􀆅' : '􀆄'}

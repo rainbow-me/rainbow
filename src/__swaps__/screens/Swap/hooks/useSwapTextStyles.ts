@@ -12,7 +12,8 @@ import { useColorMode, useForegroundColor } from '@/design-system';
 
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, pulsingConfig } from '@/__swaps__/screens/Swap/constants';
 import { InputMethods, InputValues } from '@/__swaps__/types/swap';
-import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { equalWorklet } from '@/safe-math/SafeMath';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';

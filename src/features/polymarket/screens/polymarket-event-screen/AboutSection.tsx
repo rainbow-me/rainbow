@@ -1,5 +1,6 @@
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Box, globalColors, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
@@ -65,7 +66,7 @@ const Description = memo(function Description({
         borderRadius={26}
         padding={'20px'}
         borderWidth={isDarkMode ? 2 : THICK_BORDER_WIDTH}
-        borderColor={{ custom: opacityWorklet(isDarkMode ? '#F5F8FF' : '#09111F', 0.02) }}
+        borderColor={{ custom: opacity(isDarkMode ? '#F5F8FF' : '#09111F', 0.02) }}
       >
         <Text color="labelTertiary" size="17pt / 150%" weight="medium" numberOfLines={3}>
           {description}
@@ -171,8 +172,8 @@ function InfoRow({
   rightIcon: string | undefined;
 }) {
   const { isDarkMode } = useColorMode();
-  const highlightedBackgroundColor = isDarkMode ? opacityWorklet(globalColors.white100, 0.04) : opacityWorklet(globalColors.grey100, 0.03);
-  const highlightedBorderColor = opacityWorklet(isDarkMode ? globalColors.white100 : globalColors.grey100, 0.02);
+  const highlightedBackgroundColor = isDarkMode ? opacity(globalColors.white100, 0.04) : opacity(globalColors.grey100, 0.03);
+  const highlightedBorderColor = opacity(isDarkMode ? globalColors.white100 : globalColors.grey100, 0.02);
 
   return (
     <Box

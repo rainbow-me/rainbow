@@ -4,7 +4,7 @@ import { useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import styled from '@/styled-thing';
 import { buildTextStyles, fonts } from '@/styles';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 
 interface InputProps extends TextInputProps {
   style?: StyleProp<TextStyle>;

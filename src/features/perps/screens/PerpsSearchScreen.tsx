@@ -14,7 +14,7 @@ import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Sw
 import { time } from '@/utils/time';
 import * as i18n from '@/languages';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { MarketSortOrderDropdown } from '@/features/perps/components/MarketSortOrderDropdown';
 import { useMarketSortOrderLabels } from '@/features/perps/hooks/useMarketSortOrderLabels';
 
@@ -75,7 +75,7 @@ const MarketSortOrderPicker = () => {
           alignItems="center"
           gap={6}
           paddingHorizontal={{ custom: 14 }}
-          borderColor={{ custom: isDarkMode ? opacityWorklet('#9CA4AD', 0.08) : opacityWorklet('#09111F', 0.01) }}
+          borderColor={{ custom: isDarkMode ? opacity('#9CA4AD', 0.08) : opacity('#09111F', 0.01) }}
           borderWidth={THICKER_BORDER_WIDTH}
           borderRadius={22}
           shadow={'30px'}

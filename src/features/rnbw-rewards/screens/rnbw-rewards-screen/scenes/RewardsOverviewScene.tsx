@@ -12,7 +12,7 @@ import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import Animated, { runOnJS } from 'react-native-reanimated';
 import { defaultExitAnimation, createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { RewardsHowToEarnCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RewardsHowToEarnCard';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import * as i18n from '@/languages';
@@ -120,7 +120,7 @@ const RnbwRewardsBalance = memo(function RnbwRewardsBalance() {
         )}
         {hasClaimableAirdrop && (
           <Box paddingHorizontal={'16px'} gap={20} width={'full'}>
-            <View style={{ height: 1, width: '100%', backgroundColor: opacityWorklet('#F5F8FF', 0.0625) }} />
+            <View style={{ height: 1, width: '100%', backgroundColor: opacity('#F5F8FF', 0.0625) }} />
             <Text size="15pt / 135%" weight="semibold" color="labelTertiary" align="center">
               {i18n.t(i18n.l.rnbw_rewards.how_to_earn.description)}
             </Text>

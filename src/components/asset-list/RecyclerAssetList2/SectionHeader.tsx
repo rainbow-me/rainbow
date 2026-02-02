@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 
 const HEIGHT = 48;
 
@@ -19,8 +19,8 @@ export const SectionHeader = memo(function SectionHeader({ title, onPress, isDar
   const navigationButtonColors = useMemo(() => {
     return {
       icon: accountColor,
-      border: opacityWorklet(accountColor, isDarkMode ? 0.08 : 0.015),
-      background: opacityWorklet(accountColor, isDarkMode ? 0.16 : 0.1),
+      border: opacity(accountColor, isDarkMode ? 0.08 : 0.015),
+      background: opacity(accountColor, isDarkMode ? 0.16 : 0.1),
     };
   }, [accountColor, isDarkMode]);
 

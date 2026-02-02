@@ -1,4 +1,4 @@
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { ShimmerAnimation } from '@/components/animations';
 import { AccentColorProvider, Box, useBackgroundColor, useColorMode } from '@/design-system';
 import React from 'react';

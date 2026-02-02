@@ -16,7 +16,7 @@ import { validateNameWorklet, validateSymbolWorklet } from '../helpers/inputVali
 import { Icon } from '@/components/icons';
 import { IS_ANDROID } from '@/env';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet } from 'react-native';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { PrebuySection } from '@/screens/token-launcher/components/PrebuySection';

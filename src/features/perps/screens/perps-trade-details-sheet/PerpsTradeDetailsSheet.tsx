@@ -8,7 +8,7 @@ import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { HlTrade, TradeExecutionType } from '@/features/perps/types';
 import { TradeDetailsGraphic } from '@/features/perps/screens/perps-trade-details-sheet/TradeDetailsGraphic';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
@@ -44,9 +44,9 @@ function PerpsTradeDetailsSheetContent({ trade }: { trade: HlTrade }) {
       <Box position="absolute" top={{ custom: 32 }} left={{ custom: 32 }}>
         {isDarkMode && (
           <Box
-            backgroundColor={opacityWorklet('#677483', 0.11)}
+            backgroundColor={opacity('#677483', 0.11)}
             borderWidth={THICKER_BORDER_WIDTH}
-            borderColor={{ custom: opacityWorklet('#9CA4AD', 0.05) }}
+            borderColor={{ custom: opacity('#9CA4AD', 0.05) }}
             borderRadius={12}
             width={40}
             height={40}
@@ -167,10 +167,10 @@ const PnlTradeDetailsRow = memo(function NetProfitTradeDetailsRow({ trade }: { t
   );
 });
 
-const ROW_FILL_COLOR = opacityWorklet('#09111F', 0.025);
-const ROW_BORDER_COLOR = opacityWorklet('#09111F', 0.01);
-const ROW_FILL_COLOR_DARK = opacityWorklet('#677483', 0.03);
-const ROW_BORDER_COLOR_DARK = opacityWorklet('#9CA4AD', 0.02);
+const ROW_FILL_COLOR = opacity('#09111F', 0.025);
+const ROW_BORDER_COLOR = opacity('#09111F', 0.01);
+const ROW_FILL_COLOR_DARK = opacity('#677483', 0.03);
+const ROW_BORDER_COLOR_DARK = opacity('#9CA4AD', 0.02);
 
 const TradeDetailsRow = memo(function TradeDetailsRow({
   icon,

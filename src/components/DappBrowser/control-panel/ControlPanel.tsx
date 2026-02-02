@@ -1,7 +1,7 @@
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -963,14 +963,14 @@ const ConnectButton = memo(function ControlPanelButton({
 
   const buttonBackground = useAnimatedStyle(() => {
     return {
-      backgroundColor: opacityWorklet(buttonColor.value, isDarkMode ? 0.16 : 0.9),
-      borderColor: IS_IOS ? opacityWorklet(buttonColor.value, isDarkMode ? 0.08 : 0.3) : undefined,
+      backgroundColor: opacity(buttonColor.value, isDarkMode ? 0.16 : 0.9),
+      borderColor: IS_IOS ? opacity(buttonColor.value, isDarkMode ? 0.08 : 0.3) : undefined,
     };
   });
   const buttonIconStyle = useAnimatedStyle(() => {
     return {
       color: isDarkMode ? buttonColor.value : globalColors.white100,
-      textShadowColor: isDarkMode ? opacityWorklet(buttonColor.value, 0.8) : buttonColor.value,
+      textShadowColor: isDarkMode ? opacity(buttonColor.value, 0.8) : buttonColor.value,
     };
   });
 

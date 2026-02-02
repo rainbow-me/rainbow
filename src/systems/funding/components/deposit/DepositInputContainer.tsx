@@ -13,7 +13,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { BASE_INPUT_WIDTH, ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT } from '../../constants';
 import { useDepositContext } from '../../contexts/DepositContext';
 
@@ -32,18 +33,18 @@ function useContainerStyles({ progress }: { progress: SharedValue<number> }) {
 
   const bgColor = useDerivedValue(() => {
     return isDarkMode
-      ? opacityWorklet(getColorValueForThemeWorklet(currentAssetColor.value, isDarkMode), 0.08)
-      : opacityWorklet(globalColors.white100, 0.8);
+      ? opacity(getColorValueForThemeWorklet(currentAssetColor.value, isDarkMode), 0.08)
+      : opacity(globalColors.white100, 0.8);
   });
 
   const expandedBgColor = useDerivedValue(() => {
-    return isDarkMode ? bgColor.value : opacityWorklet(globalColors.white100, 0.8);
+    return isDarkMode ? bgColor.value : opacity(globalColors.white100, 0.8);
   });
 
   const strokeColor = useDerivedValue(() => {
     const color = currentAssetColor.value;
     return isDarkMode
-      ? opacityWorklet(
+      ? opacity(
           getColorValueForThemeWorklet(color, isDarkMode) === ETH_COLOR_DARK
             ? ETH_COLOR_DARK_ACCENT
             : getColorValueForThemeWorklet(color, isDarkMode),
@@ -53,7 +54,7 @@ function useContainerStyles({ progress }: { progress: SharedValue<number> }) {
   });
 
   const expandedStrokeColor = useDerivedValue(() => {
-    return isDarkMode ? opacityWorklet(getColorValueForThemeWorklet(currentAssetColor.value, isDarkMode), 0.1) : globalColors.white100;
+    return isDarkMode ? opacity(getColorValueForThemeWorklet(currentAssetColor.value, isDarkMode), 0.1) : globalColors.white100;
   });
 
   const containerStyle = useAnimatedStyle(() => {

@@ -1,4 +1,4 @@
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { time } from '@/utils/time';
 import { Blur, Canvas, Group, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { memo, useCallback, useEffect, useMemo } from 'react';
@@ -81,7 +81,7 @@ export const LoadingSpinner = memo(function LoadingSpinner({
         </Group>
         <Group>
           <Path path={arcPath} style="stroke" strokeWidth={strokeWidth} strokeCap="round">
-            <RadialGradient c={gradientCenter} r={arcRadius * 2} colors={[opacityWorklet(color, 0), color]} positions={[0, 1]} />
+            <RadialGradient c={gradientCenter} r={arcRadius * 2} colors={[opacity(color, 0), color]} positions={[0, 1]} />
           </Path>
         </Group>
       </Canvas>

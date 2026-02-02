@@ -24,7 +24,8 @@ import { getPositionTokenId } from '@/features/polymarket/utils/getPositionToken
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { greaterThan } from '@/helpers/utilities';
 import ConditionalWrap from 'conditional-wrap';
 import { IS_IOS } from '@/env';
@@ -160,18 +161,14 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
               <Box gap={14}>
                 {showEventTitle && (
                   <GradientBorderView
-                    borderGradientColors={
-                      isDarkMode ? [accentColors.opacity4, accentColors.opacity0] : ['#F0F2F5', opacityWorklet('#F0F2F5', 0)]
-                    }
+                    borderGradientColors={isDarkMode ? [accentColors.opacity4, accentColors.opacity0] : ['#F0F2F5', opacity('#F0F2F5', 0)]}
                     borderRadius={12}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 0.75, y: 0 }}
                   >
                     <LinearGradient
                       colors={
-                        isDarkMode
-                          ? [accentColors.opacity6, accentColors.opacity0]
-                          : [opacityWorklet('#F0F2F5', 0.6), opacityWorklet('#F0F2F5', 0)]
+                        isDarkMode ? [accentColors.opacity6, accentColors.opacity0] : [opacity('#F0F2F5', 0.6), opacity('#F0F2F5', 0)]
                       }
                       style={StyleSheet.absoluteFill}
                       start={{ x: 0.29, y: 0 }}

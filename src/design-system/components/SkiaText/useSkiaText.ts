@@ -18,7 +18,7 @@ import { SharedOrDerivedValueText } from '@/design-system/components/Text/Animat
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize, typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_IOS } from '@/env';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { SharedOrDerivedValue } from '@/types/reanimated';
 import { getSkiaFontWeight, useSkiaFontManager } from './skiaFontManager';
 
@@ -119,7 +119,7 @@ export function useSkiaText({
         if (segment.foregroundPaint && segment.color) segment.foregroundPaint.setColor(segmentStyle.color);
         if (shadows || segment.shadows) segmentStyle.shadows = segment.shadows;
         if (segment.opacity !== undefined && segment.color) {
-          segmentStyle.color = Skia.Color(opacityWorklet(segment.color, segment.opacity));
+          segmentStyle.color = Skia.Color(opacity(segment.color, segment.opacity));
         }
         paragraphBuilder.pushStyle(segmentStyle, segment.foregroundPaint ?? foregroundPaint, segment.backgroundPaint ?? backgroundPaint);
         paragraphBuilder.addText(typeof segment.text === 'string' ? segment.text : segment.text.value ?? '');

@@ -6,7 +6,7 @@ import { PerpPositionSide } from '@/features/perps/types';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import Animated, { interpolate, interpolateColor, useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -63,7 +63,7 @@ export const PositionSideSelector = memo(function PositionSideSelector() {
     <Box height={POSITION_SIDE_SELECTOR_HEIGHT} width={DEVICE_WIDTH - HORIZONTAL_PADDING * 2} style={{ overflow: 'visible' }}>
       <Box flexDirection="row" alignItems="center" style={{ overflow: 'visible' }}>
         <GradientBorderView
-          borderGradientColors={[opacityWorklet('#FF584D', 0.06), 'transparent']}
+          borderGradientColors={[opacity('#FF584D', 0.06), 'transparent']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           borderRadius={20}
@@ -74,7 +74,7 @@ export const PositionSideSelector = memo(function PositionSideSelector() {
           <View />
         </GradientBorderView>
         <GradientBorderView
-          borderGradientColors={[opacityWorklet('#3ECF5B', 0.06), 'transparent']}
+          borderGradientColors={[opacity('#3ECF5B', 0.06), 'transparent']}
           start={{ x: 1, y: 0 }}
           end={{ x: 0, y: 0 }}
           borderRadius={20}
@@ -102,7 +102,7 @@ export const PositionSideSelector = memo(function PositionSideSelector() {
           <Border
             borderRadius={POSITION_SIDE_SELECTOR_HEIGHT / 2}
             borderWidth={isDarkMode ? 2 : THICKER_BORDER_WIDTH}
-            borderColor={{ custom: opacityWorklet(isDarkMode ? '#ffffff' : '#000000', isDarkMode ? 0.16 : 0.02) }}
+            borderColor={{ custom: opacity(isDarkMode ? '#ffffff' : '#000000', isDarkMode ? 0.16 : 0.02) }}
           />
         </Animated.View>
         <Box style={StyleSheet.absoluteFill} zIndex={2000}>

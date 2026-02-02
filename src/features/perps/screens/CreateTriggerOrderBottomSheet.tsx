@@ -3,7 +3,8 @@ import { Alert, StyleSheet, View } from 'react-native';
 import { AnimatedText, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { addCommasToNumber, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { addCommasToNumber } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { Panel } from '@/components/SmoothPager/ListPanel';
@@ -350,7 +351,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
             flexDirection="row"
             alignItems="center"
             justifyContent="space-between"
-            backgroundColor={opacityWorklet(ETH_COLOR_DARK, 0.03)}
+            backgroundColor={opacity(ETH_COLOR_DARK, 0.03)}
             borderWidth={THICK_BORDER_WIDTH}
             borderColor={'buttonStroke'}
             borderRadius={14}
@@ -393,7 +394,7 @@ export const CreateTriggerOrderBottomSheet = memo(function CreateTriggerOrderBot
         <PanelSheet>
           <KeyboardStickyView>
             <Panel height={PANEL_HEIGHT} innerBorderWidth={1} innerBorderColor={separatorSecondaryColor}>
-              <SheetHandleFixedToTop color={isDarkMode ? opacityWorklet('#F5F8FF', 0.3) : colors.blueGreyDark30} showBlur={true} top={14} />
+              <SheetHandleFixedToTop color={isDarkMode ? opacity('#F5F8FF', 0.3) : colors.blueGreyDark30} showBlur={true} top={14} />
               {/* The market should always be defined */}
               {market && <PanelContent triggerOrderType={triggerOrderType} market={market} source={resolvedSource} position={position} />}
             </Panel>

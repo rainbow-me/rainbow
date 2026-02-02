@@ -1,5 +1,5 @@
 import { BlurView } from 'react-native-blur-view';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ButtonPressAnimation } from '@/components/animations';

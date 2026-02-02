@@ -2,7 +2,7 @@
 import React from 'react';
 import { AnimatedText, Bleed, Box, Inline, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { GestureHandlerButtonProps, GestureHandlerButton } from './GestureHandlerButton';
 import { StyleSheet } from 'react-native';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -34,9 +34,9 @@ export function AnimatedSwitch({
   const containerStyles = useAnimatedStyle(() => {
     return {
       backgroundColor: !value.value
-        ? withTiming(opacityWorklet(inactiveBg, 0.12), TIMING_CONFIGS.fadeConfig)
-        : withTiming(opacityWorklet(activeBg, 0.72), TIMING_CONFIGS.fadeConfig),
-      borderColor: opacityWorklet(border, 0.06),
+        ? withTiming(opacity(inactiveBg, 0.12), TIMING_CONFIGS.fadeConfig)
+        : withTiming(opacity(activeBg, 0.72), TIMING_CONFIGS.fadeConfig),
+      borderColor: opacity(border, 0.06),
       opacity: disabled ? 0.4 : 1,
     };
   });

@@ -5,7 +5,7 @@ import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { PerpMarket, PerpPositionSide } from '@/features/perps/types';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { Chart } from '@/components/value-chart/Chart';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -42,12 +42,12 @@ export const NameAndPriceSection = memo(function NameAndPriceSection({
   }, [side, green, red]);
 
   const sideBackgroundColor = useMemo(() => {
-    return opacityWorklet(sideColor, 0.16);
+    return opacity(sideColor, 0.16);
   }, [sideColor]);
 
   const leverageColor = useMemo(() => {
-    if (isDarkMode) return opacityWorklet(ETH_COLOR_DARK, 0.16);
-    return opacityWorklet('#09111F', 0.04);
+    if (isDarkMode) return opacity(ETH_COLOR_DARK, 0.16);
+    return opacity('#09111F', 0.04);
   }, [isDarkMode]);
 
   return (
@@ -114,8 +114,8 @@ export const ChartSection = memo(function ChartSection({ symbol }: { symbol: str
     <Chart
       accentColors={{
         color: color,
-        opacity12: opacityWorklet(color, 0.12),
-        opacity24: opacityWorklet(color, 0.24),
+        opacity12: opacity(color, 0.12),
+        opacity24: opacity(color, 0.24),
         timeframeSelector: accentColors.opacity100,
       }}
       backgroundColor={backgroundColor}

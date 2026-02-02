@@ -13,7 +13,7 @@ import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePoly
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createOpacityPalette } from '@/worklets/colors';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 
 type CategoryKey = keyof typeof CATEGORIES;
 type CategoryWithKey = Category & { key: CategoryKey };
@@ -100,7 +100,7 @@ const CategoryItem = memo(function CategoryItem({ category, onPress, selectedCat
 
   const backgroundFillStyle = useMemo(
     () => ({
-      backgroundColor: isDarkMode ? accentColors.opacity6 : opacityWorklet(globalColors.white100, 0.6),
+      backgroundColor: isDarkMode ? accentColors.opacity6 : opacity(globalColors.white100, 0.6),
       borderRadius: CONTAINER_HEIGHT / 2,
     }),
     [isDarkMode, accentColors]

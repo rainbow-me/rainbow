@@ -2,7 +2,7 @@ import React, { ReactElement, useMemo } from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import ConditionalWrap from 'conditional-wrap';
 import { IS_ANDROID, IS_TEST } from '@/env';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { useColorMode } from '../../color/ColorMode';
 import { useForegroundColor } from '../../color/useForegroundColor';
 import { AnimatedText, AnimatedTextProps } from '../Text/AnimatedText';

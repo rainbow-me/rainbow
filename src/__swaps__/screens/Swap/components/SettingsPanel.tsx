@@ -5,7 +5,7 @@ import { NetworkSelectorButton } from '@/components/buttons/NetworkSelectorButto
 import { Bleed, Border, Box, Column, Columns, Separator, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { THICK_BORDER_WIDTH } from '../constants';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';

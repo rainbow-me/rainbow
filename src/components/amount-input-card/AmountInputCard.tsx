@@ -11,7 +11,8 @@ import {
 } from '@/features/perps/constants';
 import { runOnJS, runOnUI, SharedValue, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Slider, SliderChangeSource, SliderGestureState } from '@/features/perps/components/Slider';
-import { addCommasToNumber, clamp, opacityWorklet, trimCurrencyZeros } from '@/__swaps__/utils/swaps';
+import { addCommasToNumber, clamp, trimCurrencyZeros } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
 import {
@@ -69,8 +70,8 @@ const AmountSlider = ({
     () => ({
       activeLeft: accentColor,
       inactiveLeft: accentColor,
-      activeRight: isDarkMode ? opacityWorklet('#F5F8FF', 0.06) : opacityWorklet(accentColor, 0.12),
-      inactiveRight: isDarkMode ? opacityWorklet('#F5F8FF', 0.06) : opacityWorklet(accentColor, 0.12),
+      activeRight: isDarkMode ? opacity('#F5F8FF', 0.06) : opacity(accentColor, 0.12),
+      inactiveRight: isDarkMode ? opacity('#F5F8FF', 0.06) : opacity(accentColor, 0.12),
     }),
     [accentColor, isDarkMode]
   );
@@ -421,7 +422,7 @@ export const AmountInputCard = memo(function AmountInputCard({
       width="full"
       backgroundColor={backgroundColor}
       borderWidth={isDarkMode ? 2 : 0}
-      borderColor={{ custom: opacityWorklet(accentColor, 0.06) }}
+      borderColor={{ custom: opacity(accentColor, 0.06) }}
       borderRadius={28}
       padding={'20px'}
       alignItems="center"
@@ -440,7 +441,7 @@ export const AmountInputCard = memo(function AmountInputCard({
             ref={inputRef}
             value={displayedAmount}
             textColor={accentColor}
-            placeholderTextColor={opacityWorklet(accentColor, 0.24)}
+            placeholderTextColor={opacity(accentColor, 0.24)}
             formatInput={formatInputForEditing}
             formatDisplay={formatAmountForDisplay}
             initialValue={initialValues.amount}

@@ -3,7 +3,7 @@ import { memo } from 'react';
 import { Box, Text, TextIcon, useForegroundColor } from '@/design-system';
 import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { PerpMarket } from '@/features/perps/types';
 import { DEFAULT_SLIPPAGE_BIPS } from '@/features/perps/constants';
 import { mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
@@ -20,8 +20,8 @@ export function Row({ children, highlighted }: RowProps) {
 
   const containerStyle = useAnimatedStyle(() => {
     const isHighlighted = typeof highlighted === 'object' ? highlighted.value : highlighted;
-    const colorForBackground = opacityWorklet(fill, 0.025);
-    const colorForBorder = opacityWorklet(separator, 0.01);
+    const colorForBackground = opacity(fill, 0.025);
+    const colorForBorder = opacity(separator, 0.01);
 
     return {
       backgroundColor: isHighlighted ? colorForBackground : 'transparent',

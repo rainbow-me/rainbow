@@ -4,7 +4,7 @@ import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native
 import { BlurView } from 'react-native-blur-view';
 import { Box, globalColors, Inline, Text, TextIcon, useColorMode } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
 import * as i18n from '@/languages';
@@ -31,8 +31,8 @@ export const RnbwFeatureCard = memo(function RnbwFeatureCard() {
           <Box
             borderRadius={BORDER_RADIUS}
             borderWidth={isDarkMode ? 1 : THICK_BORDER_WIDTH}
-            borderColor={{ custom: isDarkMode ? opacityWorklet(ETH_COLOR_DARK_ACCENT, 0.06) : opacityWorklet('#F5D66C', 0.2) }}
-            backgroundColor={isDarkMode ? opacityWorklet('#677483', 0.06) : opacityWorklet('#F5D66C', 0.6)}
+            borderColor={{ custom: isDarkMode ? opacity(ETH_COLOR_DARK_ACCENT, 0.06) : opacity('#F5D66C', 0.2) }}
+            backgroundColor={isDarkMode ? opacity('#677483', 0.06) : opacity('#F5D66C', 0.6)}
             style={StyleSheet.absoluteFill}
           >
             {isDarkMode && <GradientFill />}
@@ -44,7 +44,7 @@ export const RnbwFeatureCard = memo(function RnbwFeatureCard() {
             <Box flexDirection="row" alignItems="center" gap={12}>
               <Image source={rnbwCoinImage} style={styles.coinImage} />
               <Box gap={14} style={{ maxWidth: 192 }}>
-                <Text size="13pt" weight="heavy" color={isDarkMode ? { custom: opacityWorklet('#F5F8FF', 0.4) } : 'labelSecondary'}>
+                <Text size="13pt" weight="heavy" color={isDarkMode ? { custom: opacity('#F5F8FF', 0.4) } : 'labelSecondary'}>
                   {i18n.t(i18n.l.rnbw_rewards.introduction.introducing).toUpperCase()}
                 </Text>
                 <Inline alignVertical="center" space="6px">
@@ -54,7 +54,7 @@ export const RnbwFeatureCard = memo(function RnbwFeatureCard() {
                   <TextIcon
                     size="13pt"
                     weight="heavy"
-                    color={isDarkMode ? { custom: opacityWorklet(globalColors.white100, 0.3) } : 'labelQuaternary'}
+                    color={isDarkMode ? { custom: opacity(globalColors.white100, 0.3) } : 'labelQuaternary'}
                   >
                     {'􀯻'}
                   </TextIcon>
@@ -89,7 +89,7 @@ function DismissButton() {
         <Box
           width={28}
           height={28}
-          backgroundColor={opacityWorklet(globalColors.grey100, 0.32)}
+          backgroundColor={opacity(globalColors.grey100, 0.32)}
           borderRadius={14}
           justifyContent="center"
           alignItems="center"

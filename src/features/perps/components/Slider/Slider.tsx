@@ -17,7 +17,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { SCRUBBER_WIDTH, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
 const MAX_PERCENTAGE = 0.995;
@@ -120,7 +120,7 @@ export const Slider: React.FC<SliderProps> = ({
 
   const defaultColors = useDerivedValue<SliderColors>(() => ({
     activeLeft: isDarkMode ? '#00D4FF' : '#0076FF',
-    inactiveLeft: isDarkMode ? opacityWorklet('#00D4FF', 0.9) : opacityWorklet('#0076FF', 0.9),
+    inactiveLeft: isDarkMode ? opacity('#00D4FF', 0.9) : opacity('#0076FF', 0.9),
     activeRight: fillSecondary,
     inactiveRight: separatorSecondary,
   }));

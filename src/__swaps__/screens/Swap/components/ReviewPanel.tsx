@@ -3,7 +3,7 @@ import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
 import { convertRawAmountToBalance, convertRawAmountToBalanceWorklet, handleSignificantDecimals, multiply } from '@/helpers/utilities';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import {

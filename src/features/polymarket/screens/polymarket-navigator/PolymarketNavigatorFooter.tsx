@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Box, globalColors, useColorMode } from '@/design-system';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { easing } from '@/components/animations/animationConfigs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
@@ -50,8 +50,8 @@ export const PolymarketNavigatorFooter = function PolymarketNavigatorFooter() {
       <KeyboardStickyView offset={{ opened: safeAreaInsets.bottom + MAGIC_KEYBOARD_OFFSET_NUDGE - DISTANCE_FROM_KEYBOARD }}>
         <EasingGradient
           easing={easing.in.sin}
-          startColor={opacityWorklet(gradientColor, 0)}
-          endColor={opacityWorklet(gradientColor, 1)}
+          startColor={opacity(gradientColor, 0)}
+          endColor={opacity(gradientColor, 1)}
           startPosition={{ x: 0, y: 0 }}
           endPosition={{ x: 0, y: 0.8 }}
           style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 152, width: '100%' }}

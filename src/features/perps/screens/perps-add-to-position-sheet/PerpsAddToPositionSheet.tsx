@@ -12,7 +12,7 @@ import { PerpMarket, PerpsPosition } from '@/features/perps/types';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
 import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-screen/LiquidationInfo';
@@ -136,7 +136,7 @@ const NewTotalDisplay = memo(function NewTotalDisplay({ newTotal }: { newTotal: 
       flexDirection="row"
       alignItems="center"
       justifyContent="space-between"
-      backgroundColor={opacityWorklet(ETH_COLOR_DARK, 0.03)}
+      backgroundColor={opacity(ETH_COLOR_DARK, 0.03)}
       borderWidth={THICK_BORDER_WIDTH}
       borderColor={'buttonStroke'}
       borderRadius={14}

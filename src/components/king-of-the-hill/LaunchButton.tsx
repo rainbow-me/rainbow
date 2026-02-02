@@ -1,4 +1,4 @@
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { ButtonPressAnimation } from '@/components/animations';
 import { GradientText } from '@/components/text';
 import { globalColors, Text, useColorMode } from '@/design-system';

@@ -13,7 +13,7 @@ import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { createOpacityPalette } from '@/worklets/colors';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { ShimmerAnimation } from '@/components/animations';
 
 type MarketRowProps = {
@@ -152,7 +152,7 @@ export const MarketRowLoadingSkeleton = memo(function MarketRowLoadingSkeleton({
   const fillSecondary = useBackgroundColor('fillSecondary');
   const fillQuaternary = useBackgroundColor('fillQuaternary');
   const fillColor = isDarkMode ? fillQuaternary : fillSecondary;
-  const shimmerColor = opacityWorklet(fillColor, isDarkMode ? 0.025 : 0.06);
+  const shimmerColor = opacity(fillColor, isDarkMode ? 0.025 : 0.06);
 
   return (
     <View style={styles.skeletonContainer}>

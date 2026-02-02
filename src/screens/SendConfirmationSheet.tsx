@@ -1,4 +1,4 @@
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import Divider from '@/components/Divider';
 import { ShimmerAnimation } from '@/components/animations';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';

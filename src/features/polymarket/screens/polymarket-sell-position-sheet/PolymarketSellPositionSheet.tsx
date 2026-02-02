@@ -11,7 +11,8 @@ import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polyma
 import { ensureError, logger, RainbowError } from '@/logger';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import LinearGradient from 'react-native-linear-gradient';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/safe-math/SafeMath';
 import { marketSellTotalPosition } from '@/features/polymarket/utils/orders';
@@ -52,13 +53,13 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
 
   const accentColor = getColorValueForThemeWorklet(getPositionAccentColor(position), isDarkMode);
   const buttonBackgroundColor = getSolidColorEquivalent({
-    background: opacityWorklet(accentColor, 0.7),
+    background: opacity(accentColor, 0.7),
     foreground: '#000000',
     opacity: 0.4,
   });
   const gradientFillColors = isDarkMode
-    ? [opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)]
-    : [opacityWorklet(accentColor, 0), opacityWorklet(accentColor, 0.06)];
+    ? [opacity(accentColor, 0.22), opacity(accentColor, 0)]
+    : [opacity(accentColor, 0), opacity(accentColor, 0.06)];
 
   const executionStore = useMemo(() => createSellExecutionStore(tokenId, sellAmountTokens), [tokenId, sellAmountTokens]);
   const { worstPrice, bestPrice, expectedPayoutUsd, averagePrice, fee, spread } = executionStore(state => state);
@@ -197,7 +198,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
           </Box>
           <HoldToActivateButton
             backgroundColor={buttonBackgroundColor}
-            borderColor={{ custom: opacityWorklet('#FFFFFF', 0.08) }}
+            borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
             borderWidth={2}
             disabledBackgroundColor={'gray'}
             label={i18n.t(i18n.l.predictions.cash_out.cash_out)}

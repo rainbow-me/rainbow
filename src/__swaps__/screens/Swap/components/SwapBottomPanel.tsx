@@ -1,6 +1,6 @@
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { Box, Separator, globalColors, useColorMode } from '@/design-system';
 import { RNBW_REWARDS, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';

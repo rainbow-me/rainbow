@@ -1,6 +1,6 @@
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { PANEL_WIDTH, Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
@@ -509,7 +509,7 @@ const SkiaBackground = memo(function SkiaBackground({
 
   const imageOpacity = useDerivedValue(() => (image ? withTiming(1, TIMING_CONFIGS.slowerFadeConfig) : 0));
   const shadowOpacity = useDerivedValue(() => (color ? withTiming(0.44, TIMING_CONFIGS.slowerFadeConfig) : 0));
-  const shadowColor = useDerivedValue(() => (color ? opacityWorklet(color, shadowOpacity.value) : 'rgba(0, 0, 0, 0)'));
+  const shadowColor = useDerivedValue(() => (color ? opacity(color, shadowOpacity.value) : 'rgba(0, 0, 0, 0)'));
 
   useCleanup(() => coinIconPath?.dispose?.());
   useCleanup(() => image?.dispose?.(), [image]);

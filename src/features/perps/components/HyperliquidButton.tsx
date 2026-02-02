@@ -3,7 +3,7 @@ import { Box, BoxProps, useColorMode } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet, View } from 'react-native';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 
 type ButtonPressAnimationProps = ComponentProps<typeof ButtonPressAnimation>;
@@ -22,7 +22,7 @@ export const HyperliquidButton = function HyperliquidButton({ children, onPress,
     // eslint-disable-next-line react/jsx-props-no-spreading
     <ButtonPressAnimation {...buttonProps} onPress={onPress}>
       <Box
-        borderColor={{ custom: opacityWorklet('#ffffff', 0.16) }}
+        borderColor={{ custom: opacity('#ffffff', 0.16) }}
         borderWidth={isDarkMode ? 2 : 0}
         justifyContent="center"
         alignItems="center"

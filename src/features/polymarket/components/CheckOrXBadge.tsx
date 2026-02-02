@@ -1,4 +1,4 @@
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
@@ -43,7 +43,7 @@ export const CheckOrXBadge = memo(function CheckOrXBadge({
       borderWidth={resolvedBorderWidth}
       borderColor={{ custom: 'rgba(255, 255, 255, 0.12)' }}
     >
-      <InnerShadow borderRadius={size / 2} color={opacityWorklet('#FFFFFF', 0.28)} width={size} height={size} blur={2.5} dx={0} dy={1} />
+      <InnerShadow borderRadius={size / 2} color={opacity('#FFFFFF', 0.28)} width={size} height={size} blur={2.5} dx={0} dy={1} />
       <Text color="white" size={fontSize} weight="heavy">
         {isWin ? '􀆅' : '􀆄'}
       </Text>

@@ -4,7 +4,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 
 // ============ Types ========================================================= //
 

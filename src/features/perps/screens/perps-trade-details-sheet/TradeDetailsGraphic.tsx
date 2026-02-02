@@ -1,4 +1,4 @@
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { PANEL_BACKGROUND_DARK, PANEL_BACKGROUND_LIGHT } from '@/components/PanelSheet/PanelSheet';
 import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { FloatingSparks } from '@/features/perps/screens/perps-trade-details-sheet/FloatingSparks';
@@ -41,16 +41,16 @@ const CONFIG = {
   },
   topSectionGradients: {
     loss: {
-      bottomToTop: [opacityWorklet('#FF584D', 0), '#FF655A'],
-      topToBottom: ['#FF584D', opacityWorklet('#FF584D', 0)],
+      bottomToTop: [opacity('#FF584D', 0), '#FF655A'],
+      topToBottom: ['#FF584D', opacity('#FF584D', 0)],
     },
     profit: {
-      bottomToTop: [opacityWorklet('#2EDC51', 0), '#31E054'],
-      topToBottom: ['#23D246', opacityWorklet('#26D449', 0)],
+      bottomToTop: [opacity('#2EDC51', 0), '#31E054'],
+      topToBottom: ['#23D246', opacity('#26D449', 0)],
     },
     info: {
-      bottomToTop: [opacityWorklet('#62DFBC', 0), '#62DFBC'],
-      topToBottom: ['#62DFBC', opacityWorklet('#62DFBC', 0)],
+      bottomToTop: [opacity('#62DFBC', 0), '#62DFBC'],
+      topToBottom: ['#62DFBC', opacity('#62DFBC', 0)],
     },
   },
 };
@@ -69,7 +69,7 @@ export const TradeDetailsGraphic = memo(function TradeDetailsGraphic({ trade }: 
   const gridWidth = sheetWidth + gridOverflow;
   const accentColor = getAccentColor(trade);
   const gridBackgroundGradient = getGridBackgroundGradient(trade);
-  const backgroundBlurredOvalColor = opacityWorklet(accentColor, CONFIG.backgroundBlurredOval.opacity);
+  const backgroundBlurredOvalColor = opacity(accentColor, CONFIG.backgroundBlurredOval.opacity);
   const backgroundBlurredOvalWidth = CONFIG.backgroundBlurredOval.width;
   const backgroundBlurredOvalHeight = CONFIG.backgroundBlurredOval.height;
 
@@ -119,7 +119,7 @@ export const TradeDetailsGraphic = memo(function TradeDetailsGraphic({ trade }: 
           {/* Grid fading gradient */}
           <Rect dither antiAlias x={0} y={0} width={gridWidth} height={gridHeight}>
             <LinearGradient
-              colors={[opacityWorklet(backgroundColor, 0), backgroundColor]}
+              colors={[opacity(backgroundColor, 0), backgroundColor]}
               start={vec(0, gridHeight / 2)}
               end={vec(0, gridHeight)}
             />
@@ -190,11 +190,11 @@ function getGridBackgroundGradient(trade: HlTrade) {
   const displayType = getDisplayType(trade);
   switch (displayType) {
     case 'loss':
-      return ['#FF584D', opacityWorklet('#FF584D', 0)];
+      return ['#FF584D', opacity('#FF584D', 0)];
     case 'profit':
-      return ['#23D246', opacityWorklet('#23D246', 0)];
+      return ['#23D246', opacity('#23D246', 0)];
     case 'info':
-      return ['#62DFBC', opacityWorklet('#62DFBC', 0)];
+      return ['#62DFBC', opacity('#62DFBC', 0)];
   }
 }
 
@@ -287,7 +287,7 @@ const OutcomeInfo = ({ trade }: { trade: HlTrade }) => {
           height={27}
           paddingHorizontal={8}
           fillColor={['rgba(255, 255, 255, 0.16)', 'rgba(0, 0, 0, 0.1)']}
-          textColor={isDarkMode ? 'label' : { custom: opacityWorklet(labelSecondary, 0.8) }}
+          textColor={isDarkMode ? 'label' : { custom: opacity(labelSecondary, 0.8) }}
           strokeColor={
             isDarkMode ? ['rgba(255, 255, 255, 0.08)', 'rgba(0, 0, 0, 0.20)'] : ['rgba(255, 255, 255, 0.07)', 'rgba(0, 0, 0, 0.12)']
           }

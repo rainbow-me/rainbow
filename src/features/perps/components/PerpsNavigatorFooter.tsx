@@ -15,7 +15,7 @@ import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { fontWithWidth } from '@/styles/buildTextStyles';
 import font from '@/styles/fonts';
 import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { PerpPositionSide } from '@/features/perps/types';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
@@ -189,8 +189,8 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
 
   const button = useMemo(() => {
     const positionSideColor = isLong ? green : red;
-    const darkModeTextColor = isValidOrder ? (isLong ? 'black' : 'white') : opacityWorklet(positionSideColor, 0.4);
-    const lightModeTextColor = isValidOrder ? 'white' : opacityWorklet(positionSideColor, 0.4);
+    const darkModeTextColor = isValidOrder ? (isLong ? 'black' : 'white') : opacity(positionSideColor, 0.4);
+    const lightModeTextColor = isValidOrder ? 'white' : opacity(positionSideColor, 0.4);
     const backTextColor = isDarkMode ? (isLong ? 'black' : 'white') : 'white';
     return {
       textColor: isDarkMode ? darkModeTextColor : lightModeTextColor,

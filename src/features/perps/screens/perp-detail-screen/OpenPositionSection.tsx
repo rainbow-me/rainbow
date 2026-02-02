@@ -12,7 +12,7 @@ import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 
 export const PositionValueCard = memo(function PositionValueCard({ position }: { position: PerpsPosition }) {
   const { isDarkMode } = useColorMode();
@@ -113,7 +113,7 @@ const PositionDetailsCard = memo(function PositionDetailsCard({ market, position
     },
   ];
 
-  const lightModeFill = opacityWorklet('#09111F', 0.02);
+  const lightModeFill = opacity('#09111F', 0.02);
 
   return (
     <Box

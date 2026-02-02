@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react';
 import { Box, Text, useColorMode, useForegroundColor, globalColors, TextShadow } from '@/design-system';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
 const RedGreenOutcomes = {
@@ -29,8 +29,8 @@ export const OutcomeBadge = memo(function OutcomeBadge({
     if (!(outcome.toLowerCase() in RedGreenOutcomes) && color) {
       primaryColor = color;
     }
-    const backgroundColor = opacityWorklet(primaryColor, 0.12);
-    const borderColor = opacityWorklet(primaryColor, 0.08);
+    const backgroundColor = opacity(primaryColor, 0.12);
+    const borderColor = opacity(primaryColor, 0.08);
     return { textColor: primaryColor, backgroundColor, borderColor };
   }, [outcome, outcomeIndex, green, red, color]);
 

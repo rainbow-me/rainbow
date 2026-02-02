@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { useForegroundColor, TextProps, AnimatedText } from '@/design-system';
 import { useAnimatedStyle, useDerivedValue, SharedValue, withTiming, withRepeat, withSequence, withSpring } from 'react-native-reanimated';
 // this same function exists elsewhere
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { useDelayedValue } from '@/hooks/reanimated/useDelayedValue';
 import { pulsingConfig, sliderConfig } from '@/__swaps__/screens/Swap/constants';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';

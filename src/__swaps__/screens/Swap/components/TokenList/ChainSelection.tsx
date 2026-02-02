@@ -5,7 +5,7 @@ import Animated, { AnimatedRef, useDerivedValue, useSharedValue } from 'react-na
 import * as i18n from '@/languages';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { analytics } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { AnimatedText, Bleed, Box, Inline, Text, TextIcon, globalColors, useColorMode } from '@/design-system';

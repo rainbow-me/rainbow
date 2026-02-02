@@ -28,7 +28,8 @@ import {
 } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { InputKeys } from '@/__swaps__/types/swap';
-import { opacityWorklet, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
+import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import { GestureHandlerButton } from './GestureHandlerButton';
 
 type numberPadCharacter = number | 'backspace' | '.';
@@ -323,7 +324,7 @@ const NumberPadKey = ({
     const fill = isDarkMode ? separatorSecondary : 'rgba(255, 255, 255, 0.72)';
     const pressedFill = isDarkMode ? separator : 'rgba(255, 255, 255, 1)';
 
-    const backgroundColor = transparent ? opacityWorklet(fill, 0) : fill;
+    const backgroundColor = transparent ? opacity(fill, 0) : fill;
     const pressedColor = transparent ? fill : pressedFill;
 
     return {

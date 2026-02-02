@@ -10,7 +10,8 @@ import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/feat
 import ImgixImage from '@/components/images/ImgixImage';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Navigation } from '@/navigation';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/data/opacity';
 import LinearGradient from 'react-native-linear-gradient';
 import { PolymarketChart } from '@/features/charts/polymarket/components/PolymarketChart';
 import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
@@ -34,7 +35,7 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   return (
     <PanelSheet innerBorderWidth={THICKER_BORDER_WIDTH} panelStyle={{ backgroundColor: isDarkMode ? '#000000' : '#FFFFFF' }}>
       <LinearGradient
-        colors={[opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)]}
+        colors={[opacity(accentColor, 0.22), opacity(accentColor, 0)]}
         style={StyleSheet.absoluteFill}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
@@ -78,10 +79,10 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
               >
                 <Box
                   height={56}
-                  backgroundColor={opacityWorklet(buttonColor, 0.16)}
+                  backgroundColor={opacity(buttonColor, 0.16)}
                   borderRadius={28}
                   borderWidth={2.5}
-                  borderColor={{ custom: opacityWorklet(buttonColor, 0.06) }}
+                  borderColor={{ custom: opacity(buttonColor, 0.06) }}
                   paddingHorizontal="24px"
                   justifyContent="space-between"
                   alignItems="center"
