@@ -314,8 +314,5 @@ DEPENDENCIES
   mutex_m
   xcodeproj (< 1.26.0)
 
-RUBY VERSION
-   ruby 3.1.7p261
-
 BUNDLED WITH
    2.3.27
