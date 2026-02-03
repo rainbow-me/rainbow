@@ -20,7 +20,7 @@
 
 ### Debug CI failures
 
-Logs of the test run are saved in Github Actions artifacts. To access them go to the summary of the run (`https://github.com/rainbow-me/rainbow/actions/runs/<run_id>`) and scroll to the Artifacts section. There you can download the logs in the artifacts archive.
+Logs of the test run are saved in GitHub Actions artifacts. To access them go to the summary of the run (`https://github.com/rainbow-me/rainbow/actions/runs/<run_id>`) and scroll to the Artifacts section. There you can download the logs in the artifacts archive.
 
 ### E2E test commands
 
