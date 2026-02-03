@@ -114,7 +114,7 @@ import { logger } from '@/logger';
 ### `logger.debug`
 
 Debug level is for **local development only,** and is disabled by default. To
-enabled it, set `LOG_LEVEL=debug` before running the Metro server.
+enable it, set `LOG_LEVEL=debug` before running the Metro server.
 
 ```typescript
 logger.debug(message);
