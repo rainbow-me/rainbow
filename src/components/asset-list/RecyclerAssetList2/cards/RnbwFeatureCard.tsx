@@ -76,7 +76,7 @@ export const RnbwFeatureCard = memo(function RnbwFeatureCard() {
 function DismissButton() {
   const { dismiss } = useRnbwFeatureCard();
 
-  const onDismiss = (e: ButtonPressAnimationTouchEvent) => {
+  const onDismiss = (e?: ButtonPressAnimationTouchEvent) => {
     if (e && 'stopPropagation' in e) {
       e.stopPropagation();
     }
