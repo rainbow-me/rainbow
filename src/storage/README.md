@@ -48,7 +48,7 @@ enum Network {
   Optimism = 'optimism',
 }
 
-type WalletAddress = `Ox${string}`;
+type WalletAddress = `0x${string}`;
 
 const networkAndWallet = new Storage<[Network, WalletAddress], NetworkAndWalletSchema>({
   id: 'networkAndWallet',
