@@ -13,7 +13,7 @@ import { Page } from '@/components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box } from '@/design-system';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_ANDROID } from '@/env';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -165,15 +165,7 @@ const SliderAndKeyboardAndBottomControls = () => {
   }
 
   return (
-    <Box
-      as={Animated.View}
-      position="absolute"
-      bottom="0px"
-      width="full"
-      // Hack for e2e tests, views need to be at least 1 px for overflowing content to be interactable.
-      height={{ custom: 1 }}
-      style={AnimatedSwapStyles.hideWhenInputsExpanded}
-    >
+    <Box as={Animated.View} style={[StyleSheet.absoluteFill, AnimatedSwapStyles.bottomControlsStyle]}>
       <SliderAndKeyboard />
       <SwapBottomPanel />
     </Box>

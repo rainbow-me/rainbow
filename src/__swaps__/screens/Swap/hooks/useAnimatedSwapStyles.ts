@@ -297,6 +297,16 @@ export function useAnimatedSwapStyles({
     };
   });
 
+  const bottomControlsStyle = useAnimatedStyle(() => {
+    return {
+      opacity:
+        inputProgress.value > 0 || outputProgress.value > 0
+          ? withTiming(0, TIMING_CONFIGS.fadeConfig)
+          : withTiming(1, TIMING_CONFIGS.fadeConfig),
+      pointerEvents: inputProgress.value > 0 || outputProgress.value > 0 ? 'none' : 'box-none',
+    };
+  });
+
   return {
     flipButtonStyle,
     focusedSearchStyle,
@@ -319,5 +329,6 @@ export function useAnimatedSwapStyles({
     searchOutputAssetButtonWrapperStyle,
     removeWhenNoPriceImpact,
     removeWhenPriceImpact,
+    bottomControlsStyle,
   };
 }
