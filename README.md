@@ -26,7 +26,7 @@ set up [automatic nvm switching](https://github.com/nvm-sh/nvm#deeper-shell-inte
 
 ### MacOS
 
-1. Install the [latest version of XCode](https://developer.apple.com/xcode/).
+1. Install the [latest version of Xcode](https://developer.apple.com/xcode/).
 
 2. Install Watchman:
 
@@ -92,7 +92,7 @@ https://reactnative.dev/docs/getting-started
 ### MacOS
 
 _Note: Darwin versions of the application can only be developed/built on Darwin
-platforms with XCode._
+platforms with Xcode._
 
 1. Start a React Native webserver with:
 
@@ -100,7 +100,7 @@ platforms with XCode._
    yarn start
    ```
 
-2. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode.
+2. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in Xcode.
 
 3. Run the project by clicking the play button.
 
