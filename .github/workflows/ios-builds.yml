@@ -207,7 +207,7 @@ jobs:
           echo "::add-mask::$CERT_BASE64"
 
           # Find and export the provisioning profile
-          PP_PATH=$(find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" -exec grep -l "me.rainbow" {} \; | grep -v PriceWidget | grep -v Intent | grep -v Notification | grep -v OpenIn | grep -v ShareWith | head -1)
+          PP_PATH=$(find ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles -name "*.mobileprovision" -exec grep -l "me.rainbow" {} \; | grep -v PriceWidget | grep -v Intent | grep -v Notification | grep -v OpenIn | grep -v ShareWith | head -1)
 
           base64 -i "$PP_PATH" > /tmp/pp_b64.txt
           PROFILE_BASE64=$(cat /tmp/pp_b64.txt)
