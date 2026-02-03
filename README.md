@@ -100,7 +100,7 @@ platforms with XCode._
    yarn start
    ```
 
-2. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode.
+2. Open `ios/Rainbow.xcworkspace` in Xcode.
 
 3. Run the project by clicking the play button.
 
