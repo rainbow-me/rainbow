@@ -10123,7 +10123,7 @@ __metadata:
     react-native-cloud-fs: "rainbow-me/react-native-cloud-fs#d73f055c441566e5a57eebd621da8df3cf2499bb"
     react-native-crypto: "npm:2.2.0"
     react-native-dark-mode: "npm:0.2.2"
-    react-native-device-info: "npm:5.3.1"
+    react-native-device-info: "npm:15.0.1"
     react-native-dotenv: "npm:2.4.2"
     react-native-edge-to-edge: "npm:1.6.2"
     react-native-fast-image: "npm:8.5.11"
@@ -24341,10 +24341,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-device-info@npm:5.3.1":
-  version: 5.3.1
-  resolution: "react-native-device-info@npm:5.3.1"
-  checksum: 10c0/48d5fe20f18432c2b4da7d75855c98209f0030ba8166eb30240b8d57258eae07cee51df8dab88465cd6b50b8d16cb109fee4f071ffa3b16d3798644d89982738
+"react-native-device-info@npm:15.0.1":
+  version: 15.0.1
+  resolution: "react-native-device-info@npm:15.0.1"
+  peerDependencies:
+    react-native: "*"
+  checksum: 10c0/f33a28b44bc9a67939f2c837ea55c6f59f3096323b5ccc834093bece941d343bad3d86b0faa9340004c2e657abe47fac6cee539d9274f5fabfb5745bfdc77c92
   languageName: node
   linkType: hard
 

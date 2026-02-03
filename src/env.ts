@@ -1,5 +1,6 @@
 import ReactNative from 'react-native';
 import { ENABLE_DEV_MODE, IS_TESTING, RPC_PROXY_BASE_URL_PROD, RPC_PROXY_API_KEY_PROD } from 'react-native-dotenv';
+import { getInstallerPackageNameSync } from 'react-native-device-info';
 
 /**
  * @deprecated use IS_ANDROID
@@ -23,3 +24,5 @@ export const IS_PROD = !IS_DEV && !IS_TEST;
 
 export const RPC_PROXY_BASE_URL = RPC_PROXY_BASE_URL_PROD;
 export const RPC_PROXY_API_KEY = RPC_PROXY_API_KEY_PROD;
+
+export const IS_TEST_FLIGHT = IS_IOS && getInstallerPackageNameSync() === 'TestFlight';

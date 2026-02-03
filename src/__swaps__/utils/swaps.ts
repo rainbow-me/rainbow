@@ -43,8 +43,6 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 // DO NOT REMOVE THESE COMMENTED ENV VARS
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IS_APK_BUILD } from 'react-native-dotenv';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import isTestFlight from '@/helpers/isTestFlight';
 import { NativeCurrencyKey } from '@/entities';
 import { IS_TEST } from '@/env';
 
