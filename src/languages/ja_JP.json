@@ -324,7 +324,9 @@
         "authorizing": "認証中",
         "confirming_on_ledger": "Ledgerで確認中",
         "hold_keyword": "保留中",
-        "tap_keyword": "タップ"
+        "tap_keyword": "タップ",
+        "hold_to_claim": "主張するまでホールド",
+        "claiming": "請求中..."
       },
       "hold_to_send": "送信のために保持",
       "import": "インポート",
@@ -977,7 +979,7 @@
       "redacted_title": "ロック解除されました\nRedacted Rainbow",
       "baggy_description": "街からチェーンまで、この小さなバッグはあなたのポータブルなRainbowのエッセンスを持ち運びます。色を味わい、違いを感じてください。",
       "baggy_title": "アンロック\n Rainbow Baggy",
-      "chonks_description": "レインボーの髪で風を感じながら、101号線を走り、チョンキーを感じるイメージ。",
+      "chonks_description": "Rainbowの髪を風に感じながら、101号線を走り、Chonkyを感じる瞬間を想像してください。",
       "chonks_title": "チョンキエスト アイコンをアンロックしました。",
       "mog_description": "簡単に宇宙を支配し、色でモッグします。",
       "mog_title": "アンロック\nRainbow Mogs",
@@ -2444,6 +2446,52 @@
         "warning": "アイコンを変更すると、Rainbowが再起動される可能性があります。",
         "confirm": "確認",
         "cancel": "キャンセル"
+      },
+      "support": {
+        "title": "サポートとフィードバック",
+        "entry": {
+          "contact_support": "サポートに連絡",
+          "contact_support_description": "問題、質問、または緊急の懸念事項に対するパーソナライズされたメールサポート",
+          "get_started": "始める",
+          "category_picker_description": "どのようなことでお困りですか？",
+          "share_feedback": "フィードバックを共有する",
+          "share_feedback_description": "アイデアをメールで送る、または気軽にご挨拶ください",
+          "faqs_and_guides": "よくある質問とガイド"
+        },
+        "category": {
+          "getting_started": {
+            "name": "入門",
+            "description": "セットアップ、基本、ネットワーク"
+          },
+          "backup_recovery": {
+            "name": "バックアップと復元",
+            "description": "復元、バックアップの作成"
+          },
+          "tokens_transactions": {
+            "name": "トークンとトランザクション",
+            "description": "見つからないトークン、残高"
+          },
+          "bridge_swap": {
+            "name": "ブリッジとスワップ",
+            "description": "クロスチェーン、スワップの問題"
+          },
+          "points_rewards": {
+            "name": "ポイントと報酬",
+            "description": "ポイント、エアドロップ、ローンチ"
+          },
+          "security": {
+            "name": "セキュリティ上の懸念",
+            "description": "ウォレットの侵害、フレーズの紛失"
+          },
+          "partnership": {
+            "name": "パートナーシップに関するお問い合わせ",
+            "description": "ビジネス、連携"
+          },
+          "other": {
+            "name": "その他",
+            "description": "その他の質問"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2457,6 +2505,7 @@
       "actions": {
         "hold_to_swap": "スワップを保持",
         "hold_to_bridge": "ブリッジを保持",
+        "earning_rewards": "報酬を稼ぐ",
         "save": "保存する",
         "enter_amount": "金額を入力してください",
         "review": "レビュー",
@@ -3885,6 +3934,58 @@
         "lost_bets_dont_clear": "負けた賭けは自動的にクリアされません。下でそれらをクリアできます。"
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "ご紹介",
+        "rainbow_token": "Rainbowトークン",
+        "description_prefix": "ようこそ、",
+        "description_suffix": " 今すぐエアドロップの対象かどうか確認してください。",
+        "check_eligibility": "対象状況を確認"
+      },
+      "feature_card": {
+        "subtitle": "$RNBWへようこそ。今すぐ対象状況を確認してください。"
+      },
+      "claim": {
+        "available_to_claim": "請求可能",
+        "your_airdrop": "あなたのエアドロップ",
+        "your_airdrop_description": "Rainbowをご利用いただきありがとうございます。エアドロップは、これまでのアクティビティに基づいて算出されます。",
+        "claim_failed_title": "報酬の請求中にエラーが発生しました",
+        "claim_failed_message": "もう一度やり直してください。",
+        "claim_later": "後で請求する",
+        "almost_there": "もう少しです..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "エアドロップを請求しました",
+        "you_claimed": "あなたが請求したのは"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "報酬を請求しました",
+        "you_claimed": "あなたが請求したのは"
+      },
+      "airdrop": {
+        "no_airdrop": "エアドロップなし",
+        "no_airdrop_description": "このウォレットはエアドロップを受け取りませんでした。",
+        "already_claimed": "すでに請求済み",
+        "already_claimed_description": "エアドロップはすでに請求済みです。"
+      },
+      "airdrop_card": {
+        "your_airdrop": "あなたのエアドロップ"
+      },
+      "how_to_earn": {
+        "earn_rewards": "報酬を稼ぐ",
+        "description": "トークンをスワップして$RNBWを獲得。さらに獲得できる方法も近日登場。"
+      },
+      "loading_labels": {
+        "checking_historical_activity": "過去のアクティビティを確認中...",
+        "checking_eligibility": "対象状況を確認中...",
+        "claiming_rewards": "報酬を請求中...",
+        "submitting_transaction": "トランザクションを送信中...",
+        "claiming_airdrop": "エアドロップを請求中...",
+        "counting_your_points": "ポイントを集計中...",
+        "oh_i_see": "なるほど..."
+      },
+      "longer_than_usual": "請求に通常より時間がかかっています。最大1分かかる場合があります。"
+    },
     "wallet_error_sheet": {
       "title": "ウォレットを復元する",
       "restore": "復元",
@@ -3893,6 +3994,10 @@
       "cause_switched_devices": "デバイスを切り替えた可能性があります。",
       "resolution_enable_passcode": "ウォレットを使用するには、デバイス設定で再度有効にしてください。",
       "resolution_restore_backup": "ウォレットを使用するには、バックアップから復元するか、シークレットリカバリーフレーズを再インポートしてください。"
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "報酬を稼ぐ",
+      "this_transaction_will_earn": "このトランザクションでは、およそ"
     }
   }
 }

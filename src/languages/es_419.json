@@ -324,7 +324,9 @@
         "authorizing": "Autorizando",
         "confirming_on_ledger": "Confirmando en Ledger",
         "hold_keyword": "Mantener",
-        "tap_keyword": "Tocar"
+        "tap_keyword": "Tocar",
+        "hold_to_claim": "Mantener para Reclamar",
+        "claiming": "Reclamando..."
       },
       "hold_to_send": "Mantener para enviar",
       "import": "Importar",
@@ -977,7 +979,7 @@
       "redacted_title": "Has desbloqueado\n Redacted Rainbow",
       "baggy_description": "Desde las calles hasta la cadena, este pequeño bolso sostiene tu dosis portátil de vibraciones Rainbow. Saborea los colores, y siente la diferencia.",
       "baggy_title": "Has desbloqueado\n Rainbow Baggy",
-      "chonks_description": "Imagina el viento en tu cabello Rainbow, conduciendo por la Ruta 101, sintiendo Chonky.",
+      "chonks_description": "Imagina el viento en tu cabello Rainbow, conduciendo por la 101, sintiendo a Chonky.",
       "chonks_title": "Has desbloqueado\n El Icono Más Chonky",
       "mog_description": "Dominio cósmico sin esfuerzo en colores.",
       "mog_title": "Has desbloqueado\nRainbow Mogs",
@@ -2444,6 +2446,52 @@
         "warning": "Cambiar tu icono puede hacer que Rainbow se reinicie.",
         "confirm": "Confirmar",
         "cancel": "Cancelar"
+      },
+      "support": {
+        "title": "Soporte y comentarios",
+        "entry": {
+          "contact_support": "Contactar Soporte",
+          "contact_support_description": "Soporte personalizado por correo electrónico para problemas, preguntas o inquietudes urgentes",
+          "get_started": "Comenzar",
+          "category_picker_description": "¿Con qué necesitas ayuda?",
+          "share_feedback": "Compartir comentarios",
+          "share_feedback_description": "Envíanos ideas por correo o simplemente saluda",
+          "faqs_and_guides": "Preguntas frecuentes y guías"
+        },
+        "category": {
+          "getting_started": {
+            "name": "Primeros pasos",
+            "description": "Configuración, conceptos básicos, redes"
+          },
+          "backup_recovery": {
+            "name": "Respaldo y recuperación",
+            "description": "Restaurar, crear respaldos"
+          },
+          "tokens_transactions": {
+            "name": "Tokens y transacciones",
+            "description": "Tokens faltantes, saldos"
+          },
+          "bridge_swap": {
+            "name": "Puente e intercambio",
+            "description": "Entre cadenas, problemas de intercambio"
+          },
+          "points_rewards": {
+            "name": "Puntos y recompensas",
+            "description": "Puntos, airdrops, lanzamientos"
+          },
+          "security": {
+            "name": "Preocupaciones de seguridad",
+            "description": "Billetera comprometida, frase perdida"
+          },
+          "partnership": {
+            "name": "Consulta de partnership",
+            "description": "Negocios, integraciones"
+          },
+          "other": {
+            "name": "Algo más",
+            "description": "Otras preguntas"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2457,6 +2505,7 @@
       "actions": {
         "hold_to_swap": "Mantener para Intercambiar",
         "hold_to_bridge": "Mantener para Transferir",
+        "earning_rewards": "Ganar recompensas",
         "save": "Guardar",
         "enter_amount": "Ingresa una cantidad",
         "review": "Revisar",
@@ -3885,6 +3934,58 @@
         "lost_bets_dont_clear": "Las apuestas perdidas no se eliminan automáticamente. Puede limpiar a continuación."
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "Presentamos",
+        "rainbow_token": "Token de Rainbow",
+        "description_prefix": "Dale la bienvenida a ",
+        "description_suffix": " Verifica si eres elegible para el airdrop ahora.",
+        "check_eligibility": "Verificar elegibilidad"
+      },
+      "feature_card": {
+        "subtitle": "Dale la bienvenida a $RNBW; verifica tu elegibilidad ahora."
+      },
+      "claim": {
+        "available_to_claim": "Disponible para Reclamar",
+        "your_airdrop": "Tu airdrop",
+        "your_airdrop_description": "Gracias por usar Rainbow. Tu airdrop se calcula según tu actividad previa.",
+        "claim_failed_title": "Error al reclamar recompensas",
+        "claim_failed_message": "Por favor inténtelo de nuevo.",
+        "claim_later": "Reclamar más tarde",
+        "almost_there": "Casi listo..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "Airdrop reclamado",
+        "you_claimed": "Reclamaste"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "Recompensas reclamadas",
+        "you_claimed": "Reclamaste"
+      },
+      "airdrop": {
+        "no_airdrop": "Sin airdrop",
+        "no_airdrop_description": "Esta billetera no recibió un airdrop.",
+        "already_claimed": "Ya reclamado",
+        "already_claimed_description": "Ya reclamaste tu airdrop."
+      },
+      "airdrop_card": {
+        "your_airdrop": "Tu airdrop"
+      },
+      "how_to_earn": {
+        "earn_rewards": "Ganar recompensas",
+        "description": "Gana $RNBW intercambiando tokens. Próximamente habrá más formas de ganar."
+      },
+      "loading_labels": {
+        "checking_historical_activity": "Revisando actividad histórica...",
+        "checking_eligibility": "Verificando elegibilidad...",
+        "claiming_rewards": "Reclamando recompensas...",
+        "submitting_transaction": "Enviando transacción...",
+        "claiming_airdrop": "Reclamando airdrop...",
+        "counting_your_points": "Contando tus puntos...",
+        "oh_i_see": "Ah, ya veo..."
+      },
+      "longer_than_usual": "El reclamo está tardando más de lo usual. Puede tardar hasta un minuto."
+    },
     "wallet_error_sheet": {
       "title": "Restaura tu billetera",
       "restore": "Restaurar",
@@ -3893,6 +3994,10 @@
       "cause_switched_devices": "Parece que puede haber cambiado de dispositivo.",
       "resolution_enable_passcode": "Para usar su billetera, vuelva a habilitarlo en la configuración de su dispositivo.",
       "resolution_restore_backup": "Para usar su billetera, restaure desde una copia de seguridad o reimporte su frase de recuperación secreta."
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "Ganar recompensas",
+      "this_transaction_will_earn": "Esta transacción generará aproximadamente "
     }
   }
 }
