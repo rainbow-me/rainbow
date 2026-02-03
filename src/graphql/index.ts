@@ -1,5 +1,6 @@
+/* eslint-disable no-restricted-syntax */
+// TODO(FEPLAT-5): Legacy barrel files that are allowed to exist (but should be gradually removed)
 import gql from 'graphql-tag';
-
 import { config } from './config';
 import { getFetchRequester } from './utils/getFetchRequester';
 import { getSdk as getEnsSdk } from './__generated__/ens';

@@ -70,7 +70,6 @@ const allowedBarrelFiles = [
   'src/features/positions/stores/transform/index.ts',
   'src/features/positions/types/index.ts',
   'src/featuresToUnlock/index.ts',
-  'src/graphql/index.ts',
   'src/helpers/index.ts',
   'src/hooks/charts/index.ts',
   'src/hooks/index.ts',
