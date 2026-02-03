@@ -10,7 +10,7 @@ import styled from '@/styled-thing';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 const BodyText = styled(Text).attrs(({ theme: { colors } }: { theme: ThemeContextProps }) => ({
   align: 'center',
   color: opacity(colors.blueGreyDark, 0.6),

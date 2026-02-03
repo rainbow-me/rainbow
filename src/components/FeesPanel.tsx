@@ -18,7 +18,7 @@ import { isL2Chain } from '@/handlers/web3';
 import { CurrentBaseFeeTypeKey, ExplainSheetRouteParams, gasTrendToTrendType, RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import { useChainSupportsPriorityFee } from '@/__swaps__/utils/meteorology';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 const MAX_TEXT_WIDTH = 210;
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
 

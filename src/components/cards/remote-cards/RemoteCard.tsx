@@ -17,7 +17,7 @@ import { FlashList } from '@shopify/flash-list';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { openInBrowser } from '@/utils/openInBrowser';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const ICON_SIZE = 36;
 const CARD_BORDER_RADIUS = 20;

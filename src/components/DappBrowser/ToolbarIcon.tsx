@@ -6,7 +6,7 @@ import { TextColor } from '@/design-system/color/palettes';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { useTheme } from '@/theme';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const ToolbarIcon = ({
   color,

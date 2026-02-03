@@ -9,7 +9,7 @@ import { padding, position } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
 import * as i18n from '@/languages';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const L2Disclaimer = ({
   chainId,

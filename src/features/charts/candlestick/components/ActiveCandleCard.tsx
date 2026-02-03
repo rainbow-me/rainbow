@@ -11,7 +11,7 @@ import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { SupportedCurrencyKey, supportedNativeCurrencies } from '@/references';
 import { addCommasToNumber } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { FormatTimestampOptions, formatTimestamp } from '@/worklets/dates';

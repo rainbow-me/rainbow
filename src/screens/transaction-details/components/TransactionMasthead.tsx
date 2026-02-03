@@ -36,7 +36,7 @@ import * as i18n from '@/languages';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { checkForPendingSwap } from '@/helpers/transactions';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const TransactionMastheadHeight = android ? 153 : 135;
 

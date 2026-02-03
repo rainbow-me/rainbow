@@ -10,7 +10,7 @@ import ActivityIndicator from '@/components/ActivityIndicator';
 import { Box, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 

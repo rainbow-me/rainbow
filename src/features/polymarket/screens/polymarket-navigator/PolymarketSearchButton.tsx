@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Box, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { PolymarketNavigation } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
 import Routes from '@/navigation/routesNames';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from 'react-native-blur-view';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';

@@ -5,7 +5,7 @@ import { Column, Row } from '../layout';
 import { Text } from '../text';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const BubbleInput = styled(ExchangeInput).attrs(({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({
   disableTabularNums: true,

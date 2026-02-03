@@ -12,7 +12,7 @@ import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import * as i18n from '@/languages';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { PolymarketButton } from '@/features/polymarket/components/PolymarketButton';
 
 export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalanceCard({ accentColor }: { accentColor: string }) {

@@ -69,7 +69,7 @@ import { toChecksumAddress } from 'ethereumjs-util';
 import { switchWallet } from '@/state/wallets/switchWallet';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { Address } from 'viem';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;

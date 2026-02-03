@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { colors } from '@/styles';
 import { AnimatedText, useForegroundColor } from '@/design-system';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';

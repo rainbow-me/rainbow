@@ -16,7 +16,7 @@ import {
 } from 'react-native-reanimated';
 import { generateRainbowColors } from '../constants';
 import { fonts } from '@/styles';
-import { opacity as getOpacity } from '@/data/opacity';
+import { opacity as getOpacity } from '@/framework/ui/utils/opacity';
 
 type AnimatedTextProps = {
   color?: { text: string; shadow: string };

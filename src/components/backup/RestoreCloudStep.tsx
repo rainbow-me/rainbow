@@ -31,7 +31,7 @@ import { PasswordField } from '../fields';
 import { ImgixImage } from '../images';
 import { Text } from '../text';
 import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type ComponentProps = {
   theme: ThemeContextProps;

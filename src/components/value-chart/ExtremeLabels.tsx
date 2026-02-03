@@ -5,7 +5,7 @@ import { Text } from '@/design-system';
 import { useAccountSettings, useDimensions } from '@/hooks';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const LABEL_VERTICAL_EXTRA_OFFSET = 12;
 const LABEL_MIN_HORIZONTAL_INSET = 12;

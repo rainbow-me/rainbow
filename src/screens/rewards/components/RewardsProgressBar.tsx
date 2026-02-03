@@ -3,7 +3,7 @@ import { Box } from '@/design-system';
 import { useTheme } from '@/theme';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { LayoutChangeEvent } from 'react-native';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type Props = {
   // Between 0 and 1

@@ -3,7 +3,7 @@ import { magicMemo } from '../../utils';
 import { OpacityToggler } from '../animations';
 import { Text } from '../text';
 import styled from '@/styled-thing';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const LabelText = styled(Text).attrs(({ shareButton, theme: { colors } }) => ({
   color: opacity(colors.blueGreyDark, 0.6),

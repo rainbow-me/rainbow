@@ -13,7 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { IS_TEST } from '@/env';
 import { useTheme } from '@/theme';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const timingConfig = {
   duration: 2500,

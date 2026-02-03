@@ -12,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { AnimatedText, Bleed, Column, Columns, Inline, useColorMode, useForegroundColor } from '@/design-system';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { pulsingConfig } from '@/__swaps__/screens/Swap/constants';
 import { Slider, SliderProps, SliderVisualState, SLIDER_DEFAULT_WIDTH } from './Slider';

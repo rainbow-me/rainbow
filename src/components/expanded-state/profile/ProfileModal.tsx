@@ -13,7 +13,7 @@ import ProfileNameInput from './ProfileNameInput';
 import styled from '@/styled-thing';
 import { margin, padding, position } from '@/styles';
 import { useTheme } from '@/theme';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const ProfileAddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }: any) => ({
   align: 'center',

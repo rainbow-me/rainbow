@@ -16,7 +16,7 @@ import { analytics } from '@/analytics';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { SettingsPages } from './SettingsSheet/SettingsPages';
 import { RootStackParamList } from '@/navigation/types';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const APP_ICON_SIZE = 64;
 

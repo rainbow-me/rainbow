@@ -7,7 +7,7 @@ import { infoForEventType, motiTimingConfig } from '@/components/Transactions/co
 
 import { useTheme } from '@/theme';
 import { DetailInfo, EventInfo, EventType } from '@/components/Transactions/types';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const EventIcon = ({ eventType }: { eventType: EventType }) => {
   const eventInfo: EventInfo = infoForEventType[eventType];

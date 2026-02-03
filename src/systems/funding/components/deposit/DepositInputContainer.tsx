@@ -14,7 +14,7 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { BASE_INPUT_WIDTH, ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT } from '../../constants';
 import { useDepositContext } from '../../contexts/DepositContext';
 

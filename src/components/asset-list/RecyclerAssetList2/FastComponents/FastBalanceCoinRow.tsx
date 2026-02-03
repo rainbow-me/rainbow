@@ -15,7 +15,7 @@ import { Navigation } from '@/navigation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { toSignificantDigits } from '@/helpers/utilities';
 import { getLiquidityCappedBalance, TokenData } from '@/state/liveTokens/liveTokensStore';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;

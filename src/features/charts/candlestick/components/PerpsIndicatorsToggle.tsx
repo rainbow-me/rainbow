@@ -10,7 +10,7 @@ import { ChartType } from '@/features/charts/types';
 import { useHasPositionCheck } from '@/features/perps/stores/derived/useHasPositionCheck';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
 // ============ Constants ====================================================== //

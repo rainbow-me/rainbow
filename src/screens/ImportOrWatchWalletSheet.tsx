@@ -13,7 +13,7 @@ import { LoadingOverlay } from '@/components/modal';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { Keyboard } from 'react-native';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
 

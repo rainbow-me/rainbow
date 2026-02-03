@@ -12,7 +12,7 @@ import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import Animated, { runOnJS } from 'react-native-reanimated';
 import { defaultExitAnimation, createScaleInFadeInSlideEnterAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { RewardsHowToEarnCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RewardsHowToEarnCard';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import * as i18n from '@/languages';

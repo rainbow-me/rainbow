@@ -24,7 +24,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { SEPARATOR_COLOR, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { addCommasToNumber, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { FOOTER_HEIGHT, SLIDER_WIDTH, SLIDER_WITH_LABELS_HEIGHT } from '../constants';
 import { useWithdrawalContext, WithdrawalProvider } from '../contexts/WithdrawalContext';
 import { useWithdrawalController } from '../hooks/useWithdrawalController';

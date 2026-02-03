@@ -6,7 +6,7 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const START_SCALE = 0.5;
 const FINISH_SCALE = 1;

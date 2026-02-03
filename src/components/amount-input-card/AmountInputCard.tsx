@@ -12,7 +12,7 @@ import {
 import { runOnJS, runOnUI, SharedValue, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Slider, SliderChangeSource, SliderGestureState } from '@/features/perps/components/Slider';
 import { addCommasToNumber, clamp, trimCurrencyZeros } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
 import {

@@ -1,4 +1,4 @@
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';

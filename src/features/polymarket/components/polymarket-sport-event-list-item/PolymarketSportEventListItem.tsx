@@ -2,7 +2,7 @@ import { memo, useCallback, useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import ConditionalWrap from 'conditional-wrap';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';

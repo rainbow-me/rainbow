@@ -2,7 +2,7 @@ import React, { ComponentProps, ReactNode } from 'react';
 import { Box, BoxProps, globalColors, useColorMode } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { StyleSheet } from 'react-native';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 
 type ButtonPressAnimationProps = ComponentProps<typeof ButtonPressAnimation>;

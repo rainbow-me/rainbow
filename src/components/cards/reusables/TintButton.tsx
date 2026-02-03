@@ -4,7 +4,7 @@ import { ButtonPressAnimation } from '../../animations';
 import ConditionalWrap from 'conditional-wrap';
 import { colors } from '@/styles';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 interface TintButtonProps {
   children: string;

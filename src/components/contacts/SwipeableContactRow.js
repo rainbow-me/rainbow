@@ -11,7 +11,7 @@ import ContactRow from './ContactRow';
 import showDeleteContactActionSheet from './showDeleteContactActionSheet';
 import { ImgixImage } from '@/components/images';
 import { margin, position } from '@/styles';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const AnimatedCentered = Animated.createAnimatedComponent(Centered);
 

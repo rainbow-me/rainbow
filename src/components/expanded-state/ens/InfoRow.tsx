@@ -14,7 +14,7 @@ import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export function InfoRowSkeleton() {
   const { colors } = useTheme();

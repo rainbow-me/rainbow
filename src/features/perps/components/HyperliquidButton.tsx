@@ -3,7 +3,7 @@ import { Box, BoxProps, useColorMode } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet, View } from 'react-native';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 
 type ButtonPressAnimationProps = ComponentProps<typeof ButtonPressAnimation>;

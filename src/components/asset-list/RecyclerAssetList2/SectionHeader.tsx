@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const HEIGHT = 48;
 

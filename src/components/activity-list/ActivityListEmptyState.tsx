@@ -8,7 +8,7 @@ import { Centered, Column } from '../layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Text } from '../text';
 import styled from '@/styled-thing';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const Container = styled(Column)({
   alignSelf: 'center',

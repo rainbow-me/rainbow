@@ -37,7 +37,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors, useColorMode } from '@/design-system';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { clamp } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 interface RainbowCoinEffectProps {
   color: string;

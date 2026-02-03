@@ -2,7 +2,7 @@ import { memo, useCallback, useMemo, useState } from 'react';
 import { Box, Text, useColorMode } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { View } from 'react-native';
 

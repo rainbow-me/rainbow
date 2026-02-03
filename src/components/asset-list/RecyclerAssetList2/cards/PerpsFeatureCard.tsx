@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { Box, Inline, Stack, Text, AccentColorProvider, TextIcon, useColorMode } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import infinityIcon from '@/assets/infinity.png';
 import LinearGradient from 'react-native-linear-gradient';

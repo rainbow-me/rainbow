@@ -10,7 +10,7 @@ import { MarketRow, MarketRowLoadingSkeleton } from '@/features/polymarket/scree
 import { ResolvedMarketsList } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsList';
 import { SingleMarketEventOutcomes } from '@/features/polymarket/screens/polymarket-event-screen/components/SingleMarketEvent';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';

@@ -12,7 +12,7 @@ import { PerpMarket, PerpsPosition } from '@/features/perps/types';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
 import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-screen/LiquidationInfo';

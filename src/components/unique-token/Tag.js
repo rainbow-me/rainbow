@@ -11,7 +11,7 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { magicMemo, showActionSheetWithOptions } from '@/utils';
 import { openInBrowser } from '@/utils/openInBrowser';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const HairlineSpace = '\u200a';
 

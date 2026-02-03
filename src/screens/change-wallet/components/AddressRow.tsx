@@ -8,7 +8,7 @@ import { Box, Inline, Stack, Text, useForegroundColor, useColorMode, TextIcon } 
 import { AddressItem, AddressMenuAction } from '@/screens/change-wallet/ChangeWalletSheet';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { TextWeight } from '@/design-system/components/Text/Text';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { SelectedAddressBadge } from '@/screens/change-wallet/components/SelectedAddressBadge';

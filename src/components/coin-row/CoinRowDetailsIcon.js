@@ -4,7 +4,7 @@ import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const AddButtonPadding = 19;
 

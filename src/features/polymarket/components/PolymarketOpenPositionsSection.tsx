@@ -10,7 +10,7 @@ import * as i18n from '@/languages';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { usePolymarketPositionsSummary } from '@/features/polymarket/stores/derived/usePolymarketPositionsSummary';
 import { usePolymarketPositions } from '@/features/polymarket/stores/derived/usePolymarketPositions';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const PolymarketPositionsSection = function PolymarketPositionsSection() {
   const { hasActivePositions } = usePolymarketPositionsSummary();

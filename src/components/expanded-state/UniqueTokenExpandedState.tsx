@@ -59,7 +59,7 @@ import { UniqueTokenExpandedStateContent, UniqueTokenExpandedStateHeader } from 
 import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { buildUniqueTokenName } from '@/helpers/assets';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,

@@ -3,7 +3,7 @@ import { ColumnWithMargins } from '../layout';
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,

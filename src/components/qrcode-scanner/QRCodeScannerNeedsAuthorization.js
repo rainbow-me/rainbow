@@ -10,7 +10,7 @@ import { delay } from '@/utils/delay';
 import styled from '@/styled-thing';
 import { margin, padding, position } from '@/styles';
 import { Box } from '@/design-system';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const Button = styled(ButtonPressAnimation).attrs({
   scaleTo: 1.08,

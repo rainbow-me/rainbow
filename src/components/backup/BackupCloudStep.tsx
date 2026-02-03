@@ -23,7 +23,7 @@ import { useTheme } from '@/theme';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type NativeEvent = {
   nativeEvent: {

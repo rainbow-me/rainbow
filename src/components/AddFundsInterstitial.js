@@ -21,7 +21,7 @@ import { useTheme } from '../theme/ThemeContext';
 import { deviceUtils, magicMemo } from '../utils';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const ContainerWidth = 261;
 

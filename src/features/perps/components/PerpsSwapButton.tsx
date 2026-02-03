@@ -1,5 +1,5 @@
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Cover, useColorMode, useForegroundColor } from '@/design-system';
 import { AnimatedText, SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';

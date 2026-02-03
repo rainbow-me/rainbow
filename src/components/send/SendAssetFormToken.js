@@ -8,7 +8,7 @@ import { removeLeadingZeros } from '@/utils';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const FooterContainer = styled(Column).attrs({
   justify: 'end',

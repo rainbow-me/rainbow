@@ -18,7 +18,7 @@ import { SharedOrDerivedValueText } from '@/design-system/components/Text/Animat
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize, typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_IOS } from '@/env';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { SharedOrDerivedValue } from '@/types/reanimated';
 import { getSkiaFontWeight, useSkiaFontManager } from './skiaFontManager';
 

@@ -8,7 +8,7 @@ import { analytics } from '@/analytics';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { Bleed, Separator } from '@/design-system';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const Footer = styled(ColumnWithMargins).attrs({
   margin: 19,

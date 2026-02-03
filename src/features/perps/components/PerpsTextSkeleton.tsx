@@ -1,4 +1,4 @@
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { Box, useBackgroundColor } from '@/design-system';
 

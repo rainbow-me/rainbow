@@ -11,7 +11,7 @@ import Routes from '@/navigation/routesNames';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import * as i18n from '@/languages';
 import { MarketSortOrderDropdown } from '@/features/perps/components/MarketSortOrderDropdown';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useMarketSortOrderLabels } from '@/features/perps/hooks/useMarketSortOrderLabels';
 
 const MAX_MARKETS_TO_SHOW = 8;

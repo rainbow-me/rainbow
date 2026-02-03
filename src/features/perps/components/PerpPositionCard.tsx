@@ -5,7 +5,7 @@ import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
 import { getColorValueForThemeWorklet, getHighContrastColor } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { abs } from '@/helpers/utilities';
 import { useStableValue } from '@/hooks/useStableValue';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';

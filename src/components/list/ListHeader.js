@@ -13,7 +13,7 @@ import { ContextMenu } from '../context-menu';
 import { Column, Row } from '../layout';
 import { H1 } from '../text';
 import { initializeShowcaseIfNeeded } from '@/helpers/webData';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const ListHeaderHeight = 48;
 

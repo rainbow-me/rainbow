@@ -20,7 +20,7 @@ import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const extractCollectiblesIdFromRow = (row: {
   item: {

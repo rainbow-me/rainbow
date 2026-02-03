@@ -3,7 +3,7 @@ import { memo } from 'react';
 import { Box, Text, TextIcon, useForegroundColor } from '@/design-system';
 import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { PerpMarket } from '@/features/perps/types';
 import { DEFAULT_SLIPPAGE_BIPS } from '@/features/perps/constants';
 import { mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';

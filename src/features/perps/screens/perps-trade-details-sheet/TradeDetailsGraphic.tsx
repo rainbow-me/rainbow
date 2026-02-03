@@ -1,4 +1,4 @@
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { PANEL_BACKGROUND_DARK, PANEL_BACKGROUND_LIGHT } from '@/components/PanelSheet/PanelSheet';
 import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { FloatingSparks } from '@/features/perps/screens/perps-trade-details-sheet/FloatingSparks';

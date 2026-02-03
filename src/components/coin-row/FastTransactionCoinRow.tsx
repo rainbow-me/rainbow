@@ -18,7 +18,7 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ChainImage } from '../coin-icon/ChainImage';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 import { activityValues, useTransactionLaunchToken } from '@/helpers/transactions';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const getIconTopMargin = (type: TransactionType) => {
   switch (type) {

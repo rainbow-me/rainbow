@@ -14,7 +14,7 @@ import { logger, RainbowError } from '@/logger';
 import { useCleanup, useCoinListEditOptions } from '@/hooks';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { ScrollView } from 'react-native';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type TokenLauncherContextType = {
   tokenBackgroundImage: SkImage | null;

@@ -47,7 +47,7 @@ import { Alert, InteractionManager, LayoutChangeEvent } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { Address } from 'viem';
 import { updateWebProfile } from '@/helpers/webData';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
 

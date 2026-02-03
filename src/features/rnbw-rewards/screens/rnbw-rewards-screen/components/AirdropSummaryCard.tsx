@@ -4,7 +4,7 @@ import * as i18n from '@/languages';
 import { Box, Text } from '@/design-system';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import { BlurView } from 'react-native-blur-view';

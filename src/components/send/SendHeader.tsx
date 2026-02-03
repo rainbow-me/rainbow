@@ -24,7 +24,7 @@ import { padding } from '@/styles';
 import { profileUtils, showActionSheetWithOptions } from '@/utils';
 import { RainbowAccount } from '@/model/wallet';
 import { Contact } from '@/redux/contacts';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type ComponentPropsWithTheme = {
   theme: ThemeContextProps;

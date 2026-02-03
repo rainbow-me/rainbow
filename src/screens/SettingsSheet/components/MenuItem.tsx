@@ -11,7 +11,7 @@ import { useTheme } from '@/theme';
 import { ImageSourcePropType } from 'react-native';
 import { Width } from '@/design-system/layout/size';
 import { colors } from '@/styles';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 interface ImageIconProps {
   size?: number;

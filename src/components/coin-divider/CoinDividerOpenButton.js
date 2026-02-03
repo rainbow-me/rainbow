@@ -10,7 +10,7 @@ import { padding } from '@/styles';
 import * as i18n from '@/languages';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { ImgixImage } from '@/components/images';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,

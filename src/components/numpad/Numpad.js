@@ -6,7 +6,7 @@ import { Text } from '../text';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const KeyboardButtonContent = styled(Centered)({
   height: ({ height }) => height,

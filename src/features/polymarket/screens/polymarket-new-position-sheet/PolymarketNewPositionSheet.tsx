@@ -7,7 +7,7 @@ import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-syst
 import * as i18n from '@/languages';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

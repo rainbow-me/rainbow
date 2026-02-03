@@ -6,7 +6,7 @@ import { PerpPositionSide } from '@/features/perps/types';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import Animated, { interpolate, interpolateColor, useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';

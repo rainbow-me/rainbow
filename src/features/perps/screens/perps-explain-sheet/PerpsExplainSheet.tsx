@@ -13,7 +13,7 @@ import * as i18n from '@/languages';
 import { useRoute } from '@/navigation/Navigation';
 import { HyperliquidLogo } from '@/features/perps/components/HyperliquidLogo';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { easing } from '@/components/animations/animationConfigs';
 
 const translations = i18n.l.perps.explain_sheet;

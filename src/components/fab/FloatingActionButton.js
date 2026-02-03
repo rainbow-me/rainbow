@@ -7,7 +7,7 @@ import { Centered, InnerBorder } from '../layout';
 import styled from '@/styled-thing';
 import { borders, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const FloatingActionButtonSize = 56;
 export const FabWrapperBottomPosition = 21 + safeAreaInsetValues.bottom;

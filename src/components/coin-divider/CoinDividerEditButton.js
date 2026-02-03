@@ -7,7 +7,7 @@ import { Row } from '../layout';
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import { padding, shadow } from '@/styles';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const ButtonContent = styled(Row).attrs({
   justify: 'center',

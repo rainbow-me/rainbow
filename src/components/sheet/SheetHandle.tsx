@@ -4,7 +4,7 @@ import { IS_ANDROID } from '@/env';
 import styled from '@/styled-thing';
 import { Colors } from '@/styles';
 import { useTheme } from '@/theme';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const SHEET_HANDLE_HEIGHT = 5;
 

@@ -5,7 +5,7 @@ import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { PerpMarket, PerpPositionSide } from '@/features/perps/types';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { Chart } from '@/components/value-chart/Chart';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

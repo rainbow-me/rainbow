@@ -17,7 +17,7 @@ import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenCo
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 const SearchHeight = 40;
 const SearchWidth = deviceUtils.dimensions.width - 30;
 

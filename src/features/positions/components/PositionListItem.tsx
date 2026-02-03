@@ -9,7 +9,7 @@ import {
 import { PositionAsset } from '@/features/positions/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ButtonPressAnimation } from '@/components/animations';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type Props = {
   asset: PositionAsset;

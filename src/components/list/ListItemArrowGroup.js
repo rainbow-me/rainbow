@@ -4,7 +4,7 @@ import { Image } from 'react-native';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const ListItemArrowGroup = ({ children }) => {
   const { colors } = useTheme();

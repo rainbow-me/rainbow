@@ -5,7 +5,7 @@ import { Text } from '@/components/text';
 import styled from '@/styled-thing';
 import { buildTextStyles } from '@/styles';
 import { magicMemo } from '@/utils';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const AndroidMaskWrapper = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.white,

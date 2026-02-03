@@ -13,7 +13,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { greaterThanWorklet, lessThanWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useTheme } from '@/theme';
 
 const UP_ARROW = IS_ANDROID ? '' : '↑';

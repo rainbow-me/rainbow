@@ -5,7 +5,7 @@ import { TruncatedText } from './text';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { Box, Text } from '@/design-system';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const Gradient = styled(RadialGradient).attrs(({ theme: { colors }, borderRadius = 10.5 }) => ({
   center: [0, borderRadius],

@@ -25,7 +25,7 @@ import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
 import { GenericCard } from './GenericCard';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const ETH_CARD_HEIGHT = 284.3;
 

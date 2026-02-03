@@ -29,7 +29,7 @@ import {
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { InputKeys } from '@/__swaps__/types/swap';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { GestureHandlerButton } from './GestureHandlerButton';
 
 type numberPadCharacter = number | 'backspace' | '.';

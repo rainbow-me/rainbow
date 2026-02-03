@@ -4,7 +4,7 @@ import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native
 import { BlurView } from 'react-native-blur-view';
 import { Box, globalColors, Inline, Text, TextIcon, useColorMode } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
 import * as i18n from '@/languages';

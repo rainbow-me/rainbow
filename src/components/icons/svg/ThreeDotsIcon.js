@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Circle, G, Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const ThreeDotsIcon = ({ circle, color, colors, smallDots, tightDots, ...props }) =>
   smallDots ? (

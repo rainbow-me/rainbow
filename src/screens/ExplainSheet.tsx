@@ -24,7 +24,7 @@ import { openInBrowser } from '@/utils/openInBrowser';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ExplainSheetRouteParams, RootStackParamList } from '@/navigation/types';
 import { logger } from '@/logger';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = 415 + SheetHandleFixedToTopHeight + safeAreaInsetValues.bottom;

@@ -7,7 +7,7 @@ import { fonts } from '@/styles';
 import { useTheme } from '@/theme';
 import { Categories } from './Categories';
 import { AllEmojiHeaderEntry } from './helpers/getFormattedAllEmojiList';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const categoryKeys = Object.keys(Categories);
 

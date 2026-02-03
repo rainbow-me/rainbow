@@ -7,7 +7,7 @@ import { Colors } from '../../styles/colors';
 import { Box } from '@/design-system';
 import { useTheme } from '@/theme';
 import { View } from 'moti';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const BodyText = styled(Text).attrs(({ theme: { colors } }: { theme: { colors: Colors } }) => ({
   align: 'center',

@@ -16,7 +16,7 @@ import { AnimatedText, globalColors, useColorMode, useForegroundColor } from '@/
 import { IS_IOS } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { GREEN_CANDLE_COLOR, RED_CANDLE_COLOR } from '../candlestick/constants';

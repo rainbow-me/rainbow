@@ -8,7 +8,7 @@ import { AsyncActionState, useRewardsFlowStore, rewardsFlowActions } from '@/fea
 import * as i18n from '@/languages';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { time } from '@/utils/time';
 import Animated from 'react-native-reanimated';
 import { defaultEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';

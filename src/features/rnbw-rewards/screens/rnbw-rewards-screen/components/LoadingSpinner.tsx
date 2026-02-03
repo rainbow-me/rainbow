@@ -1,4 +1,4 @@
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { time } from '@/utils/time';
 import { Blur, Canvas, Group, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { memo, useCallback, useEffect, useMemo } from 'react';

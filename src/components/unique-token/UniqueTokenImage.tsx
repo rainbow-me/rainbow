@@ -10,7 +10,7 @@ import { Colors } from '@/styles';
 import { isLowerCaseMatch } from '@/utils';
 import { RainbowImage } from '../RainbowImage';
 import { logger } from '@/logger';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 function getFallbackTextColor(bg: string, isDarkMode: boolean, colors: Colors) {
   const variants = {

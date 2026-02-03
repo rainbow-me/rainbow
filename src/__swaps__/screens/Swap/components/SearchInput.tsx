@@ -16,7 +16,7 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { INPUT_PADDING, LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useSwapsSearchStore } from '../resources/search/searchV2';
 import { SearchInputButton } from './SearchInputButton';
 

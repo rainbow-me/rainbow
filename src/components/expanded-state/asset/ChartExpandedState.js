@@ -41,7 +41,7 @@ import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analytics } from '@/analytics';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const defaultCarouselHeight = 60;
 const baseHeight = 386 + (IS_ANDROID && 20 - NAVIGATION_BAR_HEIGHT) - defaultCarouselHeight;

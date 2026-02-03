@@ -5,7 +5,7 @@ import { Box, Text, TextProps, AccentColorProvider, Stack } from '@/design-syste
 import { ImgixImage } from '@/components/images';
 import SheetActionButton from '@/components/sheet/sheet-action-buttons/SheetActionButton';
 import { ImageSourcePropType, ScrollView, StyleSheet } from 'react-native';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export { open, close, useOpen } from '@/screens/Portal';
 

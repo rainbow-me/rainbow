@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import Row from '@/components/layout/Row';
 import { Box, Inline, Text } from '@/design-system';
 import { useTheme } from '@/theme';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';

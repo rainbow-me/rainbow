@@ -15,7 +15,7 @@ import { IS_ANDROID } from '@/env';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 export const ExternalLinkWarningSheetHeight = 380 + (IS_ANDROID ? 20 : 0);
 
 const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeight, height }) => ({

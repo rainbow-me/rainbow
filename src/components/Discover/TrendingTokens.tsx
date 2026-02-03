@@ -25,7 +25,7 @@ import { useFarcasterAccountForWallets } from '@/hooks/useFarcasterAccountForWal
 import { ImgixImage } from '../images';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { getColorWorklet, getMixedColor } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_IOS } from '@/env';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';

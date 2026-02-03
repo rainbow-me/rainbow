@@ -6,7 +6,7 @@ import { Box, Cover, Text, useForegroundColor } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const NeonButton = ({ color, label, onPress, width }: { color?: string; label: string; onPress?: () => void; width?: number }) => {
   const { width: deviceWidth } = useDimensions();

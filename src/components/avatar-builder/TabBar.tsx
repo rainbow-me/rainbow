@@ -7,7 +7,7 @@ import { Categories } from './Categories';
 import { EmojiCategory } from './types';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 interface Props {
   categoryKeys: string[];

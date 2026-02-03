@@ -5,7 +5,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useLatestCallback } from '@/hooks';
 import styled from '@/styled-thing';
 import { borders, position } from '@/styles';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const CircleButton = styled(RadialGradient).attrs(({ theme: { colors } }) => ({
   center: [0, 20],

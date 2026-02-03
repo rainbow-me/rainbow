@@ -12,7 +12,7 @@ import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ChainId } from '@/state/backendNetworks/types';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const SafeRadialGradient = (IS_TEST ? View : RadialGradient) as typeof RadialGradient;
 

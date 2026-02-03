@@ -16,7 +16,7 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { EXPANDED_INPUT_HEIGHT } from '../../constants';

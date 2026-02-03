@@ -10,7 +10,7 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { magicMemo } from '@/utils';
 import { IS_TEST } from '@/env';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const FavoriteButtonPadding = 19;
 

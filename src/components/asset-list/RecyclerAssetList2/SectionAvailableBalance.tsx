@@ -6,7 +6,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { USDC_COLORS, USDC_ICON_URL } from '@/features/perps/constants';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import * as i18n from '@/languages';
 

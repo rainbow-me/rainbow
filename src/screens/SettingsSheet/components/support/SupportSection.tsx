@@ -11,7 +11,7 @@ import MenuItem from '../MenuItem';
 import { SettingsExternalURLs } from '../../constants';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { useSendFeedback } from '@/hooks/useSendFeedback';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const SupportSection = () => {
   return (

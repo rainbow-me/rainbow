@@ -13,7 +13,7 @@ import CoinRow from './CoinRow';
 import { UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { padding } from '@/styles';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const dividerHeight = 22;
 const isSmallPhone = deviceUtils.dimensions.height <= 667;

@@ -32,7 +32,7 @@ import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScree
 import { openInBrowser } from '@/utils/openInBrowser';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const Container = styled(View)({
   ...position.coverAsObject,

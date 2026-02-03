@@ -30,7 +30,7 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import { ParsedAddressAsset } from '@/entities';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
 

@@ -6,7 +6,7 @@ import Animated from 'react-native-reanimated';
 import { Box, globalColors } from '@/design-system';
 
 import { useTheme } from '@/theme';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type FadeGradientProps = { side: 'top' | 'bottom'; style?: StyleProp<Animated.AnimateStyle<StyleProp<ViewStyle>>> };
 

@@ -5,7 +5,7 @@ import { Centered } from '../../layout';
 import Svg from '../Svg';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const AnimatedSvg = Animated.createAnimatedComponent<PropsWithChildren>(Svg);
 const AnimatedPath = Animated.createAnimatedComponent(Path);

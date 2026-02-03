@@ -14,7 +14,7 @@ import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Sw
 import { time } from '@/utils/time';
 import * as i18n from '@/languages';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { MarketSortOrderDropdown } from '@/features/perps/components/MarketSortOrderDropdown';
 import { useMarketSortOrderLabels } from '@/features/perps/hooks/useMarketSortOrderLabels';
 

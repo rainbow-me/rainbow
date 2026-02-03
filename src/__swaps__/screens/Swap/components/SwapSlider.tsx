@@ -32,7 +32,7 @@ import {
 } from '@/__swaps__/screens/Swap/constants';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { clamp, getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 

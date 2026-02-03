@@ -5,7 +5,7 @@ import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const PoolValueWrapper = styled(Row)(({ simple }) => ({
   borderRadius: simple ? 0 : 15,

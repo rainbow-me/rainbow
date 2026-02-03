@@ -10,7 +10,7 @@ import { Box } from '@/design-system';
 import { TextInput, TextInputProps, View } from 'react-native';
 import { IS_IOS, IS_ANDROID } from '@/env';
 import { Icon } from '../icons';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const FieldAccessoryBadgeSize = 22;
 const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(

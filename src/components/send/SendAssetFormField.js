@@ -9,7 +9,7 @@ import { Text } from '../text';
 import { analytics } from '@/analytics';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const GradientBackground = styled(RadialGradient).attrs(({ colorForAsset, theme: { colors }, width }) => {
   const FieldWidth = width - 38;

@@ -7,7 +7,7 @@ import Text from '../text/Text';
 import styled from '@/styled-thing';
 import { RainbowError, logger } from '@/logger';
 import { Colors } from '@/styles';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const Spacer = styled(View)({
   height: ({ height }: { height: number }) => height,

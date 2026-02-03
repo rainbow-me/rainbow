@@ -9,7 +9,7 @@ import Routes from '@/navigation/routesNames';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { AirdropClaimable, BalancePill } from '@/screens/Airdrops/AirdropsSheet';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { useAirdropsStore } from '@/state/claimables/airdropsStore';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';

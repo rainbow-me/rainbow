@@ -25,7 +25,7 @@ import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { greaterThan } from '@/helpers/utilities';
 import ConditionalWrap from 'conditional-wrap';
 import { IS_IOS } from '@/env';

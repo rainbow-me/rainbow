@@ -3,7 +3,7 @@ import { RefreshControl, RefreshControlProps } from 'react-native';
 import { useRefreshAccountData } from '@/hooks';
 import { useTheme } from '@/theme';
 import { navbarHeight } from '@/components/navbar/Navbar';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export default function RefreshControlWrapped(props: Partial<RefreshControlProps>) {
   const { refresh, isRefreshing } = useRefreshAccountData();

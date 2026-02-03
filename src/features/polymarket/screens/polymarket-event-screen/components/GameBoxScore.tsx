@@ -3,7 +3,7 @@ import { Box, globalColors, Separator, Text, TextShadow } from '@/design-system'
 import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import * as i18n from '@/languages';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import Animated from 'react-native-reanimated';
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
 import { View } from 'react-native';

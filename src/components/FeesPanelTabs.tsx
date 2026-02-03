@@ -7,7 +7,7 @@ import { gasUtils } from '@/utils';
 import { AccentColorProvider, Box, Inline, Inset, Text } from '@/design-system';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const { CUSTOM, URGENT, GasSpeedOrder } = gasUtils;
 

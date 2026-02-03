@@ -10,7 +10,7 @@ import { StoreState } from '@/state/internal/queryStore/types';
 import { BaseRainbowStore } from '@/state/internal/types';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { ResponseByTheme, getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { FormatTimestampOptions, formatTimestamp } from '@/worklets/dates';
 import { ActiveInteractionData } from '../classes/PolymarketChartManager';
 import { usePolymarketChartStore, usePolymarketMarketChartStore } from '../stores/polymarketChartStore';

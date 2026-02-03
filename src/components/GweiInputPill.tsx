@@ -9,7 +9,7 @@ import { useTheme } from '@/theme';
 import { TextInput } from 'react-native';
 import { Box, Inline, Inset, Text } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type GweiInputPillProps = {
   color: string;

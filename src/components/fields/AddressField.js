@@ -6,7 +6,7 @@ import { Row } from '../layout';
 import { useClipboard, useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { abbreviations, addressUtils } from '@/utils';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const AddressInput = styled(Input).attrs({
   autoCapitalize: 'none',

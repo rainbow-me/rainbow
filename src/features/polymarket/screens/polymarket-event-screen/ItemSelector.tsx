@@ -14,7 +14,7 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 // ============ Constants ====================================================== //
 

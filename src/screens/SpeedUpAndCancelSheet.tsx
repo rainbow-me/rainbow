@@ -36,7 +36,7 @@ import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row } from '../components/layout';
 import { SheetActionButton, SheetActionButtonRow, SheetHandleFixedToTop, SheetKeyboardAnimation, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const { CUSTOM, URGENT } = gasUtils;
 

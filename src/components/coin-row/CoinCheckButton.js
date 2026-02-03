@@ -7,7 +7,7 @@ import { Row } from '../layout';
 import { useCoinListFinishEditingOptions } from '@/hooks';
 import styled from '@/styled-thing';
 import { borders, padding, position, shadow } from '@/styles';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const CoinIconSize = 40;
 

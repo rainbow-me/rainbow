@@ -14,7 +14,7 @@ import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/pol
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createOpacityPalette } from '@/worklets/colors';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type LeagueItemKey = LeagueId | typeof DEFAULT_SPORTS_LEAGUE_KEY;
 type LeagueItem = {

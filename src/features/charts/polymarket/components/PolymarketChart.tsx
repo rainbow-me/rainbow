@@ -17,7 +17,7 @@ import { useListen } from '@/state/internal/hooks/useListen';
 import { DeepPartial } from '@/types/objects';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { createBlankPicture } from '@/worklets/skia';
 import { NoChartData } from '../../components/NoChartData';
 import { LineSmoothing } from '../../line/LineSmoothingAlgorithms';

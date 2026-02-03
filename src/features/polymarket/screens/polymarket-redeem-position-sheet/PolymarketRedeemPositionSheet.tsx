@@ -13,7 +13,7 @@ import { logger, RainbowError } from '@/logger';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import LinearGradient from 'react-native-linear-gradient';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
 import Navigation from '@/navigation/Navigation';

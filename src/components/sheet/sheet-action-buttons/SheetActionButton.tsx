@@ -10,7 +10,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { StyleProp, ViewStyle } from 'react-native';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export type SheetActionButtonProps = PropsWithChildren<{
   borderRadius?: number;

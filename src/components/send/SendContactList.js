@@ -19,7 +19,7 @@ import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { filterList, isLowerCaseMatch } from '@/utils';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { opacity } from '@/data/opacity';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const KeyboardArea = styled.View({
   height: ({ keyboardHeight }) => keyboardHeight,
