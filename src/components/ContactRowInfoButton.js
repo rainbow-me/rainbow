@@ -12,7 +12,8 @@ import { useClipboard } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding } from '@/styles';
 import { IS_TEST } from '@/env';
-import { abbreviations, ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
+import { abbreviations, ethereumUtils, haptics } from '@/utils';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 const InfoButton = styled(Centered)({

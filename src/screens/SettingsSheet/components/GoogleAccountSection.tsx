@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getGoogleAccountUserData, GoogleDriveUserData, logoutFromGoogleDrive } from '@/handlers/cloudBackup';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import * as i18n from '@/languages';
 import Menu from './Menu';
 import MenuItem from './MenuItem';
