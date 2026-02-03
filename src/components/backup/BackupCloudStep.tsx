@@ -23,6 +23,7 @@ import { useTheme } from '@/theme';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type NativeEvent = {
   nativeEvent: {
@@ -202,7 +203,7 @@ export default BackupCloudStep;
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors }, color }: any) => ({
   align: 'left',
-  color: color || colors.alpha(colors.blueGreyDark, 0.5),
+  color: color || opacity(colors.blueGreyDark, 0.5),
   lineHeight: 'looser',
   size: 'lmedium',
   weight: 'medium',
@@ -231,7 +232,7 @@ const Title = styled(Text).attrs({
 const ButtonText = styled(Text).attrs(({ theme: { colors }, color }: any) => ({
   align: 'center',
   letterSpacing: 'rounded',
-  color: color || colors.alpha(colors.blueGreyDark, 0.5),
+  color: color || opacity(colors.blueGreyDark, 0.5),
   size: 'larger',
   weight: 'heavy',
   numberOfLines: 1,

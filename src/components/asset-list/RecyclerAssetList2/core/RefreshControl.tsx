@@ -3,6 +3,7 @@ import { RefreshControl, RefreshControlProps } from 'react-native';
 import { useRefreshAccountData } from '@/hooks';
 import { useTheme } from '@/theme';
 import { navbarHeight } from '@/components/navbar/Navbar';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export default function RefreshControlWrapped(props: Partial<RefreshControlProps>) {
   const { refresh, isRefreshing } = useRefreshAccountData();
@@ -14,7 +15,7 @@ export default function RefreshControlWrapped(props: Partial<RefreshControlProps
       onRefresh={refresh}
       progressViewOffset={navbarHeight + 16}
       refreshing={isRefreshing}
-      tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
+      tintColor={opacity(colors.blueGreyDark, 0.4)}
     />
   );
 }

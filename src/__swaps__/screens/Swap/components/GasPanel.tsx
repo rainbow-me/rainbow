@@ -19,7 +19,7 @@ import {
   useChainSupportsPriorityFee,
 } from '@/__swaps__/utils/meteorology';
 import { add, greaterThan, multiply, subtract, lessThan, formatNumber } from '@/helpers/utilities';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Bleed, Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';

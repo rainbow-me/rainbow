@@ -5,6 +5,7 @@ import { Text } from '../text';
 import { checkIsValidAddressOrDomain } from '@/helpers/validators';
 import { useClipboard, useInvalidPaste } from '@/hooks';
 import { deviceUtils } from '@/utils';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export default function PasteAddressButton({ onPress }) {
   const [isValid, setIsValid] = useState(false);
@@ -41,9 +42,7 @@ export default function PasteAddressButton({ onPress }) {
     <ButtonPressAnimation onPress={handlePress} testID="paste-address-button">
       <Text
         align="right"
-        color={
-          (deviceUtils.isIOS14 ? !hasClipboardData : clipboard && !isValid) ? colors.alpha(colors.blueGreyDark, 0.3) : colors.appleBlue
-        }
+        color={(deviceUtils.isIOS14 ? !hasClipboardData : clipboard && !isValid) ? opacity(colors.blueGreyDark, 0.3) : colors.appleBlue}
         size="large"
         weight="heavy"
       >

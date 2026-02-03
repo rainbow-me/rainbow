@@ -17,7 +17,8 @@ import {
   FOCUSED_INPUT_HEIGHT,
 } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { NavigationSteps } from './useSwapNavigation';
 
 export const useSwapInputStyles = ({
@@ -35,17 +36,17 @@ export const useSwapInputStyles = ({
 
   const bgColor = useDerivedValue(() => {
     return isDarkMode
-      ? opacityWorklet(getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode), 0.08)
-      : opacityWorklet(globalColors.white100, 0.8);
+      ? opacity(getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode), 0.08)
+      : opacity(globalColors.white100, 0.8);
   });
 
   const expandedBgColor = useDerivedValue(() => {
-    return isDarkMode ? bgColor.value : opacityWorklet(globalColors.white100, 0.8);
+    return isDarkMode ? bgColor.value : opacity(globalColors.white100, 0.8);
   });
 
   const strokeColor = useDerivedValue(() => {
     return isDarkMode
-      ? opacityWorklet(
+      ? opacity(
           getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode) === ETH_COLOR_DARK
             ? ETH_COLOR_DARK_ACCENT
             : getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode),
@@ -55,9 +56,7 @@ export const useSwapInputStyles = ({
   });
 
   const expandedStrokeColor = useDerivedValue(() => {
-    return isDarkMode
-      ? opacityWorklet(getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode), 0.1)
-      : globalColors.white100;
+    return isDarkMode ? opacity(getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode), 0.1) : globalColors.white100;
   });
 
   const containerStyle = useAnimatedStyle(() => {

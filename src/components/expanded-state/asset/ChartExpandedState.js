@@ -41,6 +41,7 @@ import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analytics } from '@/analytics';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const defaultCarouselHeight = 60;
 const baseHeight = 386 + (IS_ANDROID && 20 - NAVIGATION_BAR_HEIGHT) - defaultCarouselHeight;
@@ -60,7 +61,7 @@ const Carousel = styled.ScrollView.attrs({
 const AdditionalContentWrapper = styled.View({});
 
 const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.7),
+  color: opacity(colors.blueGreyDark, 0.7),
   letterSpacing: 'roundedTighter',
   weight: 'semibold',
 }))({
@@ -70,7 +71,7 @@ const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
 const TIMEOUT = 15000;
 
 const ReadMoreButton = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.8),
+  color: opacity(colors.blueGreyDark, 0.8),
   lineHeight: 37,
   size: 'lmedium',
   weight: 'heavy',
@@ -134,7 +135,7 @@ function Description({ text = '' }) {
   const { colors } = useTheme();
   return (
     <ButtonPressAnimation disabled={!needToTruncate || !truncated} onPress={() => setTruncated(prev => !prev)} scaleTo={1}>
-      <Text color={colors.alpha(colors.blueGreyDark, 0.5)} lineHeight="big" size="large">
+      <Text color={opacity(colors.blueGreyDark, 0.5)} lineHeight="big" size="large">
         {delayedTruncated ? truncatedText : text}
       </Text>
       {truncated && needToTruncate && <ReadMoreButton>{i18n.t(i18n.l.expanded_state.asset.read_more_button)} 􀯼</ReadMoreButton>}

@@ -20,6 +20,7 @@ import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const extractCollectiblesIdFromRow = (row: {
   item: {
@@ -459,7 +460,7 @@ function RecyclerAssetList({
                 onRefresh={refresh}
                 progressViewOffset={android ? 30 : 0}
                 refreshing={isRefreshing}
-                tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
+                tintColor={opacity(colors.blueGreyDark, 0.4)}
               />
             ),
           },

@@ -5,6 +5,7 @@ import { Centered } from '../../layout';
 import Svg from '../Svg';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const AnimatedSvg = Animated.createAnimatedComponent<PropsWithChildren>(Svg);
 const AnimatedPath = Animated.createAnimatedComponent(Path);
@@ -46,7 +47,7 @@ interface Props {
 const ProgressIcon = ({ progress, color: givenColor, progressColor: givenProgressColor, size = 29, strokeWidth = 2, ...props }: Props) => {
   const { colors } = useTheme();
   const progressColor = givenProgressColor ?? colors.whiteLabel;
-  const color = givenColor ?? colors.alpha(colors.sendScreen.grey, 0.3);
+  const color = givenColor ?? opacity(colors.sendScreen.grey, 0.3);
   const radius = size / 2;
   const center = radius + 2;
   const viewBoxSize = size + strokeWidth * 2;

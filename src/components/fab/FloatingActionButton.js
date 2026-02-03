@@ -7,6 +7,7 @@ import { Centered, InnerBorder } from '../layout';
 import styled from '@/styled-thing';
 import { borders, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const FloatingActionButtonSize = 56;
 export const FabWrapperBottomPosition = 21 + safeAreaInsetValues.bottom;
@@ -68,7 +69,7 @@ const FloatingActionButton = ({
     >
       <ShadowStack
         {...borders.buildCircleAsObject(size)}
-        backgroundColor={colors.alpha(backgroundColor, isDarkMode ? 0.8 : 0.5)}
+        backgroundColor={opacity(backgroundColor, isDarkMode ? 0.8 : 0.5)}
         hideShadow={disabled}
         shadows={isDarkMode ? DarkModeShadow : shadows}
       >

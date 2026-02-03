@@ -13,6 +13,7 @@ import CoinRow from './CoinRow';
 import { UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { padding } from '@/styles';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const dividerHeight = 22;
 const isSmallPhone = deviceUtils.dimensions.height <= 667;
@@ -29,7 +30,7 @@ const BottomRow = ({ selected, subtitle }: { selected: boolean; subtitle: string
 
   return (
     <TruncatedText
-      color={selected ? colors.alpha(colors.blueGreyDark, 0.6) : colors.alpha(colors.blueGreyDark, 0.5)}
+      color={selected ? opacity(colors.blueGreyDark, 0.6) : opacity(colors.blueGreyDark, 0.5)}
       letterSpacing="roundedMedium"
       size="smedium"
       weight={selected ? 'bold' : 'regular'}

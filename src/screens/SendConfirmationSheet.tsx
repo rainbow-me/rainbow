@@ -1,4 +1,4 @@
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import Divider from '@/components/Divider';
 import { ShimmerAnimation } from '@/components/animations';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -159,12 +159,12 @@ const ChevronDown = () => {
   const { colors } = useTheme();
   return (
     <Column align="center" height={34.5} position="absolute" width={50}>
-      <OldText align="center" color={colors.alpha(colors.blueGreyDark, 0.15)} letterSpacing="zero" size="larger" weight="semibold">
+      <OldText align="center" color={opacity(colors.blueGreyDark, 0.15)} letterSpacing="zero" size="larger" weight="semibold">
         􀆈
       </OldText>
       <OldText
         align="center"
-        color={colors.alpha(colors.blueGreyDark, 0.09)}
+        color={opacity(colors.blueGreyDark, 0.09)}
         letterSpacing="zero"
         size="larger"
         style={{ top: -13 }}
@@ -461,7 +461,6 @@ export const SendConfirmationSheet = () => {
   return (
     <Container deviceHeight={deviceHeight} height={contentHeight}>
       {IS_IOS && <TouchableBackdrop onPress={goBack} />}
-
       <SlackSheet additionalTopPadding={IS_ANDROID} contentHeight={contentHeight} scrollEnabled={false}>
         <SheetTitle>{i18n.t(i18n.l.wallet.transaction.sending_title)}</SheetTitle>
         <Column>
@@ -474,7 +473,7 @@ export const SendConfirmationSheet = () => {
                 <Row marginTop={12}>
                   <Text
                     color={{
-                      custom: isUniqueAsset ? theme.colors.alpha(theme.colors.blueGreyDark, 0.6) : color,
+                      custom: isUniqueAsset ? opacity(theme.colors.blueGreyDark, 0.6) : color,
                     }}
                     size="16px / 22px (Deprecated)"
                     weight={isUniqueAsset ? 'bold' : 'heavy'}
@@ -545,7 +544,7 @@ export const SendConfirmationSheet = () => {
                     >
                       <Text
                         color={{
-                          custom: theme.colors.alpha(theme.colors.blueGreyDark, theme.isDarkMode ? 0.5 : 0.6),
+                          custom: opacity(theme.colors.blueGreyDark, theme.isDarkMode ? 0.5 : 0.6),
                         }}
                         size="20px / 24px (Deprecated)"
                         weight="heavy"
@@ -562,11 +561,7 @@ export const SendConfirmationSheet = () => {
                     </Box>
                   ) : (
                     <Box height={{ custom: 18 }}>
-                      <Text
-                        color={{ custom: theme.colors.alpha(theme.colors.blueGreyDark, 0.6) }}
-                        size="16px / 22px (Deprecated)"
-                        weight="bold"
-                      >
+                      <Text color={{ custom: opacity(theme.colors.blueGreyDark, 0.6) }} size="16px / 22px (Deprecated)" weight="bold">
                         {getMessage()}
                       </Text>
                     </Box>

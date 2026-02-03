@@ -15,6 +15,7 @@ import { IS_ANDROID } from '@/env';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
+import { opacity } from '@/framework/ui/utils/opacity';
 export const ExternalLinkWarningSheetHeight = 380 + (IS_ANDROID ? 20 : 0);
 
 const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeight, height }) => ({
@@ -70,7 +71,7 @@ const ExternalLinkWarningSheet = () => {
 
             <Text
               align="center"
-              color={colors.alpha(colors.blueGreyDark, 0.6)}
+              color={opacity(colors.blueGreyDark, 0.6)}
               lineHeight="looser"
               size="large"
               style={{
@@ -85,7 +86,7 @@ const ExternalLinkWarningSheet = () => {
 
             <Column height={60}>
               <SheetActionButton
-                color={colors.alpha(colors.appleBlue, 0.04)}
+                color={opacity(colors.appleBlue, 0.04)}
                 isTransparent
                 label={`Visit ${formatURLForDisplay(url)}`}
                 onPress={handleLink}

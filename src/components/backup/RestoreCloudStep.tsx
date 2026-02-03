@@ -31,6 +31,7 @@ import { PasswordField } from '../fields';
 import { ImgixImage } from '../images';
 import { Text } from '../text';
 import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type ComponentProps = {
   theme: ThemeContextProps;
@@ -46,7 +47,7 @@ const Title = styled(Text).attrs({
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors }, color }: ComponentProps) => ({
   align: 'left',
-  color: color || colors.alpha(colors.blueGreyDark, 0.5),
+  color: color || opacity(colors.blueGreyDark, 0.5),
   lineHeight: 'looser',
   size: 'lmedium',
   weight: 'medium',
@@ -55,7 +56,7 @@ const DescriptionText = styled(Text).attrs(({ theme: { colors }, color }: Compon
 const ButtonText = styled(Text).attrs(({ theme: { colors }, color }: ComponentProps) => ({
   align: 'center',
   letterSpacing: 'rounded',
-  color: color || colors.alpha(colors.blueGreyDark, 0.5),
+  color: color || opacity(colors.blueGreyDark, 0.5),
   size: 'larger',
   weight: 'heavy',
   numberOfLines: 1,

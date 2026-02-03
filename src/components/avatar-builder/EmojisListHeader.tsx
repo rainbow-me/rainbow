@@ -4,6 +4,7 @@ import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated
 import { avatarBuilderStyles } from './avatarBuilderStyles';
 import { useTheme } from '@/theme';
 import { magicMemo } from '@/utils';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 interface Props {
   title: string;
@@ -21,7 +22,7 @@ const EmojisListHeader = ({ title, showSectionTitles, nextCategoryOffset }: Prop
   if (showSectionTitles) {
     return (
       <Animated.View style={[avatarBuilderStyles.sectionHeaderWrap, { backgroundColor: colors.white }, animatedStyle]}>
-        <Text style={[avatarBuilderStyles.sectionHeader, { color: colors.alpha(colors.blueGreyDark, 0.5) }]}>{title}</Text>
+        <Text style={[avatarBuilderStyles.sectionHeader, { color: opacity(colors.blueGreyDark, 0.5) }]}>{title}</Text>
       </Animated.View>
     );
   }

@@ -8,6 +8,7 @@ import { removeLeadingZeros } from '@/utils';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const FooterContainer = styled(Column).attrs({
   justify: 'end',
@@ -71,10 +72,10 @@ export default function SendAssetFormToken({
         <Spacer isSmallPhone={isSmallPhone} isTinyPhone={isTinyPhone} />
         <SendAssetFormField
           autoFocus
-          colorForAsset={colors.alpha(colors.blueGreyDark, 0.8)}
+          colorForAsset={opacity(colors.blueGreyDark, 0.8)}
           label={nativeCurrency}
           mask={nativeMask}
-          maxLabelColor={colors.alpha(colors.blueGreyDark, 0.6)}
+          maxLabelColor={opacity(colors.blueGreyDark, 0.6)}
           onChange={onChangeNativeAmount}
           onFocus={onFocusNativeInput}
           onPressButton={sendMaxBalance}

@@ -2,7 +2,7 @@ import { memo, useCallback, useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import ConditionalWrap from 'conditional-wrap';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
@@ -297,7 +297,7 @@ export const LoadingSkeleton = memo(function LoadingSkeleton() {
   const { isDarkMode } = useColorMode();
   const fillSecondary = useBackgroundColor('fillSecondary');
   const fillQuaternary = useBackgroundColor('fillQuaternary');
-  const shimmerColor = opacityWorklet(isDarkMode ? fillQuaternary : fillSecondary, isDarkMode ? 0.06 : 0.1);
+  const shimmerColor = opacity(isDarkMode ? fillQuaternary : fillSecondary, isDarkMode ? 0.06 : 0.1);
   const skeletonColor = isDarkMode ? fillQuaternary : fillSecondary;
 
   return (

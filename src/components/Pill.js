@@ -5,6 +5,7 @@ import { TruncatedText } from './text';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { Box, Text } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const Gradient = styled(RadialGradient).attrs(({ theme: { colors }, borderRadius = 10.5 }) => ({
   center: [0, borderRadius],
@@ -22,7 +23,7 @@ export default function Pill({ children, textColor, ...props }) {
     <Gradient {...props} justifyContent="center" alignItems="center">
       <TruncatedText
         align="center"
-        color={textColor || colors.alpha(colors.blueGreyDark, 0.5)}
+        color={textColor || opacity(colors.blueGreyDark, 0.5)}
         letterSpacing="uppercase"
         size="smedium"
         weight="semibold"

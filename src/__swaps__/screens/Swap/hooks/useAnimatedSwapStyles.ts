@@ -12,7 +12,8 @@ import {
 } from '@/__swaps__/screens/Swap/constants';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { spinnerExitConfig } from '@/components/animations/AnimatedSpinner';
 import { useColorMode } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
@@ -194,13 +195,13 @@ export function useAnimatedSwapStyles({
     }
 
     return {
-      backgroundColor: opacityWorklet(outputAssetColor.value, 0.06),
+      backgroundColor: opacity(outputAssetColor.value, 0.06),
       borderColor: withSpring(
         configProgress.value === NavigationSteps.SHOW_REVIEW ||
           configProgress.value === NavigationSteps.SHOW_GAS ||
           configProgress.value === NavigationSteps.SHOW_SETTINGS
-          ? opacityWorklet(outputAssetColor.value, 0.2)
-          : opacityWorklet(outputAssetColor.value, 0.06),
+          ? opacity(outputAssetColor.value, 0.2)
+          : opacity(outputAssetColor.value, 0.06),
         SPRING_CONFIGS.springConfig
       ),
       borderRadius: withSpring(isBottomSheetOpen ? 40 : 0, SPRING_CONFIGS.springConfig),
@@ -275,11 +276,11 @@ export function useAnimatedSwapStyles({
 
   const searchInputAssetButtonWrapperStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: opacityWorklet(
+      backgroundColor: opacity(
         getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode),
         isDarkMode ? 0.1 : 0.08
       ),
-      borderColor: opacityWorklet(
+      borderColor: opacity(
         getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode),
         isDarkMode ? 0.06 : 0.01
       ),
@@ -295,11 +296,8 @@ export function useAnimatedSwapStyles({
     return {
       backgroundColor: isPasteMode.value
         ? 'transparent'
-        : opacityWorklet(getColorValueForThemeWorklet(color, isDarkMode), isDarkMode ? 0.1 : 0.08),
-      borderColor: opacityWorklet(
-        getColorValueForThemeWorklet(color, isDarkMode),
-        isDarkMode ? darkModeBorderOpacity : lightModeBorderOpacity
-      ),
+        : opacity(getColorValueForThemeWorklet(color, isDarkMode), isDarkMode ? 0.1 : 0.08),
+      borderColor: opacity(getColorValueForThemeWorklet(color, isDarkMode), isDarkMode ? darkModeBorderOpacity : lightModeBorderOpacity),
     };
   });
 

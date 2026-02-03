@@ -10,6 +10,7 @@ import { Box } from '@/design-system';
 import { TextInput, TextInputProps, View } from 'react-native';
 import { IS_IOS, IS_ANDROID } from '@/env';
 import { Icon } from '../icons';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const FieldAccessoryBadgeSize = 22;
 const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(
@@ -41,7 +42,7 @@ const PasswordInput = styled(Input).attrs(({ theme: { colors } }: any) => ({
   autoCompleteType: 'password',
   blurOnSubmit: false,
   passwordRules: `minlength: ${cloudBackupPasswordMinLength};`,
-  placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.4),
+  placeholderTextColor: opacity(colors.blueGreyDark, 0.4),
   secureTextEntry: true,
   selectTextOnFocus: true,
   size: 'large',

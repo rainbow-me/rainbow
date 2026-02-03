@@ -59,6 +59,7 @@ import { UniqueTokenExpandedStateContent, UniqueTokenExpandedStateHeader } from 
 import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { buildUniqueTokenName } from '@/helpers/assets';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,
@@ -436,7 +437,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
               <Inset bottom={sectionSpace} top={{ custom: topInset }}>
                 <Stack alignHorizontal="center">
                   <Animated.View style={sheetHandleStyle}>
-                    <SheetHandle color={colors.alpha(colors.whiteLabel, 0.24)} />
+                    <SheetHandle color={opacity(colors.whiteLabel, 0.24)} />
                   </Animated.View>
                 </Stack>
               </Inset>

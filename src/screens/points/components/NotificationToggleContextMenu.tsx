@@ -12,7 +12,7 @@ import { IS_ANDROID } from '@/env';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import * as i18n from '@/languages';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 

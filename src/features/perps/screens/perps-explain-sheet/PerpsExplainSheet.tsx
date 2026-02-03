@@ -13,7 +13,7 @@ import * as i18n from '@/languages';
 import { useRoute } from '@/navigation/Navigation';
 import { HyperliquidLogo } from '@/features/perps/components/HyperliquidLogo';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { easing } from '@/components/animations/animationConfigs';
 
 const translations = i18n.l.perps.explain_sheet;
@@ -57,7 +57,7 @@ const STEPS: ExplainerSheetStep[] = [
           resizeMode={FastImage.resizeMode.contain}
         />
         <EasingGradient
-          startColor={opacityWorklet('#171E20', 0)}
+          startColor={opacity('#171E20', 0)}
           endColor={'#171E20'}
           startPosition={'bottom'}
           endPosition="top"
