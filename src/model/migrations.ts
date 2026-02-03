@@ -674,7 +674,7 @@ export default async function runMigrations() {
         if (isEmpty(hiddenCoins)) continue;
 
         const hiddenAssets = Object.keys(hiddenCoins).reduce<UniqueId[]>((acc: UniqueId[], key) => {
-          // we need to run it through this funciton because users could have legacy coins when we had network-based uniqueId
+          // we need to run it through this function because users could have legacy coins when we had network-based uniqueId
           const { address, chainId } = getAddressAndChainIdFromUniqueId(key);
           const uniqueId = getUniqueId(address, chainId);
           acc.push(uniqueId);
