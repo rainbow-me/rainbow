@@ -23,11 +23,11 @@ import { useNavigation } from '@/navigation';
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { TOP_INSET } from '../DappBrowser/Dimensions';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 export const TapToDismiss = memo(function TapToDismiss() {
   const { goBack } = useNavigation();

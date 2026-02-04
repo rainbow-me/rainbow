@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { useTheme } from '../theme/ThemeContext';
-import { formatURLForDisplay, magicMemo } from '../utils';
+import formatURLForDisplay from '@/utils/formatURLForDisplay';
+import magicMemo from '@/utils/magicMemo';
 import { ButtonPressAnimation } from './animations';
 import { Icon } from './icons';
 import { RowWithMargins } from './layout';

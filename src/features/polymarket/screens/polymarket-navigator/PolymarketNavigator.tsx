@@ -61,7 +61,7 @@ const PolymarketNavigatorContent = () => {
           <SmoothPager
             enableSwipeToGoBack
             enableSwipeToGoForward="always"
-            initialPage={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}
+            initialPage={usePolymarketNavigationStore.getState().activeRoute}
             onNewIndex={Navigator.handlePagerIndexChange}
             ref={ref}
             scaleTo={1}

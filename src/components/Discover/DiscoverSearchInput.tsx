@@ -11,12 +11,13 @@ import { analytics } from '@/analytics';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { opacity } from '@/framework/ui/utils/opacity';
 const SearchHeight = 40;
 const SearchWidth = deviceUtils.dimensions.width - 30;
 
@@ -49,12 +50,12 @@ const BackgroundGradient = styled(RadialGradient).attrs(({ isDiscover, theme: { 
 const SearchInput = styled(Input).attrs(({ theme: { colors }, isSearching, clearTextOnFocus }: ContainerProps) => ({
   blurOnSubmit: false,
   clearTextOnFocus,
-  color: colors.alpha(colors.blueGreyDark, 0.8),
+  color: opacity(colors.blueGreyDark, 0.8),
   enablesReturnKeyAutomatically: true,
   keyboardAppearance: 'dark',
   keyboardType: 'ascii-capable',
   lineHeight: 'looserLoose',
-  placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.6),
+  placeholderTextColor: opacity(colors.blueGreyDark, 0.6),
   returnKeyType: 'search',
   selectionColor: isSearching ? colors.appleBlue : colors.transparent,
   size: 'large',
@@ -72,7 +73,7 @@ const SearchInput = styled(Input).attrs(({ theme: { colors }, isSearching, clear
 const SearchSpinner = styled(ImgixImage).attrs(({ theme: { colors } }: ContainerProps) => ({
   resizeMode: ImgixImage.resizeMode.contain,
   source: Spinner,
-  tintColor: colors.alpha(colors.blueGreyDark, 0.6),
+  tintColor: opacity(colors.blueGreyDark, 0.6),
   size: 30,
 }))({
   height: 20,
@@ -190,7 +191,7 @@ const DiscoverSearchInput = ({
       {isSearching && (
         <>
           <Animated.View style={[searchIconStyle, { justifyContent: 'center', marginRight: 4 }]}>
-            <TextIcon color={{ custom: colors.alpha(colors.blueGreyDark, 0.6) }} size="icon 18px" weight="semibold">
+            <TextIcon color={{ custom: opacity(colors.blueGreyDark, 0.6) }} size="icon 18px" weight="semibold">
               {'􀊫'}
             </TextIcon>
           </Animated.View>

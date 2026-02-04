@@ -4,7 +4,7 @@ import { Bleed, Box, IconContainer, Inline, Text, TextShadow } from '@/design-sy
 import { Row } from '../shared/Row';
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ButtonPressAnimation } from '@/components/animations';
-import { formatURLForDisplay } from '@/utils';
+import formatURLForDisplay from '@/utils/formatURLForDisplay';
 import { XIcon } from '../../icons/XIcon';
 import { Icon } from '@/components/icons';
 import { formatUrl } from '@/components/DappBrowser/utils';

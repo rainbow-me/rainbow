@@ -34,6 +34,7 @@ import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { Box } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const RAINBOW_TEXT_HEIGHT = 32;
 const RAINBOW_TEXT_WIDTH = 125;
@@ -132,8 +133,8 @@ export function WelcomeScreen() {
   const primaryButtonBackground = isDarkMode ? colors.blueGreyDarkLight : colors.dark;
   const primaryButtonTextColor = isDarkMode ? colors.dark : colors.white;
   const existingWalletBackground = colors.blueGreyDarkLight;
-  const existingWalletTextColor = colors.alpha(colors.blueGreyDark, 0.8);
-  const termsTextColor = colors.alpha(colors.blueGreyDark, 0.5);
+  const existingWalletTextColor = opacity(colors.blueGreyDark, 0.8);
+  const termsTextColor = opacity(colors.blueGreyDark, 0.5);
 
   const createWalletButtonAnimatedStyle = useAnimatedStyle(
     () => ({

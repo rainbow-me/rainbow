@@ -7,7 +7,7 @@ import { isZero } from '@/helpers/utilities';
 import Routes from '@/navigation/routesNames';
 import { ETH_ADDRESS } from '@/references';
 import { useAccountProfileInfo, getIsReadOnlyWallet, useWalletsStore, updateAccountInfo } from '@/state/wallets/walletsStore';
-import { showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { openInBrowser } from '@/utils/openInBrowser';
 import * as i18n from '@/languages';

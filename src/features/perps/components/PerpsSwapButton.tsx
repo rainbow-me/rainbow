@@ -1,5 +1,5 @@
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Cover, useColorMode, useForegroundColor } from '@/design-system';
 import { AnimatedText, SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
@@ -128,7 +128,7 @@ export const PerpsSwapButton = ({
           justifyContent={'center'}
           alignItems={'center'}
           borderWidth={isDarkMode ? 2 : 0}
-          borderColor={{ custom: opacityWorklet(labelColor, 0.16) }}
+          borderColor={{ custom: opacity(labelColor, 0.16) }}
         >
           {isDarkMode && (
             <>

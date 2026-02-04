@@ -3,7 +3,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useNavigation } from '../../navigation/Navigation';
 import { useTheme } from '../../theme/ThemeContext';
-import { magicMemo } from '../../utils';
+import magicMemo from '@/utils/magicMemo';
 import ProfileModal from './profile/ProfileModal';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';

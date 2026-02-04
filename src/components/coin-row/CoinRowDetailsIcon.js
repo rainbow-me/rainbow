@@ -4,6 +4,7 @@ import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const AddButtonPadding = 19;
 
@@ -20,7 +21,7 @@ const AddButton = styled(Centered)({
 
 const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.2),
+  color: opacity(colors.blueGreyDark, 0.2),
   letterSpacing: 'zero',
   size: 'larger',
   weight: 'normal',

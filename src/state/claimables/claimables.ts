@@ -3,7 +3,7 @@ import { ClaimablesArgs, getClaimables } from '@/resources/addys/claimables/quer
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { CacheEntry } from '@/state/internal/queryStore/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { sumWorklet } from '@/safe-math/SafeMath';
 

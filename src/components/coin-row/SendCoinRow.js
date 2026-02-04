@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../../theme/ThemeContext';
-import { deviceUtils } from '../../utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import CoinName from './CoinName';
@@ -12,6 +12,7 @@ import { useColorForAsset } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const isSmallPhone = deviceUtils.dimensions.height <= 667;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;
@@ -32,7 +33,7 @@ const NativeAmountBubble = styled(LinearGradient).attrs(({ theme: { colors } }) 
 
 const NativeAmountBubbleText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.6),
+  color: opacity(colors.blueGreyDark, 0.6),
   letterSpacing: 'roundedTight',
   size: 'lmedium',
   weight: 'bold',
@@ -44,7 +45,7 @@ const BottomRow = ({ balance, native, nativeCurrencySymbol, selected, showNative
 
   return (
     <Text
-      color={selected ? colors.alpha(colors.blueGreyDark, 0.6) : colors.alpha(colors.blueGreyDark, 0.5)}
+      color={selected ? opacity(colors.blueGreyDark, 0.6) : opacity(colors.blueGreyDark, 0.5)}
       letterSpacing="roundedMedium"
       numberOfLines={1}
       size="smedium"

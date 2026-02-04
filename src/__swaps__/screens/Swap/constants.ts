@@ -1,8 +1,8 @@
 import { Easing } from 'react-native-reanimated';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
-import { DEVICE_HEIGHT, NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
+import deviceUtils, { DEVICE_HEIGHT, NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { buildTestSafeConfig } from '@/components/animations/animationConfigs';
 
 // /---- 🔒 Constants 🔒 ----/ //

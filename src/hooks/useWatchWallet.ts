@@ -3,7 +3,7 @@ import { logger, RainbowError } from '@/logger';
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
 import { setSelectedWallet, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
-import { doesWalletsContainAddress } from '@/utils';
+import doesWalletsContainAddress from '@/utils/doesWalletsContainAddress';
 import { useNavigation } from '@/navigation/Navigation';
 import { useCallback, useMemo } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';

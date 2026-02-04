@@ -3,11 +3,12 @@ import React from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
-import { deviceUtils } from '../../utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { Centered, Column } from '../layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Text } from '../text';
 import styled from '@/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const Container = styled(Column)({
   alignSelf: 'center',
@@ -41,7 +42,7 @@ const ActivityListEmptyState = ({
         <Centered>
           <Text
             align="center"
-            color={colors.alpha(colors.blueGreyDark, isDarkMode ? 0.4 : 0.3)}
+            color={opacity(colors.blueGreyDark, isDarkMode ? 0.4 : 0.3)}
             letterSpacing="roundedMedium"
             lineHeight={24}
             size="lmedium"

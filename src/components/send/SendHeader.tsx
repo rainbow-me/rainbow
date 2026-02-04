@@ -21,9 +21,11 @@ import { useClipboard, useDimensions, useContacts } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { profileUtils, showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import profileUtils from '@/utils/profileUtils';
 import { RainbowAccount } from '@/model/wallet';
 import { Contact } from '@/redux/contacts';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type ComponentPropsWithTheme = {
   theme: ThemeContextProps;
@@ -44,13 +46,13 @@ const AddressFieldLabel = styled(Label).attrs({
   size: 'large',
   weight: 'bold',
 })({
-  color: ({ theme: { colors } }: ComponentPropsWithTheme) => colors.alpha(colors.blueGreyDark, 0.6),
+  color: ({ theme: { colors } }: ComponentPropsWithTheme) => opacity(colors.blueGreyDark, 0.6),
   marginRight: 4,
   opacity: 1,
 });
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }: ComponentPropsWithTheme) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.3),
+  color: opacity(colors.blueGreyDark, 0.3),
 }))({
   marginRight: 2,
 });

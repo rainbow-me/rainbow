@@ -21,7 +21,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -30,6 +30,7 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import { ParsedAddressAsset } from '@/entities';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
 
@@ -118,7 +119,7 @@ const TextContainer = styled(Column).attrs(() => ({}))({});
 
 const TransactionTimeLabel = ({ formatter, theme }: { formatter: () => string; theme: string }) => {
   const { colors } = useTheme();
-  const color = theme === 'dark' ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6) : colors.alpha(colors.blueGreyDark, 0.6);
+  const color = theme === 'dark' ? opacity(darkModeThemeColors.blueGreyDark, 0.6) : opacity(colors.blueGreyDark, 0.6);
 
   return (
     <Label align="right" color={color} size="lmedium" weight="bold">
@@ -248,7 +249,7 @@ const GasSpeedButton = ({
       const priceText = animatedNumber === 0 || loading ? i18n.t(i18n.l.swap.loading) : animatedNumber;
       return (
         <Text
-          color={theme === 'dark' ? colors.whiteLabel : colors.alpha(colors.blueGreyDark, 0.8)}
+          color={theme === 'dark' ? colors.whiteLabel : opacity(colors.blueGreyDark, 0.8)}
           lineHeight="normal"
           size="lmedium"
           weight="heavy"
@@ -387,7 +388,7 @@ const GasSpeedButton = ({
         colorForAsset={
           gasOptionsAvailable
             ? makeColorMoreChill(rawColorForAsset || colors.appleBlue, colors.shadowBlack)
-            : colors.alpha(colors.blueGreyDark, 0.12)
+            : opacity(colors.blueGreyDark, 0.12)
         }
         dropdownEnabled={gasOptionsAvailable}
         onPress={noop}
@@ -502,13 +503,13 @@ const GasSpeedButton = ({
           </Row>
           <Row justify="space-between">
             <Label
-              color={theme === 'dark' ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6) : colors.alpha(colors.blueGreyDark, 0.6)}
+              color={theme === 'dark' ? opacity(darkModeThemeColors.blueGreyDark, 0.6) : opacity(colors.blueGreyDark, 0.6)}
               size="smedium"
               weight="bold"
             >
               {i18n.t(i18n.l.swap.gas.estimated_fee)}{' '}
               <Label
-                color={theme === 'dark' ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.25) : colors.alpha(colors.blueGreyDark, 0.25)}
+                color={theme === 'dark' ? opacity(darkModeThemeColors.blueGreyDark, 0.25) : opacity(colors.blueGreyDark, 0.25)}
                 size="smedium"
                 weight="bold"
               >
@@ -541,13 +542,11 @@ const GasSpeedButton = ({
               </CustomGasButton>
             ) : (
               <CustomGasButton
-                borderColor={
-                  theme === 'dark' ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.12) : colors.alpha(colors.blueGreyDark, 0.06)
-                }
+                borderColor={theme === 'dark' ? opacity(darkModeThemeColors.blueGreyDark, 0.12) : opacity(colors.blueGreyDark, 0.06)}
                 onPress={openCustomOptions}
                 testID="gas-speed-custom"
               >
-                <Symbol color={theme === 'dark' ? colors.whiteLabel : colors.alpha(colors.blueGreyDark, 0.8)}>􀌆</Symbol>
+                <Symbol color={theme === 'dark' ? colors.whiteLabel : opacity(colors.blueGreyDark, 0.8)}>􀌆</Symbol>
               </CustomGasButton>
             )}
           </Centered>

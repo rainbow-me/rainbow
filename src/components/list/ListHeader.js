@@ -13,11 +13,12 @@ import { ContextMenu } from '../context-menu';
 import { Column, Row } from '../layout';
 import { H1 } from '../text';
 import { initializeShowcaseIfNeeded } from '@/helpers/webData';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const ListHeaderHeight = 48;
 
 const ShareCollectiblesBPA = styled(ButtonPressAnimation)({
-  backgroundColor: ({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.06),
+  backgroundColor: ({ theme: { colors } }) => opacity(colors.blueGreyDark, 0.06),
   borderRadius: 15,
   height: 30,
   justifyContent: 'center',

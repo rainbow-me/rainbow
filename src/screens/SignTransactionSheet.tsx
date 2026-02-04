@@ -15,7 +15,8 @@ import { RainbowError, logger } from '@/logger';
 import { useNavigation } from '@/navigation';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme';
-import { deviceUtils, ethereumUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import {
   PERSONAL_SIGN,
   SEND_TRANSACTION,
@@ -69,6 +70,7 @@ import { toChecksumAddress } from 'ethereumjs-util';
 import { switchWallet } from '@/state/wallets/switchWallet';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { Address } from 'viem';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -589,7 +591,7 @@ export const SignTransactionSheet = () => {
       }
     }
 
-    return colors.alpha(color, canPressConfirm ? 1 : 0.6);
+    return opacity(color, canPressConfirm ? 1 : 0.6);
   }, [colors, simulationResult?.simulationError, simulationResult?.simulationScanResult, canPressConfirm]);
 
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);

@@ -37,7 +37,9 @@ import {
   useWallets,
 } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
-import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import doesWalletsContainAddress from '@/utils/doesWalletsContainAddress';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -47,6 +49,7 @@ import { Alert, InteractionManager, LayoutChangeEvent } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { Address } from 'viem';
 import { updateWebProfile } from '@/helpers/webData';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
 
@@ -693,7 +696,7 @@ export default function ChangeWalletSheet() {
                   paddingHorizontal="16px"
                   borderRadius={22}
                   borderWidth={1}
-                  borderColor={{ custom: colors.alpha(colors.appleBlue, 0.06) }}
+                  borderColor={{ custom: opacity(colors.appleBlue, 0.06) }}
                 >
                   <Text color="label" size="17pt" weight="heavy">
                     {`􀅼 ${i18n.t(i18n.l.button.add)}`}

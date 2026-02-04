@@ -22,7 +22,7 @@ import { fetchReverseRecord } from '@/handlers/ens';
 
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { ContactAvatar } from '@/components/contacts';
-import { isLowerCaseMatch } from '@/utils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { useContacts, useUserAccounts } from '@/hooks';
@@ -36,6 +36,7 @@ import * as i18n from '@/languages';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { checkForPendingSwap } from '@/helpers/transactions';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const TransactionMastheadHeight = android ? 153 : 135;
 
@@ -54,7 +55,7 @@ const Container = styled(Box).attrs({
 });
 
 const Gradient = styled(Box).attrs(({ theme: { colors }, color }: { theme: ThemeContextProps; color: string }) => ({
-  backgroundColor: colors.alpha(color, 0.08),
+  backgroundColor: opacity(color, 0.08),
 }))({
   ...position.coverAsObject,
 });

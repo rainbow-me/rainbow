@@ -13,7 +13,8 @@ import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
-import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { GestureHandlerButton } from './GestureHandlerButton';
 
 export const FlipButton = () => {

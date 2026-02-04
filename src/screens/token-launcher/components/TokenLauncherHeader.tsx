@@ -9,7 +9,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { BlurView } from 'react-native-blur-view';

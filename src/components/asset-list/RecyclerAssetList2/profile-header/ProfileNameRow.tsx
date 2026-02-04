@@ -9,7 +9,7 @@ import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { formatAccountLabel, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import { abbreviateEnsForDisplay, address } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';
 import Clipboard from '@react-native-clipboard/clipboard';

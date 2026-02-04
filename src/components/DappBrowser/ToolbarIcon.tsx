@@ -6,6 +6,7 @@ import { TextColor } from '@/design-system/color/palettes';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { useTheme } from '@/theme';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const ToolbarIcon = ({
   color,
@@ -76,7 +77,7 @@ export const ToolbarTextButton = ({
           justifyContent="center"
           paddingHorizontal={showBackground ? '8px' : undefined}
           style={{
-            backgroundColor: showBackground ? colors.alpha(hexColor, 0.1) : undefined,
+            backgroundColor: showBackground ? opacity(hexColor, 0.1) : undefined,
             flex: 1,
           }}
         >

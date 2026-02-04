@@ -22,7 +22,7 @@ import {
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { DappBrowser } from '@/components/DappBrowser/DappBrowser';
 import WalletScreen from '@/screens/WalletScreen/WalletScreen';
-import { deviceUtils } from '@/utils';
+import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
 import {
   MaterialTopTabBarProps,
@@ -48,7 +48,7 @@ import Animated, {
 import { BROWSER_BACKGROUND_COLOR_DARK, BROWSER_BACKGROUND_COLOR_LIGHT } from '@/components/DappBrowser/constants';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import ProfileScreen from '../screens/ProfileScreen';
 import DiscoverScreen from '@/screens/DiscoverScreen';
 import { PointsScreen } from '@/screens/points/PointsScreen';
@@ -58,7 +58,6 @@ import Routes, { Route } from './routesNames';
 import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
 import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
-import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
 import { MinedTransactionWatcher } from '@/components/mined-transaction-watcher/MinedTransactionWatcher';
 import { KingOfTheHillScreen } from '@/screens/KingOfTheHill';
@@ -138,7 +137,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
     const translateX = interpolate(reanimatedPosition.value, tabPositions.value.inputRange, tabPositions.value.outputRange, 'clamp');
 
     return {
-      backgroundColor: opacityWorklet(accentColor, (isDarkMode ? 0.2 : 0.1) * backgroundOpacity),
+      backgroundColor: opacity(accentColor, (isDarkMode ? 0.2 : 0.1) * backgroundOpacity),
       transform: [{ translateX: withSpring(translateX, SPRING_CONFIGS.snappyMediumSpringConfig) }],
     };
   });

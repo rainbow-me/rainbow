@@ -18,9 +18,11 @@ import { View } from 'react-native';
 import networkInfo from '../helpers/networkInfo';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../theme/ThemeContext';
-import { deviceUtils, magicMemo } from '../utils';
+import deviceUtils from '@/utils/deviceUtils';
+import magicMemo from '@/utils/magicMemo';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const ContainerWidth = 261;
 
@@ -36,7 +38,7 @@ const InterstitialButton = styled(ButtonPressAnimation).attrs({
 })();
 
 const InterstitialButtonContent = styled(View).attrs(({ theme: { colors } }) => ({
-  backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
+  backgroundColor: opacity(colors.blueGreyDark, 0.06),
   borderRadius: 23,
 }))({
   ...padding.object(11, 15, 14),
@@ -58,7 +60,7 @@ const CopyAddressButton = styled(ButtonPressAnimation).attrs({
 })();
 
 const CopyAddressButtonContent = styled(RowWithMargins).attrs(({ theme: { colors } }) => ({
-  backgroundColor: colors.alpha(colors.appleBlue, 0.06),
+  backgroundColor: opacity(colors.appleBlue, 0.06),
   borderRadius: 23,
   margin: 6,
 }))({
@@ -72,7 +74,7 @@ const AmountBPA = styled(ButtonPressAnimation)({
 
 const Paragraph = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.4),
+  color: opacity(colors.blueGreyDark, 0.4),
   letterSpacing: 'roundedMedium',
   lineHeight: 'paragraphSmall',
   size: 'lmedium',
@@ -223,7 +225,7 @@ const AddFundsInterstitial = ({ network }) => {
           <InterstitialButtonRow>
             <InterstitialButton onPress={handlePressAmount} radiusAndroid={23}>
               <InterstitialButtonContent>
-                <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.6)} lineHeight="loose" size="large" weight="bold">
+                <Text align="center" color={opacity(colors.blueGreyDark, 0.6)} lineHeight="loose" size="large" weight="bold">
                   {`􀍡 ${i18n.t(i18n.l.wallet.add_cash.interstitial.other_amount)}`}
                 </Text>
               </InterstitialButtonContent>
@@ -243,7 +245,7 @@ const AddFundsInterstitial = ({ network }) => {
           </Title>
           <Row marginTop={30}>
             <InterstitialButton onPress={addFundsToAccountAddress}>
-              <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.6)} lineHeight="loose" size="large" weight="bold">
+              <Text align="center" color={opacity(colors.blueGreyDark, 0.6)} lineHeight="loose" size="large" weight="bold">
                 􀎬 {i18n.t(i18n.l.add_funds.test_eth.add_from_faucet)}
               </Text>
             </InterstitialButton>

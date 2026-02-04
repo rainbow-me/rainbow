@@ -15,7 +15,7 @@ import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/ext
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -25,6 +25,7 @@ import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
 import { GenericCard } from './GenericCard';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
@@ -255,7 +256,7 @@ export const EthCard = () => {
           </Box>
         ) : addCashEnabled ? (
           <ButtonPressAnimation onPress={handlePressBuy} testID="buy-eth-button" scaleTo={0.92}>
-            <AccentColorProvider color={colors.alpha(colorForAsset, 0.1)}>
+            <AccentColorProvider color={opacity(colorForAsset, 0.1)}>
               <Box width="full" height={{ custom: 36 }} borderRadius={99} alignItems="center" justifyContent="center" background="accent">
                 <Text color={{ custom: colorForAsset }} containsEmoji size="15pt" weight="bold">
                   {`􀍯 ${i18n.t(i18n.l.button.buy_eth)}`}

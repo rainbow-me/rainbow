@@ -4,7 +4,7 @@ import { BlurView } from 'react-native-blur-view';
 import Animated, { interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Box, TextIcon, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { useBrowserContext } from './BrowserContext';
 import { TAB_VIEW_COLUMN_WIDTH } from './Dimensions';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';

@@ -138,7 +138,6 @@
 		C1EB01302731B68400830E70 /* TokenDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EB012E2731B68400830E70 /* TokenDetails.swift */; };
 		C1EB01312731B68400830E70 /* TokenDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EB012E2731B68400830E70 /* TokenDetails.swift */; };
 		C72F456C99A646399192517D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AED33BAB4247CEBEF8464D /* libz.tbd */; };
-		C97EAD8D2BD6C6DF00322D53 /* RCTDeviceUUID.m in Sources */ = {isa = PBXBuildFile; fileRef = C97EAD8B2BD6C6DF00322D53 /* RCTDeviceUUID.m */; };
 		C9B378A22C5159880085E5D0 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9B378A12C5159880085E5D0 /* UniformTypeIdentifiers.framework */; };
 		C9B378A52C5159880085E5D0 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9B378A42C5159880085E5D0 /* Media.xcassets */; };
 		C9B378A72C5159880085E5D0 /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B378A62C5159880085E5D0 /* ActionViewController.swift */; };
@@ -267,7 +266,6 @@
 		5AB1118D6FC6EBBDADC0F01B /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CE1DE88418382504DC3477F /* Pods-Rainbow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.release.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.release.xcconfig"; sourceTree = "<group>"; };
 		6630540824A38A1900E5B030 /* RainbowText.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RainbowText.m; sourceTree = "<group>"; };
-		6635730524939991006ACFA6 /* SafeStoreReview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SafeStoreReview.m; sourceTree = "<group>"; };
 		664612EC2748489B00B43F5A /* PriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PriceWidgetExtension.entitlements; sourceTree = "<group>"; };
 		664612ED274848B000B43F5A /* SelectTokenIntent.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SelectTokenIntent.entitlements; sourceTree = "<group>"; };
 		6655FFB325BB2B0700642961 /* ThemeModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThemeModule.m; sourceTree = "<group>"; };
@@ -359,8 +357,6 @@
 		C1C61A81272CBDA100E5C0B3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		C1C61A902731A05700E5C0B3 /* RainbowTokenList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowTokenList.swift; sourceTree = "<group>"; };
 		C1EB012E2731B68400830E70 /* TokenDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenDetails.swift; sourceTree = "<group>"; };
-		C97EAD8B2BD6C6DF00322D53 /* RCTDeviceUUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDeviceUUID.m; sourceTree = "<group>"; };
-		C97EAD8C2BD6C6DF00322D53 /* RCTDeviceUUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDeviceUUID.h; sourceTree = "<group>"; };
 		C9B378A02C5159880085E5D0 /* OpenInRainbow.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = OpenInRainbow.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9B378A12C5159880085E5D0 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = SDKROOT; };
 		C9B378A42C5159880085E5D0 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
@@ -486,7 +482,6 @@
 				0C88C38E2E30192C0057BDCE /* AppDelegate.swift */,
 				A4277D9E23CBD1910042BAF4 /* Extensions.swift */,
 				A4277DA223CFE85F0042BAF4 /* Theme.swift */,
-				6635730524939991006ACFA6 /* SafeStoreReview.m */,
 				66A28EAF24CAF1B500410A88 /* TestFlight.m */,
 				C04D10EF25AFC8C1003BEF7A /* Extras.json */,
 				6655FFB325BB2B0700642961 /* ThemeModule.m */,
@@ -648,15 +643,6 @@
 			name = RNCoolModals;
 			sourceTree = "<group>";
 		};
-		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
-			isa = PBXGroup;
-			children = (
-				C97EAD8C2BD6C6DF00322D53 /* RCTDeviceUUID.h */,
-				C97EAD8B2BD6C6DF00322D53 /* RCTDeviceUUID.m */,
-			);
-			name = Libraries;
-			sourceTree = "<group>";
-		};
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
@@ -664,7 +650,6 @@
 				C1C61A81272CBDA100E5C0B3 /* Images.xcassets */,
 				15DC38CC247E0DCC00919009 /* Config */,
 				13B07FAE1A68108700A75B9A /* Rainbow */,
-				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* RainbowTests */,
 				668ADB2B25A4E3A20050859D /* Rainbow Stickers */,
 				C16DCF61272BA6EF00FF5C78 /* PriceWidget */,
@@ -1507,7 +1492,6 @@ Upload Debug Symbols to Sentry */ = {
 				C18FCD32273C62230079CE28 /* PriceWidgetView.swift in Sources */,
 				15E531D5242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift in Sources */,
 				C18FCD3B273C64CF0079CE28 /* UIImage.swift in Sources */,
-				C97EAD8D2BD6C6DF00322D53 /* RCTDeviceUUID.m in Sources */,
 				A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */,
 				A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */,
 				AAE999D12E41E4670072AFD5 /* RainbowSplashScreen.m in Sources */,

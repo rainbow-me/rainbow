@@ -1,5 +1,5 @@
 import { IS_IOS } from '@/env';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_HEIGHT as SCREEN_HEIGHT } from '@/utils/deviceUtils';
 import { X_BUTTON_PADDING, X_BUTTON_SIZE } from '../CloseTabButton';
 import { INVERTED_MULTI_TAB_SCALE_DIFF, INVERTED_SINGLE_TAB_SCALE, TAB_VIEW_ROW_HEIGHT } from '../Dimensions';

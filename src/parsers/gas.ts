@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import zipObject from 'lodash/zipObject';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 import {
   BlocksToConfirmation,
   GasFeeParam,

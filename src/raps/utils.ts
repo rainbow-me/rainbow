@@ -6,7 +6,7 @@ import { CrosschainQuote, Quote, getQuoteExecutionDetails, getTargetAddress } fr
 import { mainnet } from 'viem/chains';
 import { Chain, erc20Abi } from 'viem';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 import { add, greaterThan, multiply } from '@/helpers/utilities';
 import { ChainId } from '@/state/backendNetworks/types';
 import { gasUnits } from '@/references';

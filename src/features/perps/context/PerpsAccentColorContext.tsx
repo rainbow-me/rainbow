@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { useColorMode } from '@/design-system';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 
 export const HYPERLIQUID_GREEN = '#3ECFAD';
@@ -76,7 +76,7 @@ export function PerpsAccentColorContextProvider({ children, primaryColorOverride
     const primary = primaryColorOverride ?? theme[isDarkMode ? 'dark' : 'light'].primary;
     const gradient = primaryColorOverride
       ? isDarkMode
-        ? [primary, opacityWorklet(primary, 0.8)]
+        ? [primary, opacity(primary, 0.8)]
         : [primary]
       : isDarkMode
         ? ['#72FFD9', '#3ECFAD']
@@ -84,20 +84,20 @@ export function PerpsAccentColorContextProvider({ children, primaryColorOverride
 
     return {
       opacity100: primary,
-      opacity80: opacityWorklet(primary, 0.8),
-      opacity56: opacityWorklet(primary, 0.56),
-      opacity40: opacityWorklet(primary, 0.4),
-      opacity24: opacityWorklet(primary, 0.24),
-      opacity12: opacityWorklet(primary, 0.12),
-      opacity10: opacityWorklet(primary, 0.1),
-      opacity8: opacityWorklet(primary, 0.08),
-      opacity7: opacityWorklet(primary, 0.07),
-      opacity6: opacityWorklet(primary, 0.06),
-      opacity5: opacityWorklet(primary, 0.05),
-      opacity4: opacityWorklet(primary, 0.04),
-      opacity3: opacityWorklet(primary, 0.03),
-      opacity2: opacityWorklet(primary, 0.02),
-      opacity1: opacityWorklet(primary, 0.01),
+      opacity80: opacity(primary, 0.8),
+      opacity56: opacity(primary, 0.56),
+      opacity40: opacity(primary, 0.4),
+      opacity24: opacity(primary, 0.24),
+      opacity12: opacity(primary, 0.12),
+      opacity10: opacity(primary, 0.1),
+      opacity8: opacity(primary, 0.08),
+      opacity7: opacity(primary, 0.07),
+      opacity6: opacity(primary, 0.06),
+      opacity5: opacity(primary, 0.05),
+      opacity4: opacity(primary, 0.04),
+      opacity3: opacity(primary, 0.03),
+      opacity2: opacity(primary, 0.02),
+      opacity1: opacity(primary, 0.01),
       surfacePrimary: isDarkMode ? '#171E20' : 'white',
       gradient,
       priceChangeColors: {
@@ -108,8 +108,8 @@ export function PerpsAccentColorContextProvider({ children, primaryColorOverride
       slider: {
         activeLeft: primary,
         inactiveLeft: primary,
-        activeRight: isDarkMode ? opacityWorklet('#F5F8FF', 0.06) : opacityWorklet(primary, 0.12),
-        inactiveRight: isDarkMode ? opacityWorklet('#F5F8FF', 0.06) : opacityWorklet(primary, 0.12),
+        activeRight: isDarkMode ? opacity('#F5F8FF', 0.06) : opacity(primary, 0.12),
+        inactiveRight: isDarkMode ? opacity('#F5F8FF', 0.06) : opacity(primary, 0.12),
       },
       shortRed: SHORT_RED,
       longGreen: LONG_GREEN,

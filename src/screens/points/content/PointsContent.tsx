@@ -43,7 +43,8 @@ import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { useAccountAddress, useAccountProfileInfo, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme';
-import { measureText, safeAreaInsetValues } from '@/utils';
+import measureText from '@/utils/measureText';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { address as formatAddress } from '@/utils/abbreviations';
 import { delay } from '@/utils/delay';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -63,6 +64,7 @@ import { LeaderboardRow } from '../components/LeaderboardRow';
 import { RewardsActionButton } from '../components/RewardsActionButton';
 import { Skeleton } from '../components/Skeleton';
 import { getNumberFormatter } from '@/helpers/intl';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined }) => {
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -615,7 +617,7 @@ export function PointsContent() {
   return (
     <Box height="full" as={Page} flex={1} style={{ backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}>
       <ScrollView
-        refreshControl={<RefreshControl onRefresh={refresh} refreshing={isRefreshing} tintColor={colors.alpha(colors.blueGreyDark, 0.4)} />}
+        refreshControl={<RefreshControl onRefresh={refresh} refreshing={isRefreshing} tintColor={opacity(colors.blueGreyDark, 0.4)} />}
         scrollIndicatorInsets={{
           bottom: TAB_BAR_HEIGHT - safeAreaInsetValues.bottom,
           top: 12,

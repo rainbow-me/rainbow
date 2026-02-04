@@ -14,7 +14,7 @@ import * as i18n from '@/languages';
 import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { PullToRefresh } from './Airdrops/AirdropsSheet';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { DiscoverSearchBar } from '@/components/Discover/DiscoverSearchBar';

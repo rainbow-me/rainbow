@@ -2,7 +2,7 @@ import React from 'react';
 import { Row } from '../layout';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 const StatusBarHeight = safeAreaInsetValues.top;
 export const HeaderHeight = 44;

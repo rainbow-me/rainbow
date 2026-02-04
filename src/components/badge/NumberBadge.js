@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useState } from 'react';
 import Animated, { interpolate, SpringUtils, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { magicMemo } from '../../utils';
+import magicMemo from '@/utils/magicMemo';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { useTimeout } from '@/hooks';

@@ -10,6 +10,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { StyleProp, ViewStyle } from 'react-native';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export type SheetActionButtonProps = PropsWithChildren<{
   borderRadius?: number;
@@ -113,7 +114,7 @@ const SheetActionButton: React.FC<SheetActionButtonProps> = ({
         [0, 10, 30, isDarkMode ? colors.shadow : color, 0.4],
       ];
     } else if (nftShadows) {
-      return [[0, 10, 30, colors.alpha(colors.shadowBlack, 0.3)]];
+      return [[0, 10, 30, opacity(colors.shadowBlack, 0.3)]];
     } else if (!forceShadows && (disabled || isTransparent)) {
       return [[0, 0, 0, colors.transparent, 0]];
     } else

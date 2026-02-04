@@ -14,7 +14,7 @@ import { LpPositionListItem } from '../components/LpPositionListItem';
 import { RootStackParamList } from '@/navigation/types';
 import { openInBrowser } from '@/utils/openInBrowser';
 import Routes from '@/navigation/routesNames';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { Navigation } from '@/navigation';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { NativeCurrencyKeys } from '@/entities';
@@ -22,6 +22,7 @@ import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
@@ -129,7 +130,7 @@ export const PositionSheet: React.FC = () => {
                   <ButtonPressAnimation onPress={openDapp}>
                     <Box
                       style={{
-                        backgroundColor: colors.alpha(positionColor, 0.08),
+                        backgroundColor: opacity(positionColor, 0.08),
                         borderRadius: 20,
                         height: 40,
                       }}

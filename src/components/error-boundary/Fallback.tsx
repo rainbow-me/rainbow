@@ -7,6 +7,7 @@ import Text from '../text/Text';
 import styled from '@/styled-thing';
 import { RainbowError, logger } from '@/logger';
 import { Colors } from '@/styles';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const Spacer = styled(View)({
   height: ({ height }: { height: number }) => height,
@@ -53,20 +54,20 @@ export default function Fallback({
         </Centered>
         <Spacer height={15} />
         <Centered>
-          <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.7)} lineHeight="loose" size="large" weight="bold">
+          <Text align="center" color={opacity(colors.blueGreyDark, 0.7)} lineHeight="loose" size="large" weight="bold">
             {i18n.t(i18n.l.error_boundary.something_went_wrong)}
           </Text>
         </Centered>
         <Spacer height={21} />
         <Centered>
-          <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.7)} lineHeight="loose" size="large" weight="bold">
+          <Text align="center" color={opacity(colors.blueGreyDark, 0.7)} lineHeight="loose" size="large" weight="bold">
             {i18n.t(i18n.l.error_boundary.wallets_are_safe)}
           </Text>
         </Centered>
         <Spacer height={33} />
         <Centered>
           <SheetActionButton
-            color={colors.alpha(colors.appleBlue, 0.06)}
+            color={opacity(colors.appleBlue, 0.06)}
             isTransparent
             label={`🌈 ${i18n.t(i18n.l.error_boundary.restart_rainbow)}`}
             onPress={handleRestart}
