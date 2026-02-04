@@ -267,7 +267,6 @@
 		5AB1118D6FC6EBBDADC0F01B /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CE1DE88418382504DC3477F /* Pods-Rainbow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.release.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.release.xcconfig"; sourceTree = "<group>"; };
 		6630540824A38A1900E5B030 /* RainbowText.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RainbowText.m; sourceTree = "<group>"; };
-		6635730524939991006ACFA6 /* SafeStoreReview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SafeStoreReview.m; sourceTree = "<group>"; };
 		664612EC2748489B00B43F5A /* PriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PriceWidgetExtension.entitlements; sourceTree = "<group>"; };
 		664612ED274848B000B43F5A /* SelectTokenIntent.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SelectTokenIntent.entitlements; sourceTree = "<group>"; };
 		6655FFB325BB2B0700642961 /* ThemeModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThemeModule.m; sourceTree = "<group>"; };
@@ -486,7 +485,6 @@
 				0C88C38E2E30192C0057BDCE /* AppDelegate.swift */,
 				A4277D9E23CBD1910042BAF4 /* Extensions.swift */,
 				A4277DA223CFE85F0042BAF4 /* Theme.swift */,
-				6635730524939991006ACFA6 /* SafeStoreReview.m */,
 				66A28EAF24CAF1B500410A88 /* TestFlight.m */,
 				C04D10EF25AFC8C1003BEF7A /* Extras.json */,
 				6655FFB325BB2B0700642961 /* ThemeModule.m */,
