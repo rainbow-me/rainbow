@@ -3,7 +3,7 @@ import { getIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsS
 import { useMutation } from '@tanstack/react-query';
 import useFetchShowcaseTokens, { showcaseTokensQueryKey } from './useFetchShowcaseTokens';
 import { getPreference, PreferenceActionType, setPreference } from '@/model/preferences';
-import { isLowerCaseMatch } from '@/utils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { queryClient } from '@/react-query';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 

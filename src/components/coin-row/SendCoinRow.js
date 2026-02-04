@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../../theme/ThemeContext';
-import { deviceUtils } from '../../utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import CoinName from './CoinName';

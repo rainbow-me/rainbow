@@ -6,8 +6,8 @@ import { Text } from '../text';
 import { GasSpeedEmoji } from '.';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
-import { magicMemo } from '@/utils';
 import { opacity } from '@/framework/ui/utils/opacity';
+import magicMemo from '@/utils/magicMemo';
 
 const SpeedButton = styled(ButtonPressAnimation).attrs({
   hapticType: 'impactHeavy',

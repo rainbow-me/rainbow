@@ -1,7 +1,7 @@
 import { IS_IOS } from '@/env';
 import { BASE_TAB_BAR_HEIGHT } from '@/navigation/constants';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const BOTTOM_BAR_HEIGHT = 88;

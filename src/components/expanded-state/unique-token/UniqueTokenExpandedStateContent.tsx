@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { magicMemo } from '../../../utils';
+import magicMemo from '@/utils/magicMemo';
 import { SimpleModelView } from '../../3d';
 import { AudioPlayer } from '../../audio';
 import { UniqueTokenImage } from '../../unique-token';

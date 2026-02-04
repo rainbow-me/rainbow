@@ -9,8 +9,8 @@ import { Text } from '../text';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
-import { neverRerender } from '@/utils';
 import { opacity } from '@/framework/ui/utils/opacity';
+import neverRerender from '@/utils/neverRerender';
 
 const Container = styled(Centered).attrs({
   flex: IS_ANDROID ? 1 : undefined,

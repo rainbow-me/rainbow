@@ -10,7 +10,7 @@ import { prefetchENSAvatar, prefetchENSCover, prefetchENSRecords, useAccountENSD
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { ListRenderItem, View } from 'react-native';
 import { BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
 import { RootStackParamList } from '@/navigation/types';

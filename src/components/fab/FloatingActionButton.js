@@ -1,7 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
 import { darkModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';
-import { magicMemo, safeAreaInsetValues } from '../../utils';
+import magicMemo from '@/utils/magicMemo';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import ButtonPressAnimation, { ScaleButtonZoomableAndroid } from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
 import styled from '@/styled-thing';

@@ -10,7 +10,8 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
-import { promiseUtils, time } from '@/utils';
+import promiseUtils from '@/utils/promise';
+import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
 import { IS_TEST } from '@/env';

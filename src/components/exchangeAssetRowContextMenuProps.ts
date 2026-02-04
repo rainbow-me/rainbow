@@ -2,8 +2,10 @@ import * as i18n from '@/languages';
 import { startCase } from 'lodash';
 import { NativeSyntheticEvent } from 'react-native';
 import { setClipboard } from '@/hooks/useClipboard';
-import { abbreviations, ethereumUtils, haptics } from '@/utils';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import abbreviations from '@/utils/abbreviations';
+import ethereumUtils from '@/utils/ethereumUtils';
+import haptics from '@/utils/haptics';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 

@@ -1,6 +1,8 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '../../helpers/emojiHandler';
-import { abbreviations, magicMemo, profileUtils } from '../../utils';
+import abbreviations from '@/utils/abbreviations';
+import magicMemo from '@/utils/magicMemo';
+import profileUtils, { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
@@ -13,7 +15,6 @@ import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import { useContacts, useDimensions, useENSAvatar } from '@/hooks';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
-import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
 import { StyleSheet } from 'react-native';
 import { opacity } from '@/framework/ui/utils/opacity';

@@ -2,7 +2,7 @@ import walletTypes from '@/helpers/walletTypes';
 import { AllRainbowWallets } from '@/model/wallet';
 import { getWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
-import { isLowerCaseMatch } from '@/utils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { isEmpty } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import { Address } from 'viem';

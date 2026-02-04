@@ -4,7 +4,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { SearchAsset } from '@/__swaps__/types/search';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { parseTokenSearchResults } from './utils';
 
 let tokenSearchHttp: RainbowFetchClient | undefined;

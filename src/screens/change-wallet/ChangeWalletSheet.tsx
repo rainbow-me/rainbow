@@ -37,8 +37,9 @@ import {
   useWallets,
 } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
-import { doesWalletsContainAddress, safeAreaInsetValues } from '@/utils';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import doesWalletsContainAddress from '@/utils/doesWalletsContainAddress';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { RouteProp, useRoute } from '@react-navigation/native';

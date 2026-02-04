@@ -39,7 +39,7 @@ import { useTheme } from '../theme/ThemeContext';
 import { ENSConfirmRegisterSheetHeight, ENSConfirmUpdateSheetHeight } from './ENSConfirmRegisterSheet';
 import { IS_ANDROID } from '@/env';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 const BottomActionHeight = 250 + safeAreaInsetValues.bottom;
 const BottomActionHeightSmall = 215;

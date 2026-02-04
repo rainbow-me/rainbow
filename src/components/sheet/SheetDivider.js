@@ -1,4 +1,4 @@
-import { neverRerender } from '../../utils';
+import neverRerender from '@/utils/neverRerender';
 import Divider from '@/components/Divider';
 import styled from '@/styled-thing';
 

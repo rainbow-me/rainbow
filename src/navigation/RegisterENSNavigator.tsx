@@ -13,7 +13,7 @@ import { accentColorAtom, REGISTRATION_MODES } from '@/helpers/ens';
 import { useDimensions, useENSRegistration, useENSRegistrationForm, usePrevious } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { RootStackParamList } from './types';
 
 const Swipe = createMaterialTopTabNavigator();
