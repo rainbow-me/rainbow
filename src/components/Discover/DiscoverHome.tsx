@@ -10,7 +10,7 @@ import useExperimentalFlag, {
 } from '@rainbow-me/config/experimentalHooks';
 import { Inline, Inset, Stack, Box } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
-import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
+import { ENSCreateProfileCard } from '@/features/ens/components/cards/ENSCreateProfileCard';
 import { GasCard } from '@/components/cards/GasCard';
 import { LearnCard } from '@/components/cards/LearnCard';
 import { avoidScamsCard, backupsCard, cryptoAndWalletsCard } from '@/components/cards/utils/constants';

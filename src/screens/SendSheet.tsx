@@ -22,14 +22,10 @@ import { REGISTRATION_STEPS } from '@/features/ens/utils/ensHelpers';
 import { convertAmountAndPriceToNativeDisplay, convertAmountFromNativeValue, formatInputDecimals, lessThan } from '@/helpers/utilities';
 import { checkIsValidAddressOrDomain, checkIsValidAddressOrDomainFormat, isENSAddressFormat } from '@/helpers/validators';
 import {
-  prefetchENSAvatar,
-  prefetchENSCover,
   useAccountSettings,
   useCoinListEditOptions,
   useColorForAsset,
   useContacts,
-  useENSProfile,
-  useENSRegistrationActionHandler,
   useGas,
   useMaxInputBalance,
   usePrevious,
@@ -37,6 +33,10 @@ import {
   useSendSheetInputRefs,
   useUserAccounts,
 } from '@/hooks';
+import { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
+import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
+import useENSProfile from '@/features/ens/hooks/useENSProfile';
+import useENSRegistrationActionHandler from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet, sendTransaction } from '@/model/wallet';

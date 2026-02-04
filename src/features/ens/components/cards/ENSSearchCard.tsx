@@ -1,18 +1,18 @@
 import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { Box, ColorModeProvider, globalColors, Stack, Text } from '@/design-system';
-import { REGISTRATION_MODES } from '@/features/ens/utils/ensHelpers';
-import useENSPendingRegistrations from '@/features/ens/hooks/useENSPendingRegistrations';
+import { REGISTRATION_MODES } from '../../utils/ensHelpers';
+import useENSPendingRegistrations from '../../hooks/useENSPendingRegistrations';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { watchingAlert } from '@/utils';
 import { useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { useNavigation } from '../../navigation/Navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { GenericCard, Gradient } from './GenericCard';
-import { IconOrb } from './reusables/IconOrb';
+import { GenericCard, Gradient } from '@/components/cards/GenericCard';
+import { IconOrb } from '@/components/cards/reusables/IconOrb';
 
 const TRANSLATIONS = i18n.l.cards.ens_search;
 const GRADIENT: Gradient = {

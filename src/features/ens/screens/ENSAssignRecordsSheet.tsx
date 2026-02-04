@@ -10,7 +10,7 @@ import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
 import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
 import useENSSearch from '../hooks/useENSSearch';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { ENSRoutes } from '@/navigation/RegisterENSNavigator';
+import { ENSRoutes } from './RegisterENSNavigator';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';

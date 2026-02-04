@@ -8,7 +8,7 @@ import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import { queryClient } from '@/react-query';
 import Routes from '@/navigation/routesNames';
-import { useEnsMarquee } from '@/resources/metadata/ensMarqueeQuery';
+import { useEnsMarquee } from '../../../hooks/useEnsMarquee';
 import { EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
 import { ensIntroMarqueeNames } from '@/references';
 
