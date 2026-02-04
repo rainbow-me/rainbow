@@ -68,14 +68,6 @@ export function WelcomeScreen() {
   }, [colorAnimation, contentAnimation, createWalletButtonAnimation, shouldAnimateRainbows]);
 
   const startAnimations = useCallback(() => {
-    // Skip looping animations for e2e - they prevent the test framework from settling
-    // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
-    if (IS_TEST) {
-      logger.debug('[WelcomeScreen] Skipping animations because IS_TEST is true');
-      resetAnimations();
-      return;
-    }
-
     shouldAnimateRainbows.value = true;
     const initialDuration = 120;
 
@@ -112,7 +104,7 @@ export function WelcomeScreen() {
       }),
       -1
     );
-  }, [shouldAnimateRainbows, contentAnimation, createWalletButtonAnimation, colorAnimation, resetAnimations]);
+  }, [shouldAnimateRainbows, contentAnimation, createWalletButtonAnimation, colorAnimation]);
 
   useEffect(() => {
     hideSplashScreen();
@@ -184,6 +176,7 @@ export function WelcomeScreen() {
       Alert.alert('Error creating wallet', ensureError(e).message);
     } finally {
       walletLoadingStore.getState().hide();
+      // eslint-disable-next-line require-atomic-updates
       isCreatingWallet.current = false;
     }
   }, [replace]);
