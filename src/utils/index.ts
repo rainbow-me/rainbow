@@ -26,7 +26,6 @@ export { default as pseudoRandomArrayItemFromString } from './pseudoRandomArrayI
 export { default as reduceArrayToObject } from './reduceArrayToObject';
 export { default as safeAreaInsetValues } from './safeAreaInsetValues';
 export { default as sentryUtils } from './sentry';
-export { default as showActionSheetWithOptions } from './actionsheet';
 export { default as simplifyChartData } from './simplifyChartData';
 export { filterList } from './search';
 export { getFirstGrapheme, initials, removeLeadingZeros, sanitizeSeedPhrase } from './formatters';

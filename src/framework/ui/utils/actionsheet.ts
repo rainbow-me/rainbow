@@ -21,7 +21,7 @@ const safeOptions = (options: ActionSheetIOSOptions['options']) => {
     .filter(Boolean);
 };
 
-export default async function showActionSheetWithOptions(
+export async function showActionSheetWithOptions(
   { options, ...props }: ActionSheetIOSOptions,
   callback: (buttonIndex: number | undefined) => void
 ) {
