@@ -3,13 +3,14 @@ import { format, formatDistanceStrict } from 'date-fns';
 import * as i18n from '@/languages';
 import React, { useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import { ENSConfirmRenewSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';
+import { ENSConfirmRenewSheetHeight } from '@/features/ens/screens/ENSConfirmRegisterSheet';
 import { ButtonPressAnimation } from '../../animations';
 import { TokenInfoItem, TokenInfoValue } from '../../token-info';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { Column, Columns, Inset } from '@/design-system';
-import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useENSAvatar, useENSRegistration } from '@/hooks';
+import { REGISTRATION_MODES } from '@/features/ens/utils/ensHelpers';
+import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
+import useENSRegistration from '@/features/ens/hooks/useENSRegistration';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 

@@ -6,7 +6,7 @@ import { useSharedValue } from 'react-native-reanimated';
 
 import BaseScrollView, { ScrollViewDefaultProps } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 import { ProfileSheetConfigContext } from '../../../../screens/ProfileSheet';
-import ProfileSheetHeader from '../../../ens-profile/ProfileSheetHeader';
+import ProfileSheetHeader from '@/features/ens/components/profile/ProfileSheetHeader';
 import ImagePreviewOverlay from '../../../images/ImagePreviewOverlay';
 import { StickyHeaderContext } from './StickyHeaders';
 import { useMemoOne } from 'use-memo-one';

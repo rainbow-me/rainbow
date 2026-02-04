@@ -17,8 +17,8 @@ import {
   convertRawAmountToDecimalFormat,
   handleSignificantDecimals,
 } from '@/helpers/utilities';
-import { fetchENSAvatar } from '@/hooks/useENSAvatar';
-import { fetchReverseRecord } from '@/handlers/ens';
+import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
+import { fetchReverseRecord } from '@/features/ens/utils/ensHandler';
 
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { ContactAvatar } from '@/components/contacts';

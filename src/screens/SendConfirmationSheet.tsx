@@ -11,13 +11,14 @@ import {
   estimateENSSetAddressGasLimit,
   estimateENSSetRecordsGasLimit,
   formatRecordsForTransaction,
-} from '@/handlers/ens';
+} from '@/features/ens/utils/ensHandler';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { assetIsParsedAddressAsset, assetIsUniqueAsset, estimateGasLimit, getProvider } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
-import { useColorForAsset, useContacts, useDimensions, useENSAvatar, useGas, useUserAccounts } from '@/hooks';
+import { useColorForAsset, useContacts, useDimensions, useGas, useUserAccounts } from '@/hooks';
+import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation';
@@ -53,7 +54,7 @@ import { Centered, Column, Row } from '../components/layout';
 import { SendButton } from '../components/send';
 import { SheetHandleFixedToTopHeight, SheetTitle, SlackSheet } from '../components/sheet';
 import { Text as OldText } from '../components/text';
-import { ENSProfile } from '../entities/ens';
+import { ENSProfile } from '@/features/ens/types/ensTypes';
 import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { address } from '../utils/abbreviations';
 import { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';

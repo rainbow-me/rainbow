@@ -1,11 +1,11 @@
 import { useNavigation } from '@/navigation/Navigation';
 import * as i18n from '@/languages';
 import React from 'react';
-import { ENSConfirmUpdateSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';
+import { ENSConfirmUpdateSheetHeight } from '@/features/ens/screens/ENSConfirmRegisterSheet';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@/design-system';
-import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useENSRegistration } from '@/hooks';
+import { REGISTRATION_MODES } from '@/features/ens/utils/ensHelpers';
+import useENSRegistration from '@/features/ens/hooks/useENSRegistration';
 import Routes from '@/navigation/routesNames';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 

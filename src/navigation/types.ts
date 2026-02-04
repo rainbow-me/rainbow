@@ -1,6 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import Routes, { Route } from '@/navigation/routesNames';
-import { REGISTRATION_MODES } from '@/helpers/ens';
+import { REGISTRATION_MODES } from '@/features/ens/utils/ensHelpers';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
 import { ParsedAddressAsset, PendingTransaction, RainbowTransaction, UniqueAsset } from '@/entities';
 import { Claimable, RainbowClaimable } from '@/resources/addys/claimables/types';
@@ -17,7 +17,7 @@ import { TokenColors } from '@/graphql/__generated__/metadata';
 import { GasTrend } from '@/__swaps__/utils/meteorology';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { Checkbox } from '@/screens/SendConfirmationSheet';
-import { ENSProfile } from '@/entities/ens';
+import { ENSProfile } from '@/features/ens/types/ensTypes';
 import { SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { BackupFile, CloudBackups } from '@/model/backup';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';

@@ -41,11 +41,3 @@ export type {
 export * from './transactions';
 export type { EthereumAddress } from './wallet';
 export type { TokenSearchThreshold, TokenSearchTokenListId, TokenSearchUniswapAssetKey } from './tokenSearch';
-export type {
-  ENSRegistrationRecords,
-  ENSRegistrations,
-  ENSRegistrationState,
-  Records,
-  RegistrationParameters,
-  TransactionRegistrationParameters,
-} from './ensRegistration';

@@ -11,7 +11,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { parseGasParamsForTransaction } from '@/parsers';
-import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/redux/ensRegistration';
+import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/features/ens/utils/ensRegistrationRedux';
 import { updateGasFeeForSpeed } from '@/redux/gas';
 import { ethUnits } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';

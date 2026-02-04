@@ -1,14 +1,14 @@
 import { AddressZero } from '@ethersproject/constants';
 import { isEmpty } from 'lodash';
 import { createNewENSAction, createNewENSRap, ENSActionParameters, RapENSAction, ENSRapActionType } from './common';
-import { Records } from '@/entities';
+import { Records } from '@/features/ens/types/ensRegistrationTypes';
 import {
   formatRecordsForTransaction,
   getRapActionTypeForTxType,
   getTransactionTypeForRecords,
   recordsForTransactionAreValid,
-} from '@/handlers/ens';
-import { ENS_RECORDS } from '@/helpers/ens';
+} from '@/features/ens/utils/ensHandler';
+import { ENS_RECORDS } from '@/features/ens/utils/ensHelpers';
 
 export const createSetRecordsENSRap = async (ensActionParameters: ENSActionParameters) => {
   let actions: RapENSAction[] = [];

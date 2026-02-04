@@ -3,9 +3,9 @@ import React, { useMemo } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@/design-system';
-import { Records } from '@/entities';
-import { deprecatedTextRecordFields, ENS_RECORDS } from '@/helpers/ens';
-import { useENSRecordDisplayProperties } from '@/hooks';
+import { Records } from '@/features/ens/types/ensRegistrationTypes';
+import { deprecatedTextRecordFields, ENS_RECORDS } from '@/features/ens/utils/ensHelpers';
+import useENSRecordDisplayProperties from '@/features/ens/hooks/useENSRecordDisplayProperties';
 
 const omitRecordKeys = [ENS_RECORDS.avatar, ENS_RECORDS.displayName];
 const topRecordKeys = [ENS_RECORDS.header, ENS_RECORDS.name, ENS_RECORDS.description];

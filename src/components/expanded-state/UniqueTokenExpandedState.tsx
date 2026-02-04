@@ -20,9 +20,11 @@ import {
 } from '@/design-system';
 import { AssetType, UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
+import { ENS_RECORDS, REGISTRATION_MODES } from '@/features/ens/utils/ensHelpers';
 import isHttpUrl from '@/helpers/isHttpUrl';
-import { useBooleanState, useDimensions, useENSProfile, useENSRegistration, useHiddenTokens, useShowcaseTokens } from '@/hooks';
+import { useBooleanState, useDimensions, useHiddenTokens, useShowcaseTokens } from '@/hooks';
+import useENSProfile from '@/features/ens/hooks/useENSProfile';
+import useENSRegistration from '@/features/ens/hooks/useENSRegistration';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { useNavigation, useUntrustedUrlOpener } from '@/navigation';

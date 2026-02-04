@@ -7,7 +7,6 @@ export { default as contenthash } from './contenthash';
 export { default as deviceUtils } from './deviceUtils';
 export { default as profileUtils } from './profileUtils';
 export { default as doesWalletsContainAddress } from './doesWalletsContainAddress';
-export { getENSNFTAvatarUrl, isENSNFTRecord, normalizeENS, parseENSNFTRecord, stringifyENSNFTRecord, validateENS } from './ens';
 export { default as ethereumUtils } from './ethereumUtils';
 export { default as formatURLForDisplay } from './formatURLForDisplay';
 export { default as gasUtils } from './gas';
@@ -16,7 +15,6 @@ export { default as getUrlForTrustIconFallback } from './getUrlForTrustIconFallb
 export { default as haptics } from './haptics';
 export { default as isETH } from './isETH';
 export { default as isLowerCaseMatch } from './isLowerCaseMatch';
-export { default as labelhash } from './labelhash';
 export { default as magicMemo } from './magicMemo';
 export { default as measureText } from './measureText';
 export { default as neverRerender } from './neverRerender';

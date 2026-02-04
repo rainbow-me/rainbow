@@ -6,7 +6,7 @@ import { PROFILES, useExperimentalFlag } from '@/config';
 import { AssetType, NewTransaction, ParsedAddressAsset, TransactionStatus, UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { isNativeAsset } from '@/handlers/assets';
-import { debouncedFetchSuggestions } from '@/handlers/ens';
+import { debouncedFetchSuggestions } from '@/features/ens/utils/ensHandler';
 import {
   assetIsUniqueAsset,
   buildTransaction,
@@ -18,7 +18,7 @@ import {
   resolveNameOrAddress,
 } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { REGISTRATION_STEPS } from '@/helpers/ens';
+import { REGISTRATION_STEPS } from '@/features/ens/utils/ensHelpers';
 import { convertAmountAndPriceToNativeDisplay, convertAmountFromNativeValue, formatInputDecimals, lessThan } from '@/helpers/utilities';
 import { checkIsValidAddressOrDomain, checkIsValidAddressOrDomainFormat, isENSAddressFormat } from '@/helpers/validators';
 import {

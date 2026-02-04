@@ -2,8 +2,9 @@ import { MMKV } from 'react-native-mmkv';
 import { RapAction, RapActionParameterMap, RapActionTypes } from './references';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { logger } from '@/logger';
-import { EthereumAddress, LegacyGasFeeParamsBySpeed, LegacySelectedGasFee, Records, SelectedGasFee, GasFeeParamsBySpeed } from '@/entities';
-import { REGISTRATION_MODES } from '@/helpers/ens';
+import { EthereumAddress, LegacyGasFeeParamsBySpeed, LegacySelectedGasFee, SelectedGasFee, GasFeeParamsBySpeed } from '@/entities';
+import { Records } from '@/features/ens/types/ensRegistrationTypes';
+import { REGISTRATION_MODES } from '@/features/ens/utils/ensHelpers';
 
 export enum ENSRapActionType {
   commitENS = 'commitENS',

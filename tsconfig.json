@@ -18,7 +18,6 @@
       "@rainbow-me/config/*": ["./src/config/*"],
       "@rainbow-me/entities": ["src/entities"],
       "@rainbow-me/routes": ["src/navigation/routesNames"],
-      "ens-avatar": ["src/ens-avatar/src"],
       "logger": ["src/utils/logger"],
       "react-native-cool-modals": ["src/react-native-cool-modals"],
       "@rainbow-me/animated-charts": ["src/react-native-animated-charts/src"],
