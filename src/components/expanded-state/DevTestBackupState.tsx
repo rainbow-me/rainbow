@@ -58,9 +58,7 @@ export const DevTestBackupState = () => {
               return;
             }
 
-            walletLoadingStore.setState({
-              loadingState: WalletLoadingStates.IMPORTING_WALLET,
-            });
+            walletLoadingStore.getState().show(WalletLoadingStates.IMPORTING_WALLET);
             const restored = await restoreBackup(backup);
             logger.log(`restored: ${restored}`);
 
@@ -73,9 +71,7 @@ export const DevTestBackupState = () => {
           } catch (err) {
             logger.error(new RainbowError(`Error restoring`, err));
           } finally {
-            walletLoadingStore.setState({
-              loadingState: null,
-            });
+            walletLoadingStore.getState().hide();
           }
         }}
       >

@@ -180,9 +180,7 @@ const ViewWalletBackup = () => {
               creatingWallet.current = false;
             },
             onCloseModal: async ({ name = '', color = null }) => {
-              walletLoadingStore.setState({
-                loadingState: WalletLoadingStates.CREATING_WALLET,
-              });
+              walletLoadingStore.getState().show(WalletLoadingStates.CREATING_WALLET);
               // Check if the selected wallet is the primary
               try {
                 // If we found it and it's not damaged use it to create the new account
@@ -201,9 +199,7 @@ const ViewWalletBackup = () => {
                   }, 1000);
                 }
               } finally {
-                walletLoadingStore.setState({
-                  loadingState: null,
-                });
+                walletLoadingStore.getState().hide();
               }
               creatingWallet.current = false;
             },

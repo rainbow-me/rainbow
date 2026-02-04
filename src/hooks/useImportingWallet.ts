@@ -28,7 +28,6 @@ import { IS_ANDROID, IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { loadWallets, useWallets, useAccountAddress } from '@/state/wallets/walletsStore';
-
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const accountAddress = useAccountAddress();
   const wallets = useWallets();
@@ -57,7 +56,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const resetOnFailure = useCallback(() => {
     setImporting(false);
     setBusy(false);
-    walletLoadingStore.setState({ loadingState: null });
+    walletLoadingStore.getState().hide();
     // Return to previous screen on failure
     goBack();
   }, [goBack]);
@@ -288,7 +287,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     const handleImportSuccess = (input: string, isWalletEthZero: boolean, backupProvider: string | undefined, previousWalletCount = 0) => {
       setImporting(false);
       setBusy(false);
-      walletLoadingStore.setState({ loadingState: null });
+      walletLoadingStore.getState().hide();
 
       const shouldReplace = previousWalletCount === 0;
       const navigate = shouldReplace ? Navigation.replace : Navigation.handleAction;
@@ -297,7 +296,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       try {
         navigate(Routes.SWIPE_LAYOUT, {
           screen: Routes.WALLET_SCREEN,
-          params: { initialized: true },
         });
 
         // Dismiss the ADD_WALLET_NAVIGATOR modal stack
@@ -309,6 +307,11 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         } catch (fallbackError) {
           logger.error(new RainbowError('[useImportingWallet]: Error with fallback navigation'), { fallbackError });
         }
+      }
+
+      if (shouldReplace) {
+        // Migrations are skipped when importing with a seed phrase.
+        void initializeWallet({ shouldRunMigrations: true });
       }
 
       // Show backup prompt after navigation completes
@@ -338,9 +341,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       try {
         const input = resolvedAddress ? resolvedAddress : sanitizeSeedPhrase(seedPhrase);
 
-        walletLoadingStore.setState({
-          loadingState: WalletLoadingStates.IMPORTING_WALLET,
-        });
+        walletLoadingStore.getState().show(WalletLoadingStates.IMPORTING_WALLET);
 
         if (!showImportModal) {
           await walletInit({

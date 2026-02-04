@@ -28,7 +28,7 @@ import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
-import WelcomeScreen from '../screens/WelcomeScreen';
+import { WelcomeScreen } from '../screens/WelcomeScreen/WelcomeScreen';
 import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import { createBottomSheetNavigator } from './bottom-sheet';
@@ -92,7 +92,6 @@ import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPane
 import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
 import { RootStackParamList } from './types';
-import WalletLoadingListener from '@/components/WalletLoadingListener';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
 import { LogSheet } from '@/components/debugging/LogSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
@@ -336,7 +335,6 @@ const AppContainerWithAnalytics = React.forwardRef<NavigationContainerRef<RootSt
 
     {/* NOTE: Internally, these use some navigational checks */}
     <CMPortal />
-    <WalletLoadingListener />
   </NavigationContainer>
 ));
 

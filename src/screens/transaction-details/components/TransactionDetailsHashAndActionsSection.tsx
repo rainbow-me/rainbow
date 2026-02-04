@@ -42,7 +42,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
   const isRetrySwapButtonVisible = !isReadOnly && status === TransactionStatus.failed && !!retrySwapMetadata;
 
   const onRetrySwap = useCallback(() => {
-    Navigation.handleAction(Routes.WALLET_SCREEN, {});
+    Navigation.handleAction(Routes.WALLET_SCREEN);
 
     // TODO: Add retry swap logic back for swaps
     navigateToSwaps();

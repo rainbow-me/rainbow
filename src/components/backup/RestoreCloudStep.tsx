@@ -126,9 +126,7 @@ export default function RestoreCloudStep() {
         throw new Error('No backup file selected');
       }
 
-      walletLoadingStore.setState({
-        loadingState: WalletLoadingStates.RESTORING_WALLET,
-      });
+      walletLoadingStore.getState().show(WalletLoadingStates.RESTORING_WALLET);
       const status = await restoreCloudBackup({
         password: pwd,
         backupFilename: filename,
@@ -178,9 +176,7 @@ export default function RestoreCloudStep() {
     } catch (e) {
       Alert.alert(i18n.t(i18n.l.back_up.restore_cloud.error_while_restoring));
     } finally {
-      walletLoadingStore.setState({
-        loadingState: null,
-      });
+      walletLoadingStore.getState().hide();
     }
   }, [password, selectedBackup?.name, onRestoreSuccess]);
 

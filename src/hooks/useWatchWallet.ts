@@ -66,9 +66,7 @@ export default function useWatchWallet({
 
       // NOTE: Make sure this is cleaned up due to the ProfileSheet calling this function directly
       if (walletLoadingStore.getState().loadingState) {
-        walletLoadingStore.setState({
-          loadingState: null,
-        });
+        walletLoadingStore.getState().hide();
       }
     } else {
       // If there's more than 1 account,

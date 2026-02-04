@@ -90,7 +90,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
         message: e instanceof Error ? e.message : String(e),
       });
     }
-    Navigation.handleAction(Routes.WALLET_SCREEN, {});
+    Navigation.handleAction(Routes.WALLET_SCREEN);
   }, [setConnectedToAnvil]);
 
   const fundTestWallet = useCallback(async () => {

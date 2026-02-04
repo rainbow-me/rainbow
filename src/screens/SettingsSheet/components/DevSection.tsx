@@ -53,7 +53,7 @@ const DevSection = () => {
     (value: any) => {
       setConfig({ ...config, [value]: !config[value] });
       if ((defaultConfig as any)[value].needsRestart) {
-        Navigation.handleAction(Routes.WALLET_SCREEN, {});
+        Navigation.handleAction(Routes.WALLET_SCREEN);
         setTimeout(Restart.Restart, 1000);
       }
     },

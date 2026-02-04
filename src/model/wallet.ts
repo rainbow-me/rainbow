@@ -9,6 +9,7 @@ import { generateMnemonic } from 'bip39';
 import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
 import { hdkey as EthereumHDKey, default as LibWallet } from 'ethereumjs-wallet';
 import * as i18n from '@/languages';
+import { analytics } from '@/analytics';
 import { findKey, isEmpty } from 'lodash';
 import { lightModeThemeColors } from '../styles/colors';
 import {
@@ -659,6 +660,22 @@ export const createWallet = async ({
   logger.debug(`[wallet]: ${isImported ? 'Importing new wallet' : 'Creating new wallet'}`, {}, DebugContext.wallet);
   const walletSeed = seed || generateMnemonic();
   const addresses: RainbowAccount[] = [];
+  const baseAnalyticsParams = {
+    isImported,
+    isRestoring,
+    overwrite,
+    silent,
+    hasCheckedWallet: !!checkedWallet,
+  };
+  let analyticsParams:
+    | (typeof baseAnalyticsParams & {
+        ethereumWalletType: EthereumWalletType;
+        walletLibraryType: WalletLibraryType;
+        isReadOnly: boolean;
+        isHardwareWallet: boolean;
+        isHDWallet: boolean;
+      })
+    | undefined;
   try {
     const {
       isHDWallet,
@@ -670,8 +687,24 @@ export const createWallet = async ({
     } = checkedWallet || (await deriveAccountFromWalletInput(walletSeed));
     const isReadOnlyType = type === EthereumWalletType.readOnly;
     const isHardwareWallet = type === EthereumWalletType.bluetooth;
+    analyticsParams = {
+      ...baseAnalyticsParams,
+      ethereumWalletType: type,
+      walletLibraryType: walletType,
+      isReadOnly: isReadOnlyType,
+      isHardwareWallet,
+      isHDWallet,
+    };
     let pkey = walletSeed;
-    if (!walletResult || !address) return null;
+    if (!walletResult || !address) {
+      if (analyticsParams) {
+        analytics.track(analytics.event.walletCreateFailed, {
+          ...analyticsParams,
+          error: 'wallet_or_address_missing',
+        });
+      }
+      return null;
+    }
     const walletAddress = address;
     if (isHDWallet) {
       ensureLibWallet(walletResult);
@@ -709,7 +742,19 @@ export const createWallet = async ({
           logger.debug('[wallet]: already imported this wallet', {}, DebugContext.wallet);
           const error = new Error(i18n.t(i18n.l.wallet.new.alert.looks_like_already_imported));
           error.name = 'WalletAlreadyExistsError';
+          if (analyticsParams) {
+            analytics.track(analytics.event.walletCreateFailed, {
+              ...analyticsParams,
+              error: 'wallet_already_exists',
+            });
+          }
           throw error;
+        }
+        if (analyticsParams) {
+          analytics.track(analytics.event.walletCreateFailed, {
+            ...analyticsParams,
+            error: 'wallet_already_exists_restoring',
+          });
         }
         return null;
       }
@@ -925,6 +970,9 @@ export const createWallet = async ({
     setWalletDamaged(id, false);
 
     if (walletResult && walletAddress) {
+      if (analyticsParams) {
+        analytics.track(analytics.event.walletCreateSucceeded, analyticsParams);
+      }
       const walletRes =
         walletType === WalletLibraryType.ethers || walletType === WalletLibraryType.ledger ? (walletResult as Wallet) : new Wallet(pkey);
 
@@ -933,6 +981,12 @@ export const createWallet = async ({
     return null;
   } catch (e) {
     const error = ensureError(e);
+    if (error.name !== 'WalletAlreadyExistsError' && analyticsParams) {
+      analytics.track(analytics.event.walletCreateFailed, {
+        ...analyticsParams,
+        error: error.message,
+      });
+    }
     if (error.name === 'WalletAlreadyExistsError') {
       throw error;
     }
