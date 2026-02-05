@@ -1,0 +1,1 @@
+export const NAVBAR_HEIGHT_WITH_PADDING = 77;

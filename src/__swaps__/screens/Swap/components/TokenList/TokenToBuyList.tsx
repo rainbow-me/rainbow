@@ -21,15 +21,16 @@ import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { getChainColorWorklet } from '@/__swaps__/utils/swaps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
+import { EXPANDED_INPUT_HEIGHT } from '../../constants';
 import { useSwapsSearchStore } from '../../resources/search/searchV2';
 import { ChainSelection } from './ChainSelection';
+import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
 
 export const BUY_LIST_HEADER_HEIGHT = 20 + 10 + 10; // paddingTop + height + paddingBottom
 
 const SCROLL_INDICATOR_INSETS = {
   focused: {
-    bottom: 28 + (EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT),
+    bottom: 28 + (EXPANDED_INPUT_HEIGHT - TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT),
   },
   unfocused: {
     bottom: 28,
@@ -164,7 +165,7 @@ export const TokenToBuyList = () => {
 
   const animatedListPadding = useAnimatedStyle(() => {
     const isFocused = outputProgress.value === 2;
-    const bottomPadding = isFocused ? EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT : 0;
+    const bottomPadding = isFocused ? EXPANDED_INPUT_HEIGHT - TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT : 0;
     return { height: bottomPadding };
   });
 

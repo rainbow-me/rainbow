@@ -13,15 +13,16 @@ import { ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
+import { EXPANDED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
-import { shallowEqual } from '@/worklets/comparisons';
+import { NAVBAR_HEIGHT_WITH_PADDING } from '@/components/navbar/constants';
+import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
 
 export const SELL_LIST_HEADER_HEIGHT = 20 + 10 + 14; // paddingTop + height + paddingBottom
 
 const SCROLL_INDICATOR_INSETS = {
   focused: {
-    bottom: 28 + (EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT),
+    bottom: 28 + (EXPANDED_INPUT_HEIGHT - TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT),
   },
   unfocused: {
     bottom: 28,
@@ -96,7 +97,7 @@ const TokenToSellListComponent = () => {
 
   const animatedListPadding = useAnimatedStyle(() => {
     const isFocused = inputProgress.value === 2;
-    const bottomPadding = isFocused ? EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT : 0;
+    const bottomPadding = isFocused ? EXPANDED_INPUT_HEIGHT - TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT : 0;
     return { height: bottomPadding };
   });
 
@@ -146,7 +147,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   list: {
-    height: EXPANDED_INPUT_HEIGHT - 77,
+    height: EXPANDED_INPUT_HEIGHT - NAVBAR_HEIGHT_WITH_PADDING,
     width: DEVICE_WIDTH - 24,
   },
   listFooter: {

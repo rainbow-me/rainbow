@@ -1,15 +1,15 @@
 import { Easing } from 'react-native-reanimated';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import deviceUtils, { DEVICE_HEIGHT, NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { buildTestSafeConfig } from '@/components/animations/animationConfigs';
+import { NAVBAR_HEIGHT_WITH_PADDING } from '@/components/navbar/constants';
+import { getDefaultKeyboardHeight } from '@/utils/keyboardHeight';
 
 // /---- 🔒 Constants 🔒 ----/ //
 //
 export const CUSTOM_KEYBOARD_HEIGHT = 209;
-export const NAVBAR_HEIGHT_WITH_PADDING = 77;
 export const SPACE_BETWEEN_SWAP_BUBBLES = 12;
 
 // TODO: Need a more reliable way to get the keyboard height
@@ -35,7 +35,6 @@ export const EXPANDED_INPUT_HEIGHT =
   BASE_INPUT_HEIGHT -
   SPACE_BETWEEN_SWAP_BUBBLES -
   Math.max(IS_IOS ? safeAreaInsetValues.bottom : NAVIGATION_BAR_HEIGHT, SPACE_BETWEEN_SWAP_BUBBLES);
-export const FOCUSED_INPUT_HEIGHT = deviceUtils.dimensions.height - safeAreaInsetValues.top - 20 - NATIVE_KEYBOARD_HEIGHT;
 export const INPUT_INNER_WIDTH = BASE_INPUT_WIDTH - THICK_BORDER_WIDTH * 2;
 
 export const SLIDER_HEIGHT = 16;

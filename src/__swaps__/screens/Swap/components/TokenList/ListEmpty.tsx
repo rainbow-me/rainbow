@@ -4,11 +4,12 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
+import { EXPANDED_INPUT_HEIGHT } from '../../constants';
 import { useSwapContext } from '../../providers/swap-provider';
 import { BUY_LIST_HEADER_HEIGHT } from './TokenToBuyList';
 import { SELL_LIST_HEADER_HEIGHT } from './TokenToSellList';
 import { isL2Chain } from '@/handlers/web3';
+import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
 
 type ListEmptyProps = {
   action?: 'swap' | 'bridge';
@@ -26,7 +27,9 @@ export const ListEmpty = memo(function ListEmpty({ action = 'swap', output = fal
     const isFocused = output ? outputProgress.value === 2 : inputProgress.value === 2;
     return {
       height: withTiming(
-        (isFocused ? FOCUSED_INPUT_HEIGHT : EXPANDED_INPUT_HEIGHT) - 120 - (output ? BUY_LIST_HEADER_HEIGHT : SELL_LIST_HEADER_HEIGHT),
+        (isFocused ? TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT : EXPANDED_INPUT_HEIGHT) -
+          120 -
+          (output ? BUY_LIST_HEADER_HEIGHT : SELL_LIST_HEADER_HEIGHT),
         TIMING_CONFIGS.slowerFadeConfig
       ),
     };
