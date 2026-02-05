@@ -3,7 +3,7 @@ import React, { createElement } from 'react';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { CustomGasState, ChartExpandedState, UniqueTokenExpandedState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';

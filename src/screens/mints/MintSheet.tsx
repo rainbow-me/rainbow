@@ -22,7 +22,10 @@ import {
   isZero,
   multiply,
 } from '@/helpers/utilities';
-import { useDimensions, useENSAvatar, useGas, usePersistentAspectRatio } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
+import useENSAvatar from '@/hooks/useENSAvatar';
+import useGas from '@/hooks/useGas';
+import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';

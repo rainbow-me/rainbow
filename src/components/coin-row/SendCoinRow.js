@@ -8,7 +8,7 @@ import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { isL2Chain } from '@/handlers/web3';
-import { useColorForAsset } from '@/hooks';
+import useColorForAsset from '@/hooks/useColorForAsset';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';

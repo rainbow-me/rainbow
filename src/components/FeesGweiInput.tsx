@@ -3,7 +3,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { ButtonPressAnimation } from '@/components/animations';
 import GweiInputPill from '@/components/GweiInputPill';
 import { delay } from '@/helpers/utilities';
-import { usePrevious } from '@/hooks';
+import usePrevious from '@/hooks/usePrevious';
 import { TextInput } from 'react-native';
 import { Box, Inline, Text } from '@/design-system';
 import { colors } from '@/styles';

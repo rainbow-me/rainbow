@@ -3,8 +3,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import { checkIsValidAddressOrDomain } from '@/helpers/validators';
-import { useClipboard, useInvalidPaste } from '@/hooks';
 import { opacity } from '@/framework/ui/utils/opacity';
+import useClipboard from '@/hooks/useClipboard';
+import useInvalidPaste from '@/hooks/useInvalidPaste';
 import deviceUtils from '@/utils/deviceUtils';
 
 export default function PasteAddressButton({ onPress }) {

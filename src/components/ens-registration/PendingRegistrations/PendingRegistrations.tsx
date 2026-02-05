@@ -7,7 +7,7 @@ import ImageAvatar from '../../../components/contacts/ImageAvatar';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { Box, Column, Columns, Inset, Separator, Stack, Text } from '@/design-system';
 import { RegistrationParameters } from '@/entities';
-import { useENSPendingRegistrations } from '@/hooks';
+import useENSPendingRegistrations from '@/hooks/useENSPendingRegistrations';
 import { colors } from '@/styles';
 
 const PendingRegistration = ({

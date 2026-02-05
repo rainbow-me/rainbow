@@ -7,7 +7,7 @@ import { SheetSeparator } from '../shared/Separator';
 import Animated, { useDerivedValue, useAnimatedStyle, DerivedValue } from 'react-native-reanimated';
 import { LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { useLiveTokenSharedValue, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { useAccountSettings } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { useCandlestickPrice } from '@/features/charts/stores/derived/useCandlestickPrice';

@@ -1,6 +1,6 @@
 import React from 'react';
 import SvgImage from './SvgImage';
-import { useSafeImageUri } from '@/hooks';
+import useSafeImageUri from '@/hooks/useSafeImageUri';
 
 const RemoteSvg = props => {
   const safeUri = useSafeImageUri(props.uri, true);

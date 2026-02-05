@@ -8,7 +8,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '../constants';
 import { useSwapsSearchStore } from '../resources/search/searchV2';
-import { useClipboard } from '@/hooks';
+import useClipboard from '@/hooks/useClipboard';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { IS_ANDROID } from '@/env';
 

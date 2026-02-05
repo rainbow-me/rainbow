@@ -2,7 +2,7 @@ import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { FastTransactionCoinRow, RequestCoinRow } from '@/components/coin-row';
 import { RainbowTransaction } from '@/entities';
 import { TransactionItemForSectionList, TransactionSections } from '@/helpers/buildTransactionsSectionsSelector';
-import { useAccountTransactions } from '@/hooks';
+import useAccountTransactions from '@/hooks/useAccountTransactions';
 import { Skeleton } from '@/screens/points/components/Skeleton';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';

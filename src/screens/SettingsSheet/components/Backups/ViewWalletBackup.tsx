@@ -19,7 +19,7 @@ import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import WalletTypes from '@/helpers/walletTypes';
-import { useENSAvatar } from '@/hooks';
+import useENSAvatar from '@/hooks/useENSAvatar';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';

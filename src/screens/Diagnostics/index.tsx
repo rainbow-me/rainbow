@@ -5,7 +5,7 @@ import { useNavigation } from '@/navigation';
 import { privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
-import { useWalletsWithBalancesAndNames } from '@/hooks';
+import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
