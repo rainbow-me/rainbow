@@ -39,11 +39,6 @@ const CopyFloatingEmojis: FC<CopyFloatingEmojisProps> = ({ children, disabled = 
             }
           }}
           radiusAndroid={24}
-          wrapperProps={{
-            containerStyle: {
-              padding: 10,
-            },
-          }}
           testID={testID}
         >
           {children}
