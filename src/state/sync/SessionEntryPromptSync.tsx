@@ -54,9 +54,7 @@ async function maybeShowBackupPrompt(): Promise<boolean> {
 
   const { status, backupProvider, lastBackupPromptAt, timesPromptedForBackup } = backupsStore.getState();
 
-  if (LoadingStates.includes(status)) {
-    return false;
-  }
+  if (LoadingStates.includes(status)) return false;
 
   const cooldownMs = oneWeekInMs * (timesPromptedForBackup + 1);
   if (lastBackupPromptAt && Date.now() - lastBackupPromptAt < cooldownMs) {
@@ -114,7 +112,10 @@ const SessionEntryPromptSyncComponent = () => {
   const startedRef = useRef(false);
 
   useEffect(() => {
-    if (startedRef.current || !walletReady || !activeRoute || !isSwipeRoute(activeRoute as Route)) return;
+    const isSwipeExperienceRoute = !!activeRoute && (activeRoute === Routes.SWIPE_LAYOUT || isSwipeRoute(activeRoute as Route));
+    if (startedRef.current || !walletReady || !activeRoute || !isSwipeExperienceRoute) {
+      return;
+    }
 
     startedRef.current = true;
     InteractionManager.runAfterInteractions(() => {
