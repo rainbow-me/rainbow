@@ -31,7 +31,7 @@ export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
   return (
     <ColorModeProvider value="dark">
       <RnbwRewardsFlowContextProvider>
-        <View style={styles.container}>
+        <View style={styles.container} testID="rnbw-rewards-screen">
           <RnbwRewardsContent />
         </View>
       </RnbwRewardsFlowContextProvider>

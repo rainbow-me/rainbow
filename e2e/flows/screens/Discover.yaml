@@ -25,7 +25,7 @@ tags:
 - swipe:
     direction: LEFT
 - assertVisible:
-    id: points-screen
+    id: rnbw-rewards-screen
 - tapOn:
     point: ${output.tabCoordinates.discoverTab}
 - assertVisible:
