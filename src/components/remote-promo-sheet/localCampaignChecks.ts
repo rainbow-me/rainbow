@@ -1,11 +1,8 @@
-import { NotificationsPromoCampaign } from './notificationsPromoCampaign';
 import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 import { InteractionManager } from 'react-native';
 
-export enum CampaignKey {
-  notificationsLaunch = 'notifications_launch',
-}
+export type CampaignKey = string;
 
 export enum CampaignCheckType {
   wallet = 'wallet',
@@ -28,7 +25,7 @@ export interface Campaign {
 }
 
 // the ordering of this list is IMPORTANT, this is the order that campaigns will be run
-export const activeCampaigns: Campaign[] = [NotificationsPromoCampaign];
+export const activeCampaigns: Campaign[] = [];
 
 export const runLocalCampaignChecks = async (): Promise<boolean> => {
   logger.debug('[runLocalCampaignChecks]: Running Checks');

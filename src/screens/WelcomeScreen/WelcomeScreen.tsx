@@ -35,6 +35,7 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { Box } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
 
 const RAINBOW_TEXT_HEIGHT = 32;
 const RAINBOW_TEXT_WIDTH = 125;
@@ -46,7 +47,7 @@ const PRIMARY_BUTTON_BORDER_WIDTH = IS_IOS ? 0 : 3;
 export function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const { colors, isDarkMode } = useTheme();
-  const { replace, navigate } = useNavigation();
+  const { navigate } = useNavigation();
   const isCreatingWallet = useRef(false);
 
   const contentAnimation = useSharedValue(1);
@@ -167,11 +168,7 @@ export function WelcomeScreen() {
         throw new RainbowError('Error creating wallet address');
       }
 
-      if (walletAddress) {
-        replace(Routes.SWIPE_LAYOUT, {
-          screen: Routes.WALLET_SCREEN,
-        });
-      }
+      await navigateAfterOnboarding();
     } catch (e) {
       logger.error(new RainbowError('[WelcomeScreen]: Error creating wallet', e));
       Alert.alert('Error creating wallet', ensureError(e).message);
@@ -180,7 +177,7 @@ export function WelcomeScreen() {
       // eslint-disable-next-line require-atomic-updates
       isCreatingWallet.current = false;
     }
-  }, [replace]);
+  }, []);
 
   const handlePressTerms = useCallback(() => {
     openInBrowser('https://rainbow.me/terms-of-use', false);

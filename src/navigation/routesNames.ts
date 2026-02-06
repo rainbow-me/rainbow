@@ -59,7 +59,7 @@ const Routes = {
   NETWORK_SWITCHER: 'NetworkSection',
   NFT_OFFERS_SHEET: 'NFTOffersSheet',
   NFT_SINGLE_OFFER_SHEET: 'NFTSingleOfferSheet',
-  NOTIFICATIONS_PROMO_SHEET: 'NotificationsPromoSheet',
+  NOTIFICATION_PERMISSION_SCREEN: 'NotificationPermissionScreen',
   OP_REWARDS_SHEET: 'OpRewardsSheet',
   PAIR_HARDWARE_WALLET_AGAIN_SHEET: 'PairHardwareWalletAgainSheet',
   PAIR_HARDWARE_WALLET_ERROR_SHEET: 'PairHardwareWalletErrorSheet',

@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import React, { useContext } from 'react';
 import { AddCashSheet } from '../screens/AddCash';
 import AvatarBuilder from '../screens/AvatarBuilder';
@@ -24,7 +24,7 @@ import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
-import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
+import { NotificationPermissionScreen } from '@/features/notifications/screens/NotificationPermissionScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
@@ -152,6 +152,11 @@ function MainNavigator() {
       <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
       <Stack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} options={bottomSheetPreset} />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
+      <Stack.Screen
+        component={NotificationPermissionScreen}
+        name={Routes.NOTIFICATION_PERMISSION_SCREEN}
+        options={{ gestureEnabled: false, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, presentation: 'card' }}
+      />
       <Stack.Screen component={ShowSecretView} name="ShowSecretView" options={bottomSheetPreset} />
       <Stack.Screen component={WalletConnectApprovalSheet} name={Routes.WALLET_CONNECT_APPROVAL_SHEET} options={bottomSheetPreset} />
     </Stack.Navigator>
@@ -226,7 +231,6 @@ function BSNavigator() {
         </>
       )}
       <BSStack.Screen component={RemotePromoSheet} name={Routes.REMOTE_PROMO_SHEET} options={bottomSheetPreset} />
-      <BSStack.Screen component={NotificationsPromoSheet} name={Routes.NOTIFICATIONS_PROMO_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen component={ExplainSheet} name={Routes.EXPLAIN_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen component={ExternalLinkWarningSheet} name={Routes.EXTERNAL_LINK_WARNING_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen component={ModalScreen} {...closeKeyboardOnClose} name={Routes.MODAL_SCREEN} />

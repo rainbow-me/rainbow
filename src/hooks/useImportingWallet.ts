@@ -28,6 +28,8 @@ import { IS_ANDROID, IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { loadWallets, useWallets, useAccountAddress } from '@/state/wallets/walletsStore';
+import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
+
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const accountAddress = useAccountAddress();
   const wallets = useWallets();
@@ -284,7 +286,12 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       return;
     }
 
-    const handleImportSuccess = (input: string, isWalletEthZero: boolean, backupProvider: string | undefined, previousWalletCount = 0) => {
+    const handleImportSuccess = async (
+      input: string,
+      isWalletEthZero: boolean,
+      backupProvider: string | undefined,
+      previousWalletCount = 0
+    ) => {
       setImporting(false);
       setBusy(false);
       walletLoadingStore.getState().hide();
@@ -294,9 +301,13 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
       // Navigate to wallet screen and dismiss the entire modal stack
       try {
-        navigate(Routes.SWIPE_LAYOUT, {
-          screen: Routes.WALLET_SCREEN,
-        });
+        if (shouldReplace) {
+          await navigateAfterOnboarding();
+        } else {
+          navigate(Routes.SWIPE_LAYOUT, {
+            screen: Routes.WALLET_SCREEN,
+          });
+        }
 
         // Dismiss the ADD_WALLET_NAVIGATOR modal stack
         dangerouslyGetParent?.()?.goBack();
@@ -354,7 +365,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             silent: true,
           });
           await loadWallets();
-          handleImportSuccess(input, isWalletEthZero, backupProvider, keys(wallets).length);
+          await handleImportSuccess(input, isWalletEthZero, backupProvider, keys(wallets).length);
           return;
         }
 
@@ -370,7 +381,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
         if (success) {
           // Navigate to wallet screen
-          handleImportSuccess(input, isWalletEthZero, backupProvider, previousWalletCount);
+          await handleImportSuccess(input, isWalletEthZero, backupProvider, previousWalletCount);
         } else {
           // Import failed
           logger.error(new RainbowError('[useImportingWallet]: Import failed'));
