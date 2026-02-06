@@ -10,10 +10,13 @@ import { sharedCoolModalTopOffset } from './config';
 import { avatarMetadataAtom } from '@/components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { Box } from '@/design-system';
 import { accentColorAtom, REGISTRATION_MODES } from '@/helpers/ens';
-import { useDimensions, useENSRegistration, useENSRegistrationForm, usePrevious } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
+import useENSRegistration from '@/hooks/useENSRegistration';
+import useENSRegistrationForm from '@/hooks/useENSRegistrationForm';
+import usePrevious from '@/hooks/usePrevious';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { RootStackParamList } from './types';
 
 const Swipe = createMaterialTopTabNavigator();

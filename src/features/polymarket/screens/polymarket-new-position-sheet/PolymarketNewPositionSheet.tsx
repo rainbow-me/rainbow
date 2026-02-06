@@ -7,7 +7,7 @@ import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-syst
 import * as i18n from '@/languages';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -45,7 +45,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   const tokenId = market.clobTokenIds[outcomeIndex];
   const accentColor = outcomeColor;
   const buttonColor = getSolidColorEquivalent({
-    background: opacityWorklet(accentColor, 0.7),
+    background: opacity(accentColor, 0.7),
     foreground: '#000000',
     opacity: 0.4,
   });
@@ -144,9 +144,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
       <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }]}>
         <LinearGradient
           colors={
-            isDarkMode
-              ? [opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)]
-              : [opacityWorklet(accentColor, 0), opacityWorklet(accentColor, 0.06)]
+            isDarkMode ? [opacity(accentColor, 0.22), opacity(accentColor, 0)] : [opacity(accentColor, 0), opacity(accentColor, 0.06)]
           }
           style={StyleSheet.absoluteFill}
           start={isDarkMode ? { x: 0, y: 0 } : { x: 0, y: 0.12 }}
@@ -171,7 +169,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
             <AmountInputCard
               availableBalance={availableBalance}
               accentColor={accentColor}
-              backgroundColor={isDarkMode ? opacityWorklet(accentColor, 0.08) : opacityWorklet(globalColors.white100, 0.9)}
+              backgroundColor={isDarkMode ? opacity(accentColor, 0.08) : opacity(globalColors.white100, 0.9)}
               onAmountChange={setBuyAmount}
               title={i18n.t(i18n.l.predictions.new_position.amount)}
               validation={validation}
@@ -226,10 +224,10 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               isProcessing={isProcessing}
               showBiometryIcon={false}
               backgroundColor={buttonColor}
-              disabledBackgroundColor={opacityWorklet(accentColor, 0.12)}
+              disabledBackgroundColor={opacity(accentColor, 0.12)}
               disabled={!isValidOrderAmount}
               height={48}
-              borderColor={{ custom: opacityWorklet('#FFFFFF', 0.08) }}
+              borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
               borderWidth={2}
               textStyle={{
                 color: 'white',
@@ -246,7 +244,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
                 height={48}
                 borderRadius={24}
                 backgroundColor={buttonColor}
-                borderColor={{ custom: opacityWorklet('#FFFFFF', 0.08) }}
+                borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
                 borderWidth={2}
               >
                 <Text color="white" size="20pt" weight="black">

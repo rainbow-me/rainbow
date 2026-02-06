@@ -13,7 +13,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { greaterThanWorklet, lessThanWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useTheme } from '@/theme';
 
 const UP_ARROW = IS_ANDROID ? '' : '↑';
@@ -78,7 +78,7 @@ export const ChartPercentChangeLabel = memo(function ChartPercentChangeLabel({
 
     return {
       color,
-      textShadowColor: isDarkMode ? opacityWorklet(color, 0.24) : 'transparent',
+      textShadowColor: isDarkMode ? opacity(color, 0.24) : 'transparent',
     };
   });
 

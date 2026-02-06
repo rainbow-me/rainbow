@@ -3,7 +3,7 @@ import { SystemBars } from 'react-native-edge-to-edge';
 import { analytics } from '@/analytics';
 import { isSwipeRoute, setActiveRoute } from '@/state/navigation/navigationStore';
 import { currentColors } from '@/theme';
-import { sentryUtils } from '../utils';
+import sentryUtils from '@/utils/sentry';
 import { Navigation } from './index';
 import Routes, { POINTS_ROUTES } from './routesNames';
 import { isSplashScreenHidden } from '@/hooks/useHideSplashScreen';

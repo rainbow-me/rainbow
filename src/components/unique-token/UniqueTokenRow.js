@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { magicMemo } from '../../utils';
+import magicMemo from '@/utils/magicMemo';
 import { Row } from '../layout';
 import { CardSize, UniqueTokenCardMargin, UniqueTokenRowPadding } from './CardSize';
 import UniqueTokenCard from './UniqueTokenCard';

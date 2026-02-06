@@ -29,8 +29,8 @@ import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDa
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
-import { opacity } from '@/__swaps__/utils/swaps';
-import showActionSheetWithOptions from '@/utils/actionsheet';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import haptics from '@/utils/haptics';
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';

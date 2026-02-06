@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Separator, useColorMode } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const DiscoverSeparator = memo(function DiscoverSeparator() {
   const { isDarkMode } = useColorMode();

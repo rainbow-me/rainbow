@@ -324,7 +324,9 @@
         "authorizing": "Yetkilendirme",
         "confirming_on_ledger": "Ledger'da Onaylanıyor",
         "hold_keyword": "Tut",
-        "tap_keyword": "Dokun"
+        "tap_keyword": "Dokun",
+        "hold_to_claim": "Talep Etmek İçin Basılı Tutun",
+        "claiming": "Talep Ediliyor..."
       },
       "hold_to_send": "Göndermek için Tut",
       "import": "İçe Aktar",
@@ -977,7 +979,7 @@
       "redacted_title": "Redacted Rainbow'un kilidini açtınız",
       "baggy_description": "Sokaklardan zincire, bu küçük çanta Rainbow havasının taşınabilir dozunu taşır. Renklerin tadına bak ve farkı hisset.",
       "baggy_title": "Kazandınız\n Rainbow Baggy",
-      "chonks_description": "101'de süzülürken, Rainbow saçlarınızda rüzgarı hayal edin, Chonky hissiyle.",
+      "chonks_description": "Rainbow saçınızda rüzgarı hayal edin, 101 boyunca Chonky hissederek araba kullanıyorsunuz.",
       "chonks_title": "En Chonky Simgeyi\n Açtınız",
       "mog_description": "Renklerde kolay kozmik dünya hakimiyeti.",
       "mog_title": "Kazandınız\n Rainbow Mogs",
@@ -1634,7 +1636,7 @@
       "markets": {
         "title": "Piyasalar",
         "view_all": "Hepsini Gör",
-        "up_to": "UP TO",
+        "up_to": "KADAR",
         "already_open": "Zaten Açık"
       },
       "deposit": {
@@ -2444,6 +2446,52 @@
         "warning": "Simgeyi değiştirmek Rainbow'un yeniden başlamasına neden olabilir.",
         "confirm": "Onayla",
         "cancel": "İptal"
+      },
+      "support": {
+        "title": "Destek ve Geri Bildirim",
+        "entry": {
+          "contact_support": "Desteğe Ulaşın",
+          "contact_support_description": "Sorunlar, sorular veya acil endişeler için kişiselleştirilmiş e-posta desteği",
+          "get_started": "Başlayın",
+          "category_picker_description": "Hangi konuda yardıma ihtiyacınız var?",
+          "share_feedback": "Geri Bildirim Paylaş",
+          "share_feedback_description": "Bize fikirlerinizi e-postayla gönderin veya sadece merhaba deyin",
+          "faqs_and_guides": "SSS ve Kılavuzlar"
+        },
+        "category": {
+          "getting_started": {
+            "name": "Başlarken",
+            "description": "Kurulum, temel bilgiler, ağlar"
+          },
+          "backup_recovery": {
+            "name": "Yedekleme ve Kurtarma",
+            "description": "Geri yükleme, yedek oluşturma"
+          },
+          "tokens_transactions": {
+            "name": "Tokenlar ve İşlemler",
+            "description": "Eksik tokenlar, bakiyeler"
+          },
+          "bridge_swap": {
+            "name": "Köprü ve Takas",
+            "description": "Zincirler arası, takas sorunları"
+          },
+          "points_rewards": {
+            "name": "Puanlar ve Ödüller",
+            "description": "Puanlar, airdrop'lar, lansmanlar"
+          },
+          "security": {
+            "name": "Güvenlik Endişeleri",
+            "description": "Ele geçirilmiş cüzdan, kayıp kurtarma ifadesi"
+          },
+          "partnership": {
+            "name": "Ortaklık Talebi",
+            "description": "İş, entegrasyonlar"
+          },
+          "other": {
+            "name": "Başka Bir Şey",
+            "description": "Diğer sorular"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2457,6 +2505,7 @@
       "actions": {
         "hold_to_swap": "Değiştirmek için Tut",
         "hold_to_bridge": "Köprülemek İçin Tut",
+        "earning_rewards": "Ödül Kazanma",
         "save": "Kaydet",
         "enter_amount": "Miktar Girin",
         "review": "İncele",
@@ -3885,6 +3934,58 @@
         "lost_bets_dont_clear": "Kaybedilen bahisler otomatik olarak kaldırılmaz. Aşağıda temizleyebilirsiniz."
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "Tanışın",
+        "rainbow_token": "Rainbow Token",
+        "description_prefix": "Şununla tanışın: ",
+        "description_suffix": " Airdrop için uygun olup olmadığınızı şimdi kontrol edin.",
+        "check_eligibility": "Uygunluğu Kontrol Et"
+      },
+      "feature_card": {
+        "subtitle": "$RNBW ile tanışın, uygunluğunuzu şimdi kontrol edin."
+      },
+      "claim": {
+        "available_to_claim": "Talep Edilebilir",
+        "your_airdrop": "Airdrop'unuz",
+        "your_airdrop_description": "Rainbow kullandığınız için teşekkürler. Airdrop'unuz önceki etkinliğinize göre hesaplanır.",
+        "claim_failed_title": "Ödüller Talep Edilirken Hata",
+        "claim_failed_message": "Lütfen tekrar deneyin.",
+        "claim_later": "Daha Sonra Talep Et",
+        "almost_there": "Neredeyse oldu..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "Airdrop Talep Edildi",
+        "you_claimed": "Talep ettiniz"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "Ödüller Talep Edildi",
+        "you_claimed": "Talep ettiniz"
+      },
+      "airdrop": {
+        "no_airdrop": "Airdrop Yok",
+        "no_airdrop_description": "Bu cüzdan bir airdrop almadı.",
+        "already_claimed": "Zaten Talep Edildi",
+        "already_claimed_description": "Airdrop'unuzu zaten talep ettiniz."
+      },
+      "airdrop_card": {
+        "your_airdrop": "Airdrop'unuz"
+      },
+      "how_to_earn": {
+        "earn_rewards": "Ödül Kazanın",
+        "description": "Token takası yaparak $RNBW kazanın. Yakında daha fazla kazanma yolu geliyor."
+      },
+      "loading_labels": {
+        "checking_historical_activity": "Geçmiş Etkinlik Kontrol Ediliyor...",
+        "checking_eligibility": "Uygunluk Kontrol Ediliyor...",
+        "claiming_rewards": "Ödüller Talep Ediliyor...",
+        "submitting_transaction": "İşlem Gönderiliyor...",
+        "claiming_airdrop": "Airdrop Talep Ediliyor...",
+        "counting_your_points": "Puanlarınız Sayılıyor...",
+        "oh_i_see": "Anlıyorum..."
+      },
+      "longer_than_usual": "Talep etme işlemi normalden uzun sürüyor. Bir dakikaya kadar sürebilir."
+    },
     "wallet_error_sheet": {
       "title": "Cüzdanınızı geri yükleyin",
       "restore": "Geri Yükle",
@@ -3893,6 +3994,10 @@
       "cause_switched_devices": "Görünüşe göre cihaz değiştirmiş olabilirsiniz.",
       "resolution_enable_passcode": "Cüzdanınızı kullanmak için cihaz ayarlarında yeniden etkinleştirin.",
       "resolution_restore_backup": "Cüzdanınızı kullanmak için yedekten geri yükleyin veya gizli kurtarma cümlenizi yeniden aktarın."
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "Ödül Kazanma",
+      "this_transaction_will_earn": "Bu işlem yaklaşık olarak şunu kazandıracak: "
     }
   }
 }

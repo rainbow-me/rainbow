@@ -1,5 +1,5 @@
 import c from 'chroma-js';
-import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
+import { SharedValue } from 'react-native-reanimated';
 
 import {
   ETH_COLOR,
@@ -53,10 +53,6 @@ const TEST_MODE_SLIPPAGE_BIPS = 9999; // 99.99% slippage for test mode
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
-export const opacity = (color: string, opacity: number): string => {
-  return c(color).alpha(opacity).css();
-};
-
 export type ResponseByTheme<T> = {
   light: T;
   dark: T;
@@ -363,16 +359,6 @@ export function niceIncrementFormatter({
   return numberFormatter.format(Number(amountToFixedDecimals));
 }
 
-export const opacityWorklet = (color: string, opacity: number) => {
-  'worklet';
-
-  if (isColor(color)) {
-    const rgbaColor = convertToRGBA(color);
-    return `rgba(${rgbaColor[0] * 255}, ${rgbaColor[1] * 255}, ${rgbaColor[2] * 255}, ${opacity})`;
-  } else {
-    return color;
-  }
-};
 //
 // /---- END worklet utils ----/ //
 

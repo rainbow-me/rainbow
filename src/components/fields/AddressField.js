@@ -3,9 +3,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { isHexString } from '../../handlers/web3';
 import { Input } from '../inputs';
 import { Row } from '../layout';
-import { useClipboard, useDimensions } from '@/hooks';
+import useClipboard from '@/hooks/useClipboard';
+import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
-import { abbreviations, addressUtils } from '@/utils';
+import { opacity } from '@/framework/ui/utils/opacity';
+import abbreviations from '@/utils/abbreviations';
+import addressUtils from '@/utils/address';
 
 const AddressInput = styled(Input).attrs({
   autoCapitalize: 'none',
@@ -68,7 +71,7 @@ const AddressField = ({ address, autoFocus, editable, name, isValid, onChangeTex
         placeholder={
           android || isTinyPhone ? i18n.t(i18n.l.fields.address.short_placeholder) : i18n.t(i18n.l.fields.address.long_placeholder)
         }
-        placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
+        placeholderTextColor={opacity(colors.blueGreyDark, 0.3)}
       />
     </Row>
   );

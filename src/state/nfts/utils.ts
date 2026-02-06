@@ -7,7 +7,7 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { STALE_TIME } from '@/state/nfts/createNftsStore';
 import { NftsState } from '@/state/nfts/types';
 import { parseUniqueId } from '@/resources/nfts/utils';
-import { isLowerCaseMatch } from '@/utils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import { UniqueAsset } from '@/entities';
 import { fetchNFTData, NFTData, nftsQueryKey } from '@/resources/nfts';

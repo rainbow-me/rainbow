@@ -9,7 +9,8 @@ import Routes from '@/navigation/routesNames';
 import { MarketRow, MarketRowLoadingSkeleton } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
 import { ResolvedMarketsList } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsList';
 import { SingleMarketEventOutcomes } from '@/features/polymarket/screens/polymarket-event-screen/components/SingleMarketEvent';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
@@ -115,7 +116,7 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
                     width={20}
                     justifyContent="center"
                     alignItems="center"
-                    backgroundColor={opacityWorklet('#F5F8FF', 0.09)}
+                    backgroundColor={opacity('#F5F8FF', 0.09)}
                     borderRadius={10}
                     style={{ transform: [{ rotate: showAllMarkets ? '180deg' : '0deg' }] }}
                   >
@@ -128,9 +129,9 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
                   </Text>
                   {resolvedMarkets.length > 0 && !showAllMarkets && (
                     <Box
-                      backgroundColor={opacityWorklet('#F5F8FF', 0.06)}
+                      backgroundColor={opacity('#F5F8FF', 0.06)}
                       borderWidth={THICKER_BORDER_WIDTH}
-                      borderColor={{ custom: opacityWorklet('#F5F8FF', 0.03) }}
+                      borderColor={{ custom: opacity('#F5F8FF', 0.03) }}
                       height={22}
                       paddingHorizontal={'8px'}
                       borderRadius={11}

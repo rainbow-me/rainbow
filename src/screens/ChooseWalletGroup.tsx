@@ -16,7 +16,7 @@ import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { createAccountInExistingWallet, getIsDamagedWallet, loadWallets, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
-import { profileUtils } from '@/utils';
+import profileUtils from '@/utils/profileUtils';
 import { abbreviateEnsForDisplay, formatAddressForDisplay } from '@/utils/abbreviations';
 import chroma from 'chroma-js';
 import React, { useCallback, useRef } from 'react';

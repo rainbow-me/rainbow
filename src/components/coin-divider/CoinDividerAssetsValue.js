@@ -4,6 +4,7 @@ import { OpacityToggler } from '../animations';
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const Container = styled(OpacityToggler)({
   height: 30,
@@ -12,7 +13,7 @@ const Container = styled(OpacityToggler)({
 
 const ValueText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'right',
-  color: colors.alpha(colors.blueGreyDark, 0.6),
+  color: opacity(colors.blueGreyDark, 0.6),
   size: 'lmedium',
   weight: 'medium',
 }))({

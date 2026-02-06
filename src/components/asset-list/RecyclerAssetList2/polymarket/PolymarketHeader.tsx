@@ -8,7 +8,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
 import useOpenPolymarket from '@/hooks/useOpenPolymarket';
@@ -25,8 +25,8 @@ export const PolymarketHeader = memo(function PolymarketHeader({ isDarkMode }: {
   const navigationButtonColors = useMemo(() => {
     return {
       icon: accountColor,
-      border: opacityWorklet(accountColor, isDarkMode ? 0.08 : 0.015),
-      background: opacityWorklet(accountColor, isDarkMode ? 0.16 : 0.1),
+      border: opacity(accountColor, isDarkMode ? 0.08 : 0.015),
+      background: opacity(accountColor, isDarkMode ? 0.16 : 0.1),
     };
   }, [accountColor, isDarkMode]);
 

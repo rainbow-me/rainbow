@@ -31,7 +31,7 @@ export const RnbwRewardsScreen = memo(function RnbwRewardsScreen() {
   return (
     <ColorModeProvider value="dark">
       <RnbwRewardsFlowContextProvider>
-        <View style={styles.container}>
+        <View style={styles.container} testID="rnbw-rewards-screen">
           <RnbwRewardsContent />
         </View>
       </RnbwRewardsFlowContextProvider>
@@ -103,7 +103,7 @@ const RnbwRewardsNavbar = memo(function RnbwRewardsNavbar() {
 //       borderWidth={1}
 //       borderColor="separatorTertiary"
 //       borderRadius={32}
-//       backgroundColor={opacityWorklet('#F5F8FF', 0.06)}
+//       backgroundColor={opacity('#F5F8FF', 0.06)}
 //       flexDirection="row"
 //       alignItems="center"
 //       gap={4}

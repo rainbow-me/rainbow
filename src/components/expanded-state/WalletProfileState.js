@@ -8,7 +8,7 @@ import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@/model/walle
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
-import { profileUtils } from '@/utils';
+import profileUtils from '@/utils/profileUtils';
 import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { isValidHex } from '@/handlers/web3';
 import { getWebProfile } from '@/helpers/webData';

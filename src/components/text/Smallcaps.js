@@ -1,8 +1,9 @@
 import Text from './Text';
 import styled from '@/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const Smallcaps = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.8),
+  color: opacity(colors.blueGreyDark, 0.8),
   size: 'small',
   uppercase: true,
   weight: 'semibold',

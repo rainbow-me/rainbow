@@ -1,5 +1,5 @@
 import { Box, Text, useColorMode } from '@/design-system';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';

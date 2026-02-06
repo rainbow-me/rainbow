@@ -7,8 +7,8 @@ import { INITIAL_SLIDER_POSITION } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors, UniqueId } from '@/__swaps__/types/assets';
 import { RecentSwap } from '@/__swaps__/types/swap';
 import { clamp, getDefaultSlippage } from '@/__swaps__/utils/swaps';
-import { time } from '@/utils';
 import { EstimateRewardResult } from '@/features/rnbw-rewards/utils/estimateReward';
+import { time } from '@/utils/time';
 
 export interface SwapsState {
   // assets

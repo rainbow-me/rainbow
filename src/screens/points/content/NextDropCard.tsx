@@ -3,7 +3,7 @@ import { Box, Text, TextShadow, Stack, IconContainer, useForegroundColor, global
 import { isToday, intervalToDuration, format } from 'date-fns';
 import * as i18n from '@/languages';
 import { LIGHT_SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { Card } from './PointsContent';
 
 export const NextDropCard = memo(function NextDropCard({ nextDistribution }: { nextDistribution: Date }) {

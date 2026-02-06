@@ -8,7 +8,7 @@ import { AsyncActionState, useRewardsFlowStore, rewardsFlowActions } from '@/fea
 import * as i18n from '@/languages';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { time } from '@/utils/time';
 import Animated from 'react-native-reanimated';
 import { defaultEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
@@ -145,7 +145,7 @@ function useLongerThanUsualInfoCard() {
 }
 
 const LongerThanUsualInfoCard = memo(function LongerThanUsualInfoCard() {
-  const backgroundColor = opacityWorklet(ETH_COLOR_DARK, 0.06);
+  const backgroundColor = opacity(ETH_COLOR_DARK, 0.06);
   return (
     <Animated.View entering={defaultEnterAnimation} exiting={defaultExitAnimation}>
       <Box

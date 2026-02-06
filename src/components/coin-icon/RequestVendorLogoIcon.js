@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
-import { initials } from '../../utils';
+import { initials } from '@/utils/abbreviations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { ImgixImage } from '@/components/images';

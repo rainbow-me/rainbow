@@ -4,7 +4,7 @@ import * as i18n from '@/languages';
 import MenuItem from '../MenuItem';
 import Spinner from '@/components/Spinner';
 import { FloatingEmojis } from '@/components/floating-emojis';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { CloudBackupState } from '@/state/backups/backups';
 
 export const BackUpMenuItem = ({

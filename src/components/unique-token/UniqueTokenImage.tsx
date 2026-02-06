@@ -5,16 +5,17 @@ import { buildUniqueTokenName } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import { useColorMode, Text } from '@/design-system';
-import { useHiddenTokens } from '@/hooks';
+import useHiddenTokens from '@/hooks/useHiddenTokens';
 import { Colors } from '@/styles';
-import { isLowerCaseMatch } from '@/utils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { RainbowImage } from '../RainbowImage';
 import { logger } from '@/logger';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 function getFallbackTextColor(bg: string, isDarkMode: boolean, colors: Colors) {
   const variants = {
-    dark: isDarkMode ? colors.alpha(colors.white, 0.25) : colors.alpha(colors.blueGreyDark, 0.5),
-    light: isDarkMode ? colors.alpha(colors.blueGreyDark, 0.25) : colors.white,
+    dark: isDarkMode ? opacity(colors.white, 0.25) : opacity(colors.blueGreyDark, 0.5),
+    light: isDarkMode ? opacity(colors.blueGreyDark, 0.25) : colors.white,
   };
   return colors.getTextColorForBackground(bg, variants);
 }

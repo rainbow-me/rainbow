@@ -11,7 +11,7 @@ import { DataProvider, LayoutProvider, ProgressiveListView } from 'recyclerlistv
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import 'string.fromcodepoint';
 import { ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
-import { deviceUtils } from '../../utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { Categories } from './Categories';
 import EmojiContent from './EmojiContent';
 import EmojisListHeader from './EmojisListHeader';
