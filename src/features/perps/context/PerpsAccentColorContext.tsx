@@ -2,6 +2,7 @@ import React, { createContext, useContext, useMemo } from 'react';
 import { useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { LinearGradientProps } from 'expo-linear-gradient';
 
 export const HYPERLIQUID_GREEN = '#3ECFAD';
 export const HYPERLIQUID_GREEN_LIGHT = '#31C8A4';
@@ -34,7 +35,7 @@ type PerpsAccentColors = {
   opacity2: string;
   opacity1: string;
   surfacePrimary: string;
-  gradient: string[];
+  gradient: LinearGradientProps['colors'];
   priceChangeColors: {
     positive: string;
     negative: string;
@@ -74,13 +75,13 @@ export function PerpsAccentColorContextProvider({ children, primaryColorOverride
 
   const accentColors: PerpsAccentColors = useMemo(() => {
     const primary = primaryColorOverride ?? theme[isDarkMode ? 'dark' : 'light'].primary;
-    const gradient = primaryColorOverride
+    const gradient: LinearGradientProps['colors'] = primaryColorOverride
       ? isDarkMode
         ? [primary, opacity(primary, 0.8)]
-        : [primary]
+        : [primary, primary]
       : isDarkMode
         ? ['#72FFD9', '#3ECFAD']
-        : ['#31C8A4'];
+        : ['#31C8A4', '#31C8A4'];
 
     return {
       opacity100: primary,

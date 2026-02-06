@@ -11,7 +11,7 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { Navigation } from '@/navigation';
 import { getSolidColorEquivalent } from '@/worklets/colors';

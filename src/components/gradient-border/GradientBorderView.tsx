@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { memo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient, LinearGradientProps } from 'expo-linear-gradient';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const DEFAULT_START = { x: 0, y: 0 };
@@ -11,8 +11,8 @@ const DEFAULT_BACKGROUND_COLOR = 'transparent';
 
 type GradientBorderViewProps = {
   children: React.ReactNode;
-  borderGradientColors: string[];
-  locations?: number[];
+  borderGradientColors: LinearGradientProps['colors'];
+  locations?: LinearGradientProps['locations'];
   borderWidth?: number;
   start?: { x: number; y: number };
   end?: { x: number; y: number };

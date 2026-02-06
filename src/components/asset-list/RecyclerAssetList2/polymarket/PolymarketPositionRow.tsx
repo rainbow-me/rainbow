@@ -10,7 +10,7 @@ import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';

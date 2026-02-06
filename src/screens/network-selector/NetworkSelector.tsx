@@ -26,7 +26,7 @@ import { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useSt
 import { Pressable, StyleSheet, View, TextInput, ScrollView } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import Animated, {
   DerivedValue,
@@ -202,7 +202,7 @@ const CustomizeNetworksBanner = !shouldShowCustomizeNetworksBanner(customizeNetw
             >
               <BlurView blurStyle="extraLight" blurIntensity={6} style={sx.bannerBlurView} />
               <View style={sx.bannerContent}>
-                <LinearGradient colors={['#268FFF1F', '#268FFF14']} angle={135} useAngle style={sx.bannerGradient}>
+                <LinearGradient colors={['#268FFF1F', '#268FFF14']} start={{ x: 0, y: 1 }} end={{ x: 1, y: 0 }} style={sx.bannerGradient}>
                   <Text color={{ custom: blue }} size="17pt" weight="heavy">
                     􀍱
                   </Text>
