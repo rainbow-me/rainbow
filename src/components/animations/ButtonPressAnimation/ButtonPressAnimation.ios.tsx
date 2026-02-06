@@ -1,11 +1,11 @@
 import React, { PropsWithChildren } from 'react';
 import NativeButton from './NativeButton';
 import { BaseButtonAnimationProps } from './types';
-import { HapticFeedbackType } from '@/utils/haptics';
+import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 
 interface Props extends BaseButtonAnimationProps {
   enableHapticFeedback?: boolean;
-  hapticType: HapticFeedbackType;
+  hapticType: HapticFeedbackTypes;
   isInteraction?: boolean;
   onPressStart: () => void;
 }

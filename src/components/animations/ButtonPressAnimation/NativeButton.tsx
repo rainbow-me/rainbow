@@ -2,12 +2,12 @@ import React, { LegacyRef, useMemo } from 'react';
 import { requireNativeComponent, View, ViewStyle } from 'react-native';
 import { BaseButtonAnimationProps, TransformOrigin } from './types';
 import styled from '@/styled-thing';
-import { HapticFeedback, HapticFeedbackType } from '@/utils/haptics';
+import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 
 interface Props extends BaseButtonAnimationProps {
   compensateForTransformOrigin?: boolean;
   enableHapticFeedback?: boolean;
-  hapticType?: HapticFeedbackType;
+  hapticType?: HapticFeedbackTypes;
   onCancel?: () => void;
   onLongPressEnded?: () => void;
   onPressStart?: () => void;
@@ -66,7 +66,7 @@ const NativeButton = React.forwardRef(
   (
     {
       duration = 160,
-      hapticType = HapticFeedback.selection,
+      hapticType = HapticFeedbackTypes.selection,
       scaleTo = 0.86,
       useLateHaptic = true,
       minLongPressDuration = 500,
