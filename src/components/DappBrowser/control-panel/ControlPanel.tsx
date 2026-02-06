@@ -1,4 +1,4 @@
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { opacity } from '@/framework/ui/utils/opacity';

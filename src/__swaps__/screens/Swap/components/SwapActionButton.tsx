@@ -19,7 +19,7 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { DepositContextType } from '@/systems/funding/types';
 import { useSwapContext } from '../providers/swap-provider';
-import { GestureHandlerButton, GestureHandlerButtonProps } from './GestureHandlerButton';
+import { GestureHandlerButton, GestureHandlerButtonProps } from '@/components/buttons/GestureHandlerButton';
 
 const getSwapButtonPadding = ({ outline, rightIcon, small }: { outline?: boolean; rightIcon?: string; small?: boolean }) => {
   const horizontalPadding = small ? 14 : 20 - (outline ? 2 : 0);

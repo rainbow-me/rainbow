@@ -1,4 +1,4 @@
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Cover, useColorMode, useForegroundColor } from '@/design-system';

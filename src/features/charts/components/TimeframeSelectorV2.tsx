@@ -6,7 +6,7 @@ import { globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { GREEN_CANDLE_COLOR, RED_CANDLE_COLOR } from '../candlestick/constants';
