@@ -12,11 +12,11 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import React, { useCallback, useEffect } from 'react';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import { RootStackParamList } from './types';
 
-export const ledgerStorage = new MMKV({
+export const ledgerStorage = createMMKV({
   id: 'ledgerStorage',
 });
 

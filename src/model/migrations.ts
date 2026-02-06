@@ -25,7 +25,7 @@ import uniq from 'lodash/uniq';
 import path from 'path';
 import FastImage from 'react-native-fast-image';
 import RNFS from 'react-native-fs';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { deprecatedRemoveLocal, getGlobal } from '../handlers/localstorage/common';
 import { getNativeCurrency, IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import { getMigrationVersion, setMigrationVersion } from '../handlers/localstorage/migrations';
@@ -52,7 +52,7 @@ export default async function runMigrations() {
   // get current version
   const currentVersion = Number(await getMigrationVersion());
   const migrations = [];
-  const mmkv = new MMKV();
+  const mmkv = createMMKV();
 
   /*
    *************** Migration v0 ******************
@@ -684,7 +684,7 @@ export default async function runMigrations() {
         userAssetsStore.getState(address).setHiddenAssets(hiddenAssets);
 
         // remove the old hidden coins obj storage
-        mmkv.delete('hidden-coins-obj-' + address);
+        mmkv.remove('hidden-coins-obj-' + address);
       }
     }
   };
@@ -698,7 +698,7 @@ export default async function runMigrations() {
   const v22 = async () => {
     // For each appIcon, delete the handled flag
     (Object.keys(unlockableAppIcons) as UnlockableAppIconKey[]).map(appIconKey => {
-      unlockableAppIconStorage.delete(appIconKey);
+      unlockableAppIconStorage.remove(appIconKey);
       logger.debug('Resetting icon status for ' + appIconKey);
     });
   };
@@ -811,7 +811,7 @@ export default async function runMigrations() {
 
     for (const wallet of Object.values(wallets)) {
       for (const { address } of (wallet as RainbowWallet).addresses || []) {
-        mmkv.delete(`nfts-sort-${address}`);
+        mmkv.remove(`nfts-sort-${address}`);
         logger.debug(`[runMigrations]: v29 migration - deleted nfts-sort-${address}`);
       }
     }

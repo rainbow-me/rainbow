@@ -1,4 +1,4 @@
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { getAccountLocal, getKey, saveAccountLocal } from './common';
 import { ENSRegistrations } from '@/entities';
 import { STORAGE_IDS } from '@/model/mmkv';
@@ -17,7 +17,7 @@ const HIDDEN_COINS = 'hiddenCoins';
 const WEB_DATA_ENABLED = 'webDataEnabled';
 const ENS_REGISTRATIONS = 'ensRegistrations';
 
-const storage = new MMKV({
+const storage = createMMKV({
   id: STORAGE_IDS.ACCOUNT,
 });
 
