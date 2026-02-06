@@ -6,7 +6,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as i18n from '@/languages';
-import { THICK_BORDER_WIDTH } from '../constants';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { useSwapsSearchStore } from '../resources/search/searchV2';
 import useClipboard from '@/hooks/useClipboard';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';

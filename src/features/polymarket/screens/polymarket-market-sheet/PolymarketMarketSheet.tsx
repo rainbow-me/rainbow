@@ -16,7 +16,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { PolymarketChart } from '@/features/charts/polymarket/components/PolymarketChart';
 import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
 import { getChartLineColors } from '@/features/charts/polymarket/utils/getChartLineColors';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { toPercentageWorklet } from '@/safe-math/SafeMath';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';

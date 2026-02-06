@@ -6,7 +6,7 @@ import { useCallback } from 'react';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import * as i18n from '@/languages';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 type AddTriggerOrderButtonProps = {
   symbol: string;

@@ -12,7 +12,7 @@ import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { createOpacityPalette } from '@/worklets/colors';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { ShimmerAnimation } from '@/components/animations';
 

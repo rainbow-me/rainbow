@@ -1,4 +1,3 @@
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { Box, Separator, globalColors, useColorMode } from '@/design-system';
@@ -32,6 +31,7 @@ import { IS_TEST } from '@/env';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import * as i18n from '@/languages';
 import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;
 

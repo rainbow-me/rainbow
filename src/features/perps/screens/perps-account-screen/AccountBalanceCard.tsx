@@ -9,7 +9,7 @@ import Routes from '@/navigation/routesNames';
 import { View } from 'react-native';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { ImgixImage } from '@/components/images';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import * as i18n from '@/languages';

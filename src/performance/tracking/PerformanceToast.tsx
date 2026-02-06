@@ -7,12 +7,12 @@ import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_IOS, IS_TEST } from '@/env';
 import { fontWithWidth } from '@/styles';
 import font from '@/styles/fonts';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { isDarkTheme } from '@/theme/ThemeContext';
 import { time } from '@/utils/time';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getNumberFormatter } from '@/helpers/intl';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 let shouldCollectStats = !IS_TEST && getExperimentalFlag(PERFORMANCE_TOAST);
 

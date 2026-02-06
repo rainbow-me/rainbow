@@ -8,7 +8,7 @@ import { usePolymarketFeatureCard } from '@/features/polymarket/hooks/usePolymar
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
 import * as i18n from '@/languages';
 import ConditionalWrap from 'conditional-wrap';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { createOpacityPalette } from '@/worklets/colors';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';

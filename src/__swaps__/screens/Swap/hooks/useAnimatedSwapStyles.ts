@@ -8,7 +8,6 @@ import {
   REVIEW_SHEET_ROW_HEIGHT,
   SETTINGS_SHEET_HEIGHT,
   SETTINGS_SHEET_ROW_GAP,
-  THICK_BORDER_WIDTH,
 } from '@/__swaps__/screens/Swap/constants';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
@@ -22,6 +21,8 @@ import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DerivedValue, SharedValue, interpolate, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { NavigationSteps } from '../providers/swap-provider';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const INSET_BOTTOM = safeAreaInsetValues.bottom + 16;
 

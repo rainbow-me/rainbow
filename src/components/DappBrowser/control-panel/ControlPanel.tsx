@@ -1,5 +1,4 @@
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
@@ -60,6 +59,7 @@ import { RAINBOW_HOME } from '../constants';
 import { getDappHost } from '../handleProviderRequest';
 import { formatUrl } from '../utils';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const PAGES = {
   HOME: 'home',

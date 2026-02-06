@@ -3,7 +3,6 @@ import { AnimatedText, Box, Text, TextShadow, useBackgroundColor, useColorMode, 
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { Tabs } from '../shared/Tabs/Tabs';
 import { TokenInteraction, TokenInteractionDirection, TokenInteractionType } from '@/graphql/__generated__/metadata';
 import { useTabContext } from '../shared/Tabs/TabContext';
@@ -31,6 +30,7 @@ import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSecti
 import { SheetSeparator } from '../shared/Separator';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const l = i18n.l.expanded_state.sections.history;
 

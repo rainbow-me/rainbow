@@ -1,6 +1,7 @@
 import { Easing } from 'react-native-reanimated';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import deviceUtils, { DEVICE_HEIGHT, NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { buildTestSafeConfig } from '@/components/animations/animationConfigs';
@@ -35,9 +36,6 @@ export const EXPANDED_INPUT_HEIGHT =
   SPACE_BETWEEN_SWAP_BUBBLES -
   Math.max(IS_IOS ? safeAreaInsetValues.bottom : NAVIGATION_BAR_HEIGHT, SPACE_BETWEEN_SWAP_BUBBLES);
 export const FOCUSED_INPUT_HEIGHT = deviceUtils.dimensions.height - safeAreaInsetValues.top - 20 - NATIVE_KEYBOARD_HEIGHT;
-export const THICK_BORDER_WIDTH = 4 / 3;
-export const THICKER_BORDER_WIDTH = 5 / 3;
-export const INPUT_PADDING = 20 - THICK_BORDER_WIDTH;
 export const INPUT_INNER_WIDTH = BASE_INPUT_WIDTH - THICK_BORDER_WIDTH * 2;
 
 export const SLIDER_HEIGHT = 16;
@@ -48,9 +46,6 @@ export const SCRUBBER_WIDTH = 16;
 
 export const SLIDER_ROUND_THRESHOLD_START = SLIDER_WIDTH * 0.01;
 export const SLIDER_ROUND_THRESHOLD_END = SLIDER_WIDTH * 0.99;
-
-export const SEPARATOR_COLOR = 'rgba(245, 248, 255, 0.03)';
-export const LIGHT_SEPARATOR_COLOR = 'rgba(9, 17, 31, 0.03)';
 
 export const ETH_COLOR = '#25292E';
 export const ETH_COLOR_DARK = '#677483';

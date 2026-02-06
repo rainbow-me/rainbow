@@ -1,4 +1,3 @@
-import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -40,6 +39,7 @@ import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherSt
 import { GasButton } from './gas/GasButton';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import Routes from '@/navigation/routesNames';
+import { SEPARATOR_COLOR } from '@/styles/constants';
 
 // height + top padding + bottom padding
 export const FOOTER_HEIGHT = 48 + 16 + 16;

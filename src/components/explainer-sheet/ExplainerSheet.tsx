@@ -6,7 +6,6 @@ import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { SheetHandle } from '@/components/sheet';
 import { Box, Separator, AnimatedText } from '@/design-system';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import LinearGradient from 'react-native-linear-gradient';
 import { downscalePagerIndex, SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -17,6 +16,7 @@ import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurVi
 import { StepIndicators } from './components/StepIndicators';
 import { Sunrays } from './components/Sunrays';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const DEFAULT_GRADIENT_COLORS = ['#8754C8', '#EE431D', '#FFF000', '#02ADDE'];
 const DEFAULT_PANEL_HEIGHT = 563;

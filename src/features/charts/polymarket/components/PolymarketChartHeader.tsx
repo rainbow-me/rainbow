@@ -8,7 +8,7 @@ import { AnimatedText, Text, TextShadow, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { StoreState } from '@/state/internal/queryStore/types';
 import { BaseRainbowStore } from '@/state/internal/types';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { ResponseByTheme, getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { FormatTimestampOptions, formatTimestamp } from '@/worklets/dates';

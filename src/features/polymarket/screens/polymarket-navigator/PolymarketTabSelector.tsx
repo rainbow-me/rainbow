@@ -13,7 +13,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from 'react-native-blur-view';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';

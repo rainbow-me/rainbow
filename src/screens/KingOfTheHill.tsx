@@ -1,4 +1,3 @@
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -18,6 +17,7 @@ import { useIsFocused } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { Keyboard, StatusBar, StyleSheet, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const KingOfTheHillScreen = () => {
   const { isDarkMode } = useColorMode();

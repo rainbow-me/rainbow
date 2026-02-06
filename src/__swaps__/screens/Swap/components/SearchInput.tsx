@@ -14,11 +14,12 @@ import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
-import { INPUT_PADDING, LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useSwapsSearchStore } from '../resources/search/searchV2';
 import { SearchInputButton } from './SearchInputButton';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
+import { TOKEN_SEARCH_INPUT_HORIZONTAL_PADDING } from '@/components/token-search/constants';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
@@ -98,7 +99,7 @@ export const SearchInput = ({
   );
 
   return (
-    <Box paddingHorizontal={{ custom: INPUT_PADDING }} width="full">
+    <Box paddingHorizontal={{ custom: TOKEN_SEARCH_INPUT_HORIZONTAL_PADDING }} width="full">
       <Columns alignHorizontal="justify" alignVertical="center" space="20px">
         <Box>
           <Bleed horizontal="8px" vertical="24px">
