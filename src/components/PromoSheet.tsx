@@ -3,7 +3,6 @@ import { ImageSourcePropType, ImageBackground } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
-import { CampaignKey } from '@/components/remote-promo-sheet/localCampaignChecks';
 import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Stack, Text, Bleed, Column, Columns, useForegroundColor } from '@/design-system';
 import { useDimensions } from '@/hooks';
@@ -26,7 +25,7 @@ type PromoSheetProps = {
   backgroundColor: string;
   accentColor: string;
   sheetHandleColor?: string;
-  campaignKey: CampaignKey | string;
+  campaignKey: string;
   header: string;
   subHeader: string;
   primaryButtonProps: SheetActionButtonProps;

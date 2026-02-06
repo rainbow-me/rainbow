@@ -12,16 +12,6 @@ let memState;
 let memRouteName;
 let memPrevRouteName;
 
-let action = null;
-
-export function triggerOnSwipeLayout(newAction) {
-  if (isSwipeRoute(Navigation.getActiveRoute()?.name)) {
-    newAction();
-  } else {
-    action = newAction;
-  }
-}
-
 export function onHandleStatusBar(currentState, prevState) {
   // Skip updating the system bars while the splash screen is visible
   // this will be called again once splash screen is hidden.
@@ -122,8 +112,6 @@ export function onNavigationStateChange(currentState) {
 
   if (isSwipeRoute(routeName)) {
     setActiveRoute(routeName);
-    action?.();
-    action = undefined;
   }
 
   onHandleStatusBar(currentState, prevState);

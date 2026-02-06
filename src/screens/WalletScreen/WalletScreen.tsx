@@ -19,7 +19,7 @@ import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewT
 import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { debounce } from 'lodash';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
-import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
+import { SessionEntryPromptSync } from '@/state/sync/SessionEntryPromptSync';
 import { clearWalletState, useAccountAddress } from '@/state/wallets/walletsStore';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { InteractionManager, Pressable } from 'react-native';
@@ -33,7 +33,7 @@ const UtilityComponents = memo(function UtilityComponents() {
   return (
     <>
       <RemoteCardsSync />
-      <RemotePromoSheetSync />
+      <SessionEntryPromptSync />
       <MobileWalletProtocolListener />
     </>
   );

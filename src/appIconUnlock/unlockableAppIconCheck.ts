@@ -1,12 +1,9 @@
 import { TokenGateCheckerNetwork, TokenInfo, checkIfWalletsOwnNft, checkIfWalletsOwnNft1155 } from './tokenGatedUtils';
 import { EthereumAddress } from '@/entities';
-import { Navigation } from '@/navigation';
 import { RainbowError, logger } from '@/logger';
-import Routes from '@/navigation/routesNames';
 import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
 import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
-import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
 
 export const unlockableAppIconStorage = new MMKV({
   id: STORAGE_IDS.UNLOCKABLE_APP_ICONS,
@@ -86,8 +83,6 @@ export const unlockableAppIconCheck = async (appIconKey: UnlockableAppIconKey, w
       if (iconsToIgnore.includes(appIconKey)) {
         return false;
       }
-
-      triggerOnSwipeLayout(() => Navigation.handleAction(Routes.APP_ICON_UNLOCK_SHEET, { appIconKey }));
 
       return true;
     }

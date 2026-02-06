@@ -10,7 +10,7 @@ import { useTheme } from '@/theme';
 import { logger } from '@/logger';
 import { analytics } from '@/analytics';
 import { AppIcon, AppIconKey, UnlockableAppIcon, UnlockableAppIconKey, freeAppIcons, unlockableAppIcons } from '@/appIcons/appIcons';
-import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
+import { unlockableAppIconStorage } from '@/appIconUnlock/unlockableAppIconCheck';
 
 const AppIconSection = () => {
   const { appIcon, settingsChangeAppIcon } = useAccountSettings();
