@@ -1,5 +1,5 @@
 import { isValidAddress } from 'ethereumjs-util';
-import { getProvider, isHexStringIgnorePrefix, isValidMnemonic, resolveUnstoppableDomain } from '@/handlers/web3';
+import { getProvider, isHexStringIgnorePrefix, isValidMnemonic, resolveUnstoppableDomain, resolveWNSDomain } from '@/handlers/web3';
 import { sanitizeSeedPhrase } from '@/utils/formatters';
 import { ChainId } from '@/state/backendNetworks/types';
 
@@ -46,6 +46,15 @@ export const isUnstoppableAddressFormat = (address: string) => {
   return true;
 };
 
+export const isWNSAddressFormat = (address: string | undefined) => {
+  'worklet';
+  const parts = !!address && address.split('.');
+  if (!parts || parts.length === 1 || !parts[parts.length - 1]) {
+    return false;
+  }
+  return parts[parts.length - 1].toLowerCase() === 'wei';
+};
+
 /**
  * @desc validate ethereum address, ENS, or Unstoppable name formatting
  * @param  {String} address, ENS, or Unstoppable
@@ -56,6 +65,9 @@ export const checkIsValidAddressOrDomainFormat = (address: any) => {
     return true;
   }
   if (isUnstoppableAddressFormat(address)) {
+    return true;
+  }
+  if (isWNSAddressFormat(address)) {
     return true;
   }
   return isValidAddress(address);
@@ -80,6 +92,10 @@ export const checkIsValidAddressOrDomain = async (address: any) => {
     const resolvedAddress = await resolveUnstoppableDomain(address);
     return !!resolvedAddress;
   }
+  if (isWNSAddressFormat(address)) {
+    const resolvedAddress = await resolveWNSDomain(address);
+    return !!resolvedAddress;
+  }
   return isValidAddress(address);
 };
 
@@ -90,7 +106,7 @@ export const checkIsValidAddressOrDomain = async (address: any) => {
  */
 export const isValidDomainFormat = (domain: string) => {
   'worklet';
-  return isUnstoppableAddressFormat(domain) || isENSAddressFormat(domain);
+  return isUnstoppableAddressFormat(domain) || isENSAddressFormat(domain) || isWNSAddressFormat(domain);
 };
 /**
  * @desc validate seed phrase mnemonic
@@ -129,4 +145,5 @@ export const isValidWallet = (seed: any) =>
     isValidSeedPhrase(seed) ||
     isValidAddress(seed) ||
     isUnstoppableAddressFormat(seed) ||
-    isENSAddressFormat(seed));
+    isENSAddressFormat(seed) ||
+    isWNSAddressFormat(seed));

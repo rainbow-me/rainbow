@@ -9,7 +9,7 @@ import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
 import { AssetType, NewTransaction, ParsedAddressAsset, UniqueAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
-import { isUnstoppableAddressFormat } from '@/helpers/validators';
+import { isUnstoppableAddressFormat, isWNSAddressFormat } from '@/helpers/validators';
 import { ethUnits, smartContractMethods, CRYPTO_KITTIES_NFT_ADDRESS, CRYPTO_PUNKS_NFT_ADDRESS } from '@/references';
 import {
   addBuffer,
@@ -448,6 +448,35 @@ export const resolveUnstoppableDomain = async (domain: string): Promise<string |
 };
 
 /**
+ * @desc Resolves a WNS (.wei) domain string.
+ * @param domain The domain as a string.
+ * @return The resolved address, or null if none could be found.
+ */
+export const resolveWNSDomain = async (domain: string): Promise<string | null> => {
+  const WNS_ABI = [
+    'function computeId(string calldata fullName) public pure returns (uint256)',
+    'function resolve(uint256 tokenId) public view returns (address)',
+  ];
+  const WNS_CONTRACT = '0x0000000000696760E15f265e828DB644A0c242EB';
+
+  try {
+    const provider = getProvider({ chainId: ChainId.mainnet });
+    const contract = new Contract(WNS_CONTRACT, WNS_ABI, provider);
+    const tokenId = await contract.computeId(domain);
+    const resolved = await contract.resolve(tokenId);
+    if (!resolved || resolved === '0x0000000000000000000000000000000000000000') {
+      return null;
+    }
+    return resolved;
+  } catch (error) {
+    logger.error(new RainbowError('[web3]: resolveWNSDomain error'), {
+      message: (error as Error).message,
+    });
+    return null;
+  }
+};
+
+/**
  * @desc Resolves a name or address to an Ethereum hex-formatted address.
  * @param nameOrAddress The name or address to resolve.
  * @return The address, or null if one could not be resolved.
@@ -456,6 +485,10 @@ export const resolveNameOrAddress = async (nameOrAddress: string): Promise<strin
   if (!isHexString(nameOrAddress)) {
     if (isUnstoppableAddressFormat(nameOrAddress)) {
       const resolvedAddress = await resolveUnstoppableDomain(nameOrAddress);
+      return resolvedAddress;
+    }
+    if (isWNSAddressFormat(nameOrAddress)) {
+      const resolvedAddress = await resolveWNSDomain(nameOrAddress);
       return resolvedAddress;
     }
     const p = getProvider({ chainId: ChainId.mainnet });

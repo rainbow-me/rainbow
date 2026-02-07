@@ -12,8 +12,8 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
-import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
-import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
+import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain, resolveWNSDomain } from '@/handlers/web3';
+import { isENSAddressFormat, isUnstoppableAddressFormat, isWNSAddressFormat, isValidWallet } from '@/helpers/validators';
 import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -200,6 +200,31 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           Alert.alert(i18n.t(i18n.l.wallet.sorry_cannot_add_unstoppable));
           return;
         }
+      } else if (isWNSAddressFormat(input)) {
+        try {
+          const address = await resolveWNSDomain(input);
+          if (!address) {
+            setBusy(false);
+            Alert.alert(i18n.t(i18n.l.wallet.invalid_unstoppable_name));
+            return;
+          }
+          setResolvedAddress(address);
+          name = input;
+          setBusy(false);
+
+          if (type === 'watch') {
+            analytics.track(analytics.event.watchWallet, {
+              addressOrEnsName: input,
+              address,
+            });
+          }
+
+          startImportProfile(name, guardedForceColor, address, '');
+        } catch (e) {
+          setBusy(false);
+          Alert.alert(i18n.t(i18n.l.wallet.sorry_cannot_add_unstoppable));
+          return;
+        }
       } else if (isValidAddress(input)) {
         let finalAvatarUrl: string | null | undefined = avatarUrl;
         let ens = input;
@@ -319,6 +344,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             IS_TEST ||
             isENSAddressFormat(input) ||
             isUnstoppableAddressFormat(input) ||
+            isWNSAddressFormat(input) ||
             isValidAddress(input) ||
             isValidBluetoothDeviceId(input)
           )
