@@ -28,7 +28,6 @@ import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { EthereumAddress } from '@/entities';
 import { maybeAuthenticateWithPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
-import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
 import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
 import { createSignature } from '@/helpers/signingWallet';
 import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
@@ -284,10 +283,6 @@ export const walletInit = async (props: InitializeWalletParams): Promise<WalletI
 
     walletAddress = wallet.address;
     isNew = true;
-  }
-
-  if (isNew) {
-    saveAccountEmptyState(true, walletAddress.toLowerCase(), network ?? Network.mainnet);
   }
 
   return { isNew, walletAddress };
