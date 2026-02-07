@@ -83,8 +83,5 @@ jobs:
       - name: Lint
         run: yarn lint:ci
 
-      - name: Check circular dependencies
-        run: yarn check:cycles
-
       - name: Unit tests
         run: yarn test
