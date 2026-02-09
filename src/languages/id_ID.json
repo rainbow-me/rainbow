@@ -3295,7 +3295,6 @@
     "walletconnect": {
       "connecting": "Menghubungkan",
       "loading": "Memuat",
-      "requests": "Permintaan",
       "wants_to_connect": "ingin terhubung ke dompet Anda",
       "wants_to_connect_to_network": "ingin terhubung ke jaringan %{network}",
       "available_networks": "Jaringan yang Tersedia",
