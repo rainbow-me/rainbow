@@ -33,7 +33,7 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { clamp, getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons';
 
 type SwapSliderProps = {
   dualColor?: boolean;

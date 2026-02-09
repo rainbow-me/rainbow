@@ -15,7 +15,7 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { opacity } from '@/framework/ui/utils/opacity';
 import { pulsingConfig } from '@/__swaps__/screens/Swap/constants';
 import { Slider, SliderProps, SliderVisualState, SLIDER_DEFAULT_WIDTH } from './Slider';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons';
 
 export type SliderLabels = {
   title?: string | SharedValue<string>;
