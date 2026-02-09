@@ -8,7 +8,7 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
-import { GestureHandlerButton } from './GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { StyleSheet } from 'react-native';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';

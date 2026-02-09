@@ -58,7 +58,7 @@ import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { noop } from 'lodash';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { Navigation, useNavigation } from '@/navigation';

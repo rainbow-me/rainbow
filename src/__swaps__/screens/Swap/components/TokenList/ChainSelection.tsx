@@ -17,7 +17,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import Routes from '@/navigation/routesNames';
 import { Navigation } from '@/navigation';
 import { TokenToBuyListItem } from '@/__swaps__/types/search';
-import { GestureHandlerButton } from '../GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { UserAssetFilter } from '@/__swaps__/types/assets';
 
 type ChainSelectionProps = {

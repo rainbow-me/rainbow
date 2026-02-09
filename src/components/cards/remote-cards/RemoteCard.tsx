@@ -16,7 +16,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { analytics } from '@/analytics';
 import { FlashList } from '@shopify/flash-list';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { opacity } from '@/framework/ui/utils/opacity';
 
