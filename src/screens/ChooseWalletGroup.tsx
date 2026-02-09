@@ -38,7 +38,7 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
         if (isCreatingWallet.current) return;
         isCreatingWallet.current = true;
 
-        walletLoadingStore.getState().show(WalletLoadingStates.CREATING_WALLET);
+        walletLoadingStore.setState({ loadingState: WalletLoadingStates.CREATING_WALLET });
 
         try {
           await createWallet({ name });
@@ -48,7 +48,7 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
         } catch (error) {
           logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account', error));
         } finally {
-          walletLoadingStore.getState().hide();
+          walletLoadingStore.setState({ loadingState: null });
 
           if (isCreatingWallet.current) isCreatingWallet.current = false;
 
@@ -133,7 +133,7 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
         if (isCreatingWallet.current) return;
         isCreatingWallet.current = true;
 
-        walletLoadingStore.getState().show(WalletLoadingStates.CREATING_WALLET);
+        walletLoadingStore.setState({ loadingState: WalletLoadingStates.CREATING_WALLET });
 
         try {
           if (wallet.damaged) throw new Error('Wallet is damaged');
@@ -152,7 +152,7 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
             }, 1000);
           }
         } finally {
-          walletLoadingStore.getState().hide();
+          walletLoadingStore.setState({ loadingState: null });
 
           if (isCreatingWallet.current) isCreatingWallet.current = false;
         }

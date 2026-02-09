@@ -56,7 +56,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const resetOnFailure = useCallback(() => {
     setImporting(false);
     setBusy(false);
-    walletLoadingStore.getState().hide();
+    walletLoadingStore.setState({ loadingState: null });
     // Return to previous screen on failure
     goBack();
   }, [goBack]);
@@ -287,7 +287,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     const handleImportSuccess = (input: string, isWalletEthZero: boolean, backupProvider: string | undefined, previousWalletCount = 0) => {
       setImporting(false);
       setBusy(false);
-      walletLoadingStore.getState().hide();
+      walletLoadingStore.setState({ loadingState: null });
 
       const shouldReplace = previousWalletCount === 0;
       const navigate = shouldReplace ? Navigation.replace : Navigation.handleAction;
@@ -341,7 +341,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       try {
         const input = resolvedAddress ? resolvedAddress : sanitizeSeedPhrase(seedPhrase);
 
-        walletLoadingStore.getState().show(WalletLoadingStates.IMPORTING_WALLET);
+        walletLoadingStore.setState({ loadingState: WalletLoadingStates.IMPORTING_WALLET });
 
         if (!showImportModal) {
           await walletInit({

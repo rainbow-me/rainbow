@@ -3,12 +3,8 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 
 type WalletLoadingState = {
   loadingState: WalletLoadingStates | null;
-  show: (state: WalletLoadingStates) => void;
-  hide: () => void;
 };
 
-export const walletLoadingStore = createRainbowStore<WalletLoadingState>(set => ({
+export const walletLoadingStore = createRainbowStore<WalletLoadingState>(() => ({
   loadingState: null,
-  show: (loadingState: WalletLoadingStates) => set({ loadingState }),
-  hide: () => set({ loadingState: null }),
 }));
