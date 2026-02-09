@@ -3295,7 +3295,6 @@
     "walletconnect": {
       "connecting": "接続中",
       "loading": "読み込み中",
-      "requests": "リクエスト",
       "wants_to_connect": "あなたのウォレットに接続を許可します",
       "wants_to_connect_to_network": "%{network} ネットワークに接続を許可します",
       "available_networks": "利用可能なネットワーク",
