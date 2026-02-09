@@ -3295,7 +3295,6 @@
     "walletconnect": {
       "connecting": "กำลังเชื่อมต่อ",
       "loading": "กำลังโหลด",
-      "requests": "คำร้องขอ",
       "wants_to_connect": "ต้องการเชื่อมต่อกับกระเป๋าสตางค์ของคุณ",
       "wants_to_connect_to_network": "ต้องการเชื่อมต่อกับเครือข่าย %{network}",
       "available_networks": "เครือข่ายที่ใช้ได้",
