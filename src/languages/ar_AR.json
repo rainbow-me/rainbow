@@ -3295,7 +3295,6 @@
     "walletconnect": {
       "connecting": "جارٍ الاتصال",
       "loading": "جار التحميل",
-      "requests": "طلبات",
       "wants_to_connect": "يرغب في الاتصال بمحفظتك",
       "wants_to_connect_to_network": "يرغب في الاتصال بالشبكة %{network}",
       "available_networks": "الشبكات المتاحة",
