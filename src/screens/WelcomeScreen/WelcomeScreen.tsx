@@ -155,7 +155,9 @@ export function WelcomeScreen() {
     if (isCreatingWallet.current) return;
     isCreatingWallet.current = true;
     analytics.track(analytics.event.welcomeNewWallet);
-    walletLoadingStore.setState({ loadingState: WalletLoadingStates.CREATING_WALLET });
+    walletLoadingStore.setState({
+      loadingState: WalletLoadingStates.CREATING_WALLET,
+    });
 
     try {
       const walletAddress = await initializeWallet({
@@ -176,7 +178,9 @@ export function WelcomeScreen() {
       logger.error(new RainbowError('[WelcomeScreen]: Error creating wallet', e));
       Alert.alert('Error creating wallet', ensureError(e).message);
     } finally {
-      walletLoadingStore.setState({ loadingState: null });
+      walletLoadingStore.setState({
+        loadingState: null,
+      });
       // eslint-disable-next-line require-atomic-updates
       isCreatingWallet.current = false;
     }

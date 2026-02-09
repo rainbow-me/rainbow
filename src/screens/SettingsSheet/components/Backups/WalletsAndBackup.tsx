@@ -158,7 +158,9 @@ export const WalletsAndBackup = () => {
       onCloseModal: async ({ name }: { name: string }) => {
         const nameValue = name.trim() !== '' ? name.trim() : '';
         try {
-          walletLoadingStore.setState({ loadingState: WalletLoadingStates.CREATING_WALLET });
+          walletLoadingStore.setState({
+            loadingState: WalletLoadingStates.CREATING_WALLET,
+          });
 
           await createWallet({
             color: null,
@@ -173,7 +175,9 @@ export const WalletsAndBackup = () => {
             error: err,
           });
         } finally {
-          walletLoadingStore.setState({ loadingState: null });
+          walletLoadingStore.setState({
+            loadingState: null,
+          });
           scrollviewRef.current?.scrollTo({ y: 0, animated: true });
           const step =
             backupProvider === WalletBackupTypes.cloud ? walletBackupStepTypes.backup_prompt_cloud : walletBackupStepTypes.backup_prompt;
