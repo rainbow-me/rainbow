@@ -3295,7 +3295,6 @@
     "walletconnect": {
       "connecting": "Bağlanıyor",
       "loading": "Yükleniyor",
-      "requests": "İstekler",
       "wants_to_connect": "Cüzdanınıza bağlanmak istiyor",
       "wants_to_connect_to_network": "%{network} ağına bağlanmak istiyor",
       "available_networks": "Kullanılabilir Ağlar",
