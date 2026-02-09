@@ -3295,7 +3295,6 @@
     "walletconnect": {
       "connecting": "Conectando",
       "loading": "Cargando",
-      "requests": "Solicitudes",
       "wants_to_connect": "quiere conectarse a tu billetera",
       "wants_to_connect_to_network": "quiere conectarse a la red %{network}",
       "available_networks": "Redes Disponibles",
