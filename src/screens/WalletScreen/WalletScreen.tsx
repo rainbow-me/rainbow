@@ -22,14 +22,14 @@ import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from 
 import { debounce } from 'lodash';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
-import { clearWalletState, useAccountAddress } from '@/state/wallets/walletsStore';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
-import { InteractionManager, Pressable } from 'react-native';
+import { InteractionManager } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRecoilValue } from 'recoil';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useStableValue } from '@/hooks/useStableValue';
-import { navigate, useRoute } from '@/navigation/Navigation';
+import { useRoute } from '@/navigation/Navigation';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
@@ -85,20 +85,6 @@ function WalletScreen() {
   );
 
   const listContainerStyle = useMemo(() => ({ flex: 1, marginTop: -(navbarHeight + insets.top) }), [insets.top]);
-  const devResetStyle = useMemo(
-    () => ({
-      position: 'absolute' as const,
-      right: 12,
-      top: insets.top + 8,
-      zIndex: 20,
-    }),
-    [insets.top]
-  );
-
-  const handleDevReset = useCallback(async () => {
-    await clearWalletState({ resetKeychain: true });
-    navigate(Routes.WELCOME_SCREEN);
-  }, []);
 
   const handleWalletScreenMount = useCallback(() => {
     hideSplashScreen();
@@ -159,17 +145,6 @@ function WalletScreen() {
         <ToastComponent />
         <UtilityComponents />
         <WalletScreenEffects />
-        {IS_DEV && (
-          <Box position="absolute" right={{ custom: 12 }} top={{ custom: insets.top + 50 }} zIndex={20}>
-            <Pressable onPress={handleDevReset} style={devResetStyle} testID="dev-reset-wallet">
-              <Box backgroundColor="rgba(0, 0, 0, 0.65)" borderRadius={8} paddingHorizontal="8px" paddingVertical="4px">
-                <Text color="white" size="11pt" weight="bold">
-                  Reset Wallet
-                </Text>
-              </Box>
-            </Pressable>
-          </Box>
-        )}
       </Box>
     </PerformanceMeasureView>
   );

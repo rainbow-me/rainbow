@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { IS_IOS } from '@/env';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { requireNativeComponent, StyleSheet, View } from 'react-native';
@@ -13,10 +13,7 @@ const Wrapper = IS_IOS ? ({ children }: { children: React.ReactNode }) => childr
 export function Portal() {
   const activeRoute = useActiveRoute();
   const loadingState = walletLoadingStore(state => state.loadingState);
-
-  const shouldHide = useMemo(() => {
-    return !loadingState || (activeRoute === Routes.PIN_AUTHENTICATION_SCREEN && !IS_IOS);
-  }, [loadingState, activeRoute]);
+  const shouldHide = !loadingState || (activeRoute === Routes.PIN_AUTHENTICATION_SCREEN && !IS_IOS);
 
   if (shouldHide) return null;
 

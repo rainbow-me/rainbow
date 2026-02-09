@@ -169,11 +169,9 @@ export function WelcomeScreen() {
         throw new RainbowError('Error creating wallet address');
       }
 
-      if (walletAddress) {
-        replace(Routes.SWIPE_LAYOUT, {
-          screen: Routes.WALLET_SCREEN,
-        });
-      }
+      replace(Routes.SWIPE_LAYOUT, {
+        screen: Routes.WALLET_SCREEN,
+      });
     } catch (e) {
       logger.error(new RainbowError('[WelcomeScreen]: Error creating wallet', e));
       Alert.alert('Error creating wallet', ensureError(e).message);
