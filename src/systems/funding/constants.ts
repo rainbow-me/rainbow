@@ -3,6 +3,14 @@ import { CUSTOM_KEYBOARD_HEIGHT } from '@/features/perps/components/NumberPad/Nu
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
+// ============ Navigation Constants ========================================== //
+
+export enum NavigationSteps {
+  INPUT_ELEMENT_FOCUSED = 0,
+  TOKEN_LIST_FOCUSED = 1,
+  SEARCH_FOCUSED = 2,
+}
+
 // ============ Slider Constants =============================================== //
 
 export const INITIAL_SLIDER_PROGRESS = 25;
