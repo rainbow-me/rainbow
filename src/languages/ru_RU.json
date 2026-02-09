@@ -3295,7 +3295,6 @@
     "walletconnect": {
       "connecting": "Подключение",
       "loading": "Загрузка",
-      "requests": "Запросы",
       "wants_to_connect": "хочет получить доступ к вашему кошельку",
       "wants_to_connect_to_network": "хочет подключиться к сети %{network}",
       "available_networks": "Доступные сети",
