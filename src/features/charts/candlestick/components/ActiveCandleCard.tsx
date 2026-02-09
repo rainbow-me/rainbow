@@ -10,7 +10,8 @@ import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { SupportedCurrencyKey, supportedNativeCurrencies } from '@/references';
-import { addCommasToNumber, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { addCommasToNumber } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { FormatTimestampOptions, formatTimestamp } from '@/worklets/dates';
@@ -190,11 +191,11 @@ const CloseBadge = ({
   isDarkMode: boolean;
 }) => {
   const borderOpacity = BADGE_BORDER_OPACITY[isDarkMode ? 'dark' : 'light'];
-  const borderStyle = useAnimatedStyle(() => ({ borderColor: opacityWorklet(closeColor?.value ?? accentColor, borderOpacity) }));
+  const borderStyle = useAnimatedStyle(() => ({ borderColor: opacity(closeColor?.value ?? accentColor, borderOpacity) }));
 
   const textStyle = useAnimatedStyle(() => ({
     color: closeColor?.value ?? accentColor,
-    textShadowColor: isDarkMode ? opacityWorklet(closeColor?.value ?? accentColor, 0.24) : 'transparent',
+    textShadowColor: isDarkMode ? opacity(closeColor?.value ?? accentColor, 0.24) : 'transparent',
     textTransform: 'uppercase',
   }));
 
@@ -266,7 +267,7 @@ const PercentageChange = ({
 
   const colorStyle = useAnimatedStyle(() => ({
     color: closeColor.value,
-    textShadowColor: isDarkMode ? opacityWorklet(closeColor.value, 0.24) : 'transparent',
+    textShadowColor: isDarkMode ? opacity(closeColor.value, 0.24) : 'transparent',
   }));
 
   return (
@@ -397,7 +398,7 @@ function formatVolume(volume: number | undefined, currency: NativeCurrencyKey): 
 function getBadgeBorderColor(theme: BadgeTheme, isDarkMode: boolean, accentColor: string): BoxProps['borderColor'] {
   'worklet';
   const colorMode = isDarkMode ? 'dark' : 'light';
-  const makeTransparent = (color: string, opacity?: number) => opacityWorklet(color, opacity ?? BADGE_BORDER_OPACITY[colorMode]);
+  const makeTransparent = (color: string, opacityValue?: number) => opacity(color, opacityValue ?? BADGE_BORDER_OPACITY[colorMode]);
 
   switch (theme) {
     case BadgeTheme.Accent:

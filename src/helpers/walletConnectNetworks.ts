@@ -1,5 +1,5 @@
 import store from '@/redux/store';
-import { showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import * as i18n from '@/languages';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

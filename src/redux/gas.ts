@@ -34,7 +34,8 @@ import {
   weiToGwei,
 } from '@/parsers';
 import { ethUnits } from '@/references';
-import { ethereumUtils, gasUtils } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
+import gasUtils from '@/utils/gas';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';

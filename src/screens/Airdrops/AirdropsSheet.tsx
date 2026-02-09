@@ -31,8 +31,9 @@ import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { ChainId } from '@/state/backendNetworks/types';
 import { FULL_PAGE_SIZE, INITIAL_PAGE_SIZE, useAirdropsStore } from '@/state/claimables/airdropsStore';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
-import { safeAreaInsetValues, time } from '@/utils';
+import { opacity } from '@/framework/ui/utils/opacity';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+import { time } from '@/utils/time';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export interface AirdropClaimable {

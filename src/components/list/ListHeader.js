@@ -1,5 +1,7 @@
 import Divider from '@/components/Divider';
-import { useDimensions, useHiddenTokens, useShowcaseTokens } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
+import useHiddenTokens from '@/hooks/useHiddenTokens';
+import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import * as i18n from '@/languages';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import { getIsReadOnlyWallet, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
@@ -13,11 +15,12 @@ import { ContextMenu } from '../context-menu';
 import { Column, Row } from '../layout';
 import { H1 } from '../text';
 import { initializeShowcaseIfNeeded } from '@/helpers/webData';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const ListHeaderHeight = 48;
 
 const ShareCollectiblesBPA = styled(ButtonPressAnimation)({
-  backgroundColor: ({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.06),
+  backgroundColor: ({ theme: { colors } }) => opacity(colors.blueGreyDark, 0.06),
   borderRadius: 15,
   height: 30,
   justifyContent: 'center',

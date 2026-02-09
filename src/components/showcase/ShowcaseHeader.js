@@ -1,11 +1,12 @@
 import { getContacts } from '@/handlers/localstorage/contacts';
 import { isHexString } from '@/handlers/web3';
-import { useImportingWallet } from '@/hooks';
+import useImportingWallet from '@/hooks/useImportingWallet';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { colors, padding } from '@/styles';
-import { abbreviations, profileUtils } from '@/utils';
+import abbreviations from '@/utils/abbreviations';
+import profileUtils from '@/utils/profileUtils';
 import * as i18n from '@/languages';
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';

@@ -2,10 +2,11 @@ import React, { memo, useCallback, useMemo, useState } from 'react';
 import { LayoutChangeEvent, StyleProp, View, ViewStyle } from 'react-native';
 import { useChartData } from '@/react-native-animated-charts/src';
 import { Text } from '@/design-system';
-import { useAccountSettings, useDimensions } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import useDimensions from '@/hooks/useDimensions';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const LABEL_VERTICAL_EXTRA_OFFSET = 12;
 const LABEL_MIN_HORIZONTAL_INSET = 12;
@@ -84,7 +85,7 @@ export const ExtremeLabels = memo(function ExtremeLabels({ color, isCard }: { co
   return (
     <>
       <CenteredLabel
-        color={opacityWorklet(color, 0.8)}
+        color={opacity(color, 0.8)}
         x={minPricePosition.x}
         size={isCard ? '13pt' : undefined}
         style={{ bottom: -13 - LABEL_VERTICAL_EXTRA_OFFSET }}
@@ -95,7 +96,7 @@ export const ExtremeLabels = memo(function ExtremeLabels({ color, isCard }: { co
         })}
       </CenteredLabel>
       <CenteredLabel
-        color={opacityWorklet(color, 0.8)}
+        color={opacity(color, 0.8)}
         x={maxPricePosition.x}
         size={isCard ? '13pt' : undefined}
         style={{ top: -13 - LABEL_VERTICAL_EXTRA_OFFSET }}

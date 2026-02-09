@@ -2,7 +2,7 @@ import React, { ComponentProps, ReactNode } from 'react';
 import { Box, BoxProps, globalColors, useColorMode } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { StyleSheet } from 'react-native';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 
 type ButtonPressAnimationProps = ComponentProps<typeof ButtonPressAnimation>;
@@ -22,7 +22,7 @@ export const PolymarketButton = function PolymarketButton({ children, onPress, b
     // eslint-disable-next-line react/jsx-props-no-spreading
     <ButtonPressAnimation {...buttonProps} onPress={onPress}>
       <Box
-        borderColor={{ custom: opacityWorklet(globalColors.white100, 0.08) }}
+        borderColor={{ custom: opacity(globalColors.white100, 0.08) }}
         borderWidth={isDarkMode ? StyleSheet.hairlineWidth : 0}
         backgroundColor={fillColor}
         justifyContent="center"
@@ -32,7 +32,7 @@ export const PolymarketButton = function PolymarketButton({ children, onPress, b
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...boxProps}
       >
-        <InnerShadow borderRadius={24} color={opacityWorklet(globalColors.white100, 0.17)} blur={3} dx={0} dy={3} />
+        <InnerShadow borderRadius={24} color={opacity(globalColors.white100, 0.17)} blur={3} dx={0} dy={3} />
         {children}
       </Box>
     </ButtonPressAnimation>

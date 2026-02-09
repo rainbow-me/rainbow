@@ -4,7 +4,7 @@ import SheetActionButton from './SheetActionButton';
 import { useTheme } from '@/theme';
 import { RainbowToken } from '@/entities';
 import { containsEmoji } from '@/helpers/strings';
-import { ethereumUtils } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';

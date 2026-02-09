@@ -3,8 +3,9 @@ import { useTheme } from '../../theme/ThemeContext';
 import ExchangeInput from '@/components/ExchangeInput';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const BubbleInput = styled(ExchangeInput).attrs(({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({
   disableTabularNums: true,
@@ -106,7 +107,7 @@ const BubbleField = (
           onChangeText={handleChangeText}
           onFocus={handleFocus}
           placeholder={placeholder}
-          placeholderTextColor={maxLabelColor ? colors.alpha(colors.blueGreyDark, 0.32) : colors.alpha(colorForAsset, 0.4)}
+          placeholderTextColor={maxLabelColor ? opacity(colors.blueGreyDark, 0.32) : opacity(colorForAsset, 0.4)}
           ref={ref}
           testID={testID + '-input'}
           value={formattedValue}

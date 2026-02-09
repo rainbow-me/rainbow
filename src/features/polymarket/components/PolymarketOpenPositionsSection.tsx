@@ -10,7 +10,7 @@ import * as i18n from '@/languages';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { usePolymarketPositionsSummary } from '@/features/polymarket/stores/derived/usePolymarketPositionsSummary';
 import { usePolymarketPositions } from '@/features/polymarket/stores/derived/usePolymarketPositions';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const PolymarketPositionsSection = function PolymarketPositionsSection() {
   const { hasActivePositions } = usePolymarketPositionsSummary();
@@ -136,7 +136,7 @@ const LostPositionsList = memo(function LostPositionsList() {
               width={20}
               justifyContent="center"
               alignItems="center"
-              backgroundColor={opacityWorklet('#F5F8FF', 0.09)}
+              backgroundColor={opacity('#F5F8FF', 0.09)}
               borderRadius={10}
               style={{ transform: [{ rotate: showLostPositions ? '180deg' : '0deg' }] }}
             >

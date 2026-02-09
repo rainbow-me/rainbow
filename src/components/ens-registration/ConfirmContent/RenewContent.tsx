@@ -3,7 +3,8 @@ import React from 'react';
 import { RegistrationReviewRows } from '../../../components/ens-registration';
 import { Inset, Separator, Stack } from '@/design-system';
 import { ENS_DOMAIN, REGISTRATION_MODES } from '@/helpers/ens';
-import { useDimensions, useENSRegistrant } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
+import useENSRegistrant from '@/hooks/useENSRegistrant';
 import { timeUnits } from '@/references';
 
 const RenewContent = ({

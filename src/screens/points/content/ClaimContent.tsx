@@ -1,13 +1,13 @@
 import { analytics } from '@/analytics';
 import { ETH_REWARDS, useExperimentalFlag } from '@/config';
 import { Box, Row, Rows, Stack, Text, globalColors, useColorMode } from '@/design-system';
-import { useAccountAccentColor } from '@/hooks';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ActionButton } from '@/screens/points/components/ActionButton';
-import { watchingAlert } from '@/utils';
+import watchingAlert from '@/utils/watchingAlert';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';

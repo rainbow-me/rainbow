@@ -6,7 +6,7 @@ import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
 import { Separator, Stack } from '@/design-system';
-import { useAccountSettings } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

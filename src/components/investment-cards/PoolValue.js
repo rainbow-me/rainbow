@@ -5,6 +5,7 @@ import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const PoolValueWrapper = styled(Row)(({ simple }) => ({
   borderRadius: simple ? 0 : 15,
@@ -64,7 +65,7 @@ export const PoolValue = ({ type, value, simple, ...props }) => {
     formattedValue = bigNumberFormat(value, nativeCurrency, value >= 10000);
   }
   return (
-    <PoolValueWrapper backgroundColor={colors.alpha(color, simple ? 0 : 0.06)} simple={simple}>
+    <PoolValueWrapper backgroundColor={opacity(color, simple ? 0 : 0.06)} simple={simple}>
       <PoolValueText color={color} simple={simple} {...props}>
         {formattedValue}
       </PoolValueText>

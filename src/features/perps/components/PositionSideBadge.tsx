@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { Bleed, Box, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { PerpPositionSide } from '@/features/perps/types';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type PositionSideBadgeProps = {
   side: PerpPositionSide;
@@ -16,7 +16,7 @@ export const PositionSideBadge = memo(function PositionSideBadge({ side }: Posit
   }, [side, green, red]);
 
   const backgroundColor = useMemo(() => {
-    return opacityWorklet(textColor, 0.08);
+    return opacity(textColor, 0.08);
   }, [textColor]);
 
   return (

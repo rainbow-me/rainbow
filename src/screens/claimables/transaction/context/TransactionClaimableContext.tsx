@@ -4,7 +4,7 @@ import { TokenToReceive, TransactionClaimableTxPayload } from '../types';
 import { CrosschainQuote, ETH_ADDRESS, getCrosschainQuote, getQuote, Quote, QuoteParams } from '@rainbow-me/swaps';
 import { Claimable, ClaimableType, TransactionClaimable } from '@/resources/addys/claimables/types';
 import { logger, RainbowError } from '@/logger';
-import { useAccountSettings } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
 import {
   convertAmountToNativeDisplay,
   convertAmountToRawAmount,
@@ -23,7 +23,7 @@ import { getProvider } from '@/handlers/web3';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { formatUnits } from 'viem';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import { queryClient } from '@/react-query';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';

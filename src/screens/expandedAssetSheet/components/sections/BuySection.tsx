@@ -10,7 +10,7 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
 import { convertAmountToNativeDisplay, convertStringToNumber, roundToSignificant1or5 } from '@/helpers/utilities';
-import { useAccountAsset } from '@/hooks';
+import useAccountAsset from '@/hooks/useAccountAsset';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
 import { isL2Chain } from '@/handlers/web3';

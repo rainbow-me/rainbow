@@ -70,10 +70,7 @@ const allowedBarrelFiles = [
   'src/features/positions/stores/transform/index.ts',
   'src/features/positions/types/index.ts',
   'src/featuresToUnlock/index.ts',
-  'src/graphql/index.ts',
   'src/helpers/index.ts',
-  'src/hooks/charts/index.ts',
-  'src/hooks/index.ts',
   'src/keychain/index.ts',
   'src/languages/index.ts',
   'src/logger/index.ts',
@@ -117,7 +114,6 @@ const allowedBarrelFiles = [
   'src/storage/index.ts',
   'src/styled-thing/index.tsx',
   'src/theme/index.ts',
-  'src/utils/index.ts',
   'src/walletConnect/index.tsx',
 ];
 

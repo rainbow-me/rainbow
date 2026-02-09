@@ -5,7 +5,7 @@ import { useNavigation } from '@/navigation';
 import { NavigateArgs } from '@/navigation/Navigation';
 import { Route } from '@/navigation/routesNames';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { watchingAlert } from '@/utils';
+import watchingAlert from '@/utils/watchingAlert';
 
 export default function useNavigationForNonReadOnlyWallets() {
   const { goBack, navigate } = useNavigation();

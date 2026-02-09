@@ -16,6 +16,7 @@ import { analytics } from '@/analytics';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { SettingsPages } from './SettingsSheet/SettingsPages';
 import { RootStackParamList } from '@/navigation/types';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const APP_ICON_SIZE = 64;
 
@@ -71,7 +72,7 @@ export default function AppIconUnlockSheet() {
               </Stack>
             </Inset>
             <SheetActionButton
-              color={colors.alpha(accentColor, 0.06)}
+              color={opacity(accentColor, 0.06)}
               isTransparent
               label={i18n.t(i18n.l.app_icon_unlock_sheet.button)}
               onPress={navigateToAppIconSettings}

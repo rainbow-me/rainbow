@@ -1,12 +1,13 @@
 import { isEmpty } from 'lodash';
 import React from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useGas } from '@/hooks';
+import useGas from '@/hooks/useGas';
 import { colors } from '@/styles';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 import { AccentColorProvider, Box, Inline, Inset, Text } from '@/design-system';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const { CUSTOM, URGENT, GasSpeedOrder } = gasUtils;
 
@@ -39,7 +40,7 @@ const TabPill = ({ speed, isSelected, handleOnPressTabPill, color, testID }: Tab
       testID={testID}
       paddingHorizontal="5px (Deprecated)"
     >
-      <AccentColorProvider color={isSelected ? color || colors.appleBlue : colors.alpha(color || colors.appleBlue, 0.06)}>
+      <AccentColorProvider color={isSelected ? color || colors.appleBlue : opacity(color || colors.appleBlue, 0.06)}>
         <Box
           background="accent"
           height="30px"
@@ -58,7 +59,7 @@ const TabPill = ({ speed, isSelected, handleOnPressTabPill, color, testID }: Tab
             <Text
               size="16px / 22px (Deprecated)"
               color={{
-                custom: isSelected ? colors.whiteLabel : colors.alpha(color || colors.appleBlue, 0.9),
+                custom: isSelected ? colors.whiteLabel : opacity(color || colors.appleBlue, 0.9),
               }}
               align="center"
               weight="heavy"

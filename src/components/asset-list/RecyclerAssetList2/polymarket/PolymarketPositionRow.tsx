@@ -8,7 +8,8 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import LinearGradient from 'react-native-linear-gradient';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
@@ -55,9 +56,7 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
       <Box paddingHorizontal="20px">
         <GradientBorderView
           borderGradientColors={
-            isDarkMode
-              ? [opacityWorklet(accentColor, 0.06), opacityWorklet(accentColor, 0)]
-              : [opacityWorklet('#F0F2F5', 0.8), opacityWorklet('#F0F2F5', 0)]
+            isDarkMode ? [opacity(accentColor, 0.06), opacity(accentColor, 0)] : [opacity('#F0F2F5', 0.8), opacity('#F0F2F5', 0)]
           }
           borderWidth={THICKER_BORDER_WIDTH}
           locations={[0, 0.94]}
@@ -67,11 +66,7 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
         >
           <Box height={66} paddingLeft={{ custom: 14 }} justifyContent="center">
             <LinearGradient
-              colors={
-                isDarkMode
-                  ? [opacityWorklet(accentColor, 0.14), opacityWorklet(accentColor, 0)]
-                  : [opacityWorklet('#F0F2F5', 0.6), opacityWorklet('#F0F2F5', 0)]
-              }
+              colors={isDarkMode ? [opacity(accentColor, 0.14), opacity(accentColor, 0)] : [opacity('#F0F2F5', 0.6), opacity('#F0F2F5', 0)]}
               style={StyleSheet.absoluteFill}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}

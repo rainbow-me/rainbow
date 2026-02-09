@@ -2,13 +2,13 @@ import { useEffect, useRef, useCallback } from 'react';
 import { estimateGas, toHex } from '@/handlers/web3';
 import { convertHexToString, omitFlatten } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { ethereumUtils } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { hexToNumber, isHex } from 'viem';
 import { isEmpty } from 'lodash';
 import { InteractionManager } from 'react-native';
 import { GasFeeParamsBySpeed } from '@/entities';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { useGas } from '@/hooks';
+import useGas from '@/hooks/useGas';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 

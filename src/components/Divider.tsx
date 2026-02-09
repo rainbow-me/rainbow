@@ -1,6 +1,6 @@
 import { isNil, isNumber } from 'lodash';
 import React from 'react';
-import { magicMemo } from '../utils';
+import magicMemo from '@/utils/magicMemo';
 import styled from '@/styled-thing';
 import { borders, position } from '@/styles';
 import { View } from 'react-native';

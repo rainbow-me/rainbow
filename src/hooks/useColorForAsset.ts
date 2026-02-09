@@ -1,7 +1,9 @@
 import { useMemo } from 'react';
 import { lightModeThemeColors } from '../styles/colors';
 import { ParsedAddressAsset } from '@/entities';
-import { ethereumUtils, isETH, pseudoRandomArrayItemFromString } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
+import isETH from '@/utils/isETH';
+import pseudoRandomArrayItemFromString from '@/utils/pseudoRandomArrayItemFromString';
 import { getHighContrastColor } from './useAccountAccentColor';
 import { usePersistentDominantColorFromImage } from './usePersistentDominantColorFromImage';
 import { useTheme } from '@/theme';

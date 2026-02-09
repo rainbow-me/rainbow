@@ -17,7 +17,7 @@ import { fetchAnvilBalancesByChainId } from '@/resources/assets/anvilAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId, ChainName } from '@/state/backendNetworks/types';
 import { AddressOrEth, ParsedSearchAsset, UniqueId, UserAssetFilter, ZerionAsset } from '@/__swaps__/types/assets';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { isNativeAsset } from '@/handlers/assets';
 import { UserAssetsState, UserAssetsParams, GetAssetsResponse, Asset, UserAsset } from './types';

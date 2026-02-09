@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import TokenFamilyHeader, { TokenFamilyHeaderAnimationDuration } from './TokenFamilyHeader';
 import { times } from '@/helpers/utilities';
-import { useTimeout } from '@/hooks';
+import useTimeout from '@/hooks/useTimeout';
 import { ThemeContextProps } from '@/theme';
 
 type Props = {

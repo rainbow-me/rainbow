@@ -8,7 +8,7 @@ import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewa
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 
@@ -37,7 +37,7 @@ export const AirdropClaimedScene = memo(function AirdropClaimedScene() {
         style={styles.button}
       >
         <Box
-          backgroundColor={opacityWorklet('#F5F8FF', 0.06)}
+          backgroundColor={opacity('#F5F8FF', 0.06)}
           width="full"
           height={52}
           borderRadius={26}

@@ -7,9 +7,10 @@ import TokenInfoBalanceValue from './TokenInfoBalanceValue';
 import TokenInfoHeading from './TokenInfoHeading';
 import TokenInfoValue from './TokenInfoValue';
 import { Column, Columns } from '@/design-system';
-import { useDelayedValueWithLayoutAnimation } from '@/hooks';
+import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const VerticalDivider = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.rowDividerExtraLight,
@@ -73,7 +74,7 @@ export default function TokenInfoItem({
           <TokenInfoHeading align={align} isNft={isNft}>
             {title}
             {showInfoButton ? (
-              <TokenInfoHeading color={colors.alpha(colors.whiteLabel, 0.25)} isNft>
+              <TokenInfoHeading color={opacity(colors.whiteLabel, 0.25)} isNft>
                 {' '}
                 􀅵
               </TokenInfoHeading>
@@ -110,14 +111,14 @@ export default function TokenInfoItem({
         {loading && (
           <WrapperView
             align={align}
-            backgroundColor={isNft ? colors.alpha(colors.whiteLabel, 0.04) : colors.alpha(colors.blueGreyDark, 0.04)}
+            backgroundColor={isNft ? opacity(colors.whiteLabel, 0.04) : opacity(colors.blueGreyDark, 0.04)}
             isENS={isENS}
             isNft={isNft}
           >
             <ShimmerAnimation
-              color={isNft ? colors.alpha(colors.whiteLabel, 0.04) : colors.alpha(colors.blueGreyDark, 0.06)}
+              color={isNft ? opacity(colors.whiteLabel, 0.04) : opacity(colors.blueGreyDark, 0.06)}
               enabled
-              gradientColor={isNft ? colors.alpha(colors.whiteLabel, 0.04) : colors.alpha(colors.blueGreyDark, 0.06)}
+              gradientColor={isNft ? opacity(colors.whiteLabel, 0.04) : opacity(colors.blueGreyDark, 0.06)}
               width={50}
             />
           </WrapperView>

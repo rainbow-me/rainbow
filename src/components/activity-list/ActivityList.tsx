@@ -2,13 +2,13 @@ import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { FastTransactionCoinRow, RequestCoinRow } from '@/components/coin-row';
 import { RainbowTransaction } from '@/entities';
 import { TransactionItemForSectionList, TransactionSections } from '@/helpers/buildTransactionsSectionsSelector';
-import { useAccountTransactions } from '@/hooks';
+import useAccountTransactions from '@/hooks/useAccountTransactions';
 import { Skeleton } from '@/screens/points/components/Skeleton';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { LegendList, LegendListRef } from '@legendapp/list';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -21,6 +21,7 @@ import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const PANEL_HEIGHT = DEVICE_HEIGHT - TOP_INSET - safeAreaInsetValues.bottom;
 
@@ -63,7 +64,7 @@ function ListFooterComponent({ label, onPress }: { label: string; onPress: () =>
       {isLoading ? (
         <LoadingSpinner />
       ) : (
-        <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.3)} lineHeight="loose" size="smedium" weight="bold">
+        <Text align="center" color={opacity(colors.blueGreyDark, 0.3)} lineHeight="loose" size="smedium" weight="bold">
           {label}
         </Text>
       )}

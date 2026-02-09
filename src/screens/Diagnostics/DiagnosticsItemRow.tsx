@@ -1,5 +1,5 @@
 import { useTheme } from '@/theme';
-import { useImportingWallet } from '@/hooks';
+import useImportingWallet from '@/hooks/useImportingWallet';
 import React, { useCallback } from 'react';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';

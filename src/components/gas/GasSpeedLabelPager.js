@@ -6,7 +6,8 @@ import { Text } from '../text';
 import { GasSpeedEmoji } from '.';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
-import { magicMemo } from '@/utils';
+import { opacity } from '@/framework/ui/utils/opacity';
+import magicMemo from '@/utils/magicMemo';
 
 const SpeedButton = styled(ButtonPressAnimation).attrs({
   hapticType: 'impactHeavy',
@@ -41,10 +42,8 @@ const GasSpeedLabelPager = ({ label, theme, onPress, colorForAsset, dropdownEnab
     <SpeedButton color={colorForAsset} disabled={!dropdownEnabled} onPress={onPress}>
       <Row>
         <GasSpeedEmoji label={label} />
-        <GasSpeedLabel color={theme === 'dark' ? colors.whiteLabel : colors.alpha(colors.blueGreyDark, 0.8)}>
-          {upperFirst(label)}
-        </GasSpeedLabel>
-        {dropdownEnabled && <Symbol color={theme !== 'light' ? colors.whiteLabel : colors.alpha(colors.blueGreyDark, 0.8)}>􀁰</Symbol>}
+        <GasSpeedLabel color={theme === 'dark' ? colors.whiteLabel : opacity(colors.blueGreyDark, 0.8)}>{upperFirst(label)}</GasSpeedLabel>
+        {dropdownEnabled && <Symbol color={theme !== 'light' ? colors.whiteLabel : opacity(colors.blueGreyDark, 0.8)}>􀁰</Symbol>}
       </Row>
     </SpeedButton>
   );

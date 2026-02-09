@@ -25,6 +25,7 @@ import { Grid } from './Grid';
 import { validateLinkWorklet } from '../helpers/inputValidators';
 import { colors } from '@/styles';
 import { Link, LinkType } from '../types';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const LINK_SETTINGS = {
   x: {
@@ -222,7 +223,7 @@ export function LinksSection() {
         <Grid columns={2} spacing={8}>
           {addMoreLinks.map((linkType, index) => {
             const { Icon, displayName, iconBackgroundColor, primaryColor } = LINK_SETTINGS[linkType as keyof typeof LINK_SETTINGS];
-            const backgroundColor = colors.alpha(primaryColor, 0.05);
+            const backgroundColor = opacity(primaryColor, 0.05);
             const hasAddedLink = links.some(link => link.type === linkType);
 
             return (

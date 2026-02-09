@@ -324,7 +324,9 @@
         "authorizing": "Mengotorisasi",
         "confirming_on_ledger": "Mengkonfirmasi di Ledger",
         "hold_keyword": "Tahan",
-        "tap_keyword": "Ketuk"
+        "tap_keyword": "Ketuk",
+        "hold_to_claim": "Tahan untuk Mengklaim",
+        "claiming": "Mengklaim..."
       },
       "hold_to_send": "Tahan untuk Mengirim",
       "import": "Impor",
@@ -977,7 +979,7 @@
       "redacted_title": "Anda telah membuka\n Rainbow yang Dihilangkan",
       "baggy_description": "Dari jalanan hingga rantai, tas kecil ini memegang dosis portabel suasana Rainbow Anda. Rasakan warnanya, dan rasakan bedanya.",
       "baggy_title": "Anda telah membuka\n Rainbow Baggy",
-      "chonks_description": "Bayangkan angin di rambut Rainbow Anda, mengemudi di 101, merasakan Chonky.",
+      "chonks_description": "Bayangkan angin di rambut Rainbow Anda, mengemudi menyusuri 101, merasakan Chonky.",
       "chonks_title": "Anda telah membuka\n Ikon Chonkiest",
       "mog_description": "Dominasi dunia kosmik yang mudah, berpakaian dalam warna.",
       "mog_title": "Anda telah membuka\nRainbow Mogs",
@@ -2444,6 +2446,52 @@
         "warning": "Mengubah ikon Anda mungkin menyebabkan Rainbow untuk restart.",
         "confirm": "Konfirmasi",
         "cancel": "Batal"
+      },
+      "support": {
+        "title": "Dukungan dan Masukan",
+        "entry": {
+          "contact_support": "Hubungi Dukungan",
+          "contact_support_description": "Dukungan email yang dipersonalisasi untuk masalah, pertanyaan, atau kekhawatiran mendesak",
+          "get_started": "Mulai",
+          "category_picker_description": "Apa yang kamu butuhkan bantuannya?",
+          "share_feedback": "Bagikan Masukan",
+          "share_feedback_description": "Kirim ide lewat email atau sekadar menyapa",
+          "faqs_and_guides": "FAQ & Panduan"
+        },
+        "category": {
+          "getting_started": {
+            "name": "Memulai",
+            "description": "Penyiapan, dasar-dasar, jaringan"
+          },
+          "backup_recovery": {
+            "name": "Cadangan & Pemulihan",
+            "description": "Pulihkan, buat cadangan"
+          },
+          "tokens_transactions": {
+            "name": "Token & Transaksi",
+            "description": "Token hilang, saldo"
+          },
+          "bridge_swap": {
+            "name": "Bridge & Swap",
+            "description": "Lintas-chain, masalah swap"
+          },
+          "points_rewards": {
+            "name": "Poin & Hadiah",
+            "description": "Poin, airdrop, peluncuran"
+          },
+          "security": {
+            "name": "Kekhawatiran Keamanan",
+            "description": "Dompet dibobol, frasa hilang"
+          },
+          "partnership": {
+            "name": "Pertanyaan Kemitraan",
+            "description": "Bisnis, integrasi"
+          },
+          "other": {
+            "name": "Hal Lain",
+            "description": "Pertanyaan lain"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2457,6 +2505,7 @@
       "actions": {
         "hold_to_swap": "Tahan untuk Tukar",
         "hold_to_bridge": "Tahan untuk Jembatan",
+        "earning_rewards": "Mendapatkan Hadiah",
         "save": "Simpan",
         "enter_amount": "Masukkan Jumlah",
         "review": "Tinjau",
@@ -3885,6 +3934,58 @@
         "lost_bets_dont_clear": "Taruhan yang kalah tidak dihapus secara otomatis. Anda dapat menghapusnya di bawah ini."
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "Memperkenalkan",
+        "rainbow_token": "Token Rainbow",
+        "description_prefix": "Sapa ",
+        "description_suffix": " Periksa apakah kamu memenuhi syarat untuk airdrop sekarang.",
+        "check_eligibility": "Periksa Kelayakan"
+      },
+      "feature_card": {
+        "subtitle": "Sapa $RNBW, periksa kelayakanmu sekarang."
+      },
+      "claim": {
+        "available_to_claim": "Tersedia untuk Diklaim",
+        "your_airdrop": "Airdrop Kamu",
+        "your_airdrop_description": "Terima kasih telah menggunakan Rainbow. Airdrop kamu dihitung berdasarkan aktivitas kamu sebelumnya.",
+        "claim_failed_title": "Error saat Mengklaim Hadiah",
+        "claim_failed_message": "Silakan coba lagi.",
+        "claim_later": "Klaim Nanti",
+        "almost_there": "Hampir selesai..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "Airdrop Diklaim",
+        "you_claimed": "Kamu mengklaim"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "Hadiah Diklaim",
+        "you_claimed": "Kamu mengklaim"
+      },
+      "airdrop": {
+        "no_airdrop": "Tidak Ada Airdrop",
+        "no_airdrop_description": "Dompet ini tidak menerima airdrop.",
+        "already_claimed": "Sudah Diklaim",
+        "already_claimed_description": "Kamu sudah mengklaim airdrop kamu."
+      },
+      "airdrop_card": {
+        "your_airdrop": "Airdrop Kamu"
+      },
+      "how_to_earn": {
+        "earn_rewards": "Dapatkan Hadiah",
+        "description": "Dapatkan $RNBW dengan melakukan swap token. Lebih banyak cara untuk mendapatkan akan segera hadir."
+      },
+      "loading_labels": {
+        "checking_historical_activity": "Memeriksa Aktivitas Historis...",
+        "checking_eligibility": "Memeriksa Kelayakan...",
+        "claiming_rewards": "Mengklaim Hadiah...",
+        "submitting_transaction": "Mengirimkan Transaksi...",
+        "claiming_airdrop": "Mengklaim Airdrop...",
+        "counting_your_points": "Menghitung Poin kamu...",
+        "oh_i_see": "Oh begitu..."
+      },
+      "longer_than_usual": "Proses klaim memakan waktu lebih lama dari biasanya. Ini bisa memakan waktu hingga satu menit."
+    },
     "wallet_error_sheet": {
       "title": "Pulihkan dompet Anda",
       "restore": "Pulihkan",
@@ -3893,6 +3994,10 @@
       "cause_switched_devices": "Sepertinya Anda mungkin telah mengganti perangkat.",
       "resolution_enable_passcode": "Untuk menggunakan dompet Anda, aktifkan kembali di pengaturan perangkat Anda.",
       "resolution_restore_backup": "Untuk menggunakan dompet Anda, pulihkan dari cadangan atau impor ulang frasa pemulihan rahasia Anda."
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "Mendapatkan Hadiah",
+      "this_transaction_will_earn": "Transaksi ini akan menghasilkan sekitar "
     }
   }
 }

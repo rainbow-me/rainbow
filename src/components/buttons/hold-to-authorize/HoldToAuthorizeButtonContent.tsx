@@ -24,12 +24,12 @@ import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import ShadowStack from 'react-native-shadow-stack';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 
 const { ACTIVE, BEGAN, END, FAILED } = GestureHandlerState;
 

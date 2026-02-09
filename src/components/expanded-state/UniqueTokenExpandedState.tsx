@@ -22,7 +22,12 @@ import { AssetType, UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import isHttpUrl from '@/helpers/isHttpUrl';
-import { useBooleanState, useDimensions, useENSProfile, useENSRegistration, useHiddenTokens, useShowcaseTokens } from '@/hooks';
+import useBooleanState from '@/hooks/useBooleanState';
+import useDimensions from '@/hooks/useDimensions';
+import useENSProfile from '@/hooks/useENSProfile';
+import useENSRegistration from '@/hooks/useENSRegistration';
+import useHiddenTokens from '@/hooks/useHiddenTokens';
+import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
@@ -32,7 +37,9 @@ import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsS
 import styled from '@/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme';
-import { magicMemo, safeAreaInsetValues, isLowerCaseMatch } from '@/utils';
+import magicMemo from '@/utils/magicMemo';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import { openInBrowser } from '@/utils/openInBrowser';
@@ -59,6 +66,7 @@ import { UniqueTokenExpandedStateContent, UniqueTokenExpandedStateHeader } from 
 import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { buildUniqueTokenName } from '@/helpers/assets';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,
@@ -436,7 +444,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
               <Inset bottom={sectionSpace} top={{ custom: topInset }}>
                 <Stack alignHorizontal="center">
                   <Animated.View style={sheetHandleStyle}>
-                    <SheetHandle color={colors.alpha(colors.whiteLabel, 0.24)} />
+                    <SheetHandle color={opacity(colors.whiteLabel, 0.24)} />
                   </Animated.View>
                 </Stack>
               </Inset>
@@ -638,7 +646,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                                 bottom={IS_ANDROID ? '15px (Deprecated)' : undefined}
                                 top="15px (Deprecated)"
                               >
-                                {/* @ts-expect-error JavaScript component */}
+                                {/* @ts-expect-error emoji prop is optional but inferred as required from untyped JS */}
                                 <Link color={imageColor} display={familyLinkDisplay} url={asset.collectionUrl} weight="bold" />
                               </Bleed>
                             ) : null}

@@ -11,7 +11,7 @@ import { weiToGwei } from '@/parsers';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 
 const GAS_BUTTON_HIT_SLOP = 16;
 const SWAP_GAS_ICONS = gasUtils.SWAP_GAS_ICONS;

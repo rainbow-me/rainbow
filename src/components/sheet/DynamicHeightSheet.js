@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, { SheetHandleFixedToTopHeight } from './SheetHandleFixedToTop';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';

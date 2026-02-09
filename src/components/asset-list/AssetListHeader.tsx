@@ -1,5 +1,5 @@
 import { IS_TEST } from '@/env';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -11,7 +11,9 @@ import { useTheme } from '@/theme';
 import React, { ComponentProps, useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { abbreviations, magicMemo, measureText } from '../../utils';
+import abbreviations from '@/utils/abbreviations';
+import magicMemo from '@/utils/magicMemo';
+import measureText from '@/utils/measureText';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Row } from '../layout';

@@ -14,7 +14,7 @@ import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/pol
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createOpacityPalette } from '@/worklets/colors';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type LeagueItemKey = LeagueId | typeof DEFAULT_SPORTS_LEAGUE_KEY;
 type LeagueItem = {
@@ -32,7 +32,7 @@ const LEAGUE_ITEMS: LeagueItem[] = [
   {
     key: DEFAULT_SPORTS_LEAGUE_KEY,
     label: 'All',
-    color: { dark: opacityWorklet(globalColors.white100, 0.1), light: opacityWorklet(globalColors.white100, 0.5) },
+    color: { dark: opacity(globalColors.white100, 0.1), light: opacity(globalColors.white100, 0.5) },
   },
   ...LEAGUE_SELECTOR_ORDER.map<LeagueItem>(key => ({
     key,
@@ -83,18 +83,18 @@ export const PolymarketLeagueSelector = memo(function PolymarketLeagueSelector()
       style={[
         styles.container,
         {
-          backgroundColor: isDarkMode ? opacityWorklet(globalColors.white100, 0.02) : opacityWorklet(globalColors.grey100, 0.03),
+          backgroundColor: isDarkMode ? opacity(globalColors.white100, 0.02) : opacity(globalColors.grey100, 0.03),
         },
       ]}
     >
       <View style={StyleSheet.absoluteFill} pointerEvents="none">
         <Border
           borderRadius={CONTAINER_HEIGHT / 2}
-          borderColor={{ custom: isDarkMode ? opacityWorklet('#F5F8FF', 0.08) : opacityWorklet(globalColors.grey100, 0.02) }}
+          borderColor={{ custom: isDarkMode ? opacity('#F5F8FF', 0.08) : opacity(globalColors.grey100, 0.02) }}
           borderWidth={THICK_BORDER_WIDTH}
         />
         {!isDarkMode && (
-          <InnerShadow blur={6} borderRadius={CONTAINER_HEIGHT / 2} color={opacityWorklet(globalColors.grey100, 0.03)} dx={0} dy={2} />
+          <InnerShadow blur={6} borderRadius={CONTAINER_HEIGHT / 2} color={opacity(globalColors.grey100, 0.03)} dx={0} dy={2} />
         )}
       </View>
       <ScrollView
@@ -110,7 +110,7 @@ export const PolymarketLeagueSelector = memo(function PolymarketLeagueSelector()
               <LeagueItemComponent league={league} onPress={onPress} selectedLeagueKey={selectedLeagueKey} />
             </View>
             {index < LEAGUE_ITEMS.length - 1 && (
-              <View style={[styles.separator, { backgroundColor: opacityWorklet('#1A1A1A', isDarkMode ? 1 : 0.04) }]} />
+              <View style={[styles.separator, { backgroundColor: opacity('#1A1A1A', isDarkMode ? 1 : 0.04) }]} />
             )}
           </Fragment>
         ))}
@@ -129,11 +129,11 @@ type LeagueItemProps = {
 
 const LeagueItemComponent = memo(function LeagueItemComponent({ league, onPress, selectedLeagueKey }: LeagueItemProps) {
   const { isDarkMode } = useColorMode();
-  const selectedColor = isDarkMode ? league.color.dark : opacityWorklet(globalColors.white100, 0.5);
+  const selectedColor = isDarkMode ? league.color.dark : opacity(globalColors.white100, 0.5);
 
   const leagueKey = league.key;
   const accentColors = useMemo(() => createOpacityPalette(selectedColor, PALETTE_OPACITIES), [selectedColor]);
-  const backgroundColor = isDarkMode ? accentColors.opacity8 : opacityWorklet(globalColors.white100, 0.5);
+  const backgroundColor = isDarkMode ? accentColors.opacity8 : opacity(globalColors.white100, 0.5);
 
   const backgroundFillStyle = useMemo(
     () => ({

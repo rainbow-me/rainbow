@@ -52,8 +52,10 @@ import { TokensHeader } from '@/components/asset-list/RecyclerAssetList2/tokens/
 import { SectionAvailableBalance } from '@/components/asset-list/RecyclerAssetList2/SectionAvailableBalance';
 import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
+import Routes from '@/navigation/routesNames';
 import { PolymarketHeader } from '@/components/asset-list/RecyclerAssetList2/polymarket/PolymarketHeader';
 import { PolymarketPositionRow } from '@/components/asset-list/RecyclerAssetList2/polymarket/PolymarketPositionRow';
+import { usePolymarketNavigationStore } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
 
 function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
   const data = extendedState.additionalData[uid];
@@ -250,7 +252,16 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     }
     case CellType.POLYMARKET_BALANCE: {
       const { balance } = data as PolymarketBalanceExtraData;
-      return <SectionAvailableBalance balance={balance} isDarkMode={extendedState.theme.isDarkMode} onPress={navigateToPolymarket} />;
+      return (
+        <SectionAvailableBalance
+          balance={balance}
+          isDarkMode={extendedState.theme.isDarkMode}
+          onPress={() => {
+            usePolymarketNavigationStore.getState().navigate(Routes.POLYMARKET_ACCOUNT_SCREEN);
+            navigateToPolymarket();
+          }}
+        />
+      );
     }
     case CellType.POLYMARKET_POSITION: {
       const { position } = data as PolymarketPositionExtraData;
