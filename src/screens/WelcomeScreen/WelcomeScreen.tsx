@@ -199,14 +199,14 @@ export function WelcomeScreen() {
 
   return (
     <PerformanceMeasureView interactive={true} screenName="WelcomeScreen">
-      <Box style={sx.container} testID="welcome-screen" backgroundColor={colors.white}>
+      <Box style={styles.container} testID="welcome-screen" backgroundColor={colors.white}>
         <RainbowsBackground shouldAnimate={shouldAnimateRainbows} />
-        <Animated.View style={[contentStyle, sx.contentContainer]}>
+        <Animated.View style={[contentStyle, styles.contentContainer]}>
           {IS_ANDROID && IS_TEST ? (
             <RainbowText colors={colors} />
           ) : (
             <MaskedView maskElement={<RainbowText colors={colors} />}>
-              <Animated.View style={[textStyle, sx.rainbowTextMask]} />
+              <Animated.View style={[textStyle, styles.rainbowTextMask]} />
             </MaskedView>
           )}
 
@@ -223,18 +223,18 @@ export function WelcomeScreen() {
             />
           </Animated.View>
           <WelcomeScreenRainbowButton
-            darkShadowStyle={sx.existingWalletShadow}
+            darkShadowStyle={styles.existingWalletShadow}
             emoji="old_key"
             height={56}
             onPress={showRestoreSheet}
-            shadowStyle={sx.existingWalletShadow}
-            style={[sx.existingWallet, { backgroundColor: existingWalletBackground }]}
+            shadowStyle={styles.existingWalletShadow}
+            style={[styles.existingWallet, { backgroundColor: existingWalletBackground }]}
             testID="already-have-wallet-button"
             text={i18n.t(i18n.l.wallet.new.already_have_wallet)}
             textColor={existingWalletTextColor}
           />
         </Animated.View>
-        <View style={[sx.termsOfUseContainer, { bottom: insets.bottom / 2 + 32, position: 'absolute' }]}>
+        <View style={[styles.termsOfUseContainer, { bottom: insets.bottom / 2 + 32, position: 'absolute' }]}>
           <Text align="center" color={termsTextColor} lineHeight="loose" size="smedium" weight="semibold">
             {i18n.t(i18n.l.wallet.new.terms)}
             <Text
@@ -254,7 +254,7 @@ export function WelcomeScreen() {
   );
 }
 
-const sx = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
