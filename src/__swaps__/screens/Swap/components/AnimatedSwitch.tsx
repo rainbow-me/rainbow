@@ -3,7 +3,7 @@ import React from 'react';
 import { AnimatedText, Bleed, Box, Inline, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { GestureHandlerButtonProps, GestureHandlerButton } from './GestureHandlerButton';
+import { GestureHandlerButtonProps, GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { StyleSheet } from 'react-native';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 

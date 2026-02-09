@@ -11,7 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { HitSlop, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { colors } from '@/styles';
 import { IS_IOS } from '@/env';

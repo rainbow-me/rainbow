@@ -9,7 +9,7 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import { THICK_BORDER_WIDTH } from '../constants';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
-import { GestureHandlerButton } from './GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { SlippageRow } from './ReviewPanel';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 

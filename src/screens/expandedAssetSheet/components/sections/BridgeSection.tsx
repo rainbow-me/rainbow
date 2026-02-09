@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { View } from 'react-native';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import Animated, { SharedValue, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import useAsset from '@/hooks/useAsset';
 import { Address } from 'viem';

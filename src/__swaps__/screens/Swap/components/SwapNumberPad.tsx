@@ -30,7 +30,7 @@ import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/provid
 import { InputKeys } from '@/__swaps__/types/swap';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { GestureHandlerButton } from './GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 
 type numberPadCharacter = number | 'backspace' | '.';
 
