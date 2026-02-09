@@ -4,7 +4,8 @@ import TextInputMask from 'react-native-text-input-mask';
 import { Text } from '@/components/text';
 import styled from '@/styled-thing';
 import { buildTextStyles } from '@/styles';
-import { magicMemo } from '@/utils';
+import { opacity } from '@/framework/ui/utils/opacity';
+import magicMemo from '@/utils/magicMemo';
 
 const AndroidMaskWrapper = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.white,
@@ -51,7 +52,7 @@ const ExchangeInput = (
 ) => {
   const { colors } = useTheme();
   const color = givenColor || colors.dark;
-  const placeholderTextColor = givenPlaceholderTextColor || colors.alpha(colors.blueGreyDark, 0.3);
+  const placeholderTextColor = givenPlaceholderTextColor || opacity(colors.blueGreyDark, 0.3);
   const selectionColor = givenSelectionColor || color;
   const [isFocused, setIsFocused] = useState(false);
   const [isTouched, setIsTouched] = useState(false);

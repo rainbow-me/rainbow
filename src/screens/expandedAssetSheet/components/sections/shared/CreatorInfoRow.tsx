@@ -22,7 +22,7 @@ import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { sliderConfig, pulsingConfig } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useTheme } from '@/theme';
 import { IS_IOS } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';

@@ -1,7 +1,8 @@
 import { memo, useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
@@ -200,7 +201,7 @@ export const LoadingSkeleton = memo(function LoadingSkeleton() {
   const { isDarkMode } = useColorMode();
   const fillQuaternary = useBackgroundColor('fillQuaternary');
   const fillSecondary = useBackgroundColor('fillSecondary');
-  const shimmerColor = opacityWorklet(fillSecondary, 0.1);
+  const shimmerColor = opacity(fillSecondary, 0.1);
   const skeletonColor = isDarkMode ? fillQuaternary : fillSecondary;
 
   return (
@@ -287,6 +288,6 @@ const styles = StyleSheet.create({
   },
   lightModeCardFill: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: opacityWorklet(globalColors.white100, 0.89),
+    backgroundColor: opacity(globalColors.white100, 0.89),
   },
 });

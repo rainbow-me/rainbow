@@ -4,7 +4,7 @@ import * as i18n from '@/languages';
 import { Box, Text } from '@/design-system';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import { BlurView } from 'react-native-blur-view';
@@ -36,8 +36,8 @@ export const AirdropSummaryCard = memo(function AirdropSummaryCard() {
     <ButtonPressAnimation onPress={handleNavigateToClaimAirdrop} scaleTo={0.96}>
       <View style={{ overflow: 'visible' }}>
         <Box
-          backgroundColor={opacityWorklet(ETH_COLOR_DARK, 0.06)}
-          borderColor={{ custom: opacityWorklet(ETH_COLOR_DARK_ACCENT, 0.06) }}
+          backgroundColor={opacity(ETH_COLOR_DARK, 0.06)}
+          borderColor={{ custom: opacity(ETH_COLOR_DARK_ACCENT, 0.06) }}
           borderRadius={BORDER_RADIUS}
           paddingVertical="24px"
           paddingHorizontal="20px"

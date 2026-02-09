@@ -1,12 +1,13 @@
 import React from 'react';
-import { magicMemo } from '../../utils';
+import magicMemo from '@/utils/magicMemo';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIconIndicator } from '../coin-icon';
 import { Icon } from '../icons';
 import { Row } from '../layout';
-import { useCoinListFinishEditingOptions } from '@/hooks';
+import { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import styled from '@/styled-thing';
 import { borders, padding, position, shadow } from '@/styles';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const CoinIconSize = 40;
 
@@ -25,7 +26,7 @@ const Content = styled(Row).attrs({
 
 const CircleOutline = styled.View({
   ...borders.buildCircleAsObject(22),
-  borderColor: ({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.12),
+  borderColor: ({ theme: { colors } }) => opacity(colors.blueGreyDark, 0.12),
   borderWidth: 1.5,
   left: 19,
   position: 'absolute',

@@ -1,6 +1,6 @@
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import walletTypes from '@/helpers/walletTypes';
-import { usePrevious } from '@/hooks';
+import usePrevious from '@/hooks/usePrevious';
 import { logger } from '@/logger';
 import { Navigation } from '@/navigation';
 import {
@@ -27,7 +27,7 @@ import store, { AppState } from '@/redux/store';
 import { fetchCachedTransaction } from '@/resources/transactions/transaction';
 import { switchWallet } from '@/state/wallets/switchWallet';
 import { getAccountAddress, getWalletReady, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
-import { isLowerCaseMatch } from '@/utils';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import notifee, { EventType, Event as NotifeeEvent } from '@notifee/react-native';
 import Routes from '@rainbow-me/routes';
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';

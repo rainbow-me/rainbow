@@ -13,13 +13,16 @@ import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from './ViewTypes';
 import LayoutItemAnimator from './LayoutItemAnimator';
 import { EthereumAddress } from '@/entities';
-import { useCoinListEdited, usePrevious, useRefreshAccountData } from '@/hooks';
+import useCoinListEdited from '@/hooks/useCoinListEdited';
+import usePrevious from '@/hooks/usePrevious';
+import useRefreshAccountData from '@/hooks/useRefreshAccountData';
 import styled from '@/styled-thing';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const extractCollectiblesIdFromRow = (row: {
   item: {
@@ -459,7 +462,7 @@ function RecyclerAssetList({
                 onRefresh={refresh}
                 progressViewOffset={android ? 30 : 0}
                 refreshing={isRefreshing}
-                tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
+                tintColor={opacity(colors.blueGreyDark, 0.4)}
               />
             ),
           },

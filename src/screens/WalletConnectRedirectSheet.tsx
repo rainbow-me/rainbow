@@ -5,14 +5,15 @@ import { Centered } from '@/components/layout';
 import { Sheet } from '@/components/sheet';
 import { Text } from '@/components/text';
 import { useNavigation } from '@/navigation/Navigation';
-import { useAppState } from '@/hooks';
+import useAppState from '@/hooks/useAppState';
 import styled from '@/styled-thing';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
+import { opacity } from '@/framework/ui/utils/opacity';
 const BodyText = styled(Text).attrs(({ theme: { colors } }: { theme: ThemeContextProps }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.6),
+  color: opacity(colors.blueGreyDark, 0.6),
   lineHeight: 'loosest',
   size: 'big',
 }))({

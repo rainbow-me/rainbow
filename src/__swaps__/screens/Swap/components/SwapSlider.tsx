@@ -31,7 +31,8 @@ import {
   pulsingConfig,
 } from '@/__swaps__/screens/Swap/constants';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { clamp, getColorValueForThemeWorklet, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { clamp, getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 
@@ -86,7 +87,7 @@ export const SwapSlider = ({
   );
 
   const colors = useDerivedValue(() => ({
-    inactiveColorLeft: opacityWorklet(
+    inactiveColorLeft: opacity(
       dualColor
         ? getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode)
         : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode),
@@ -96,7 +97,7 @@ export const SwapSlider = ({
       ? getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode)
       : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode),
     inactiveColorRight: dualColor
-      ? opacityWorklet(getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode), 0.9)
+      ? opacity(getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode), 0.9)
       : separatorSecondary,
     activeColorRight: dualColor
       ? getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode)

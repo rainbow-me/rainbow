@@ -324,7 +324,9 @@
         "authorizing": "正在授权",
         "confirming_on_ledger": "在Ledger上确认",
         "hold_keyword": "持有",
-        "tap_keyword": "点击"
+        "tap_keyword": "点击",
+        "hold_to_claim": "长按领取",
+        "claiming": "认领中..."
       },
       "hold_to_send": "长按以发送",
       "import": "导入",
@@ -977,7 +979,7 @@
       "redacted_title": "您已解锁\n Redacted Rainbow",
       "baggy_description": "从街头到链，这个小袋子承载了你的便携彩虹氛围。品尝颜色，感受不同。",
       "baggy_title": "您已解锁\n Rainbow Baggy",
-      "chonks_description": "想象一下风在你的Rainbow头发中飘扬，驾驶着101，感受Chonky。",
+      "chonks_description": "想象一下，风在你的Rainbow发型中飞舞，驾驶在101号公路上，感受Chonky。",
       "chonks_title": "您已解锁\n 最巨大的图标",
       "mog_description": "轻松地征服宇宙，以缤纷的色彩令人惊艳。",
       "mog_title": "您已解锁\nRainbow Mogs",
@@ -2444,6 +2446,52 @@
         "warning": "更改您的图标可能会导致Rainbow重新启动。",
         "confirm": "确认",
         "cancel": "取消"
+      },
+      "support": {
+        "title": "支持与反馈",
+        "entry": {
+          "contact_support": "联系支持",
+          "contact_support_description": "针对问题、疑问或紧急情况提供个性化的电子邮件支持",
+          "get_started": "开始",
+          "category_picker_description": "您需要什么帮助？",
+          "share_feedback": "分享反馈",
+          "share_feedback_description": "通过电子邮件告诉我们想法，或只是打个招呼",
+          "faqs_and_guides": "常见问题与指南"
+        },
+        "category": {
+          "getting_started": {
+            "name": "入门",
+            "description": "设置、基础知识、网络"
+          },
+          "backup_recovery": {
+            "name": "备份与恢复",
+            "description": "恢复、创建备份"
+          },
+          "tokens_transactions": {
+            "name": "代币与交易",
+            "description": "缺失的代币、余额"
+          },
+          "bridge_swap": {
+            "name": "桥接与兑换",
+            "description": "跨链、兑换问题"
+          },
+          "points_rewards": {
+            "name": "积分与奖励",
+            "description": "积分、空投、上线活动"
+          },
+          "security": {
+            "name": "安全问题",
+            "description": "钱包被入侵、助记词丢失"
+          },
+          "partnership": {
+            "name": "合作咨询",
+            "description": "业务、集成"
+          },
+          "other": {
+            "name": "其他",
+            "description": "其他问题"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2457,6 +2505,7 @@
       "actions": {
         "hold_to_swap": "按住以交换",
         "hold_to_bridge": "按住以桥接",
+        "earning_rewards": "赚取奖励",
         "save": "保存",
         "enter_amount": "输入金额",
         "review": "审阅",
@@ -3885,6 +3934,58 @@
         "lost_bets_dont_clear": "输掉的赌注不会自动清除。您可以在下面清除它们。"
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "介绍",
+        "rainbow_token": "Rainbow 代币",
+        "description_prefix": "向您介绍 ",
+        "description_suffix": " 立即查看您是否有资格获得空投。",
+        "check_eligibility": "查看资格"
+      },
+      "feature_card": {
+        "subtitle": "向您介绍 $RNBW，立即查看您的资格。"
+      },
+      "claim": {
+        "available_to_claim": "可领取",
+        "your_airdrop": "您的空投",
+        "your_airdrop_description": "感谢您使用 Rainbow。您的空投将根据您此前的活动来计算。",
+        "claim_failed_title": "领取奖励出错",
+        "claim_failed_message": "请再试一次。",
+        "claim_later": "稍后领取",
+        "almost_there": "快完成了..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "空投已领取",
+        "you_claimed": "您已领取"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "奖励已领取",
+        "you_claimed": "您已领取"
+      },
+      "airdrop": {
+        "no_airdrop": "无空投",
+        "no_airdrop_description": "该钱包未收到空投。",
+        "already_claimed": "已领取",
+        "already_claimed_description": "您已领取过您的空投。"
+      },
+      "airdrop_card": {
+        "your_airdrop": "您的空投"
+      },
+      "how_to_earn": {
+        "earn_rewards": "赚取奖励",
+        "description": "通过兑换代币赚取 $RNBW。更多赚取方式即将推出。"
+      },
+      "loading_labels": {
+        "checking_historical_activity": "正在检查历史活动...",
+        "checking_eligibility": "正在检查资格...",
+        "claiming_rewards": "正在领取奖励...",
+        "submitting_transaction": "正在提交交易...",
+        "claiming_airdrop": "正在领取空投...",
+        "counting_your_points": "正在统计您的积分...",
+        "oh_i_see": "哦，我明白了..."
+      },
+      "longer_than_usual": "领取所需时间比平时更长。可能最多需要一分钟。"
+    },
     "wallet_error_sheet": {
       "title": "恢复你的钱包",
       "restore": "恢复",
@@ -3893,6 +3994,10 @@
       "cause_switched_devices": "看起来你可能已经切换设备。",
       "resolution_enable_passcode": "要使用你的钱包，请在设备设置中重新启用它。",
       "resolution_restore_backup": "要使用你的钱包，请从备份恢复或重新导入你的秘密恢复短语。"
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "赚取奖励",
+      "this_transaction_will_earn": "此交易将大约赚取 "
     }
   }
 }

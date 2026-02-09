@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { InteractionManager } from 'react-native';
-import { useLoadAccountLateData, useLoadGlobalLateData } from '@/hooks';
+import useLoadAccountLateData from '@/hooks/useLoadAccountLateData';
+import useLoadGlobalLateData from '@/hooks/useLoadGlobalLateData';
 import { useWalletsStore } from '../state/wallets/walletsStore';
 
 export const useLoadDeferredWalletData = () => {

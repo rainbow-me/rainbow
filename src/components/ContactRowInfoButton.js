@@ -8,11 +8,15 @@ import { ButtonPressAnimation } from './animations';
 import { CoinRowHeight } from './coin-row/CoinRow';
 import { Centered } from './layout';
 import { Text } from './text';
-import { useClipboard } from '@/hooks';
+import useClipboard from '@/hooks/useClipboard';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding } from '@/styles';
 import { IS_TEST } from '@/env';
-import { abbreviations, ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import { opacity } from '@/framework/ui/utils/opacity';
+import abbreviations from '@/utils/abbreviations';
+import ethereumUtils from '@/utils/ethereumUtils';
+import haptics from '@/utils/haptics';
 
 const InfoButton = styled(Centered)({
   alignItems: 'center',
@@ -39,7 +43,7 @@ const Circle = styled(IS_TEST ? View : RadialGradient).attrs(({ theme: { colors 
 
 const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.3),
+  color: opacity(colors.blueGreyDark, 0.3),
   letterSpacing: 'zero',
   size: 'lmedium',
   weight: 'bold',

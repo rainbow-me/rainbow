@@ -6,11 +6,14 @@ import ButtonPressAnimation from '../components/animations/ButtonPressAnimation'
 import { Sheet } from '../components/sheet';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { AccentColorProvider, Bleed, Box, Heading, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
-import { prefetchENSAvatar, prefetchENSCover, prefetchENSRecords, useAccountENSDomains, useENSAvatar } from '@/hooks';
+import useENSAvatar, { prefetchENSAvatar } from '@/hooks/useENSAvatar';
+import { prefetchENSCover } from '@/hooks/useENSCover';
+import { prefetchENSRecords } from '@/hooks/useENSRecords';
+import useAccountENSDomains from '@/hooks/useAccountENSDomains';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { ListRenderItem, View } from 'react-native';
 import { BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
 import { RootStackParamList } from '@/navigation/types';

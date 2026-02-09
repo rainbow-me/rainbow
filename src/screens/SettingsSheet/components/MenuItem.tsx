@@ -11,6 +11,7 @@ import { useTheme } from '@/theme';
 import { ImageSourcePropType } from 'react-native';
 import { Width } from '@/design-system/layout/size';
 import { colors } from '@/styles';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 interface ImageIconProps {
   size?: number;
@@ -80,7 +81,7 @@ const StatusIcon = ({ status }: StatusIconProps) => {
   const { colors, isDarkMode } = useTheme();
   const statusColors: { [key in StatusType]: string } = {
     complete: colors.green,
-    incomplete: colors.alpha(colors.blueGreyDark, 0.5),
+    incomplete: opacity(colors.blueGreyDark, 0.5),
     selected: colors.appleBlue,
     warning: colors.orangeLight,
   };

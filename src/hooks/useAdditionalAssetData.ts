@@ -3,7 +3,7 @@ import { NativeCurrencyKey } from '@/entities';
 import { metadataClient } from '@/graphql';
 import { Token } from '@/graphql/__generated__/metadata';
 import { ChainId } from '@/state/backendNetworks/types';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 
 // Types
 export type TokenMetadata = Pick<

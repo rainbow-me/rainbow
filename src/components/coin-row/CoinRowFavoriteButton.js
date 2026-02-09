@@ -8,8 +8,9 @@ import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { magicMemo } from '@/utils';
+import magicMemo from '@/utils/magicMemo';
 import { IS_TEST } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const FavoriteButtonPadding = 19;
 
@@ -27,7 +28,7 @@ const FavoriteButton = styled(Centered)({
 const Circle = styled(IS_TEST ? View : RadialGradient).attrs(({ isFavorited, theme: { colors, isDarkMode } }) => ({
   center: [0, 15],
   colors: isFavorited
-    ? [colors.alpha('#FFB200', isDarkMode ? 0.15 : 0), colors.alpha('#FFB200', isDarkMode ? 0.05 : 0.2)]
+    ? [opacity('#FFB200', isDarkMode ? 0.15 : 0), opacity('#FFB200', isDarkMode ? 0.05 : 0.2)]
     : colors.gradients.lightestGrey,
 }))({
   borderRadius: 15,
@@ -38,7 +39,7 @@ const Circle = styled(IS_TEST ? View : RadialGradient).attrs(({ isFavorited, the
 
 const StarIcon = styled(Text).attrs(({ isFavorited, theme: { colors } }) => ({
   align: 'center',
-  color: isFavorited ? colors.yellowFavorite : colors.alpha(colors.blueGreyDark, 0.2),
+  color: isFavorited ? colors.yellowFavorite : opacity(colors.blueGreyDark, 0.2),
   letterSpacing: 'zero',
   size: 'smaller',
   weight: 'heavy',

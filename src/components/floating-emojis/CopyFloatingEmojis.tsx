@@ -1,8 +1,8 @@
 import React, { FC, ReactNode } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import FloatingEmojis from './FloatingEmojis';
-import { useClipboard } from '@/hooks';
-import { magicMemo } from '@/utils';
+import useClipboard from '@/hooks/useClipboard';
+import magicMemo from '@/utils/magicMemo';
 
 interface CopyFloatingEmojisProps {
   /** Child elements or nodes to render inside this component */
@@ -39,11 +39,6 @@ const CopyFloatingEmojis: FC<CopyFloatingEmojisProps> = ({ children, disabled = 
             }
           }}
           radiusAndroid={24}
-          wrapperProps={{
-            containerStyle: {
-              padding: 10,
-            },
-          }}
           testID={testID}
         >
           {children}

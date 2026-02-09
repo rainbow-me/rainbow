@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef } from 'react';
-import { getAlphaColor, useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { useColorMode } from '@/design-system';
@@ -11,9 +11,11 @@ import { SkImage, useAnimatedImageValue, useImage } from '@shopify/react-native-
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { SharedValue } from 'react-native-reanimated';
 import { logger, RainbowError } from '@/logger';
-import { useCleanup, useCoinListEditOptions } from '@/hooks';
+import { useCleanup } from '@/hooks/useCleanup';
+import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { ScrollView } from 'react-native';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type TokenLauncherContextType = {
   tokenBackgroundImage: SkImage | null;
@@ -113,21 +115,21 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
 
     return {
       opacity100: primaryColor,
-      opacity90: getAlphaColor(primaryColor, 0.9),
-      opacity80: getAlphaColor(primaryColor, 0.8),
-      opacity70: getAlphaColor(primaryColor, 0.7),
-      opacity60: getAlphaColor(primaryColor, 0.6),
-      opacity50: getAlphaColor(primaryColor, 0.5),
-      opacity40: getAlphaColor(primaryColor, 0.4),
-      opacity30: getAlphaColor(primaryColor, 0.3),
-      opacity20: getAlphaColor(primaryColor, 0.2),
-      opacity16: getAlphaColor(primaryColor, 0.16),
-      opacity12: getAlphaColor(primaryColor, 0.12),
-      opacity10: getAlphaColor(primaryColor, 0.1),
-      opacity6: getAlphaColor(primaryColor, 0.06),
-      opacity4: getAlphaColor(primaryColor, 0.04),
-      opacity3: getAlphaColor(primaryColor, 0.03),
-      opacity2: getAlphaColor(primaryColor, 0.02),
+      opacity90: opacity(primaryColor, 0.9),
+      opacity80: opacity(primaryColor, 0.8),
+      opacity70: opacity(primaryColor, 0.7),
+      opacity60: opacity(primaryColor, 0.6),
+      opacity50: opacity(primaryColor, 0.5),
+      opacity40: opacity(primaryColor, 0.4),
+      opacity30: opacity(primaryColor, 0.3),
+      opacity20: opacity(primaryColor, 0.2),
+      opacity16: opacity(primaryColor, 0.16),
+      opacity12: opacity(primaryColor, 0.12),
+      opacity10: opacity(primaryColor, 0.1),
+      opacity6: opacity(primaryColor, 0.06),
+      opacity4: opacity(primaryColor, 0.04),
+      opacity3: opacity(primaryColor, 0.03),
+      opacity2: opacity(primaryColor, 0.02),
       highContrastTextColor,
     };
   }, [colors, imageDerivedColor, isDarkMode]);

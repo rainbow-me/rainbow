@@ -16,7 +16,8 @@ import { ENS_DOMAIN, ENS_RECORDS, ENSRegistrationTransactionType, generateSalt, 
 import { add } from '@/helpers/utilities';
 import { ImgixImage } from '@/components/images';
 import { ENS_NFT_CONTRACT_ADDRESS, ethUnits } from '@/references';
-import { labelhash, profileUtils } from '@/utils';
+import labelhash from '@/utils/labelhash';
+import profileUtils from '@/utils/profileUtils';
 import { AvatarResolver } from '@/ens-avatar/src';
 import { ensClient } from '@/graphql';
 import { prefetchFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';

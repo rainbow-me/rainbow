@@ -8,7 +8,7 @@ import { useChartsStore, useChartType } from '@/features/charts/stores/chartsSto
 import { ChartType, LineChartTimePeriod } from '@/features/charts/types';
 import * as i18n from '@/languages';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { formatTimestamp } from '@/worklets/dates';
 import { ChartPercentChangeLabel } from './chart-data-labels';

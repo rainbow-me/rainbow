@@ -1,12 +1,15 @@
 import { UniqueId } from '@/__swaps__/types/assets';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
 import { NativeCurrencyKey, UniqueAsset } from '@/entities';
-import { useAccountSettings, useCoinListEdited, useCoinListEditOptions, usePrevious } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import useCoinListEdited from '@/hooks/useCoinListEdited';
+import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
+import usePrevious from '@/hooks/usePrevious';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ThemeContextProps, useTheme } from '@/theme';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import React, { LegacyRef, useCallback, useEffect, useMemo, useRef } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { SetterOrUpdater } from 'recoil';

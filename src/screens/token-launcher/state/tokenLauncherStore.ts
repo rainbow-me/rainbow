@@ -41,9 +41,6 @@ import { tokenLaunchErrorToErrorMessage } from '../helpers/tokenLaunchErrorToErr
 // TODO: Remove this — temporary option for testing
 const REQUIRE_TOKEN_LOGO = !(isTestFlight || IS_DEV);
 
-// TODO: same as colors.alpha, move to a helper file
-export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
-
 export const enum NavigationSteps {
   INFO = 0,
   REVIEW = 1,

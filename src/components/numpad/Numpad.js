@@ -3,9 +3,10 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const KeyboardButtonContent = styled(Centered)({
   height: ({ height }) => height,
@@ -33,7 +34,7 @@ const KeyboardButton = ({ children, ...props }) => {
 
 export default function Numpad({ decimal = true, onPress, width }) {
   const { colors } = useTheme();
-  const keyColor = colors.alpha(colors.blueGreyDark, 0.8);
+  const keyColor = opacity(colors.blueGreyDark, 0.8);
 
   const renderCell = useCallback(
     symbol => (

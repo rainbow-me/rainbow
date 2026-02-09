@@ -1,5 +1,6 @@
 import ContextMenu from '@/components/native-context-menu/contextMenu';
-import { useLatestCallback, useOnAvatarPress } from '@/hooks';
+import useLatestCallback from '@/hooks/useLatestCallback';
+import useOnAvatarPress from '@/hooks/useOnAvatarPress';
 import ShadowStack from '@/react-native-shadow-stack';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
@@ -10,6 +11,7 @@ import { ButtonPressAnimation } from '../animations';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const AvatarCircleSize = 60;
 
@@ -58,7 +60,7 @@ export default function AvatarCircle({
     () => ({
       default: [
         [0, 2, 5, isDarkMode ? colors.trueBlack : colors.dark, 0.2],
-        [0, 6, 10, isDarkMode ? colors.trueBlack : colors.alpha(resolvedColor, 0.6)],
+        [0, 6, 10, isDarkMode ? colors.trueBlack : opacity(resolvedColor, 0.6)],
       ],
       overlay: [
         [0, 6, 10, isDarkMode ? colors.trueBlack : colors.shadowBlack, 0.08],

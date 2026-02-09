@@ -11,7 +11,7 @@ import Routes from '@/navigation/routesNames';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import * as i18n from '@/languages';
 import { MarketSortOrderDropdown } from '@/features/perps/components/MarketSortOrderDropdown';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useMarketSortOrderLabels } from '@/features/perps/hooks/useMarketSortOrderLabels';
 
 const MAX_MARKETS_TO_SHOW = 8;
@@ -60,7 +60,7 @@ export const MarketsSection = memo(function MarketsSection() {
 
           <MarketSortOrderDropdown>
             <Box
-              backgroundColor={isDarkMode ? undefined : opacityWorklet('#09111F', 0.04)}
+              backgroundColor={isDarkMode ? undefined : opacity('#09111F', 0.04)}
               height={28}
               flexDirection="row"
               alignItems="center"

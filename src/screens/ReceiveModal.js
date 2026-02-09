@@ -2,7 +2,7 @@ import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { Box } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { toChecksumAddress } from '@/handlers/web3';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
@@ -15,7 +15,8 @@ import QRCode from '../components/qr-code/QRCode';
 import ShareButton from '../components/qr-code/ShareButton';
 import { Text, TruncatedAddress } from '../components/text';
 import { CopyToast, ToastPositionContainer } from '../components/toasts';
-import { abbreviations, deviceUtils } from '../utils';
+import abbreviations from '@/utils/abbreviations';
+import deviceUtils from '@/utils/deviceUtils';
 
 const QRCodeSize = IS_IOS ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
 

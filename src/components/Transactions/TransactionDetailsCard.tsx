@@ -5,7 +5,8 @@ import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-n
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 
-import { abbreviations, ethereumUtils } from '@/utils';
+import abbreviations from '@/utils/abbreviations';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { TransactionSimulationMeta } from '@/graphql/__generated__/metadataPOST';
 import { ChainId } from '@/state/backendNetworks/types';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAccountSettings } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
 import { useFeaturedResults } from '@/resources/featuredResults/getFeaturedResults';
 import { languageLocaleToCountry } from '@/utils/languageLocaleToCountry';
 import { getFeaturedResultsById } from '@/resources/featuredResults/_selectors/getFeaturedResultIds';

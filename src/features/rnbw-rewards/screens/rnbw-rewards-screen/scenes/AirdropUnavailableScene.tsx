@@ -7,7 +7,7 @@ import { createScaleInFadeInSlideEnterAnimation, defaultExitAnimation } from '@/
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 
@@ -39,7 +39,7 @@ export const AirdropUnavailableScene = memo(function AirdropUnavailableScene() {
         style={styles.button}
       >
         <Box
-          backgroundColor={opacityWorklet('#F5F8FF', 0.06)}
+          backgroundColor={opacity('#F5F8FF', 0.06)}
           width="full"
           height={52}
           borderRadius={26}

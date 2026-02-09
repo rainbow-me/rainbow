@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { colors } from '@/styles';
 import { AnimatedText, useForegroundColor } from '@/design-system';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -16,14 +16,8 @@ export const TabPill = ({ tab, index }: { tab: string; index: number }) => {
   const activeTabStyle = useAnimatedStyle(() => {
     const activeValue = typeof activeTabIndex === 'number' ? activeTabIndex : activeTabIndex.value;
     return {
-      borderColor: withTiming(
-        activeValue === index ? opacityWorklet(accentColor, 0.06) : colors.transparent,
-        TIMING_CONFIGS.tabPressConfig
-      ),
-      backgroundColor: withTiming(
-        activeValue === index ? opacityWorklet(accentColor, 0.12) : colors.transparent,
-        TIMING_CONFIGS.tabPressConfig
-      ),
+      borderColor: withTiming(activeValue === index ? opacity(accentColor, 0.06) : colors.transparent, TIMING_CONFIGS.tabPressConfig),
+      backgroundColor: withTiming(activeValue === index ? opacity(accentColor, 0.12) : colors.transparent, TIMING_CONFIGS.tabPressConfig),
     };
   });
 

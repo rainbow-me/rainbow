@@ -11,7 +11,7 @@ import * as i18n from '@/languages';
 import { add, formatNumber } from '@/helpers/utilities';
 import { weiToGwei } from '@/parsers';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 
 const { SWAP_GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;
