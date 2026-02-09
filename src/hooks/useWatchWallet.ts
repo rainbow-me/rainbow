@@ -1,4 +1,5 @@
-import { useDeleteWallet, useImportingWallet } from '@/hooks';
+import useDeleteWallet from '@/hooks/useDeleteWallet';
+import useImportingWallet from '@/hooks/useImportingWallet';
 import { logger, RainbowError } from '@/logger';
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';

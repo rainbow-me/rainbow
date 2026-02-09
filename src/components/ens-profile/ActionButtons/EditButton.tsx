@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import ActionButton from './ActionButton';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useENSRegistration } from '@/hooks';
+import useENSRegistration from '@/hooks/useENSRegistration';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 

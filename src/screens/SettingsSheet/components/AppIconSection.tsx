@@ -4,7 +4,7 @@ import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { Box } from '@/design-system';
-import { useAccountSettings } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import { logger } from '@/logger';

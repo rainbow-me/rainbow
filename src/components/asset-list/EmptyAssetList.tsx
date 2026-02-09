@@ -6,7 +6,7 @@ import { Centered, Column } from '../layout';
 import AssetListHeader from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';
 import { times } from '@/helpers/utilities';
-import { useRefreshAccountData } from '@/hooks';
+import useRefreshAccountData from '@/hooks/useRefreshAccountData';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { navbarHeight } from '../navbar/Navbar';

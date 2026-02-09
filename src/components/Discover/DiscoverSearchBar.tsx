@@ -5,7 +5,7 @@ import { Box, Inline, Text } from '@/design-system';
 import DiscoverSearchInput from '@/components/Discover/DiscoverSearchInput';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import deviceUtils from '@/utils/deviceUtils';
-import { useDelayedValueWithLayoutAnimation } from '@/hooks';
+import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
 import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { NAVBAR_HORIZONTAL_INSET, navbarHeight } from '../navbar/Navbar';
 import { useTheme } from '@/theme';

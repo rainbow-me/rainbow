@@ -2,7 +2,7 @@
 import React from 'react';
 import Animated, { DerivedValue, LinearTransition, SharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { Bleed, Box, IconContainer, Text, TextShadow } from '@/design-system';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
 const ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;

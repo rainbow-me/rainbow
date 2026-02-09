@@ -3,7 +3,7 @@ import React from 'react';
 import { ButtonPressAnimation, HourglassAnimation } from '../../../components/animations';
 import StepIndicator from '../../../components/step-indicator/StepIndicator';
 import { Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 
 const WaitCommitmentConfirmationContent = ({
   accentColor,

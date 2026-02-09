@@ -2,7 +2,7 @@ import { NavigationHelpersContext, StackActions, StackNavigationState } from '@r
 import React, { useCallback, useMemo, useRef } from 'react';
 import type { BottomSheetDescriptorMap, BottomSheetNavigationConfig, BottomSheetNavigationHelpers } from '../types';
 import BottomSheetRoute from './BottomSheetRoute';
-import { useForceUpdate } from '@/hooks';
+import useForceUpdate from '@/hooks/useForceUpdate';
 import { RootStackParamList } from '@/navigation/types';
 
 type Props = BottomSheetNavigationConfig & {

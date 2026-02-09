@@ -18,7 +18,8 @@ import { useRainbowToasts, useRainbowToastsStore } from '@/components/rainbow-to
 import { Box, useColorMode, useForegroundColor } from '@/design-system';
 import { TransactionStatus } from '@/entities';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
-import { useAccountSettings, useDimensions } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import useDimensions from '@/hooks/useDimensions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';

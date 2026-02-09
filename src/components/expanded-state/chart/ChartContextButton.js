@@ -3,7 +3,7 @@ import { startCase } from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { ContextCircleButton } from '../../context-menu';
 import EditAction from '@/helpers/EditAction';
-import { useCoinListEditOptions, useCoinListFinishEditingOptions } from '@/hooks';
+import useCoinListEditOptions, { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import ethereumUtils, { getUniqueId } from '@/utils/ethereumUtils';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 

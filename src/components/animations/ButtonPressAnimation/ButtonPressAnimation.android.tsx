@@ -4,7 +4,7 @@ import React, { forwardRef, PropsWithChildren, useCallback, useContext, useMemo 
 import { processColor, requireNativeComponent, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { createNativeWrapper, NativeViewGestureHandlerGestureEvent, RawButtonProps } from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import ReactNativeHapticFeedback, { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import Animated, {
   AnimatedProps,
   Easing,
@@ -18,8 +18,7 @@ import Animated, {
 import { normalizeTransformOrigin } from './NativeButton';
 import { ScaleButtonContext } from './ScaleButtonZoomable';
 import { BaseButtonAnimationProps } from './types';
-import { HapticFeedbackType } from '@/utils/haptics';
-import { useLongPressEvents } from '@/hooks';
+import useLongPressEvents from '@/hooks/useLongPressEvents';
 
 interface BaseProps extends BaseButtonAnimationProps {
   backgroundColor: string;
@@ -33,7 +32,7 @@ interface BaseProps extends BaseButtonAnimationProps {
   shouldLongPressHoldPress?: boolean;
   skipTopMargin?: boolean;
   wrapperStyle: StyleProp<ViewStyle>;
-  hapticType: HapticFeedbackType;
+  hapticType: HapticFeedbackTypes;
   enableHapticFeedback: boolean;
   disallowInterruption?: boolean;
 }
@@ -232,7 +231,7 @@ export default forwardRef(function ButtonPressAnimation(
     testID,
     transformOrigin,
     wrapperStyle,
-    hapticType = 'selection',
+    hapticType = HapticFeedbackTypes.selection,
     enableHapticFeedback = true,
     disallowInterruption = false,
   }: Props,

@@ -10,7 +10,7 @@ import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import * as i18n from '@/languages';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import position from '@/styles/position';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';

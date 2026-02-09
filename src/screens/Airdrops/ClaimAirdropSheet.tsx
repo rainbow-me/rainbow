@@ -1,4 +1,4 @@
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
@@ -28,7 +28,7 @@ import { fetchReverseRecord } from '@/handlers/ens';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { containsEmoji } from '@/helpers/strings';
 import { convertAmountToBalanceDisplay } from '@/helpers/utilities';
-import { useCleanup } from '@/hooks';
+import { useCleanup } from '@/hooks/useCleanup';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';

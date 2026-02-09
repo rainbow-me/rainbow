@@ -4,11 +4,11 @@ import { Navigation } from '@/navigation';
 import { RainbowError, logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
 
-export const unlockableAppIconStorage = new MMKV({
+export const unlockableAppIconStorage = createMMKV({
   id: STORAGE_IDS.UNLOCKABLE_APP_ICONS,
 });
 

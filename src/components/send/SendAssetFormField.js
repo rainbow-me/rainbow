@@ -7,7 +7,7 @@ import { BubbleField } from '../fields';
 import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { analytics } from '@/analytics';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 

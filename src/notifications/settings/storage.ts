@@ -5,10 +5,10 @@ import {
   WALLET_TOPICS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
 import { GlobalNotificationTopics, GroupSettings, WalletNotificationSettings } from '@/notifications/settings/types';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
 
-export const notificationSettingsStorage = new MMKV({
+export const notificationSettingsStorage = createMMKV({
   id: STORAGE_IDS.NOTIFICATIONS,
 });
 

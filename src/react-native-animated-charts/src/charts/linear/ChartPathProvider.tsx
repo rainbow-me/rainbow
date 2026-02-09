@@ -7,7 +7,7 @@ import { parse as parseSvg } from 'react-native-redash';
 import { CallbackType, ChartContext, CurveType, DataType, PathData, PathScales, Point } from '../../helpers/ChartContext';
 import { findYExtremes } from '../../helpers/extremesHelpers';
 // @ts-ignore this library is no longer maintained independently of the app, so this is fine
-import { usePrevious } from '@/hooks';
+import usePrevious from '@/hooks/usePrevious';
 
 const { width: WIDTH } = Dimensions.get('window');
 

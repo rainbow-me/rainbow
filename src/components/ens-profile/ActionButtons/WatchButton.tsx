@@ -3,7 +3,7 @@ import * as i18n from '@/languages';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ContextMenuButton, MenuConfig } from 'react-native-ios-context-menu';
 import ActionButton from './ActionButton';
-import { useWatchWallet } from '@/hooks';
+import useWatchWallet from '@/hooks/useWatchWallet';
 
 export default function WatchButton({ address, ensName, avatarUrl }: { address?: string; ensName?: string; avatarUrl?: string | null }) {
   const { isImporting, isWatching, watchWallet } = useWatchWallet({

@@ -71,8 +71,6 @@ const allowedBarrelFiles = [
   'src/features/positions/types/index.ts',
   'src/featuresToUnlock/index.ts',
   'src/helpers/index.ts',
-  'src/hooks/charts/index.ts',
-  'src/hooks/index.ts',
   'src/keychain/index.ts',
   'src/languages/index.ts',
   'src/logger/index.ts',

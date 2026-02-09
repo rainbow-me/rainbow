@@ -1,7 +1,7 @@
 import React, { useCallback, useContext } from 'react';
 import { TabContext } from './TabContext';
 import { StyleSheet, View } from 'react-native';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/framework/ui/utils/opacity';

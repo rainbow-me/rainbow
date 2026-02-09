@@ -5,7 +5,8 @@ import { Box, Column, Columns, Inset, Stack, Text, useForegroundColor } from '@/
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
-import { useDimensions, useImportingWallet } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
+import useImportingWallet from '@/hooks/useImportingWallet';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { useRecoilValue } from 'recoil';
 import { RainbowError, logger } from '@/logger';

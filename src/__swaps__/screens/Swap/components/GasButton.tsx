@@ -20,7 +20,7 @@ import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
-import { GestureHandlerButton } from './GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 import { ChainId } from '@/state/backendNetworks/types';
 

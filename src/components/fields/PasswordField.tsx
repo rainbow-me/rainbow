@@ -2,7 +2,7 @@ import React, { forwardRef, useCallback, Ref } from 'react';
 import { ThemeContextProps, useTheme } from '../../theme/ThemeContext';
 import { Input } from '../inputs';
 import { cloudBackupPasswordMinLength } from '@/handlers/cloudBackup';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
