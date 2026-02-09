@@ -4,7 +4,6 @@ import { useNavigation } from '@/navigation';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
-import { getSortedWalletConnectRequests } from '@/state/walletConnectRequests';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { buildTransactionsSections } from '../helpers/buildTransactionsSectionsSelector';
@@ -19,8 +18,6 @@ export default function useAccountTransactions() {
   const pendingTransactionsMostRecentFirst = usePendingTransactionsStore(state =>
     state.getPendingTransactionsInReverseOrder(accountAddress)
   );
-
-  const walletConnectRequests = getSortedWalletConnectRequests();
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useConsolidatedTransactions({
     address: accountAddress,
@@ -49,7 +46,6 @@ export default function useAccountTransactions() {
     accountAddress,
     contacts,
     navigate,
-    requests: walletConnectRequests,
     theme,
     transactions: slicedTransaction,
     nativeCurrency,
