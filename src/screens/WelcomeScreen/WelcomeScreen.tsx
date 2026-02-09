@@ -20,7 +20,7 @@ import RainbowText from '../../components/icons/svg/RainbowText';
 import { RainbowsBackground } from '../../components/rainbows-background/RainbowsBackground';
 import { Text } from '../../components/text';
 import { analytics } from '@/analytics';
-import { useHardwareBackOnFocus } from '@/hooks';
+import { useHardwareBackOnFocus } from '@/hooks/useHardwareBack';
 import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { useTheme } from '@/theme';
