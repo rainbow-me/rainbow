@@ -3295,7 +3295,6 @@
     "walletconnect": {
       "connecting": "연결 중",
       "loading": "불러오는 중",
-      "requests": "요청",
       "wants_to_connect": "당신의 지갑에 연결하려 합니다",
       "wants_to_connect_to_network": "%{network} 네트워크에 연결하려 합니다",
       "available_networks": "사용 가능한 네트워크",
