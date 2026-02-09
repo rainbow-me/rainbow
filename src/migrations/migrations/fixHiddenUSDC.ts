@@ -1,9 +1,9 @@
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { Migration, MigrationName } from '@/migrations/types';
 import { loadAddress } from '@/model/wallet';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 
-const storage = new MMKV();
+const storage = createMMKV();
 
 export function fixHiddenUSDC(): Migration {
   return {
