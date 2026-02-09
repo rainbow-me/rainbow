@@ -3,7 +3,6 @@ import { capitalize, groupBy, isEmpty } from 'lodash';
 import { thisMonthTimestamp, thisYearTimestamp, todayTimestamp, yesterdayTimestamp } from './transactions';
 import { NativeCurrencyKey, RainbowTransaction, TransactionStatus } from '@/entities';
 import * as i18n from '@/languages';
-import { WalletconnectRequestData } from '@/walletConnect/types';
 import { Contact } from '@/redux/contacts';
 import { SectionListData } from 'react-native';
 
@@ -11,21 +10,13 @@ export type RainbowTransactionWithContact = RainbowTransaction & {
   contact: Contact | null;
 };
 
-type Section<T> = {
+export type TransactionSection = {
   title: string;
-  data: T[];
-  type: 'request' | 'transaction';
+  data: RainbowTransactionWithContact[];
 };
 
-export type WalletconnectSection = Section<WalletconnectRequestData>;
-export type TransactionSection = Section<RainbowTransactionWithContact>;
-
-export type TransactionSections = WalletconnectSection | TransactionSection;
-
-export type TransactionItemForSectionList = WalletconnectRequestData | RainbowTransactionWithContact;
-
 export type TransactionSectionsResult = {
-  sections: SectionListData<TransactionItemForSectionList, TransactionSections>[];
+  sections: SectionListData<RainbowTransactionWithContact, TransactionSection>[];
 };
 
 // bad news
@@ -70,12 +61,10 @@ const addContactInfo =
 export const buildTransactionsSections = ({
   accountAddress,
   contacts,
-  requests,
   transactions,
 }: {
   accountAddress: string;
   contacts: { [address: string]: Contact };
-  requests: WalletconnectRequestData[];
   transactions: RainbowTransaction[];
   nativeCurrency: NativeCurrencyKey;
 }): TransactionSectionsResult => {
@@ -83,7 +72,7 @@ export const buildTransactionsSections = ({
     return { sections: [] };
   }
 
-  let sectionedTransactions: TransactionSections[] = [];
+  let sectionedTransactions: TransactionSection[] = [];
 
   const transactionsWithContacts = transactions?.map(addContactInfo(contacts));
 
@@ -108,7 +97,6 @@ export const buildTransactionsSections = ({
       return {
         data: sectionData,
         title: section,
-        type: 'transaction',
       };
     });
     sectionedTransactions = sectioned;
@@ -120,14 +108,7 @@ export const buildTransactionsSections = ({
     }
   }
 
-  if (!isEmpty(requests)) {
-    sectionedTransactions.unshift({
-      data: requests,
-      title: i18n.t(i18n.l.walletconnect.requests),
-      type: 'request',
-    });
-  }
   return {
-    sections: sectionedTransactions as SectionListData<TransactionItemForSectionList, TransactionSections>[],
+    sections: sectionedTransactions as SectionListData<RainbowTransactionWithContact, TransactionSection>[],
   };
 };
