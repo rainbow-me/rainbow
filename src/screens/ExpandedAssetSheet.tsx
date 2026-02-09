@@ -1,7 +1,7 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { createElement } from 'react';
 import TouchableBackdrop from '../components/TouchableBackdrop';
-import { CustomGasState, ChartExpandedState, UniqueTokenExpandedState } from '../components/expanded-state';
+import { CustomGasState, UniqueTokenExpandedState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation';
@@ -12,7 +12,6 @@ import Routes from '@/navigation/routesNames';
 
 const ScreenTypes = {
   custom_gas: CustomGasState,
-  token: ChartExpandedState,
   unique_token: UniqueTokenExpandedState,
 };
 
