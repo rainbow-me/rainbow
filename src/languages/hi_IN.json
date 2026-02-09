@@ -3295,7 +3295,6 @@
     "walletconnect": {
       "connecting": "जोड़ रहा है",
       "loading": "लोड हो रहा है",
-      "requests": "अनुरोध",
       "wants_to_connect": "आपके वॉलेट के साथ कनेक्ट करना चाहता है",
       "wants_to_connect_to_network": "नेटवर्क %{network} के साथ कनेक्ट करना चाहता है",
       "available_networks": "उपलब्ध नेटवर्क",
