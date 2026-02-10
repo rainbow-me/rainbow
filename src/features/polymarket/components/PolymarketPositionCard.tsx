@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { GestureResponderEvent, StyleSheet } from 'react-native';
 import { Bleed, Box, Separator, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { PolymarketPosition } from '@/features/polymarket/types';
@@ -17,7 +17,6 @@ import { createOpacityPalette, getSolidColorEquivalent } from '@/worklets/colors
 import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
 import { PositionAction, getPositionAction } from '@/features/polymarket/utils/getPositionAction';
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
@@ -73,7 +72,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   }, [actionButtonType]);
 
   const onPressActionButton = useCallback(
-    (e: ButtonPressAnimationTouchEvent) => {
+    (e?: GestureResponderEvent) => {
       if (e && 'stopPropagation' in e) {
         e.stopPropagation();
       }

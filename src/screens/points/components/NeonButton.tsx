@@ -5,6 +5,7 @@ import Animated from 'react-native-reanimated';
 import { Box, Cover, Text, useForegroundColor } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
 import { useTheme } from '@/theme';
+import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { opacity } from '@/framework/ui/utils/opacity';
 
@@ -14,7 +15,13 @@ export const NeonButton = ({ color, label, onPress, width }: { color?: string; l
   const green = useForegroundColor('green');
 
   return (
-    <ButtonPressAnimation hapticType="impactHeavy" onPress={onPress} scaleTo={0.94} style={styles.neonButtonWrapper} transformOrigin="top">
+    <ButtonPressAnimation
+      hapticType={HapticFeedbackTypes.impactHeavy}
+      onPress={onPress}
+      scaleTo={0.94}
+      style={styles.neonButtonWrapper}
+      transformOrigin="top"
+    >
       <Animated.View
         style={[
           styles.neonButton,

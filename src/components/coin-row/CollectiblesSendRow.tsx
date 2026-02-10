@@ -1,5 +1,5 @@
 import React, { Fragment, useMemo } from 'react';
-import { PressableProps, TouchableWithoutFeedback, StyleSheet } from 'react-native';
+import { TouchableWithoutFeedback, StyleSheet } from 'react-native';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
@@ -87,7 +87,7 @@ const CollectiblesSendRow = React.memo(
     disablePressAnimation?: boolean;
     item: UniqueAsset;
     isFirstRow?: boolean;
-    onPress: PressableProps['onPress'];
+    onPress: () => void;
     selected?: boolean;
     testID: string;
   }) => {

@@ -1,5 +1,4 @@
 import React from 'react';
-import { ButtonProps } from 'react-native';
 import { BackgroundColor } from '../../../design-system/color/palettes';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { AccentColorProvider, Box, Inset, Space, Text, useForegroundColor } from '@/design-system';
@@ -8,7 +7,7 @@ type ActionButtonProps = {
   children?: string;
   color?: BackgroundColor | 'accent';
   icon?: string | React.ReactElement;
-  onPress?: ButtonProps['onPress'];
+  onPress?: () => void;
   paddingHorizontal?: Space;
   variant?: 'solid' | 'outlined';
   testID?: string;
