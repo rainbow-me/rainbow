@@ -89,7 +89,7 @@ function ActionButton({
 }) {
   const { colorMode } = useColorMode();
   return (
-    <ButtonPressAnimation disabled={!onPress} onPress={onPress} scale={0.8} testID={testID}>
+    <ButtonPressAnimation disabled={!onPress} onPress={onPress} testID={testID}>
       <Stack alignHorizontal="center" space="10px">
         <Box
           alignItems="center"
