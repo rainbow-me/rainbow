@@ -18,6 +18,8 @@ import useDimensions from '@/hooks/useDimensions';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { ResolvedMarketsSection } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsSection';
 
+const INITIAL_MARKETS_TO_SHOW = 10;
+
 export const MarketsSection = memo(function MarketsSection({ event }: { event: PolymarketEvent | null }) {
   const { isDarkMode } = useColorMode();
   const markets = event?.markets;
@@ -57,10 +59,10 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
   const { isDarkMode } = useColorMode();
   const activeMarkets = markets.filter(market => !market.closed);
   const resolvedMarkets = markets.filter(market => market.closed);
-  const [showAllMarkets, setShowAllMarkets] = useState(markets.length <= 10);
+  const [showAllMarkets, setShowAllMarkets] = useState(activeMarkets.length <= INITIAL_MARKETS_TO_SHOW);
   const showMarketImages = usePolymarketEventStore(state => state.getData()?.showMarketImages ?? false);
   const allResolved = activeMarkets.length === 0;
-  const visibleMarkets = showAllMarkets ? activeMarkets : activeMarkets.slice(0, 10);
+  const visibleMarkets = showAllMarkets ? activeMarkets : activeMarkets.slice(0, INITIAL_MARKETS_TO_SHOW);
   const eventColor = getColorValueForThemeWorklet(event.color, isDarkMode);
   const screenBackgroundColor = isDarkMode
     ? getSolidColorEquivalent({ background: eventColor, foreground: '#000000', opacity: 0.92 })
@@ -95,7 +97,7 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
           </Box>
         )}
         {allResolved && <ResolvedMarketsList markets={resolvedMarkets} showMarketImages={showMarketImages} />}
-        {!allResolved && markets.length > 10 && (
+        {!allResolved && activeMarkets.length > INITIAL_MARKETS_TO_SHOW && (
           <>
             <Box position="absolute" bottom={{ custom: 0 }} width="full">
               <EasingGradient
