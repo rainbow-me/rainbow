@@ -15,7 +15,9 @@ import Routes from '@/navigation/routesNames';
 import { backupsStore, LoadingStates, oneWeekInMs } from '@/state/backups/backups';
 import { isSwipeRoute } from '@/state/navigation/navigationStore';
 import { getSelectedWallet, getWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { ReviewPromptAction } from '@/storage/schema';
 import { delay } from '@/utils/delay';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { time } from '@/utils/time';
 
 let hasRunSessionEntryPrompt = false;
@@ -23,6 +25,7 @@ let runningSessionEntryPrompt: Promise<void> | null = null;
 
 const BACKUP_STATUS_POLL_INTERVAL_MS = time.ms(250);
 const BACKUP_STATUS_TIMEOUT_MS = time.seconds(15);
+const BACKUP_SHEET_ENTRY_TIMEOUT_MS = time.seconds(3);
 
 const runSessionEntryPromptOnce = async (): Promise<void> => {
   if (hasRunSessionEntryPrompt || IS_TEST) return;
@@ -30,7 +33,14 @@ const runSessionEntryPromptOnce = async (): Promise<void> => {
 
   runningSessionEntryPrompt = (async () => {
     try {
-      if (await maybeShowBackupPrompt()) {
+      const didShowBackupPrompt = await maybeShowBackupPrompt();
+      if (didShowBackupPrompt) {
+        await waitForBackupPromptToOpenAndDismiss();
+      }
+
+      await handleReviewPromptAction(ReviewPromptAction.ViewedWalletScreen);
+
+      if (didShowBackupPrompt) {
         return;
       }
       await maybeShowAppIconUnlockPrompt();
@@ -102,6 +112,17 @@ async function maybeShowAppIconUnlockPrompt(): Promise<boolean> {
 async function waitForBackupStatusToSettle(): Promise<void> {
   const start = Date.now();
   while (LoadingStates.includes(backupsStore.getState().status) && Date.now() - start < BACKUP_STATUS_TIMEOUT_MS) {
+    await delay(BACKUP_STATUS_POLL_INTERVAL_MS);
+  }
+}
+
+async function waitForBackupPromptToOpenAndDismiss(): Promise<void> {
+  const start = Date.now();
+  while (Navigation.getActiveRouteName() !== Routes.BACKUP_SHEET && Date.now() - start < BACKUP_SHEET_ENTRY_TIMEOUT_MS) {
+    await delay(BACKUP_STATUS_POLL_INTERVAL_MS);
+  }
+
+  while (Navigation.getActiveRouteName() === Routes.BACKUP_SHEET) {
     await delay(BACKUP_STATUS_POLL_INTERVAL_MS);
   }
 }
