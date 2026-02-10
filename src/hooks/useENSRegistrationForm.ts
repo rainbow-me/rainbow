@@ -1,7 +1,8 @@
 import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
-import { useENSModifiedRegistration, useENSRegistration } from '.';
+import useENSModifiedRegistration from './useENSModifiedRegistration';
+import useENSRegistration from './useENSRegistration';
 import { Records } from '@/entities';
 import { deprecatedTextRecordFields, ENS_RECORDS, REGISTRATION_MODES, TextRecordField, textRecordFields } from '@/helpers/ens';
 

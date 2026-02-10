@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { PanGestureHandler, TapGestureHandler } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedGestureHandler } from 'react-native-reanimated';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
 
 const NOOP = () => null;

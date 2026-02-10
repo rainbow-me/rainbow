@@ -19,7 +19,7 @@ import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import WalletTypes from '@/helpers/walletTypes';
-import { useENSAvatar } from '@/hooks';
+import useENSAvatar from '@/hooks/useENSAvatar';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
@@ -180,7 +180,9 @@ const ViewWalletBackup = () => {
               creatingWallet.current = false;
             },
             onCloseModal: async ({ name = '', color = null }) => {
-              walletLoadingStore.getState().show(WalletLoadingStates.CREATING_WALLET);
+              walletLoadingStore.setState({
+                loadingState: WalletLoadingStates.CREATING_WALLET,
+              });
               // Check if the selected wallet is the primary
               try {
                 // If we found it and it's not damaged use it to create the new account
@@ -199,7 +201,9 @@ const ViewWalletBackup = () => {
                   }, 1000);
                 }
               } finally {
-                walletLoadingStore.getState().hide();
+                walletLoadingStore.setState({
+                  loadingState: null,
+                });
               }
               creatingWallet.current = false;
             },

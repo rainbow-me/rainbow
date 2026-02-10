@@ -27,7 +27,7 @@ async function runSetup(setInitialRoute: Dispatch<SetStateAction<InitialRoute>>)
   });
 
   if (address) {
-    await initializeWallet({ shouldRunMigrations: true });
+    void initializeWallet({ shouldRunMigrations: true });
     InteractionManager.runAfterInteractions(checkIdentifierOnLaunch);
   }
 

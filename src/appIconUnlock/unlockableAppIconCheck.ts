@@ -2,10 +2,10 @@ import { TokenGateCheckerNetwork, TokenInfo, checkIfWalletsOwnNft, checkIfWallet
 import { EthereumAddress } from '@/entities';
 import { RainbowError, logger } from '@/logger';
 import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
 
-export const unlockableAppIconStorage = new MMKV({
+export const unlockableAppIconStorage = createMMKV({
   id: STORAGE_IDS.UNLOCKABLE_APP_ICONS,
 });
 

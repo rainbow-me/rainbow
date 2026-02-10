@@ -3,7 +3,8 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming, SharedValue } from 'react-native-reanimated';
 import { Centered } from '../layout';
 import { SheetSubtitleCyclerItem } from './SheetSubtitleCyclerItem';
-import { useInterval, useTimeout } from '@/hooks';
+import useInterval from '@/hooks/useInterval';
+import useTimeout from '@/hooks/useTimeout';
 
 interface Props {
   sharedValue: SharedValue<number>;

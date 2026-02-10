@@ -9,7 +9,8 @@ import { TokenInfoItem, TokenInfoValue } from '../../token-info';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { Column, Columns, Inset } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useENSAvatar, useENSRegistration } from '@/hooks';
+import useENSAvatar from '@/hooks/useENSAvatar';
+import useENSRegistration from '@/hooks/useENSRegistration';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 

@@ -14,7 +14,6 @@ import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
-import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { sanitizeSeedPhrase } from '@/utils/formatters';
@@ -27,7 +26,7 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { loadWallets, useWallets, useAccountAddress } from '@/state/wallets/walletsStore';
+import { useWallets, useAccountAddress } from '@/state/wallets/walletsStore';
 import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
@@ -58,7 +57,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const resetOnFailure = useCallback(() => {
     setImporting(false);
     setBusy(false);
-    walletLoadingStore.getState().hide();
+    walletLoadingStore.setState({ loadingState: null });
     // Return to previous screen on failure
     goBack();
   }, [goBack]);
@@ -294,7 +293,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     ) => {
       setImporting(false);
       setBusy(false);
-      walletLoadingStore.getState().hide();
+      walletLoadingStore.setState({ loadingState: null });
 
       const shouldReplace = previousWalletCount === 0;
       const navigate = shouldReplace ? Navigation.replace : Navigation.handleAction;
@@ -318,11 +317,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         } catch (fallbackError) {
           logger.error(new RainbowError('[useImportingWallet]: Error with fallback navigation'), { fallbackError });
         }
-      }
-
-      if (shouldReplace) {
-        // Migrations are skipped when importing with a seed phrase.
-        void initializeWallet({ shouldRunMigrations: true });
       }
 
       // Show backup prompt after navigation completes
@@ -352,22 +346,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       try {
         const input = resolvedAddress ? resolvedAddress : sanitizeSeedPhrase(seedPhrase);
 
-        walletLoadingStore.getState().show(WalletLoadingStates.IMPORTING_WALLET);
-
-        if (!showImportModal) {
-          await walletInit({
-            seedPhrase: input,
-            color,
-            name: name ? name : '',
-            overwrite: false,
-            checkedWallet,
-            image,
-            silent: true,
-          });
-          await loadWallets();
-          await handleImportSuccess(input, isWalletEthZero, backupProvider, keys(wallets).length);
-          return;
-        }
+        walletLoadingStore.setState({
+          loadingState: WalletLoadingStates.IMPORTING_WALLET,
+        });
 
         const previousWalletCount = keys(wallets).length;
 
@@ -377,6 +358,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           name: name ? name : '',
           checkedWallet,
           image,
+          silent: !showImportModal,
         });
 
         if (success) {

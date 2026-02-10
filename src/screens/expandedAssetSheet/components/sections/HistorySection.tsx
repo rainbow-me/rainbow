@@ -8,7 +8,7 @@ import { Tabs } from '../shared/Tabs/Tabs';
 import { TokenInteraction, TokenInteractionDirection, TokenInteractionType } from '@/graphql/__generated__/metadata';
 import { useTabContext } from '../shared/Tabs/TabContext';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import Animated, {
   clamp,
   SharedValue,

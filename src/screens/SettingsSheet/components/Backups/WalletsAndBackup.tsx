@@ -13,7 +13,8 @@ import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
-import { useENSAvatar, useManageCloudBackups } from '@/hooks';
+import useENSAvatar from '@/hooks/useENSAvatar';
+import useManageCloudBackups from '@/hooks/useManageCloudBackups';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
@@ -158,7 +159,9 @@ export const WalletsAndBackup = () => {
       onCloseModal: async ({ name }: { name: string }) => {
         const nameValue = name.trim() !== '' ? name.trim() : '';
         try {
-          walletLoadingStore.getState().show(WalletLoadingStates.CREATING_WALLET);
+          walletLoadingStore.setState({
+            loadingState: WalletLoadingStates.CREATING_WALLET,
+          });
 
           await createWallet({
             color: null,
@@ -173,7 +176,9 @@ export const WalletsAndBackup = () => {
             error: err,
           });
         } finally {
-          walletLoadingStore.getState().hide();
+          walletLoadingStore.setState({
+            loadingState: null,
+          });
           scrollviewRef.current?.scrollTo({ y: 0, animated: true });
           const step =
             backupProvider === WalletBackupTypes.cloud ? walletBackupStepTypes.backup_prompt_cloud : walletBackupStepTypes.backup_prompt;

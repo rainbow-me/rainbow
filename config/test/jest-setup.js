@@ -66,3 +66,9 @@ jest.mock('@/utils/time', () => ({
     zero: 0,
   },
 }));
+
+jest.mock('react-native-nitro-modules', () => ({
+  NitroModules: {
+    createHybridObject: jest.fn(() => ({})),
+  },
+}));

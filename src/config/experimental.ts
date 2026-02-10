@@ -1,4 +1,4 @@
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { IS_DEV, IS_TEST } from '@/env';
 import isTestFlight from '@/helpers/isTestFlight';
 import { STORAGE_IDS } from '@/model/mmkv';
@@ -111,7 +111,7 @@ export const defaultConfigValues = Object.entries(defaultConfig).reduce(
 
 const storageKey = 'config';
 
-const storage = new MMKV({
+const storage = createMMKV({
   id: STORAGE_IDS.EXPERIMENTAL_CONFIG,
 });
 

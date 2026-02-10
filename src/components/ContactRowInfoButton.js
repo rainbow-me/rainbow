@@ -8,7 +8,7 @@ import { ButtonPressAnimation } from './animations';
 import { CoinRowHeight } from './coin-row/CoinRow';
 import { Centered } from './layout';
 import { Text } from './text';
-import { useClipboard } from '@/hooks';
+import useClipboard from '@/hooks/useClipboard';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding } from '@/styles';
 import { IS_TEST } from '@/env';

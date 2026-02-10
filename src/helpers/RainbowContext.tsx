@@ -2,7 +2,7 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import { Wallet } from '@ethersproject/wallet';
 import React, { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { useSharedValue } from 'react-native-reanimated';
 import DevButton from '../components/dev-buttons/DevButton';
 import Emoji from '../components/text/Emoji';
@@ -35,7 +35,7 @@ export const RainbowContext = createContext<RainbowContextType>({
 
 const storageKey = 'config';
 
-const storage = new MMKV({
+const storage = createMMKV({
   id: STORAGE_IDS.EXPERIMENTAL_CONFIG,
 });
 

@@ -12,7 +12,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import { isValidHex } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
-import { useWalletsWithBalancesAndNames } from '@/hooks';
+import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
 import { useLiveWalletBalance } from '@/hooks/useLiveWalletBalance';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import * as i18n from '@/languages';

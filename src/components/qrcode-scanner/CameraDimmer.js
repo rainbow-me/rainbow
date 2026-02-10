@@ -1,7 +1,7 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
 
-import { useDelayedValueWithLayoutAnimation } from '@/hooks';
+import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
 import styled from '@/styled-thing';
 
 const Dim = styled(Animated.View)({

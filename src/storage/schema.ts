@@ -43,10 +43,6 @@ export type Legacy = {
   [key: string]: any;
 };
 
-export type Account = {
-  totalTokens: number;
-};
-
 export enum ReviewPromptAction {
   UserPrompt = 'UserPrompt', // this is a special action that we use if the user manually prompts for review
   AddingContact = 'AddingContact',

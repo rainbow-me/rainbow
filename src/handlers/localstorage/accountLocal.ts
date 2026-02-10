@@ -1,12 +1,9 @@
-import { MMKV } from 'react-native-mmkv';
-import { getAccountLocal, getKey, saveAccountLocal } from './common';
 import { ENSRegistrations } from '@/entities';
-import { STORAGE_IDS } from '@/model/mmkv';
+import { getAccountLocal, saveAccountLocal } from './common';
 
 const assetsVersion = '0.3.0';
 
 const ACCOUNT_INFO = 'accountInfo';
-const ACCOUNT_EMPTY = 'accountEmpty';
 const ASSETS = 'assets';
 const SHOWCASE_TOKENS = 'showcaseTokens';
 const HIDDEN_TOKENS = 'hiddenTokens';
@@ -16,10 +13,6 @@ const PINNED_COINS = 'pinnedCoins';
 const HIDDEN_COINS = 'hiddenCoins';
 const WEB_DATA_ENABLED = 'webDataEnabled';
 const ENS_REGISTRATIONS = 'ensRegistrations';
-
-const storage = new MMKV({
-  id: STORAGE_IDS.ACCOUNT,
-});
 
 export const accountLocalKeys = [
   ACCOUNT_INFO,
@@ -32,24 +25,6 @@ export const accountLocalKeys = [
   HIDDEN_COINS,
   WEB_DATA_ENABLED,
 ];
-
-/**
- * @desc get account empty state
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Boolean}
- */
-export const getAccountEmptyState = (accountAddress: any, network: any) =>
-  storage.getBoolean(getKey(ACCOUNT_EMPTY, accountAddress, network));
-
-/**
- * @desc save account empty state
- * @param  {Boolean}    [val]
- * @param  {String}   [address]
- * @param  {String}   [network]
- */
-export const saveAccountEmptyState = (val: any, accountAddress: any, network: any) =>
-  storage.set(getKey(ACCOUNT_EMPTY, accountAddress, network), val);
 
 /**
  * @desc get assets

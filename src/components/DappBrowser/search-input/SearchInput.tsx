@@ -26,7 +26,7 @@ import { fontWithWidth } from '@/styles';
 import font from '@/styles/fonts';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { opacity } from '@/framework/ui/utils/opacity';

@@ -4,7 +4,7 @@ import { IS_ANDROID } from '@/env';
 import { isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import { getLocalBackupPassword, restoreCloudBackup, RestoreCloudBackupResultStates, saveLocalBackupPassword } from '@/model/backup';
@@ -128,7 +128,9 @@ export default function RestoreCloudStep() {
         throw new Error('No backup file selected');
       }
 
-      walletLoadingStore.getState().show(WalletLoadingStates.RESTORING_WALLET);
+      walletLoadingStore.setState({
+        loadingState: WalletLoadingStates.RESTORING_WALLET,
+      });
       const status = await restoreCloudBackup({
         password: pwd,
         backupFilename: filename,
@@ -176,7 +178,9 @@ export default function RestoreCloudStep() {
     } catch (e) {
       Alert.alert(i18n.t(i18n.l.back_up.restore_cloud.error_while_restoring));
     } finally {
-      walletLoadingStore.getState().hide();
+      walletLoadingStore.setState({
+        loadingState: null,
+      });
     }
   }, [password, selectedBackup?.name, onRestoreSuccess]);
 

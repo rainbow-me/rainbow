@@ -10,7 +10,7 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { formatDate } from '@/utils/formatDate';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { ShimmerAnimation } from '@/components/animations';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import FastImage from 'react-native-fast-image';

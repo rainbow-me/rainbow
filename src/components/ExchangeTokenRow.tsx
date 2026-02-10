@@ -2,7 +2,7 @@ import React from 'react';
 import isEqual from 'react-fast-compare';
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
-import { useAsset } from '@/hooks';
+import useAsset from '@/hooks/useAsset';
 import { ButtonPressAnimation } from '@/components/animations';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { IS_IOS } from '@/env';

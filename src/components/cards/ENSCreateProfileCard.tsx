@@ -1,7 +1,10 @@
 import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { Bleed, Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
-import { prefetchENSAvatar, prefetchENSRecords, useAccountENSDomains, useDimensions } from '@/hooks';
+import { prefetchENSAvatar } from '@/hooks/useENSAvatar';
+import { prefetchENSRecords } from '@/hooks/useENSRecords';
+import useAccountENSDomains from '@/hooks/useAccountENSDomains';
+import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import watchingAlert from '@/utils/watchingAlert';

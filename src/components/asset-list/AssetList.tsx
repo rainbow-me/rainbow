@@ -7,7 +7,7 @@ import EmptyAssetList, { EmptyAssetListProps } from './EmptyAssetList';
 import * as i18n from '@/languages';
 import { UniqueAsset } from '@/entities';
 import { ListFooterHeight } from '../list/ListFooter';
-import { useWalletSectionsData } from '@/hooks';
+import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import { IS_ANDROID } from '@/env';
 import { ViewableItemsChangedCallback } from './RecyclerAssetList2/core/RawRecyclerList';
 

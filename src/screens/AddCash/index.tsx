@@ -6,7 +6,7 @@ import wait from 'w2t';
 
 import { SheetHandle } from '@/components/sheet';
 import deviceUtils from '@/utils/deviceUtils';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { borders } from '@/styles';
 import { Box, Text, Separator, useForegroundColor, useBackgroundColor } from '@/design-system';
 import { getProviders, getWidgetURL } from '@/resources/f2c';

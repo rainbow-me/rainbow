@@ -1,6 +1,6 @@
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { useLedgerConnect } from '@/hooks/useLedgerConnect';
 import { logger } from '@/logger';
 import { useNavigation } from '@/navigation';
@@ -12,11 +12,11 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import React, { useCallback, useEffect } from 'react';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import { RootStackParamList } from './types';
 
-export const ledgerStorage = new MMKV({
+export const ledgerStorage = createMMKV({
   id: 'ledgerStorage',
 });
 

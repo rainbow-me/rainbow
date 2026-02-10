@@ -1,4 +1,5 @@
-import { useDeleteWallet, useImportingWallet } from '@/hooks';
+import useDeleteWallet from '@/hooks/useDeleteWallet';
+import useImportingWallet from '@/hooks/useImportingWallet';
 import { logger, RainbowError } from '@/logger';
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
@@ -66,7 +67,9 @@ export default function useWatchWallet({
 
       // NOTE: Make sure this is cleaned up due to the ProfileSheet calling this function directly
       if (walletLoadingStore.getState().loadingState) {
-        walletLoadingStore.getState().hide();
+        walletLoadingStore.setState({
+          loadingState: null,
+        });
       }
     } else {
       // If there's more than 1 account,

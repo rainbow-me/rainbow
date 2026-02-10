@@ -5,7 +5,8 @@ import Spinner from '../../Spinner';
 import { Input } from '../../inputs';
 import SearchInputGradientBackground from './SearchInputGradientBackground';
 import { Box, Column, Columns, Cover, Heading, Inset, useHeadingStyle } from '@/design-system';
-import { useDimensions, useMagicAutofocus } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
+import useMagicAutofocus from '@/hooks/useMagicAutofocus';
 
 export type SearchInputProps = {
   isLoading?: boolean;

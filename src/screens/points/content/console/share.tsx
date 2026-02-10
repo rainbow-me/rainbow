@@ -1,7 +1,7 @@
 import { analytics } from '@/analytics';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
 import { Bleed, Box, Inline, Stack } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';

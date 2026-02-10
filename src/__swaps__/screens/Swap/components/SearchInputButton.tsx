@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { GestureHandlerButton } from './GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { AnimatedText, Box } from '@/design-system';
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
@@ -8,7 +8,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '../constants';
 import { useSwapsSearchStore } from '../resources/search/searchV2';
-import { useClipboard } from '@/hooks';
+import useClipboard from '@/hooks/useClipboard';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { IS_ANDROID } from '@/env';
 

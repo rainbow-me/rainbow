@@ -18,7 +18,7 @@ import {
 import { TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import { useAccountAccentColor } from '@/hooks';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useNavigation } from '@/navigation';
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';

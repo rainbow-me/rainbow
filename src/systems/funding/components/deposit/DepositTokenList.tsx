@@ -5,7 +5,7 @@ import Animated from 'react-native-reanimated';
 import { LegendList } from '@legendapp/list';
 import { DelayedMount } from '@/components/utilities/DelayedMount';
 import { AnimatedText, Bleed, Box, globalColors, Inline, Text, useColorMode } from '@/design-system';
-import { useAccountAccentColor } from '@/hooks';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -14,7 +14,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { opacity } from '@/framework/ui/utils/opacity';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';

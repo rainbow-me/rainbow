@@ -7,7 +7,8 @@ import { ImgixImage } from '@/components/images';
 import { IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';
 import { Language } from '@/languages';
-import { useAccountSettings, useDimensions } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import useDimensions from '@/hooks/useDimensions';
 import { BackgroundColor, ForegroundColor, TextColor } from '@/design-system/color/palettes';
 import { maybeSignUri } from '@/handlers/imgix';
 import { colors } from '@/styles';
@@ -15,7 +16,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { analytics } from '@/analytics';
 import { FlashList } from '@shopify/flash-list';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { opacity } from '@/framework/ui/utils/opacity';
 

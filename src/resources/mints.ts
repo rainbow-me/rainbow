@@ -7,11 +7,11 @@ import { GetMintableCollectionsQuery } from '@/graphql/__generated__/arc';
 import { createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { atom, useRecoilState } from 'recoil';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 
-const mmkv = new MMKV();
+const mmkv = createMMKV();
 
 const MINTS_FILTER_MMKV_KEY = 'mintsFilter';
 
