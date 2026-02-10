@@ -222,11 +222,11 @@ export const DEFAULT_CONFIG = {
   king_of_the_hill2_enabled: false,
   king_of_the_hill_enabled: false,
   prince_of_the_hill_enabled: false,
-  candlestick_charts_enabled: IS_DEV || IS_TEST_FLIGHT || false,
-  rainbow_toasts_enabled: IS_DEV || IS_TEST_FLIGHT || false,
+  candlestick_charts_enabled: IS_DEV || IS_TEST_FLIGHT,
+  rainbow_toasts_enabled: IS_DEV || IS_TEST_FLIGHT,
   perps_enabled: false,
   polymarket_enabled: false,
-  dev_section_enabled: IS_DEV || false,
+  dev_section_enabled: IS_DEV,
   rnbw_rewards_enabled: false,
 } as const satisfies Readonly<RainbowConfig>;
 
