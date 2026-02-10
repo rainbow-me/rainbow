@@ -8,13 +8,10 @@ import { FeatureHintTooltip, TooltipRef } from '@/components/tooltips/FeatureHin
 import { NOTIFICATIONS, useExperimentalFlag } from '@/config';
 import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
 import { EthereumAddress } from '@/entities';
-import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
-import isTestFlight from '@/helpers/isTestFlight';
-import { ChainId } from '@/state/backendNetworks/types';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
-import { getProvider, isValidHex } from '@/handlers/web3';
-import { getIsDelegated } from '@rainbow-me/delegation';
-import { Address } from 'viem';
+import { isValidHex } from '@/handlers/web3';
+import type { Address } from 'viem';
 import WalletTypes from '@/helpers/walletTypes';
 import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
 import { useLiveWalletBalance } from '@/hooks/useLiveWalletBalance';
@@ -86,7 +83,6 @@ export interface AddressItem {
   isReadOnly: boolean;
   isLedger: boolean;
   isSelected: boolean;
-  isDelegated: boolean;
   label: string;
   rowType: number;
   walletId: string;
@@ -116,66 +112,8 @@ export default function ChangeWalletSheet() {
 
   const [editMode, setEditMode] = useState(false);
   const [isLayoutMeasured, setIsLayoutMeasured] = useState(IS_IOS);
-  const [delegationStatusByAddress, setDelegationStatusByAddress] = useState<Record<string, boolean>>({});
 
   const setPinnedAddresses = usePinnedWalletsStore(state => state.setPinnedAddresses);
-
-  // Check delegation status for non-read-only wallets (only in dev/testflight)
-  useEffect(() => {
-    if (!IS_DEV && !isTestFlight) return;
-
-    const checkDelegationStatuses = async () => {
-      const walletsToCheck = Object.values(walletsWithBalancesAndNames || {}).flatMap(wallet => {
-        // Only check owned and hardware wallets, not read-only
-        if (wallet.type === WalletTypes.readOnly) return [];
-        return (wallet.addresses || []).filter(account => account.visible).map(account => account.address);
-      });
-
-      logger.debug('[ChangeWalletSheet] Checking delegation for wallets', { count: walletsToCheck.length, addresses: walletsToCheck });
-
-      const results: Record<string, boolean> = {};
-
-      await Promise.all(
-        walletsToCheck.map(async address => {
-          const [isDelegatedMainnet, isDelegatedBase] = await Promise.all([
-            (async () => {
-              try {
-                return await getIsDelegated({
-                  address: address as Address,
-                  chainId: ChainId.mainnet,
-                });
-              } catch (error) {
-                logger.error(new RainbowError('Failed to check if address is delegated on mainnet'), {
-                  error,
-                  address,
-                });
-                return false;
-              }
-            })(),
-            (async () => {
-              try {
-                return await getIsDelegated({
-                  address: address as Address,
-                  chainId: ChainId.base,
-                });
-              } catch (error) {
-                logger.error(new RainbowError('Failed to check if address is delegated on base'), {
-                  error,
-                  address,
-                });
-                return false;
-              }
-            })(),
-          ]);
-          results[address.toLowerCase()] = isDelegatedMainnet || isDelegatedBase;
-        })
-      );
-      logger.debug('[ChangeWalletSheet] Delegation results', { results });
-      setDelegationStatusByAddress(results);
-    };
-
-    checkDelegationStatuses();
-  }, [walletsWithBalancesAndNames]);
 
   // Feature hint tooltip should only ever been shown once.
   useEffect(() => {
@@ -221,7 +159,6 @@ export default function ChangeWalletSheet() {
           isLedger: wallet.type === WalletTypes.bluetooth,
           isReadOnly: wallet.type === WalletTypes.readOnly,
           isSelected: account.address === accountAddress,
-          isDelegated: delegationStatusByAddress[account.address.toLowerCase()] ?? false,
           rowType: RowTypes.ADDRESS,
           walletId: wallet.id,
         };
@@ -238,7 +175,7 @@ export default function ChangeWalletSheet() {
 
     // sorts by order wallets were added
     return [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets].sort((a, b) => a.walletId.localeCompare(b.walletId));
-  }, [walletsWithBalancesAndNames, accountAddress, hideReadOnlyWallets, liveWalletBalance, delegationStatusByAddress]);
+  }, [walletsWithBalancesAndNames, accountAddress, hideReadOnlyWallets, liveWalletBalance]);
 
   // If user has never seen pinned addresses feature, auto-pin the users most used owned addresses
   useEffect(() => {
