@@ -57,8 +57,7 @@ import { IS_IOS } from '@/env';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { noop } from 'lodash';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { Navigation, useNavigation } from '@/navigation';
@@ -67,6 +66,7 @@ import Routes from '@/navigation/routesNames';
 import { SEARCH_BAR_HEIGHT, SearchBar } from './components/SearchBar';
 import { KeyboardStickyView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { Chain } from 'viem/chains';
+import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 type RouteParams = RouteProp<RootStackParamList, 'NetworkSelector'>['params'];
 
@@ -98,7 +98,6 @@ const SEPARATOR_HEIGHT = 68;
 const SEPARATOR_HEIGHT_NETWORK_CHIP = 18;
 const SHEET_WIDTH = deviceUtils.dimensions.width - 16;
 const ALL_NETWORKS_BADGE_SIZE = 16;
-const THICKER_BORDER_WIDTH = 5 / 3;
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
 const MAX_NETWORK_LIST_HEIGHT = MAX_HEIGHT - HEADER_HEIGHT;
 const SEARCH_BAR_CLEARANCE = SEARCH_BAR_HEIGHT + SHEET_INNER_PADDING + 18;

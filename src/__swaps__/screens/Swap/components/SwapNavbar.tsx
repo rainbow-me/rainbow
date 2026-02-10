@@ -2,7 +2,6 @@ import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import Animated, { useDerivedValue } from 'react-native-reanimated';
 
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -29,7 +28,8 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { GestureHandlerButton } from './GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const SWAP_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.swap);
 const BRIDGE_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.bridge);

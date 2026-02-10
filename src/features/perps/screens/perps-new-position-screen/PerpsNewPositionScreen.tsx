@@ -12,7 +12,6 @@ import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-scr
 import { TriggerOrdersSection } from '@/features/perps/screens/perps-new-position-screen/TriggerOrdersSection';
 import { FOOTER_HEIGHT_WITH_SAFE_AREA, LAYOUT_ANIMATION, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import { MarketInfoSection } from './MarketInfoSection';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { HeaderFade } from '@/features/perps/components/HeaderFade';
 import { IS_ANDROID } from '@/env';
 import { PerpMarket } from '@/features/perps/types';
@@ -20,6 +19,7 @@ import { useStableValue } from '@/hooks/useStableValue';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
   const { isDarkMode } = useColorMode();

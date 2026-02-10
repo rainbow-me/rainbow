@@ -18,7 +18,7 @@ import { getSizedImageUrl } from '@/handlers/imgix';
 import { useCleanup } from '@/hooks/useCleanup';
 import Routes from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ANIMATION_CONFIGS, BORDER_THICKNESS, INTERNAL_SPRING_CONFIGS } from './constants';
 import { cancelAnimations, getRainbowCoinEffectConfig, onPressCoinIcon, startAnimations } from './utils';
 

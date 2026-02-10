@@ -605,7 +605,7 @@ export const SendConfirmationSheet = () => {
                   </Fragment>
                 )}
                 {isENS && checkboxes.length > 0 && (
-                  <ButtonPressAnimation onPress={handleENSConfigurationPress} scale={0.95}>
+                  <ButtonPressAnimation onPress={handleENSConfigurationPress} scaleTo={0.95}>
                     <Callout
                       after={
                         <Text color="secondary30 (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy">

@@ -1,5 +1,5 @@
 import RNFS from 'react-native-fs';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { RainbowError, logger } from '@/logger';
 import { time } from '@/utils/time';
 import { RAINBOW_HOME } from './constants';
@@ -7,7 +7,7 @@ import { ScreenshotType, TabData, TabId } from './types';
 
 // ============ Storage ======================================================== //
 
-export const tabScreenshotStorage = new MMKV();
+export const tabScreenshotStorage = createMMKV();
 
 // ============ Operation Queue ================================================ //
 
@@ -52,14 +52,14 @@ function getStoredScreenshots(): ScreenshotType[] {
 
     if (!Array.isArray(parsed)) {
       logger.error(new RainbowError('[DappBrowser]: Screenshot data is malformed — expected array. Resetting storage.'));
-      tabScreenshotStorage.delete(MMKV_KEY);
+      tabScreenshotStorage.remove(MMKV_KEY);
       return [];
     }
 
     return parsed;
   } catch (error) {
     logger.error(new RainbowError('[DappBrowser]: Screenshot data is corrupted — invalid JSON. Resetting storage.'), { error });
-    tabScreenshotStorage.delete(MMKV_KEY);
+    tabScreenshotStorage.remove(MMKV_KEY);
     return [];
   }
 }

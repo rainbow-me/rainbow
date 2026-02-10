@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import * as i18n from '@/languages';
 import { AnimatedText, Box, Separator, TextShadow, useForegroundColor } from '@/design-system';
 import { CollapsableField } from './CollapsableField';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { runOnJS, SharedValue, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import {

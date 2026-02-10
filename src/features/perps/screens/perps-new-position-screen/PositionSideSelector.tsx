@@ -11,8 +11,8 @@ import Animated, { interpolate, interpolateColor, useAnimatedStyle, useDerivedVa
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, PERPS_COLORS } from '@/features/perps/constants';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { fonts } from '@/design-system/typography/typography';
 
 export const POSITION_SIDE_SELECTOR_HEIGHT = 36;

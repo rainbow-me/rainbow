@@ -26,8 +26,7 @@ import { fontWithWidth } from '@/styles';
 import font from '@/styles/fonts';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
@@ -41,6 +40,7 @@ import { HOMEPAGE_BACKGROUND_COLOR_DARK, RAINBOW_HOME } from '../constants';
 import { useSearchContext } from '../search/SearchContext';
 import { TabViewGestureStates } from '../types';
 import { getNameFromFormattedUrl, handleShareUrl } from '../utils';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const SEARCH_PLACEHOLDER_TEXT = i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder);
 

@@ -18,19 +18,14 @@ import { IS_IOS } from '@/env';
 import { equalWorklet } from '@/safe-math/SafeMath';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { colors } from '@/styles';
-import {
-  CUSTOM_KEYBOARD_HEIGHT,
-  LIGHT_SEPARATOR_COLOR,
-  LONG_PRESS_DELAY_DURATION,
-  LONG_PRESS_REPEAT_DURATION,
-  SEPARATOR_COLOR,
-  THICK_BORDER_WIDTH,
-} from '@/__swaps__/screens/Swap/constants';
+import { CUSTOM_KEYBOARD_HEIGHT, LONG_PRESS_DELAY_DURATION, LONG_PRESS_REPEAT_DURATION } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { InputKeys } from '@/__swaps__/types/swap';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { GestureHandlerButton } from './GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
 
 type numberPadCharacter = number | 'backspace' | '.';
 

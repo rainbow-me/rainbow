@@ -8,14 +8,9 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
 import { globalColors, useColorMode } from '@/design-system';
-import {
-  BASE_INPUT_HEIGHT,
-  ETH_COLOR_DARK,
-  ETH_COLOR_DARK_ACCENT,
-  EXPANDED_INPUT_HEIGHT,
-  FOCUSED_INPUT_HEIGHT,
-} from '@/__swaps__/screens/Swap/constants';
+import { BASE_INPUT_HEIGHT, ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, EXPANDED_INPUT_HEIGHT } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -100,14 +95,19 @@ export const useSwapInputStyles = ({
         {
           translateY: bottomInput
             ? withSpring(
-                interpolate(otherInputProgress.value, [0, 1, 2], [0, 0, EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT], 'clamp'),
+                interpolate(
+                  otherInputProgress.value,
+                  [0, 1, 2],
+                  [0, 0, EXPANDED_INPUT_HEIGHT - TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT],
+                  'clamp'
+                ),
                 SPRING_CONFIGS.springConfig
               )
             : 0,
         },
       ],
       height: withSpring(
-        interpolate(progress.value, [0, 1, 2], [BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT], 'clamp'),
+        interpolate(progress.value, [0, 1, 2], [BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT, TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT], 'clamp'),
         SPRING_CONFIGS.springConfig
       ),
     };

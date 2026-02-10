@@ -11,7 +11,7 @@ jobs:
     runs-on: macos-15-xlarge
     env:
       NODE_OPTIONS: "--max-old-space-size=6144"
-    timeout-minutes: 30
+    timeout-minutes: 45
     if: github.event.pull_request.draft == false && github.event.pull_request.merged == false
     concurrency:
       group: ${{ github.workflow }}-simulator-${{ github.ref }}
@@ -98,7 +98,7 @@ jobs:
     runs-on: macos-15-xlarge
     env:
       NODE_OPTIONS: "--max-old-space-size=6144"
-    timeout-minutes: 30
+    timeout-minutes: 45
     if: github.event.pull_request.draft == false && github.event.pull_request.merged == false
     concurrency:
       group: ${{ github.workflow }}-device-${{ github.ref }}

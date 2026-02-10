@@ -43,7 +43,7 @@
     "lint:js": "eslint --cache . --quiet",
     "lint:js:ci": "eslint . --quiet",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
-    "check:cycles": "./scripts/check-cycles.sh 1691",
+    "check:cycles": "./scripts/check-cycles.sh 0",
     "postinstall": "./scripts/postinstall.sh",
     "start": "react-native start",
     "start:client-logs": "react-native start --client-logs",
@@ -247,7 +247,8 @@
     "react-native-linear-gradient": "2.8.3",
     "react-native-markdown-display": "7.0.0-alpha.2",
     "react-native-minimizer": "rainbow-me/react-native-minimizer#26ae6dce10d353de701cebc3a1ae126729bf87f0",
-    "react-native-mmkv": "2.12.2",
+    "react-native-mmkv": "4.1.2",
+    "react-native-nitro-modules": "0.33.7",
     "react-native-os": "rainbow-me/react-native-os#41a08e45260b8c1c53c77ad00e13ae954cb9337c",
     "react-native-pager-view": "6.8.1",
     "react-native-palette-full": "1.2.0",
@@ -479,6 +480,8 @@
       "viem>ws>utf-8-validate": false,
       "react-native-bootsplash>sharp": false,
       "ethereumjs-util>ethereum-cryptography>keccak": false,
+      "react-native-mmkv": false,
+      "react-native-nitro-modules": false,
       "@polymarket/builder-relayer-client>tsx>esbuild": true
     }
   },

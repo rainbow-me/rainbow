@@ -1,5 +1,5 @@
 import { hydrate } from '@tanstack/react-query';
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { LogEntry, showLogSheet } from '@/components/debugging/LogSheet';
 import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
 import { RainbowError, logger } from '@/logger';
@@ -54,7 +54,7 @@ export async function clearReactQueryCache({
 
   try {
     if (preserveFavorites) {
-      const store = new MMKV({ id: REACT_QUERY_STORAGE_ID });
+      const store = createMMKV({ id: REACT_QUERY_STORAGE_ID });
       const storedString = store.getString(REACT_QUERY_STORAGE_ID);
       if (!storedString) {
         devLog('No queries found in storage');
@@ -97,7 +97,7 @@ export async function clearReactQueryCache({
     } else {
       // Completely delete all queries
       queryClient.clear();
-      const store = new MMKV({ id: REACT_QUERY_STORAGE_ID });
+      const store = createMMKV({ id: REACT_QUERY_STORAGE_ID });
       store.clearAll();
       devLog('Successfully deleted all queries');
     }
@@ -194,7 +194,7 @@ export function analyzeReactQueryStore({
   const report: Report | null = displayReport ? { title: { title: '🔦  React Query Analysis', message: '' } } : null;
 
   // Get the React Query cache directly from MMKV
-  const store = new MMKV({ id: REACT_QUERY_STORAGE_ID });
+  const store = createMMKV({ id: REACT_QUERY_STORAGE_ID });
   const storedData = store.getString(REACT_QUERY_STORAGE_ID);
 
   if (!storedData) {

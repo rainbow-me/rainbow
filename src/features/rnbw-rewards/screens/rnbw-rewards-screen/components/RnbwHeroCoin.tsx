@@ -21,10 +21,10 @@ import { LoadingSpinner } from '@/features/rnbw-rewards/screens/rnbw-rewards-scr
 import concentricCircleImage from '@/features/rnbw-rewards/assets/radial-circle.png';
 import { SpinnableCoin, SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/SpinnableCoin';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { Blur, Canvas, RoundedRect } from '@shopify/react-native-skia';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const COIN_SIZE = 160;
 const SMALL_COIN_SIZE = 90;

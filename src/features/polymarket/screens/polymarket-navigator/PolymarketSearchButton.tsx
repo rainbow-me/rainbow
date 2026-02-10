@@ -8,9 +8,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from 'react-native-blur-view';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_IOS } from '@/env';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const PolymarketSearchButton = memo(function PolymarketSearchButton() {
   const { isDarkMode } = useColorMode();

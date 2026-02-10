@@ -9,7 +9,6 @@ import { KeyboardAvoidingView, KeyboardStickyView } from 'react-native-keyboard-
 import { NavigationSteps, useTokenLauncherStore } from './state/tokenLauncherStore';
 import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { StepBlurredImageBackground } from './components/StepBlurredImageBackground';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { TokenLauncherContextProvider } from './context/TokenLauncherContext';
 import { CreatingStep } from './components/CreatingStep';
 import { Dimensions, StyleProp, StyleSheet, ViewStyle } from 'react-native';
@@ -19,6 +18,7 @@ import { IS_ANDROID } from '@/env';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StepBorderEffects } from './components/StepBorderEffects';
 import { PriceAndGasSync } from './components/PriceAndGasSync';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 function reviewStepExitingAnimation() {
   'worklet';

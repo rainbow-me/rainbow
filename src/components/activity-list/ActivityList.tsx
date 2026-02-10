@@ -1,7 +1,7 @@
 import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
-import { FastTransactionCoinRow, RequestCoinRow } from '@/components/coin-row';
+import { FastTransactionCoinRow } from '@/components/coin-row';
 import { RainbowTransaction } from '@/entities';
-import { TransactionItemForSectionList, TransactionSections } from '@/helpers/buildTransactionsSectionsSelector';
+import { TransactionSection } from '@/helpers/buildTransactionsSectionsSelector';
 import useAccountTransactions from '@/hooks/useAccountTransactions';
 import { Skeleton } from '@/screens/points/components/Skeleton';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -73,8 +73,8 @@ function ListFooterComponent({ label, onPress }: { label: string; onPress: () =>
 }
 
 type ListItems =
-  | { key: string; type: 'transaction' | 'request'; value: TransactionItemForSectionList }
-  | { key: string; type: 'header'; value: TransactionSections }
+  | { key: string; type: 'transaction'; value: RainbowTransaction }
+  | { key: string; type: 'header'; value: TransactionSection }
   | { key: string; type: 'paddingTopForNavBar' };
 
 // keeping everything the same height here since we basically can pretty easily
@@ -109,10 +109,10 @@ export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
       if (section.data.length > 0) {
         items.push({ key: `${accountAddress}${section.title}`, type: 'header', value: section });
         for (const item of section.data) {
-          const key = `${item.chainId}${'requestId' in item ? item.requestId : item.hash}`;
+          const key = `${item.chainId}${item.hash}`;
           items.push({
             key: `${sectionIndex}-${accountAddress}-${key}-entry`,
-            type: section.type,
+            type: 'transaction',
             value: item,
           });
         }
@@ -136,10 +136,6 @@ export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
             <ActivityListHeader title={item.value.title} />
           </View>
         );
-      }
-
-      if (item.type === 'request') {
-        return <RequestCoinRow item={item.value} theme={theme} nativeCurrency={nativeCurrency} />;
       }
 
       return (

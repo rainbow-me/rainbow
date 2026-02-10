@@ -3,7 +3,7 @@ import { DerivedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { AnimatedText, Bleed, Box, useColorMode } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { TextWeight } from '@/design-system/components/Text/Text';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const BalanceBadge = ({ color, label, weight }: { color?: TextColor; label: DerivedValue<string>; weight?: TextWeight }) => {
   const { isDarkMode } = useColorMode();

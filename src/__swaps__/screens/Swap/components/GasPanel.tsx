@@ -3,7 +3,7 @@ import React, { PropsWithChildren, ReactNode, useCallback, useEffect, useMemo, u
 import { LayoutChangeEvent } from 'react-native';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
 
-import { ACTION_BUTTON_HEIGHT, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ACTION_BUTTON_HEIGHT } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
@@ -34,6 +34,8 @@ import { getSelectedGas, setSelectedGasSpeed, useSelectedGasSpeed } from '../hoo
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 import { ExplainSheetParams, gasTrendToTrendType } from '@/navigation/types';
+
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const { GAS_TRENDS } = gasUtils;
 

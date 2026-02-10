@@ -10140,7 +10140,8 @@ __metadata:
     react-native-linear-gradient: "npm:2.8.3"
     react-native-markdown-display: "npm:7.0.0-alpha.2"
     react-native-minimizer: "rainbow-me/react-native-minimizer#26ae6dce10d353de701cebc3a1ae126729bf87f0"
-    react-native-mmkv: "npm:2.12.2"
+    react-native-mmkv: "npm:4.1.2"
+    react-native-nitro-modules: "npm:0.33.7"
     react-native-os: "rainbow-me/react-native-os#41a08e45260b8c1c53c77ad00e13ae954cb9337c"
     react-native-pager-view: "npm:6.8.1"
     react-native-palette-full: "npm:1.2.0"
@@ -24569,13 +24570,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-mmkv@npm:2.12.2":
-  version: 2.12.2
-  resolution: "react-native-mmkv@npm:2.12.2"
+"react-native-mmkv@npm:4.1.2":
+  version: 4.1.2
+  resolution: "react-native-mmkv@npm:4.1.2"
   peerDependencies:
     react: "*"
-    react-native: ">=0.71.0"
-  checksum: 10c0/751b92d60b3526c9bbeac652b840c048b7f1cc4f48179f4e24a45cf14bdcdd08bfc7f3c65fb50c686cae41356ac0d15a21e6da034e2f0907459036dacb67fcbd
+    react-native: "*"
+    react-native-nitro-modules: "*"
+  checksum: 10c0/713f9c76e732fc010e53203f7dcb9fd571b1d89db13b8ea600ebc3b9505a3c8320e24acabdeb285e7bb0cc0c321d0374cf1a0cca9b211e0852555471aa90e396
+  languageName: node
+  linkType: hard
+
+"react-native-nitro-modules@npm:0.33.7":
+  version: 0.33.7
+  resolution: "react-native-nitro-modules@npm:0.33.7"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/2fdec1ff28f9330d10d604bb241a0521af1273eed6894418101b32976ac97fe454762385fd0eef78b878efd905fd67101d70ae6452746791e23e850e6925eb36
   languageName: node
   linkType: hard
 

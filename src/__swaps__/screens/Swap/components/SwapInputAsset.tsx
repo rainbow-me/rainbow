@@ -8,13 +8,14 @@ import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/desig
 
 import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
 import { SwapNativeInput } from '@/__swaps__/screens/Swap/components/SwapNativeInput';
 import { SwapInputValuesCaret } from '@/__swaps__/screens/Swap/components/SwapInputValuesCaret';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
-import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { TOKEN_SEARCH_INPUT_HORIZONTAL_PADDING } from '@/components/token-search/constants';
 
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { IS_ANDROID, IS_IOS } from '@/env';
@@ -23,6 +24,7 @@ import * as i18n from '@/languages';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 import { CopyPasteMenu } from './CopyPasteMenu';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const SELECT_LABEL = i18n.t(i18n.l.swap.select);
 const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
@@ -145,15 +147,15 @@ export function SwapInputAsset() {
       </Box>
       <Box
         as={Animated.View}
-        paddingTop={{ custom: INPUT_PADDING }}
+        paddingTop={{ custom: TOKEN_SEARCH_INPUT_HORIZONTAL_PADDING }}
         paddingBottom={{ custom: 14.5 }}
         position="absolute"
         style={AnimatedSwapStyles.inputTokenListStyle}
         width={{ custom: INPUT_INNER_WIDTH }}
       >
         <TokenList
-          handleExitSearchWorklet={SwapNavigation.handleExitSearch}
-          handleFocusSearchWorklet={SwapNavigation.handleFocusInputSearch}
+          onCancelOrClosePressWorklet={SwapNavigation.handleExitSearch}
+          onSearchFocusWorklet={SwapNavigation.handleFocusInputSearch}
           output={false}
         />
       </Box>
@@ -199,7 +201,7 @@ export const styles = StyleSheet.create({
     borderRadius: 30,
     borderWidth: IS_IOS ? THICK_BORDER_WIDTH : 0,
     overflow: 'hidden',
-    padding: INPUT_PADDING,
+    padding: TOKEN_SEARCH_INPUT_HORIZONTAL_PADDING,
     width: BASE_INPUT_WIDTH,
   },
   textIconGlow: {

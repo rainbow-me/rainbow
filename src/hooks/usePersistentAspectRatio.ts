@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Image } from 'react-native';
-import { MMKV, useMMKVNumber } from 'react-native-mmkv';
+import { createMMKV, useMMKVNumber } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
 
-const storage = new MMKV({
+const storage = createMMKV({
   id: STORAGE_IDS.ASPECT_RATIO,
 });
 

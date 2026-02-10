@@ -2,7 +2,7 @@ import { Fragment, memo, useCallback, useMemo, useRef } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { SharedValue, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Border, globalColors, Text, useColorMode } from '@/design-system';
 import { DEFAULT_SPORTS_LEAGUE_KEY } from '@/features/polymarket/constants';

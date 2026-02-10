@@ -16,10 +16,10 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { PullToRefresh } from './Airdrops/AirdropsSheet';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { DiscoverSearchBar } from '@/components/Discover/DiscoverSearchBar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const Content = () => {
   const { isDarkMode } = useColorMode();

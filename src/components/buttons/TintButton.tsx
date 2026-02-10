@@ -29,7 +29,7 @@ const TintButton = ({
       justifyContent="center"
       // @ts-ignore overloaded props
       onPress={disabled ? () => undefined : onPress}
-      scale={disabled ? 1 : 0.8}
+      scaleTo={disabled ? 1 : 0.9}
       style={{
         opacity: disabled ? 0.5 : 1,
         overflow: 'hidden',

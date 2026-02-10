@@ -1,4 +1,3 @@
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
 import { ButtonPressAnimation } from '@/components/animations';
 import { BlurGradient } from '@/components/blur/BlurGradient';
@@ -14,6 +13,7 @@ import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const EXIT_BUTTON_SIZE = 36;
 // padding top + exit button + inner padding + padding bottom + blur padding
