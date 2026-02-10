@@ -184,3 +184,27 @@ export const CATEGORIES = {
 } as const;
 
 export type Category = (typeof CATEGORIES)[keyof typeof CATEGORIES];
+
+export const ITEMS_COLOR_PALETTE = [
+  '#FC5C54',
+  '#F2AF8B',
+  '#FF9A23',
+  '#FFB35A',
+  '#EAD55C',
+  '#B8B78A',
+  '#A8CE63',
+  '#75C06B',
+  '#8BF2D1',
+  '#219397',
+  '#5FC6D4',
+  '#C5DADB',
+  '#8BCAF2',
+  '#6A87C8',
+  '#4D82FF',
+  '#A575FF',
+  '#DC5CEA',
+  '#FF8CBC',
+  '#E95D72',
+  '#FF949A',
+  '#9BA1A4',
+];

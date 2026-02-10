@@ -4,10 +4,9 @@ import { isDrawMarket } from '@/features/polymarket/utils/sports';
 import { PolymarketPosition, PolymarketTeamInfo } from '@/features/polymarket/types';
 import { PolymarketMarket, RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam';
-import colors from '@/styles/colors';
-import { addressHashedColorIndex } from '@/utils/profileUtils';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { isTeamBasedOutcome } from '@/features/polymarket/utils/marketClassification';
+import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
 
 type MarketColors = {
   color: ResponseByTheme<string>;
@@ -30,10 +29,8 @@ export function getMarketColors(market: RawPolymarketMarket, eventColor: Respons
     };
   }
 
-  const colorIndex = addressHashedColorIndex(market.id) ?? 0;
-  const baseColor = colors.avatarBackgrounds[colorIndex];
   return {
-    color: getHighContrastColorTheme(baseColor),
+    color: getColorBySeed(market.conditionId),
     secondaryColor: undefined,
   };
 }
