@@ -2989,9 +2989,16 @@
         "cloud_backup_link": "Learn more…",
         "view_secret_phrase": "View Secret Phrase",
         "view_private_key": "View Private Key",
-        "copy_wallet_address": "Copy wallet address"
+        "copy_wallet_address": "Copy Address",
+        "edit_smart_wallet": "Edit Smart Wallet"
       },
       "delegations": {
+        "active": "Active",
+        "not_active": "Not active",
+        "enable_smart_wallet": "Enable Smart Wallet",
+        "disable_smart_wallet": "Disable Smart Wallet",
+        "enabled_description": "You'll miss out on faster transactions and lower network costs",
+        "disabled_description": "Updates will take effect on your next swap",
         "revoke_panel": {
           "disable_title": "Disable Smart Wallet",
           "disable_subtitle": "This will revoke all active delegations and disable Smart Wallet features.",
