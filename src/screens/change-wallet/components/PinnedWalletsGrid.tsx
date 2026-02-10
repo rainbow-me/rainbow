@@ -18,6 +18,8 @@ import isTestFlight from '@/helpers/isTestFlight';
 import { useTheme } from '@/theme';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { StyleSheet } from 'react-native';
+import { useDelegations, useDelegationPreference } from '@rainbow-me/delegation';
+import type { Address } from 'viem';
 
 const UNPIN_BADGE_SIZE = 28;
 const PINS_PER_ROW = 3;
@@ -31,6 +33,21 @@ type PinnedWalletsGridProps = {
   onPressMenuItem: (actionKey: AddressMenuAction, data: AddressMenuActionData) => void;
   editMode: boolean;
 };
+
+function DelegationBadge({ accountAddress, isReadOnly }: { accountAddress: string; isReadOnly: boolean }) {
+  const { delegations } = useDelegations(accountAddress as Address);
+  const { enabled: isDelegationEnabled = true } = useDelegationPreference(accountAddress as Address) ?? {};
+
+  const isDelegated = delegations.length > 0;
+  const isDisabled = !isDelegationEnabled;
+
+  return (
+    // eslint-disable-next-line no-nested-ternary
+    <Text color={isDisabled ? 'red' : isDelegated ? 'green' : 'labelQuaternary'} size="icon 10px">
+      􀋦
+    </Text>
+  );
+}
 
 export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, onPressMenuItem }: PinnedWalletsGridProps) {
   const { colors, isDarkMode } = useTheme();
@@ -56,11 +73,10 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
   }, [walletItems.length]);
 
   // the draggable context should only layout its children when the number of children changes
-  // but we also need to update when isDelegated changes
   const draggableItems = useMemo(() => {
     return walletItems;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletItems.length, walletItems.map(item => item.isDelegated).join(',')]);
+  }, [walletItems.length]);
 
   const avatarSize = useMemo(
     () =>
@@ -206,9 +222,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                       </Text>
                     )}
                     {(IS_DEV || isTestFlight) && !account.isReadOnly && (
-                      <Text color={account.isDelegated ? 'green' : 'red'} size="icon 10px">
-                        􀋦
-                      </Text>
+                      <DelegationBadge accountAddress={account.address} isReadOnly={account.isReadOnly} />
                     )}
                     <Text numberOfLines={1} ellipsizeMode="middle" color="label" size="13pt" weight="bold">
                       {walletName}
