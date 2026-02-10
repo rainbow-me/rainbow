@@ -609,6 +609,12 @@ type RouteParams = {
     walletId: string;
   };
 
+  [Routes.VIEW_WALLET_DELEGATIONS]: {
+    walletId: string;
+    address: Address;
+    title: string;
+  };
+
   [Routes.RESTORE_SHEET]: {
     fromSettings?: boolean;
   };
