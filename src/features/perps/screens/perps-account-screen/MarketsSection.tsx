@@ -8,7 +8,7 @@ import { useHyperliquidMarketsStore, useSortedHyperliquidMarkets } from '@/featu
 import { PerpMarket } from '@/features/perps/types';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import * as i18n from '@/languages';
 import { MarketSortOrderDropdown } from '@/features/perps/components/MarketSortOrderDropdown';
 import { opacity } from '@/framework/ui/utils/opacity';

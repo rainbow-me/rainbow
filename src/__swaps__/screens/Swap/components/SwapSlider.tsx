@@ -22,19 +22,14 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { AnimatedText, Bleed, Box, Column, Columns, Inline, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { greaterThanWorklet } from '@/safe-math/SafeMath';
-import {
-  SCRUBBER_WIDTH,
-  SLIDER_COLLAPSED_HEIGHT,
-  SLIDER_HEIGHT,
-  SLIDER_WIDTH,
-  THICK_BORDER_WIDTH,
-  pulsingConfig,
-} from '@/__swaps__/screens/Swap/constants';
+import { SCRUBBER_WIDTH, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH, pulsingConfig } from '@/__swaps__/screens/Swap/constants';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { clamp, getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 type SwapSliderProps = {
   dualColor?: boolean;

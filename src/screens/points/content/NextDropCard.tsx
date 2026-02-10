@@ -2,9 +2,9 @@ import React, { memo, useReducer, useEffect } from 'react';
 import { Box, Text, TextShadow, Stack, IconContainer, useForegroundColor, globalColors, useColorMode } from '@/design-system';
 import { isToday, intervalToDuration, format } from 'date-fns';
 import * as i18n from '@/languages';
-import { LIGHT_SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { Card } from './PointsContent';
+import { LIGHT_SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const NextDropCard = memo(function NextDropCard({ nextDistribution }: { nextDistribution: Date }) {
   const { isDarkMode } = useColorMode();

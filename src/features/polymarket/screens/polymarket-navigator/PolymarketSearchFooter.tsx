@@ -11,7 +11,7 @@ import { fontWithWidth } from '@/styles/buildTextStyles';
 import font from '@/styles/fonts';
 import { BlurView } from 'react-native-blur-view';
 import LinearGradient from 'react-native-linear-gradient';
-import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { time } from '@/utils/time';
 import { useDebouncedCallback } from 'use-debounce';
 import * as i18n from '@/languages';

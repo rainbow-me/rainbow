@@ -16,11 +16,11 @@ import { IS_DEV } from '@/env';
 import isTestFlight from '@/helpers/isTestFlight';
 import { isL2Chain } from '@/handlers/web3';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';
 import Animated from 'react-native-reanimated';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const GRADIENT_FADE_WIDTH = 24;
 const DEFAULT_PERCENTAGES_OF_BALANCE = [0.05, 0.1, 0.25, 0.5, 0.75];

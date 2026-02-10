@@ -10,7 +10,7 @@ import { useOnLeaveRoute } from '@/hooks/useOnLeaveRoute';
 import Routes from '@/navigation/routesNames';
 import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
 import { DelayedMount } from '@/components/utilities/DelayedMount';
-import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { time } from '@/utils/time';
 import * as i18n from '@/languages';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';

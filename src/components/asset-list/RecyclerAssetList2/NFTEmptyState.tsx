@@ -9,10 +9,10 @@ import { useMints } from '@/resources/mints';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { StyleSheet } from 'react-native';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/styles/constants';
 
 type LaunchFeaturedMintButtonProps = {
   featuredMint: ReturnType<typeof useMints>['data']['featuredMint'];

@@ -1,4 +1,3 @@
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -14,6 +13,7 @@ import { memo, useMemo } from 'react';
 import Routes from '@/navigation/routesNames';
 import ConditionalWrap from 'conditional-wrap';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const AboutSection = memo(function AboutSection({
   event,

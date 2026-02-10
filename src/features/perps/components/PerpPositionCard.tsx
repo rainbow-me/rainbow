@@ -14,7 +14,8 @@ import { TokenData } from '@/state/liveTokens/liveTokensStore';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { ETH_COLOR_DARK, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import * as i18n from '@/languages';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 

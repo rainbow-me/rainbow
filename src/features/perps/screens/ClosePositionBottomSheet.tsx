@@ -10,7 +10,7 @@ import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
-import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { PositionPercentageSlider } from '@/features/perps/components/PositionPercentageSlider';
 import { SheetHandleFixedToTop } from '@/components/sheet';
@@ -27,6 +27,8 @@ import { useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore'
 import { TriggerOrderType } from '@/features/perps/types';
 import { Alert } from 'react-native';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
+
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 function PanelSheet({ children }: { children: React.ReactNode }) {
   const { isDarkMode } = useColorMode();

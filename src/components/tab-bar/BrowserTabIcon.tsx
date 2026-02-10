@@ -6,11 +6,11 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import { Box, useColorMode, TextIcon } from '@/design-system';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { shallowEqual } from '@/worklets/comparisons';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
 import { TAB_BAR_PILL_HEIGHT } from './dimensions';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const BrowserTabIcon = memo(function BrowserTabIcon({
   accentColor,

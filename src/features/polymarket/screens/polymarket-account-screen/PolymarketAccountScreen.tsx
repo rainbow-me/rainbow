@@ -2,7 +2,6 @@ import React, { useCallback, useState } from 'react';
 import { RefreshControl, StyleSheet, View } from 'react-native';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { Box, Separator, useColorMode } from '@/design-system';
@@ -18,6 +17,7 @@ import {
 import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const PolymarketAccountScreen = function PolymarketAccountScreen() {
   const { isDarkMode } = useColorMode();

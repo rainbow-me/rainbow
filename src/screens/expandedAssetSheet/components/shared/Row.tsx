@@ -1,9 +1,9 @@
 import React from 'react';
 import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { Box, useColorMode, useForegroundColor } from '@/design-system';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 interface RowProps {
   children: React.ReactNode;

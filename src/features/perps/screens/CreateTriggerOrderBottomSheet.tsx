@@ -16,7 +16,7 @@ import { useNavigation, useRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
-import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { estimatePnl } from '@/features/perps/utils/estimatePnl';
 import {
   getPercentageDifferenceWorklet,
@@ -44,6 +44,8 @@ import { analytics } from '@/analytics';
 import { sanitizeAmount } from '@/worklets/strings';
 import { useStableValue } from '@/hooks/useStableValue';
 import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
+
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 // Translations for worklets
 const translations = {

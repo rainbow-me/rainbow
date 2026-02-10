@@ -1,5 +1,4 @@
 import ConditionalWrap from 'conditional-wrap';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
 import { ButtonPressAnimation } from '@/components/animations';
 import { FlexItem } from '@/components/layout';
@@ -75,6 +74,7 @@ import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue'
 import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 import { RnbwRewardsScreen } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen';
 import { BASE_TAB_BAR_HEIGHT } from '@/navigation/constants';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const TAB_BAR_HEIGHT = getTabBarHeight();
 

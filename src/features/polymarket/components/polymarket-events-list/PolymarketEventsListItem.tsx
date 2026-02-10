@@ -18,8 +18,8 @@ import Routes from '@/navigation/routesNames';
 import { roundWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { createOpacityPalette } from '@/worklets/colors';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const HEIGHT = 224;
 

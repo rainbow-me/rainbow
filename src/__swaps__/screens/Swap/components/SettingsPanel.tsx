@@ -6,7 +6,7 @@ import { Bleed, Border, Box, Column, Columns, Separator, Stack, Text, TextIcon, 
 import * as i18n from '@/languages';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { THICK_BORDER_WIDTH } from '../constants';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';

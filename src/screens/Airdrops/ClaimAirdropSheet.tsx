@@ -1,5 +1,4 @@
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
@@ -56,6 +55,7 @@ import { Address } from 'viem';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { AirdropGasInfo, ClaimStatus, useClaimAirdrop } from './useClaimAirdrop';
 import { GasInfo } from './utils';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const COIN_ICON_SIZE = 96;
 const PANEL_HEIGHT = 593;

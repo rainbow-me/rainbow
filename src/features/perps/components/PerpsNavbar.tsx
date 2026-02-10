@@ -12,7 +12,7 @@ import { VirtualNavigationStore } from '@/navigation/createVirtualNavigator';
 import { PerpsRoute } from '@/navigation/types';
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const PerpsNavbar = function PerpsNavbar() {
   const safeAreaInsets = useSafeAreaInsets();

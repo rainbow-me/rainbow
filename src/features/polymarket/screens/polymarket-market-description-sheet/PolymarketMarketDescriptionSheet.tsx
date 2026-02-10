@@ -11,7 +11,7 @@ import * as i18n from '@/languages';
 import { useUntrustedUrlOpener } from '@/navigation';
 import { useRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 

@@ -9,10 +9,12 @@ import rnbwCoinImage from '@/assets/rnbw.png';
 import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
 import * as i18n from '@/languages';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
-import { ETH_COLOR_DARK_ACCENT, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { IS_IOS } from '@/env';
+
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const RNBW_FEATURE_CARD_HEIGHT = 131;
 const BORDER_RADIUS = 28;

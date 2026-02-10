@@ -15,7 +15,7 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import useDimensions from '@/hooks/useDimensions';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { ResolvedMarketsSection } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsSection';
 
 export const MarketsSection = memo(function MarketsSection({ event }: { event: PolymarketEvent | null }) {
