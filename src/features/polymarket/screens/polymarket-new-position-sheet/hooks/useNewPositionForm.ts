@@ -11,7 +11,8 @@ type UseNewPositionFormParams = {
 };
 
 export function useNewPositionForm({ tokenId }: UseNewPositionFormParams) {
-  const availableBalance = usePolymarketBalanceStore(state => state.getBalance());
+  const liveAvailableBalance = usePolymarketBalanceStore(state => state.getBalance());
+  const availableBalance = useStableValue(() => liveAvailableBalance);
 
   const { orderFormStore, executionStore } = useStableValue(() => {
     const orderFormStore = createOrderFormStore();
