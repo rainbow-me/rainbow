@@ -117,6 +117,7 @@ const Routes = {
   VIEW_CLOUD_BACKUPS: 'ViewCloudBackups',
   SECRET_WARNING: 'SecretWarning',
   SHOW_SECRET: 'ShowSecret',
+  VIEW_WALLET_DELEGATIONS: 'ViewWalletDelegations',
   DAPP_BROWSER_CONTROL_PANEL: 'DappBrowserControlPanel',
   NETWORK_SELECTOR: 'NetworkSelector',
   CLAIM_REWARDS_PANEL: 'ClaimRewardsPanel',
