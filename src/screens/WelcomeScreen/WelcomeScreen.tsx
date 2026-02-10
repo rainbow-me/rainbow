@@ -46,7 +46,7 @@ const PRIMARY_BUTTON_BORDER_WIDTH = IS_IOS ? 0 : 3;
 export function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const { colors, isDarkMode } = useTheme();
-  const { replace, navigate } = useNavigation();
+  const { getState: dangerouslyGetState, replace, navigate } = useNavigation();
   const isCreatingWallet = useRef(false);
 
   const contentAnimation = useSharedValue(1);
@@ -169,7 +169,8 @@ export function WelcomeScreen() {
         throw new RainbowError('Error creating wallet address');
       }
 
-      replace(Routes.SWIPE_LAYOUT, {
+      const operation = dangerouslyGetState()?.index === 1 ? navigate : replace;
+      operation(Routes.SWIPE_LAYOUT, {
         screen: Routes.WALLET_SCREEN,
       });
     } catch (e) {
@@ -182,7 +183,7 @@ export function WelcomeScreen() {
       // eslint-disable-next-line require-atomic-updates
       isCreatingWallet.current = false;
     }
-  }, [replace]);
+  }, [dangerouslyGetState, navigate, replace]);
 
   const handlePressTerms = useCallback(() => {
     openInBrowser('https://rainbow.me/terms-of-use', false);
