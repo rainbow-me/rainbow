@@ -1,8 +1,8 @@
 import React, { createContext, useContext } from 'react';
 import { TextInput } from 'react-native';
 import { AnimatedRef, SharedValue, useAnimatedRef, useSharedValue } from 'react-native-reanimated';
-import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
 import { Dapp } from '@/resources/metadata/dapps';
+import { getDefaultKeyboardHeight } from '@/utils/keyboardHeight';
 
 interface SearchContextType {
   inputRef: AnimatedRef<TextInput>;

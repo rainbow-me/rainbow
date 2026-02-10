@@ -154,8 +154,8 @@ export function SwapInputAsset() {
         width={{ custom: INPUT_INNER_WIDTH }}
       >
         <TokenList
-          handleExitSearchWorklet={SwapNavigation.handleExitSearch}
-          handleFocusSearchWorklet={SwapNavigation.handleFocusInputSearch}
+          onCancelOrClosePressWorklet={SwapNavigation.handleExitSearch}
+          onSearchFocusWorklet={SwapNavigation.handleFocusInputSearch}
           output={false}
         />
       </Box>
