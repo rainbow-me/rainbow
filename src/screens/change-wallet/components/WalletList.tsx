@@ -122,11 +122,10 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
   }, [pinnedWalletItems, onPressAccount, editMode, unpinnedWalletItems.length, menuItems, onPressMenuItem, onDraggableActivationWorklet]);
 
   // the draggable context should only layout its children when the number of children changes
-  // but we also need to update when isDelegated changes
   const draggableUnpinnedWalletItems = useMemo(() => {
     return unpinnedWalletItems;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [unpinnedWalletItems.length, unpinnedWalletItems.map(item => item.isDelegated).join(',')]);
+  }, [unpinnedWalletItems.length]);
 
   return (
     <>

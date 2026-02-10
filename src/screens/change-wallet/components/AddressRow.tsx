@@ -18,6 +18,8 @@ import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
 import { IS_DEV } from '@/env';
 import isTestFlight from '@/helpers/isTestFlight';
+import { useDelegations, useDelegationPreference } from '@rainbow-me/delegation';
+import type { Address } from 'viem';
 
 const ROW_HEIGHT_WITH_PADDING = 64;
 const BUTTON_SIZE = 28;
@@ -76,7 +78,13 @@ interface AddressRowProps {
 }
 
 export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem }: AddressRowProps) {
-  const { address, color, emoji, balance, isSelected, isReadOnly, isLedger, isDelegated, label, image } = data;
+  const { address, color, emoji, balance, isSelected, isReadOnly, isLedger, label, image } = data;
+
+  const { delegations } = useDelegations(address as Address);
+  const { enabled: isDelegationEnabled = true } = useDelegationPreference(address as Address) ?? {};
+
+  const isDelegated = delegations.length > 0;
+  const isDisabled = !isDelegationEnabled;
 
   const walletName = useMemo(() => {
     return removeFirstEmojiFromString(label) || abbreviateAddress(address, 4, 6);
@@ -203,13 +211,18 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
                 paddingVertical="6px"
                 borderRadius={22}
                 style={{
-                  backgroundColor: isDelegated ? globalColors.green60 : globalColors.red60,
+                  // eslint-disable-next-line no-nested-ternary
+                  backgroundColor: isDisabled ? globalColors.red60 : isDelegated ? globalColors.green60 : globalColors.grey60,
                   borderWidth: 1,
                   borderColor: opacity('#F5F8FF', 0.03),
                 }}
               >
                 <Text color={{ custom: globalColors.white100 }} size="13pt" weight="bold">
-                  {isDelegated ? i18n.t(i18n.l.wallet.change_wallet.delegated) : i18n.t(i18n.l.wallet.change_wallet.not_delegated)}
+                  {isDisabled
+                    ? i18n.t(i18n.l.wallet.change_wallet.disabled)
+                    : isDelegated
+                      ? i18n.t(i18n.l.wallet.change_wallet.delegated)
+                      : i18n.t(i18n.l.wallet.change_wallet.not_delegated)}
                 </Text>
               </Box>
             )}
