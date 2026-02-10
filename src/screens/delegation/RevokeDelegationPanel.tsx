@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Wallet } from '@ethersproject/wallet';
@@ -19,6 +19,8 @@ import { getNextNonce } from '@/state/nonces';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import * as i18n from '@/languages';
+import useGas from '@/hooks/useGas';
+import { GasFee, LegacyGasFee } from '@/entities';
 
 /**
  * Reasons for revoking delegation - determines the panel's appearance and messaging
@@ -111,6 +113,32 @@ export const RevokeDelegationPanel = () => {
   // Get chain name for display
   const chainsLabel = getChainsLabel();
   const chainName = chainsLabel[chainId] || `Chain ${chainId}`;
+
+  // Gas management
+  const { startPollingGasFees, stopPollingGasFees, selectedGasFee } = useGas();
+
+  useEffect(() => {
+    if (chainId) {
+      startPollingGasFees(chainId);
+    }
+    return () => {
+      stopPollingGasFees();
+    };
+  }, [chainId, startPollingGasFees, stopPollingGasFees]);
+
+  // Get gas fee display with $0.01 floor
+  const gasFeeDisplay = (() => {
+    const gasFee = selectedGasFee?.gasFee;
+    if (!gasFee) return null;
+    const isLegacy = !!(gasFee as LegacyGasFee)?.estimatedFee;
+    const feeData = isLegacy ? (gasFee as LegacyGasFee)?.estimatedFee : (gasFee as GasFee)?.maxFee;
+    const amount = parseFloat(feeData?.native?.value?.amount || '0');
+    // Round up to $0.01 for very small amounts
+    if (amount > 0 && amount < 0.01) {
+      return '$0.01';
+    }
+    return feeData?.native?.value?.display;
+  })();
 
   // Get sheet content based on revoke reason
   const sheetContent = getSheetContent(revokeReason, chainName);
@@ -222,7 +250,7 @@ export const RevokeDelegationPanel = () => {
   return (
     <PanelSheet showHandle showTapToDismiss>
       {/* Header with Smart Wallet Icon */}
-      <Box alignItems="center" paddingTop="28px" paddingHorizontal="20px">
+      <Box alignItems="center" paddingTop="44px" paddingHorizontal="20px">
         {/* Smart Wallet Lock Icon with Gradient */}
         <Box
           width={{ custom: 52 }}
@@ -298,11 +326,22 @@ export const RevokeDelegationPanel = () => {
       {/* Gas Fee Preview */}
       <Box paddingTop="24px" paddingBottom="24px" alignItems="center" justifyContent="center">
         <Box flexDirection="row" alignItems="center" gap={4}>
-          <Text size="13pt" weight="heavy" color={{ custom: 'rgba(245, 248, 255, 0.56)' }} align="center">
+          <Text size="13pt" weight="heavy" color="labelTertiary" align="center">
             􀵟
           </Text>
-          <Text size="13pt" weight="bold" color={{ custom: 'rgba(245, 248, 255, 0.56)' }} align="center">
-            {i18n.t(i18n.l.wallet.delegations.revoke_panel.gas_fee, { chainName })}
+          <Text size="13pt" weight="bold" color="labelTertiary" align="center">
+            {gasFeeDisplay ? (
+              <>
+                <Text size="13pt" weight="bold" color="labelTertiary">
+                  {gasFeeDisplay}
+                </Text>
+                <Text size="13pt" weight="semibold" color="labelQuaternary">
+                  {` ${i18n.t(i18n.l.wallet.delegations.revoke_panel.gas_fee, { chainName })}`}
+                </Text>
+              </>
+            ) : (
+              i18n.t(i18n.l.wallet.delegations.revoke_panel.gas_fee, { chainName })
+            )}
           </Text>
         </Box>
       </Box>
