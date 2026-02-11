@@ -22,6 +22,8 @@ import { AnyPerformanceLog, Screen } from '../state/performance/operations';
 import { PairHardwareWalletNavigatorParams } from '@/navigation/types';
 import { SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { PerpPositionSide, TriggerOrderType } from '@/features/perps/types';
+import { EthereumWalletType } from '@/helpers/walletTypes';
+import { WalletLibraryType } from '@/model/wallet';
 
 /**
  * All events, used by `analytics.track()`
@@ -257,6 +259,8 @@ export const event = {
   networkStatusReconnected: 'network_status.reconnected',
 
   // wallet initialization
+  walletCreateSucceeded: 'wallet_create.succeeded',
+  walletCreateFailed: 'wallet_create.failed',
   walletInitializationFailed: 'wallet_initialization.failed',
 
   // performance
@@ -392,6 +396,19 @@ type SwapsEventFailedParameters<T extends 'swap' | 'crosschainSwap'> = {
 type SwapsEventSucceededParameters<T extends 'swap' | 'crosschainSwap'> = {
   nonce: number | undefined;
 } & SwapEventParameters<T>;
+
+type WalletCreateEventParams = {
+  isImported: boolean;
+  isRestoring: boolean;
+  isReadOnly: boolean;
+  isHardwareWallet: boolean;
+  isHDWallet: boolean;
+  ethereumWalletType: EthereumWalletType;
+  walletLibraryType: WalletLibraryType;
+  silent: boolean;
+  overwrite: boolean;
+  hasCheckedWallet: boolean;
+};
 
 /**
  * Properties corresponding to each event
@@ -1013,6 +1030,10 @@ export type EventProperties = {
   [event.networkStatusReconnected]: undefined;
 
   // wallet initialization
+  [event.walletCreateSucceeded]: WalletCreateEventParams;
+  [event.walletCreateFailed]: WalletCreateEventParams & {
+    error: string;
+  };
   [event.walletInitializationFailed]: {
     error: string;
     walletStatus: string;
