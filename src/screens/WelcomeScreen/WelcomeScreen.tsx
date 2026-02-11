@@ -1,9 +1,10 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import * as i18n from '@/languages';
-import React, { useCallback, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
-import Reanimated, {
+import React, { useCallback, useEffect, useRef } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
+import Animated, {
   Easing,
+  cancelAnimation,
   interpolateColor,
   useAnimatedStyle,
   useDerivedValue,
@@ -15,138 +16,104 @@ import Reanimated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import RainbowText from '../../components/icons/svg/RainbowText';
 import { RainbowsBackground } from '../../components/rainbows-background/RainbowsBackground';
 import { Text } from '../../components/text';
 import { analytics } from '@/analytics';
-
+import { useHardwareBackOnFocus } from '@/hooks/useHardwareBack';
 import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from '@/styled-thing';
-import { position } from '@/styles';
-import { ThemeContextProps, useTheme } from '@/theme';
-import { logger } from '@/logger';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { useTheme } from '@/theme';
+import { ensureError, logger, RainbowError } from '@/logger';
+import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
+import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
+import { Box } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
-
-const Container = styled(View)({
-  ...position.coverAsObject,
-  alignItems: 'center',
-  backgroundColor: ({ theme: { colors } }: { theme: ThemeContextProps }) => colors.white,
-  justifyContent: 'center',
-});
-
-const ContentWrapper = styled(Reanimated.View)({
-  alignItems: 'center',
-  height: 192,
-  justifyContent: 'space-between',
-  marginBottom: 20,
-  zIndex: 10,
-});
-
-const ButtonWrapper = styled(Reanimated.View)({
-  width: '100%',
-});
-
-const TermsOfUse = styled(View)(({ bottomInset }: any) => ({
-  bottom: bottomInset / 2 + 32,
-  position: 'absolute',
-  width: 200,
-}));
 
 const RAINBOW_TEXT_HEIGHT = 32;
 const RAINBOW_TEXT_WIDTH = 125;
+const ANIMATION_COLORS = ['rgb(255,73,74)', 'rgb(255,170,0)', 'rgb(0,163,217)', 'rgb(0,163,217)', 'rgb(115,92,255)', 'rgb(255,73,74)'];
+const PRIMARY_BUTTON_HEIGHT = IS_IOS ? 54 : 60;
+const PRIMARY_BUTTON_WIDTH = IS_IOS ? 230 : 236;
+const PRIMARY_BUTTON_BORDER_WIDTH = IS_IOS ? 0 : 3;
 
-const RainbowTextMask = styled(Reanimated.View)({
-  height: RAINBOW_TEXT_HEIGHT,
-  width: RAINBOW_TEXT_WIDTH,
-});
-
-const animationColors = ['rgb(255,73,74)', 'rgb(255,170,0)', 'rgb(0,163,217)', 'rgb(0,163,217)', 'rgb(115,92,255)', 'rgb(255,73,74)'];
-
-export default function WelcomeScreen() {
+export function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const { colors, isDarkMode } = useTheme();
-  const { replace, navigate, getState: dangerouslyGetState } = useNavigation();
+  const { getState: dangerouslyGetState, replace, navigate } = useNavigation();
+  const isCreatingWallet = useRef(false);
 
   const contentAnimation = useSharedValue(1);
   const colorAnimation = useSharedValue(0);
   const shouldAnimateRainbows = useSharedValue(false);
   const calculatedColor = useDerivedValue(
-    () => interpolateColor(colorAnimation.value, [0, 1, 2, 3, 4, 5], animationColors),
+    () => interpolateColor(colorAnimation.value, [0, 1, 2, 3, 4, 5], ANIMATION_COLORS),
     [colorAnimation]
   );
   const createWalletButtonAnimation = useSharedValue(1);
 
+  const resetAnimations = useCallback(() => {
+    cancelAnimation(contentAnimation);
+    cancelAnimation(createWalletButtonAnimation);
+    cancelAnimation(colorAnimation);
+    createWalletButtonAnimation.value = 1;
+    contentAnimation.value = 1;
+    colorAnimation.value = 0;
+    shouldAnimateRainbows.value = false;
+  }, [colorAnimation, contentAnimation, createWalletButtonAnimation, shouldAnimateRainbows]);
+
+  const startAnimations = useCallback(() => {
+    shouldAnimateRainbows.value = true;
+    const initialDuration = 120;
+
+    contentAnimation.value = withSequence(
+      withTiming(1.2, {
+        duration: initialDuration,
+        easing: Easing.bezier(0.165, 0.84, 0.44, 1),
+      }),
+      withSpring(1, {
+        damping: 7,
+        overshootClamping: false,
+        stiffness: 250,
+      })
+    );
+
+    createWalletButtonAnimation.value = withDelay(
+      initialDuration,
+      withTiming(1.02, { duration: 1000 }, finished => {
+        if (!finished) return;
+        createWalletButtonAnimation.value = withRepeat(
+          withTiming(0.98, {
+            duration: 1000,
+          }),
+          -1,
+          true
+        );
+      })
+    );
+
+    colorAnimation.value = withRepeat(
+      withTiming(5, {
+        duration: 2500,
+        easing: Easing.linear,
+      }),
+      -1
+    );
+  }, [shouldAnimateRainbows, contentAnimation, createWalletButtonAnimation, colorAnimation]);
+
   useEffect(() => {
-    const initialize = async () => {
-      // Skip looping animations for e2e - they prevent the test framework from settling
-      // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
-      if (IS_TEST) {
-        logger.debug('[WelcomeScreen] Skipping animations because IS_TEST is true');
-        contentAnimation.value = 1;
-        createWalletButtonAnimation.value = 1;
-        colorAnimation.value = 0;
-        hideSplashScreen();
-        return;
-      }
-
-      hideSplashScreen();
-      shouldAnimateRainbows.value = true;
-      const initialDuration = 120;
-
-      contentAnimation.value = withSequence(
-        withTiming(1.2, {
-          duration: initialDuration,
-          easing: Easing.bezier(0.165, 0.84, 0.44, 1),
-        }),
-        withSpring(1, {
-          damping: 7,
-          overshootClamping: false,
-          stiffness: 250,
-        })
-      );
-
-      createWalletButtonAnimation.value = withDelay(
-        initialDuration,
-        withTiming(1.02, { duration: 1000 }, () => {
-          createWalletButtonAnimation.value = withRepeat(
-            withTiming(0.98, {
-              duration: 1000,
-            }),
-            -1,
-            true
-          );
-        })
-      );
-
-      colorAnimation.value = withRepeat(
-        withTiming(5, {
-          duration: 2500,
-          easing: Easing.linear,
-        }),
-        -1
-      );
-    };
-
-    initialize();
-
-    return () => {
-      createWalletButtonAnimation.value = 1;
-      contentAnimation.value = 1;
-      colorAnimation.value = 0;
-    };
-  }, [colorAnimation, contentAnimation, createWalletButtonAnimation, hideSplashScreen, shouldAnimateRainbows]);
+    hideSplashScreen();
+    startAnimations();
+    return resetAnimations;
+  }, [startAnimations, resetAnimations]);
 
   const buttonStyle = useAnimatedStyle(() => {
-    if (IS_TEST) {
-      return { transform: [{ scale: 1 }], zIndex: 10 };
-    }
     return {
       transform: [{ scale: createWalletButtonAnimation.value }],
       zIndex: 10,
@@ -154,9 +121,6 @@ export default function WelcomeScreen() {
   }, []);
 
   const contentStyle = useAnimatedStyle(() => {
-    if (IS_TEST) {
-      return { transform: [{ scale: 1 }] };
-    }
     return {
       transform: [{ scale: contentAnimation.value }],
     };
@@ -166,12 +130,21 @@ export default function WelcomeScreen() {
     backgroundColor: calculatedColor.value,
   }));
 
-  const createWalletButtonAnimatedStyle = useAnimatedStyle(() => ({
-    backgroundColor: isDarkMode ? colors.blueGreyDarkLight : colors.dark,
-    borderColor: calculatedColor.value,
-    borderWidth: ios ? 0 : 3,
-    width: 230 + (ios ? 0 : 6),
-  }));
+  const primaryButtonBackground = isDarkMode ? colors.blueGreyDarkLight : colors.dark;
+  const primaryButtonTextColor = isDarkMode ? colors.dark : colors.white;
+  const existingWalletBackground = colors.blueGreyDarkLight;
+  const existingWalletTextColor = opacity(colors.blueGreyDark, 0.8);
+  const termsTextColor = opacity(colors.blueGreyDark, 0.5);
+
+  const createWalletButtonAnimatedStyle = useAnimatedStyle(
+    () => ({
+      backgroundColor: primaryButtonBackground,
+      borderColor: calculatedColor.value,
+      borderWidth: PRIMARY_BUTTON_BORDER_WIDTH,
+      width: PRIMARY_BUTTON_WIDTH,
+    }),
+    [primaryButtonBackground]
+  );
 
   const createWalletButtonAnimatedShadowStyle = useAnimatedStyle(() => ({
     backgroundColor: calculatedColor.value,
@@ -179,12 +152,37 @@ export default function WelcomeScreen() {
   }));
 
   const onCreateWallet = useCallback(async () => {
+    if (isCreatingWallet.current) return;
+    isCreatingWallet.current = true;
     analytics.track(analytics.event.welcomeNewWallet);
-    const operation = dangerouslyGetState()?.index === 1 ? navigate : replace;
-    operation(Routes.SWIPE_LAYOUT, {
-      params: { emptyWallet: true },
-      screen: Routes.WALLET_SCREEN,
+    walletLoadingStore.setState({
+      loadingState: WalletLoadingStates.CREATING_WALLET,
     });
+
+    try {
+      const walletAddress = await initializeWallet({
+        shouldCreateFirstWallet: true,
+        shouldRunMigrations: true,
+      });
+
+      if (!walletAddress) {
+        throw new RainbowError('Error creating wallet address');
+      }
+
+      const operation = dangerouslyGetState()?.index === 1 ? navigate : replace;
+      operation(Routes.SWIPE_LAYOUT, {
+        screen: Routes.WALLET_SCREEN,
+      });
+    } catch (e) {
+      logger.error(new RainbowError('[WelcomeScreen]: Error creating wallet', e));
+      Alert.alert('Error creating wallet', ensureError(e).message);
+    } finally {
+      walletLoadingStore.setState({
+        loadingState: null,
+      });
+      // eslint-disable-next-line require-atomic-updates
+      isCreatingWallet.current = false;
+    }
   }, [dangerouslyGetState, navigate, replace]);
 
   const handlePressTerms = useCallback(() => {
@@ -198,51 +196,47 @@ export default function WelcomeScreen() {
     });
   }, [navigate]);
 
-  useAndroidBackHandler(() => {
-    return true;
-  });
+  useHardwareBackOnFocus(() => true, !IS_ANDROID);
 
   return (
     <PerformanceMeasureView interactive={true} screenName="WelcomeScreen">
-      <Container testID="welcome-screen">
+      <Box style={styles.container} testID="welcome-screen" backgroundColor={colors.white}>
         <RainbowsBackground shouldAnimate={shouldAnimateRainbows} />
-        <ContentWrapper style={contentStyle}>
+        <Animated.View style={[contentStyle, styles.contentContainer]}>
           {IS_ANDROID && IS_TEST ? (
             <RainbowText colors={colors} />
           ) : (
             <MaskedView maskElement={<RainbowText colors={colors} />}>
-              <RainbowTextMask style={textStyle} />
+              <Animated.View style={[textStyle, styles.rainbowTextMask]} />
             </MaskedView>
           )}
 
-          <ButtonWrapper style={buttonStyle}>
+          <Animated.View style={buttonStyle}>
             <WelcomeScreenRainbowButton
               emoji="castle"
-              height={54 + (ios ? 0 : 6)}
+              height={PRIMARY_BUTTON_HEIGHT}
               onPress={onCreateWallet}
               shadowStyle={createWalletButtonAnimatedShadowStyle}
               style={createWalletButtonAnimatedStyle}
               testID="new-wallet-button"
               text={i18n.t(i18n.l.wallet.new.get_new_wallet)}
-              textColor={isDarkMode ? colors.dark : colors.white}
+              textColor={primaryButtonTextColor}
             />
-          </ButtonWrapper>
-          <ButtonWrapper>
-            <WelcomeScreenRainbowButton
-              darkShadowStyle={sx.existingWalletShadow}
-              emoji="old_key"
-              height={56}
-              onPress={showRestoreSheet}
-              shadowStyle={sx.existingWalletShadow}
-              style={[sx.existingWallet, { backgroundColor: colors.blueGreyDarkLight }]}
-              testID="already-have-wallet-button"
-              text={i18n.t(i18n.l.wallet.new.already_have_wallet)}
-              textColor={opacity(colors.blueGreyDark, 0.8)}
-            />
-          </ButtonWrapper>
-        </ContentWrapper>
-        <TermsOfUse bottomInset={insets.bottom}>
-          <Text align="center" color={opacity(colors.blueGreyDark, 0.5)} lineHeight="loose" size="smedium" weight="semibold">
+          </Animated.View>
+          <WelcomeScreenRainbowButton
+            darkShadowStyle={styles.existingWalletShadow}
+            emoji="old_key"
+            height={56}
+            onPress={showRestoreSheet}
+            shadowStyle={styles.existingWalletShadow}
+            style={[styles.existingWallet, { backgroundColor: existingWalletBackground }]}
+            testID="already-have-wallet-button"
+            text={i18n.t(i18n.l.wallet.new.already_have_wallet)}
+            textColor={existingWalletTextColor}
+          />
+        </Animated.View>
+        <View style={[styles.termsOfUseContainer, { bottom: insets.bottom / 2 + 32, position: 'absolute' }]}>
+          <Text align="center" color={termsTextColor} lineHeight="loose" size="smedium" weight="semibold">
             {i18n.t(i18n.l.wallet.new.terms)}
             <Text
               color={colors.paleBlue}
@@ -255,17 +249,36 @@ export default function WelcomeScreen() {
               {i18n.t(i18n.l.wallet.new.terms_link)}
             </Text>
           </Text>
-        </TermsOfUse>
-      </Container>
+        </View>
+      </Box>
     </PerformanceMeasureView>
   );
 }
 
-const sx = StyleSheet.create({
+const styles = StyleSheet.create({
+  container: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   existingWallet: {
     width: 248,
   },
   existingWalletShadow: {
     opacity: 0,
+  },
+  contentContainer: {
+    alignItems: 'center',
+    height: 192,
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    zIndex: 10,
+  },
+  termsOfUseContainer: {
+    width: 200,
+  },
+  rainbowTextMask: {
+    height: RAINBOW_TEXT_HEIGHT,
+    width: RAINBOW_TEXT_WIDTH,
   },
 });
