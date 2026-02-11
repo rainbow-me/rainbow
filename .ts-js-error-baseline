@@ -50,8 +50,6 @@ TS2769   #    2  No overload matches this call
 # ── Module / import issues ───────────────────────────────────────────
 # Medium priority — broken imports or missing exports.
 TS2304   #   52  Cannot find name (identifier not in scope)
-TS2305   #    1  Module has no exported member
-TS2307   #    3  Cannot find module or type declaration
 
 # ── Miscellaneous ────────────────────────────────────────────────────
 TS2866   #    1  Import assertion type not supported (deprecated syntax)
