@@ -6026,9 +6026,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/swaps@npm:0.42.0-beta.1":
-  version: 0.42.0-beta.1
-  resolution: "@rainbow-me/swaps@npm:0.42.0-beta.1"
+"@rainbow-me/swaps@npm:0.42.0-beta.2":
+  version: 0.42.0-beta.2
+  resolution: "@rainbow-me/swaps@npm:0.42.0-beta.2"
   dependencies:
     "@ethereumjs/util": "npm:9.0.0"
     "@ethersproject/abi": "npm:5.7.0"
@@ -6044,7 +6044,7 @@ __metadata:
     "@ethersproject/wallet": "npm:5.7.0"
     "@metamask/eth-sig-util": "npm:7.0.0"
     ox: "npm:0.9.14"
-  checksum: 10c0/897a464941f0e5a310f596c0df3af7538b7eaa575acc8ba191139bedaca426862926823c0bcf60c01e384b6780d35f2704929d5b82b28edc7c0f6905ebffea7d
+  checksum: 10c0/9c7e0389c308cb225cf2f2df99d946c1b62469ec51579896796f275bc5fa42731f63887cffb6ee7469231b9591c05eccdbacef306d58f8bb9bc3d6b2523f6d14
   languageName: node
   linkType: hard
 
@@ -9959,7 +9959,7 @@ __metadata:
     "@polymarket/clob-client": "npm:4.22.8"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
-    "@rainbow-me/swaps": "npm:0.42.0-beta.1"
+    "@rainbow-me/swaps": "npm:0.42.0-beta.2"
     "@rainbow-me/token-launcher": "npm:0.2.0"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-native-camera-roll/camera-roll": "npm:7.10.0"
