@@ -11,7 +11,6 @@ import useFetchOpenCollectionsOnMount from '@/hooks/useFetchOpenCollectionsOnMou
 import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
-import { useInitializeWalletAndSetParams } from '@/hooks/useInitializeWalletAndSetParams';
 import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
 import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
 import { useWalletCohort } from '@/hooks/useWalletCohort';
@@ -53,7 +52,6 @@ const ToastComponent = memo(function ToastComponent() {
 
 const WalletScreenEffects = memo(function WalletScreenEffects() {
   useRemoveScreen(Routes.WELCOME_SCREEN);
-  useInitializeWalletAndSetParams();
   useLoadDeferredWalletData();
   useWalletCohort();
   useAppIconIdentify();

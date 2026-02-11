@@ -303,13 +303,6 @@ export type SendParams = {
   shouldShowChecks?: boolean;
 };
 
-export type WalletScreenParams =
-  | {
-      initialized?: boolean;
-      emptyWallet?: boolean;
-    }
-  | undefined;
-
 export type SettingsSheetParams = {
   initialRoute?: keyof SettingsStackParams;
 };
@@ -337,7 +330,7 @@ type RouteParams = {
     type: 'speed_up' | 'cancel';
   };
   [Routes.SWIPE_LAYOUT]: NavigatorScreenParams<{
-    [Routes.WALLET_SCREEN]: WalletScreenParams | undefined;
+    [Routes.WALLET_SCREEN]: undefined;
   }>;
   [Routes.SETTINGS_SECTION_BACKUP]: {
     walletId?: string;
@@ -380,7 +373,6 @@ type RouteParams = {
   };
   [Routes.EXPLAIN_SHEET]: ExplainSheetRouteParams;
   [Routes.PORTAL]: PortalSheetProps;
-  [Routes.WALLET_SCREEN]: WalletScreenParams;
   [Routes.ENS_CONFIRM_REGISTER_SHEET]: {
     externalAvatarUrl?: string | null;
     longFormHeight?: number;
