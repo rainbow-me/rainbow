@@ -17,9 +17,9 @@ const ContextButton = props => (
 
 export default function ContextMenu({
   activeOpacity = 0.2,
-  cancelButtonIndex,
+  cancelButtonIndex = /** @type {number | undefined} */ (undefined),
   children,
-  dynamicOptions,
+  dynamicOptions = /** @type {(() => string[]) | undefined} */ (undefined),
   onPressActionSheet,
   options = [],
   ...props

@@ -92,8 +92,7 @@ function ENSAvatarPlaceholder({
 }) {
   return (
     <ButtonPressAnimation
-      // TODO: remove explicit type once moduleSuffixes is enabled in tsconfig
-      onCancel={({ nativeEvent: { state, close } }: { nativeEvent: { state: number; close: boolean } }) => {
+      onCancel={({ nativeEvent: { state, close } }) => {
         // Ensure the press has been triggered
         if (state === 5 && close) {
           ReactNativeHapticFeedback.trigger('selection');
