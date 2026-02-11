@@ -13,6 +13,10 @@ interface ButtonElementProps extends ButtonPressAnimationProps {
   isLongPress?: boolean;
 }
 
+interface ZoomableButtonPressEvent {
+  nativeEvent: { type: 'longPress' | 'longPressEnded' | 'press' };
+}
+
 type ButtonElementPropsWithDefaults = ButtonElementProps &
   Required<
     Pick<
@@ -24,9 +28,18 @@ type ButtonElementPropsWithDefaults = ButtonElementProps &
 const ZoomableRawButton = requireNativeComponent<
   Omit<
     ButtonElementProps,
-    'contentContainerStyle' | 'overflowMargin' | 'backgroundColor' | 'borderRadius' | 'onLongPressEnded' | 'wrapperStyle' | 'onLongPress'
+    | 'contentContainerStyle'
+    | 'overflowMargin'
+    | 'backgroundColor'
+    | 'borderRadius'
+    | 'onLongPressEnded'
+    | 'wrapperStyle'
+    | 'onLongPress'
+    | 'onPress'
   > &
-    Pick<RawButtonProps, 'rippleColor'>
+    Pick<RawButtonProps, 'rippleColor'> & {
+      onPress?: (event: ZoomableButtonPressEvent) => void;
+    }
 >('RNZoomableButton');
 
 const ZoomableButton = createNativeWrapper(ZoomableRawButton);
@@ -161,13 +174,13 @@ const SimpleScaleButton = forwardRef(function SimpleScaleButton(
   ref
 ) {
   const onNativePress = useCallback(
-    ({ nativeEvent: { type } }: any) => {
+    ({ nativeEvent: { type } }: ZoomableButtonPressEvent) => {
       if (type === 'longPress') {
-        onLongPress?.(undefined as any);
+        onLongPress?.();
       } else if (shouldLongPressHoldPress && type === 'longPressEnded') {
         onLongPressEnded?.();
       } else {
-        onPress?.(undefined as any);
+        onPress?.();
         enableHapticFeedback && ReactNativeHapticFeedback.trigger(hapticType);
       }
     },

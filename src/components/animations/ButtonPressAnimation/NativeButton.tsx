@@ -4,9 +4,7 @@ import { ButtonPressAnimationProps, TransformOrigin } from './types';
 import styled from '@/styled-thing';
 import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 
-type Props = ButtonPressAnimationProps;
-
-interface SpecificRawNativeButtonProps extends Props {
+interface SpecificRawNativeButtonProps extends ButtonPressAnimationProps {
   transformOrigin?: TransformOrigin;
 }
 
@@ -64,7 +62,7 @@ const NativeButton = React.forwardRef(
       transformOrigin,
       testID,
       ...props
-    }: Props,
+    }: ButtonPressAnimationProps,
     ref
   ) => {
     const normalizedTransformOrigin = useMemo(() => normalizeTransformOrigin(transformOrigin), [transformOrigin]);
