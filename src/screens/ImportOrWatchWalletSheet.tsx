@@ -55,7 +55,7 @@ export const ImportOrWatchWalletSheet = () => {
     }
   };
 
-  const buttonDisabled = seedPhrase && !isSecretValid;
+  const buttonDisabled = !!seedPhrase && !isSecretValid;
 
   return (
     <>

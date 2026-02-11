@@ -1,11 +1,10 @@
 import React from 'react';
-import { PressableProps } from 'react-native';
 import { Bleed, Box, Inset, Space } from '@/design-system';
 import { ButtonPressAnimation } from '../animations';
 
 type NavbarItemProps = {
   children: React.ReactElement;
-  onPress?: PressableProps['onPress'];
+  onPress?: () => void;
   testID?: string;
 };
 
