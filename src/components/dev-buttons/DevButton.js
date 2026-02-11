@@ -1,8 +1,8 @@
 import React from 'react';
 import { useWindowDimensions } from 'react-native';
 
-import { PanGestureHandler } from 'react-native-gesture-handler';
-import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withDecay, withSpring } from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { useAnimatedStyle, useSharedValue, withDecay, withSpring } from 'react-native-reanimated';
 import RNRestart from 'react-native-restart';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
@@ -40,32 +40,33 @@ export default function DevButton({
   const { width } = useWindowDimensions();
   const x = useSharedValue(2);
   const y = useSharedValue(initialDisplacement);
-  const gestureHandler = useAnimatedGestureHandler({
-    onActive: (event, ctx) => {
-      x.value = ctx.startX + event.translationX;
-      y.value = ctx.startY + event.translationY;
-    },
-    onEnd: event => {
+  const startX = useSharedValue(0);
+  const startY = useSharedValue(0);
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      startX.value = x.value;
+      startY.value = y.value;
+    })
+    .onUpdate(event => {
+      x.value = startX.value + event.translationX;
+      y.value = startY.value + event.translationY;
+    })
+    .onEnd(event => {
       x.value = withSpring(x.value + event.velocityX > (width - size / 2) / 2 ? width - size / 2 : 2, { velocity: event.velocityX });
       y.value = withDecay({ deceleration: 0.99, velocity: event.velocityY });
-    },
-    onStart: (event, ctx) => {
-      ctx.startX = x.value;
-      ctx.startY = y.value;
-    },
-  });
+    });
 
   const style = useAnimatedStyle(() => ({
     transform: [{ translateX: x.value }, { translateY: y.value }],
   }));
 
   return (
-    <PanGestureHandler onGestureEvent={gestureHandler} onHandlerStateChange={gestureHandler}>
+    <GestureDetector gesture={panGesture}>
       <Wrapper style={style} size={size}>
         <Button color={color} onPress={onPress} testID={testID} size={size}>
           {children}
         </Button>
       </Wrapper>
-    </PanGestureHandler>
+    </GestureDetector>
   );
 }

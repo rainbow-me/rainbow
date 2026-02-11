@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import Animated, {
   SharedValue,
@@ -13,9 +13,9 @@ import Animated, {
 import { AnimatedText, Bleed, Column, Columns, Inline, useColorMode, useForegroundColor } from '@/design-system';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { pulsingConfig } from '@/__swaps__/screens/Swap/constants';
 import { Slider, SliderProps, SliderVisualState, SLIDER_DEFAULT_WIDTH } from './Slider';
+import { GestureHandlerButton } from '@/components/buttons';
 
 export type SliderLabels = {
   title?: string | SharedValue<string>;
@@ -59,7 +59,6 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
   icon,
 }) => {
   const { isDarkMode } = useColorMode();
-  const maxButtonRef = useRef(undefined);
 
   const internalProgressValue = useSharedValue(initialProgress);
   const progressValue = externalProgressValue || internalProgressValue;
@@ -159,11 +158,11 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
             </Inline>
             {showMaxButton && (
               <Column width="content">
-                <GestureHandlerV1Button onPressWorklet={handleMaxPress} ref={maxButtonRef} style={{ margin: -12, padding: 12 }}>
+                <GestureHandlerButton onPressWorklet={handleMaxPress} style={{ margin: -12, padding: 12 }}>
                   <AnimatedText align="center" size="15pt" style={maxTextColor} weight="heavy">
                     {labelsValue.value.maxButtonText || 'Max'}
                   </AnimatedText>
-                </GestureHandlerV1Button>
+                </GestureHandlerButton>
               </Column>
             )}
           </Columns>

@@ -67,7 +67,6 @@ const UniqueTokenExpandedStateContent = ({
 
   return (
     <ZoomableWrapper
-      // @ts-expect-error animationProgress is optional... but javascript component
       animationProgress={animationProgress}
       aspectRatio={aspectRatioWithFallback}
       borderRadius={borderRadius}

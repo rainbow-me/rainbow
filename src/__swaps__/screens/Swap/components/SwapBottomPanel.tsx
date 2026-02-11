@@ -5,7 +5,7 @@ import { RNBW_REWARDS, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
-import { PanGestureHandler } from 'react-native-gesture-handler';
+import { GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   runOnJS,
@@ -47,14 +47,13 @@ export function SwapBottomPanel() {
     quoteFetchingInterval,
   } = useSwapContext();
 
+  const { swipeToDismissGesture, gestureY } = useBottomPanelGestureHandler();
   const { rnbw_rewards_enabled } = useRemoteConfig('rnbw_rewards_enabled');
   const rnbwRewardsEnabled = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
 
   const isRewardEligible = useSwapsStore(state => state.rewardsEstimate?.eligible === true);
   const rewardsEstimate = useSwapsStore(state => state.rewardsEstimate);
   const showRewards = rnbwRewardsEnabled && isRewardEligible && confirmButtonProps.value.type === 'hold';
-
-  const { swipeToDismissGestureHandler, gestureY } = useBottomPanelGestureHandler();
 
   const holdProgress = useSharedValue(0);
 
@@ -121,7 +120,7 @@ export function SwapBottomPanel() {
   }, [navigate, rewardsEstimate?.rewardRnbw, rewardsEstimate?.decimals]);
 
   return (
-    <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler}>
+    <GestureDetector gesture={swipeToDismissGesture}>
       <Animated.View
         style={[
           styles.swapActionsWrapper,
@@ -221,7 +220,7 @@ export function SwapBottomPanel() {
           </Box>
         </Box>
       </Animated.View>
-    </PanGestureHandler>
+    </GestureDetector>
   );
 }
 
