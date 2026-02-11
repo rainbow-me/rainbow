@@ -1,5 +1,5 @@
-/* eslint-disable import/no-unresolved */
-// @ts-ignore .android and .ios exports cause errors
+// @ts-ignore - resolved via platform suffixes (.ios/.android)
+// eslint-disable-next-line import/no-unresolved
 import ButtonPressAnimation from './ButtonPressAnimation';
 import { ScaleButtonZoomable as ScaleButtonZoomableAndroid } from './ScaleButtonZoomable';
 

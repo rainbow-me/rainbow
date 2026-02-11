@@ -122,7 +122,7 @@ export function CoinRow({
   }, [address, mainnetAddress, chainId]);
 
   const onPressHandler = useCallback(
-    (event: GestureResponderEvent) => {
+    (event?: GestureResponderEvent) => {
       event?.stopPropagation();
 
       if (output) {
