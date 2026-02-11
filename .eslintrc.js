@@ -170,9 +170,6 @@ module.exports = {
         ],
       },
     ],
-    // eslint-import-resolver-typescript doesn't support moduleSuffixes yet,
-    // so platform-split files (.ios/.android) without a bare fallback can't be resolved.
-    'import/no-unresolved': ['error', { ignore: ['\\./ButtonPressAnimation$', '\\.?/contextMenu$'] }],
     'jest/expect-expect': 'off',
     'jest/no-disabled-tests': 'off',
     'no-await-in-loop': 'off',
