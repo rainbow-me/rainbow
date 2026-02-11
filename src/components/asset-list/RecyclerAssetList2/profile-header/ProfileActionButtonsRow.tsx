@@ -13,7 +13,6 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import * as React from 'react';
-import { PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { useRecoilState } from 'recoil';
 
@@ -76,17 +75,7 @@ export const ProfileActionButtonsRow = React.memo(function ProfileActionButtonsR
   );
 });
 
-function ActionButton({
-  children,
-  icon,
-  onPress,
-  testID,
-}: {
-  children: string;
-  icon: string;
-  onPress?: PressableProps['onPress'];
-  testID?: string;
-}) {
+function ActionButton({ children, icon, onPress, testID }: { children: string; icon: string; onPress?: () => void; testID?: string }) {
   const { colorMode } = useColorMode();
   return (
     <ButtonPressAnimation disabled={!onPress} onPress={onPress} testID={testID}>

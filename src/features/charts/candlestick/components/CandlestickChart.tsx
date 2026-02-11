@@ -29,6 +29,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
@@ -2065,7 +2066,7 @@ export const CandlestickChart = memo(function CandlestickChart({
               color={accentColor}
               idleComponent={
                 <ButtonPressAnimation
-                  hapticType="soft"
+                  hapticType={HapticFeedbackTypes.soft}
                   onPress={() => fetchAdditionalCandles(true)}
                   style={{ height: SPINNER_HIT_AREA_SIZE + 16, marginTop: 16, width: SPINNER_HIT_AREA_SIZE }}
                 >

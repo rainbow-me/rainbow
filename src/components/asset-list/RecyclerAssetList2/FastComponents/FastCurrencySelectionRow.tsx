@@ -29,7 +29,7 @@ interface FavStarProps {
 export function FavStar({ toggleFavorite, favorite, theme }: FavStarProps) {
   const { isDarkMode, colors } = theme;
   return (
-    <ButtonPressAnimation onPress={toggleFavorite}>
+    <ButtonPressAnimation onPress={() => toggleFavorite()}>
       <SafeRadialGradient
         center={[0, 15]}
         colors={

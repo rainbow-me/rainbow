@@ -332,7 +332,7 @@ export default React.memo(function TransactionCoinRow({
   const [topValue] = activityValues(item, nativeCurrency) ?? [];
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} uniqueId={`${item.hash}-${item.chainId}`}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
       <View style={sx.wholeRow} testID={`${item.title}-${item.description}-${item.balance?.display}`}>
         <View style={sx.icon}>
           <ActivityIcon transaction={item} theme={theme} />

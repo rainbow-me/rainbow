@@ -1,5 +1,5 @@
 import { analytics } from '@/analytics';
-import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
+import { GestureResponderEvent } from 'react-native';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
 import { IS_IOS } from '@/env';
@@ -55,7 +55,7 @@ export const EthCard = () => {
   const cardType = 'stretch';
 
   const handlePressBuy = useCallback(
-    (e: ButtonPressAnimationTouchEvent) => {
+    (e?: GestureResponderEvent) => {
       if (e && 'stopPropagation' in e) {
         e.stopPropagation();
       }

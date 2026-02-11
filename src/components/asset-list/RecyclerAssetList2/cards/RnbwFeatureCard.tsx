@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { GestureResponderEvent, Image, StyleSheet, View } from 'react-native';
 import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native-skia';
 import { BlurView } from 'react-native-blur-view';
 import { Box, globalColors, Inline, Text, TextIcon, useColorMode } from '@/design-system';
@@ -8,7 +8,6 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
 import * as i18n from '@/languages';
-import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -78,7 +77,7 @@ export const RnbwFeatureCard = memo(function RnbwFeatureCard() {
 function DismissButton() {
   const { dismiss } = useRnbwFeatureCard();
 
-  const onDismiss = (e: ButtonPressAnimationTouchEvent) => {
+  const onDismiss = (e?: GestureResponderEvent) => {
     if (e && 'stopPropagation' in e) {
       e.stopPropagation();
     }
