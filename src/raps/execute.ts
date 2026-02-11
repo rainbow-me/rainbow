@@ -2,7 +2,7 @@
 /* eslint-disable no-promise-executor-return */
 import { Signer } from '@ethersproject/abstract-signer';
 import { Wallet } from '@ethersproject/wallet';
-import { type BatchCall, executeBatchedTransaction, getDelegations, supportsDelegation, DelegationStatus } from '@rainbow-me/delegation';
+import { type BatchCall, executeBatchedTransaction, supportsDelegation } from '@rainbow-me/delegation';
 
 import { ChainId } from '@/state/backendNetworks/types';
 import { RainbowError, logger } from '@/logger';
@@ -30,8 +30,7 @@ import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/per
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { createClaimClaimableRap } from './claimClaimable';
 import { claimClaimable } from './actions/claimClaimable';
-import { IS_DEV, IS_TEST } from '@/env';
-import isTestFlight from '@/helpers/isTestFlight';
+import { IS_TEST } from '@/env';
 import { getProvider } from '@/handlers/web3';
 import { Address } from 'viem';
 import { addNewTransaction } from '@/state/pendingTransactions';
@@ -192,16 +191,6 @@ export const walletExecuteRap = async <T extends RapTypes>(
     }
 
     try {
-      // Check if already delegated to determine if this will be a new delegation (only in dev/testflight)
-      // TODO: replace with type value return from `executeTransaction` instead of just txHash
-      let isAlreadyDelegated = false;
-      if ((IS_DEV || isTestFlight) && getExperimentalFlag(DELEGATION)) {
-        const delegations = await getDelegations({ address: quote.from as Address });
-        isAlreadyDelegated = delegations.some(
-          delegation => delegation.chainId === chainId && delegation.delegationStatus === DelegationStatus.RAINBOW_DELEGATED
-        );
-      }
-
       const calls: BatchCall[] = [];
       let pendingTransaction: Omit<NewTransaction, 'hash'> | null = null;
 
@@ -253,7 +242,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
           ...pendingTransaction,
           hash: result.hash,
           batch: true,
-          delegation: !isAlreadyDelegated,
+          delegation: result.type === 'eip7702',
         };
         addNewTransaction({
           address: quote.from,
