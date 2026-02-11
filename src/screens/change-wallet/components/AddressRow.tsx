@@ -16,8 +16,7 @@ import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 import { Icon } from '@/components/icons';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
-import { IS_DEV } from '@/env';
-import isTestFlight from '@/helpers/isTestFlight';
+import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
 import { useDelegations, useDelegationPreference } from '@rainbow-me/delegation';
 import type { Address } from 'viem';
 
@@ -205,7 +204,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
                 )}
               </>
             )}
-            {(IS_DEV || isTestFlight) && !isReadOnly && !editMode && (
+            {(IS_DEV || IS_TEST_FLIGHT) && !isReadOnly && !editMode && (
               <Box
                 paddingHorizontal="8px"
                 paddingVertical="6px"

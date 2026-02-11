@@ -13,8 +13,7 @@ import ConditionalWrap from 'conditional-wrap';
 import { address } from '@/utils/abbreviations';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
-import { IS_DEV, IS_IOS } from '@/env';
-import isTestFlight from '@/helpers/isTestFlight';
+import { IS_DEV, IS_IOS, IS_TEST_FLIGHT } from '@/env';
 import { useTheme } from '@/theme';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { StyleSheet } from 'react-native';
@@ -221,7 +220,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                         􀋮
                       </Text>
                     )}
-                    {(IS_DEV || isTestFlight) && !account.isReadOnly && (
+                    {(IS_DEV || IS_TEST_FLIGHT) && !account.isReadOnly && (
                       <DelegationBadge accountAddress={account.address} isReadOnly={account.isReadOnly} />
                     )}
                     <Text numberOfLines={1} ellipsizeMode="middle" color="label" size="13pt" weight="bold">
