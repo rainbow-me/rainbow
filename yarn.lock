@@ -10171,7 +10171,7 @@ __metadata:
     react-native-url-polyfill: "npm:2.0.0"
     react-native-version-number: "npm:0.3.6"
     react-native-video: "npm:6.15.0"
-    react-native-view-shot: "npm:4.0.2"
+    react-native-view-shot: "npm:4.0.3"
     react-native-vision-camera: "npm:4.7.3"
     react-native-webview: "npm:13.13.5"
     react-native-widgetkit: "npm:1.0.9"
@@ -24921,15 +24921,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-view-shot@npm:4.0.2":
-  version: 4.0.2
-  resolution: "react-native-view-shot@npm:4.0.2"
+"react-native-view-shot@npm:4.0.3":
+  version: 4.0.3
+  resolution: "react-native-view-shot@npm:4.0.3"
   dependencies:
     html2canvas: "npm:^1.4.1"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/842e9587a19c4e33328ec19f839bfd557b8c89df6f980e593d3aae25edad834f18146fdde51612e7be6ad349c30f441a7d852726b6c69e1fdd59f14cc215f500
+  checksum: 10c0/e172507eb7de8760a8a557a5e8632bdc248b60b89770cc941690c8fe6c788d28be1efd8259236fbc768eba3b33aaec8b7a833476b566dfef5b754618060edbec
   languageName: node
   linkType: hard
 
