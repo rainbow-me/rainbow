@@ -4,7 +4,7 @@ import { ImageBackground, StyleSheet, Image, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SystemBars } from 'react-native-edge-to-edge';
-import { Box, Stack, Text, Bleed, Column, Columns, AccentColorProvider } from '@/design-system';
+import { Box, Stack, Text, Bleed, Column, Columns, ColorModeProvider } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useHardwareBackOnFocus } from '@/hooks/useHardwareBack';
 import * as i18n from '@/languages';
@@ -22,7 +22,6 @@ import { event } from '@/analytics/event';
 const TRANSLATIONS = i18n.l.promos.notifications_launch;
 
 export function NotificationPermissionScreen() {
-  const { colors } = useTheme();
   const safeAreaInsets = useSafeAreaInsets();
   const { goBack } = useNavigation();
 
@@ -73,12 +72,12 @@ export function NotificationPermissionScreen() {
   }, [navigateToWallet]);
 
   return (
-    <AccentColorProvider color={colors.trueBlack}>
+    <ColorModeProvider value="dark">
       <View style={styles.container}>
         <SystemBars style="light" />
         <Box as={ImageBackground} height="full" source={backgroundImage} style={StyleSheet.absoluteFillObject} />
         <Box paddingTop={{ custom: 57.5 }} paddingBottom={{ custom: safeAreaInsets.bottom }} style={styles.flex}>
-          <Image source={headerImage} style={styles.headerImage} />
+          <Image source={headerImage} style={styles.headerImage} resizeMode="contain" />
           <Box alignItems="center" paddingHorizontal="20px" paddingTop={'44px'} paddingBottom={{ custom: 64 }}>
             <Text color="label" align="center" size="30pt" weight="heavy">
               {i18n.t(TRANSLATIONS.header)}
@@ -113,7 +112,7 @@ export function NotificationPermissionScreen() {
           </Box>
         </Box>
       </View>
-    </AccentColorProvider>
+    </ColorModeProvider>
   );
 }
 
