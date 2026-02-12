@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { Box, Stack, Text, Bleed, Column, Columns, AccentColorProvider } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { useHardwareBackOnFocus } from '@/hooks/useHardwareBack';
 import * as i18n from '@/languages';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -54,6 +55,8 @@ export function NotificationPermissionScreen() {
     analytics.track(event.notificationPermissionSkipped);
     navigateToWallet();
   }, [navigateToWallet]);
+
+  useHardwareBackOnFocus(() => true, !IS_ANDROID);
 
   const handleEnable = useCallback(async () => {
     try {
