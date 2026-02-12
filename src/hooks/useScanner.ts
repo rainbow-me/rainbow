@@ -6,7 +6,6 @@ import { InteractionManager } from 'react-native';
 import URL from 'url-parse';
 import { parseUri } from '@walletconnect/utils';
 import { Alert } from '../components/alerts';
-import useExperimentalFlag, { PROFILES } from '../config/experimentalHooks';
 import { useNavigation } from '../navigation/Navigation';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { analytics } from '@/analytics';
@@ -24,7 +23,6 @@ import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const { navigate, goBack } = useNavigation();
-  const profilesEnabled = useExperimentalFlag(PROFILES);
   const enabledVar = useRef<boolean>(undefined);
 
   const enableScanning = useCallback(() => {
@@ -61,7 +59,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
 
       // And then navigate to Profile sheet
       InteractionManager.runAfterInteractions(() => {
-        Navigation.handleAction(profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET, {
+        Navigation.handleAction(Routes.PROFILE_SHEET, {
           address: ensName || address,
           fromRoute: 'QR Code',
         });
@@ -69,7 +67,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         setTimeout(onSuccess, 500);
       });
     },
-    [navigate, onSuccess, profilesEnabled]
+    [navigate, onSuccess]
   );
 
   const handleScanRainbowProfile = useCallback(
@@ -87,7 +85,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
 
         // And then navigate to Profile sheet
         InteractionManager.runAfterInteractions(() => {
-          Navigation.handleAction(profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET, {
+          Navigation.handleAction(Routes.PROFILE_SHEET, {
             address: ensName ?? '',
             fromRoute: 'QR Code',
           });
@@ -96,7 +94,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         });
       }
     },
-    [navigate, onSuccess, profilesEnabled]
+    [navigate, onSuccess]
   );
 
   const handleScanWalletConnect = useCallback(

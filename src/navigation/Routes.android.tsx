@@ -22,7 +22,6 @@ import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
-import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
@@ -175,13 +174,6 @@ function BSNavigator() {
   return (
     <BSStack.Navigator>
       <BSStack.Screen component={MainOuterNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
-      <BSStack.Screen
-        component={ShowcaseSheet}
-        name={Routes.SHOWCASE_SHEET}
-        options={{
-          height: '95%',
-        }}
-      />
       <BSStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
       <BSStack.Screen component={ExpandedAssetSheet} name={Routes.EXPANDED_ASSET_SHEET} />
       <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
