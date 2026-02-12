@@ -37,6 +37,7 @@ import * as i18n from '@/languages';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { checkForPendingSwap } from '@/helpers/transactions';
+import { safeSum } from '@/utils/safeSum';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 const TransactionMastheadHeight = android ? 153 : 135;
@@ -283,20 +284,22 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
   const isPendingSwap = checkForPendingSwap(transaction);
 
   const inputAsset = useMemo(() => {
-    const change = transaction?.changes?.find(a => a?.direction === 'in');
+    const inChanges = transaction?.changes?.filter(a => a?.direction === 'in') ?? [];
+    const change = inChanges[0];
 
     if (!change?.asset) return undefined;
 
     // NOTE: For pending transactions let's use the change value
     // since the balance hasn't been updated yet.
     if (isPendingSwap) {
-      const decimals = typeof change?.asset.decimals === 'number' ? change?.asset.decimals : 18;
-      const inAssetValueDisplay = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(change?.value?.toString() || '0', decimals), decimals)} ${change?.asset.symbol}`;
+      const decimals = typeof change.asset.decimals === 'number' ? change.asset.decimals : 18;
+      const totalValue = safeSum(inChanges, change => change?.value);
+      const valueDisplay = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(totalValue.toString(), decimals), decimals)} ${change?.asset.symbol}`;
       return {
-        inAssetValueDisplay,
-        inAssetNativeDisplay: change?.asset.price?.value
+        valueDisplay,
+        nativeDisplay: change?.asset.price?.value
           ? convertAmountAndPriceToNativeDisplay(
-              convertRawAmountToDecimalFormat(change?.value?.toString() || '0', decimals),
+              convertRawAmountToDecimalFormat(totalValue.toString(), decimals),
               change?.asset.price?.value || '0',
               nativeCurrency
             )?.display
@@ -305,19 +308,20 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
       };
     }
 
-    const inAsset = change.asset;
+    const totalBalance = safeSum(inChanges, change => change?.asset.balance?.amount).toString();
 
     return {
-      inAssetValueDisplay: convertAmountToBalanceDisplay(inAsset?.balance?.amount || '0', inAsset),
-      inAssetNativeDisplay: inAsset?.price?.value
-        ? convertAmountAndPriceToNativeDisplay(inAsset?.balance?.amount || '0', inAsset?.price?.value || '0', nativeCurrency)?.display
+      valueDisplay: convertAmountToBalanceDisplay(totalBalance, change.asset),
+      nativeDisplay: change.asset.price?.value
+        ? convertAmountAndPriceToNativeDisplay(totalBalance, change.asset.price?.value || '0', nativeCurrency)?.display
         : '-',
-      ...inAsset,
+      ...change.asset,
     };
   }, [isPendingSwap, nativeCurrency, transaction?.changes]);
 
   const outputAsset = useMemo(() => {
-    const change = transaction?.changes?.find(a => a?.direction === 'out');
+    const outChanges = transaction?.changes?.filter(a => a?.direction === 'out') ?? [];
+    const change = outChanges[0];
 
     if (!change?.asset) return undefined;
 
@@ -325,12 +329,13 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
     // since the balance hasn't been updated yet.
     if (isPendingSwap) {
       const decimals = typeof change?.asset.decimals === 'number' ? change?.asset.decimals : 18;
-      const inAssetValueDisplay = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(change?.value?.toString() || '0', decimals), decimals)} ${change?.asset.symbol}`;
+      const totalValue = safeSum(outChanges, change => change?.value);
+      const outAssetValueDisplay = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(totalValue.toString(), decimals), decimals)} ${change.asset.symbol}`;
       return {
-        inAssetValueDisplay,
-        inAssetNativeDisplay: change?.asset.price?.value
+        valueDisplay: outAssetValueDisplay,
+        nativeDisplay: change?.asset.price?.value
           ? convertAmountAndPriceToNativeDisplay(
-              convertRawAmountToDecimalFormat(change?.value?.toString() || '0', decimals),
+              convertRawAmountToDecimalFormat(totalValue.toString(), decimals),
               change?.asset.price?.value || '0',
               nativeCurrency
             )?.display
@@ -339,15 +344,15 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
       };
     }
 
-    const outAsset = change.asset;
+    const totalBalance = safeSum(outChanges, change => change?.asset.balance?.amount).toString();
 
     return {
-      image: outAsset?.icon_url || '',
-      inAssetValueDisplay: convertAmountToBalanceDisplay(outAsset?.balance?.amount || '0', outAsset),
-      inAssetNativeDisplay: outAsset?.price?.value
-        ? convertAmountAndPriceToNativeDisplay(outAsset?.balance?.amount || '0', outAsset?.price?.value || '0', nativeCurrency)?.display
+      image: change.asset.icon_url || '',
+      valueDisplay: convertAmountToBalanceDisplay(totalBalance, change.asset),
+      nativeDisplay: change.asset.price?.value
+        ? convertAmountAndPriceToNativeDisplay(totalBalance, change.asset?.price?.value || '0', nativeCurrency)?.display
         : '-',
-      ...outAsset,
+      ...change.asset,
     };
   }, [isPendingSwap, nativeCurrency, transaction?.changes]);
 
@@ -361,8 +366,8 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
   const getRightMasteadData = (): { title?: string; subtitle?: string; image?: string } => {
     if (transaction.type === 'swap') {
       return {
-        title: inputAsset?.inAssetValueDisplay,
-        subtitle: inputAsset?.inAssetNativeDisplay,
+        title: inputAsset?.valueDisplay,
+        subtitle: inputAsset?.nativeDisplay,
       };
     }
     if (transaction.type === 'contract_interaction' || transaction.type === 'approve') {
@@ -383,8 +388,8 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
   const getLeftMasteadData = (): { title?: string; subtitle?: string; image?: string } => {
     if (transaction.type === 'swap') {
       return {
-        title: outputAsset?.inAssetValueDisplay,
-        subtitle: outputAsset?.inAssetNativeDisplay,
+        title: outputAsset?.valueDisplay,
+        subtitle: outputAsset?.nativeDisplay,
       };
     }
     return {

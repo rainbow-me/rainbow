@@ -10,6 +10,7 @@ import {
 import * as i18n from '@/languages';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 import { useMemo } from 'react';
+import { safeSum } from '../utils/safeSum';
 
 export const calculateTimestampOfToday = () => {
   const d = new Date();
@@ -86,8 +87,11 @@ const approvalTypeValues = (transaction: RainbowTransaction) => {
 };
 
 const swapTypeValues = (changes: RainbowTransaction['changes'], status: RainbowTransaction['status']) => {
-  const tokenIn = changes?.filter(c => c?.direction === 'in')[0];
-  const tokenOut = changes?.filter(c => c?.direction === 'out')[0];
+  const inChanges = changes?.filter(c => c?.direction === 'in') ?? [];
+  const outChanges = changes?.filter(c => c?.direction === 'out') ?? [];
+
+  const tokenIn = inChanges[0];
+  const tokenOut = outChanges[0];
 
   // NOTE: For pending txns let's use the change values instead of
   // the transaction balance change since that hasn't happened yet
@@ -95,16 +99,22 @@ const swapTypeValues = (changes: RainbowTransaction['changes'], status: RainbowT
     const decimalsOut = typeof tokenOut?.asset.decimals === 'number' ? tokenOut.asset.decimals : 18;
     const decimalsIn = typeof tokenIn?.asset.decimals === 'number' ? tokenIn.asset.decimals : 18;
 
-    const valueOut = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(tokenOut?.value?.toString() || '0', decimalsOut), decimalsOut)} ${tokenOut?.asset.symbol}`;
-    const valueIn = `+${handleSignificantDecimals(convertRawAmountToDecimalFormat(tokenIn?.value?.toString() || '0', decimalsIn), decimalsIn)} ${tokenIn?.asset.symbol}`;
+    const totalValueOut = safeSum(outChanges, change => change?.value);
+    const totalValueIn = safeSum(inChanges, change => change?.value);
+
+    const valueOut = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(totalValueOut.toString(), decimalsOut), decimalsOut)} ${tokenOut?.asset.symbol}`;
+    const valueIn = `+${handleSignificantDecimals(convertRawAmountToDecimalFormat(totalValueIn.toString(), decimalsIn), decimalsIn)} ${tokenIn?.asset.symbol}`;
 
     return [valueOut, valueIn];
   }
 
   if (!tokenIn?.asset.balance?.amount || !tokenOut?.asset.balance?.amount) return;
 
-  const valueOut = `${convertAmountToBalanceDisplay(tokenOut?.asset.balance?.amount, { ...tokenOut?.asset })}`;
-  const valueIn = `+${convertAmountToBalanceDisplay(tokenIn?.asset.balance?.amount, { ...tokenIn?.asset })}`;
+  const totalBalanceOut = safeSum(outChanges, change => change?.asset.balance?.amount);
+  const totalBalanceIn = safeSum(inChanges, change => change?.asset.balance?.amount);
+
+  const valueOut = `${convertAmountToBalanceDisplay(totalBalanceOut.toString(), { ...tokenOut?.asset })}`;
+  const valueIn = `+${convertAmountToBalanceDisplay(totalBalanceIn.toString(), { ...tokenIn?.asset })}`;
 
   return [valueOut, valueIn];
 };
