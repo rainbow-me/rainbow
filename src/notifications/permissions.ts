@@ -5,6 +5,9 @@ import * as i18n from '@/languages';
 import { saveFCMToken } from '@/notifications/tokens';
 import { trackPushNotificationPermissionStatus } from '@/notifications/analytics';
 import { logger, RainbowError } from '@/logger';
+import { notificationSettingsStorage } from '@/notifications/settings/storage';
+
+const HAS_SHOWN_PERMISSION_SCREEN_KEY = 'hasShownNotificationPermissionScreen';
 
 export const getPermissionStatus = async (): Promise<PermissionStatus> => {
   const { status } = await checkNotifications();
@@ -73,10 +76,17 @@ export const checkPushNotificationPermissions = async () => {
   });
 };
 
+export const setHasShownNotificationPermissionScreen = () => {
+  notificationSettingsStorage.set(HAS_SHOWN_PERMISSION_SCREEN_KEY, true);
+};
+
 export const shouldShowNotificationPermissionScreen = async (): Promise<boolean> => {
   try {
+    if (notificationSettingsStorage.getBoolean(HAS_SHOWN_PERMISSION_SCREEN_KEY)) {
+      return false;
+    }
     const status = await getPermissionStatus();
-    return status === RESULTS.DENIED;
+    return !isNotificationPermissionGranted(status);
   } catch {
     return false;
   }

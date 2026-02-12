@@ -9,12 +9,14 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { requestNotificationPermission } from '@/notifications/permissions';
+import { isNotificationPermissionGranted, requestNotificationPermission } from '@/notifications/permissions';
 import { useTheme } from '@/theme';
 import backgroundImage from '@/assets/notificationsPromoSheetBackground.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import mockNotificationsIOS from '@/assets/mockNotificationsIOS.png';
 import mockNotificationsAndroid from '@/assets/mockNotificationsAndroid.png';
+import { analytics } from '@/analytics';
+import { event } from '@/analytics/event';
 
 const TRANSLATIONS = i18n.l.promos.notifications_launch;
 
@@ -48,9 +50,20 @@ export function NotificationPermissionScreen() {
     Navigation.handleAction(Routes.SWIPE_LAYOUT, { screen: Routes.WALLET_SCREEN });
   }, [goBack]);
 
+  const handleDismiss = useCallback(() => {
+    analytics.track(event.notificationPermissionSkipped);
+    navigateToWallet();
+  }, [navigateToWallet]);
+
   const handleEnable = useCallback(async () => {
     try {
-      await requestNotificationPermission();
+      analytics.track(event.notificationPermissionRequested);
+      const status = await requestNotificationPermission();
+      if (isNotificationPermissionGranted(status)) {
+        analytics.track(event.notificationPermissionGranted);
+      } else {
+        analytics.track(event.notificationPermissionDenied);
+      }
     } finally {
       navigateToWallet();
     }
@@ -89,7 +102,7 @@ export function NotificationPermissionScreen() {
                 </Text>
               </Box>
             </ButtonPressAnimation>
-            <ButtonPressAnimation onPress={navigateToWallet}>
+            <ButtonPressAnimation onPress={handleDismiss}>
               <Text color="labelTertiary" size="17pt" weight="heavy" align="center">
                 {i18n.t(TRANSLATIONS.secondary_button)}
               </Text>

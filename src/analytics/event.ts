@@ -88,6 +88,11 @@ export const event = {
   addWalletFlowStarted: 'add_wallet_flow.started',
   sendMaxPressed: 'Clicked "Max" in Send flow input',
 
+  notificationPermissionRequested: 'notification_permission.requested',
+  notificationPermissionGranted: 'notification_permission.granted',
+  notificationPermissionDenied: 'notification_permission.denied',
+  notificationPermissionSkipped: 'notification_permission.skipped',
+
   // notification promo sheet was shown
   notificationsPromoShown: 'notifications_promo.shown',
   // only for iOS — initial prompt is not allowed — Android is enabled by default
@@ -440,6 +445,10 @@ export type EventProperties = {
     campaign: string;
     time_viewed: number;
   };
+  [event.notificationPermissionRequested]: undefined;
+  [event.notificationPermissionGranted]: undefined;
+  [event.notificationPermissionDenied]: undefined;
+  [event.notificationPermissionSkipped]: undefined;
   [event.notificationsPromoShown]: undefined;
   [event.notificationsPromoPermissionsBlocked]: undefined;
   [event.notificationsPromoPermissionsGranted]: undefined;
