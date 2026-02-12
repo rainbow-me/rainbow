@@ -2533,7 +2533,6 @@
         "networks": "ネットワーク",
         "filter_by_network": "ネットワークでフィルタリング",
         "switch_networks": "ネットワークを切り替える",
-        "nothing_found": "何も見つかりません",
         "nothing_found_description": "一部のトークンは成功した%{action}を行うための十分な流動性がありません。",
         "nothing_found_description_l2": "一部のトークンは、成功した%{action}を実行するための十分なレイヤー2の流動性がありません。",
         "output_quotes_disabled": "出力の見積もりは無効です"
@@ -2582,6 +2581,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "何も見つかりません",
       "section_header": {
         "recent": "最近の",
         "popular": "Rainbowの人気",
