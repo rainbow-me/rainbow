@@ -2533,7 +2533,6 @@
         "networks": "เครือข่าย",
         "filter_by_network": "กรองตามเครือข่าย",
         "switch_networks": "เปลี่ยนเครือข่าย",
-        "nothing_found": "ไม่พบอะไร",
         "nothing_found_description": "บางโทเคนมีขาดแคลนความชื้นเพื่อทำการ %{action}อย่างสำเร็จ",
         "nothing_found_description_l2": "บางโทเคนไม่มีความสุกใสขั้นที่ 2 เพียงพอที่จะทำ %{action}อย่างสำเร็จ",
         "output_quotes_disabled": "ปิดใช้งานคำพูดผลลัพธ์"
@@ -2582,6 +2581,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "ไม่พบอะไร",
       "section_header": {
         "recent": "ล่าสุด",
         "popular": "เป็นที่นิยมใน Rainbow",
