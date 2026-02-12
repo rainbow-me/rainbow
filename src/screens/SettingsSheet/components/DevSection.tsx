@@ -193,6 +193,22 @@ const DevSection = () => {
     }
   };
 
+  const wipeAppAndRestart = async () => {
+    const isAuth = await isAuthenticated();
+    if (isAuth) {
+      const shouldWipeKeychain = await confirmKeychainAlert();
+      if (shouldWipeKeychain) {
+        await unsubscribeAllNotifications();
+        await wipeKeychain();
+        await AsyncStorage.clear();
+        clearAllStorages();
+        addDefaultNotificationGroupSettings(true);
+        await clearWalletState({ resetKeychain: true });
+        Restart.Restart();
+      }
+    }
+  };
+
   const onPressNavigationEntryPoint = () =>
     navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
       screen: Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET,
@@ -239,6 +255,13 @@ const DevSection = () => {
           size={52}
           testID="reset-keychain-section"
           titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.keychain.menu_title)} />}
+        />
+        <MenuItem
+          leftComponent={<MenuItem.TextIcon icon="🧨" isEmoji />}
+          onPress={wipeAppAndRestart}
+          size={52}
+          testID="wipe-app-and-restart-section"
+          titleComponent={<MenuItem.Title text="Wipe App + Restart" />}
         />
       </Menu>
       {(IS_DEV || IS_TEST_FLIGHT) && (
