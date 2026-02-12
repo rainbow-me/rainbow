@@ -5,8 +5,6 @@ import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { analytics } from '@/analytics';
 import { showWalletConnectToast } from '@/components/toasts/WalletConnectToast';
-import { defaultConfig } from '@/config/experimental';
-import { PROFILES } from '@/config/experimentalHooks';
 import { FiatProviderName } from '@/entities/f2c';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
 import { logger } from '@/logger';
@@ -260,9 +258,8 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
           const isValid = await checkIsValidAddressOrDomain(addressOrENS);
 
           if (isValid) {
-            const profilesEnabled = defaultConfig?.[PROFILES]?.value;
             const ensName = isENSAddressFormat(addressOrENS) ? addressOrENS : await fetchReverseRecordWithRetry(addressOrENS);
-            return Navigation.handleAction(profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET, {
+            return Navigation.handleAction(Routes.PROFILE_SHEET, {
               address: ensName || addressOrENS,
               fromRoute: 'Deeplink',
             });
