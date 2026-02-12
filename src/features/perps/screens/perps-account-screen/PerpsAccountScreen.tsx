@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { useSharedValue } from 'react-native-reanimated';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { Box, Separator, Stack, useColorMode } from '@/design-system';
@@ -11,6 +10,7 @@ import { MarketsSection } from '@/features/perps/screens/perps-account-screen/Ma
 import { OpenPositionsSection } from '@/features/perps/screens/perps-account-screen/OpenPositionsSection';
 import { usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
 import Routes from '@/navigation/routesNames';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const PerpsAccountScreen = function PerpsAccountScreen() {
   const { isDarkMode } = useColorMode();

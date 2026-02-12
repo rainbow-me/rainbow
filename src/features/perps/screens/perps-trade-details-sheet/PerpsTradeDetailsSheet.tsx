@@ -9,7 +9,7 @@ import { RootStackParamList } from '@/navigation/types';
 import { HlTrade, TradeExecutionType } from '@/features/perps/types';
 import { TradeDetailsGraphic } from '@/features/perps/screens/perps-trade-details-sheet/TradeDetailsGraphic';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';

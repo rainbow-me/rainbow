@@ -12,7 +12,7 @@ import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import * as i18n from '@/languages';
 import ConditionalWrap from 'conditional-wrap';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 export const PERPS_FEATURE_CARD_HEIGHT = 92;
 
@@ -49,7 +49,7 @@ export const PerpsFeatureCard = memo(function PerpsFeatureCard({
   return (
     <AccentColorProvider color={accentColor}>
       <View style={styles.container}>
-        <ButtonPressAnimation onPress={navigateToPerps} scaleTo={0.96}>
+        <ButtonPressAnimation onPress={() => navigateToPerps()} scaleTo={0.96}>
           <ConditionalWrap
             condition={isDarkMode}
             wrap={children => (

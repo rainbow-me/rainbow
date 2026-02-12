@@ -292,6 +292,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
   // TODO(jxom): This is temporary until `ZoomableWrapper` refactor
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: 1 - (animationProgress.value || ensCoverAnimationProgress.value),
+    pointerEvents: animationProgress.value > 0 || ensCoverAnimationProgress.value > 0 ? 'none' : 'auto',
   }));
   // TODO(jxom): This is temporary until `ZoomableWrapper` refactor
   const sheetHandleStyle = useAnimatedStyle(() => ({

@@ -1,10 +1,9 @@
 import { ImgixImage } from '@/components/images';
 import { defaultConfig, getExperimentalFlag, LOG_PUSH } from '@/config';
-import { IS_DEV } from '@/env';
+import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
 import { deleteAllBackups } from '@/handlers/cloudBackup';
 import { RainbowContext } from '@/helpers/RainbowContext';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import isTestFlight from '@/helpers/isTestFlight';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import { logger, RainbowError } from '@/logger';
 import { serialize } from '@/logger/logDump';
@@ -201,7 +200,7 @@ const DevSection = () => {
 
   return (
     <MenuContainer testID="developer-settings-sheet">
-      <Menu header={IS_DEV || isTestFlight ? 'Normie Settings' : ''}>
+      <Menu header={IS_DEV || IS_TEST_FLIGHT ? 'Normie Settings' : ''}>
         {/* <MenuItem
           disabled
           leftComponent={<MenuItem.TextIcon icon="🕹️" isEmoji />}
@@ -242,7 +241,7 @@ const DevSection = () => {
           titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.keychain.menu_title)} />}
         />
       </Menu>
-      {(IS_DEV || isTestFlight) && (
+      {(IS_DEV || IS_TEST_FLIGHT) && (
         <>
           <Menu header="Rainbow Developer Settings">
             <MenuItem

@@ -1,20 +1,11 @@
 /* eslint-disable react/no-unused-prop-types */
 /* 👆 Had to disable this ESLint rule it was false positive on shared Props interface */
-import React, { forwardRef, PropsWithChildren, useCallback, useContext, useMemo } from 'react';
+import React, { forwardRef, PropsWithChildren, useCallback, useContext, useMemo, useRef } from 'react';
 import { processColor, requireNativeComponent, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import { createNativeWrapper, NativeViewGestureHandlerGestureEvent, RawButtonProps } from 'react-native-gesture-handler';
+import { createNativeWrapper, RawButtonProps, State } from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import ReactNativeHapticFeedback, { HapticFeedbackTypes } from 'react-native-haptic-feedback';
-import Animated, {
-  AnimatedProps,
-  Easing,
-  runOnJS,
-  useAnimatedGestureHandler,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { AnimatedProps, Easing, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { normalizeTransformOrigin } from './NativeButton';
 import { ScaleButtonContext } from './ScaleButtonZoomable';
 import { BaseButtonAnimationProps } from './types';
@@ -41,7 +32,7 @@ type Props = PropsWithChildren<BaseProps>;
 
 const ZoomableRawButton = requireNativeComponent<
   Omit<
-    Props,
+    BaseProps,
     'contentContainerStyle' | 'overflowMargin' | 'backgroundColor' | 'borderRadius' | 'onLongPressEnded' | 'wrapperStyle' | 'onLongPress'
   > &
     Pick<RawButtonProps, 'rippleColor'>
@@ -70,17 +61,16 @@ const ScaleButton = forwardRef(function ScaleButton(
     minLongPressDuration,
     onLongPress,
     onPress,
-    overflowMargin,
+    overflowMargin = OVERFLOW_MARGIN,
     scaleTo = 0.86,
     wrapperStyle,
     testID,
-  }: PropsWithChildren<Props>,
+  }: Props,
   ref
 ) {
   const parentScale = useContext(ScaleButtonContext);
   const childScale = useSharedValue(1);
   const scale = parentScale || childScale;
-  const hasScaledDown = useSharedValue(0);
   const scaleTraversed = useDerivedValue(() => {
     const value = withTiming(scale.value, {
       duration,
@@ -94,13 +84,11 @@ const ScaleButton = forwardRef(function ScaleButton(
   });
   const sz = useAnimatedStyle(() => {
     return {
-      transform: [
-        {
-          scale: scaleTraversed.value,
-        },
-      ],
+      transform: [{ scale: scaleTraversed.value }],
     };
   });
+
+  const lastActiveRef = useRef(false);
 
   const { handleCancel, handlePress, handleStartPress } = useLongPressEvents({
     minLongPressDuration,
@@ -108,35 +96,47 @@ const ScaleButton = forwardRef(function ScaleButton(
     onPress,
   });
 
-  const gestureHandler = useAnimatedGestureHandler<NativeViewGestureHandlerGestureEvent>({
-    onActive: () => {
-      runOnJS(handleStartPress)();
-      if (hasScaledDown.value === 0) {
-        scale.value = scaleTo;
+  const handleEvent = useCallback(
+    ({ nativeEvent }: any) => {
+      const { state, oldState, pointerInside } = nativeEvent;
+      const active = pointerInside && state === State.ACTIVE;
+
+      // Scale animation on active state change
+      if (active !== lastActiveRef.current) {
+        scale.value = active ? scaleTo : 1;
       }
-      hasScaledDown.value = 1;
+
+      // Start long press timer on BEGAN
+      if (!lastActiveRef.current && state === State.BEGAN && pointerInside) {
+        handleStartPress();
+      }
+
+      // Fire onPress when gesture ends successfully (handlePress checks if long press was detected)
+      if (oldState === State.ACTIVE && state !== State.CANCELLED && lastActiveRef.current) {
+        handlePress();
+      }
+
+      // Cancel if finger moved out or gesture was cancelled/failed
+      if ((state === State.ACTIVE && !pointerInside) || state === State.CANCELLED || state === State.FAILED) {
+        handleCancel();
+      }
+
+      lastActiveRef.current = active;
     },
-    onCancel: () => {
-      scale.value = 1;
-      hasScaledDown.value = 0;
-      runOnJS(handleCancel)();
-    },
-    onEnd: () => {
-      hasScaledDown.value = 0;
-      scale.value = 1;
-      runOnJS(handlePress)();
-    },
-    onFail: () => {
-      runOnJS(handleCancel)();
-    },
-  });
+    [handleCancel, handlePress, handleStartPress, scale, scaleTo]
+  );
 
   return (
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error ref type mismatch
     <View style={[sx.overflow, wrapperStyle]} testID={testID} ref={ref}>
       <View style={{ margin: -overflowMargin }}>
-        <AnimatedRawButton exclusive={exclusive} hitSlop={-overflowMargin} onGestureEvent={gestureHandler} rippleColor={transparentColor}>
+        <AnimatedRawButton
+          exclusive={exclusive}
+          hitSlop={-overflowMargin}
+          rippleColor={transparentColor}
+          onHandlerStateChange={handleEvent}
+          onGestureEvent={handleEvent}
+        >
           <View style={sx.transparentBackground}>
             <View style={{ padding: overflowMargin }}>
               <Animated.View style={[sz, contentContainerStyle]}>{children}</Animated.View>

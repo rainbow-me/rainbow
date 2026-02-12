@@ -9,9 +9,9 @@ import { XIcon } from '../../icons/XIcon';
 import { Icon } from '@/components/icons';
 import { formatUrl } from '@/components/DappBrowser/utils';
 import { openInBrowser } from '@/utils/openInBrowser';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { logger } from '@/logger';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 interface RowItem {
   icon?: string;
@@ -144,7 +144,7 @@ const Description = memo(function Description({ text }: { text: string }) {
         {showFullDescription ? text : truncatedText}
       </Text>
       {!showFullDescription && (
-        <ButtonPressAnimation scaleTo={0.96} hapticTrigger="tap-end" onPress={() => setShowFullDescription(prev => !prev)}>
+        <ButtonPressAnimation scaleTo={0.96} onPress={() => setShowFullDescription(prev => !prev)}>
           <Row highlighted={true}>
             <Bleed vertical="4px" horizontal="2px">
               <Box width="full" flexDirection="row" alignItems="center" gap={8}>

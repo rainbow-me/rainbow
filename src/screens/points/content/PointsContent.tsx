@@ -1,4 +1,3 @@
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
 import EthIcon from '@/assets/eth-icon.png';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -68,6 +67,7 @@ import { RewardsActionButton } from '../components/RewardsActionButton';
 import { Skeleton } from '../components/Skeleton';
 import { getNumberFormatter } from '@/helpers/intl';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined }) => {
   const labelSecondary = useForegroundColor('labelSecondary');

@@ -18,7 +18,9 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { SCRUBBER_WIDTH, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { SCRUBBER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const MAX_PERCENTAGE = 0.995;
 const MIN_PERCENTAGE = 0.005;

@@ -230,7 +230,7 @@
     "react-native-cloud-fs": "rainbow-me/react-native-cloud-fs#d73f055c441566e5a57eebd621da8df3cf2499bb",
     "react-native-crypto": "2.2.0",
     "react-native-dark-mode": "0.2.2",
-    "react-native-device-info": "5.3.1",
+    "react-native-device-info": "15.0.1",
     "react-native-dotenv": "2.4.2",
     "react-native-edge-to-edge": "1.6.2",
     "react-native-fast-image": "8.5.11",

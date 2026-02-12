@@ -15,7 +15,7 @@ import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';

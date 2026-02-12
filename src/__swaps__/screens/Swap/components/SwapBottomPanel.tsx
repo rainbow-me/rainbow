@@ -1,4 +1,3 @@
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { Box, Separator, globalColors, useColorMode } from '@/design-system';
@@ -6,7 +5,7 @@ import { RNBW_REWARDS, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
-import { PanGestureHandler } from 'react-native-gesture-handler';
+import { GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   runOnJS,
@@ -32,6 +31,7 @@ import { IS_TEST } from '@/env';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import * as i18n from '@/languages';
 import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;
 
@@ -47,14 +47,13 @@ export function SwapBottomPanel() {
     quoteFetchingInterval,
   } = useSwapContext();
 
+  const { swipeToDismissGesture, gestureY } = useBottomPanelGestureHandler();
   const { rnbw_rewards_enabled } = useRemoteConfig('rnbw_rewards_enabled');
   const rnbwRewardsEnabled = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
 
   const isRewardEligible = useSwapsStore(state => state.rewardsEstimate?.eligible === true);
   const rewardsEstimate = useSwapsStore(state => state.rewardsEstimate);
   const showRewards = rnbwRewardsEnabled && isRewardEligible && confirmButtonProps.value.type === 'hold';
-
-  const { swipeToDismissGestureHandler, gestureY } = useBottomPanelGestureHandler();
 
   const holdProgress = useSharedValue(0);
 
@@ -121,7 +120,7 @@ export function SwapBottomPanel() {
   }, [navigate, rewardsEstimate?.rewardRnbw, rewardsEstimate?.decimals]);
 
   return (
-    <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler}>
+    <GestureDetector gesture={swipeToDismissGesture}>
       <Animated.View
         style={[
           styles.swapActionsWrapper,
@@ -221,7 +220,7 @@ export function SwapBottomPanel() {
           </Box>
         </Box>
       </Animated.View>
-    </PanGestureHandler>
+    </GestureDetector>
   );
 }
 

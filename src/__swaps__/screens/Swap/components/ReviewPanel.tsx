@@ -36,7 +36,8 @@ import Animated, {
   withDelay,
   withSpring,
 } from 'react-native-reanimated';
-import { REVIEW_SHEET_ROW_HEIGHT, THICK_BORDER_WIDTH } from '../constants';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { REVIEW_SHEET_ROW_HEIGHT } from '../constants';
 import { useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';

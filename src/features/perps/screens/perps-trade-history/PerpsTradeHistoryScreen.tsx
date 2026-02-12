@@ -11,11 +11,11 @@ import { HlTrade } from '@/features/perps/types';
 import { Box, Separator, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import infinityIcon from '@/assets/infinity.png';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ButtonPressAnimation } from '@/components/animations';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const ESTIMATED_ITEM_HEIGHT = 68;
 const SCROLL_INSETS = { bottom: 48 };

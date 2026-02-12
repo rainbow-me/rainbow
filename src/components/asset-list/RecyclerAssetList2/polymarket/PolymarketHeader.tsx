@@ -42,7 +42,7 @@ export const PolymarketHeader = memo(function PolymarketHeader({ isDarkMode }: {
   return (
     <Box height={{ custom: HEIGHT }} paddingHorizontal="20px" justifyContent="center">
       <Inline alignHorizontal="justify" alignVertical="center">
-        <ButtonPressAnimation onPress={navigateToPolymarket} scaleTo={1.05}>
+        <ButtonPressAnimation onPress={() => navigateToPolymarket()} scaleTo={1.05}>
           <Inline horizontalSpace={'8px'} alignVertical="center">
             <Text size="22pt" color="label" weight="heavy">
               {i18n.t(i18n.l.account.tab_polymarket)}

@@ -2339,8 +2339,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNDeviceInfo (5.3.1):
-    - React
+  - RNDeviceInfo (15.0.1):
+    - React-Core
   - RNFastImage (8.5.11):
     - React-Core
     - SDWebImage (~> 5.18.11)
@@ -3379,7 +3379,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: aa75595c1aefa18f868452091fa0c411a516ce11
   RNCClipboard: e1d17c9d093d8129ef50b39b63a17a0e8ccd0ade
   RNCMaskedView: f5e98ce62da44ef5035739cf44536881983d82a1
-  RNDeviceInfo: c78d3d9ae81aed962fa0cc7c455e970f35a44a47
+  RNDeviceInfo: 36d7f232bfe7c9b5c494cb7793230424ed32c388
   RNFastImage: b4741be7fc96457586f610a1a454817518376819
   RNFBApp: a04e05e3ad4c3e6a2a84cf714f6845ec2cf5d73d
   RNFBMessaging: 6d244fcbdf8489869facfefb4ddf17386e234f68
