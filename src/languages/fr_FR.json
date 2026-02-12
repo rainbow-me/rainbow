@@ -2533,7 +2533,6 @@
         "networks": "Réseaux",
         "filter_by_network": "Filtrer par réseau",
         "switch_networks": "Changer de réseau",
-        "nothing_found": "Rien trouvé",
         "nothing_found_description": "Certains tokens n’ont pas assez de liquidités pour effectuer un %{action}réussi.",
         "nothing_found_description_l2": "Certains tokens n'ont pas assez de liquidités en couche 2 pour effectuer un %{action}réussi.",
         "output_quotes_disabled": "Cottages de sortie désactivées"
@@ -2582,6 +2581,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "Rien trouvé",
       "section_header": {
         "recent": "Récent",
         "popular": "Populaire sur Rainbow",
