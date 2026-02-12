@@ -2533,7 +2533,6 @@
         "networks": "Сети",
         "filter_by_network": "Фильтр по сети",
         "switch_networks": "Сменить сеть",
-        "nothing_found": "Ничего не найдено",
         "nothing_found_description": "У некоторых токенов недостаточно ликвидности для успешного %{action}.",
         "nothing_found_description_l2": "У некоторых токенов недостаточно ликвидности на уровне 2 для успешного %{action}.",
         "output_quotes_disabled": "Отключена выдача котировок"
@@ -2582,6 +2581,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "Ничего не найдено",
       "section_header": {
         "recent": "Последние",
         "popular": "Популярное в Rainbow",
