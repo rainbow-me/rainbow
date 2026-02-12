@@ -16,6 +16,7 @@ jest.config.js
 __generated__
 coverage
 src/browser
+rainbow-scripts
 src/__swaps__/README.md
 InjectedJSBundle.js
 src/features/positions/types/generated/**
