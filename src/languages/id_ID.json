@@ -2533,7 +2533,6 @@
         "networks": "Jaringan",
         "filter_by_network": "Filter berdasarkan Jaringan",
         "switch_networks": "Ganti Jaringan",
-        "nothing_found": "Tidak ada yang ditemukan",
         "nothing_found_description": "Beberapa token tidak memiliki cukup likuiditas untuk melakukan %{action}yang sukses.",
         "nothing_found_description_l2": "Beberapa token tidak memiliki cukup likuiditas layer 2 untuk melakukan %{action}yang sukses.",
         "output_quotes_disabled": "Kutipan keluaran dinonaktifkan"
@@ -2582,6 +2581,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "Tidak ada yang ditemukan",
       "section_header": {
         "recent": "Baru-baru ini",
         "popular": "Populer di Rainbow",
