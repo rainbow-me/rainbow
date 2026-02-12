@@ -84,6 +84,7 @@ async function maybeShowBackupPrompt(): Promise<boolean> {
 
 async function maybeShowAppIconUnlockPrompt(): Promise<boolean> {
   const wallets = getWallets();
+  if (!wallets) return false;
   const walletsToCheck: EthereumAddress[] = [];
 
   Object.values(wallets).forEach(wallet => {
