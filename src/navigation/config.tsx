@@ -504,6 +504,23 @@ export const promoSheetConfig: PartialNavigatorConfigOptions = {
   }),
 };
 
+export const notificationPermissionSheetConfig: PartialNavigatorConfigOptions = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      springDamping: 1,
+      transitionDuration: 0.3,
+    }),
+    allowsDragToDismiss: false,
+    allowsTapToDismiss: false,
+    dismissable: false,
+    headerHeight: 0,
+    isShortFormEnabled: false,
+    gestureEnabled: false,
+  }),
+};
+
 export const profileConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({

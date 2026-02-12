@@ -292,15 +292,14 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       setBusy(false);
       walletLoadingStore.setState({ loadingState: null });
 
-      const shouldReplace = previousWalletCount === 0;
-      const navigate = shouldReplace ? Navigation.replace : Navigation.handleAction;
+      const isFirstWallet = previousWalletCount === 0;
 
       // Navigate to wallet screen and dismiss the entire modal stack
       try {
-        if (shouldReplace) {
+        if (isFirstWallet) {
           await navigateAfterOnboarding();
         } else {
-          navigate(Routes.SWIPE_LAYOUT, {
+          Navigation.handleAction(Routes.SWIPE_LAYOUT, {
             screen: Routes.WALLET_SCREEN,
           });
         }

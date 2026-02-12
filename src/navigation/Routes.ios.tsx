@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
-import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
 import { AddCashSheet } from '../screens/AddCash';
 import AvatarBuilder from '../screens/AvatarBuilder';
@@ -56,6 +56,7 @@ import {
   profilePreviewConfig,
   qrScannerConfig,
   promoSheetConfig,
+  notificationPermissionSheetConfig,
   registerENSNavigatorConfig,
   restoreSheetConfig,
   sendConfirmationSheetConfig,
@@ -166,11 +167,6 @@ function MainNavigator() {
     <Stack.Navigator initialRouteName={initialRoute} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
       <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
-      <Stack.Screen
-        component={NotificationPermissionScreen}
-        name={Routes.NOTIFICATION_PERMISSION_SCREEN}
-        options={{ gestureEnabled: false, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, presentation: 'card' }}
-      />
       <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER} options={emojiPreset} />
       <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER_WALLET} options={emojiPresetWallet} />
       <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
@@ -193,6 +189,11 @@ function NativeStackNavigator() {
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
       <NativeStack.Screen component={MainStack} name={Routes.STACK} />
+      <NativeStack.Screen
+        component={NotificationPermissionScreen}
+        name={Routes.NOTIFICATION_PERMISSION_SCREEN}
+        {...notificationPermissionSheetConfig}
+      />
       <NativeStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
       <NativeStack.Screen component={ReceiveModal} name={Routes.RECEIVE_MODAL} {...recieveModalSheetConfig} />
       <NativeStack.Screen component={SettingsSheet} name={Routes.SETTINGS_SHEET} {...settingsSheetConfig} />

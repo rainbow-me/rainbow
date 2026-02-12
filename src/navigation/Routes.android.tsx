@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
-import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
 import { AddCashSheet } from '../screens/AddCash';
 import AvatarBuilder from '../screens/AvatarBuilder';
@@ -152,11 +152,6 @@ function MainNavigator() {
       <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
       <Stack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} options={bottomSheetPreset} />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
-      <Stack.Screen
-        component={NotificationPermissionScreen}
-        name={Routes.NOTIFICATION_PERMISSION_SCREEN}
-        options={{ gestureEnabled: false, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, presentation: 'card' }}
-      />
       <Stack.Screen component={ShowSecretView} name="ShowSecretView" options={bottomSheetPreset} />
       <Stack.Screen component={WalletConnectApprovalSheet} name={Routes.WALLET_CONNECT_APPROVAL_SHEET} options={bottomSheetPreset} />
     </Stack.Navigator>
@@ -179,6 +174,19 @@ function BSNavigator() {
   return (
     <BSStack.Navigator>
       <BSStack.Screen component={MainOuterNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
+      <BSStack.Screen
+        component={NotificationPermissionScreen}
+        name={Routes.NOTIFICATION_PERMISSION_SCREEN}
+        options={{
+          ...bottomSheetPreset,
+          backdropOpacity: 1,
+          backdropPressBehavior: 'none',
+          enableContentPanningGesture: false,
+          enableHandlePanningGesture: false,
+          enablePanDownToClose: false,
+          height: '100%',
+        }}
+      />
       <BSStack.Screen
         component={ShowcaseSheet}
         name={Routes.SHOWCASE_SHEET}

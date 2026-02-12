@@ -7,7 +7,7 @@ import { SystemBars } from 'react-native-edge-to-edge';
 import { Box, Stack, Text, Bleed, Column, Columns, AccentColorProvider } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { requestNotificationPermission } from '@/notifications/permissions';
 import { useTheme } from '@/theme';
@@ -21,7 +21,7 @@ const TRANSLATIONS = i18n.l.promos.notifications_launch;
 export function NotificationPermissionScreen() {
   const { colors } = useTheme();
   const safeAreaInsets = useSafeAreaInsets();
-  const { replace } = useNavigation();
+  const { goBack } = useNavigation();
 
   const valuePropItems = [
     {
@@ -44,10 +44,9 @@ export function NotificationPermissionScreen() {
   const headerImage = IS_IOS ? mockNotificationsIOS : mockNotificationsAndroid;
 
   const navigateToWallet = useCallback(() => {
-    replace(Routes.SWIPE_LAYOUT, {
-      screen: Routes.WALLET_SCREEN,
-    });
-  }, [replace]);
+    goBack();
+    Navigation.handleAction(Routes.SWIPE_LAYOUT, { screen: Routes.WALLET_SCREEN });
+  }, [goBack]);
 
   const handleEnable = useCallback(async () => {
     try {
@@ -62,7 +61,7 @@ export function NotificationPermissionScreen() {
       <View style={styles.container}>
         <SystemBars style="light" />
         <Box as={ImageBackground} height="full" source={backgroundImage} style={StyleSheet.absoluteFillObject} />
-        <Box paddingTop={{ custom: safeAreaInsets.top + 32 }} paddingBottom={{ custom: safeAreaInsets.bottom }} style={styles.flex}>
+        <Box paddingTop={{ custom: 57.5 }} paddingBottom={{ custom: safeAreaInsets.bottom }} style={styles.flex}>
           <Image source={headerImage} style={styles.headerImage} />
           <Box alignItems="center" paddingHorizontal="20px" paddingTop={'44px'} paddingBottom={{ custom: 64 }}>
             <Text color="label" align="center" size="30pt" weight="heavy">
@@ -77,15 +76,15 @@ export function NotificationPermissionScreen() {
           <Box flexGrow={1} justifyContent="flex-end" gap={24} paddingHorizontal="20px" paddingVertical={'24px'}>
             <ButtonPressAnimation onPress={handleEnable}>
               <Box
-                height={52}
+                height={48}
                 background="white"
-                borderRadius={26}
+                borderRadius={24}
                 paddingHorizontal="20px"
                 paddingVertical="12px"
                 justifyContent="center"
                 alignItems="center"
               >
-                <Text color="black" size="26pt" weight="heavy">
+                <Text color="black" size="22pt" weight="heavy">
                   {i18n.t(TRANSLATIONS.primary_button.permissions_not_enabled)}
                 </Text>
               </Box>
@@ -145,6 +144,11 @@ const ValuePropItem = ({ title, description, icon }: { title: string; descriptio
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    ...(IS_ANDROID && {
+      borderTopLeftRadius: 40,
+      borderTopRightRadius: 40,
+      overflow: 'hidden',
+    }),
   },
   flex: {
     flex: 1,
