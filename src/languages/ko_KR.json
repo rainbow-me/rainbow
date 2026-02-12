@@ -2533,7 +2533,6 @@
         "networks": "네트워크",
         "filter_by_network": "네트워크별 필터링",
         "switch_networks": "네트워크 전환",
-        "nothing_found": "아무것도 찾을 수 없음",
         "nothing_found_description": "일부 토큰은 충분한 유동성이 없어 성공적인 %{action}수행이 불가합니다.",
         "nothing_found_description_l2": "일부 토큰은 레이어 2 유동성이 충분하지 않아 성공적인 %{action}수행이 불가합니다.",
         "output_quotes_disabled": "출력 견적 비활성화"
@@ -2582,6 +2581,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "아무것도 찾을 수 없음",
       "section_header": {
         "recent": "최근",
         "popular": "레인보우에서 인기",
