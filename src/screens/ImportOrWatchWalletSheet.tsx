@@ -10,7 +10,7 @@ import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { LoadingOverlay } from '@/components/modal';
+import { LoadingOverlay } from '@/components/modal/LoadingOverlay';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { Keyboard } from 'react-native';
