@@ -2533,7 +2533,6 @@
         "networks": "Redes",
         "filter_by_network": "Filtrar por red",
         "switch_networks": "Cambiar de red",
-        "nothing_found": "Nada encontrado",
         "nothing_found_description": "Algunos tokens no tienen suficiente liquidez para realizar un éxito %{action}.",
         "nothing_found_description_l2": "Algunos tokens no tienen suficiente liquidez en capa 2 para realizar un éxito %{action}.",
         "output_quotes_disabled": "Citas de salida desactivadas"
@@ -2582,6 +2581,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "Nada encontrado",
       "section_header": {
         "recent": "Reciente",
         "popular": "Popular en Rainbow",
