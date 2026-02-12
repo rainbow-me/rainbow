@@ -160,6 +160,11 @@ export function WelcomeScreen() {
       loadingState: WalletLoadingStates.CREATING_WALLET,
     });
 
+    // Let the loading overlay render before starting expensive wallet initialization.
+    await new Promise<void>(resolve => {
+      requestAnimationFrame(() => resolve());
+    });
+
     try {
       const walletAddress = await initializeWallet({
         shouldCreateFirstWallet: true,
