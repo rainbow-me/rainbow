@@ -5,7 +5,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import TouchableBackdrop from '../TouchableBackdrop';
-import { Box, Text } from '@/design-system';
+import { Box, globalColors, Text } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import neverRerender from '@/utils/neverRerender';
@@ -27,7 +27,7 @@ const LoadingOverlayComponent = ({ title, paddingTop = 0, style }: LoadingOverla
       <Animated.View
         entering={FadeIn}
         exiting={FadeOut}
-        style={[StyleSheet.absoluteFillObject, { backgroundColor: opacity(colors.black, 0.7) }]}
+        style={[StyleSheet.absoluteFillObject, { backgroundColor: opacity(globalColors.grey100, 0.7) }]}
       />
       <Box
         alignItems="center"
