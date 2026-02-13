@@ -73,7 +73,7 @@ export function NotificationPermissionScreen() {
 
   return (
     <ColorModeProvider value="dark">
-      <View style={styles.container}>
+      <View style={styles.container} testID="notification-permission-screen">
         <SystemBars style="light" />
         <Box as={ImageBackground} height="full" source={backgroundImage} style={StyleSheet.absoluteFillObject} />
         <Box paddingTop={{ custom: 57.5 }} paddingBottom={{ custom: safeAreaInsets.bottom }} style={styles.flex}>
@@ -89,7 +89,7 @@ export function NotificationPermissionScreen() {
             ))}
           </Box>
           <Box flexGrow={1} justifyContent="flex-end" gap={24} paddingHorizontal="20px" paddingVertical={'24px'}>
-            <ButtonPressAnimation onPress={handleEnable}>
+            <ButtonPressAnimation onPress={handleEnable} testID="notification-permission-enable-button">
               <Box
                 height={48}
                 background="white"
@@ -104,7 +104,7 @@ export function NotificationPermissionScreen() {
                 </Text>
               </Box>
             </ButtonPressAnimation>
-            <ButtonPressAnimation onPress={handleDismiss}>
+            <ButtonPressAnimation onPress={handleDismiss} testID="notification-permission-dismiss-button">
               <Text color="labelTertiary" size="17pt" weight="heavy" align="center">
                 {i18n.t(TRANSLATIONS.secondary_button)}
               </Text>
