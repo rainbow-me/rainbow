@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 
 import Routes from '@/navigation/routesNames';
 
-import AppIconSection from './components/AppIconSection';
+import AppIconSettingsSection from '@/features/app-icon/AppIconSettingsSection';
 import WalletsAndBackup from './components/Backups/WalletsAndBackup';
 import CurrencySection from './components/CurrencySection';
 import LanguageSection from './components/LanguageSection';
@@ -14,7 +14,7 @@ import { SupportSection } from './components/support/SupportSection';
 
 export const SettingsPages = {
   appIcon: {
-    component: AppIconSection,
+    component: AppIconSettingsSection,
     getTitle: () => i18n.t(i18n.l.settings.app_icon),
     key: Routes.SETTINGS_SECTION_APP_ICON,
   },

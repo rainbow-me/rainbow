@@ -3,7 +3,7 @@ import type { EthereumAddress } from '@/entities/wallet';
 import { Navigation } from '@/navigation';
 import { RainbowError, logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
-import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
+import { UnlockableAppIconKey, unlockableAppIcons } from './appIcons';
 import { createMMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
