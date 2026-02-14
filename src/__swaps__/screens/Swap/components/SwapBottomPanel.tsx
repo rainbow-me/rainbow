@@ -1,7 +1,7 @@
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { Box, Separator, globalColors, useColorMode } from '@/design-system';
-import { RNBW_REWARDS, useExperimentalFlag } from '@/config';
+import { ATOMIC_SWAPS, DELEGATION, RNBW_REWARDS, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
@@ -27,8 +27,9 @@ import { getIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
-import { IS_TEST } from '@/env';
+import { IS_DEV, IS_TEST } from '@/env';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { useSwapWillDelegate } from '../hooks/useSwapWillDelegate';
 import * as i18n from '@/languages';
 import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -48,11 +49,19 @@ export function SwapBottomPanel() {
   } = useSwapContext();
 
   const { swipeToDismissGesture, gestureY } = useBottomPanelGestureHandler();
-  const { rnbw_rewards_enabled } = useRemoteConfig('rnbw_rewards_enabled');
+  const { rnbw_rewards_enabled, delegation_enabled, atomic_swaps_enabled } = useRemoteConfig(
+    'rnbw_rewards_enabled',
+    'delegation_enabled',
+    'atomic_swaps_enabled'
+  );
   const rnbwRewardsEnabled = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
+  const delegationFlag = useExperimentalFlag(DELEGATION);
+  const atomicSwapsFlag = useExperimentalFlag(ATOMIC_SWAPS);
+  const delegationFlagsOn = IS_DEV && (delegation_enabled || delegationFlag) && (atomic_swaps_enabled || atomicSwapsFlag);
 
   const isRewardEligible = useSwapsStore(state => state.rewardsEstimate?.eligible === true);
   const rewardsEstimate = useSwapsStore(state => state.rewardsEstimate);
+  const willDelegate = useSwapWillDelegate();
   const showRewards = rnbwRewardsEnabled && isRewardEligible && confirmButtonProps.value.type === 'hold';
 
   const holdProgress = useSharedValue(0);
@@ -173,8 +182,16 @@ export function SwapBottomPanel() {
               icon={icon}
               iconStyle={confirmButtonIconStyle}
               label={label}
-              subtitle={showRewards ? i18n.t(i18n.l.swap.actions.earning_rewards) : undefined}
-              rightIcon={showRewards ? '􀅴' : undefined}
+              subtitle={
+                delegationFlagsOn
+                  ? willDelegate
+                    ? i18n.t(i18n.l.swap.actions.eip7702_delegate)
+                    : i18n.t(i18n.l.swap.actions.eip7702_batch)
+                  : showRewards
+                    ? i18n.t(i18n.l.swap.actions.earning_rewards)
+                    : undefined
+              }
+              rightIcon={showRewards && !delegationFlagsOn ? '􀅴' : undefined}
               longPressDuration={HOLD_TO_SWAP_DURATION_MS}
               disabled={finalDisabled}
               onPressWorklet={() => {
@@ -214,7 +231,7 @@ export function SwapBottomPanel() {
                 }
               }}
               opacity={finalOpacity}
-              onPressRightIconJS={showRewards ? handleRewardsInfoPress : undefined}
+              onPressRightIconJS={showRewards && !delegationFlagsOn ? handleRewardsInfoPress : undefined}
               scaleTo={0.9}
             />
           </Box>
