@@ -17,7 +17,7 @@ import { Icon } from '@/components/icons';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
 import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
-import { useDelegations, useDelegationPreference } from '@rainbow-me/delegation';
+import { DelegationStatus, useDelegations, useDelegationPreference } from '@rainbow-me/delegation';
 import type { Address } from 'viem';
 
 const ROW_HEIGHT_WITH_PADDING = 64;
@@ -82,7 +82,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
   const { delegations } = useDelegations(address as Address);
   const { enabled: isDelegationEnabled = true } = useDelegationPreference(address as Address) ?? {};
 
-  const isDelegated = delegations.length > 0;
+  const isDelegated = delegations.some(({ delegationStatus }) => delegationStatus === DelegationStatus.RAINBOW_DELEGATED);
   const isDisabled = !isDelegationEnabled;
 
   const walletName = useMemo(() => {

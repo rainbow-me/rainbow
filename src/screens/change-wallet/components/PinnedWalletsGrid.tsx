@@ -17,7 +17,7 @@ import { IS_DEV, IS_IOS, IS_TEST_FLIGHT } from '@/env';
 import { useTheme } from '@/theme';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { StyleSheet } from 'react-native';
-import { useDelegations, useDelegationPreference } from '@rainbow-me/delegation';
+import { DelegationStatus, useDelegations, useDelegationPreference } from '@rainbow-me/delegation';
 import type { Address } from 'viem';
 
 const UNPIN_BADGE_SIZE = 28;
@@ -37,7 +37,7 @@ function DelegationBadge({ accountAddress, isReadOnly }: { accountAddress: strin
   const { delegations } = useDelegations(accountAddress as Address);
   const { enabled: isDelegationEnabled = true } = useDelegationPreference(accountAddress as Address) ?? {};
 
-  const isDelegated = delegations.length > 0;
+  const isDelegated = delegations.some(({ delegationStatus }) => delegationStatus === DelegationStatus.RAINBOW_DELEGATED);
   const isDisabled = !isDelegationEnabled;
 
   return (
