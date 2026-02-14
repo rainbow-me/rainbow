@@ -39,6 +39,7 @@ import Animated, {
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { REVIEW_SHEET_ROW_HEIGHT } from '../constants';
 import { useSelectedGasSpeed } from '../hooks/useSelectedGas';
+import { useSwapWillDelegate } from '../hooks/useSwapWillDelegate';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
@@ -53,6 +54,7 @@ const MAXIMUM_SOLD_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.maximum_
 const RAINBOW_FEE_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.rainbow_fee);
 const MAX_SLIPPAGE_LABEL = i18n.t(i18n.l.exchange.slippage_tolerance);
 const ESTIMATED_NETWORK_FEE_LABEL = i18n.t(i18n.l.gas.network_fee);
+const SMART_WALLET_ACTIVATION_FEE_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.smart_wallet_activation_fee);
 
 const RainbowFee = () => {
   const { isDarkMode } = useColorMode();
@@ -248,6 +250,7 @@ export function ReviewPanel() {
   const { isDarkMode } = useColorMode();
   const { configProgress, lastTypedInput, internalSelectedInputAsset, internalSelectedOutputAsset, quote } = useSwapContext();
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
+  const willDelegate = useSwapWillDelegate();
 
   const labelTertiary = useForegroundColor('labelTertiary');
   const separator = useForegroundColor('separator');
@@ -284,13 +287,14 @@ export function ReviewPanel() {
 
   const openGasExplainer = useCallback(async () => {
     const chainsNativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset();
-    const nativeAsset = chainsNativeAsset[swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet];
+    const chainId = swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet;
+    const nativeAsset = chainsNativeAsset[chainId];
     navigate(Routes.EXPLAIN_SHEET, {
-      chainId: swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet,
-      type: 'gas',
+      chainId,
+      type: willDelegate ? 'smart_wallet_activation' : 'gas',
       nativeAsset,
     });
-  }, [navigate]);
+  }, [navigate, willDelegate]);
 
   const styles = useAnimatedStyle(() => {
     return {
@@ -408,7 +412,7 @@ export function ReviewPanel() {
 
                 <Inline wrap={false} alignHorizontal="left" alignVertical="center" horizontalSpace="4px">
                   <Text color="labelTertiary" size="13pt" weight="bold">
-                    {ESTIMATED_NETWORK_FEE_LABEL}
+                    {willDelegate ? SMART_WALLET_ACTIVATION_FEE_LABEL : ESTIMATED_NETWORK_FEE_LABEL}
                   </Text>
                   <Text align="center" color={{ custom: opacity(labelTertiary, 0.24) }} size="icon 13px" weight="semibold">
                     􀅴

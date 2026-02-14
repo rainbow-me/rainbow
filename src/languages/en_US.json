@@ -885,6 +885,7 @@
         "minimum_received": "Minimum Received",
         "preferred_network": "Preferred Network",
         "rainbow_fee": "Included Rainbow Fee",
+        "smart_wallet_activation_fee": "Est. Smart Wallet Fee",
         "settings": "Settings"
       },
       "token_index": {
@@ -1039,6 +1040,10 @@
       "gas": {
         "text": "This is the \"gas fee\" used by the %{networkName} blockchain to securely validate your transaction.\n\nThis fee varies depending on the complexity of your transaction and how busy the network is!",
         "title": "%{networkName} network fee"
+      },
+      "smart_wallet_activation": {
+        "text": "This transaction includes a one-time Smart Wallet activation on %{networkName}. This upgrades your wallet to support batched transactions and other smart account features.\n\nThe activation fee is included in the network fee for this swap.",
+        "title": "Smart Wallet activation"
       },
       "max_base_fee": {
         "text": "This is the maximum base fee you’re willing to pay for this transaction.\n\nSetting a higher max base fee prevents your transaction from getting stuck if fees rise.",
