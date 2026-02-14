@@ -95,6 +95,7 @@ export type ExplainSheetType =
   | 'obtainL2Assets'
   | 'routeSwaps'
   | 'slippage'
+  | 'smart_wallet_activation'
   | 'token_allocation';
 
 interface ExplainSheetNativeAssetInfo {
@@ -207,6 +208,10 @@ export interface ExplainSheetParameterMap extends CurrentBaseFeeTypes {
   };
   routeSwaps: Record<string, never>;
   slippage: Record<string, never>;
+  smart_wallet_activation: {
+    chainId: ChainId;
+    nativeAsset?: ExplainSheetNativeAssetInfo;
+  };
   token_allocation: { sections: ExplainSheetTokenAllocationSection[] };
 }
 
