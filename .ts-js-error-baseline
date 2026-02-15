@@ -52,7 +52,6 @@ TS2769   #    2  No overload matches this call
 TS2304   #   52  Cannot find name (identifier not in scope)
 
 # ── Miscellaneous ────────────────────────────────────────────────────
-TS2866   #    1  Import assertion type not supported (deprecated syntax)
 TS7053   #   59  Element implicitly has 'any' type (no index signature)
 TS18042  #    1  'import.meta' not allowed in this module type
 TS18043  #    1  Relative import needs explicit file extension
