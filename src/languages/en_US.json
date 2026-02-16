@@ -2999,6 +2999,7 @@
         "disable_smart_wallet": "Disable Smart Wallet",
         "enabled_description": "You'll miss out on faster transactions and lower network costs",
         "disabled_description": "Updates will take effect on your next swap",
+        "will_delegate_callout": "Includes smart wallet activation",
         "revoke_panel": {
           "disable_title": "Disable Smart Wallet",
           "disable_subtitle": "This will revoke all active delegations and disable Smart Wallet features.",

@@ -1,6 +1,6 @@
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { Box, Separator, globalColors, useColorMode } from '@/design-system';
+import { Box, Separator, Text, globalColors, useColorMode } from '@/design-system';
 import { RNBW_REWARDS, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import React, { useCallback } from 'react';
@@ -23,7 +23,7 @@ import { ReviewPanel } from './ReviewPanel';
 import { SwapActionButton } from './SwapActionButton';
 import { SettingsPanel } from './SettingsPanel';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { getIsHardwareWallet } from '@/state/wallets/walletsStore';
+import { getIsHardwareWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
@@ -32,6 +32,9 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import * as i18n from '@/languages';
 import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
+import { useWillDelegate, willDelegate } from '@rainbow-me/delegation';
+import { ChainId } from '@/state/backendNetworks/types';
+import { Address } from 'viem';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;
 
@@ -217,10 +220,32 @@ export function SwapBottomPanel() {
               onPressRightIconJS={showRewards ? handleRewardsInfoPress : undefined}
               scaleTo={0.9}
             />
+            <DelegationCallout />
           </Box>
         </Box>
       </Animated.View>
     </GestureDetector>
+  );
+}
+
+function DelegationCallout() {
+  const address = useAccountAddress();
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId);
+  if (!chainId) return null;
+
+  return <WillDelegate address={address} chainId={chainId} />;
+}
+
+function WillDelegate(params: { address: Address; chainId: ChainId }) {
+  const willDelegate = useWillDelegate(params.address, params.chainId);
+  if (!willDelegate) return null;
+
+  return (
+    <Box style={styles.willDelegateCallout}>
+      <Text align="center" color="labelQuinary" size="11pt" weight="heavy">
+        {i18n.t(i18n.l.wallet.delegations.will_delegate_callout)}
+      </Text>
+    </Box>
   );
 }
 
@@ -245,5 +270,12 @@ export const styles = StyleSheet.create({
     paddingBottom: 16 - THICK_BORDER_WIDTH,
     position: 'absolute',
     zIndex: 15,
+  },
+  willDelegateCallout: {
+    alignItems: 'center',
+    bottom: -24,
+    justifyContent: 'center',
+    position: 'absolute',
+    width: '100%',
   },
 });
