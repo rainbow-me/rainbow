@@ -3,7 +3,7 @@ import { keys } from 'lodash';
 import { accountLocalKeys } from './accountLocal';
 import { getKey } from './common';
 import { logger, RainbowError } from '@/logger';
-import { removeNotificationSettingsForWallet } from '@/notifications/settings';
+import { removeNotificationSettingsForWallet } from '@/notifications/settings/settings';
 import { Network } from '@/state/backendNetworks/types';
 
 export const removeWalletData = async (accountAddress: any) => {

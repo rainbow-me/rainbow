@@ -32,7 +32,7 @@ import { LearnCardKey, LearnCategory } from '@/components/cards/utils/types';
 import { CardType } from '@/components/cards/GenericCard';
 import { RefObject } from 'react';
 import { ActiveTabRef } from '@/components/DappBrowser/types';
-import { WalletNotificationSettings } from '@/notifications/settings';
+import type { WalletNotificationSettings } from '@/notifications/settings/types';
 import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { UnlockableAppIconKey } from '@/appIcons/appIcons';
