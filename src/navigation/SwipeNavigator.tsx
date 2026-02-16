@@ -308,7 +308,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
     return {
       boxShadow: [
         withSpring({
-          color: opacityWorklet(globalColors.grey100, isDarkMode ? 0.6 : isDappBrowserTab ? 0 : 0.16),
+          color: opacity(globalColors.grey100, isDarkMode ? 0.6 : isDappBrowserTab ? 0 : 0.16),
           offsetX: 0,
           offsetY: 12,
           blurRadius: 18,

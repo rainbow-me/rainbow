@@ -8,7 +8,7 @@ import { Emoji, Text } from '@/components/text';
 import { ThemeContextProps } from '@/theme';
 import { RowWithMargins } from '@/components/layout';
 import { shadow } from '@/styles';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const ButtonContainer = styled(Reanimated.View)({
   borderRadius: ({ height }: { height: number }) => height / 2,
@@ -50,7 +50,7 @@ const Shadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: { the
       offsetX: 0,
       offsetY: 5,
       blurRadius: 15,
-      color: opacityWorklet(colors.shadow, isDarkMode ? 0 : 0.4),
+      color: opacity(colors.shadow, isDarkMode ? 0 : 0.4),
     },
   ],
   borderRadius: 30,

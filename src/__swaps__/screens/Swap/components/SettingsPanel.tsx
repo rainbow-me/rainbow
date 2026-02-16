@@ -46,21 +46,19 @@ export function SettingsPanel() {
   const separator = useForegroundColor('separator');
 
   const degenSettingsVisibilityStyle = useAnimatedStyle(() => {
-    const shouldShow = swapInfo.value.areBothAssetsSet && SwapSettings.degenMode.value;
     return {
-      // Workaround for https://github.com/software-mansion/react-native-gesture-handler/issues/3937, should be using display: none.
-      position: shouldShow ? 'relative' : 'absolute',
-      pointerEvents: shouldShow ? 'auto' : 'none',
-      opacity: shouldShow ? 1 : 0,
+      display: swapInfo.value.areBothAssetsSet && SwapSettings.degenMode.value ? 'flex' : 'none',
     };
   });
 
   const styles = useAnimatedStyle(() => {
     return {
-      // Workaround for https://github.com/software-mansion/react-native-gesture-handler/issues/3937, should be using display: none.
-      position: configProgress.value !== NavigationSteps.SHOW_SETTINGS ? 'absolute' : 'relative',
+      display: configProgress.value !== NavigationSteps.SHOW_SETTINGS ? 'none' : 'flex',
       pointerEvents: configProgress.value !== NavigationSteps.SHOW_SETTINGS ? 'none' : 'auto',
-      opacity: configProgress.value === NavigationSteps.SHOW_SETTINGS ? withDelay(120, withSpring(1, SPRING_CONFIGS.springConfig)) : 0,
+      opacity:
+        configProgress.value === NavigationSteps.SHOW_SETTINGS
+          ? withDelay(120, withSpring(1, SPRING_CONFIGS.springConfig))
+          : withSpring(0, SPRING_CONFIGS.springConfig),
     };
   });
 
