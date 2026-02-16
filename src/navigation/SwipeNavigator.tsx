@@ -306,14 +306,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const shadowStyle = useAnimatedStyle(() => {
     const isDappBrowserTab = showDappBrowserTab && reanimatedPosition.value === 2;
     return {
-      boxShadow: [
-        withSpring({
-          color: opacity(globalColors.grey100, isDarkMode ? 0.6 : isDappBrowserTab ? 0 : 0.16),
-          offsetX: 0,
-          offsetY: 12,
-          blurRadius: 18,
-        }),
-      ],
+      shadowOpacity: withSpring(isDarkMode ? 0.6 : isDappBrowserTab ? 0 : 0.16, SPRING_CONFIGS.snappyMediumSpringConfig),
     };
   });
 
@@ -351,80 +344,81 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
         </MaskedView>
       </Animated.View>
 
-      <Box
-        as={Animated.View}
-        borderColor={isDarkMode ? 'separatorSecondary' : { custom: 'rgba(255, 255, 255, 0.64)' }}
-        borderWidth={THICK_BORDER_WIDTH}
-        borderRadius={TAB_BAR_BORDER_RADIUS}
-        width={{ custom: TAB_BAR_WIDTH }}
-        height={{ custom: BASE_TAB_BAR_HEIGHT }}
-        pointerEvents="box-none"
-        position="absolute"
-        bottom={{ custom: TAB_BAR_HEIGHT - BASE_TAB_BAR_HEIGHT }}
-        style={[hideForBrowserTabViewStyle, shadowStyle, { alignSelf: 'center' }]}
-      >
-        <Box height={{ custom: BASE_TAB_BAR_HEIGHT }} width="full">
-          {IS_IOS ? (
-            <>
-              <BlurGradient
-                gradientPoints={[
-                  { x: 0.5, y: 1.2 },
-                  { x: 0.5, y: 0 },
-                ]}
-                height={BASE_TAB_BAR_HEIGHT}
-                intensity={16}
-                saturation={1.5}
-                style={StyleSheet.absoluteFill}
-                width={TAB_BAR_WIDTH}
-              />
+      <Animated.View style={[{ shadowColor: globalColors.grey100, shadowOffset: { width: 0, height: 12 }, shadowRadius: 18 }, shadowStyle]}>
+        <Box
+          as={Animated.View}
+          borderColor={isDarkMode ? 'separatorSecondary' : { custom: 'rgba(255, 255, 255, 0.64)' }}
+          borderWidth={THICK_BORDER_WIDTH}
+          borderRadius={TAB_BAR_BORDER_RADIUS}
+          bottom={{ custom: TAB_BAR_HEIGHT - BASE_TAB_BAR_HEIGHT }}
+          height={{ custom: BASE_TAB_BAR_HEIGHT }}
+          pointerEvents="box-none"
+          position="absolute"
+          style={[hideForBrowserTabViewStyle, { alignSelf: 'center' }]}
+        >
+          <Box height={{ custom: BASE_TAB_BAR_HEIGHT }} width="full">
+            {IS_IOS ? (
+              <>
+                <BlurGradient
+                  gradientPoints={[
+                    { x: 0.5, y: 1.2 },
+                    { x: 0.5, y: 0 },
+                  ]}
+                  height={BASE_TAB_BAR_HEIGHT}
+                  intensity={16}
+                  saturation={1.5}
+                  style={StyleSheet.absoluteFill}
+                  width={TAB_BAR_WIDTH}
+                />
+                <LinearGradient
+                  start={{ x: 0.5, y: 0 }}
+                  end={{ x: 0.5, y: 1 }}
+                  colors={
+                    isDarkMode
+                      ? ['rgba(57, 58, 64, 0.36)', 'rgba(57, 58, 64, 0.32)']
+                      : ['rgba(255, 255, 255, 0.72)', 'rgba(255, 255, 255, 0.52)']
+                  }
+                  style={StyleSheet.absoluteFill}
+                />
+              </>
+            ) : (
+              <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? PANEL_COLOR_DARK : globalColors.white100 }]} />
+            )}
+            {isDarkMode && (
               <LinearGradient
-                start={{ x: 0.5, y: 0 }}
                 end={{ x: 0.5, y: 1 }}
-                colors={
-                  isDarkMode
-                    ? ['rgba(57, 58, 64, 0.36)', 'rgba(57, 58, 64, 0.32)']
-                    : ['rgba(255, 255, 255, 0.72)', 'rgba(255, 255, 255, 0.52)']
-                }
+                colors={['rgba(255, 255, 255, 0.02)', 'rgba(255, 255, 255, 0)']}
+                start={{ x: 0.5, y: 0 }}
                 style={StyleSheet.absoluteFill}
               />
-            </>
-          ) : (
-            <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? PANEL_COLOR_DARK : globalColors.white100 }]} />
-          )}
-          {isDarkMode && (
-            <LinearGradient
-              end={{ x: 0.5, y: 1 }}
-              colors={['rgba(255, 255, 255, 0.02)', 'rgba(255, 255, 255, 0)']}
-              start={{ x: 0.5, y: 0 }}
-              style={StyleSheet.absoluteFill}
+            )}
+            <Box
+              as={Animated.View}
+              height="full"
+              position="absolute"
+              style={[
+                dappBrowserTabBarStyle,
+                { backgroundColor: isDarkMode ? BROWSER_BACKGROUND_COLOR_DARK : BROWSER_BACKGROUND_COLOR_LIGHT },
+              ]}
+              width="full"
             />
-          )}
-          <Box
-            as={Animated.View}
-            height="full"
-            position="absolute"
-            style={[
-              dappBrowserTabBarStyle,
-              { backgroundColor: isDarkMode ? BROWSER_BACKGROUND_COLOR_DARK : BROWSER_BACKGROUND_COLOR_LIGHT },
-            ]}
-            width="full"
-          />
-          <Box
-            alignItems="center"
-            as={Animated.View}
-            borderRadius={TAB_BAR_BORDER_RADIUS - TAB_BAR_INNER_PADDING}
-            height={{ custom: TAB_BAR_PILL_HEIGHT }}
-            justifyContent="center"
-            position="absolute"
-            style={backgroundPillStyle}
-            top={{ custom: TAB_BAR_INNER_PADDING }}
-            width={{ custom: TAB_BAR_PILL_WIDTH }}
-          />
-          <Box paddingHorizontal={{ custom: TAB_BAR_INNER_PADDING }}>
-            <Columns alignVertical="center">{renderedTabs}</Columns>
+            <Box
+              alignItems="center"
+              as={Animated.View}
+              borderRadius={TAB_BAR_BORDER_RADIUS - TAB_BAR_INNER_PADDING}
+              height={{ custom: TAB_BAR_PILL_HEIGHT }}
+              justifyContent="center"
+              position="absolute"
+              style={backgroundPillStyle}
+              top={{ custom: TAB_BAR_INNER_PADDING }}
+              width={{ custom: TAB_BAR_PILL_WIDTH }}
+            />
+            <Box paddingHorizontal={{ custom: TAB_BAR_INNER_PADDING }}>
+              <Columns alignVertical="center">{renderedTabs}</Columns>
+            </Box>
           </Box>
         </Box>
-      </Box>
+      </Animated.View>
     </>
   );
 });
