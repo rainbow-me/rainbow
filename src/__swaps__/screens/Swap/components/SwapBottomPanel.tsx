@@ -3,7 +3,7 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import { Box, Separator, Text, globalColors, useColorMode } from '@/design-system';
 import { RNBW_REWARDS, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import React, { useCallback } from 'react';
+import React, { memo, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -32,7 +32,7 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import * as i18n from '@/languages';
 import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
-import { useWillDelegate, willDelegate } from '@rainbow-me/delegation';
+import { useWillDelegate } from '@rainbow-me/delegation';
 import { ChainId } from '@/state/backendNetworks/types';
 import { Address } from 'viem';
 
@@ -228,13 +228,13 @@ export function SwapBottomPanel() {
   );
 }
 
-function DelegationCallout() {
+const DelegationCallout = memo(function DelegationCallout() {
   const address = useAccountAddress();
   const chainId = useSwapsStore(s => s.inputAsset?.chainId);
   if (!chainId) return null;
 
   return <WillDelegate address={address} chainId={chainId} />;
-}
+});
 
 function WillDelegate(params: { address: Address; chainId: ChainId }) {
   const willDelegate = useWillDelegate(params.address, params.chainId);
