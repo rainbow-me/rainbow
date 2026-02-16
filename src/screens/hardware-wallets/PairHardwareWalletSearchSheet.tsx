@@ -6,7 +6,7 @@ import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { useSetRecoilState } from 'recoil';
 import { useLedgerImport } from '@/hooks/useLedgerImport';
 import Routes from '@/navigation/routesNames';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { CancelButton } from './components/CancelButton';

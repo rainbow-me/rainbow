@@ -19,7 +19,7 @@ import * as kc from '@/keychain';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import * as keychain from '@/model/keychain';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { loadWallets, refreshWalletInfo, setAllWalletsWithIdsAsBackedUp } from '@/state/wallets/walletsStore';

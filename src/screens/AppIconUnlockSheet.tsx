@@ -1,5 +1,5 @@
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import React, { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
 import { AccentColorProvider, Box, Inset, Stack, Text, useBackgroundColor } from '@/design-system';

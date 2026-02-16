@@ -1,4 +1,4 @@
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 
 export function useRemoveFirst() {
   const { dispatch } = useNavigation();

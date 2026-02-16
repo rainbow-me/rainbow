@@ -6,7 +6,7 @@ import { Bleed, Box, Inline, Text, globalColors, useForegroundColor } from '@/de
 import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { RainbowTransaction, TransactionStatus, TransactionType } from '@/entities/transactions';
 import { ThemeContextProps } from '@/theme';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
 import { ImgixImage } from '../images';
 import { CardSize } from '../unique-token/CardSize';

@@ -12,7 +12,7 @@ import { Box, Separator, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import infinityIcon from '@/assets/infinity.png';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';

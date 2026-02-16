@@ -4,7 +4,7 @@ import TouchableBackdrop from '../components/TouchableBackdrop';
 import { CustomGasState, UniqueTokenExpandedState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import useDimensions from '@/hooks/useDimensions';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { RootStackParamList } from '@/navigation/types';

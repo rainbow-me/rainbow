@@ -10,7 +10,7 @@ import { toUtf8Bytes } from '@ethersproject/strings';
 import { UnsignedTransaction, serialize } from '@ethersproject/transactions';
 import { BigNumber } from '@ethersproject/bignumber';
 import { logger, RainbowError } from '@/logger';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { getAddress } from '@ethersproject/address';
 import { getEthApp } from '@/utils/ledger';

@@ -2,7 +2,7 @@ import React from 'react';
 import { CarouselCard } from '../CarouselCard';
 import { CollectionCell, NFT_IMAGE_SIZE, Placeholder } from './CollectionCell';
 import { Menu } from './Menu';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { mintsQueryKey, useMints, useMintsFilter } from '@/resources/mints';
 import { MintableCollection } from '@/graphql/__generated__/arc';

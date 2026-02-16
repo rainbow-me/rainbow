@@ -17,7 +17,7 @@ import { SliderWithLabels } from '@/features/perps/components/Slider/SliderWithL
 import { USDC_ASSET } from '@/features/perps/constants';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import * as i18n from '@/languages';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
 import { ChainId } from '@/state/backendNetworks/types';

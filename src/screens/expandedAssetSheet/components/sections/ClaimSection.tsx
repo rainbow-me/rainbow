@@ -4,7 +4,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Border, Box, Text, TextShadow, globalColors } from '@/design-system';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { AirdropClaimable, BalancePill } from '@/screens/Airdrops/AirdropsSheet';

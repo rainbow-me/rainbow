@@ -19,7 +19,7 @@ import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { isL2Chain } from '@/handlers/web3';
 import { CurrentBaseFeeTypeKey, ExplainSheetRouteParams, gasTrendToTrendType, RootStackParamList } from '@/navigation/types';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import { useChainSupportsPriorityFee } from '@/__swaps__/utils/meteorology';
 import { opacity } from '@/framework/ui/utils/opacity';
 const MAX_TEXT_WIDTH = 210;

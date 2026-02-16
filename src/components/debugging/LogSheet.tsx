@@ -2,14 +2,17 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import React from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { Panel } from '@/components/SmoothPager/ListPanel';
-import { MarkdownText, Separator, Stack, Text } from '@/design-system';
-import { Navigation } from '@/navigation';
+import { MarkdownText } from '@/design-system/components/MarkdownText/MarkdownText';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Stack } from '@/design-system/components/Stack/Stack';
+import { Text } from '@/design-system/components/Text/Text';
+import Navigation from '@/navigation/Navigation';
 import { containsEmoji } from '@/helpers/strings';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export interface LogEntry {
   message: string;

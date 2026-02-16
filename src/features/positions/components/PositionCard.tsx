@@ -5,7 +5,7 @@ import { useTheme } from '@/theme';
 import { GenericCard } from '@/components/cards/GenericCard';
 import startCase from 'lodash/startCase';
 import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { IS_ANDROID } from '@/env';

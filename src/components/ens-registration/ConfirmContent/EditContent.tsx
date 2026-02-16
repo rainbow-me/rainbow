@@ -2,8 +2,12 @@ import * as i18n from '@/languages';
 import React from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import { Inline, Inset, Row, Rows, Separator, Text } from '@/design-system';
-import { useNavigation } from '@/navigation';
+import { Inline } from '@/design-system/components/Inline/Inline';
+import { Inset } from '@/design-system/components/Inset/Inset';
+import { Row, Rows } from '@/design-system/components/Rows/Rows';
+import { Separator } from '@/design-system/components/Separator/Separator';
+import { Text } from '@/design-system/components/Text/Text';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 

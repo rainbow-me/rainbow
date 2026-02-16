@@ -3,7 +3,7 @@ import { Pressable } from 'react-native';
 import { Text } from '@/design-system';
 import useAppVersion from '@/hooks/useAppVersion';
 import useTimeout from '@/hooks/useTimeout';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { IS_ANDROID, IS_IOS } from '@/env';

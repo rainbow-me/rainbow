@@ -1,6 +1,8 @@
 import React from 'react';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Text, TextIcon } from '@/design-system';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { AccountImage } from '@/components/AccountImage';
 import { Navbar } from '@/components/navbar/Navbar';
 import { HyperliquidLogo } from '@/features/perps/components/HyperliquidLogo';
@@ -11,8 +13,8 @@ import { usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator
 import { VirtualNavigationStore } from '@/navigation/createVirtualNavigator';
 import { PerpsRoute } from '@/navigation/types';
 import * as i18n from '@/languages';
-import { Navigation } from '@/navigation';
-import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import Navigation from '@/navigation/Navigation';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
 export const PerpsNavbar = function PerpsNavbar() {
   const safeAreaInsets = useSafeAreaInsets();

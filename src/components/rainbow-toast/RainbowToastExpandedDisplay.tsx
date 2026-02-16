@@ -4,7 +4,7 @@ import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Panel } from '@/components/SmoothPager/ListPanel';
 import { Box } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import React, { memo, ReactNode, useCallback, useEffect, useState } from 'react';
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';

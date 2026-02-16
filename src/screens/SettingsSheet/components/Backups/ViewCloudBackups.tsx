@@ -6,7 +6,7 @@ import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
 import { BackupFile, parseTimestampFromFilename } from '@/model/backup';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { Page } from '@/components/layout';
