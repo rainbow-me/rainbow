@@ -1,6 +1,6 @@
 import React from 'react';
 import { BackgroundColor } from '../../../design-system/color/palettes';
-import ButtonPressAnimation, { ButtonPressAnimationProps } from '../../animations/ButtonPressAnimation';
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { AccentColorProvider, Box, Inset, Space, Text, useForegroundColor } from '@/design-system';
 
 type ActionButtonProps = {

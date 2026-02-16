@@ -5,8 +5,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Components from './screens';
 
 type ModalContextValue = {
-  jumpToLong: () => void;
-  jumpToShort: () => void;
   layout: () => void;
 };
 
@@ -84,14 +82,8 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }: N
 
   const context = useMemo(
     () => ({
-      jumpToLong: () => {
-        // not implemented
-      },
-      jumpToShort: () => {
-        // not implemented
-      },
       layout: () => {
-        // not implemented
+        // TODO: Is this needed?
       },
     }),
     []
