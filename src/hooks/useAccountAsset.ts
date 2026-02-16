@@ -1,6 +1,6 @@
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import useAccountSettings from './useAccountSettings';
-import { parseAssetNative } from '@/parsers';
+import { parseAssetNative } from '@/parsers/accounts';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 
