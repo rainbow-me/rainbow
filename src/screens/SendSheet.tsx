@@ -60,7 +60,8 @@ import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/per
 import { getWallets, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
-import { ThemeContextProps, useTheme } from '@/theme';
+import type { ThemeContextProps } from '@/theme/ThemeContext';
+import { useTheme } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
 import ethereumUtils from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';

@@ -8,7 +8,7 @@ import useLatestCallback from '@/hooks/useLatestCallback';
 import useOnAvatarPress from '@/hooks/useOnAvatarPress';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { getFirstGrapheme } from '@/utils/formatters';
 import * as React from 'react';
 import { Text as NativeText, Animated as RNAnimated } from 'react-native';

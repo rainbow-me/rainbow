@@ -12,7 +12,7 @@ import { REGISTRATION_MODES } from '@/helpers/ens';
 import useENSAvatar from '@/hooks/useENSAvatar';
 import useENSRegistration from '@/hooks/useENSRegistration';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 export default function ENSBriefTokenInfoRow({
   color,

@@ -10,7 +10,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import TokenFamilyHeaderIcon from '@/components/token-family/TokenFamilyHeaderIcon';
 import { Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
-import { ThemeContextProps } from '@/theme';
+import type { ThemeContextProps } from '@/theme/ThemeContext';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 
 type Props = {

@@ -8,7 +8,7 @@ import { Source } from 'react-native-fast-image';
 import Animated, { useAnimatedStyle, useDerivedValue, withDelay, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import gridDotsLight from '@/assets/dot-grid-light.png';
 import gridDotsDark from '@/assets/dot-grid-dark.png';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { IS_IOS } from '@/env';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { useRecoilState, useSetRecoilState } from 'recoil';

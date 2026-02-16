@@ -1,5 +1,5 @@
 import { TransactionStatus } from '@/entities/transactions';
-import { ThemeContextProps } from '@/theme';
+import type { ThemeContextProps } from '@/theme/ThemeContext';
 
 export function getIconColorAndGradientForTransactionStatus(
   colors: ThemeContextProps['colors'],

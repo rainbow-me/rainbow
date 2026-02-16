@@ -16,7 +16,7 @@ import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import watchingAlert from '@/utils/watchingAlert';
 import { delay } from '@/utils/delay';
 import { openInBrowser } from '@/utils/openInBrowser';

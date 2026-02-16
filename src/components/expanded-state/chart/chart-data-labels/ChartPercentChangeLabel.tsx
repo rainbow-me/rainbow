@@ -14,7 +14,7 @@ import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-sy
 import { IS_ANDROID } from '@/env';
 import { greaterThanWorklet, lessThanWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 const UP_ARROW = IS_ANDROID ? '' : '↑';
 

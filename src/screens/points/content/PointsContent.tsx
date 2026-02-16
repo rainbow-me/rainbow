@@ -44,7 +44,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { useAccountAddress, useAccountProfileInfo, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { fonts } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import measureText from '@/utils/measureText';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { address as formatAddress } from '@/utils/abbreviations';

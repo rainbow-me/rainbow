@@ -1,7 +1,10 @@
 import React, { useMemo } from 'react';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Text, globalColors, useForegroundColor } from '@/design-system';
-import { useTheme } from '@/theme';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { globalColors } from '@/design-system/color/palettes';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { useTheme } from '@/theme/ThemeContext';
 import c from 'chroma-js';
 import { StyleSheet } from 'react-native';
 

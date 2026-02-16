@@ -5,7 +5,7 @@ import { EMOJIS_CONTAINER_HORIZONTAL_MARGIN } from './constants';
 import { charFromEmojiObject } from './helpers/charFromEmojiObject';
 import { AllEmojiContentEntry } from './helpers/getFormattedAllEmojiList';
 import { EmojiEntry } from './types';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 type Props = AllEmojiContentEntry & {
   columns: number;

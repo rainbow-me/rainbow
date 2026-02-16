@@ -1,6 +1,6 @@
 import { Box, Column, Columns, Inline, Stack, Text, globalColors } from '@/design-system';
 import React, { memo, useCallback, useMemo } from 'react';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import startCase from 'lodash/startCase';

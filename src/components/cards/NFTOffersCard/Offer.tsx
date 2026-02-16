@@ -11,7 +11,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { CardSize } from '@/components/unique-token/CardSize';
 import * as i18n from '@/languages';
 import { useRecoilValue } from 'recoil';

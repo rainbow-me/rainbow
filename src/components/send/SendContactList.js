@@ -16,7 +16,7 @@ import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { filterList } from '@/utils/search';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { useAccountAddress } from '@/state/wallets/walletsStore';

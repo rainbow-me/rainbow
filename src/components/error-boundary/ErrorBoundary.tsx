@@ -2,7 +2,7 @@ import React from 'react';
 import * as Sentry from '@sentry/react-native';
 import Fallback from './Fallback';
 import { IS_TEST } from '@/env';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { analytics } from '@/analytics';
 
 const NoErrorBoundary = ({ children }: { children: React.ReactNode }) => children;

@@ -13,7 +13,7 @@ import deviceUtils from '@/utils/deviceUtils';
 import { AVATAR_CIRCLE_TOP_MARGIN } from '@/navigation/effects';
 import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 const AvatarCircleHeight = 60;
 const AvatarCircleMarginTop = 2;

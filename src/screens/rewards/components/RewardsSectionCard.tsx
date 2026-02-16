@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from 'react';
 import { View } from 'react-native';
 import { Box, Space, globalColors, useBackgroundColor } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 type Props = {
   paddingVertical?: Space;

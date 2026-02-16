@@ -38,7 +38,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import magicMemo from '@/utils/magicMemo';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';

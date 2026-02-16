@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Box } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import Animated, {
   Easing,
   interpolate,

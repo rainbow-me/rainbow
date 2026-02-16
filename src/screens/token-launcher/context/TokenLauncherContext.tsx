@@ -2,8 +2,8 @@ import React, { createContext, useContext, useEffect, useMemo, useRef } from 're
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
-import { useColorMode } from '@/design-system';
-import { useTheme } from '@/theme';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useTheme } from '@/theme/ThemeContext';
 import { DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR } from '../constants';
 import { BackendNetwork } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

@@ -17,7 +17,7 @@ import Animated, {
 
 import { globalColors } from '@/design-system';
 
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 import useDimensions from '@/hooks/useDimensions';
 import { FadeGradient } from '@/components/FadeGradient';

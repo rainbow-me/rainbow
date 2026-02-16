@@ -4,7 +4,7 @@ import { GenericCard } from './GenericCard';
 import { CardColor } from './utils/types';
 import { IconOrb } from './reusables/IconOrb';
 import { getCardColorways } from './utils/constants';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 interface ActionCardProps {
   colorway: CardColor;

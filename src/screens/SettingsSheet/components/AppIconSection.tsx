@@ -6,7 +6,7 @@ import MenuItem from './MenuItem';
 import { Box } from '@/design-system';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import { ImgixImage } from '@/components/images';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { logger } from '@/logger';
 import { analytics } from '@/analytics';
 import { AppIcon, AppIconKey, UnlockableAppIcon, UnlockableAppIconKey, freeAppIcons, unlockableAppIcons } from '@/appIcons/appIcons';

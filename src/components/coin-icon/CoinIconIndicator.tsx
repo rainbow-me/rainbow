@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
 import { Icon } from '../icons';
 import { borders, shadow } from '@/styles';
-import { ThemeContextProps, useTheme } from '@/theme';
+import type { ThemeContextProps } from '@/theme/ThemeContext';
+import { useTheme } from '@/theme/ThemeContext';
 
 type CoinIconIndicatorProps = {
   theme?: ThemeContextProps;

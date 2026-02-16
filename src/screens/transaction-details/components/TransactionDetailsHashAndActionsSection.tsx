@@ -12,7 +12,7 @@ import { SingleLineTransactionDetailsRow } from '@/screens/transaction-details/c
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import { shortenTxHashString } from '@/screens/transaction-details/helpers/shortenTxHashString';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import ethereumUtils from '@/utils/ethereumUtils';
 import haptics from '@/utils/haptics';
 import { openInBrowser } from '@/utils/openInBrowser';

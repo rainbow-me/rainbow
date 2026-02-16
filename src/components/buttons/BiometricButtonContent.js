@@ -7,7 +7,7 @@ import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import { LedgerIcon } from '../icons/svg/LedgerIcon';
 import { IS_ANDROID } from '@/env';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 const { Face, FaceID, Fingerprint, none, passcode, TouchID } = BiometryTypes;
 

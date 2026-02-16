@@ -6,7 +6,7 @@ import { Icon } from '../icons';
 import { Categories } from './Categories';
 import { EmojiCategory } from './types';
 import { position } from '@/styles';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 interface Props {

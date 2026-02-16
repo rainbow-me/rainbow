@@ -23,7 +23,7 @@ import { charFromEmojiObject } from './helpers/charFromEmojiObject';
 import getEmojiCellsProperties from './helpers/getEmojiCellProperties';
 import getFormattedAllEmojiList, { AllEmojiContentEntry, AllEmojiEntry, AllEmojiHeaderEntry } from './helpers/getFormattedAllEmojiList';
 import { EmojiCategory, EmojiEntry } from './types';
-import { useTheme } from '@/theme';
+import { useTheme } from '@/theme/ThemeContext';
 
 const { width } = Dimensions.get('screen');
 
