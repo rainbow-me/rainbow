@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme } from '../../theme/ThemeContext';
-import { magicMemo } from '../../utils';
-import { ButtonPressAnimation } from '../animations';
+import magicMemo from '@/utils/magicMemo';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Row } from '../layout';
 import { Text } from '../text';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
@@ -10,6 +10,7 @@ import { padding } from '@/styles';
 import * as i18n from '@/languages';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { ImgixImage } from '@/components/images';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,
@@ -26,7 +27,7 @@ const ButtonContent = styled(AnimatedRow).attrs({
   justify: 'center',
 })(({ isActive, theme: { colors, isDarkMode } }) => ({
   ...padding.object(5, 10, 6),
-  backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
+  backgroundColor: opacity(colors.blueGreyDark, 0.06),
   borderRadius: 15,
   height: 30,
 }));
@@ -65,7 +66,7 @@ const CoinDividerEditButton = ({ isSmallBalancesOpen, onPress }) => {
         <ButtonContent style={containerStyle} align="center">
           <Text
             align={'left'}
-            color={colors.alpha(colors.blueGreyDark, 0.6)}
+            color={opacity(colors.blueGreyDark, 0.6)}
             letterSpacing="roundedTight"
             opacity={1}
             size="lmedium"

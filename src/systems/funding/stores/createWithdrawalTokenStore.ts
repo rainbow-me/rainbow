@@ -2,14 +2,15 @@ import { Token } from '@/graphql/__generated__/metadata';
 import { metadataClient } from '@/graphql';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { WithdrawalTokenData, WithdrawalTokenStoreType } from '../types';
+import type { AddressOrEth } from '@/__swaps__/types/assets';
 
 // ============ Types ========================================================== //
 
 type ExternalToken = Pick<Token, 'iconUrl' | 'networks' | 'symbol'>;
-type NetworkInfo = { address: string; decimals: number };
-type TokenParams = { address: string; chainId: ChainId };
+type NetworkInfo = { address: AddressOrEth; decimals: number };
+type TokenParams = { address: AddressOrEth; chainId: ChainId };
 
 // ============ Store Factory ================================================== //
 
@@ -60,7 +61,7 @@ function parseNetworkInfo(value: unknown): NetworkInfo | null {
   if (!('address' in value) || typeof value.address !== 'string') return null;
   if (!('decimals' in value) || typeof value.decimals !== 'number') return null;
   return {
-    address: value.address,
+    address: value.address as AddressOrEth,
     decimals: value.decimals,
   };
 }

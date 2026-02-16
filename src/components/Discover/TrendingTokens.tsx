@@ -20,18 +20,19 @@ import { ReactNode, useCallback, useEffect, useMemo } from 'react';
 import { FlatList, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { SharedValue, useSharedValue } from 'react-native-reanimated';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { useFarcasterAccountForWallets } from '@/hooks/useFarcasterAccountForWallets';
 import { ImgixImage } from '../images';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { getColorWorklet, getMixedColor, opacity } from '@/__swaps__/utils/swaps';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { getColorWorklet, getMixedColor } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { IS_IOS } from '@/env';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { shallowEqual } from '@/worklets/comparisons';
 import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { LiveTokenText } from '../live-token-text/LiveTokenText';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const t = i18n.l.trending_tokens;
 

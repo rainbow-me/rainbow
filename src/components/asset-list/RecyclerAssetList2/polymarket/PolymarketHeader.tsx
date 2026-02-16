@@ -4,11 +4,11 @@ import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-n
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
 import * as i18n from '@/languages';
 import { formatCurrency } from '@/helpers/strings';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
 import useOpenPolymarket from '@/hooks/useOpenPolymarket';
@@ -25,8 +25,8 @@ export const PolymarketHeader = memo(function PolymarketHeader({ isDarkMode }: {
   const navigationButtonColors = useMemo(() => {
     return {
       icon: accountColor,
-      border: opacityWorklet(accountColor, isDarkMode ? 0.08 : 0.015),
-      background: opacityWorklet(accountColor, isDarkMode ? 0.16 : 0.1),
+      border: opacity(accountColor, isDarkMode ? 0.08 : 0.015),
+      background: opacity(accountColor, isDarkMode ? 0.16 : 0.1),
     };
   }, [accountColor, isDarkMode]);
 
@@ -42,12 +42,7 @@ export const PolymarketHeader = memo(function PolymarketHeader({ isDarkMode }: {
   return (
     <Box height={{ custom: HEIGHT }} paddingHorizontal="20px" justifyContent="center">
       <Inline alignHorizontal="justify" alignVertical="center">
-        <ButtonPressAnimation
-          onPress={() => {
-            navigateToPolymarket();
-          }}
-          scaleTo={1.05}
-        >
+        <ButtonPressAnimation onPress={() => navigateToPolymarket()} scaleTo={1.05}>
           <Inline horizontalSpace={'8px'} alignVertical="center">
             <Text size="22pt" color="label" weight="heavy">
               {i18n.t(i18n.l.account.tab_polymarket)}

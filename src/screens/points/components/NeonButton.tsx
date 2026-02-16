@@ -3,9 +3,11 @@ import { StyleSheet, Text as RNText } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import { Box, Cover, Text, useForegroundColor } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { useTheme } from '@/theme';
+import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const NeonButton = ({ color, label, onPress, width }: { color?: string; label: string; onPress?: () => void; width?: number }) => {
   const { width: deviceWidth } = useDimensions();
@@ -13,7 +15,13 @@ export const NeonButton = ({ color, label, onPress, width }: { color?: string; l
   const green = useForegroundColor('green');
 
   return (
-    <ButtonPressAnimation hapticType="impactHeavy" onPress={onPress} scaleTo={0.94} style={styles.neonButtonWrapper} transformOrigin="top">
+    <ButtonPressAnimation
+      hapticType={HapticFeedbackTypes.impactHeavy}
+      onPress={onPress}
+      scaleTo={0.94}
+      style={styles.neonButtonWrapper}
+      transformOrigin="top"
+    >
       <Animated.View
         style={[
           styles.neonButton,
@@ -33,7 +41,7 @@ export const NeonButton = ({ color, label, onPress, width }: { color?: string; l
             style={[
               styles.neonButtonFill,
               {
-                backgroundColor: colors.alpha(color || green, 0.1),
+                backgroundColor: opacity(color || green, 0.1),
               },
             ]}
             width={{ custom: width ? width - 2 : deviceWidth - 66 }}
@@ -43,7 +51,7 @@ export const NeonButton = ({ color, label, onPress, width }: { color?: string; l
           style={[
             styles.neonButtonText,
             {
-              textShadowColor: colors.alpha(color || green, 0.6),
+              textShadowColor: opacity(color || green, 0.6),
             },
           ]}
         >

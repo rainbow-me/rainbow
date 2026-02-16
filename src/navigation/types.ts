@@ -393,10 +393,6 @@ type RouteParams = {
     onSearchForNewName?: () => void;
     onSelectExistingName?: () => void;
   };
-  [Routes.SHOWCASE_SHEET]: {
-    address: string;
-    fromRoute: string;
-  };
   [Routes.PROFILE_SHEET]: {
     address: string;
     fromRoute: string;

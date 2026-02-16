@@ -12,7 +12,8 @@ import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polyma
 import { logger, RainbowError } from '@/logger';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { LinearGradient } from 'expo-linear-gradient';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
 import Navigation from '@/navigation/Navigation';
@@ -37,7 +38,7 @@ export const PolymarketRedeemPositionSheet = memo(function PolymarketRedeemPosit
   const red = useForegroundColor('red');
   const green = useForegroundColor('green');
   const buttonBackgroundColor = getSolidColorEquivalent({
-    background: opacityWorklet(accentColor, 0.7),
+    background: opacity(accentColor, 0.7),
     foreground: '#000000',
     opacity: 0.4,
   });
@@ -89,8 +90,8 @@ export const PolymarketRedeemPositionSheet = memo(function PolymarketRedeemPosit
   const absPnl = Math.abs(pnl);
 
   const gradientFillColors = isDarkMode
-    ? ([opacityWorklet(accentColor, 0.22), opacityWorklet(accentColor, 0)] as const)
-    : ([opacityWorklet(accentColor, 0), opacityWorklet(accentColor, 0.06)] as const);
+    ? ([opacity(accentColor, 0.22), opacity(accentColor, 0)] as const)
+    : ([opacity(accentColor, 0), opacity(accentColor, 0.06)] as const);
 
   return (
     <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }}>
@@ -115,7 +116,7 @@ export const PolymarketRedeemPositionSheet = memo(function PolymarketRedeemPosit
           <PolymarketPositionCard position={position} showActionButton={false} />
           <HoldToActivateButton
             backgroundColor={buttonBackgroundColor}
-            borderColor={{ custom: opacityWorklet('#FFFFFF', 0.08) }}
+            borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
             borderWidth={2}
             disabledBackgroundColor={'gray'}
             label={actionButtonLabel}

@@ -1,9 +1,8 @@
 import { createMMKV, MMKV } from 'react-native-mmkv';
 
-import { Account, Cards, Campaigns, Device, Review, WatchedWalletCohort } from '@/storage/schema';
-import { EthereumAddress, RainbowTransaction } from '@/entities';
+import { Cards, Campaigns, Device, Review, WatchedWalletCohort } from '@/storage/schema';
+import { RainbowTransaction } from '@/entities';
 import { SecureStorage } from '@coinbase/mobile-wallet-protocol-host';
-import { ChainId } from '@/state/backendNetworks/types';
 
 /**
  * Generic storage class. DO NOT use this directly. Instead, use the exported
@@ -90,10 +89,6 @@ export class Storage<Scopes extends unknown[], Schema> {
  *   `global.set(['doNotTrack'], true)`
  */
 export const device = new Storage<[], Device>({ id: 'global' });
-
-export const account = new Storage<[EthereumAddress, ChainId], Account>({
-  id: 'account',
-});
 
 export const pendingTransactions = new Storage<[], { pendingTransactions: Record<string, RainbowTransaction[]> }>({
   id: 'pendingTransactions',

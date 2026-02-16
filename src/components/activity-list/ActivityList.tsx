@@ -1,14 +1,14 @@
 import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
-import { FastTransactionCoinRow, RequestCoinRow } from '@/components/coin-row';
+import { FastTransactionCoinRow } from '@/components/coin-row';
 import { RainbowTransaction } from '@/entities';
-import { TransactionItemForSectionList, TransactionSections } from '@/helpers/buildTransactionsSectionsSelector';
-import { useAccountTransactions } from '@/hooks';
+import { TransactionSection } from '@/helpers/buildTransactionsSectionsSelector';
+import useAccountTransactions from '@/hooks/useAccountTransactions';
 import { Skeleton } from '@/screens/points/components/Skeleton';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { LegendList, LegendListRef } from '@legendapp/list';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -16,11 +16,12 @@ import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react
 import { SharedValue } from 'react-native-reanimated';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const PANEL_HEIGHT = DEVICE_HEIGHT - TOP_INSET - safeAreaInsetValues.bottom;
 
@@ -63,7 +64,7 @@ function ListFooterComponent({ label, onPress }: { label: string; onPress: () =>
       {isLoading ? (
         <LoadingSpinner />
       ) : (
-        <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.3)} lineHeight="loose" size="smedium" weight="bold">
+        <Text align="center" color={opacity(colors.blueGreyDark, 0.3)} lineHeight="loose" size="smedium" weight="bold">
           {label}
         </Text>
       )}
@@ -72,8 +73,8 @@ function ListFooterComponent({ label, onPress }: { label: string; onPress: () =>
 }
 
 type ListItems =
-  | { key: string; type: 'transaction' | 'request'; value: TransactionItemForSectionList }
-  | { key: string; type: 'header'; value: TransactionSections }
+  | { key: string; type: 'transaction'; value: RainbowTransaction }
+  | { key: string; type: 'header'; value: TransactionSection }
   | { key: string; type: 'paddingTopForNavBar' };
 
 // keeping everything the same height here since we basically can pretty easily
@@ -108,10 +109,10 @@ export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
       if (section.data.length > 0) {
         items.push({ key: `${accountAddress}${section.title}`, type: 'header', value: section });
         for (const item of section.data) {
-          const key = `${item.chainId}${'requestId' in item ? item.requestId : item.hash}`;
+          const key = `${item.chainId}${item.hash}`;
           items.push({
             key: `${sectionIndex}-${accountAddress}-${key}-entry`,
-            type: section.type,
+            type: 'transaction',
             value: item,
           });
         }
@@ -135,10 +136,6 @@ export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
             <ActivityListHeader title={item.value.title} />
           </View>
         );
-      }
-
-      if (item.type === 'request') {
-        return <RequestCoinRow item={item.value} theme={theme} nativeCurrency={nativeCurrency} />;
       }
 
       return (

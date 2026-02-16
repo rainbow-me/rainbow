@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Box, Inline, Stack, Text, AccentColorProvider, TextIcon, useColorMode, TextShadow, Bleed } from '@/design-system';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ConditionalWrap from 'conditional-wrap';
 import { createOpacityPalette } from '@/worklets/colors';
 

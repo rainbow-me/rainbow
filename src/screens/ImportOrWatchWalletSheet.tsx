@@ -2,17 +2,19 @@ import { Input } from '@/components/inputs';
 import { SheetHandleFixedToTopHeight } from '@/components/sheet';
 import { AccentColorProvider, Box, globalColors, Inset, Stack, Text, useForegroundColor, useTextStyle } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { useImportingWallet, useKeyboardHeight } from '@/hooks';
+import useImportingWallet from '@/hooks/useImportingWallet';
+import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { colors } from '@/styles';
 import React, { useCallback, useRef } from 'react';
 import * as i18n from '@/languages';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { LoadingOverlay } from '@/components/modal';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { Keyboard } from 'react-native';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
 
@@ -105,7 +107,7 @@ export const ImportOrWatchWalletSheet = () => {
         </Box>
         <Box position="absolute" right="0px" bottom={{ custom: keyboardHeight }}>
           <Inset bottom="20px" right="20px">
-            <AccentColorProvider color={colors.alpha(globalColors.purple60, seedPhrase ? 1 : 0.1)}>
+            <AccentColorProvider color={opacity(globalColors.purple60, seedPhrase ? 1 : 0.1)}>
               <ButtonPressAnimation
                 disabled={buttonDisabled}
                 onPress={

@@ -8,8 +8,9 @@ import { AnimatedText, Text, TextShadow, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { StoreState } from '@/state/internal/queryStore/types';
 import { BaseRainbowStore } from '@/state/internal/types';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { ResponseByTheme, getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
+import { ResponseByTheme, getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { FormatTimestampOptions, formatTimestamp } from '@/worklets/dates';
 import { ActiveInteractionData } from '../classes/PolymarketChartManager';
 import { usePolymarketChartStore, usePolymarketMarketChartStore } from '../stores/polymarketChartStore';
@@ -215,7 +216,7 @@ const InteractionContent = memo(function InteractionContent({
       <EasingGradient
         endColor={backgroundColor}
         endOpacity={1}
-        startColor={opacityWorklet(backgroundColor, 0)}
+        startColor={opacity(backgroundColor, 0)}
         startOpacity={0}
         style={styles.backgroundGradient}
       />
@@ -273,14 +274,14 @@ const OutcomeBubble = memo(function OutcomeBubble({
 
   const bubbleBackgroundStyle = useAnimatedStyle(() => {
     const color = outcomeColor.value;
-    const backgroundColor = opacityWorklet(color, BUBBLE.opacity);
-    const borderColor = opacityWorklet(color, BUBBLE.borderOpacity);
+    const backgroundColor = opacity(color, BUBBLE.opacity);
+    const borderColor = opacity(color, BUBBLE.borderOpacity);
     return { backgroundColor, borderColor };
   });
 
   const priceTextStyle = useAnimatedStyle(() => ({
     color: outcomeColor.value,
-    textShadowColor: isDarkMode ? opacityWorklet(outcomeColor.value, 0.24) : 'transparent',
+    textShadowColor: isDarkMode ? opacity(outcomeColor.value, 0.24) : 'transparent',
   }));
 
   return (
@@ -293,7 +294,7 @@ const OutcomeBubble = memo(function OutcomeBubble({
         ]}
       />
       <LinearGradient
-        colors={[opacityWorklet(backgroundColor, 0), backgroundColor]}
+        colors={[opacity(backgroundColor, 0), backgroundColor]}
         end={{ x: 1, y: 0.5 }}
         start={{ x: 0, y: 0.5 }}
         style={styles.gradientOverlay}

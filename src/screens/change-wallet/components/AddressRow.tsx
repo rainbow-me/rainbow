@@ -2,13 +2,13 @@ import * as i18n from '@/languages';
 import React, { useMemo } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/theme/ThemeContext';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ConditionalWrap from 'conditional-wrap';
 import { Box, Inline, Stack, Text, useForegroundColor, useColorMode, TextIcon } from '@/design-system';
 import { AddressItem, AddressMenuAction } from '@/screens/change-wallet/ChangeWalletSheet';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { TextWeight } from '@/design-system/components/Text/Text';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { SelectedAddressBadge } from '@/screens/change-wallet/components/SelectedAddressBadge';
@@ -93,9 +93,9 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
         paddingHorizontal: 8,
         paddingVertical: 6,
         borderWidth: 1,
-        borderColor: colors.alpha('#F5F8FF', 0.03),
+        borderColor: opacity('#F5F8FF', 0.03),
       } as const,
-      colors: [colors.alpha(colors.blueGreyDark, 0.03), colors.alpha(colors.blueGreyDark, isDarkMode ? 0.02 : 0.06)] as const,
+      colors: [opacity(colors.blueGreyDark, 0.03), opacity(colors.blueGreyDark, isDarkMode ? 0.02 : 0.06)] as const,
       end: { x: 1, y: 1 },
       start: { x: 0, y: 0 },
     }),
@@ -126,7 +126,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
         <Inline alignVertical="center">
           {editMode && (
             <Box paddingRight="8px">
-              <Icon name="dragHandler" color={colors.alpha(colors.black, 0.2)} />
+              <Icon name="dragHandler" color={opacity(colors.black, 0.2)} />
             </Box>
           )}
           <Box

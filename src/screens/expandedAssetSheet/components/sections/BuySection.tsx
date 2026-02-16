@@ -3,29 +3,28 @@ import * as i18n from '@/languages';
 import { Bleed, Box, IconContainer, Stack, Text, TextShadow } from '@/design-system';
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ScrollView } from 'react-native-gesture-handler';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Row } from '../shared/Row';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
 import { convertAmountToNativeDisplay, convertStringToNumber, roundToSignificant1or5 } from '@/helpers/utilities';
-import { useAccountAsset } from '@/hooks';
+import useAccountAsset from '@/hooks/useAccountAsset';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { IS_DEV } from '@/env';
-import isTestFlight from '@/helpers/isTestFlight';
+import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
 import { isL2Chain } from '@/handlers/web3';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';
 import Animated from 'react-native-reanimated';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const GRADIENT_FADE_WIDTH = 24;
 const DEFAULT_PERCENTAGES_OF_BALANCE = [0.05, 0.1, 0.25, 0.5, 0.75];
 // Ideally this would be different for different currencies, but that would need to be set in the remote config
-const DEFAULT_MAINNET_MINIMUM_NATIVE_CURRENCY_AMOUNT = IS_DEV || isTestFlight ? 1 : 10;
+const DEFAULT_MAINNET_MINIMUM_NATIVE_CURRENCY_AMOUNT = IS_DEV || IS_TEST_FLIGHT ? 1 : 10;
 const DEFAULT_L2_MINIMUM_NATIVE_CURRENCY_AMOUNT = 1;
 
 const BUTTON_INSET_HORIZONTAL = 24;

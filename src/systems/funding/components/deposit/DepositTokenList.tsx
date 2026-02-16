@@ -1,11 +1,13 @@
 import c from 'chroma-js';
 import React, { memo, useCallback, useMemo } from 'react';
-import { StyleSheet, Text as RNText, View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { Keyboard, StyleSheet, Text as RNText } from 'react-native';
+import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { LegendList } from '@legendapp/list';
 import { DelayedMount } from '@/components/utilities/DelayedMount';
-import { AnimatedText, Bleed, Box, globalColors, Inline, Text, useColorMode } from '@/design-system';
-import { useAccountAccentColor } from '@/hooks';
+import { NAVBAR_HEIGHT_WITH_PADDING } from '@/components/navbar/constants';
+import { TokenSearchNotFound } from '@/components/token-search/TokenSearchNotFound';
+import { AnimatedText, Bleed, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -14,13 +16,15 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { opacity } from '@/__swaps__/utils/swaps';
-import { safeAreaInsetValues } from '@/utils';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { EXPANDED_INPUT_HEIGHT } from '../../constants';
+import { EXPANDED_INPUT_HEIGHT, NavigationSteps } from '../../constants';
 import { useDepositContext } from '../../contexts/DepositContext';
+import { SearchInput } from './SearchInput';
 
 // ============ Types ========================================================== //
 
@@ -30,6 +34,7 @@ type ChainSelectionProps = {
 };
 
 type DepositTokenListProps = {
+  inputProgress: SharedValue<number>;
   onSelectToken?: (token: ParsedSearchAsset | null) => void;
 };
 
@@ -59,6 +64,7 @@ const ChainSelection = memo(function ChainSelection({ onChainSelected, selectedC
   const chainName = !selectedChainId ? allText : chainLabels[selectedChainId];
 
   const navigateToNetworkSelector = useCallback(() => {
+    Keyboard.dismiss();
     Navigation.handleAction(Routes.NETWORK_SELECTOR, {
       allowedNetworks: balanceSortedChainList,
       canEdit: false,
@@ -70,7 +76,7 @@ const ChainSelection = memo(function ChainSelection({ onChainSelected, selectedC
   }, [balanceSortedChainList, onChainSelected, selectedChainId]);
 
   return (
-    <Box as={Animated.View} paddingBottom={{ custom: 14 }} paddingHorizontal="20px">
+    <Box as={Animated.View} paddingBottom={{ custom: 14 }} paddingHorizontal="20px" paddingTop="20px">
       <Inline alignHorizontal="justify" alignVertical="center">
         <Inline alignVertical="center" space="6px">
           <Bleed vertical="4px">
@@ -117,17 +123,17 @@ const ChainSelection = memo(function ChainSelection({ onChainSelected, selectedC
 
 // ============ Token List ===================================================== //
 
-export function DepositTokenList({ onSelectToken }: DepositTokenListProps) {
+export function DepositTokenList({ inputProgress, onSelectToken }: DepositTokenListProps) {
   return (
     <DelayedMount delay="idle">
-      <DepositTokenListCore onSelectToken={onSelectToken} />
+      <DepositTokenListCore inputProgress={inputProgress} onSelectToken={onSelectToken} />
     </DelayedMount>
   );
 }
 
 const MemoizedCoinRow = memo(CoinRow);
 
-function DepositTokenListCore({ onSelectToken }: DepositTokenListProps) {
+function DepositTokenListCore({ inputProgress, onSelectToken }: DepositTokenListProps) {
   const accountAddress = useAccountAddress();
   const { depositActions, useDepositStore } = useDepositContext();
   const selectedChainId = useDepositStore(state => state.listChainId);
@@ -155,25 +161,39 @@ function DepositTokenListCore({ onSelectToken }: DepositTokenListProps) {
     [handleSelectToken]
   );
 
+  const listFooterStyle = useAnimatedStyle(() => {
+    const isSearchFocused = inputProgress.value === NavigationSteps.SEARCH_FOCUSED;
+    const bottomPadding = isSearchFocused ? EXPANDED_INPUT_HEIGHT - TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT + 16 : 0;
+    return { height: bottomPadding };
+  });
+
   return (
     <Box style={styles.listContainer}>
-      <Box paddingHorizontal="4px">
-        <ChainSelection onChainSelected={depositActions.setListChainId} selectedChainId={selectedChainId} />
-      </Box>
+      <Stack space="20px">
+        <SearchInput inputProgress={inputProgress} />
+        <Separator color="separatorTertiary" thickness={1} />
+      </Stack>
 
-      <LegendList
-        ListFooterComponent={<View style={styles.listFooter} />}
-        data={searchResults}
-        estimatedItemSize={COIN_ROW_HEIGHT}
-        key={accountAddress}
-        keyExtractor={keyExtractor}
-        keyboardShouldPersistTaps="always"
-        maintainVisibleContentPosition={false}
-        overScrollMode="always"
-        recycleItems
-        renderItem={renderItem}
-        scrollIndicatorInsets={styles.scrollIndicatorInsets}
-      />
+      <Box style={styles.listBody}>
+        <Box paddingHorizontal="4px">
+          <ChainSelection onChainSelected={depositActions.setListChainId} selectedChainId={selectedChainId} />
+        </Box>
+
+        <LegendList
+          ListEmptyComponent={<ListEmptyComponent />}
+          ListFooterComponent={<Animated.View style={[styles.listFooter, listFooterStyle]} />}
+          data={searchResults}
+          estimatedItemSize={COIN_ROW_HEIGHT}
+          key={accountAddress}
+          keyExtractor={keyExtractor}
+          keyboardShouldPersistTaps="always"
+          maintainVisibleContentPosition={false}
+          overScrollMode="always"
+          recycleItems
+          renderItem={renderItem}
+          scrollIndicatorInsets={styles.scrollIndicatorInsets}
+        />
+      </Box>
     </Box>
   );
 }
@@ -182,11 +202,22 @@ function keyExtractor(item: ParsedSearchAsset): string {
   return item.uniqueId;
 }
 
+const ListEmptyComponent = memo(function ListEmptyComponent() {
+  return (
+    <Box justifyContent="center" alignItems="center" paddingTop="32px">
+      <TokenSearchNotFound />
+    </Box>
+  );
+});
+
 // ============ Styles ========================================================= //
 
 const styles = StyleSheet.create({
   listContainer: {
-    height: EXPANDED_INPUT_HEIGHT,
+    width: DEVICE_WIDTH - 24,
+  },
+  listBody: {
+    height: EXPANDED_INPUT_HEIGHT - NAVBAR_HEIGHT_WITH_PADDING,
     width: DEVICE_WIDTH - 24,
   },
   listFooter: {

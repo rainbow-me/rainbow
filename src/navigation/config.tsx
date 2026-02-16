@@ -7,7 +7,8 @@ import colors from '@/theme/currentColors';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { getPositionSheetHeight } from '@/features/positions/screens/PositionSheet';
 
 import { Icon } from '@/components/icons';

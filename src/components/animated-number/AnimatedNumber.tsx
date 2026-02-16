@@ -26,7 +26,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { buildTestSafeConfig } from '@/components/animations/animationConfigs';
 import { measureTextSync } from '@/utils/measureText';
 import { useIsFirstRender } from '@/hooks/useIsFirstRender';
-import { usePrevious } from '@/hooks';
+import usePrevious from '@/hooks/usePrevious';
 
 // reanimated defines but does not export this type
 type EntryOrExitLayoutType = BaseAnimationBuilder | typeof BaseAnimationBuilder | EntryExitAnimationFunction;

@@ -3,11 +3,11 @@ import { AccentColorProvider, Bleed, Box, Cover, IconContainer, Separator, Text,
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { View } from 'react-native';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import Animated, { SharedValue, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import useAsset from '@/hooks/useAsset';
 import { Address } from 'viem';

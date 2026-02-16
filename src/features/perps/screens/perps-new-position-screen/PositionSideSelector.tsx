@@ -6,13 +6,13 @@ import { PerpPositionSide } from '@/features/perps/types';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import Animated, { interpolate, interpolateColor, useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, PERPS_COLORS } from '@/features/perps/constants';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { fonts } from '@/design-system/typography/typography';
 
 export const POSITION_SIDE_SELECTOR_HEIGHT = 36;
@@ -63,7 +63,7 @@ export const PositionSideSelector = memo(function PositionSideSelector() {
     <Box height={POSITION_SIDE_SELECTOR_HEIGHT} width={DEVICE_WIDTH - HORIZONTAL_PADDING * 2} style={{ overflow: 'visible' }}>
       <Box flexDirection="row" alignItems="center" style={{ overflow: 'visible' }}>
         <GradientBorderView
-          borderGradientColors={[opacityWorklet('#FF584D', 0.06), 'transparent']}
+          borderGradientColors={[opacity('#FF584D', 0.06), 'transparent']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           borderRadius={20}
@@ -74,7 +74,7 @@ export const PositionSideSelector = memo(function PositionSideSelector() {
           <View />
         </GradientBorderView>
         <GradientBorderView
-          borderGradientColors={[opacityWorklet('#3ECF5B', 0.06), 'transparent']}
+          borderGradientColors={[opacity('#3ECF5B', 0.06), 'transparent']}
           start={{ x: 1, y: 0 }}
           end={{ x: 0, y: 0 }}
           borderRadius={20}
@@ -102,7 +102,7 @@ export const PositionSideSelector = memo(function PositionSideSelector() {
           <Border
             borderRadius={POSITION_SIDE_SELECTOR_HEIGHT / 2}
             borderWidth={isDarkMode ? 2 : THICKER_BORDER_WIDTH}
-            borderColor={{ custom: opacityWorklet(isDarkMode ? '#ffffff' : '#000000', isDarkMode ? 0.16 : 0.02) }}
+            borderColor={{ custom: opacity(isDarkMode ? '#ffffff' : '#000000', isDarkMode ? 0.16 : 0.02) }}
           />
         </Animated.View>
         <Box style={StyleSheet.absoluteFill} zIndex={2000}>

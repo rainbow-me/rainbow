@@ -13,8 +13,9 @@ import {
 } from '@/design-system';
 import React, { useEffect, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
-import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
-import { useDimensions } from '@/hooks';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import useDimensions from '@/hooks/useDimensions';
 import { nftOffersQueryKey, useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';

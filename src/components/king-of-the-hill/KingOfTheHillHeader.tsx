@@ -1,5 +1,5 @@
 import crownImage from '@/assets/crown.png';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ShinyCoinIcon } from '@/components/coin-icon/ShinyCoinIcon';
 import { CHEVRON_RIGHT_SYMBOL } from '@/components/king-of-the-hill/constants';
@@ -14,7 +14,7 @@ import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { Canvas, Circle, LinearGradient, vec } from '@shopify/react-native-skia';
 import React, { memo, useEffect, useLayoutEffect, useState } from 'react';

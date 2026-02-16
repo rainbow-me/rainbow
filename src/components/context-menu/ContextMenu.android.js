@@ -3,8 +3,8 @@ import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { omitFlatten } from '@/helpers/utilities';
 import { padding } from '@/styles';
-import { showActionSheetWithOptions } from '@/utils';
-import { ButtonPressAnimation } from '@/components/animations';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 
 const ActionSheetProps = ['cancelButtonIndex', 'destructiveButtonIndex', 'message', 'onPress', 'options', 'tintColor', 'title'];
 
@@ -18,9 +18,9 @@ const ContextButton = props => (
 
 export default function ContextMenu({
   activeOpacity = 0.2,
-  cancelButtonIndex,
+  cancelButtonIndex = /** @type {number | undefined} */ (undefined),
   children,
-  dynamicOptions,
+  dynamicOptions = /** @type {(() => string[]) | undefined} */ (undefined),
   onPressActionSheet,
   options = [],
   ...props

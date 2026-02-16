@@ -29,8 +29,9 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
@@ -56,7 +57,8 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
-import { clamp, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { clamp } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { DeepPartial } from '@/types/objects';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -555,7 +557,7 @@ class CandlestickChartManager {
 
     this.paints.crosshairDot.setAntiAlias(true);
     if (!isDarkMode) {
-      const color = opacityWorklet(this.config.crosshair.dotColor, 0.64);
+      const color = opacity(this.config.crosshair.dotColor, 0.64);
       const shadowColor = Skia.Color(color);
       this.paints.crosshairDot.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 1, 2, 2, shadowColor, null));
     }
@@ -1430,7 +1432,7 @@ class CandlestickChartManager {
     if (providedConfig?.crosshair?.dotColor) {
       this.colors.crosshairDot = Skia.Color(providedConfig.crosshair.dotColor);
       if (!isDarkMode) {
-        const color = opacityWorklet(providedConfig.crosshair.dotColor, 0.64);
+        const color = opacity(providedConfig.crosshair.dotColor, 0.64);
         const shadowColor = Skia.Color(color);
         this.paints.crosshairDot.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 1, 2, 2, shadowColor, null));
       }
@@ -2064,7 +2066,7 @@ export const CandlestickChart = memo(function CandlestickChart({
               color={accentColor}
               idleComponent={
                 <ButtonPressAnimation
-                  hapticType="selection"
+                  hapticType={HapticFeedbackTypes.soft}
                   onPress={() => fetchAdditionalCandles(true)}
                   style={{ height: SPINNER_HIT_AREA_SIZE + 16, marginTop: 16, width: SPINNER_HIT_AREA_SIZE }}
                 >

@@ -1,17 +1,16 @@
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { GestureResponderEvent, StyleSheet, View } from 'react-native';
 import { Box, Inline, Stack, Text, AccentColorProvider, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { usePolymarketFeatureCard } from '@/features/polymarket/hooks/usePolymarketFeatureCard';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
 import * as i18n from '@/languages';
 import ConditionalWrap from 'conditional-wrap';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { createOpacityPalette } from '@/worklets/colors';
-import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 
 export const POLYMARKET_FEATURE_CARD_HEIGHT = 92;
 
@@ -34,7 +33,7 @@ export const PolymarketFeatureCard = memo(function PolymarketFeatureCard({
   }, [accentColor]);
 
   const { dismiss: dismissPolymarketFeatureCard } = usePolymarketFeatureCard();
-  const onDismiss = (e?: ButtonPressAnimationTouchEvent) => {
+  const onDismiss = (e?: GestureResponderEvent) => {
     if (e && 'stopPropagation' in e) {
       e.stopPropagation();
     }
@@ -44,12 +43,7 @@ export const PolymarketFeatureCard = memo(function PolymarketFeatureCard({
   return (
     <AccentColorProvider color={accentColor}>
       <View style={styles.container}>
-        <ButtonPressAnimation
-          onPress={() => {
-            navigateToPolymarket();
-          }}
-          scaleTo={0.96}
-        >
+        <ButtonPressAnimation onPress={() => navigateToPolymarket()} scaleTo={0.96}>
           <ConditionalWrap
             condition={isDarkMode}
             wrap={children => (

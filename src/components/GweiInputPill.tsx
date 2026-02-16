@@ -1,13 +1,14 @@
 import React, { useCallback } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaskedTextInput } from 'react-native-advanced-input-mask';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import styled from '@/styled-thing';
 import { buildTextStyles, padding } from '@/styles';
 import { useTheme } from '@/theme';
 import { TextInput } from 'react-native';
 import { Box, Inline, Inset, Text } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type GweiInputPillProps = {
   color: string;
@@ -23,7 +24,7 @@ type GweiInputPillProps = {
 const GweiNumberInput = styled(MaskedTextInput).attrs(
   // @ts-expect-error
   ({ theme: { colors }, value }) => ({
-    color: !value && colors.alpha(colors.blueGreyDark, 0.4),
+    color: !value && opacity(colors.blueGreyDark, 0.4),
     interval: 1,
     keyboardAppearance: 'dark',
     keyboardType: 'decimal-pad',
@@ -86,7 +87,7 @@ function GweiInputPill(
               onChangeText={onChangeText}
               onFocus={onFocus}
               placeholder="0"
-              placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.4)}
+              placeholderTextColor={opacity(colors.blueGreyDark, 0.4)}
               ref={ref}
               selectionColor={color}
               spellCheck={false}

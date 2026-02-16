@@ -5,7 +5,7 @@ import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocuse
 import { Border, Box, Text, TextShadow, useColorMode } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import Routes from '@/navigation/routesNames';
 import Animated, { useAnimatedRef } from 'react-native-reanimated';
@@ -15,7 +15,7 @@ import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { fontWithWidth } from '@/styles/buildTextStyles';
 import font from '@/styles/fonts';
 import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { PerpPositionSide } from '@/features/perps/types';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
@@ -189,8 +189,8 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
 
   const button = useMemo(() => {
     const positionSideColor = isLong ? green : red;
-    const darkModeTextColor = isValidOrder ? (isLong ? 'black' : 'white') : opacityWorklet(positionSideColor, 0.4);
-    const lightModeTextColor = isValidOrder ? 'white' : opacityWorklet(positionSideColor, 0.4);
+    const darkModeTextColor = isValidOrder ? (isLong ? 'black' : 'white') : opacity(positionSideColor, 0.4);
+    const lightModeTextColor = isValidOrder ? 'white' : opacity(positionSideColor, 0.4);
     const backTextColor = isDarkMode ? (isLong ? 'black' : 'white') : 'white';
     return {
       textColor: isDarkMode ? darkModeTextColor : lightModeTextColor,

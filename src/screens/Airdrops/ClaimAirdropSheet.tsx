@@ -1,10 +1,9 @@
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { PANEL_WIDTH, Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import {
@@ -28,7 +27,7 @@ import { fetchReverseRecord } from '@/handlers/ens';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { containsEmoji } from '@/helpers/strings';
 import { convertAmountToBalanceDisplay } from '@/helpers/utilities';
-import { useCleanup } from '@/hooks';
+import { useCleanup } from '@/hooks/useCleanup';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
@@ -38,7 +37,9 @@ import { RootStackParamList } from '@/navigation/types';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { darkModeThemeColors } from '@/styles/colors';
-import { safeAreaInsetValues, time, watchingAlert } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+import { time } from '@/utils/time';
+import watchingAlert from '@/utils/watchingAlert';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
@@ -54,6 +55,7 @@ import { Address } from 'viem';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { AirdropGasInfo, ClaimStatus, useClaimAirdrop } from './useClaimAirdrop';
 import { GasInfo } from './utils';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const COIN_ICON_SIZE = 96;
 const PANEL_HEIGHT = 593;
@@ -509,7 +511,7 @@ const SkiaBackground = memo(function SkiaBackground({
 
   const imageOpacity = useDerivedValue(() => (image ? withTiming(1, TIMING_CONFIGS.slowerFadeConfig) : 0));
   const shadowOpacity = useDerivedValue(() => (color ? withTiming(0.44, TIMING_CONFIGS.slowerFadeConfig) : 0));
-  const shadowColor = useDerivedValue(() => (color ? opacityWorklet(color, shadowOpacity.value) : 'rgba(0, 0, 0, 0)'));
+  const shadowColor = useDerivedValue(() => (color ? opacity(color, shadowOpacity.value) : 'rgba(0, 0, 0, 0)'));
 
   useCleanup(() => coinIconPath?.dispose?.());
   useCleanup(() => image?.dispose?.(), [image]);

@@ -13,8 +13,8 @@ import { SPRING_CONFIGS, easing } from '@/components/animations/animationConfigs
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 // ============ Constants ====================================================== //
 

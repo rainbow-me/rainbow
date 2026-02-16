@@ -20,11 +20,11 @@ import { transitionEasing } from '@/features/rnbw-rewards/animations/sceneTransi
 import { LoadingSpinner } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/LoadingSpinner';
 import concentricCircleImage from '@/features/rnbw-rewards/assets/radial-circle.png';
 import { SpinnableCoin, SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/SpinnableCoin';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { Blur, Canvas, RoundedRect } from '@shopify/react-native-skia';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const COIN_SIZE = 160;
 const SMALL_COIN_SIZE = 90;
@@ -175,7 +175,7 @@ export const RnbwHeroCoin = memo(function RnbwHeroCoin() {
             width={BLUR_CIRCLE_SIZE}
             height={BLUR_CIRCLE_SIZE}
             r={BLUR_CIRCLE_SIZE / 2}
-            color={opacityWorklet('#F6D56B', 0.2)}
+            color={opacity('#F6D56B', 0.2)}
           >
             <Blur blur={BLUR_INTENSITY} />
           </RoundedRect>
@@ -198,10 +198,10 @@ export const RnbwHeroCoin = memo(function RnbwHeroCoin() {
               justifyContent="center"
               alignItems="center"
               borderWidth={THICK_BORDER_WIDTH}
-              borderColor={{ custom: opacityWorklet(globalColors.white100, 0.12) }}
+              borderColor={{ custom: opacity(globalColors.white100, 0.12) }}
               shadow={'24px'}
             >
-              <InnerShadow color={opacityWorklet(globalColors.white100, 0.28)} width={52} height={52} blur={3.5} dx={0} dy={6} />
+              <InnerShadow color={opacity(globalColors.white100, 0.28)} width={52} height={52} blur={3.5} dx={0} dy={6} />
               <Text color="label" size="26pt" weight="heavy" align="center">
                 {'􀆅'}
               </Text>
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: DEVICE_WIDTH / 2 - COIN_SIZE / 2,
     transformOrigin: 'center top',
-    shadowColor: opacityWorklet(globalColors.grey100, 0.27),
+    shadowColor: opacity(globalColors.grey100, 0.27),
     shadowOffset: { width: 0, height: 8 },
     shadowRadius: 17,
   },

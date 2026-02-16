@@ -3,7 +3,7 @@ import { Box, useColorMode } from '@/design-system';
 import { ExtremeLabels, LABEL_VERTICAL_EXTRA_OFFSET } from './ExtremeLabels';
 import { ChartDot, ChartPath, ChartPathProvider, useChartData } from '@/react-native-animated-charts/src';
 import { useTheme } from '@/theme';
-import { useChartThrottledPoints } from '@/hooks';
+import useChartThrottledPoints from '@/hooks/charts/useChartThrottledPoints';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { SharedValue, useAnimatedReaction } from 'react-native-reanimated';

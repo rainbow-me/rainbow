@@ -3,19 +3,22 @@ import * as i18n from '@/languages';
 import { memo, useMemo, useState } from 'react';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { MarketRow, MarketRowLoadingSkeleton } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
 import { ResolvedMarketsList } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsList';
 import { SingleMarketEventOutcomes } from '@/features/polymarket/screens/polymarket-event-screen/components/SingleMarketEvent';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import useDimensions from '@/hooks/useDimensions';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { ResolvedMarketsSection } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsSection';
+
+const INITIAL_MARKETS_TO_SHOW = 10;
 
 export const MarketsSection = memo(function MarketsSection({ event }: { event: PolymarketEvent | null }) {
   const { isDarkMode } = useColorMode();
@@ -56,10 +59,10 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
   const { isDarkMode } = useColorMode();
   const activeMarkets = markets.filter(market => !market.closed);
   const resolvedMarkets = markets.filter(market => market.closed);
-  const [showAllMarkets, setShowAllMarkets] = useState(markets.length <= 10);
+  const [showAllMarkets, setShowAllMarkets] = useState(activeMarkets.length <= INITIAL_MARKETS_TO_SHOW);
   const showMarketImages = usePolymarketEventStore(state => state.getData()?.showMarketImages ?? false);
   const allResolved = activeMarkets.length === 0;
-  const visibleMarkets = showAllMarkets ? activeMarkets : activeMarkets.slice(0, 10);
+  const visibleMarkets = showAllMarkets ? activeMarkets : activeMarkets.slice(0, INITIAL_MARKETS_TO_SHOW);
   const eventColor = getColorValueForThemeWorklet(event.color, isDarkMode);
   const screenBackgroundColor = isDarkMode
     ? getSolidColorEquivalent({ background: eventColor, foreground: '#000000', opacity: 0.92 })
@@ -94,7 +97,7 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
           </Box>
         )}
         {allResolved && <ResolvedMarketsList markets={resolvedMarkets} showMarketImages={showMarketImages} />}
-        {!allResolved && markets.length > 10 && (
+        {!allResolved && activeMarkets.length > INITIAL_MARKETS_TO_SHOW && (
           <>
             <Box position="absolute" bottom={{ custom: 0 }} width="full">
               <EasingGradient
@@ -115,7 +118,7 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
                     width={20}
                     justifyContent="center"
                     alignItems="center"
-                    backgroundColor={opacityWorklet('#F5F8FF', 0.09)}
+                    backgroundColor={opacity('#F5F8FF', 0.09)}
                     borderRadius={10}
                     style={{ transform: [{ rotate: showAllMarkets ? '180deg' : '0deg' }] }}
                   >
@@ -128,9 +131,9 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
                   </Text>
                   {resolvedMarkets.length > 0 && !showAllMarkets && (
                     <Box
-                      backgroundColor={opacityWorklet('#F5F8FF', 0.06)}
+                      backgroundColor={opacity('#F5F8FF', 0.06)}
                       borderWidth={THICKER_BORDER_WIDTH}
-                      borderColor={{ custom: opacityWorklet('#F5F8FF', 0.03) }}
+                      borderColor={{ custom: opacity('#F5F8FF', 0.03) }}
                       height={22}
                       paddingHorizontal={'8px'}
                       borderRadius={11}

@@ -2,7 +2,7 @@ import React, { ReactNode, useCallback, useMemo } from 'react';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { Box } from '@/design-system';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -11,7 +11,7 @@ import * as i18n from '@/languages';
 import { add, formatNumber } from '@/helpers/utilities';
 import { weiToGwei } from '@/parsers';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 
 const { SWAP_GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;

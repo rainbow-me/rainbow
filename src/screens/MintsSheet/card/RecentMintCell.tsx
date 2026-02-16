@@ -5,7 +5,7 @@ import { useTheme } from '@/theme';
 import { View } from 'react-native';
 import { MintedNft } from '@/graphql/__generated__/arc';
 import { IS_IOS } from '@/env';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { NUM_NFTS } from './Card';
 import { ImgixImage } from '@/components/images';
 

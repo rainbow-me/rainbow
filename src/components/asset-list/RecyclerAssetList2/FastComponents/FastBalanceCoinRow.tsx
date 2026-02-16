@@ -1,11 +1,12 @@
 import React, { useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { CoinIconIndicator } from '@/components/coin-icon';
+import CoinIconIndicator from '@/components/coin-icon/CoinIconIndicator';
 import { Icon } from '@/components/icons';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ExtendedState } from '../core/RawRecyclerList';
 import { Text } from '@/design-system';
-import { useAccountAsset, useCoinListFinishEditingOptions } from '@/hooks';
+import useAccountAsset from '@/hooks/useAccountAsset';
+import { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import Routes from '@/navigation/routesNames';
 import { borders, colors, padding, shadow } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -15,6 +16,7 @@ import { Navigation } from '@/navigation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { toSignificantDigits } from '@/helpers/utilities';
 import { getLiquidityCappedBalance, TokenData } from '@/state/liveTokens/liveTokensStore';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -39,7 +41,7 @@ const CoinCheckButton = React.memo(function CoinCheckButton({ isHidden, isPinned
     <View style={sx.checkboxContainer}>
       <ButtonPressAnimation onPress={onPress}>
         <View style={sx.checkboxInnerContainer}>
-          {showOutline && <View style={[sx.circleOutline, { borderColor: colors.alpha(colors.blueGreyDark, 0.12) }]} />}
+          {showOutline && <View style={[sx.circleOutline, { borderColor: opacity(colors.blueGreyDark, 0.12) }]} />}
 
           {coinIconPlaceholder && <CoinIconIndicator isPinned={isPinned} style={sx.coinIconIndicator} theme={theme} />}
 

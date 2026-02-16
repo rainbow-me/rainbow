@@ -17,7 +17,7 @@ import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@
 import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { sanitizeSeedPhrase } from '@/utils';
+import { sanitizeSeedPhrase } from '@/utils/formatters';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger, RainbowError } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -128,9 +128,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
       setBusy(true);
 
-      // guard against pressEvent coming in as forceColor if
-      // handlePressImportButton is used as onClick handler
-      const guardedForceColor = typeof forceColor === 'string' || typeof forceColor === 'number' ? forceColor : null;
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
       let name: string | null = null;
 
@@ -160,7 +157,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             });
           }
 
-          startImportProfile(name, guardedForceColor, address, finalAvatarUrl || undefined);
+          startImportProfile(name, forceColor, address, finalAvatarUrl || undefined);
           analytics.track(analytics.event.showWalletProfileModalForENSAddress, {
             address,
             input,
@@ -190,7 +187,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             });
           }
 
-          startImportProfile(name, guardedForceColor, address, '');
+          startImportProfile(name, forceColor, address, '');
           analytics.track(analytics.event.showWalletProfileModalForUnstoppableAddress, {
             address,
             input,
@@ -230,7 +227,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           });
         }
 
-        startImportProfile(name || '', guardedForceColor, input, finalAvatarUrl);
+        startImportProfile(name || '', forceColor, input, finalAvatarUrl);
       } else {
         try {
           const walletResult = await deriveAccountFromWalletInput(input);
@@ -263,7 +260,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             });
           }
 
-          startImportProfile(name || '', guardedForceColor, walletResult.address, finalAvatarUrl);
+          startImportProfile(name || '', forceColor, walletResult.address, finalAvatarUrl);
 
           analytics.track(analytics.event.showWalletProfileModalForImportedWallet, {
             address: walletResult.address,

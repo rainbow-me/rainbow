@@ -1,5 +1,5 @@
 import React, { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
-import { Appearance, LayoutAnimation, NativeModules, useColorScheme } from 'react-native';
+import { Appearance, LayoutAnimation, useColorScheme } from 'react-native';
 import { useDarkMode } from 'react-native-dark-mode';
 import { ThemeProvider } from 'styled-components';
 import { Colors, darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
@@ -35,8 +35,6 @@ export const ThemeContext = createContext<ThemeContextProps>({
   setTheme: () => {},
 });
 
-const { RNThemeModule } = NativeModules;
-
 export const isDarkTheme = async () => {
   let currentTheme: ThemesType = await getTheme();
 
@@ -58,7 +56,7 @@ export const MainThemeProvider = (props: PropsWithChildren) => {
   const colorSchemeSystemAdjusted = colorScheme === Themes.SYSTEM ? (isSystemDarkMode ? 'dark' : 'light') : colorScheme;
 
   useEffect(() => {
-    setTimeout(() => RNThemeModule?.setMode(colorSchemeSystemAdjusted), 400);
+    Appearance.setColorScheme(colorSchemeSystemAdjusted);
   }, [colorSchemeSystemAdjusted]);
 
   // Override default with user preferences

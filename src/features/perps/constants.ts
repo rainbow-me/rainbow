@@ -1,8 +1,8 @@
-import { AddressOrEth, ParsedAsset } from '@/__swaps__/types/assets';
+import type { Address } from 'viem';
+import { ParsedAsset } from '@/__swaps__/types/assets';
 import { HlBuilderSettings, MarketSortOrder } from '@/features/perps/types';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { Address } from 'viem';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { SearchAsset } from '@/__swaps__/types/search';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -10,7 +10,6 @@ import { LinearTransition } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { supportedNativeCurrencies } from '@/references';
 import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities';
-import * as i18n from '@/languages';
 
 export const DEFAULT_SLIPPAGE_BIPS = 500;
 export const RAINBOW_BUILDER_SETTINGS = {
@@ -36,7 +35,7 @@ export const FOOTER_HEIGHT_WITH_SAFE_AREA = FOOTER_HEIGHT + safeAreaInsetValues.
 
 export const INPUT_CARD_HEIGHT = 106;
 
-export const HYPERLIQUID_USDC_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+export const HYPERLIQUID_USDC_ADDRESS: Address = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 export const HYPERLIQUID_COLORS = {
   green: '#3ECFAD',
   darkGreen: '#072723',
@@ -85,7 +84,7 @@ export const USD_CURRENCY = NativeCurrencyKeys.USD satisfies NativeCurrencyKey;
 export const USD_DECIMALS = supportedNativeCurrencies[USD_CURRENCY].decimals;
 
 export const USDC_ASSET = {
-  address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as AddressOrEth,
+  address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
   chainId: 1337,
   chainName: 'Hyperliquid',
   colors: {
@@ -97,18 +96,18 @@ export const USDC_ASSET = {
   isNativeAsset: false,
   isRainbowCurated: true,
   isVerified: true,
-  mainnetAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' as AddressOrEth,
+  mainnetAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
   name: 'USD Coin',
   native: {
     price: undefined,
   },
   networks: {
     [ChainId.mainnet]: {
-      address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' as Address,
+      address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
       decimals: 8,
     },
     1337: {
-      address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address,
+      address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
       decimals: 8,
     },
   },
@@ -120,7 +119,7 @@ export const USDC_ASSET = {
     circulating_supply: 100000000000,
   },
   symbol: 'USDC',
-  uniqueId: getUniqueId('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, HYPERCORE_PSEUDO_CHAIN_ID),
+  uniqueId: getUniqueId('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', HYPERCORE_PSEUDO_CHAIN_ID),
   highLiquidity: true,
 } satisfies SearchAsset & ParsedAsset;
 

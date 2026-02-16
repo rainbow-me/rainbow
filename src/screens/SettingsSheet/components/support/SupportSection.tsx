@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useNavigation } from '@/navigation';
 import { Box, Stack, Text } from '@/design-system';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
@@ -11,6 +11,7 @@ import MenuItem from '../MenuItem';
 import { SettingsExternalURLs } from '../../constants';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { useSendFeedback } from '@/hooks/useSendFeedback';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const SupportSection = () => {
   return (
@@ -61,7 +62,7 @@ const ContactSupportCard = () => {
 
 const ChooseTopicCTAButton = () => {
   const { colors } = useTheme();
-  const ctaButtonStyle = useMemo(() => ({ backgroundColor: colors.alpha(colors.appleBlue, 0.06) }), [colors]);
+  const ctaButtonStyle = useMemo(() => ({ backgroundColor: opacity(colors.appleBlue, 0.06) }), [colors]);
 
   return (
     <Box

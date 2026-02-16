@@ -1,7 +1,7 @@
 import { analytics } from '@/analytics';
 import { DynamicHeightSheet } from '@/components/sheet';
 import { BackgroundProvider, Box } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { useRewards } from '@/resources/rewards/rewardsQuery';
 import { RewardsContent } from '@/screens/rewards/components/RewardsContent';
 import { useAccountAddress } from '@/state/wallets/walletsStore';

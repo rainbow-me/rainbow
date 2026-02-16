@@ -1,7 +1,6 @@
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
 import EthIcon from '@/assets/eth-icon.png';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { Page } from '@/components/layout';
@@ -30,7 +29,10 @@ import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
-import { useAccountAccentColor, useAccountSettings, useClipboard, useDimensions } from '@/hooks';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import useClipboard from '@/hooks/useClipboard';
+import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
@@ -43,7 +45,8 @@ import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { useAccountAddress, useAccountProfileInfo, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme';
-import { measureText, safeAreaInsetValues } from '@/utils';
+import measureText from '@/utils/measureText';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { address as formatAddress } from '@/utils/abbreviations';
 import { delay } from '@/utils/delay';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -63,6 +66,8 @@ import { LeaderboardRow } from '../components/LeaderboardRow';
 import { RewardsActionButton } from '../components/RewardsActionButton';
 import { Skeleton } from '../components/Skeleton';
 import { getNumberFormatter } from '@/helpers/intl';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined }) => {
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -615,7 +620,7 @@ export function PointsContent() {
   return (
     <Box height="full" as={Page} flex={1} style={{ backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}>
       <ScrollView
-        refreshControl={<RefreshControl onRefresh={refresh} refreshing={isRefreshing} tintColor={colors.alpha(colors.blueGreyDark, 0.4)} />}
+        refreshControl={<RefreshControl onRefresh={refresh} refreshing={isRefreshing} tintColor={opacity(colors.blueGreyDark, 0.4)} />}
         scrollIndicatorInsets={{
           bottom: TAB_BAR_HEIGHT - safeAreaInsetValues.bottom,
           top: 12,

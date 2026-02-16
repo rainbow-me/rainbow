@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { GestureResponderEvent, StyleSheet } from 'react-native';
 import { Bleed, Box, Separator, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { PolymarketPosition } from '@/features/polymarket/types';
@@ -6,7 +6,7 @@ import { memo, useCallback, useMemo } from 'react';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import ImgixImage from '@/components/images/ImgixImage';
 import { mulWorklet, subWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
@@ -17,14 +17,14 @@ import { createOpacityPalette, getSolidColorEquivalent } from '@/worklets/colors
 import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
 import { PositionAction, getPositionAction } from '@/features/polymarket/utils/getPositionAction';
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { greaterThan } from '@/helpers/utilities';
 import ConditionalWrap from 'conditional-wrap';
 import { IS_IOS } from '@/env';
@@ -72,7 +72,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   }, [actionButtonType]);
 
   const onPressActionButton = useCallback(
-    (e?: ButtonPressAnimationTouchEvent) => {
+    (e?: GestureResponderEvent) => {
       if (e && 'stopPropagation' in e) {
         e.stopPropagation();
       }
@@ -160,18 +160,14 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
               <Box gap={14}>
                 {showEventTitle && (
                   <GradientBorderView
-                    borderGradientColors={
-                      isDarkMode ? [accentColors.opacity4, accentColors.opacity0] : ['#F0F2F5', opacityWorklet('#F0F2F5', 0)]
-                    }
+                    borderGradientColors={isDarkMode ? [accentColors.opacity4, accentColors.opacity0] : ['#F0F2F5', opacity('#F0F2F5', 0)]}
                     borderRadius={12}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 0.75, y: 0 }}
                   >
                     <LinearGradient
                       colors={
-                        isDarkMode
-                          ? [accentColors.opacity6, accentColors.opacity0]
-                          : [opacityWorklet('#F0F2F5', 0.6), opacityWorklet('#F0F2F5', 0)]
+                        isDarkMode ? [accentColors.opacity6, accentColors.opacity0] : [opacity('#F0F2F5', 0.6), opacity('#F0F2F5', 0)]
                       }
                       style={StyleSheet.absoluteFill}
                       start={{ x: 0.29, y: 0 }}

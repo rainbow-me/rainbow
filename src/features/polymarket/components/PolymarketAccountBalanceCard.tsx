@@ -6,13 +6,13 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { View } from 'react-native';
 import { ImgixImage } from '@/components/images';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import * as i18n from '@/languages';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { PolymarketButton } from '@/features/polymarket/components/PolymarketButton';
 
 export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalanceCard({ accentColor }: { accentColor: string }) {
@@ -28,7 +28,7 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
       height={64}
       borderRadius={110}
       borderWidth={isDarkMode ? THICKER_BORDER_WIDTH : 0}
-      borderColor={{ custom: opacityWorklet(accentColor, 0.16) }}
+      borderColor={{ custom: opacity(accentColor, 0.16) }}
       shadow={'18px'}
     >
       <Box flexDirection="row" justifyContent="space-between">
@@ -58,12 +58,12 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
               <Box
                 justifyContent="center"
                 alignItems="center"
-                backgroundColor={isDarkMode ? opacityWorklet(accentColor, 0.08) : opacityWorklet(accentColor, 0.1)}
+                backgroundColor={isDarkMode ? opacity(accentColor, 0.08) : opacity(accentColor, 0.1)}
                 height={40}
                 width={52}
                 borderRadius={24}
                 borderWidth={THICKER_BORDER_WIDTH}
-                borderColor={{ custom: isDarkMode ? opacityWorklet(accentColor, 0.06) : opacityWorklet(accentColor, 0.03) }}
+                borderColor={{ custom: isDarkMode ? opacity(accentColor, 0.06) : opacity(accentColor, 0.03) }}
               >
                 <TextIcon align="center" color={{ custom: accentColor }} size="icon 20px" weight="black">
                   {'􀅽'}

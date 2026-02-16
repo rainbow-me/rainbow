@@ -1,11 +1,12 @@
 import { isArray, isString } from 'lodash';
 import React from 'react';
 import { useTheme } from '../../../theme/ThemeContext';
-import { ButtonPressAnimation } from '../../animations';
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const ButtonSizeTypes = {
   default: {
@@ -24,7 +25,7 @@ const ButtonShapeTypes = {
 };
 
 const shadowStyles = (colors, disabled, isDarkMode) => ({
-  shadowColor: colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark, isDarkMode && disabled ? 0.2 : 0.5),
+  shadowColor: opacity(isDarkMode ? colors.shadow : colors.blueGreyDark, isDarkMode && disabled ? 0.2 : 0.5),
   shadowOffset: { height: 4, width: 0 },
   shadowOpacity: 0.2,
   shadowRadius: 6,

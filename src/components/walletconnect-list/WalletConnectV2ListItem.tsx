@@ -10,19 +10,20 @@ import { ChainId } from '@/state/backendNetworks/types';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import { useTheme } from '@/theme';
-import { showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { changeAccount, disconnectSession } from '@/walletConnect';
 import { SessionTypes } from '@walletconnect/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { RequestVendorLogoIcon } from '../coin-icon';
+import RequestVendorLogoIcon from '../coin-icon/RequestVendorLogoIcon';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
 import { TruncatedText } from '../text';
 import { isValidHex } from '@/handlers/web3';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const CONTAINER_PADDING = 15;
 const VENDOR_LOGO_ICON_SIZE = 50;
@@ -149,8 +150,16 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
     >
       <Row align="center" height={WALLET_CONNECT_LIST_ITEM_HEIGHT}>
         <Row align="center" flex={1} style={rowStyle}>
-          {/* @ts-expect-error */}
-          <RequestVendorLogoIcon backgroundColor={colors.white} dappName={dappName} imageUrl={dappLogo} size={VENDOR_LOGO_ICON_SIZE} />
+          <RequestVendorLogoIcon
+            backgroundColor={colors.white}
+            chainId={undefined}
+            dappName={dappName}
+            imageUrl={dappLogo}
+            noShadow={false}
+            shouldPrioritizeImageLoading={false}
+            showLargeShadow={false}
+            size={VENDOR_LOGO_ICON_SIZE}
+          />
           <ColumnWithMargins flex={1} margin={android ? -4 : 5} style={columnStyle}>
             <Row width="95%">
               <TruncatedText size="lmedium" weight="heavy">
@@ -176,7 +185,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
                 <TruncatedText
                   size="medium"
                   style={{
-                    color: colors.alpha(colors.blueGreyDark, 0.6),
+                    color: opacity(colors.blueGreyDark, 0.6),
                     paddingLeft: 5,
                     paddingRight: 19,
                     width: '100%',

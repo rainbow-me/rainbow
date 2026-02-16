@@ -1,6 +1,6 @@
 import React, { memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Border, Box, Text, TextShadow, globalColors } from '@/design-system';
 import * as i18n from '@/languages';
@@ -8,13 +8,13 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { AirdropClaimable, BalancePill } from '@/screens/Airdrops/AirdropsSheet';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { useAirdropsStore } from '@/state/claimables/airdropsStore';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';
 import Animated from 'react-native-reanimated';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const COIN_ROW_HEIGHT = 40;
 

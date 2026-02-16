@@ -2,10 +2,11 @@ import React, { Fragment, useMemo } from 'react';
 import { TouchableWithoutFeedback, StyleSheet } from 'react-native';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
-import { deviceUtils, magicMemo } from '../../utils';
+import deviceUtils from '@/utils/deviceUtils';
+import magicMemo from '@/utils/magicMemo';
 import Divider from '@/components/Divider';
-import { ButtonPressAnimation, ButtonPressAnimationProps } from '../animations';
-import { RequestVendorLogoIcon } from '../coin-icon';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import RequestVendorLogoIcon from '../coin-icon/RequestVendorLogoIcon';
 import { Centered } from '../layout';
 import { TruncatedText } from '../text';
 import CoinName from './CoinName';
@@ -13,6 +14,7 @@ import CoinRow from './CoinRow';
 import { UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { padding } from '@/styles';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const dividerHeight = 22;
 const isSmallPhone = deviceUtils.dimensions.height <= 667;
@@ -29,7 +31,7 @@ const BottomRow = ({ selected, subtitle }: { selected: boolean; subtitle: string
 
   return (
     <TruncatedText
-      color={selected ? colors.alpha(colors.blueGreyDark, 0.6) : colors.alpha(colors.blueGreyDark, 0.5)}
+      color={selected ? opacity(colors.blueGreyDark, 0.6) : opacity(colors.blueGreyDark, 0.5)}
       letterSpacing="roundedMedium"
       size="smedium"
       weight={selected ? 'bold' : 'regular'}
@@ -85,7 +87,7 @@ const CollectiblesSendRow = React.memo(
     disablePressAnimation?: boolean;
     item: UniqueAsset;
     isFirstRow?: boolean;
-    onPress: ButtonPressAnimationProps['onPress'];
+    onPress: () => void;
     selected?: boolean;
     testID: string;
   }) => {

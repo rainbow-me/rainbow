@@ -1,18 +1,19 @@
 import React, { memo } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { GestureResponderEvent, Image, StyleSheet, View } from 'react-native';
 import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native-skia';
 import { BlurView } from 'react-native-blur-view';
 import { Box, globalColors, Inline, Text, TextIcon, useColorMode } from '@/design-system';
-import { ButtonPressAnimation } from '@/components/animations';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { opacity } from '@/framework/ui/utils/opacity';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
 import * as i18n from '@/languages';
-import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
-import { ETH_COLOR_DARK_ACCENT, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { IS_IOS } from '@/env';
+
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const RNBW_FEATURE_CARD_HEIGHT = 131;
 const BORDER_RADIUS = 28;
@@ -31,8 +32,8 @@ export const RnbwFeatureCard = memo(function RnbwFeatureCard() {
           <Box
             borderRadius={BORDER_RADIUS}
             borderWidth={isDarkMode ? 1 : THICK_BORDER_WIDTH}
-            borderColor={{ custom: isDarkMode ? opacityWorklet(ETH_COLOR_DARK_ACCENT, 0.06) : opacityWorklet('#F5D66C', 0.2) }}
-            backgroundColor={isDarkMode ? opacityWorklet('#677483', 0.06) : opacityWorklet('#F5D66C', 0.6)}
+            borderColor={{ custom: isDarkMode ? opacity(ETH_COLOR_DARK_ACCENT, 0.06) : opacity('#F5D66C', 0.2) }}
+            backgroundColor={isDarkMode ? opacity('#677483', 0.06) : opacity('#F5D66C', 0.6)}
             style={StyleSheet.absoluteFill}
           >
             {isDarkMode && <GradientFill />}
@@ -44,7 +45,7 @@ export const RnbwFeatureCard = memo(function RnbwFeatureCard() {
             <Box flexDirection="row" alignItems="center" gap={12}>
               <Image source={rnbwCoinImage} style={styles.coinImage} />
               <Box gap={14} style={{ maxWidth: 192 }}>
-                <Text size="13pt" weight="heavy" color={isDarkMode ? { custom: opacityWorklet('#F5F8FF', 0.4) } : 'labelSecondary'}>
+                <Text size="13pt" weight="heavy" color={isDarkMode ? { custom: opacity('#F5F8FF', 0.4) } : 'labelSecondary'}>
                   {i18n.t(i18n.l.rnbw_rewards.introduction.introducing).toUpperCase()}
                 </Text>
                 <Inline alignVertical="center" space="6px">
@@ -54,7 +55,7 @@ export const RnbwFeatureCard = memo(function RnbwFeatureCard() {
                   <TextIcon
                     size="13pt"
                     weight="heavy"
-                    color={isDarkMode ? { custom: opacityWorklet(globalColors.white100, 0.3) } : 'labelQuaternary'}
+                    color={isDarkMode ? { custom: opacity(globalColors.white100, 0.3) } : 'labelQuaternary'}
                   >
                     {'􀯻'}
                   </TextIcon>
@@ -76,7 +77,7 @@ export const RnbwFeatureCard = memo(function RnbwFeatureCard() {
 function DismissButton() {
   const { dismiss } = useRnbwFeatureCard();
 
-  const onDismiss = (e?: ButtonPressAnimationTouchEvent) => {
+  const onDismiss = (e?: GestureResponderEvent) => {
     if (e && 'stopPropagation' in e) {
       e.stopPropagation();
     }
@@ -89,7 +90,7 @@ function DismissButton() {
         <Box
           width={28}
           height={28}
-          backgroundColor={opacityWorklet(globalColors.grey100, 0.32)}
+          backgroundColor={opacity(globalColors.grey100, 0.32)}
           borderRadius={14}
           justifyContent="center"
           alignItems="center"

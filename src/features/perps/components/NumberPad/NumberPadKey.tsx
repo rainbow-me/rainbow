@@ -11,11 +11,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { HitSlop, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { colors } from '@/styles';
 import { IS_IOS } from '@/env';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const LONG_PRESS_DELAY_DURATION = 400;
 const LONG_PRESS_REPEAT_DURATION = 100;

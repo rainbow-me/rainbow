@@ -1,8 +1,8 @@
 import React from 'react';
 import Animated, { Easing, useAnimatedStyle, useDerivedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import { Box, Columns, useForegroundColor } from '@/design-system';
-import { useDimensions } from '@/hooks';
-import { magicMemo } from '@/utils';
+import useDimensions from '@/hooks/useDimensions';
+import magicMemo from '@/utils/magicMemo';
 
 const PULSE_STEP_DURATION = 1000;
 const STEP_SPACING = 9;

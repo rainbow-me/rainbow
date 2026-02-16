@@ -10,13 +10,12 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Bleed, Box, Inline, Inset, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
 import { Dapp, useBrowserDappsStore } from '@/resources/metadata/dapps';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from '../../BrowserContext';
 import { SEARCH_BAR_HEIGHT } from '../../Dimensions';
@@ -24,6 +23,7 @@ import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT } from 
 import { isValidURLWorklet } from '../../utils';
 import { useSearchContext } from '../SearchContext';
 import { GoogleSearchResult, SearchResult } from './SearchResult';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
   'worklet';

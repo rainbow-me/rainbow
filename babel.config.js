@@ -28,7 +28,7 @@ module.exports = function (api) {
       'module-resolver',
       {
         alias: getAliasesFromTsConfig(),
-        extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
+        extensions: ['.ios.ts', '.ios.tsx', '.android.ts', '.android.tsx', '.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
         root: ['./src'],
       },
     ],

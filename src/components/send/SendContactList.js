@@ -6,19 +6,21 @@ import { SectionList } from 'react-native';
 import * as DeviceInfo from 'react-native-device-info';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useDeepCompareMemo } from 'use-deep-compare';
-import { FlyInAnimation } from '../animations';
+import FlyInAnimation from '../animations/FlyInAnimation';
 import { ContactRow, SwipeableContactRow } from '../contacts';
 import { SheetHandleFixedToTopHeight } from '../sheet';
 import { Text } from '../text';
 import { InvalidPasteToast, ToastPositionContainer } from '../toasts';
 import SendEmptyState from './SendEmptyState';
-import { useKeyboardHeight } from '@/hooks';
+import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { filterList, isLowerCaseMatch } from '@/utils';
+import { filterList } from '@/utils/search';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const KeyboardArea = styled.View({
   height: ({ keyboardHeight }) => keyboardHeight,
@@ -37,13 +39,13 @@ const SectionTitle = styled(Text).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })({
-  color: ({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.6),
+  color: ({ theme: { colors } }) => opacity(colors.blueGreyDark, 0.6),
   marginLeft: 19,
   marginTop: android ? 6 : 12,
 });
 
 const SectionWrapper = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
-  colors: [colors.white, colors.alpha(colors.white, 0)],
+  colors: [colors.white, opacity(colors.white, 0)],
   end: { x: 0.5, y: 1 },
   locations: [0.55, 1],
   start: { x: 0.5, y: 0 },

@@ -1,4 +1,5 @@
-import { ChainId as SwapsChainId, Quote, QuoteParams, Source, SwapType, TokenAsset } from '@rainbow-me/swaps';
+import { getAddress, type Address } from 'viem';
+import { ChainId as SwapsChainId, Quote, QuoteParams, Source, SwapType, TokenAsset, ETH_ADDRESS } from '@rainbow-me/swaps';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { equalWorklet, greaterThanWorklet } from '@/safe-math/SafeMath';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -21,6 +22,7 @@ import { fetchAndValidateCrosschainQuote } from '../utils/crosschainQuote';
 import { isValidSwapsChainId } from '../utils/quotes';
 import { fetchAndValidateSameChainQuote } from '../utils/sameChainQuote';
 import { resolveDefaultSlippage } from '../utils/slippage';
+import { isNativeAsset } from '@/handlers/assets';
 
 // ============ Quote Store Factory ============================================ //
 
@@ -78,7 +80,7 @@ function createQuoteFetcher(config: DepositConfig) {
       feePercentageBasisPoints: config.quote?.feeBps ?? 0,
       fromAddress: accountAddress,
       sellAmount: convertAmountToRawAmount(normalizedAmount, asset.decimals),
-      sellTokenAddress: asset.address,
+      sellTokenAddress: asset.isNativeAsset ? ETH_ADDRESS : getAddress(asset.address),
       slippage,
       ...(isCrosschain && {
         refuel: true,
@@ -99,7 +101,7 @@ function createQuoteFetcher(config: DepositConfig) {
 
 function buildSyntheticTransferQuote(
   config: DepositConfig,
-  accountAddress: string,
+  accountAddress: Address,
   asset: NonNullable<DepositQuoteStoreParams['asset']>,
   normalizedAmount: string,
   assetChainId: ChainId
@@ -117,7 +119,7 @@ function buildSyntheticTransferQuote(
     buyAmountDisplayMinimum: rawAmount,
     buyAmountInEth: rawAmount,
     buyAmountMinusFees: rawAmount,
-    buyTokenAddress: asset.address,
+    buyTokenAddress: asset.isNativeAsset ? ETH_ADDRESS : getAddress(asset.address),
     buyTokenAsset: tokenAsset,
     chainId: assetChainId,
     data: '0x',
@@ -133,7 +135,7 @@ function buildSyntheticTransferQuote(
     sellAmountDisplay: rawAmount,
     sellAmountInEth: rawAmount,
     sellAmountMinusFees: rawAmount,
-    sellTokenAddress: asset.address,
+    sellTokenAddress: asset.isNativeAsset ? ETH_ADDRESS : getAddress(asset.address),
     sellTokenAsset: tokenAsset,
     swapType: SwapType.normal,
     to: config.to.token.address,
@@ -185,5 +187,6 @@ function selectDepositAsset(state: InferStoreState<DepositStoreType>): DepositQu
     name: asset.name,
     price: asset.price,
     symbol: asset.symbol,
+    isNativeAsset: isNativeAsset(asset.address, asset.chainId),
   };
 }

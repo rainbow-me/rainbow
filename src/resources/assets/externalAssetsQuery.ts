@@ -14,7 +14,7 @@ export const EXTERNAL_TOKEN_STALE_TIME = 1000 * 60; // 1 minute
 // Types
 type ExternalToken = Pick<Token, 'decimals' | 'iconUrl' | 'name' | 'networks' | 'symbol' | 'colors' | 'price' | 'transferable'>;
 export type FormattedExternalAsset = ExternalToken & {
-  address: string;
+  address: AddressOrEth;
   chainId: ChainId;
   icon_url?: string;
   isNativeAsset: boolean;
@@ -42,7 +42,7 @@ type externalTokenQueryKey = ReturnType<typeof externalTokenQueryKey>;
 
 // Helpers
 const formatExternalAsset = (
-  address: string,
+  address: AddressOrEth,
   chainId: ChainId,
   asset: ExternalToken,
   nativeCurrency: NativeCurrencyKey
@@ -68,7 +68,7 @@ export async function fetchExternalToken({ address, chainId, currency }: Externa
     currency,
   });
   if (response.token) {
-    return formatExternalAsset(address, chainId, response.token, currency);
+    return formatExternalAsset(address as AddressOrEth, chainId, response.token, currency);
   } else {
     return null;
   }

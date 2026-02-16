@@ -3,7 +3,7 @@ import React, { useCallback, useRef } from 'react';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import Animated, { cancelAnimation, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withDecay } from 'react-native-reanimated';
-import { withSpeed } from '@/utils';
+import withSpeed from '@/utils/withSpeed';
 
 const DECCELERATION = 0.998;
 
@@ -96,6 +96,7 @@ const SwipeableList = ({ components, height, speed, testID }) => {
   }, [swiping, transX]);
 
   const tapGesture = Gesture.Tap()
+    .cancelsTouchesInView(false)
     .onBegin(() => {
       if (ios) {
         cancelAnimation(transX);
@@ -113,7 +114,6 @@ const SwipeableList = ({ components, height, speed, testID }) => {
 
   const longPressGesture = Gesture.LongPress()
     .maxDistance(100000)
-    .maxPointers(1)
     .onEnd(() => {
       if (android) swiping.value = withSpeed({ targetSpeed: speed });
     });

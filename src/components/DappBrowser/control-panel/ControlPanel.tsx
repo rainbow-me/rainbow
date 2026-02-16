@@ -1,9 +1,8 @@
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ImgixImage } from '@/components/images';
@@ -27,7 +26,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { greaterThan } from '@/helpers/utilities';
 import WalletTypes from '@/helpers/walletTypes';
-import { useWalletsWithBalancesAndNames } from '@/hooks';
+import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
@@ -42,7 +41,9 @@ import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDa
 import { getWalletWithAccount, setSelectedWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
-import { deviceUtils, safeAreaInsetValues, watchingAlert } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+import watchingAlert from '@/utils/watchingAlert';
 import { address } from '@/utils/abbreviations';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
@@ -58,6 +59,7 @@ import { RAINBOW_HOME } from '../constants';
 import { getDappHost } from '../handleProviderRequest';
 import { formatUrl } from '../utils';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const PAGES = {
   HOME: 'home',
@@ -963,14 +965,14 @@ const ConnectButton = memo(function ControlPanelButton({
 
   const buttonBackground = useAnimatedStyle(() => {
     return {
-      backgroundColor: opacityWorklet(buttonColor.value, isDarkMode ? 0.16 : 0.9),
-      borderColor: IS_IOS ? opacityWorklet(buttonColor.value, isDarkMode ? 0.08 : 0.3) : undefined,
+      backgroundColor: opacity(buttonColor.value, isDarkMode ? 0.16 : 0.9),
+      borderColor: IS_IOS ? opacity(buttonColor.value, isDarkMode ? 0.08 : 0.3) : undefined,
     };
   });
   const buttonIconStyle = useAnimatedStyle(() => {
     return {
       color: isDarkMode ? buttonColor.value : globalColors.white100,
-      textShadowColor: isDarkMode ? opacityWorklet(buttonColor.value, 0.8) : buttonColor.value,
+      textShadowColor: isDarkMode ? opacity(buttonColor.value, 0.8) : buttonColor.value,
     };
   });
 

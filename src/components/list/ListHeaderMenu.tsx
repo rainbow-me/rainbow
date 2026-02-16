@@ -1,8 +1,8 @@
 import React from 'react';
 import ContextMenuButton, { MenuConfig } from '@/components/native-context-menu/contextMenu';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, Inline, Text, useForegroundColor } from '@/design-system';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import { NftSort } from '@/state/nfts/nftsStoreManager';
 
 type ListHeaderMenuProps = {

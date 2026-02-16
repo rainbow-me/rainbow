@@ -33,7 +33,7 @@ if (process.env.CI) {
  * Metro configuration
  * https://reactnative.dev/docs/metro
  *
- * @type {import('@react-native/metro-config').MetroConfig}
+ * @type {import('metro-config').MetroConfig}
  */
 const rainbowConfig = {
   resolver: {

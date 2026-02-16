@@ -1,6 +1,6 @@
 import { isString } from 'lodash';
 import React, { useCallback } from 'react';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Centered, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';

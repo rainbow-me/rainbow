@@ -3,13 +3,14 @@ import pWaitFor from 'p-wait-for';
 import React, { useCallback } from 'react';
 import { AppState, Linking } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Text } from '../text';
 import { delay } from '@/utils/delay';
 import styled from '@/styled-thing';
 import { margin, padding, position } from '@/styles';
 import { Box } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const Button = styled(ButtonPressAnimation).attrs({
   scaleTo: 1.08,
@@ -33,7 +34,7 @@ const QRIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
 
 const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(darkModeThemeColors.blueGreyDark, 0.6),
+  color: opacity(darkModeThemeColors.blueGreyDark, 0.6),
   size: 'smedium',
   weight: 'semibold',
 }))({});

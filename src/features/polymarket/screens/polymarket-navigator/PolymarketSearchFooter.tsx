@@ -1,9 +1,9 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, TextInput, View, NativeSyntheticEvent, TextInputChangeEventData } from 'react-native';
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { PolymarketNavigation } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import { polymarketEventSearchActions } from '@/features/polymarket/stores/polymarketEventSearchStore';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
@@ -11,7 +11,7 @@ import { fontWithWidth } from '@/styles/buildTextStyles';
 import font from '@/styles/fonts';
 import { BlurView } from 'react-native-blur-view';
 import { LinearGradient } from 'expo-linear-gradient';
-import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { time } from '@/utils/time';
 import { useDebouncedCallback } from 'use-debounce';
 import * as i18n from '@/languages';
@@ -28,11 +28,11 @@ export const PolymarketSearchFooter = memo(function PolymarketSearchFooter() {
   const accentColors = useMemo(() => {
     const color = isDarkMode ? '#DC91F4' : '#E650D5';
     return {
-      opacity3: opacityWorklet(color, 0.03),
-      opacity6: opacityWorklet(color, 0.06),
-      opacity12: opacityWorklet(color, 0.12),
-      opacity40: opacityWorklet(color, 0.4),
-      opacity50: opacityWorklet(color, 0.5),
+      opacity3: opacity(color, 0.03),
+      opacity6: opacity(color, 0.06),
+      opacity12: opacity(color, 0.12),
+      opacity40: opacity(color, 0.4),
+      opacity50: opacity(color, 0.5),
       opacity100: color,
     };
   }, [isDarkMode]);
@@ -132,7 +132,7 @@ export const PolymarketSearchFooter = memo(function PolymarketSearchFooter() {
             enablesReturnKeyAutomatically
             onChange={onSearchQueryChange}
             placeholder={i18n.t(i18n.l.predictions.search.input_placeholder)}
-            placeholderTextColor={opacityWorklet(textAccentColor, 0.4)}
+            placeholderTextColor={opacity(textAccentColor, 0.4)}
             ref={inputRef}
             returnKeyType="search"
             spellCheck={false}

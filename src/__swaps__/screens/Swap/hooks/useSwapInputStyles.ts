@@ -8,16 +8,12 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
 import { globalColors, useColorMode } from '@/design-system';
-import {
-  BASE_INPUT_HEIGHT,
-  ETH_COLOR_DARK,
-  ETH_COLOR_DARK_ACCENT,
-  EXPANDED_INPUT_HEIGHT,
-  FOCUSED_INPUT_HEIGHT,
-} from '@/__swaps__/screens/Swap/constants';
+import { BASE_INPUT_HEIGHT, ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, EXPANDED_INPUT_HEIGHT } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { NavigationSteps } from './useSwapNavigation';
 
 export const useSwapInputStyles = ({
@@ -35,17 +31,17 @@ export const useSwapInputStyles = ({
 
   const bgColor = useDerivedValue(() => {
     return isDarkMode
-      ? opacityWorklet(getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode), 0.08)
-      : opacityWorklet(globalColors.white100, 0.8);
+      ? opacity(getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode), 0.08)
+      : opacity(globalColors.white100, 0.8);
   });
 
   const expandedBgColor = useDerivedValue(() => {
-    return isDarkMode ? bgColor.value : opacityWorklet(globalColors.white100, 0.8);
+    return isDarkMode ? bgColor.value : opacity(globalColors.white100, 0.8);
   });
 
   const strokeColor = useDerivedValue(() => {
     return isDarkMode
-      ? opacityWorklet(
+      ? opacity(
           getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode) === ETH_COLOR_DARK
             ? ETH_COLOR_DARK_ACCENT
             : getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode),
@@ -55,9 +51,7 @@ export const useSwapInputStyles = ({
   });
 
   const expandedStrokeColor = useDerivedValue(() => {
-    return isDarkMode
-      ? opacityWorklet(getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode), 0.1)
-      : globalColors.white100;
+    return isDarkMode ? opacity(getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode), 0.1) : globalColors.white100;
   });
 
   const containerStyle = useAnimatedStyle(() => {
@@ -101,14 +95,19 @@ export const useSwapInputStyles = ({
         {
           translateY: bottomInput
             ? withSpring(
-                interpolate(otherInputProgress.value, [0, 1, 2], [0, 0, EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT], 'clamp'),
+                interpolate(
+                  otherInputProgress.value,
+                  [0, 1, 2],
+                  [0, 0, EXPANDED_INPUT_HEIGHT - TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT],
+                  'clamp'
+                ),
                 SPRING_CONFIGS.springConfig
               )
             : 0,
         },
       ],
       height: withSpring(
-        interpolate(progress.value, [0, 1, 2], [BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT], 'clamp'),
+        interpolate(progress.value, [0, 1, 2], [BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT, TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT], 'clamp'),
         SPRING_CONFIGS.springConfig
       ),
     };

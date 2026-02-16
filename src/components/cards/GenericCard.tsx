@@ -1,9 +1,9 @@
 // @ts-nocheck
 import { Box, AccentColorProvider, Space } from '@/design-system';
 import React, { PropsWithChildren } from 'react';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { LinearGradient } from 'expo-linear-gradient';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import ConditionalWrap from 'conditional-wrap';
 import { IS_IOS } from '@/env';
 

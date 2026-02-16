@@ -1,6 +1,6 @@
-import { BaseButtonAnimationProps } from '@/components/animations/ButtonPressAnimation/types';
+import { ButtonPressAnimationProps } from '@/components/animations/ButtonPressAnimation/types';
 import { StyleProp, ViewStyle } from 'react-native';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import React from 'react';
 import styled from '@/styled-thing';
 import Reanimated from 'react-native-reanimated';
@@ -65,7 +65,7 @@ const Shadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: { the
     : {}),
 }));
 
-interface Props extends BaseButtonAnimationProps {
+interface Props extends ButtonPressAnimationProps {
   height: number;
   textColor: string;
   text: string;

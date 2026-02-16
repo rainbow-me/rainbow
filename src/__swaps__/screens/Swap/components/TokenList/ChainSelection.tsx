@@ -5,11 +5,11 @@ import Animated, { AnimatedRef, useDerivedValue, useSharedValue } from 'react-na
 import * as i18n from '@/languages';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { analytics } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { AnimatedText, Bleed, Box, Inline, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
-import { useAccountAccentColor } from '@/hooks';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
@@ -17,7 +17,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import Routes from '@/navigation/routesNames';
 import { Navigation } from '@/navigation';
 import { TokenToBuyListItem } from '@/__swaps__/types/search';
-import { GestureHandlerButton } from '../GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { UserAssetFilter } from '@/__swaps__/types/assets';
 
 type ChainSelectionProps = {

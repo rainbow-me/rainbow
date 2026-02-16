@@ -4,7 +4,8 @@ import { PerpsPosition } from '@/features/perps/types';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
-import { getColorValueForThemeWorklet, getHighContrastColor, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, getHighContrastColor } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { abs } from '@/helpers/utilities';
 import { useStableValue } from '@/hooks/useStableValue';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
@@ -13,7 +14,8 @@ import { TokenData } from '@/state/liveTokens/liveTokensStore';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { ETH_COLOR_DARK, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import * as i18n from '@/languages';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 
@@ -28,8 +30,8 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
   const backgroundColor = useMemo(
     () =>
       isDarkMode
-        ? opacityWorklet(getColorValueForThemeWorklet(getHighContrastColor(ETH_COLOR_DARK), isDarkMode), 0.08)
-        : opacityWorklet(globalColors.white100, 0.8),
+        ? opacity(getColorValueForThemeWorklet(getHighContrastColor(ETH_COLOR_DARK), isDarkMode), 0.08)
+        : opacity(globalColors.white100, 0.8),
     [isDarkMode]
   );
 

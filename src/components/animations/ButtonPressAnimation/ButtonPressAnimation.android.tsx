@@ -1,30 +1,45 @@
-/* eslint-disable react/no-unused-prop-types */
-/* 👆 Had to disable this ESLint rule it was false positive on shared Props interface */
-import React, { forwardRef, PropsWithChildren, useCallback, useContext, useMemo } from 'react';
+import React, { forwardRef, PropsWithChildren, useCallback, useContext, useMemo, useRef } from 'react';
 import { processColor, requireNativeComponent, StyleSheet, View } from 'react-native';
-import { createNativeWrapper, Gesture, GestureDetector, RawButtonProps } from 'react-native-gesture-handler';
+import { createNativeWrapper, RawButtonProps, State } from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import Animated, {
-  AnimatedProps,
-  Easing,
-  runOnJS,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import ReactNativeHapticFeedback, { HapticFeedbackTypes } from 'react-native-haptic-feedback';
+import Animated, { AnimatedProps, Easing, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { ScaleButtonContext } from './ScaleButtonZoomable';
-import type { ButtonProps } from './types';
-import { useLongPressEvents } from '@/hooks';
+import { ButtonPressAnimationProps } from './types';
+import useLongPressEvents from '@/hooks/useLongPressEvents';
 import { normalizeTransformOrigin } from './normalizeTransformOrigin';
+
+interface ButtonElementProps extends ButtonPressAnimationProps {
+  isLongPress?: boolean;
+}
+
+interface ZoomableButtonPressEvent {
+  nativeEvent: { type: 'longPress' | 'longPressEnded' | 'press' };
+}
+
+type ButtonElementPropsWithDefaults = ButtonElementProps &
+  Required<
+    Pick<
+      ButtonElementProps,
+      'duration' | 'minLongPressDuration' | 'overflowMargin' | 'scaleTo' | 'hapticType' | 'enableHapticFeedback' | 'disallowInterruption'
+    >
+  >;
 
 const ZoomableRawButton = requireNativeComponent<
   Omit<
-    ButtonProps,
-    'contentContainerStyle' | 'overflowMargin' | 'backgroundColor' | 'borderRadius' | 'onLongPressEnded' | 'wrapperStyle' | 'onLongPress'
+    ButtonElementProps,
+    | 'contentContainerStyle'
+    | 'overflowMargin'
+    | 'backgroundColor'
+    | 'borderRadius'
+    | 'onLongPressEnded'
+    | 'wrapperStyle'
+    | 'onLongPress'
+    | 'onPress'
   > &
-    Pick<RawButtonProps, 'rippleColor'>
+    Pick<RawButtonProps, 'rippleColor'> & {
+      onPress?: (event: ZoomableButtonPressEvent) => void;
+    }
 >('RNZoomableButton');
 
 const ZoomableButton = createNativeWrapper(ZoomableRawButton);
@@ -50,17 +65,16 @@ const ScaleButton = forwardRef(function ScaleButton(
     minLongPressDuration,
     onLongPress,
     onPress,
-    overflowMargin = OVERFLOW_MARGIN,
-    scaleTo = 0.86,
+    overflowMargin,
+    scaleTo,
     wrapperStyle,
     testID,
-  }: PropsWithChildren<ButtonProps>,
+  }: ButtonElementPropsWithDefaults,
   ref
 ) {
   const parentScale = useContext(ScaleButtonContext);
   const childScale = useSharedValue(1);
   const scale = parentScale || childScale;
-  const hasScaledDown = useSharedValue(0);
   const scaleTraversed = useDerivedValue(() => {
     const value = withTiming(scale.value, {
       duration,
@@ -74,13 +88,11 @@ const ScaleButton = forwardRef(function ScaleButton(
   });
   const sz = useAnimatedStyle(() => {
     return {
-      transform: [
-        {
-          scale: scaleTraversed.value,
-        },
-      ],
+      transform: [{ scale: scaleTraversed.value }],
     };
   });
+
+  const lastActiveRef = useRef(false);
 
   const { handleCancel, handlePress, handleStartPress } = useLongPressEvents({
     minLongPressDuration,
@@ -88,50 +100,53 @@ const ScaleButton = forwardRef(function ScaleButton(
     onPress,
   });
 
-  const pressGesture = useMemo(() => {
-    return Gesture.LongPress()
-      .minDuration(0)
-      .maxDistance(20)
-      .onTouchesDown(() => {
-        runOnJS(handleStartPress)();
-        if (hasScaledDown.value === 0) {
-          scale.value = scaleTo;
-        }
-        hasScaledDown.value = 1;
-      })
-      .onEnd(() => {
-        hasScaledDown.value = 0;
-        scale.value = 1;
-        runOnJS(handlePress)();
-      })
-      .onFinalize((_, success) => {
-        if (!success) {
-          scale.value = 1;
-          hasScaledDown.value = 0;
-          runOnJS(handleCancel)();
-        }
-      })
-      .onTouchesCancelled(() => {
-        scale.value = 1;
-        hasScaledDown.value = 0;
-        runOnJS(handleCancel)();
-      });
-  }, [handleCancel, handlePress, handleStartPress, hasScaledDown, scale, scaleTo]);
+  const handleEvent = useCallback(
+    ({ nativeEvent }: any) => {
+      const { state, oldState, pointerInside } = nativeEvent;
+      const active = pointerInside && state === State.ACTIVE;
+
+      // Scale animation on active state change
+      if (active !== lastActiveRef.current) {
+        scale.value = active ? scaleTo : 1;
+      }
+
+      // Start long press timer on BEGAN
+      if (!lastActiveRef.current && state === State.BEGAN && pointerInside) {
+        handleStartPress();
+      }
+
+      // Fire onPress when gesture ends successfully (handlePress checks if long press was detected)
+      if (oldState === State.ACTIVE && state !== State.CANCELLED && lastActiveRef.current) {
+        handlePress();
+      }
+
+      // Cancel if finger moved out or gesture was cancelled/failed
+      if ((state === State.ACTIVE && !pointerInside) || state === State.CANCELLED || state === State.FAILED) {
+        handleCancel();
+      }
+
+      lastActiveRef.current = active;
+    },
+    [handleCancel, handlePress, handleStartPress, scale, scaleTo]
+  );
 
   return (
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error ref type mismatch
     <View style={[sx.overflow, wrapperStyle]} testID={testID} ref={ref}>
       <View style={{ margin: -overflowMargin }}>
-        <GestureDetector gesture={pressGesture}>
-          <AnimatedRawButton exclusive={exclusive} hitSlop={-overflowMargin} rippleColor={transparentColor}>
-            <View style={sx.transparentBackground}>
-              <View style={{ padding: overflowMargin }}>
-                <Animated.View style={[sz, contentContainerStyle]}>{children}</Animated.View>
-              </View>
+        <AnimatedRawButton
+          exclusive={exclusive}
+          hitSlop={-overflowMargin}
+          rippleColor={transparentColor}
+          onHandlerStateChange={handleEvent}
+          onGestureEvent={handleEvent}
+        >
+          <View style={sx.transparentBackground}>
+            <View style={{ padding: overflowMargin }}>
+              <Animated.View style={[sz, contentContainerStyle]}>{children}</Animated.View>
             </View>
-          </AnimatedRawButton>
-        </GestureDetector>
+          </View>
+        </AnimatedRawButton>
       </View>
     </View>
   );
@@ -155,11 +170,11 @@ const SimpleScaleButton = forwardRef(function SimpleScaleButton(
     wrapperStyle,
     testID,
     disallowInterruption,
-  }: ButtonProps,
+  }: ButtonElementPropsWithDefaults,
   ref
 ) {
   const onNativePress = useCallback(
-    ({ nativeEvent: { type } }: any) => {
+    ({ nativeEvent: { type } }: ZoomableButtonPressEvent) => {
       if (type === 'longPress') {
         onLongPress?.();
       } else if (shouldLongPressHoldPress && type === 'longPressEnded') {
@@ -220,10 +235,10 @@ export default forwardRef(function ButtonPressAnimation(
     testID,
     transformOrigin,
     wrapperStyle,
-    hapticType = 'selection',
+    hapticType = HapticFeedbackTypes.selection,
     enableHapticFeedback = true,
     disallowInterruption = false,
-  }: ButtonProps,
+  }: ButtonElementProps,
   ref
 ) {
   const normalizedTransformOrigin = useMemo(() => normalizeTransformOrigin(transformOrigin), [transformOrigin]);

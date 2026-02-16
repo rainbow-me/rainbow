@@ -13,6 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { IS_TEST } from '@/env';
 import { useTheme } from '@/theme';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const timingConfig = {
   duration: 2500,
@@ -38,12 +39,12 @@ export default function ShimmerAnimation({
 }: ShimmerAnimationProps) {
   const containerWidth = useSharedValue(width);
   const translateX = useSharedValue(0);
-  const opacity = useSharedValue(1);
+  const opacityValue = useSharedValue(1);
   const isEnabled = useSharedValue(enabled);
 
   const { colors } = useTheme();
   const gradientColors = useMemo(
-    () => [colors.alpha(color, 0), gradientColor || colors.alpha(colors.whiteLabel, 0.2), colors.alpha(color, 0)] as const,
+    () => [opacity(color, 0), gradientColor || opacity(colors.whiteLabel, 0.2), opacity(color, 0)],
     [gradientColor, color, colors]
   );
 
@@ -67,20 +68,20 @@ export default function ShimmerAnimation({
       ),
       -1
     );
-    opacity.value = withTiming(1, {
+    opacityValue.value = withTiming(1, {
       duration: animationDuration / 2,
       easing: timingConfig.easing,
     });
-  }, [containerWidth, animationDuration, translateX, opacity]);
+  }, [containerWidth, animationDuration, translateX, opacityValue]);
 
   const stopAnimation = useCallback(() => {
     'worklet';
     cancelAnimation(translateX);
-    opacity.value = withTiming(0, {
+    opacityValue.value = withTiming(0, {
       duration: animationDuration / 2,
       easing: timingConfig.easing,
     });
-  }, [animationDuration, translateX, opacity]);
+  }, [animationDuration, translateX, opacityValue]);
 
   // React to changes in width or enabled state
   useAnimatedReaction(
@@ -111,7 +112,7 @@ export default function ShimmerAnimation({
   );
 
   const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
+    opacity: opacityValue.value,
     transform: [{ translateX: translateX.value }],
   }));
 

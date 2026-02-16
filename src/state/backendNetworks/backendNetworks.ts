@@ -9,9 +9,9 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { colors as globalColors } from '@/styles';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 
-const INITIAL_BACKEND_NETWORKS = buildTimeNetworks.networks;
+const INITIAL_BACKEND_NETWORKS = buildTimeNetworks.networks as BackendNetwork[];
 const DEFAULT_PRIVATE_MEMPOOL_TIMEOUT = time.minutes(2);
 
 export interface BackendNetworksState {

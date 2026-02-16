@@ -2,25 +2,28 @@ import {
   BASE_INPUT_HEIGHT,
   BOTTOM_ACTION_BAR_HEIGHT,
   EXPANDED_INPUT_HEIGHT,
-  FOCUSED_INPUT_HEIGHT,
   REVIEW_SHEET_HEIGHT,
   REVIEW_SHEET_ROW_GAP,
   REVIEW_SHEET_ROW_HEIGHT,
   SETTINGS_SHEET_HEIGHT,
   SETTINGS_SHEET_ROW_GAP,
-  THICK_BORDER_WIDTH,
 } from '@/__swaps__/screens/Swap/constants';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { spinnerExitConfig } from '@/components/animations/AnimatedSpinner';
+import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
 import { useColorMode } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
-import { IS_ANDROID } from '@/env';
-import { safeAreaInsetValues } from '@/utils';
+import { getTokenSearchButtonWrapperStyle } from '@/components/token-search/styles';
+import { IS_ANDROID, IS_TEST } from '@/env';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DerivedValue, SharedValue, interpolate, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { NavigationSteps } from '../providers/swap-provider';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const INSET_BOTTOM = safeAreaInsetValues.bottom + 16;
 
@@ -54,7 +57,7 @@ export function useAnimatedSwapStyles({
       transform: [
         {
           translateY: withSpring(
-            interpolate(inputProgress.value, [0, 1, 2], [0, 0, EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT], 'clamp'),
+            interpolate(inputProgress.value, [0, 1, 2], [0, 0, EXPANDED_INPUT_HEIGHT - TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT], 'clamp'),
             SPRING_CONFIGS.springConfig
           ),
         },
@@ -194,13 +197,13 @@ export function useAnimatedSwapStyles({
     }
 
     return {
-      backgroundColor: opacityWorklet(outputAssetColor.value, 0.06),
+      backgroundColor: opacity(outputAssetColor.value, 0.06),
       borderColor: withSpring(
         configProgress.value === NavigationSteps.SHOW_REVIEW ||
           configProgress.value === NavigationSteps.SHOW_GAS ||
           configProgress.value === NavigationSteps.SHOW_SETTINGS
-          ? opacityWorklet(outputAssetColor.value, 0.2)
-          : opacityWorklet(outputAssetColor.value, 0.06),
+          ? opacity(outputAssetColor.value, 0.2)
+          : opacity(outputAssetColor.value, 0.06),
         SPRING_CONFIGS.springConfig
       ),
       borderRadius: withSpring(isBottomSheetOpen ? 40 : 0, SPRING_CONFIGS.springConfig),
@@ -268,33 +271,19 @@ export function useAnimatedSwapStyles({
   });
 
   const searchInputAssetButtonWrapperStyle = useAnimatedStyle(() => {
-    return {
-      backgroundColor: opacityWorklet(
-        getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode),
-        isDarkMode ? 0.1 : 0.08
-      ),
-      borderColor: opacityWorklet(
-        getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode),
-        isDarkMode ? 0.06 : 0.01
-      ),
-    };
+    return getTokenSearchButtonWrapperStyle({
+      color: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode),
+      isDarkMode,
+    });
   });
 
   const searchOutputAssetButtonWrapperStyle = useAnimatedStyle(() => {
     const color = isPasteMode.value ? foregroundColors.blue : internalSelectedOutputAsset.value?.highContrastColor;
-
-    const darkModeBorderOpacity = isPasteMode.value ? 0.08 : 0.06;
-    const lightModeBorderOpacity = isPasteMode.value ? 0.06 : 0.01;
-
-    return {
-      backgroundColor: isPasteMode.value
-        ? 'transparent'
-        : opacityWorklet(getColorValueForThemeWorklet(color, isDarkMode), isDarkMode ? 0.1 : 0.08),
-      borderColor: opacityWorklet(
-        getColorValueForThemeWorklet(color, isDarkMode),
-        isDarkMode ? darkModeBorderOpacity : lightModeBorderOpacity
-      ),
-    };
+    return getTokenSearchButtonWrapperStyle({
+      color: getColorValueForThemeWorklet(color, isDarkMode),
+      isDarkMode,
+      pasteMode: isPasteMode.value,
+    });
   });
 
   const bottomControlsStyle = useAnimatedStyle(() => {

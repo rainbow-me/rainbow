@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { delay } from '@/utils/delay';
-import { usePrevious } from '@/hooks';
+import usePrevious from '@/hooks/usePrevious';
 import styled from '@/styled-thing';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Row from '@/components/layout/Row';
 import { Box, Inline, Text } from '@/design-system';
 import { useTheme } from '@/theme';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';
@@ -63,11 +64,11 @@ const StepButton = ({
         width={{ custom: 36 }}
         height={{ custom: 36 }}
         style={{
-          backgroundColor: colors.alpha(color, 0.1),
+          backgroundColor: opacity(color, 0.1),
           borderRadius: 18,
         }}
       >
-        <Text align="center" size="17pt" weight="bold" color={{ custom: colors.alpha(color, 0.25) }}>
+        <Text align="center" size="17pt" weight="bold" color={{ custom: opacity(color, 0.25) }}>
           {type === 'plus' ? '􀅼' : '􀅽'}
         </Text>
       </Box>

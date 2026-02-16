@@ -1,4 +1,4 @@
-import { ButtonPressAnimation, ButtonPressAnimationProps } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
 import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
@@ -6,7 +6,7 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { getIsDamagedWallet, getIsReadOnlyWallet, useAccountAddress, useIsDamagedWallet } from '@/state/wallets/walletsStore';
-import { watchingAlert } from '@/utils';
+import watchingAlert from '@/utils/watchingAlert';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config';
@@ -73,20 +73,10 @@ export const ProfileActionButtonsRow = React.memo(function ProfileActionButtonsR
   );
 });
 
-function ActionButton({
-  children,
-  icon,
-  onPress,
-  testID,
-}: {
-  children: string;
-  icon: string;
-  onPress?: ButtonPressAnimationProps['onPress'];
-  testID?: string;
-}) {
+function ActionButton({ children, icon, onPress, testID }: { children: string; icon: string; onPress?: () => void; testID?: string }) {
   const { colorMode } = useColorMode();
   return (
-    <ButtonPressAnimation disabled={!onPress} onPress={onPress} pointerEvents="box-only" scaleTo={0.8} testID={testID}>
+    <ButtonPressAnimation disabled={!onPress} onPress={onPress} testID={testID}>
       <Stack alignHorizontal="center" space="10px">
         <Box
           alignItems="center"

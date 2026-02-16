@@ -1,11 +1,12 @@
 import React, { useLayoutEffect, useState } from 'react';
 import Animated, { Easing, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { magicMemo } from '../../utils';
-import { ButtonPressAnimation } from '../animations';
+import magicMemo from '@/utils/magicMemo';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const START_SCALE = 0.5;
 const FINISH_SCALE = 1;
@@ -24,7 +25,7 @@ const Container = styled.View({
 
 const TextIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.4),
+  color: opacity(colors.blueGreyDark, 0.4),
   letterSpacing: 'zero',
   size: 'large',
   weight: 'bold',

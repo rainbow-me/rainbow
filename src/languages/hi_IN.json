@@ -324,7 +324,9 @@
         "authorizing": "प्राधिकरण देना",
         "confirming_on_ledger": "लेजर पर पुष्टि कर रहा है",
         "hold_keyword": "रोकें",
-        "tap_keyword": "टैप करें"
+        "tap_keyword": "टैप करें",
+        "hold_to_claim": "दावे के लिए दबाए रखें",
+        "claiming": "दावा किया जा रहा है..."
       },
       "hold_to_send": "भेजने के लिए रोकें",
       "import": "आयात करें",
@@ -357,7 +359,6 @@
       "unhide": "अदृश्यता रद्द करें",
       "unpin": "अनपिन",
       "view": "देखें",
-      "watch_this_wallet": "इस वॉलेट को देखें",
       "hidden": "छुपा हुआ"
     },
     "cards": {
@@ -977,7 +978,7 @@
       "redacted_title": "आपने\nरेडैक्टेड रेनबो को अनलॉक कर दिया",
       "baggy_description": "सड़कों से लेकर चेन तक, यह छोटा बैग आपकी पोर्टेबल रेनबो वाइब्स की खुराक को पकड़े हुए है। रंगों का स्वाद लें, और अंतर महसूस करें।",
       "baggy_title": "आपने अनलॉक कर लिया है\n रेनबो बैगी",
-      "chonks_description": "इमेजिन कीजिए कि आपके Rainbow बालों में हवा है, आप 101 पर ड्राइव कर रहे हैं और Chonky महसूस कर रहे हैं।",
+      "chonks_description": "कल्पना करें कि Rainbow बालों में हवा है, 101 पर चलाते हुए, Chonky को महसूस कर रहे हैं।",
       "chonks_title": "आपने Chonkiest आइकन अनलॉक कर लिया है",
       "mog_description": "आसान ब्रह्मांडीय विश्व वर्चस्व, रंगों में मोगिंग।",
       "mog_title": "आपने अनलॉक कर लिया है\nRainbow Mogs",
@@ -2444,6 +2445,52 @@
         "warning": "आपका चिह्न परिवर्तन करने से Rainbow को पुनः शुरू होने का कारण बन सकता है।",
         "confirm": "पुष्टि करें",
         "cancel": "रद्द करें"
+      },
+      "support": {
+        "title": "सहायता और प्रतिक्रिया",
+        "entry": {
+          "contact_support": "समर्थन से संपर्क करें",
+          "contact_support_description": "समस्याओं, प्रश्नों या तत्काल चिंताओं के लिए व्यक्तिगत ईमेल सहायता",
+          "get_started": "शुरुआत करें",
+          "category_picker_description": "आपको किसमें मदद चाहिए?",
+          "share_feedback": "फ़ीडबैक साझा करें",
+          "share_feedback_description": "हमें अपने विचार ईमेल करें या बस नमस्ते कहें",
+          "faqs_and_guides": "अक्सर पूछे जाने वाले सवाल और गाइड"
+        },
+        "category": {
+          "getting_started": {
+            "name": "आरंभ कैसे करें",
+            "description": "सेटअप, बुनियादी बातें, नेटवर्क"
+          },
+          "backup_recovery": {
+            "name": "बैकअप और रिकवरी",
+            "description": "पुनर्स्थापित करें, बैकअप बनाएं"
+          },
+          "tokens_transactions": {
+            "name": "टोकन और लेन-देन",
+            "description": "गुम टोकन, बैलेंस"
+          },
+          "bridge_swap": {
+            "name": "ब्रिज और स्वैप",
+            "description": "क्रॉस-चेन, स्वैप समस्याएं"
+          },
+          "points_rewards": {
+            "name": "पॉइंट्स और रिवार्ड्स",
+            "description": "पॉइंट्स, एयरड्रॉप, लॉन्च"
+          },
+          "security": {
+            "name": "सुरक्षा संबंधी चिंताएँ",
+            "description": "समझौता किया गया वॉलेट, खोया हुआ फ़्रेज़"
+          },
+          "partnership": {
+            "name": "पार्टनरशिप पूछताछ",
+            "description": "व्यवसाय, इंटीग्रेशन"
+          },
+          "other": {
+            "name": "कुछ और",
+            "description": "अन्य प्रश्न"
+          }
+        }
       }
     },
     "subscribe_form": {
@@ -2457,6 +2504,7 @@
       "actions": {
         "hold_to_swap": "बदलने के लिए होल्ड करें",
         "hold_to_bridge": "ब्रिज करने के लिए होल्ड करें",
+        "earning_rewards": "रिवार्ड्स अर्जित करना",
         "save": "सहेजें",
         "enter_amount": "राशि दर्ज करें",
         "review": "समीक्षा करें",
@@ -3885,6 +3933,58 @@
         "lost_bets_dont_clear": "खोई हुई बाजियाँ स्वचालित रूप से नहीं हटती हैं। आप उन्हें नीचे साफ कर सकते हैं।"
       }
     },
+    "rnbw_rewards": {
+      "introduction": {
+        "introducing": "परिचय",
+        "rainbow_token": "Rainbow टोकन",
+        "description_prefix": "नमस्ते कहें ",
+        "description_suffix": " अभी देखें कि आप एयरड्रॉप के लिए पात्र हैं या नहीं।",
+        "check_eligibility": "पात्रता जांचें"
+      },
+      "feature_card": {
+        "subtitle": "$RNBW को नमस्ते कहें, अभी अपनी पात्रता जांचें।"
+      },
+      "claim": {
+        "available_to_claim": "दावा करने के लिए उपलब्ध",
+        "your_airdrop": "आपका एयरड्रॉप",
+        "your_airdrop_description": "Rainbow इस्तेमाल करने के लिए धन्यवाद। आपका एयरड्रॉप आपकी पिछली गतिविधि के आधार पर गणना किया जाता है।",
+        "claim_failed_title": "रिवार्ड्स का दावा करने में त्रुटि",
+        "claim_failed_message": "कृपया पुनः प्रयास करें।",
+        "claim_later": "बाद में दावा करें",
+        "almost_there": "बस थोड़ा सा..."
+      },
+      "airdrop_claim_finished": {
+        "airdrop_claimed": "एयरड्रॉप का दावा किया गया",
+        "you_claimed": "आपने दावा किया"
+      },
+      "rewards_claim_finished": {
+        "rewards_claimed": "रिवार्ड्स का दावा किया गया",
+        "you_claimed": "आपने दावा किया"
+      },
+      "airdrop": {
+        "no_airdrop": "कोई एयरड्रॉप नहीं",
+        "no_airdrop_description": "इस वॉलेट को एयरड्रॉप नहीं मिला।",
+        "already_claimed": "पहले ही दावा किया गया",
+        "already_claimed_description": "आप पहले ही अपने एयरड्रॉप का दावा कर चुके हैं।"
+      },
+      "airdrop_card": {
+        "your_airdrop": "आपका एयरड्रॉप"
+      },
+      "how_to_earn": {
+        "earn_rewards": "रिवार्ड्स अर्जित करें",
+        "description": "टोकन स्वैप करके $RNBW अर्जित करें। अर्जित करने के और तरीके जल्द आ रहे हैं।"
+      },
+      "loading_labels": {
+        "checking_historical_activity": "ऐतिहासिक गतिविधि जांची जा रही है...",
+        "checking_eligibility": "पात्रता जांची जा रही है...",
+        "claiming_rewards": "रिवार्ड्स का दावा किया जा रहा है...",
+        "submitting_transaction": "लेन-देन सबमिट किया जा रहा है...",
+        "claiming_airdrop": "एयरड्रॉप का दावा किया जा रहा है...",
+        "counting_your_points": "आपके पॉइंट्स गिने जा रहे हैं...",
+        "oh_i_see": "अच्छा, समझ गया..."
+      },
+      "longer_than_usual": "दावा करने में सामान्य से अधिक समय लग रहा है। इसमें एक मिनट तक लग सकता है।"
+    },
     "wallet_error_sheet": {
       "title": "अपने वॉलेट को पुनर्स्थापित करें",
       "restore": "पुनर्स्थापित करें",
@@ -3893,6 +3993,10 @@
       "cause_switched_devices": "ऐसा लगता है कि आपने डिवाइस बदल दिया है।",
       "resolution_enable_passcode": "अपना वॉलेट उपयोग करने के लिए, इसे अपने डिवाइस की सेटिंग्स में पुनः सक्षम करें।",
       "resolution_restore_backup": "अपना वॉलेट उपयोग करने के लिए, बैकअप से पुनर्स्थापित करें या अपना गुप्त पुनर्प्राप्ति वाक्यांश पुनः आयात करें।"
+    },
+    "rnbw_rewards_estimate_sheet": {
+      "earning_rewards": "रिवार्ड्स अर्जित करना",
+      "this_transaction_will_earn": "यह लेन-देन लगभग "
     }
   }
 }

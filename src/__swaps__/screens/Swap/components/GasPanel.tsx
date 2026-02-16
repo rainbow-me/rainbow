@@ -3,7 +3,7 @@ import React, { PropsWithChildren, ReactNode, useCallback, useEffect, useMemo, u
 import { LayoutChangeEvent } from 'react-native';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
 
-import { ACTION_BUTTON_HEIGHT, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ACTION_BUTTON_HEIGHT } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
@@ -19,8 +19,8 @@ import {
   useChainSupportsPriorityFee,
 } from '@/__swaps__/utils/meteorology';
 import { add, greaterThan, multiply, subtract, lessThan, formatNumber } from '@/helpers/utilities';
-import { opacity } from '@/__swaps__/utils/swaps';
-import { ButtonPressAnimation } from '@/components/animations';
+import { opacity } from '@/framework/ui/utils/opacity';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Bleed, Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
@@ -28,12 +28,14 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
 import { getSelectedGas, setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 import { ExplainSheetParams, gasTrendToTrendType } from '@/navigation/types';
+
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const { GAS_TRENDS } = gasUtils;
 

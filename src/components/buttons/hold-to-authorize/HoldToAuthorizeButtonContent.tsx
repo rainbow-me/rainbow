@@ -8,7 +8,7 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Spinner from '../../Spinner';
-import { ShimmerAnimation } from '../../animations';
+import ShimmerAnimation from '../../animations/ShimmerAnimation';
 import { Centered, InnerBorder } from '../../layout';
 import BiometricButtonContent from '../BiometricButtonContent';
 import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
@@ -24,12 +24,12 @@ import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import ShadowStack from 'react-native-shadow-stack';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 
 const { ACTIVE, BEGAN, END, FAILED } = GestureHandlerState;
 

@@ -2,17 +2,17 @@ import React, { memo, useMemo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { Box, Inline, Stack, Text, AccentColorProvider, TextIcon, useColorMode } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import infinityIcon from '@/assets/infinity.png';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
 import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import * as i18n from '@/languages';
 import ConditionalWrap from 'conditional-wrap';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 export const PERPS_FEATURE_CARD_HEIGHT = 92;
 
@@ -35,14 +35,14 @@ export const PerpsFeatureCard = memo(function PerpsFeatureCard({
   const accentColors = useMemo(() => {
     return {
       opacity100: accentColor,
-      opacity40: opacityWorklet(accentColor, 0.4),
-      opacity20: opacityWorklet(accentColor, 0.2),
-      opacity16: opacityWorklet(accentColor, 0.16),
-      opacity12: opacityWorklet(accentColor, 0.12),
-      opacity10: opacityWorklet(accentColor, 0.1),
-      opacity8: opacityWorklet(accentColor, 0.08),
-      opacity6: opacityWorklet(accentColor, 0.06),
-      opacity1: opacityWorklet(accentColor, 0.01),
+      opacity40: opacity(accentColor, 0.4),
+      opacity20: opacity(accentColor, 0.2),
+      opacity16: opacity(accentColor, 0.16),
+      opacity12: opacity(accentColor, 0.12),
+      opacity10: opacity(accentColor, 0.1),
+      opacity8: opacity(accentColor, 0.08),
+      opacity6: opacity(accentColor, 0.06),
+      opacity1: opacity(accentColor, 0.01),
     };
   }, [accentColor]);
 

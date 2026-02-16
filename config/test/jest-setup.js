@@ -44,8 +44,18 @@ jest.mock('react-native-permissions', () => ({
   requestNotifications: jest.fn(),
 }));
 
-jest.mock('@/utils', () => {
-  const time = {
+jest.mock('@/utils/deviceUtils', () => ({
+  __esModule: true,
+  default: {
+    dimensions: {
+      height: 874,
+      width: 402,
+    },
+  },
+}));
+
+jest.mock('@/utils/time', () => ({
+  time: {
     ms: ms => ms,
     seconds: seconds => seconds * 1000,
     minutes: minutes => minutes * 60 * 1000,
@@ -54,18 +64,8 @@ jest.mock('@/utils', () => {
     weeks: weeks => weeks * 7 * 24 * 60 * 60 * 1000,
     infinity: Infinity,
     zero: 0,
-  };
-
-  return {
-    deviceUtils: {
-      dimensions: {
-        height: 874,
-        width: 402,
-      },
-    },
-    time,
-  };
-});
+  },
+}));
 
 jest.mock('react-native-nitro-modules', () => ({
   NitroModules: {

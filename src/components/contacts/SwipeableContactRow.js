@@ -4,13 +4,14 @@ import { Animated } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import DeleteIcon from '../../assets/swipeToDelete.png';
 import EditIcon from '../../assets/swipeToEdit.png';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import ContactRow from './ContactRow';
 import showDeleteContactActionSheet from './showDeleteContactActionSheet';
 import { ImgixImage } from '@/components/images';
 import { margin, position } from '@/styles';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const AnimatedCentered = Animated.createAnimatedComponent(Centered);
 
@@ -31,7 +32,7 @@ const RightAction = ({ onPress, progress, text, type, x }) => {
         <ImgixImage source={isEdit ? EditIcon : DeleteIcon} style={styles} size={30} />
         <Text
           align="center"
-          color={colors.alpha(colors.blueGreyDark, 0.4)}
+          color={opacity(colors.blueGreyDark, 0.4)}
           letterSpacing="roundedTight"
           size="smaller"
           weight="semibold"

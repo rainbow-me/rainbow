@@ -2,14 +2,13 @@ import React, { memo, useCallback, ReactNode } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Panel, PANEL_WIDTH, TapToDismiss } from '@/components/SmoothPager/ListPanel';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { SheetHandle } from '@/components/sheet';
 import { Box, Separator, AnimatedText } from '@/design-system';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { LinearGradient, LinearGradientProps } from 'expo-linear-gradient';
 import { downscalePagerIndex, SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Extrapolation, interpolate, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { useNavigation } from '@/navigation';
 import { Canvas, LinearGradient as SkiaLinearGradient, RadialGradient, vec, Circle, Group, Blur } from '@shopify/react-native-skia';
@@ -17,6 +16,7 @@ import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurVi
 import { StepIndicators } from './components/StepIndicators';
 import { Sunrays } from './components/Sunrays';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const DEFAULT_GRADIENT_COLORS = ['#8754C8', '#EE431D', '#FFF000', '#02ADDE'];
 const DEFAULT_PANEL_HEIGHT = 563;

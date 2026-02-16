@@ -1,14 +1,15 @@
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import ContextMenu from '@/components/native-context-menu/contextMenu';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { AccentColorProvider, Box, Cover, useColorMode } from '@/design-system';
-import { useLatestCallback, useOnAvatarPress } from '@/hooks';
+import useLatestCallback from '@/hooks/useLatestCallback';
+import useOnAvatarPress from '@/hooks/useOnAvatarPress';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
-import { getFirstGrapheme } from '@/utils';
+import { getFirstGrapheme } from '@/utils/formatters';
 import * as React from 'react';
 import { Text as NativeText, Animated as RNAnimated } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
@@ -117,7 +118,7 @@ export const ProfileAvatarRow = React.memo(function ProfileAvatarRow({ size = Pr
       <RNAnimated.View style={[animatedStyle, { zIndex: 500 }]}>
         <Animated.View style={expandStyle}>
           <ContextMenuButton testID="avatar-button" menuConfig={avatarContextMenuConfig} onPressMenuItem={handlePressMenuItem}>
-            <ButtonPressAnimation onPress={onAvatarPressProfile} scaleTo={0.8} overflowMargin={20}>
+            <ButtonPressAnimation onPress={onAvatarPressProfile} overflowMargin={20}>
               <Box
                 alignItems="center"
                 background="accent"

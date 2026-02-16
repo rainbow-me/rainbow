@@ -21,18 +21,14 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { AnimatedText, Bleed, Box, Column, Columns, Inline, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { greaterThanWorklet } from '@/safe-math/SafeMath';
-import {
-  SCRUBBER_WIDTH,
-  SLIDER_COLLAPSED_HEIGHT,
-  SLIDER_HEIGHT,
-  SLIDER_WIDTH,
-  THICK_BORDER_WIDTH,
-  pulsingConfig,
-} from '@/__swaps__/screens/Swap/constants';
+import { SCRUBBER_WIDTH, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH, pulsingConfig } from '@/__swaps__/screens/Swap/constants';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { clamp, getColorValueForThemeWorklet, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { clamp, getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons';
+
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -65,7 +61,7 @@ export const SwapSlider = ({
     swapInfo,
   } = useSwapContext();
 
-  const maxButtonRef = useRef<TapGesture | undefined>(undefined);
+  const maxButtonRef = useRef<TapGesture>(null!) as React.RefObject<TapGesture>;
 
   const fillSecondary = useForegroundColor('fillSecondary');
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -85,7 +81,7 @@ export const SwapSlider = ({
   );
 
   const colors = useDerivedValue(() => ({
-    inactiveColorLeft: opacityWorklet(
+    inactiveColorLeft: opacity(
       dualColor
         ? getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode)
         : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode),
@@ -95,7 +91,7 @@ export const SwapSlider = ({
       ? getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode)
       : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode),
     inactiveColorRight: dualColor
-      ? opacityWorklet(getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode), 0.9)
+      ? opacity(getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode), 0.9)
       : separatorSecondary,
     activeColorRight: dualColor
       ? getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode)

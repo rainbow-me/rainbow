@@ -12,8 +12,8 @@ import { PerpMarket, PerpsPosition } from '@/features/perps/types';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
 import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-screen/LiquidationInfo';
 import { useDerivedValue } from 'react-native-reanimated';
@@ -26,6 +26,8 @@ import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 import * as i18n from '@/languages';
 import { divide } from '@/helpers/utilities';
+
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 function calculateWeightedEntryPrice({
   addedMargin,
@@ -136,7 +138,7 @@ const NewTotalDisplay = memo(function NewTotalDisplay({ newTotal }: { newTotal: 
       flexDirection="row"
       alignItems="center"
       justifyContent="space-between"
-      backgroundColor={opacityWorklet(ETH_COLOR_DARK, 0.03)}
+      backgroundColor={opacity(ETH_COLOR_DARK, 0.03)}
       borderWidth={THICK_BORDER_WIDTH}
       borderColor={'buttonStroke'}
       borderRadius={14}

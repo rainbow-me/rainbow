@@ -7,7 +7,7 @@ import { convertAmountToNativeDisplay, getFormattedTimeQuantity, handleSignifica
 import { NftOffer, SortCriterion } from '@/graphql/__generated__/arc';
 import { AccentColorProvider, Box, Inline, Inset, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { RainbowError, logger } from '@/logger';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';

@@ -1,44 +1,57 @@
-import { HapticFeedbackType } from '@/utils/haptics';
-import { NativeSyntheticEvent, NativeTouchEvent, PressableProps, StyleProp, ViewProps, ViewStyle } from 'react-native';
+import { GestureResponderEvent, PressableProps, StyleProp, ViewProps, ViewStyle } from 'react-native';
+import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 
 export type TransformOrigin = [number, number];
 export type Direction = 'bottom' | 'left' | 'right' | 'top';
-export type ButtonPressAnimationTouchEvent = NativeSyntheticEvent<NativeTouchEvent>;
 
-export interface BaseButtonAnimationProps
-  extends Pick<ViewProps, 'onLayout' | 'style' | 'testID' | 'pointerEvents' | 'hitSlop' | 'accessible' | 'accessibilityLabel'>,
-    Pick<PressableProps, 'onPress'> {
+export interface ButtonPressAnimationProps
+  extends Pick<PressableProps, 'disabled' | 'hitSlop' | 'onLayout' | 'testID' | 'accessible'>,
+    Pick<ViewProps, 'style'> {
+  children?: React.ReactNode;
+  onPress?: ((event?: GestureResponderEvent) => void) | null | undefined;
+  onLongPress?: ((event?: GestureResponderEvent) => void) | null;
   activeOpacity?: number;
-  disabled?: boolean;
   duration?: number;
   minLongPressDuration?: number;
-  onPress?: (event?: ButtonPressAnimationTouchEvent) => void;
-  onLongPress?: () => void;
-  transformOrigin?: TransformOrigin | Direction;
-  scaleTo?: number;
-}
-
-export interface ButtonProps extends BaseButtonAnimationProps {
-  children?: React.ReactNode;
-  compensateForTransformOrigin?: boolean;
-  enableHapticFeedback?: boolean;
-  hapticType?: HapticFeedbackType;
-  onCancel?: (event: NativeSyntheticEvent<{ state: number; close: boolean }>) => void;
   onLongPressEnded?: () => void;
   onPressStart?: () => void;
-  pressOutDuration?: number;
+  transformOrigin?: TransformOrigin | Direction;
+  scaleTo?: number;
+  enableHapticFeedback?: boolean;
+  hapticType?: HapticFeedbackTypes;
   shouldLongPressHoldPress?: boolean;
+
+  /** @platform ios */
+  compensateForTransformOrigin?: boolean;
+  /** @platform ios */
+  onCancel?: (event: { nativeEvent: { state: number; close: boolean } }) => void;
+  /** @platform ios */
+  pressOutDuration?: number;
+  /** @platform ios */
   throttle?: boolean;
+  /** @platform ios */
   useLateHaptic?: boolean;
-  backgroundColor?: string;
-  borderRadius?: number;
-  contentContainerStyle?: StyleProp<ViewStyle>;
-  exclusive?: boolean;
-  isLongPress?: boolean;
-  overflowMargin?: number;
+  /** @platform ios */
+  isInteraction?: boolean;
+
+  /** @platform android */
   reanimatedButton?: boolean;
+  /** @platform android */
+  backgroundColor?: string;
+  /** @platform android */
+  borderRadius?: number;
+  /** @platform android */
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  /** @platform android */
+  exclusive?: boolean;
+  /** @platform android */
+  overflowMargin?: number;
+  /** @platform android */
   skipTopMargin?: boolean;
+  /** @platform android */
   wrapperStyle?: StyleProp<ViewStyle>;
+  /** @platform android */
   disallowInterruption?: boolean;
+  /** @platform android */
   radiusAndroid?: number;
 }

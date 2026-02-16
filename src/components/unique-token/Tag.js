@@ -2,15 +2,17 @@ import * as i18n from '@/languages';
 import { upperCase, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered, Column } from '../layout';
 import { Text as TextElement } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Inline } from '@/design-system';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { magicMemo, showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import magicMemo from '@/utils/magicMemo';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const HairlineSpace = '\u200a';
 
@@ -50,7 +52,7 @@ const Container = styled(Column)({
 });
 
 const OuterBorder = styled(Centered)({
-  borderColor: ({ color, theme: { colors } }) => color || colors.alpha(colors.whiteLabel, 0.15),
+  borderColor: ({ color, theme: { colors } }) => color || opacity(colors.whiteLabel, 0.15),
   borderRadius: TagBorderRadius,
   borderWidth: 2,
   flex: 0,
@@ -67,7 +69,7 @@ const Text = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
 });
 
 const Title = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
-  color: color || colors.alpha(colors.whiteLabel, 0.5),
+  color: color || opacity(colors.whiteLabel, 0.5),
   size: 'tiny',
   weight: 'heavy',
 }))({

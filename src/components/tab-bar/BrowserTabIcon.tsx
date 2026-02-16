@@ -2,15 +2,15 @@ import React, { memo } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 import { useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import { Box, useColorMode, TextIcon } from '@/design-system';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { shallowEqual } from '@/worklets/comparisons';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
 import { TAB_BAR_PILL_HEIGHT } from './dimensions';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const BrowserTabIcon = memo(function BrowserTabIcon({
   accentColor,
@@ -37,7 +37,7 @@ export const BrowserTabIcon = memo(function BrowserTabIcon({
 
   const navButtonsStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: opacityWorklet(accentColor, 0.06 * navButtonsBackgroundOpacity.value),
+      backgroundColor: opacity(accentColor, 0.06 * navButtonsBackgroundOpacity.value),
       opacity: withTiming(showNavButtons.value ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
       pointerEvents: showNavButtons.value ? 'auto' : 'none',
     };
@@ -45,7 +45,7 @@ export const BrowserTabIcon = memo(function BrowserTabIcon({
 
   const animatedBorderStyle = useAnimatedStyle(() => {
     return {
-      borderColor: opacityWorklet(accentColor, (isDarkMode ? 0.08 : 0.04) * navButtonsBackgroundOpacity.value),
+      borderColor: opacity(accentColor, (isDarkMode ? 0.08 : 0.04) * navButtonsBackgroundOpacity.value),
     };
   });
 

@@ -6,10 +6,10 @@ import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
 import { CampaignKey } from '@/components/remote-promo-sheet/localCampaignChecks';
 import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Stack, Text, Bleed, Column, Columns, useForegroundColor } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { SystemBars } from 'react-native-edge-to-edge';
 
 type SheetActionButtonProps = {

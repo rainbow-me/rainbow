@@ -1,7 +1,7 @@
 import { analytics } from '@/analytics';
 import { MenuConfig, MenuItem } from '@/components/DropdownMenu';
 import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { FeatureHintTooltip, TooltipRef } from '@/components/tooltips/FeatureHintTooltip';
@@ -12,7 +12,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import { isValidHex } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
-import { useWalletsWithBalancesAndNames } from '@/hooks';
+import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
 import { useLiveWalletBalance } from '@/hooks/useLiveWalletBalance';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import * as i18n from '@/languages';
@@ -37,7 +37,9 @@ import {
   useWallets,
 } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
-import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import doesWalletsContainAddress from '@/utils/doesWalletsContainAddress';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -47,6 +49,7 @@ import { Alert, InteractionManager, LayoutChangeEvent } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { Address } from 'viem';
 import { updateWebProfile } from '@/helpers/webData';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
 
@@ -693,7 +696,7 @@ export default function ChangeWalletSheet() {
                   paddingHorizontal="16px"
                   borderRadius={22}
                   borderWidth={1}
-                  borderColor={{ custom: colors.alpha(colors.appleBlue, 0.06) }}
+                  borderColor={{ custom: opacity(colors.appleBlue, 0.06) }}
                 >
                   <Text color="label" size="17pt" weight="heavy">
                     {`􀅼 ${i18n.t(i18n.l.button.add)}`}

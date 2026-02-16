@@ -2,10 +2,10 @@ import React, { useCallback, useMemo, useState } from 'react';
 import * as i18n from '@/languages';
 import { useSharedValue } from 'react-native-reanimated';
 
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, Inline, Text } from '@/design-system';
 
-import { useClipboard } from '@/hooks';
+import useClipboard from '@/hooks/useClipboard';
 import { logger } from '@/logger';
 import { isSignTypedData } from '@/utils/signingMethods';
 

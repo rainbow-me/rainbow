@@ -1,9 +1,10 @@
 import * as i18n from '@/languages';
 import React from 'react';
-import { ButtonPressAnimation, HourglassAnimation } from '../../../components/animations';
+import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';
+import HourglassAnimation from '../../../components/animations/HourglassAnimation';
 import StepIndicator from '../../../components/step-indicator/StepIndicator';
 import { Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 
 const WaitCommitmentConfirmationContent = ({
   accentColor,

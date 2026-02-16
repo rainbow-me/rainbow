@@ -5,7 +5,7 @@ import { ENSConfirmUpdateSheetHeight } from '../../../screens/ENSConfirmRegister
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useENSRegistration } from '@/hooks';
+import useENSRegistration from '@/hooks/useENSRegistration';
 import Routes from '@/navigation/routesNames';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 

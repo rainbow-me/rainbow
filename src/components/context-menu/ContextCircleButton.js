@@ -4,6 +4,7 @@ import { Text } from '../text';
 import ContextMenu from './ContextMenu';
 import styled from '@/styled-thing';
 import { borders, position } from '@/styles';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const CircleButton = styled(RadialGradient).attrs(({ theme: { colors } }) => ({
   center: [0, 20],
@@ -16,7 +17,7 @@ const CircleButton = styled(RadialGradient).attrs(({ theme: { colors } }) => ({
 
 const ContextIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.4),
+  color: opacity(colors.blueGreyDark, 0.4),
   letterSpacing: 'zero',
   size: 'larger',
   weight: 'bold',

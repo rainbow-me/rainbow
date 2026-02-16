@@ -1,4 +1,5 @@
 import { Signer } from '@ethersproject/abstract-signer';
+import { type Address } from 'viem';
 import { DerivedValue, SharedValue } from 'react-native-reanimated';
 import { CrosschainQuote, Quote, Source } from '@rainbow-me/swaps';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
@@ -73,7 +74,7 @@ export type DepositFailureMetadata = {
  */
 export type DepositToken = {
   /** Contract address */
-  address: AddressOrEth;
+  address: Address;
   /** Token decimal places */
   decimals: number;
   /** Token ticker symbol */
@@ -128,7 +129,7 @@ export type DepositConfig = {
      * When set, deposits route to this address instead of the user's wallet.
      * If configured, deposits will fail when the store returns null.
      */
-    recipient?: DerivedStore<string | null>;
+    recipient?: DerivedStore<Address | null>;
   };
 
   /** Quote fetching configuration */
@@ -205,10 +206,10 @@ export type AmountState = {
 export type AmountStoreType = RainbowStore<AmountState>;
 
 export type DepositQuoteStoreParams = {
-  accountAddress: string;
+  accountAddress: Address;
   amount: string;
   asset: {
-    address: string;
+    address: AddressOrEth;
     balance: string;
     chainId: ChainId;
     decimals: number;
@@ -216,8 +217,9 @@ export type DepositQuoteStoreParams = {
     name?: string;
     price?: { value: number };
     symbol?: string;
+    isNativeAsset: boolean;
   } | null;
-  recipient: string | null;
+  recipient: Address | null;
 };
 
 export type DepositQuoteResult =
@@ -377,7 +379,7 @@ export type TokenAnchor = {
 export type WithdrawalChainInfo = {
   chainId: ChainId;
   /** Token address on the selected chain */
-  tokenAddress: string;
+  tokenAddress: AddressOrEth;
 };
 
 /**
@@ -387,12 +389,12 @@ export type RouteConfig = {
   /** Source of funds for swap/bridge quotes */
   from: {
     /** Store providing the sender address (e.g., proxy wallet) */
-    addressStore: DerivedStore<string | null>;
+    addressStore: DerivedStore<Address | null>;
     /** Chain where funds are held */
     chainId: ChainId;
     /** Token being sent */
     token: {
-      address: AddressOrEth;
+      address: Address;
       decimals: number;
     };
   };
@@ -509,7 +511,7 @@ export type WithdrawalExecutorParams = {
   /** Quote for swap/bridge execution when required */
   quote?: WithdrawalSwapQuote;
   /** Destination address for withdrawn funds */
-  recipient: string;
+  recipient: Address;
 };
 
 /**
@@ -646,7 +648,7 @@ export type WithdrawalStoreType = RainbowStore<WithdrawalStoreState>;
  * Network info for a token on a specific chain.
  */
 export type TokenNetworkInfo = {
-  address: string;
+  address: AddressOrEth;
   decimals: number;
 };
 
@@ -660,7 +662,7 @@ export type WithdrawalTokenData = {
   symbol: string;
 };
 
-export type WithdrawalTokenStoreType = QueryStore<WithdrawalTokenData | null, { address: string; chainId: ChainId }>;
+export type WithdrawalTokenStoreType = QueryStore<WithdrawalTokenData | null, { address: AddressOrEth; chainId: ChainId }>;
 
 // ============ Withdrawal Quote Store Types =================================== //
 
@@ -678,9 +680,9 @@ export enum WithdrawalQuoteStatus {
 export type WithdrawalQuoteStoreParams = {
   amount: string;
   balance: string;
-  buyTokenAddress: string | null;
-  destReceiver: string;
-  sourceAddress: string | null;
+  buyTokenAddress: Address | null;
+  destReceiver: Address;
+  sourceAddress: Address | null;
   targetChainId: ChainId | undefined;
 };
 

@@ -2,8 +2,8 @@
 import { Bleed, Box, Column, Columns, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
 import React, { useEffect, useRef, useState } from 'react';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
-import { ButtonPressAnimation } from '@/components/animations';
-import { useDimensions } from '@/hooks';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import useDimensions from '@/hooks/useDimensions';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { IS_ANDROID } from '@/env';
 import Spinner from '@/components/Spinner';

@@ -1,5 +1,5 @@
 import React, { createElement, useCallback } from 'react';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 
 export default function JellySelectorItem({
   enableHapticFeedback = false,

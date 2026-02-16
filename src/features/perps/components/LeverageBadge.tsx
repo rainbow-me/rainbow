@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { Bleed, Box, Text, useColorMode } from '@/design-system';
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type LeverageBadgeProps = {
   leverage: number;
@@ -10,8 +10,8 @@ type LeverageBadgeProps = {
 export const LeverageBadge = memo(function LeverageBadge({ leverage }: LeverageBadgeProps) {
   const { isDarkMode } = useColorMode();
   const color = useMemo(() => {
-    if (isDarkMode) return opacityWorklet(ETH_COLOR_DARK, 0.16);
-    return opacityWorklet('#09111F', 0.04);
+    if (isDarkMode) return opacity(ETH_COLOR_DARK, 0.16);
+    return opacity('#09111F', 0.04);
   }, [isDarkMode]);
 
   return (

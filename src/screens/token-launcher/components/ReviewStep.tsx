@@ -1,4 +1,3 @@
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContactAvatar } from '@/components/contacts';
 import { isValidURLWorklet } from '@/components/DappBrowser/utils';
@@ -11,7 +10,7 @@ import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar'
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
-import { formatURLForDisplay } from '@/utils';
+import formatURLForDisplay from '@/utils/formatURLForDisplay';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import React, { useMemo } from 'react';
@@ -25,6 +24,7 @@ import { LINK_SETTINGS } from './LinksSection';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT, TOKEN_LAUNCHER_SCROLL_INDICATOR_INSETS } from './TokenLauncherHeader';
 import { TokenLogo } from './TokenLogo';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
 const SHOW_TOKEN_ALLOCATION_CARD = false;

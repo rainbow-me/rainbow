@@ -1,8 +1,8 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Box, Text, useColorMode } from '@/design-system';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { View } from 'react-native';
 
@@ -45,7 +45,7 @@ export const PerpsSheetActionButtons = memo(function PerpsSheetActionButtons({
           <Box
             height={48}
             borderRadius={24}
-            backgroundColor={opacityWorklet('#F5F8FF', 0.06)}
+            backgroundColor={opacity('#F5F8FF', 0.06)}
             borderWidth={2}
             borderColor={'buttonStroke'}
             justifyContent="center"

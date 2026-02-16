@@ -1,19 +1,19 @@
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import { Box, Text, TextIcon } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const EXIT_BUTTON_SIZE = 36;
 // padding top + exit button + inner padding + padding bottom + blur padding

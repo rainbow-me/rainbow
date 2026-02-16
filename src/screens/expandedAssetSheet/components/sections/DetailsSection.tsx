@@ -3,15 +3,15 @@ import * as i18n from '@/languages';
 import { Bleed, Box, IconContainer, Inline, Text, TextShadow } from '@/design-system';
 import { Row } from '../shared/Row';
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
-import { ButtonPressAnimation } from '@/components/animations';
-import { formatURLForDisplay } from '@/utils';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import formatURLForDisplay from '@/utils/formatURLForDisplay';
 import { XIcon } from '../../icons/XIcon';
 import { Icon } from '@/components/icons';
 import { formatUrl } from '@/components/DappBrowser/utils';
 import { openInBrowser } from '@/utils/openInBrowser';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { logger } from '@/logger';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 interface RowItem {
   icon?: string;

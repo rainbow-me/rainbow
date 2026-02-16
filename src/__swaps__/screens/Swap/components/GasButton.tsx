@@ -3,7 +3,7 @@ import { weiToGwei } from '@/parsers';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { add, formatNumber } from '@/helpers/utilities';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -11,16 +11,16 @@ import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
-import { THICK_BORDER_WIDTH } from '../constants';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
-import { GestureHandlerButton } from './GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 import { ChainId } from '@/state/backendNetworks/types';
 

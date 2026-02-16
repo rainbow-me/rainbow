@@ -13,6 +13,7 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const NONE = 'None';
 
@@ -89,7 +90,7 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
     <Columns space="19px (Deprecated)">
       {/* @ts-expect-error JavaScript component */}
       <TokenInfoItem
-        color={lastSalePrice === NONE && !listingValue ? colors.alpha(colors.whiteLabel, 0.5) : colors.whiteLabel}
+        color={lastSalePrice === NONE && !listingValue ? opacity(colors.whiteLabel, 0.5) : colors.whiteLabel}
         enableHapticFeedback={!!listingValue}
         isNft
         onPress={toggleCurrentPriceDisplayCurrency}
@@ -112,7 +113,7 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
       {/* @ts-expect-error JavaScript component */}
       <TokenInfoItem
         align="right"
-        color={floorPrice === NONE ? colors.alpha(colors.whiteLabel, 0.5) : colors.whiteLabel}
+        color={floorPrice === NONE ? opacity(colors.whiteLabel, 0.5) : colors.whiteLabel}
         enableHapticFeedback={floorPrice !== NONE}
         isNft
         loading={!floorPrice}

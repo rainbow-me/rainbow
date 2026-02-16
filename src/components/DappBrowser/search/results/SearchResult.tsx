@@ -4,14 +4,14 @@ import { Source } from 'react-native-fast-image';
 import Animated, { useAnimatedProps, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import GoogleSearchIcon from '@/assets/googleSearchIcon.png';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { AnimatedText, Box, Inline, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useSearchContext } from '../SearchContext';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url: string) => void }) => {
   const { searchResults } = useSearchContext();

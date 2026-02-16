@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import SpinnerImageSource from '../assets/spinner.png';
 import { useTheme } from '../theme/ThemeContext';
-import { SpinAnimation } from './animations';
+import { SpinAnimation } from './animations/SpinAnimation';
 import { Centered } from './layout';
 import { ImgixImage } from '@/components/images';
 import { position } from '@/styles';

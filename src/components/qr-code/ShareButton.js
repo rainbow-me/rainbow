@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder, Row } from '../layout';
 import { Text } from '../text';
 import styled from '@/styled-thing';

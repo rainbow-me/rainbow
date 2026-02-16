@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createMMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
-import { getDominantColorFromImage } from '@/utils';
+import getDominantColorFromImage from '@/utils/getDominantColorFromImage';
 import { maybeSignUri } from '@/handlers/imgix';
 
 export const storage = createMMKV({

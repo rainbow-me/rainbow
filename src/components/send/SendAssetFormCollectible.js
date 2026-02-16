@@ -1,9 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { OpacityToggler } from '../animations';
+import OpacityToggler from '../animations/OpacityToggler';
 import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
 import { Column } from '../layout';
-import { useDimensions, useImageMetadata } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
+import useImageMetadata from '@/hooks/useImageMetadata';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import { IS_ANDROID } from '@/env';

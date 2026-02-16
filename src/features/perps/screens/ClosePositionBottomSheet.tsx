@@ -2,7 +2,7 @@ import React, { memo, useCallback, useMemo, useState } from 'react';
 import { AnimatedText, Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { runOnJS, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { Panel, controlPanelStyles, PANEL_BOTTOM_OFFSET } from '@/components/SmoothPager/ListPanel';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
@@ -10,7 +10,7 @@ import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
-import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { PositionPercentageSlider } from '@/features/perps/components/PositionPercentageSlider';
 import { SheetHandleFixedToTop } from '@/components/sheet';
@@ -27,6 +27,8 @@ import { useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore'
 import { TriggerOrderType } from '@/features/perps/types';
 import { Alert } from 'react-native';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
+
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 function PanelSheet({ children }: { children: React.ReactNode }) {
   const { isDarkMode } = useColorMode();
@@ -191,7 +193,7 @@ function PanelContent({ symbol }: PanelContentProps) {
         </Box>
 
         <Box
-          backgroundColor={opacityWorklet(ETH_COLOR_DARK, 0.03)}
+          backgroundColor={opacity(ETH_COLOR_DARK, 0.03)}
           borderWidth={THICK_BORDER_WIDTH}
           borderColor={'buttonStroke'}
           borderRadius={24}

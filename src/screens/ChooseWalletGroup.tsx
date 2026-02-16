@@ -1,5 +1,5 @@
 import CreateNewWalletGroupIcon from '@/assets/CreateNewWalletGroup.png';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { Box, Separator, Text, useForegroundColor } from '@/design-system';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
@@ -16,7 +16,7 @@ import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { createAccountInExistingWallet, getIsDamagedWallet, loadWallets, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
-import { profileUtils } from '@/utils';
+import profileUtils from '@/utils/profileUtils';
 import { abbreviateEnsForDisplay, formatAddressForDisplay } from '@/utils/abbreviations';
 import chroma from 'chroma-js';
 import React, { useCallback, useRef } from 'react';

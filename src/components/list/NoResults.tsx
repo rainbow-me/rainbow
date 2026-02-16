@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
 import React from 'react';
-import { neverRerender } from '@/utils';
+import neverRerender from '@/utils/neverRerender';
 import { Inset, Stack, Text } from '@/design-system';
 import { useTheme } from '@/theme';
 import { logger } from '@/logger';

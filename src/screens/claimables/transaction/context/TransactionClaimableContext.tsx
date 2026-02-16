@@ -4,7 +4,7 @@ import { TokenToReceive, TransactionClaimableTxPayload } from '../types';
 import { CrosschainQuote, ETH_ADDRESS, getCrosschainQuote, getQuote, Quote, QuoteParams } from '@rainbow-me/swaps';
 import { Claimable, ClaimableType, TransactionClaimable } from '@/resources/addys/claimables/types';
 import { logger, RainbowError } from '@/logger';
-import { useAccountSettings } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
 import {
   convertAmountToNativeDisplay,
   convertAmountToRawAmount,
@@ -21,9 +21,9 @@ import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/
 import { getNextNonce } from '@/state/nonces';
 import { getProvider } from '@/handlers/web3';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
-import { formatUnits } from 'viem';
+import { formatUnits, getAddress } from 'viem';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import { queryClient } from '@/react-query';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
@@ -159,8 +159,8 @@ export function TransactionClaimableContextProvider({
       const quoteParams: QuoteParams = {
         chainId: claimable.chainId,
         fromAddress: accountAddress,
-        sellTokenAddress: asset.asset.isNativeAsset ? ETH_ADDRESS : asset.asset.address,
-        buyTokenAddress: outputConfig.token.isNativeAsset ? ETH_ADDRESS : outputTokenAddress,
+        sellTokenAddress: asset.asset.isNativeAsset ? ETH_ADDRESS : getAddress(asset.asset.address),
+        buyTokenAddress: outputConfig.token.isNativeAsset ? ETH_ADDRESS : getAddress(outputTokenAddress),
         sellAmount: convertAmountToRawAmount(asset.amount.amount, asset.asset.decimals),
         slippage: +getDefaultSlippageWorklet(claimable.chainId, getRemoteConfig().default_slippage_bips_chainId),
         refuel: false,

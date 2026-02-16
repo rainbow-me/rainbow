@@ -1,5 +1,5 @@
 import { sortList } from '../helpers/sortList';
-import { reduceArrayToObject } from '../utils';
+import reduceArrayToObject from '@/utils/reduceArrayToObject';
 
 const DefaultConfig = {
   damping: 42,

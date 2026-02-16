@@ -32,7 +32,7 @@ import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScree
 import { openInBrowser } from '@/utils/openInBrowser';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const Container = styled(View)({
   ...position.coverAsObject,
@@ -176,7 +176,7 @@ export default function WelcomeScreen() {
   const createWalletButtonAnimatedShadowStyle = useAnimatedStyle(() => ({
     backgroundColor: calculatedColor.value,
     shadowColor: calculatedColor.value,
-    boxShadow: [{ color: opacityWorklet(calculatedColor.value, isDarkMode ? 0 : 0.4), offsetX: 0, offsetY: 5, blurRadius: 15 }],
+    boxShadow: [{ color: opacity(calculatedColor.value, isDarkMode ? 0 : 0.4), offsetX: 0, offsetY: 5, blurRadius: 15 }],
   }));
 
   const onCreateWallet = useCallback(async () => {
@@ -238,12 +238,12 @@ export default function WelcomeScreen() {
               style={[sx.existingWallet, { backgroundColor: colors.blueGreyDarkLight }]}
               testID="already-have-wallet-button"
               text={i18n.t(i18n.l.wallet.new.already_have_wallet)}
-              textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+              textColor={opacity(colors.blueGreyDark, 0.8)}
             />
           </ButtonWrapper>
         </ContentWrapper>
         <TermsOfUse bottomInset={insets.bottom}>
-          <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.5)} lineHeight="loose" size="smedium" weight="semibold">
+          <Text align="center" color={opacity(colors.blueGreyDark, 0.5)} lineHeight="loose" size="smedium" weight="semibold">
             {i18n.t(i18n.l.wallet.new.terms)}
             <Text
               color={colors.paleBlue}

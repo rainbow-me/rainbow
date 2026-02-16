@@ -1,9 +1,11 @@
-import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { AccentColorProvider, Box, Inline, Text, TextShadow } from '@/design-system';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { deviceUtils, watchingAlert } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
+import watchingAlert from '@/utils/watchingAlert';
 import { debounce } from 'lodash';
 import React from 'react';
 

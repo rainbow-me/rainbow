@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getPreference } from '@/model/preferences';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { queryClient } from '@/react-query';
 import { isDataComplete } from '@/state/nfts/utils';
 import { useNftsStore } from '@/state/nfts/nfts';

@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { InnerBorder } from '../layout';
 import { CardSize } from './CardSize';
 import { UniqueTokenImage } from './UniqueTokenImage';
-import { usePersistentAspectRatio } from '@/hooks';
+import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
 import styled from '@/styled-thing';
 import { shadow as shadowUtil } from '@/styles';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';

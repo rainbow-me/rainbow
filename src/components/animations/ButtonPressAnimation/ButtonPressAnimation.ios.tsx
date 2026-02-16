@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { View, ViewStyle } from 'react-native';
-import type { ButtonProps, TransformOrigin } from './types';
+import type { ButtonPressAnimationProps, TransformOrigin } from './types';
 import NativeButtonNativeComponent, { NativeButtonProps } from '@/codegen/specs/NativeButtonNativeComponent';
 import styled from '@/styled-thing';
-import { HapticFeedback } from '@/utils/haptics';
 import { normalizeTransformOrigin } from './normalizeTransformOrigin';
+import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 
 const ButtonWithTransformOrigin = styled(NativeButtonNativeComponent)(({ transformOrigin }: { transformOrigin?: TransformOrigin }) => {
   if (!transformOrigin) return {};
@@ -26,12 +26,12 @@ const ButtonWithTransformOrigin = styled(NativeButtonNativeComponent)(({ transfo
   return styles;
 });
 
-const ButtonPressAnimation = React.forwardRef<React.ElementRef<typeof NativeButtonNativeComponent>, ButtonProps>(
+const ButtonPressAnimation = React.forwardRef<React.ElementRef<typeof NativeButtonNativeComponent>, ButtonPressAnimationProps>(
   (
     {
       children,
       duration = 160,
-      hapticType = HapticFeedback.selection,
+      hapticType = HapticFeedbackTypes.selection,
       scaleTo = 0.86,
       useLateHaptic = true,
       minLongPressDuration = 500,
@@ -40,9 +40,10 @@ const ButtonPressAnimation = React.forwardRef<React.ElementRef<typeof NativeButt
       transformOrigin,
       testID,
       onPress,
+      onLongPress,
       accessible = true,
       ...rest
-    }: ButtonProps,
+    },
     ref
   ) => {
     const normalizedTransformOrigin = useMemo(() => normalizeTransformOrigin(transformOrigin), [transformOrigin]);
@@ -58,6 +59,7 @@ const ButtonPressAnimation = React.forwardRef<React.ElementRef<typeof NativeButt
       transformOrigin: normalizedTransformOrigin,
       useLateHaptic,
       onPress: onPress as NativeButtonProps['onPress'],
+      onLongPress: onLongPress as NativeButtonProps['onLongPress'],
       accessible,
     };
 

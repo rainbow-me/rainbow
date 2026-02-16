@@ -4,7 +4,7 @@ import { ContextMenuButton } from '@/components/context-menu';
 import { Bleed, Box, Inline, Text, TextProps } from '@/design-system';
 import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 import { Bleed, Box, Inline, Text, globalColors, useForegroundColor } from '@/design-system';
 import { NativeCurrencyKey, RainbowTransaction, TransactionStatus, TransactionType } from '@/entities';
@@ -18,6 +18,7 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ChainImage } from '../coin-icon/ChainImage';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 import { activityValues, useTransactionLaunchToken } from '@/helpers/transactions';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const getIconTopMargin = (type: TransactionType) => {
   switch (type) {
@@ -144,7 +145,7 @@ const BottomRow = React.memo(function BottomRow({
               <Box
                 style={{
                   borderWidth: 1.5,
-                  borderColor: theme.colors.alpha(separatorSecondary, 0.2),
+                  borderColor: opacity(separatorSecondary, 0.2),
                   borderRadius: 8,
                 }}
                 justifyContent="center"

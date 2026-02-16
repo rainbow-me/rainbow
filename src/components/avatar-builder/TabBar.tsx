@@ -1,12 +1,13 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Categories } from './Categories';
 import { EmojiCategory } from './types';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 interface Props {
   categoryKeys: string[];
@@ -41,7 +42,7 @@ const TabBar = ({ categoryKeys, activeCategory, onPress }: Props) => {
                   style={[sx.gradient]}
                 />
               )}
-              <Icon color={category === activeCategory ? null : colors.alpha(colors.blueGreyDark, 0.4)} name={category.icon} />
+              <Icon color={category === activeCategory ? null : opacity(colors.blueGreyDark, 0.4)} name={category.icon} />
             </ButtonPressAnimation>
           );
         })}

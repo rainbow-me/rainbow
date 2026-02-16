@@ -15,7 +15,7 @@ import { useRemoteConfig, useRemoteConfigUpdates } from '@/model/remoteConfig';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { usePoints, usePointsReferralCode } from '@/resources/points';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { deviceUtils } from '@/utils';
+import deviceUtils from '@/utils/deviceUtils';
 import { delay } from '@/utils/delay';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NotificationToggleContextMenu } from './components/NotificationToggleContextMenu';
@@ -23,7 +23,7 @@ import { ClaimContent } from './content/ClaimContent';
 import { PlaceholderContent } from './content/PlaceholderContent';
 import { PointsContent } from './content/PointsContent';
 import { ReferralContent } from './content/ReferralContent';
-import { ButtonPressAnimation } from '../../components/animations';
+import ButtonPressAnimation from '../../components/animations/ButtonPressAnimation';
 
 export const POINTS_ROUTES = {
   CLAIM_CONTENT: 'ClaimContent',

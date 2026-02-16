@@ -4,20 +4,24 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard, KeyboardAvoidingView } from 'react-native';
 import { Alert } from '@/components/alerts';
 import { useTheme } from '@/theme/ThemeContext';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import FeesGweiInput from '@/components/FeesGweiInput';
 import { calculateMinerTipAddDifference, calculateMinerTipSubstDifference } from '@/helpers/gas';
 import { add, greaterThan, isZero, lessThan, multiply, toFixedDecimals } from '@/helpers/utilities';
-import { useFeesPanelInputRefs, useGas, usePrevious, useTimeout } from '@/hooks';
+import useFeesPanelInputRefs from '@/hooks/useFeesPanelInputRefs';
+import useGas from '@/hooks/useGas';
+import usePrevious from '@/hooks/usePrevious';
+import useTimeout from '@/hooks/useTimeout';
 import { gweiToWei, parseGasFeeParam } from '@/parsers';
 import Routes from '@/navigation/routesNames';
-import { gasUtils } from '@/utils';
+import gasUtils from '@/utils/gas';
 import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { isL2Chain } from '@/handlers/web3';
 import { CurrentBaseFeeTypeKey, ExplainSheetRouteParams, gasTrendToTrendType, RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import { useChainSupportsPriorityFee } from '@/__swaps__/utils/meteorology';
+import { opacity } from '@/framework/ui/utils/opacity';
 const MAX_TEXT_WIDTH = 210;
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
 
@@ -144,7 +148,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
       let color;
       let text;
       if ((!error && !warning) || !selectedOptionIsCustom) {
-        color = colors.alpha(colors.blueGreyDark, 0.25);
+        color = opacity(colors.blueGreyDark, 0.25);
         text = '􀅵';
       } else if (error) {
         color = colors.red;
@@ -319,7 +323,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
           <Box paddingTop="8px" style={{ maxWidth: MAX_TEXT_WIDTH }}>
             <Text color={{ custom: colors.red }} size="16px / 22px (Deprecated)" weight="heavy" numberOfLines={1}>
               {errorPrefix}
-              <Text color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }} size="16px / 22px (Deprecated)" weight="bold">
+              <Text color={{ custom: opacity(colors.blueGreyDark, 0.5) }} size="16px / 22px (Deprecated)" weight="bold">
                 {errorSuffix}
               </Text>
             </Text>
@@ -329,7 +333,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
           <Box paddingTop="8px" style={{ maxWidth: MAX_TEXT_WIDTH }}>
             <Text color={{ custom: colors.yellowFavorite }} size="16px / 22px (Deprecated)" weight="heavy">
               {warningPrefix}
-              <Text color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }} size="16px / 22px (Deprecated)" weight="heavy">
+              <Text color={{ custom: opacity(colors.blueGreyDark, 0.5) }} size="16px / 22px (Deprecated)" weight="heavy">
                 {warningSuffix}
               </Text>
             </Text>

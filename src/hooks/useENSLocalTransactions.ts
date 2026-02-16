@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux';
 import { useMemo } from 'react';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { usePendingTransactions } from '.';
+import usePendingTransactions from './usePendingTransactions';
 import { ENSRegistrationState, RainbowTransaction } from '@/entities';
 import { AppState } from '@/redux/store';
-import { ethereumUtils } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 

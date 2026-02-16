@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { AccentColorProvider, Box, ColorModeProvider, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { GlobalNotificationTopic } from '@/notifications/settings/constants';
@@ -12,7 +12,7 @@ import { IS_ANDROID } from '@/env';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import * as i18n from '@/languages';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 

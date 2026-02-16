@@ -7,7 +7,7 @@ import { useNavigation } from '../../navigation/Navigation';
 import { ThemeContextProps, useTheme } from '../../theme/ThemeContext';
 import Divider from '@/components/Divider';
 import Spinner from '@/components/Spinner';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { PasteAddressButton } from '../buttons';
 import showDeleteContactActionSheet from '../contacts/showDeleteContactActionSheet';
 import { AddressField } from '../fields';
@@ -17,13 +17,17 @@ import { Label, Text } from '../text';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { useClipboard, useDimensions, useContacts } from '@/hooks';
+import useClipboard from '@/hooks/useClipboard';
+import useDimensions from '@/hooks/useDimensions';
+import useContacts from '@/hooks/useContacts';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { profileUtils, showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import profileUtils from '@/utils/profileUtils';
 import { RainbowAccount } from '@/model/wallet';
 import { Contact } from '@/redux/contacts';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type ComponentPropsWithTheme = {
   theme: ThemeContextProps;
@@ -44,13 +48,13 @@ const AddressFieldLabel = styled(Label).attrs({
   size: 'large',
   weight: 'bold',
 })({
-  color: ({ theme: { colors } }: ComponentPropsWithTheme) => colors.alpha(colors.blueGreyDark, 0.6),
+  color: ({ theme: { colors } }: ComponentPropsWithTheme) => opacity(colors.blueGreyDark, 0.6),
   marginRight: 4,
   opacity: 1,
 });
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }: ComponentPropsWithTheme) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.3),
+  color: opacity(colors.blueGreyDark, 0.3),
 }))({
   marginRight: 2,
 });

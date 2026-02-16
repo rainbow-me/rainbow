@@ -1,8 +1,8 @@
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { memo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { LinearGradient, LinearGradientProps } from 'expo-linear-gradient';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const DEFAULT_START = { x: 0, y: 0 };
 const DEFAULT_END = { x: 1, y: 1 };

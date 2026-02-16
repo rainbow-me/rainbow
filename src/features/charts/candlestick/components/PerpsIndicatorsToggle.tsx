@@ -8,9 +8,9 @@ import { IS_IOS } from '@/env';
 import { chartsActions, useChartsStore, useChartType } from '@/features/charts/stores/chartsStore';
 import { ChartType } from '@/features/charts/types';
 import { useHasPositionCheck } from '@/features/perps/stores/derived/useHasPositionCheck';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
 // ============ Constants ====================================================== //

@@ -1,14 +1,15 @@
 import React from 'react';
 import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { magicMemo } from '@/utils';
+import magicMemo from '@/utils/magicMemo';
 import { IS_TEST } from '@/env';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const AddButtonPadding = 19;
 
@@ -35,7 +36,7 @@ const Circle = styled(IS_TEST ? View : RadialGradient).attrs(({ theme: { colors 
 
 const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.3),
+  color: opacity(colors.blueGreyDark, 0.3),
   letterSpacing: 'zero',
   size: 'lmedium',
   weight: 'bold',

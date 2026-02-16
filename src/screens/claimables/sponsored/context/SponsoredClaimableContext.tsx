@@ -2,7 +2,7 @@ import React, { createContext, Dispatch, SetStateAction, useContext, useState } 
 import { Claimable, ClaimResponse, SponsoredClaimable } from '@/resources/addys/claimables/types';
 import { logger, RainbowError } from '@/logger';
 import { getProvider } from '@/handlers/web3';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';

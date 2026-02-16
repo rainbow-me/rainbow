@@ -20,7 +20,6 @@ import me.rainbow.NativeModules.Haptics.RNHapticsPackage
 import me.rainbow.NativeModules.Internals.InternalPackage
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage
 import me.rainbow.NativeModules.RNBip39.RNBip39Package
-import me.rainbow.NativeModules.RNStartTime.RNStartTimePackage
 import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage
 import me.rainbow.NativeModules.NavbarHeight.NavbarHeightPackage
@@ -40,7 +39,6 @@ class MainApplication : Application(), ReactApplication {
             packages.add(RNTextAnimatorPackage())
             packages.add(RNZoomableButtonPackage())
             packages.add(InternalPackage())
-            packages.add(RNStartTimePackage(START_MARK))
             packages.add(RNHapticsPackage())
             packages.add(NavbarHeightPackage())
             return packages
@@ -70,7 +68,6 @@ class MainApplication : Application(), ReactApplication {
   }
 
     companion object {
-        private val START_MARK = System.currentTimeMillis()
         private lateinit var appContext: Context
 
         fun getAppContext(): Context = appContext

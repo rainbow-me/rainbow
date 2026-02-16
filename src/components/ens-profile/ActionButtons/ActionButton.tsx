@@ -7,7 +7,7 @@ type ActionButtonProps = {
   children?: string;
   color?: BackgroundColor | 'accent';
   icon?: string | React.ReactElement;
-  onPress?: ButtonPressAnimationProps['onPress'];
+  onPress?: () => void;
   paddingHorizontal?: Space;
   variant?: 'solid' | 'outlined';
   testID?: string;

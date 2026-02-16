@@ -275,7 +275,7 @@ PODS:
   - libwebp/sharpyuv (1.5.0)
   - libwebp/webp (1.5.0):
     - libwebp/sharpyuv
-  - MetricsReporter (2.0.0):
+  - MetricsReporter (2.0.1):
     - RSCrashReporter (= 1.0.1)
     - RudderKit (= 1.4.0)
   - MMKVCore (2.2.4)
@@ -293,7 +293,7 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
-  - NitroMmkv (4.0.0):
+  - NitroMmkv (4.1.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -324,7 +324,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - NitroModules (0.31.6):
+  - NitroModules (0.33.7):
     - boost
     - DoubleConversion
     - fast_float
@@ -3450,8 +3450,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNDeviceInfo (5.3.1):
-    - React
+  - RNDeviceInfo (15.0.1):
+    - React-Core
   - RNFastImage (8.5.11):
     - React-Core
     - SDWebImage (~> 5.18.11)
@@ -3957,8 +3957,8 @@ PODS:
     - SocketRocket
     - Yoga
   - RSCrashReporter (1.0.1)
-  - Rudder (1.31.1):
-    - MetricsReporter (= 2.0.0)
+  - Rudder (1.31.2):
+    - MetricsReporter (= 2.0.1)
   - RudderKit (1.4.0)
   - SDWebImage (5.18.12):
     - SDWebImage/Core (= 5.18.12)
@@ -4609,13 +4609,13 @@ SPEC CHECKSUMS:
   hermes-engine: 9f4dfe93326146a1c99eb535b1cb0b857a3cd172
   ImageColors: e12eb73e29bc1feaa3c228db8c174a1b25acb59d
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
-  MetricsReporter: 364b98791e868b10e9d512eb50af28d8c11e5cdb
+  MetricsReporter: b76937c31c06e81316ec1f9049ee069ca69faea0
   MMKVCore: f2dd4c9befea04277a55e84e7812f930537993df
   mobile-wallet-protocol-host: 56d2ecd5c258ba007d2d837455d5554a22dd7e85
   MultiplatformBleAdapter: b1fddd0d499b96b607e00f0faa8e60648343dc1d
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  NitroMmkv: 515799c03a56c23def39625baaee36bf1e65290e
-  NitroModules: f01eb8e452bd988b73ba5a596666f38e5f817c38
+  NitroMmkv: 0be91455465952f2b943f753b9ee7df028d89e5c
+  NitroModules: e8ec707a245a85cf1eb4289f91a9372f9590a897
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
   Permission-Camera: cf14fb2d76432ee0f36546249ee608ef6037a23e
   Permission-FaceID: 57f30c981224753654df9350828dfbfc75dc5e83
@@ -4726,7 +4726,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 6161dbb167973ab36a7800c5deb506ed854f2c33
   RNCClipboard: adba6334687b7fb2c37760e26dedd550b4846a72
   RNCMaskedView: e7a06dc4cc53a88528c5d21ff89b346d47fcd047
-  RNDeviceInfo: c78d3d9ae81aed962fa0cc7c455e970f35a44a47
+  RNDeviceInfo: 36d7f232bfe7c9b5c494cb7793230424ed32c388
   RNFastImage: b4741be7fc96457586f610a1a454817518376819
   RNFBApp: 255fa19a91d6c1309e021ee75d5d209754e5961b
   RNFBMessaging: c304c1d8949f996d3eed1cf4eeba33148d13b4ea
@@ -4749,7 +4749,7 @@ SPEC CHECKSUMS:
   RNTextSize: c5e0593c898ad57ef5061464c154ab855da06047
   RNWorklets: 416ef974c176d76634e34c0aeda83f6b67084a88
   RSCrashReporter: 6b8376ac729b0289ebe0908553e5f56d8171f313
-  Rudder: 352cb3417238fb84cc083826d9a5a7cc91efaa69
+  Rudder: d18a99cafd24734d516dfb3db65634a0962a5ce7
   RudderKit: f272f9872183946452ac94cd7bb2244a71e6ca8f
   SDWebImage: 2d6d229046fea284d62e36bfb8ebe8287dfc5b10
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380

@@ -1,6 +1,6 @@
 import ActivityIndicator from '@/components/ActivityIndicator';
 import Spinner from '@/components/Spinner';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import { ImgixImage } from '@/components/images';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
@@ -18,7 +18,7 @@ import {
   useColorMode,
 } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

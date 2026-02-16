@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { ChainId } from '@/state/backendNetworks/types';
 import { borders, fonts } from '@/styles';
 import { useTheme } from '@/theme';
-import { FallbackIcon as CoinIconTextFallback } from '@/utils';
+import FallbackIcon from '@/utils/CoinIcons/FallbackIcon';
 import { FastFallbackCoinIconImage } from '../asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
 import { ChainImage } from './ChainImage';
 
@@ -52,7 +52,7 @@ export default React.memo(function RainbowCoinIcon({
     <View style={[sx.container, { height: size, width: size }]} collapsable={false}>
       <FastFallbackCoinIconImage icon={icon} shadowColor={shadowColor} symbol={symbol} theme={theme} size={size}>
         {() => (
-          <CoinIconTextFallback
+          <FallbackIcon
             color={fallbackIconColor}
             height={size}
             style={fallbackIconStyle(size)}

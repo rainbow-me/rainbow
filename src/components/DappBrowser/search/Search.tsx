@@ -5,7 +5,8 @@ import Animated, { runOnJS, useAnimatedStyle, withSpring } from 'react-native-re
 import { scheduleOnRN } from 'react-native-worklets';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useColorMode } from '@/design-system';
-import { useKeyboardHeight } from '@/hooks';
+import { IS_IOS } from '@/env';
+import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';

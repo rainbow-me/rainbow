@@ -6,9 +6,8 @@ import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { abs } from '@/helpers/utilities';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { ButtonPressAnimation } from '@/components/animations';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
@@ -17,6 +16,7 @@ import Routes from '@/navigation/routesNames';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import * as i18n from '@/languages';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: { position: PerpsPosition }) {
   const isPositivePnl = !position.unrealizedPnl.includes('-');
@@ -92,8 +92,8 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: { p
                   gap={2}
                   borderRadius={16}
                   borderWidth={THICK_BORDER_WIDTH}
-                  borderColor={{ custom: opacityWorklet(pnlColor, 0.12) }}
-                  backgroundColor={opacityWorklet(pnlColor, 0.04)}
+                  borderColor={{ custom: opacity(pnlColor, 0.12) }}
+                  backgroundColor={opacity(pnlColor, 0.04)}
                 >
                   <TextShadow blur={6} shadowOpacity={0.24}>
                     <Text align="center" color={{ custom: pnlColor }} size="icon 8px" weight="black" style={{ top: 0.5 }}>

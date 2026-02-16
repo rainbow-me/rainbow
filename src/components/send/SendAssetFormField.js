@@ -2,20 +2,21 @@ import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { useTheme } from '@/theme';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { BubbleField } from '../fields';
 import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { analytics } from '@/analytics';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const GradientBackground = styled(RadialGradient).attrs(({ colorForAsset, theme: { colors }, width }) => {
   const FieldWidth = width - 38;
 
   return {
     center: [0, (FieldWidth - 38) / 2],
-    colors: [colors.alpha(colorForAsset, 0), colors.alpha(colorForAsset, 0.06)],
+    colors: [opacity(colorForAsset, 0), opacity(colorForAsset, 0.06)],
     stops: [0, 1],
   };
 })({

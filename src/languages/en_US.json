@@ -359,7 +359,6 @@
       "unhide": "Unhide",
       "unpin": "Unpin",
       "view": "View",
-      "watch_this_wallet": "Watch this Wallet",
       "hidden": "Hidden"
     },
     "cards": {
@@ -699,10 +698,6 @@
         "balance": "Balance",
         "get_asset": "Get %{assetSymbol}",
         "market_cap": "Market cap",
-        "read_more_button": "Read more",
-        "available_networks": "Available on %{availableNetworks} networks",
-        "available_network": "Available on the %{availableNetwork} network",
-        "available_networkv2": "Only available on %{availableNetwork}",
         "l2_disclaimer": "This %{symbol} is on the %{network} network",
         "l2_disclaimer_send": "Sending on the %{network} network",
         "l2_disclaimer_dapp": "This app on the %{network} network",
@@ -2519,7 +2514,6 @@
         "networks": "Networks",
         "filter_by_network": "Filter by Network",
         "switch_networks": "Switch Networks",
-        "nothing_found": "Nothing found",
         "nothing_found_description": "Some tokens don't have enough liquidity to perform a successful %{action}.",
         "nothing_found_description_l2": "Some tokens don't have enough layer 2 liquidity to perform a successful %{action}.",
         "output_quotes_disabled": "Output quotes disabled"
@@ -2568,6 +2562,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "Nothing found",
       "section_header": {
         "recent": "Recent",
         "popular": "Popular in Rainbow",
@@ -3277,7 +3272,6 @@
     "walletconnect": {
       "connecting": "Connecting",
       "loading": "Loading",
-      "requests": "Requests",
       "wants_to_connect": "wants to connect to your wallet",
       "wants_to_connect_to_network": "wants to connect to the %{network} network",
       "available_networks": "Available Networks",

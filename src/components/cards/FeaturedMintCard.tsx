@@ -15,7 +15,7 @@ import {
 } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
 import { useMints } from '@/resources/mints';
@@ -25,7 +25,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import { useAccountAddress } from '../../state/wallets/walletsStore';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { ImgixImage } from '../images';
 import { Media } from '../Media';
 

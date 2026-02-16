@@ -19,13 +19,13 @@ import {
 import { ImgixImage } from '@/components/images';
 import { getFormattedTimeQuantity, convertAmountToNativeDisplay, handleSignificantDecimals } from '@/helpers/utilities';
 import { NftOffer } from '@/graphql/__generated__/arc';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useNavigation } from '@/navigation';
 import { IS_ANDROID } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
-import { useGas } from '@/hooks';
+import useGas from '@/hooks/useGas';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities';
 import { analytics } from '@/analytics';

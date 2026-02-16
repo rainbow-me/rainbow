@@ -1,12 +1,13 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { magicMemo } from '../../../utils';
+import magicMemo from '@/utils/magicMemo';
 import { SimpleModelView } from '../../3d';
 import { AudioPlayer } from '../../audio';
 import { UniqueTokenImage } from '../../unique-token';
 import { SimpleVideo } from '../../video';
 import { ZoomableWrapper } from './ZoomableWrapper';
-import { usePersistentAspectRatio, useAnimationType } from '@/hooks';
+import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
+import useAnimationType from '@/hooks/useAnimationType';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { UniqueAsset } from '@/entities';

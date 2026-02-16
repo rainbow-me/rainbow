@@ -1,15 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { Easing, SharedValue, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
-import vstyled from 'styled-components';
-import { ButtonPressAnimation } from '../../animations';
-import { useDimensions } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { safeAreaInsetValues } from '@/utils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
-import { scheduleOnRN } from 'react-native-worklets';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { Easing, runOnJS, SharedValue, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import vstyled from 'styled-components';
 
 const adjustConfig = {
   duration: 300,
@@ -25,20 +23,6 @@ const exitConfig = {
   mass: 2,
   stiffness: 800,
 };
-type GestureBlockerProps = {
-  containerWidth: number;
-  height: number;
-  width: number;
-  xOffset?: number;
-};
-
-const GestureBlocker = styled(View)(({ height, containerWidth, width, xOffset }: GestureBlockerProps) => ({
-  height: height * 3,
-  left: -(xOffset || (width - containerWidth) / 2),
-  position: 'absolute',
-  top: -height,
-  width,
-}));
 
 // TODO osdnk
 const Container = vstyled(Animated.View)<{ hasShadow: boolean }>`
@@ -110,7 +94,6 @@ export const ZoomableWrapper = ({
     'worklet';
   },
   opacity,
-  yOffset = 85,
   xOffset: givenXOffset = 0,
   yDisplacement: givenYDisplacement,
   width,
@@ -179,8 +162,6 @@ export const ZoomableWrapper = ({
   const fullSizeHeight = Math.min(deviceHeightWithMaybeHiddenStatusBar, deviceWidth / aspectRatio);
   const fullSizeWidth = Math.min(deviceWidth, deviceHeightWithMaybeHiddenStatusBar * aspectRatio);
   const zooming = fullSizeHeight / containerHeight;
-
-  const xOffset = givenXOffset || (width !== undefined ? (width - containerWidth) / 2 : 0) || 0;
 
   const containerStyle = useAnimatedStyle(() => {
     const scale = 1 + animationProgress.value * (fullSizeHeight / containerHeight - 1);
@@ -320,7 +301,7 @@ export const ZoomableWrapper = ({
         if (scale.value * containerWidth >= deviceWidth) {
           const adjustedScale = scale.value / (fullSizeWidth / containerWidth);
           isZoomedValue.value = true;
-          scheduleOnRN(setIsZoomed, true);
+          runOnJS(setIsZoomed)(true);
           onZoomInWorklet?.();
           animationProgress.value = withTiming(1, adjustConfig);
           scale.value = withTiming(adjustedScale, adjustConfig);
@@ -334,7 +315,7 @@ export const ZoomableWrapper = ({
         if (scale.value < MIN_IMAGE_SCALE) {
           if (ctx.startScale <= MIN_IMAGE_SCALE && !ctx.blockExitZoom) {
             isZoomedValue.value = false;
-            scheduleOnRN(setIsZoomed, false);
+            runOnJS(setIsZoomed)(false);
             onZoomOutWorklet?.();
             animationProgress.value = withSpring(0, exitConfig);
             scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
@@ -355,7 +336,7 @@ export const ZoomableWrapper = ({
           fullSizeHeight * scale.value <= deviceHeightWithMaybeHiddenStatusBar
         ) {
           isZoomedValue.value = false;
-          scheduleOnRN(setIsZoomed, false);
+          runOnJS(setIsZoomed)(false);
           onZoomOutWorklet?.();
           scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
           animationProgress.value = withSpring(0, exitConfig);
@@ -465,7 +446,7 @@ export const ZoomableWrapper = ({
         ctx.prevTranslateX = event.translationX;
         ctx.prevTranslateY = event.translationY;
       })
-      .onFinalize(event => {
+      .onEnd(event => {
         endGesture(event, panContext.value);
       });
   }, [
@@ -490,7 +471,6 @@ export const ZoomableWrapper = ({
         const ctx = pinchContext.value;
         ctx.startScale = scale.value;
         ctx.blockExitZoom = false;
-
         ctx.focalDisplacementX = (containerWidth / 2 - event.focalX) * scale.value;
         ctx.focalDisplacementY = (containerHeight / 2 - event.focalY) * scale.value;
       })
@@ -518,7 +498,7 @@ export const ZoomableWrapper = ({
           ctx.prevScale = event.scale;
         }
       })
-      .onFinalize(event => {
+      .onEnd(event => {
         endGesture(event, pinchContext.value);
       })
       .simultaneousWithExternalGesture(panGesture);
@@ -543,7 +523,7 @@ export const ZoomableWrapper = ({
       .onEnd(event => {
         if (!isZoomedValue.value) {
           isZoomedValue.value = true;
-          scheduleOnRN(setIsZoomed, true);
+          runOnJS(setIsZoomed)(true);
           onZoomInWorklet?.();
           animationProgress.value = withSpring(1, enterConfig);
         } else if (
@@ -554,7 +534,7 @@ export const ZoomableWrapper = ({
         ) {
           // dismiss if tap was outside image bounds
           isZoomedValue.value = false;
-          scheduleOnRN(setIsZoomed, false);
+          runOnJS(setIsZoomed)(false);
           onZoomOutWorklet?.();
           animationProgress.value = withSpring(0, exitConfig);
         }
@@ -653,34 +633,29 @@ export const ZoomableWrapper = ({
   });
 
   const combinedGesture = useMemo(() => {
+    // singleTap waits for doubleTap to fail so double-tapping on image doesn't trigger dismiss
+    singleTapGesture.requireExternalGestureToFail(doubleTapGesture);
+    return Gesture.Simultaneous(panGesture, singleTapGesture);
+  }, [doubleTapGesture, panGesture, singleTapGesture]);
+
+  const imageGesture = useMemo(() => {
     doubleTapGesture.requireExternalGestureToFail(pinchGesture);
-    const tapGesture = Gesture.Exclusive(doubleTapGesture, singleTapGesture);
-    return Gesture.Simultaneous(panGesture, tapGesture);
-  }, [doubleTapGesture, panGesture, pinchGesture, singleTapGesture]);
+    return Gesture.Simultaneous(pinchGesture, doubleTapGesture);
+  }, [doubleTapGesture, pinchGesture]);
 
   return (
-    <ButtonPressAnimation enableHapticFeedback={false} onPress={() => {}} scaleTo={1} style={{ alignItems: 'center', zIndex: 1 }}>
+    <View style={{ alignItems: 'center' }}>
       <GestureDetector gesture={combinedGesture}>
-        <Animated.View>
-          <ZoomContainer height={containerHeight} width={containerWidth}>
-            <GestureBlocker
-              containerWidth={containerWidth}
-              height={deviceHeightWithMaybeHiddenStatusBar}
-              pointerEvents={isZoomed ? 'auto' : 'none'}
-              width={deviceWidth}
-              xOffset={xOffset}
-              yOffset={yOffset}
-            />
-            <Animated.View style={[StyleSheet.absoluteFillObject]}>
-              <Container hasShadow={hasShadow} style={[containerStyle, StyleSheet.absoluteFillObject]}>
-                <GestureDetector gesture={pinchGesture}>
-                  <ImageWrapper style={[animatedStyle, cornerStyle, StyleSheet.absoluteFillObject]}>{children}</ImageWrapper>
-                </GestureDetector>
-              </Container>
-            </Animated.View>
-          </ZoomContainer>
-        </Animated.View>
+        <ZoomContainer collapsable={false} height={containerHeight} width={containerWidth}>
+          <Container hasShadow={hasShadow} style={[containerStyle, StyleSheet.absoluteFillObject]}>
+            <GestureDetector gesture={imageGesture}>
+              <ImageWrapper collapsable={false} style={[animatedStyle, cornerStyle, StyleSheet.absoluteFillObject]}>
+                {children}
+              </ImageWrapper>
+            </GestureDetector>
+          </Container>
+        </ZoomContainer>
       </GestureDetector>
-    </ButtonPressAnimation>
+    </View>
   );
 };

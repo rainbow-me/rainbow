@@ -1,53 +1,57 @@
 import React, { useCallback } from 'react';
-import { GestureHandlerButton } from './GestureHandlerButton';
+import { TextInput } from 'react-native';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { AnimatedText, Box } from '@/design-system';
-import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
+import Animated, { AnimatedRef, SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as i18n from '@/languages';
-import { THICK_BORDER_WIDTH } from '../constants';
-import { useSwapsSearchStore } from '../resources/search/searchV2';
-import { useClipboard } from '@/hooks';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import useClipboard from '@/hooks/useClipboard';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { IS_ANDROID } from '@/env';
+import { TOKEN_SEARCH_CONTROL_ITEM_HEIGHT } from './constants';
 
 const CANCEL_LABEL = i18n.t(i18n.l.button.cancel);
 const CLOSE_LABEL = i18n.t(i18n.l.button.close);
 const PASTE_LABEL = i18n.t(i18n.l.button.paste);
 
+export type AnimatedButtonStyles = {
+  buttonWrapperStyle: ReturnType<typeof useAnimatedStyle>;
+  buttonStyle: ReturnType<typeof useAnimatedStyle>;
+};
+
 export const SearchInputButton = ({
-  output,
+  enablePaste,
+  showButtonWhenNoAsset,
   pastedSearchInputValue,
   isSearchFocused,
-  handleExitSearchWorklet,
+  isTokenListFocused,
+  onCancelOrClosePressWorklet,
+  onPasteSearchQuery,
+  searchInputRef,
+  isAssetSelected,
+  animatedButtonStyles,
 }: {
-  output: boolean;
+  enablePaste: boolean;
+  showButtonWhenNoAsset: boolean;
   pastedSearchInputValue: SharedValue<string>;
   isSearchFocused: Readonly<SharedValue<boolean>>;
-  handleExitSearchWorklet: () => void;
+  isTokenListFocused: Readonly<SharedValue<boolean>>;
+  onCancelOrClosePressWorklet: () => void;
+  onPasteSearchQuery: (text: string) => void;
+  searchInputRef: AnimatedRef<TextInput>;
+  isAssetSelected: Readonly<SharedValue<boolean>>;
+  animatedButtonStyles: AnimatedButtonStyles;
 }) => {
-  const {
-    inputProgress,
-    inputSearchRef,
-    internalSelectedInputAsset,
-    internalSelectedOutputAsset,
-    outputProgress,
-    outputSearchRef,
-    AnimatedSwapStyles,
-  } = useSwapContext();
-
   const { hasClipboardData } = useClipboard();
 
   const buttonText = useDerivedValue(() => {
-    if (
-      (inputProgress.value === NavigationSteps.SEARCH_FOCUSED && !output) ||
-      (outputProgress.value === NavigationSteps.SEARCH_FOCUSED && output)
-    ) {
+    if (isSearchFocused.value) {
       return CANCEL_LABEL;
     }
 
-    if ((output && internalSelectedOutputAsset.value) || !output) {
+    if (isAssetSelected.value || !enablePaste) {
       return CLOSE_LABEL;
     }
 
@@ -59,19 +63,15 @@ export const SearchInputButton = ({
       // Slice the pasted text to the length of an ETH address
       const pastedText = text.trim().slice(0, 42);
       pastedSearchInputValue.value = pastedText;
-      useSwapsSearchStore.setState({ searchQuery: pastedText });
+      onPasteSearchQuery(pastedText);
     });
-  }, [pastedSearchInputValue]);
+  }, [pastedSearchInputValue, onPasteSearchQuery]);
 
   const buttonInfo = useDerivedValue(() => {
-    const isInputSearchFocused = inputProgress.value === NavigationSteps.SEARCH_FOCUSED;
-    const isOutputSearchFocused = outputProgress.value === NavigationSteps.SEARCH_FOCUSED;
-    const isOutputTokenListFocused = outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED;
-
     const clipboardDataAvailable = hasClipboardData || IS_ANDROID;
 
-    const isPasteDisabled = output && !internalSelectedOutputAsset.value && isOutputTokenListFocused && !clipboardDataAvailable;
-    const isVisible = isInputSearchFocused || isOutputSearchFocused || output || (!output && !!internalSelectedInputAsset.value);
+    const isPasteDisabled = enablePaste && !isAssetSelected.value && isTokenListFocused.value && !clipboardDataAvailable;
+    const isVisible = isSearchFocused.value || showButtonWhenNoAsset || isAssetSelected.value;
     const visibleOpacity = isPasteDisabled ? 0.4 : 1;
 
     return {
@@ -93,11 +93,11 @@ export const SearchInputButton = ({
     <Animated.View style={buttonVisibilityStyle}>
       <GestureHandlerButton
         onPressJS={() => {
-          (output ? outputSearchRef : inputSearchRef).current?.blur();
+          searchInputRef.current?.blur();
         }}
         onPressWorklet={() => {
           'worklet';
-          if (output && outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !internalSelectedOutputAsset.value) {
+          if (enablePaste && isTokenListFocused.value && !isAssetSelected.value) {
             if (buttonInfo.value.isPasteDisabled) {
               triggerHaptics('notificationError');
             } else {
@@ -105,8 +105,8 @@ export const SearchInputButton = ({
             }
           }
 
-          if (isSearchFocused.value || (output && internalSelectedOutputAsset.value) || (!output && internalSelectedInputAsset.value)) {
-            handleExitSearchWorklet();
+          if (isSearchFocused.value || isAssetSelected.value) {
+            onCancelOrClosePressWorklet();
           }
         }}
         scaleTo={0.8}
@@ -114,12 +114,12 @@ export const SearchInputButton = ({
         <Box
           as={Animated.View}
           alignItems="center"
-          borderRadius={18}
-          height={{ custom: 36 }}
+          borderRadius={TOKEN_SEARCH_CONTROL_ITEM_HEIGHT / 2}
+          height={{ custom: TOKEN_SEARCH_CONTROL_ITEM_HEIGHT }}
           justifyContent="center"
           paddingHorizontal={{ custom: 12 - THICK_BORDER_WIDTH }}
           style={[
-            output ? AnimatedSwapStyles.searchOutputAssetButtonWrapperStyle : AnimatedSwapStyles.searchInputAssetButtonWrapperStyle,
+            animatedButtonStyles.buttonWrapperStyle,
             {
               borderCurve: 'continuous',
               borderWidth: THICK_BORDER_WIDTH,
@@ -127,12 +127,7 @@ export const SearchInputButton = ({
             },
           ]}
         >
-          <AnimatedText
-            align="center"
-            style={output ? AnimatedSwapStyles.searchOutputAssetButtonStyle : AnimatedSwapStyles.searchInputAssetButtonStyle}
-            size="17pt"
-            weight="heavy"
-          >
+          <AnimatedText align="center" style={animatedButtonStyles.buttonStyle} size="17pt" weight="heavy">
             {buttonText}
           </AnimatedText>
         </Box>

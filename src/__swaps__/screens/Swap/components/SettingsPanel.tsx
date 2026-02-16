@@ -5,11 +5,11 @@ import { NetworkSelectorButton } from '@/components/buttons/NetworkSelectorButto
 import { Bleed, Border, Box, Column, Columns, Separator, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { opacity } from '@/__swaps__/utils/swaps';
-import { THICK_BORDER_WIDTH } from '../constants';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
-import { GestureHandlerButton } from './GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { SlippageRow } from './ReviewPanel';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 

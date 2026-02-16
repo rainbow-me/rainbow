@@ -2,7 +2,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import React, { useCallback, useEffect, useRef } from 'react';
 import ToolTip from 'react-native-tooltip';
 
-function CopyTooltip({ textToCopy, activeOpacity, tooltipText, ...props }) {
+function CopyTooltip({ textToCopy, tooltipText, ...props }) {
   const handleCopy = useCallback(() => Clipboard.setString(textToCopy), [textToCopy]);
   const { colors } = useTheme();
   const ref = useRef(undefined);
@@ -11,7 +11,6 @@ function CopyTooltip({ textToCopy, activeOpacity, tooltipText, ...props }) {
     <ToolTip
       {...props}
       actions={[{ onPress: handleCopy, text: tooltipText }]}
-      activeOpacity={activeOpacity}
       onPress={() => ref.current.showMenu()}
       ref={ref}
       underlayColor={colors.transparent}

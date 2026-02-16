@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React, { useCallback, useRef } from 'react';
 import { View } from 'react-native';
 import Divider from '@/components/Divider';
-import { ButtonPressAnimation } from '../../animations';
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { BiometricButtonContent } from '../../buttons';
 import CopyTooltip from '../../copy-tooltip';
 import { Centered, ColumnWithDividers } from '../../layout';
@@ -13,10 +13,11 @@ import ProfileNameInput from './ProfileNameInput';
 import styled from '@/styled-thing';
 import { margin, padding, position } from '@/styles';
 import { useTheme } from '@/theme';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const ProfileAddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }: any) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.6),
+  color: opacity(colors.blueGreyDark, 0.6),
   firstSectionLength: 4,
   size: 'large',
   truncationLength: 4,
@@ -144,7 +145,7 @@ const ProfileModal = ({
         </ProfileButton>
         <ProfileButton onPress={handleCancel}>
           <ProfileButtonText
-            color={colors.alpha(colors.blueGreyDark, 0.6)}
+            color={opacity(colors.blueGreyDark, 0.6)}
             letterSpacing="roundedMedium"
             testID="wallet-info-cancel-button"
             weight="medium"

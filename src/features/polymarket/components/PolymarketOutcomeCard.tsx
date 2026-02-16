@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { Box, Text, useColorMode, globalColors } from '@/design-system';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import ImgixImage from '@/components/images/ImgixImage';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 
@@ -29,9 +29,9 @@ export const PolymarketOutcomeCard = memo(function PolymarketOutcomeCard({
   return (
     <Box
       padding={'20px'}
-      backgroundColor={isDarkMode ? opacityWorklet(accentColor, 0.08) : opacityWorklet(globalColors.white100, 0.9)}
+      backgroundColor={isDarkMode ? opacity(accentColor, 0.08) : opacity(globalColors.white100, 0.9)}
       borderRadius={26}
-      borderColor={{ custom: opacityWorklet(accentColor, 0.03) }}
+      borderColor={{ custom: opacity(accentColor, 0.03) }}
       borderWidth={isDarkMode ? 2.5 : 0}
     >
       <Box flexDirection="row" alignItems="center" gap={12}>

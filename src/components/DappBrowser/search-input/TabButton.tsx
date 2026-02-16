@@ -10,15 +10,16 @@ import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import * as i18n from '@/languages';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import position from '@/styles/position';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
-import { haptics, showActionSheetWithOptions } from '@/utils';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
+import haptics from '@/utils/haptics';
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import { BrowserButtonShadows } from '../DappBrowserShadows';
 import { RAINBOW_HOME } from '../constants';
 import { useSearchContext } from '../search/SearchContext';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const TAB_BUTTON_SIZE = 44;
 

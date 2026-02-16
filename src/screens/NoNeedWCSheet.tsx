@@ -12,10 +12,11 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const BodyText = styled(Text).attrs(({ theme: { colors } }: { theme: { colors: Colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.6),
+  color: opacity(colors.blueGreyDark, 0.6),
   lineHeight: 'loosest',
   size: 'medium',
 }))({

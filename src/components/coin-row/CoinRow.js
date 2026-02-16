@@ -1,6 +1,6 @@
 import React, { createElement } from 'react';
 import { Column, Row } from '../layout';
-import { useAccountSettings } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';

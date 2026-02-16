@@ -9,12 +9,13 @@ import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/d
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
-import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
-import { GestureHandlerButton } from './GestureHandlerButton';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import { SEPARATOR_COLOR } from '@/styles/constants';
 
 export const FlipButton = () => {
   const { isDarkMode } = useColorMode();

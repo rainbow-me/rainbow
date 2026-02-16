@@ -1,6 +1,5 @@
-import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Box, Inline, Separator, Text } from '@/design-system';
@@ -10,7 +9,7 @@ import { buildTokenDeeplink } from '@/handlers/deeplinks';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider } from '@/handlers/web3';
 import { BiometryTypes } from '@/helpers';
-import { useBiometryType } from '@/hooks';
+import useBiometryType from '@/hooks/useBiometryType';
 import { useTokenLauncher } from '@/hooks/useTokenLauncher';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -40,6 +39,7 @@ import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherSt
 import { GasButton } from './gas/GasButton';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import Routes from '@/navigation/routesNames';
+import { SEPARATOR_COLOR } from '@/styles/constants';
 
 // height + top padding + bottom padding
 export const FOOTER_HEIGHT = 48 + 16 + 16;

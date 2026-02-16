@@ -9,9 +9,13 @@ import Skeleton from '../../skeleton/Skeleton';
 import { Box, Cover, Text, useForegroundColor } from '@/design-system';
 import { UniqueAsset } from '@/entities';
 import { UploadImageReturnData } from '@/handlers/pinata';
-import { useENSModifiedRegistration, useENSRegistration, useENSRegistrationForm, useSelectImageMenu } from '@/hooks';
+import useENSModifiedRegistration from '@/hooks/useENSModifiedRegistration';
+import useENSRegistration from '@/hooks/useENSRegistration';
+import useENSRegistrationForm from '@/hooks/useENSRegistrationForm';
+import useSelectImageMenu from '@/hooks/useSelectImageMenu';
 import { ImgixImage } from '@/components/images';
-import { magicMemo, stringifyENSNFTRecord } from '@/utils';
+import magicMemo from '@/utils/magicMemo';
+import { stringifyENSNFTRecord } from '@/utils/ens';
 import { ENS_RECORDS } from '@/helpers/ens';
 import { ImagePickerAsset } from 'expo-image-picker';
 

@@ -1,5 +1,5 @@
 import { settingsLoadLanguage, settingsLoadState } from '@/redux/settings';
-import { promiseUtils } from '@/utils';
+import promiseUtils from '@/utils/promise';
 import { logger } from '@/logger';
 import store from '../../redux/store';
 

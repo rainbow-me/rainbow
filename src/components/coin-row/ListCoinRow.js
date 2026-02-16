@@ -1,12 +1,13 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered, FlexItem, Row } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { ethereumUtils, magicMemo } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
+import magicMemo from '@/utils/magicMemo';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const CoinIconSize = 40;

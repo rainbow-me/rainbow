@@ -1,6 +1,5 @@
 import { createMMKV } from 'react-native-mmkv';
-import { IS_DEV, IS_TEST } from '@/env';
-import isTestFlight from '@/helpers/isTestFlight';
+import { IS_DEV, IS_TEST, IS_TEST_FLIGHT } from '@/env';
 import { STORAGE_IDS } from '@/model/mmkv';
 
 /**
@@ -15,7 +14,6 @@ export const NOTIFICATIONS = 'Notifications';
 export const REVIEW_ANDROID = 'reviewAndroid';
 export const PROFILES = 'ENS Profiles';
 export const L2_TXS = 'L2 Transactions';
-export const CROSSCHAIN_SWAPS = 'Crosschain Swaps';
 export const OP_REWARDS = '$OP Rewards';
 export const DEFI_POSITIONS = 'Defi Positions';
 export const NFT_OFFERS = 'NFT Offers';
@@ -66,7 +64,6 @@ const config = {
   [NOTIFICATIONS]: { needsRestart: true, settings: true, value: true },
   [PROFILES]: { settings: true, value: true },
   [REVIEW_ANDROID]: { settings: false, value: false },
-  [CROSSCHAIN_SWAPS]: { settings: true, value: true },
   [OP_REWARDS]: { settings: true, value: false },
   [LOG_PUSH]: { settings: true, value: false },
   [DEFI_POSITIONS]: { settings: true, value: true },
@@ -88,7 +85,7 @@ const config = {
   [RAINBOW_TRENDING_TOKENS_LIST]: { settings: true, value: false },
   [PRINCE_OF_THE_HILL]: { settings: true, value: false },
   [LAZY_TABS]: { needsRestart: true, settings: true, value: false },
-  [CANDLESTICK_CHARTS]: { settings: true, value: IS_DEV || isTestFlight || false },
+  [CANDLESTICK_CHARTS]: { settings: true, value: IS_DEV || IS_TEST_FLIGHT || false },
   [CANDLESTICK_DATA_MONITOR]: { settings: true, value: false },
   [KING_OF_THE_HILL_TAB]: { settings: true, value: false },
   [RAINBOW_TOASTS]: { settings: true, value: false },

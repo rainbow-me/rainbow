@@ -14,12 +14,13 @@ import {
 } from '../handlers/localstorage/globalSettings';
 import { useNavigation } from '../navigation/Navigation';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { useDimensions, useShakeAnimation } from '@/hooks';
+import useDimensions from '@/hooks/useDimensions';
+import useShakeAnimation from '@/hooks/useShakeAnimation';
 import { useBlockBackButton } from '@/hooks/useBlockBackButton';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 
 const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,

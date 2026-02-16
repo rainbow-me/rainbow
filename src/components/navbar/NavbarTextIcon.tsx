@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Cover, Text } from '@/design-system';
 import { useTheme } from '@/theme';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 export const NAVBAR_ICON_SIZE = 36;
 
@@ -19,7 +20,7 @@ export function NavBarTextIconFrame({ backgroundOpacity, color, children }: NavB
       borderRadius={NAVBAR_ICON_SIZE / 2}
       height={{ custom: NAVBAR_ICON_SIZE }}
       style={{
-        backgroundColor: colors.alpha(accentColor, backgroundOpacity ?? (isDarkMode ? 0.2 : 0.1)),
+        backgroundColor: opacity(accentColor, backgroundOpacity ?? (isDarkMode ? 0.2 : 0.1)),
       }}
       width={{ custom: NAVBAR_ICON_SIZE }}
     >

@@ -12,9 +12,9 @@ import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { createOpacityPalette } from '@/worklets/colors';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { ShimmerAnimation } from '@/components/animations';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
+import { opacity } from '@/framework/ui/utils/opacity';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 
 type MarketRowProps = {
   accentColor: string;
@@ -152,7 +152,7 @@ export const MarketRowLoadingSkeleton = memo(function MarketRowLoadingSkeleton({
   const fillSecondary = useBackgroundColor('fillSecondary');
   const fillQuaternary = useBackgroundColor('fillQuaternary');
   const fillColor = isDarkMode ? fillQuaternary : fillSecondary;
-  const shimmerColor = opacityWorklet(fillColor, isDarkMode ? 0.025 : 0.06);
+  const shimmerColor = opacity(fillColor, isDarkMode ? 0.025 : 0.06);
 
   return (
     <View style={styles.skeletonContainer}>

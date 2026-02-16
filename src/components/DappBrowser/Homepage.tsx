@@ -4,7 +4,7 @@ import { BlurView } from 'react-native-blur-view';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import {
   Bleed,
   Border,
@@ -22,8 +22,7 @@ import {
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
 import { Site, useBrowserHistoryStore } from '@/state/browserHistory';
 import { getDappHost } from './handleProviderRequest';
@@ -43,6 +42,7 @@ import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, HTTP, 
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { FEATURED_RESULTS, useExperimentalFlag } from '@/config';
 import { FeaturedResultStack, FeaturedResultStackProps } from '@/components/FeaturedResult/FeaturedResultStack';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;

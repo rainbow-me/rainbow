@@ -3,10 +3,10 @@ import React, { useCallback } from 'react';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { haptics } from '@/utils';
+import haptics from '@/utils/haptics';
 import { Row } from '@/components/layout';
 import { TextInput } from 'react-native';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Text } from '@/components/text';
 
 export const DiagnosticsSecretInput = ({ value, color }: { value: string; color: string }) => {

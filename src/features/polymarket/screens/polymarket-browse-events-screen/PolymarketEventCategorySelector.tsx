@@ -2,8 +2,8 @@ import { memo, useCallback, useMemo, useRef } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { SharedValue, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { ButtonPressAnimation } from '@/components/animations';
+import { THICKER_BORDER_WIDTH } from '@/styles/constants';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { Border, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { CATEGORIES, Category } from '@/features/polymarket/constants';
@@ -13,7 +13,7 @@ import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePoly
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createOpacityPalette } from '@/worklets/colors';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type CategoryKey = keyof typeof CATEGORIES;
 type CategoryWithKey = Category & { key: CategoryKey };
@@ -100,7 +100,7 @@ const CategoryItem = memo(function CategoryItem({ category, onPress, selectedCat
 
   const backgroundFillStyle = useMemo(
     () => ({
-      backgroundColor: isDarkMode ? accentColors.opacity6 : opacityWorklet(globalColors.white100, 0.6),
+      backgroundColor: isDarkMode ? accentColors.opacity6 : opacity(globalColors.white100, 0.6),
       borderRadius: CONTAINER_HEIGHT / 2,
     }),
     [isDarkMode, accentColors]

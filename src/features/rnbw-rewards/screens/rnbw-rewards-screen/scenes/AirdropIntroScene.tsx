@@ -1,7 +1,7 @@
 import { memo, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { Box, globalColors, Text } from '@/design-system';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import * as i18n from '@/languages';
 import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import Animated, { runOnJS } from 'react-native-reanimated';

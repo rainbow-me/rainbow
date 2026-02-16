@@ -13,7 +13,7 @@ const TintButton = ({
 }: {
   children: ReactNode;
   disabled?: boolean;
-  onPress: ButtonProps['onPress'];
+  onPress?: () => void;
   color?: TextColor;
   testID?: string;
 }) => {
@@ -27,9 +27,8 @@ const TintButton = ({
       as={ButtonPressAnimation}
       height={`${height}px`}
       justifyContent="center"
-      // @ts-ignore overloaded props
       onPress={disabled ? () => undefined : onPress}
-      scaleTo={disabled ? 1 : 0.8}
+      scaleTo={disabled ? 1 : 0.9}
       style={{
         opacity: disabled ? 0.5 : 1,
         overflow: 'hidden',

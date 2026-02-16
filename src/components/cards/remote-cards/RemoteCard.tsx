@@ -7,7 +7,8 @@ import { ImgixImage } from '@/components/images';
 import { IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';
 import { Language } from '@/languages';
-import { useAccountSettings, useDimensions } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import useDimensions from '@/hooks/useDimensions';
 import { BackgroundColor, ForegroundColor, TextColor } from '@/design-system/color/palettes';
 import { maybeSignUri } from '@/handlers/imgix';
 import { colors } from '@/styles';
@@ -15,8 +16,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { analytics } from '@/analytics';
 import { FlashList } from '@shopify/flash-list';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const ICON_SIZE = 36;
 const CARD_BORDER_RADIUS = 20;
@@ -157,13 +159,13 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
               <Box
                 as={LinearGradient}
                 style={{
-                  backgroundColor: colors.alpha(accent, 0.12),
-                  borderColor: colors.alpha(accent, 0.06),
+                  backgroundColor: opacity(accent, 0.12),
+                  borderColor: opacity(accent, 0.06),
                   borderWidth: 1,
                   marginTop: 'auto',
                   marginBottom: 'auto',
                 }}
-                colors={[colors.alpha(accent, isDarkMode ? 0.1 : 0), colors.alpha(accent, isDarkMode ? 0 : 0.1)]}
+                colors={[opacity(accent, isDarkMode ? 0.1 : 0), opacity(accent, isDarkMode ? 0 : 0.1)]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 borderRadius={card.imageRadius ?? 10}

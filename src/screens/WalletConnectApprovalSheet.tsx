@@ -3,7 +3,7 @@ import { analytics } from '@/analytics';
 import Divider from '@/components/Divider';
 import Spinner from '@/components/Spinner';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { RequestVendorLogoIcon } from '@/components/coin-icon';
+import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -15,7 +15,7 @@ import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { getDappHostname } from '@/helpers/dappNameHandler';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 import { NETWORK_MENU_ACTION_KEY_FILTER, networksMenuItems } from '@/helpers/walletConnectNetworks';
-import { useAccountSettings } from '@/hooks';
+import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
 import { RainbowWallet } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
@@ -33,13 +33,14 @@ import { noop } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, InteractionManager } from 'react-native';
 import { Address } from 'viem';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type WithThemeProps = {
   theme: ThemeContextProps;
 };
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }: WithThemeProps) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.3),
+  color: opacity(colors.blueGreyDark, 0.3),
   size: android ? 40 : 'large',
 }))({});
 
@@ -216,7 +217,7 @@ export function WalletConnectApprovalSheet() {
     if (!chain) {
       return {
         chainId: approvalChainId,
-        color: colors.alpha(colors.blueGreyDark, 0.3),
+        color: opacity(colors.blueGreyDark, 0.3),
         name: label || 'Unknown Network',
       };
     }
@@ -434,7 +435,7 @@ export function WalletConnectApprovalSheet() {
               label={i18n.t(i18n.l.button.cancel)}
               onPress={handleCancel}
               size="big"
-              textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+              textColor={opacity(colors.blueGreyDark, 0.8)}
               weight="bold"
             />
             <SheetActionButton
