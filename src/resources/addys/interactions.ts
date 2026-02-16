@@ -1,4 +1,4 @@
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { QueryConfigWithSelect, createQueryKey } from '@/react-query';
 import { useQuery, type QueryFunctionContext } from '@tanstack/react-query';
 import { logger, RainbowError } from '@/logger';

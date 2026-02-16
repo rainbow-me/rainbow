@@ -1,5 +1,6 @@
 import Divider from '@/components/Divider';
-import { GasFeeType, GasFeeTypes, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts, TransactionStatus } from '@/entities';
+import { GasFeeType, GasFeeTypes, TransactionStatus } from '@/entities/transactions';
+import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { getProvider, isL2Chain, toHex } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { greaterThan } from '@/helpers/utilities';

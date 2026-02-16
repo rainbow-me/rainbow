@@ -7,7 +7,8 @@ import * as i18n from '@/languages';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
 import { add, addBuffer, convertAmountAndPriceToNativeDisplay, divide, fromWei, handleSignificantDecimals, multiply } from './utilities';
-import { ENSRegistrationRecords, EthereumAddress } from '@/entities';
+import type { ENSRegistrationRecords } from '@/entities/ensRegistration';
+import type { EthereumAddress } from '@/entities/wallet';
 import { getProvider, toHex } from '@/handlers/web3';
 import { gweiToWei } from '@/parsers';
 import {

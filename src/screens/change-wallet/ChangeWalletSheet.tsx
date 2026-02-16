@@ -7,7 +7,7 @@ import { SheetHandleFixedToTop } from '@/components/sheet';
 import { FeatureHintTooltip, TooltipRef } from '@/components/tooltips/FeatureHintTooltip';
 import { NOTIFICATIONS, useExperimentalFlag } from '@/config';
 import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
-import { EthereumAddress } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import { isValidHex } from '@/handlers/web3';

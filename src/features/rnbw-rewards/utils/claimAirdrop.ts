@@ -1,5 +1,5 @@
 import { analytics } from '@/analytics';
-import { NativeCurrencyKey } from '@/entities';
+import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ClaimAirdropResponse, ClaimAirdropResult } from '@/features/rnbw-rewards/types/claimAirdropTypes';

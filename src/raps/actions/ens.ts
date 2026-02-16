@@ -1,5 +1,7 @@
 import { analytics } from '@/analytics';
-import { ENSRegistrationRecords, NewTransaction, TransactionGasParamAmounts, TransactionStatus } from '@/entities';
+import { ENSRegistrationRecords } from '@/entities/ensRegistration';
+import { NewTransaction, TransactionStatus } from '@/entities/transactions';
+import { TransactionGasParamAmounts } from '@/entities/gas';
 import { IS_TEST } from '@/env';
 import { estimateENSTransactionGasLimit, formatRecordsForTransaction } from '@/handlers/ens';
 import { toHex } from '@/handlers/web3';

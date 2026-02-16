@@ -1,4 +1,4 @@
-import { Asset } from '@/entities';
+import { Asset } from '@/entities/tokens';
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as chainAssets } from './chain-assets.json';

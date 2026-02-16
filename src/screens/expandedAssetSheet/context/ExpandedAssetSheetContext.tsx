@@ -1,4 +1,4 @@
-import { ParsedAddressAsset } from '@/entities';
+import type { ParsedAddressAsset } from '@/entities/tokens';
 import useAdditionalAssetData, { TokenMetadata } from '@/hooks/useAdditionalAssetData';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useAccountAsset from '@/hooks/useAccountAsset';

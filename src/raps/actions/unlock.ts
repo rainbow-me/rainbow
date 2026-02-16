@@ -7,7 +7,7 @@ import { Address, erc20Abi, erc721Abi } from 'viem';
 
 import { ChainId } from '@/state/backendNetworks/types';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { NewTransaction, TransactionStatus, TxHash } from '@/entities';
+import { NewTransaction, TransactionStatus, TxHash } from '@/entities/transactions';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 

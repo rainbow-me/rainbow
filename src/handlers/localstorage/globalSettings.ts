@@ -1,6 +1,6 @@
 import { ChainId } from '@/state/backendNetworks/types';
 import { getGlobal, saveGlobal } from './common';
-import { NativeCurrencyKeys } from '@/entities';
+import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
 import { Language } from '@/languages';
 
 export const IMAGE_METADATA = 'imageMetadata';

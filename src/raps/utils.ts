@@ -5,7 +5,12 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { CrosschainQuote, Quote, getQuoteExecutionDetails, getTargetAddress } from '@rainbow-me/swaps';
 import { mainnet } from 'viem/chains';
 import { Chain, erc20Abi } from 'viem';
-import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+import type {
+  GasFeeParamsBySpeed,
+  LegacyGasFeeParamsBySpeed,
+  LegacyTransactionGasParamAmounts,
+  TransactionGasParamAmounts,
+} from '@/entities/gas';
 import gasUtils from '@/utils/gas';
 import { add, greaterThan, multiply } from '@/helpers/utilities';
 import { ChainId } from '@/state/backendNetworks/types';

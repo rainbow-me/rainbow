@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/store';
 import usePrevious from './usePrevious';
-import {
+import type {
   CurrentBlockParams,
   GasFee,
   GasFeeParams,
@@ -10,9 +10,9 @@ import {
   GasFeesBySpeed,
   LegacyGasFee,
   LegacyGasFeeParams,
-  ParsedAddressAsset,
   SelectedGasFee,
-} from '@/entities';
+} from '@/entities/gas';
+import type { ParsedAddressAsset } from '@/entities/tokens';
 import { fromWei, greaterThan, greaterThanOrEqualTo } from '@/helpers/utilities';
 import {
   gasPricesStartPolling,

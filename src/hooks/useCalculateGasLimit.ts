@@ -6,7 +6,7 @@ import ethereumUtils from '@/utils/ethereumUtils';
 import { hexToNumber, isHex } from 'viem';
 import { isEmpty } from 'lodash';
 import { InteractionManager } from 'react-native';
-import { GasFeeParamsBySpeed } from '@/entities';
+import type { GasFeeParamsBySpeed } from '@/entities/gas';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import useGas from '@/hooks/useGas';
 import { ChainId } from '@/state/backendNetworks/types';

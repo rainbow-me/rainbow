@@ -1,5 +1,5 @@
 import { isValidDomainFormat } from '../helpers/validators';
-import { EthereumAddress } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
 
 const defaultNumCharsPerSection = 6;
 

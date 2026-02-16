@@ -4,7 +4,7 @@ import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon'
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import type { RainbowToast } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
-import { TransactionStatus } from '@/entities';
+import { TransactionStatus } from '@/entities/transactions';
 import React, { memo } from 'react';
 import { View } from 'react-native';
 
