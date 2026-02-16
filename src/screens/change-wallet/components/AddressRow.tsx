@@ -81,7 +81,6 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
 
   const delegations = useDelegations(address as Address);
   const isDelegationDisabled = useDelegationDisabled(address as Address);
-
   const isDelegated = Boolean(delegations?.length);
 
   const walletName = useMemo(() => {
