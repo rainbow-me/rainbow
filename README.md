@@ -14,15 +14,48 @@
 
 ## Setup
 
-### General
+> [!TIP] > **Internal developers** can also use the [`rainbow-me/rainbow-setup`](https://github.com/rainbow-me/rainbow-setup)
+> script to install all dependencies and configure the project in one step.
+
+### Prerequisites
 
 1. Install nvm: https://github.com/creationix/nvm
-2. Install required Node.js version: `nvm install`
+2. Install the required Node.js version: `nvm install`
 3. Enable yarn: `corepack enable`
+
+**Note:** On future terminal sessions, run `nvm use` to activate the correct
+Node.js version. Alternatively, set up
+[automatic nvm switching](https://github.com/nvm-sh/nvm#deeper-shell-integration)
+in your shell.
+
+### Internal developers
+
+Set up these **before** running `yarn install`, as the postinstall script reads
+`.env` and `rainbow-scripts` to generate build configs and run prebuild hooks.
+
+1. Copy `dotenv` from [`rainbow-me/rainbow-env`](https://github.com/rainbow-me/rainbow-env)
+   to `.env` in the project root.
+2. Copy `android/app/google-services.json` from the same repo to `android/app/`
+   in this project.
+3. Clone [`rainbow-me/rainbow-scripts`](https://github.com/rainbow-me/rainbow-scripts)
+   into the project root (the postinstall prebuild hooks depend on it).
 4. Install dependencies and run setup: `yarn install && yarn setup`
 
-**Note:** On future terminal sessions, run `nvm use` to activate the correct Node.js version. Alternatively,
-set up [automatic nvm switching](https://github.com/nvm-sh/nvm#deeper-shell-integration) in your shell.
+### External contributors
+
+1. Copy `.env.example` to `.env` and fill in your own API keys. Note that some
+   features are currently not accessible; we are working with our Data
+   Providers to provide open source API Keys.
+   - Etherscan: https://etherscan.io/apis
+   - Infura: https://infura.io/
+   - ETH Gas Station: https://docs.ethgasstation.info/
+   - Imgix: https://www.imgix.com/
+2. Provide your own `google-services.json` in `android/app/` from a personal
+   Firebase project registered under the package name `me.rainbow`.
+3. Install dependencies and run setup: `yarn install && yarn setup`
+
+The iOS `GoogleService-Info.plist` is already in the repo and gets its API key
+patched by the postinstall script from `GOOGLE_SERVICE_API_KEY` in your `.env`.
 
 ### MacOS
 
@@ -66,28 +99,6 @@ set up [automatic nvm switching](https://github.com/nvm-sh/nvm#deeper-shell-inte
 
 If you are new to React Native, this is a helpful introduction:
 https://reactnative.dev/docs/getting-started
-
-### Preflight
-
-1. Run `nvm use` to switch to the required Node.js version.
-
-2. Set up your .env file, use our env.example as a guide.
-
-   **_Note that some features are currently not accessible, we are working with our Data Providers in order to provide open source API Keys!_**
-
-   Here are some resources to generate your own API keys:
-
-   - Etherscan: https://etherscan.io/apis
-   - Infura: https://infura.io/
-   - ETH Gas Station: https://docs.ethgasstation.info/
-   - Imgix: https://www.imgix.com/
-
-3. Ensure a `google-services.json` has been added to the relevant project
-   directory/directories so the compile will not fail.
-
-   This can either be the live Google Services config (for internal development)
-   or a self-provided config for a personal Firebase project (third-party
-   contributors) registered under the package name `me.rainbow`.
 
 ### MacOS
 
