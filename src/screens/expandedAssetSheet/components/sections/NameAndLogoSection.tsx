@@ -4,7 +4,7 @@ import { Box, Text, TextShadow } from '@/design-system';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { RainbowCoinEffect } from '@/components/rainbow-coin-effect/RainbowCoinEffect';
 import { RAINBOW_COIN_EFFECT } from '@/config/experimental';
-import { useExperimentalFlag } from '@/config';
+import useExperimentalFlag from '@/config/experimentalHooks';
 
 export const NameAndLogoSection = memo(function NameAndLogoSection() {
   const { basicAsset: asset, isRainbowToken, accentColors } = useExpandedAssetSheetContext();
