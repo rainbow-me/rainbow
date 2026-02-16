@@ -37,7 +37,7 @@ const getApprovalAmount = async ({
   amount: string;
 }): Promise<{ approvalAmount: string; isUnlimited: boolean }> => {
   const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
-  const { supported: delegationSupported } = await supportsDelegation({ address, chainId });
+  const { supported: delegationSupported } = await supportsDelegation({ address, chainId, requireFreshStatus: true });
   if (delegationEnabled && delegationSupported) {
     return { approvalAmount: amount, isUnlimited: false };
   }
