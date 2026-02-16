@@ -15,7 +15,7 @@ import { SupportCategoryPickerView } from './components/support/SupportCategoryP
 import WalletNotificationsSettings from './components/WalletNotificationsSettings';
 import { settingsOptions } from '@/navigation/config';
 import ViewCloudBackups from './components/Backups/ViewCloudBackups';
-import ViewWalletDelegations from './components/Backups/ViewWalletDelegations';
+import { ViewWalletDelegations } from './components/Backups/ViewWalletDelegations';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import Routes from '@/navigation/routesNames';
 import useAccountSettings from '@/hooks/useAccountSettings';

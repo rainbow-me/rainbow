@@ -12,12 +12,11 @@ import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
 import haptics from '@/utils/haptics';
 import { executeRevokeDelegation } from '@rainbow-me/delegation';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { loadWallet } from '@/model/wallet';
 import { getProvider } from '@/handlers/web3';
 import { getNextNonce } from '@/state/nonces';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import * as i18n from '@/languages';
 import useGas from '@/hooks/useGas';
 import { GasFee, LegacyGasFee } from '@/entities/gas';
@@ -128,21 +127,18 @@ const getSheetContent = (reason: RevokeReason, chainName?: string): SheetContent
 
 export const RevokeDelegationPanel = () => {
   const { goBack } = useNavigation();
-  const { params: { delegationsToRevoke = [], onSuccess, revokeReason = RevokeReason.ALERT_UNSPECIFIED } = {} } =
+  const { params: { address, delegationsToRevoke = [], onSuccess, revokeReason = RevokeReason.ALERT_UNSPECIFIED } = {} } =
     useRoute<RouteProp<RootStackParamList, typeof Routes.REVOKE_DELEGATION_PANEL>>();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [revokeStatus, setRevokeStatus] = useState<RevokeStatus>('ready');
-  const accountAddress = useWalletsStore(state => state.accountAddress);
-  const getChainsLabel = useBackendNetworksStore(state => state.getChainsLabel);
 
   const currentDelegation = delegationsToRevoke[currentIndex];
   const isLastDelegation = currentIndex === delegationsToRevoke.length - 1;
   const chainId = currentDelegation?.chainId as ChainId;
 
   // Get chain name for display
-  const chainsLabel = getChainsLabel();
-  const chainName = chainId ? chainsLabel[chainId] || `Chain ${chainId}` : '';
+  const chainName = chainId ? backendNetworksActions.getChainsLabel()[chainId] || `Chain ${chainId}` : '';
 
   // Gas management
   const { startPollingGasFees, stopPollingGasFees, selectedGasFee } = useGas();
@@ -184,7 +180,7 @@ export const RevokeDelegationPanel = () => {
       const provider = getProvider({ chainId: currentDelegation.chainId });
 
       const wallet = await loadWallet({
-        address: accountAddress,
+        address,
         provider,
       });
 
@@ -197,11 +193,10 @@ export const RevokeDelegationPanel = () => {
       const maxFeePerGas = feeData.maxFeePerGas?.toBigInt() ?? 0n;
       const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas?.toBigInt() ?? 0n;
 
-      const nonce = await getNextNonce({ address: accountAddress, chainId: currentDelegation.chainId });
+      const nonce = await getNextNonce({ address, chainId: currentDelegation.chainId });
 
       const result = await executeRevokeDelegation({
         signer: wallet as Wallet,
-        address: accountAddress,
         provider,
         chainId: currentDelegation.chainId,
         transactionOptions: {
@@ -215,7 +210,6 @@ export const RevokeDelegationPanel = () => {
       logger.info('Delegation removed successfully', {
         hash: result.hash,
         chainId: currentDelegation.chainId,
-        contractAddress: currentDelegation.contractAddress,
       });
 
       haptics.notificationSuccess();
@@ -235,12 +229,11 @@ export const RevokeDelegationPanel = () => {
       logger.error(new RainbowError('Failed to revoke delegation'), {
         error,
         chainId: currentDelegation.chainId,
-        contractAddress: currentDelegation.contractAddress,
       });
       haptics.notificationError();
       setRevokeStatus('recoverableError');
     }
-  }, [currentDelegation, accountAddress, isLastDelegation, goBack, onSuccess]);
+  }, [address, currentDelegation, isLastDelegation, goBack, onSuccess]);
 
   const buttonLabel = (() => {
     switch (revokeStatus) {
