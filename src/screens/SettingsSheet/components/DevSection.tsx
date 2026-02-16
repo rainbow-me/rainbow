@@ -279,10 +279,7 @@ const DevSection = () => {
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🗑️" isEmoji />}
-              onPress={() =>
-                // @ts-expect-error - SDK type definitions are incorrect. Implementation expects Record<string, never>, not Signer & Provider
-                resetDelegationCache()
-              }
+              onPress={() => resetDelegationCache()}
               size={52}
               titleComponent={<MenuItem.Title text="Delegation Store Reset" />}
             />

@@ -17,7 +17,7 @@ import { Icon } from '@/components/icons';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
 import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
-import { useDelegations, useDelegationPreference } from '@rainbow-me/delegation';
+import { useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';
 import type { Address } from 'viem';
 
 const ROW_HEIGHT_WITH_PADDING = 64;
@@ -79,11 +79,10 @@ interface AddressRowProps {
 export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem }: AddressRowProps) {
   const { address, color, emoji, balance, isSelected, isReadOnly, isLedger, label, image } = data;
 
-  const { delegations } = useDelegations(address as Address);
-  const { enabled: isDelegationEnabled = true } = useDelegationPreference(address as Address) ?? {};
+  const delegations = useDelegations(address as Address);
+  const isDelegationDisabled = useDelegationDisabled(address as Address);
 
-  const isDelegated = delegations.length > 0;
-  const isDisabled = !isDelegationEnabled;
+  const isDelegated = Boolean(delegations?.length);
 
   const walletName = useMemo(() => {
     return removeFirstEmojiFromString(label) || abbreviateAddress(address, 4, 6);
@@ -211,13 +210,13 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
                 borderRadius={22}
                 style={{
                   // eslint-disable-next-line no-nested-ternary
-                  backgroundColor: isDisabled ? globalColors.red60 : isDelegated ? globalColors.green60 : globalColors.grey60,
+                  backgroundColor: isDelegationDisabled ? globalColors.red60 : isDelegated ? globalColors.green60 : globalColors.grey60,
                   borderWidth: 1,
                   borderColor: opacity('#F5F8FF', 0.03),
                 }}
               >
                 <Text color={{ custom: globalColors.white100 }} size="13pt" weight="bold">
-                  {isDisabled
+                  {isDelegationDisabled
                     ? i18n.t(i18n.l.wallet.change_wallet.disabled)
                     : isDelegated
                       ? i18n.t(i18n.l.wallet.change_wallet.delegated)

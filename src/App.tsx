@@ -187,7 +187,7 @@ async function initializeApplication() {
       // If this becomes an issue, we should add a subscription to backend networks changes
       // and reconfigure the SDK when chains are updated.
       chains: useBackendNetworksStore.getState().getSupportedChains(),
-      currentAddress: $ => $(useWalletsStore).accountAddress || null,
+      getCurrentAddress: $ => $(useWalletsStore).accountAddress || null,
     }),
   ]);
 
