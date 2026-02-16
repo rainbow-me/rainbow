@@ -154,6 +154,23 @@ function getNodeAckDelay(chainId: ChainId): number {
   }
 }
 
+function isAtomicGasParams(
+  gasParams: RapSwapActionParameters<'swap' | 'crosschainSwap'>['gasParams']
+): gasParams is TransactionGasParamAmounts {
+  return 'maxFeePerGas' in gasParams && 'maxPriorityFeePerGas' in gasParams;
+}
+
+function shouldFallbackToSequential(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+
+  const message = error.message.toLowerCase();
+  const isSendRawTransactionError = message.includes('eth_sendrawtransaction');
+  const isInvalidParamsError =
+    message.includes('missing or invalid parameters') || message.includes('invalid params') || message.includes('invalid parameters');
+
+  return isSendRawTransactionError && isInvalidParamsError;
+}
+
 export const walletExecuteRap = async <T extends RapTypes>(
   wallet: Signer,
   type: T,
@@ -177,87 +194,99 @@ export const walletExecuteRap = async <T extends RapTypes>(
   const { supported: delegationSupported } = await supportsDelegation({
     address: parameters.quote?.from as Address,
     chainId: parameters.chainId,
+    requireFreshStatus: true,
   });
   const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
   const executeAtomic = delegationEnabled && delegationSupported && parameters.atomic;
   if (executeAtomic && (type === 'swap' || type === 'crosschainSwap')) {
     const swapParams = parameters as RapSwapActionParameters<'swap' | 'crosschainSwap'>;
-    const { chainId, quote, gasParams } = swapParams;
+    const { chainId, quote, gasParams, nonce } = swapParams;
     const provider = getProvider({ chainId });
-    const eip1559 = gasParams as TransactionGasParamAmounts;
+    const canExecuteAtomic = nonce !== undefined && isAtomicGasParams(gasParams);
 
     if (!quote) {
       return { nonce: undefined, hash: null, errorMessage: 'Quote is required for atomic execution' };
     }
 
-    try {
-      const calls: BatchCall[] = [];
-      let pendingTransaction: Omit<NewTransaction, 'hash'> | null = null;
+    if (canExecuteAtomic) {
+      try {
+        const calls: BatchCall[] = [];
+        let pendingTransaction: Omit<NewTransaction, 'hash'> | null = null;
 
-      for (const action of actions) {
-        const prepareResult = await typePrepareAction(action.type, {
-          parameters: action.parameters,
-          wallet,
-          chainId,
-          quote,
-        } as PrepareActionProps<typeof action.type>)();
+        for (const action of actions) {
+          const prepareResult = await typePrepareAction(action.type, {
+            parameters: action.parameters,
+            wallet,
+            chainId,
+            quote,
+          } as PrepareActionProps<typeof action.type>)();
 
-        if (prepareResult.call) {
-          calls.push(prepareResult.call);
+          if (prepareResult.call) {
+            calls.push(prepareResult.call);
+          }
+          if ('transaction' in prepareResult) {
+            pendingTransaction = prepareResult.transaction;
+          }
         }
-        if ('transaction' in prepareResult) {
-          pendingTransaction = prepareResult.transaction;
+
+        if (!calls.length) {
+          return { nonce: undefined, hash: null, errorMessage: 'No calls to execute' };
         }
-      }
 
-      if (!calls.length) {
-        return { nonce: undefined, hash: null, errorMessage: 'No calls to execute' };
-      }
-
-      const result = await executeFn(executeBatchedTransaction, {
-        screen: Screens.SWAPS,
-        operation: TimeToSignOperation.BroadcastTransaction,
-        metadata: { degenMode: swapsStore.getState().degenMode },
-      })({
-        signer: wallet as Wallet,
-        address: quote.from as Address,
-        chainId,
-        provider,
-        calls,
-        value: BigInt(quote.value?.toString() ?? '0'),
-        transactionOptions: {
-          maxFeePerGas: BigInt(eip1559.maxFeePerGas),
-          maxPriorityFeePerGas: BigInt(eip1559.maxPriorityFeePerGas),
-          gasLimit: null,
-        },
-        nonce: swapParams.nonce!,
-      });
-
-      if (!result.hash) {
-        return { nonce: undefined, hash: null, errorMessage: 'Transaction failed - no hash returned' };
-      }
-
-      if (pendingTransaction) {
-        const transaction: NewTransaction = {
-          ...pendingTransaction,
-          hash: result.hash,
-          batch: true,
-          delegation: result.type === 'eip7702',
-        };
-        addNewTransaction({
-          address: quote.from,
+        const result = await executeFn(executeBatchedTransaction, {
+          screen: Screens.SWAPS,
+          operation: TimeToSignOperation.BroadcastTransaction,
+          metadata: { degenMode: swapsStore.getState().degenMode },
+        })({
+          signer: wallet as Wallet,
           chainId,
-          transaction,
+          provider,
+          calls,
+          value: BigInt(quote.value?.toString() ?? '0'),
+          transactionOptions: {
+            maxFeePerGas: BigInt(gasParams.maxFeePerGas),
+            maxPriorityFeePerGas: BigInt(gasParams.maxPriorityFeePerGas),
+            gasLimit: null,
+          },
+          nonce,
         });
-      }
 
-      logger.debug(`[${rapName}] executed atomically`, { hash: result.hash });
-      return { nonce: swapParams.nonce, hash: result.hash, errorMessage: null };
-    } catch (error) {
-      logger.error(new RainbowError(`[raps/execute]: ${rapName} - atomic execution failed`), {
-        message: (error as Error)?.message,
+        if (!result.hash) {
+          return { nonce: undefined, hash: null, errorMessage: 'Transaction failed - no hash returned' };
+        }
+
+        if (pendingTransaction) {
+          const transaction: NewTransaction = {
+            ...pendingTransaction,
+            hash: result.hash,
+            batch: true,
+            delegation: result.type === 'eip7702',
+          };
+          addNewTransaction({
+            address: quote.from,
+            chainId,
+            transaction,
+          });
+        }
+
+        logger.debug(`[${rapName}] executed atomically`, { hash: result.hash });
+        return { nonce, hash: result.hash, errorMessage: null };
+      } catch (error) {
+        const fallbackToSequential = shouldFallbackToSequential(error);
+        logger.error(new RainbowError(`[raps/execute]: ${rapName} - atomic execution failed`), {
+          message: (error as Error)?.message,
+          fallbackToSequential,
+        });
+        if (!fallbackToSequential) {
+          return { nonce: undefined, hash: null, errorMessage: (error as Error)?.message ?? 'Unknown error' };
+        }
+
+        logger.debug(`[${rapName}] falling back to sequential execution after atomic failure`);
+      }
+    } else {
+      logger.debug(`[${rapName}] atomic execution skipped, falling back to sequential`, {
+        reason: nonce === undefined ? 'missing nonce' : 'non-eip1559-gas-params',
       });
-      return { nonce: undefined, hash: null, errorMessage: (error as Error)?.message ?? 'Unknown error' };
     }
   }
 
