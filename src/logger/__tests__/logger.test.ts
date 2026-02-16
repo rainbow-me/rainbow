@@ -121,6 +121,44 @@ describe('general functionality', () => {
     expect(mockTransport).toHaveBeenCalledWith(LogLevel.Error, new RainbowError(`logger.error was not provided a RainbowError`), {});
   });
 
+  test('createContextualLogger debug honors context filtering and prefixes messages', () => {
+    const logger = new Logger({
+      enabled: true,
+      debug: 'delegation',
+    });
+    const mockTransport = jest.fn();
+    logger.addTransport(mockTransport);
+
+    logger.createContextualLogger('delegation').debug('matched');
+    expect(mockTransport).toHaveBeenCalledWith(LogLevel.Debug, '[delegation]: matched', {});
+
+    mockTransport.mockClear();
+    logger.createContextualLogger('wallet').debug('ignored');
+    expect(mockTransport).not.toHaveBeenCalled();
+  });
+
+  test('createContextualLogger error wraps external errors into RainbowError', () => {
+    const logger = new Logger({ enabled: true, level: LogLevel.Error });
+    const mockTransport = jest.fn();
+    logger.addTransport(mockTransport);
+
+    const cause = new Error('boom');
+    logger.createContextualLogger('delegation').error(cause, { chainId: 1 });
+
+    expect(mockTransport).toHaveBeenCalledTimes(1);
+
+    const [level, message, metadata] = mockTransport.mock.calls[0];
+    expect(level).toBe(LogLevel.Error);
+    expect(message).toBeInstanceOf(RainbowError);
+    if (!(message instanceof RainbowError)) {
+      throw new Error('Expected context logger to wrap errors in RainbowError');
+    }
+
+    expect(message.message).toBe('[delegation]: boom');
+    expect(message.cause).toBe(cause);
+    expect(metadata).toEqual({ chainId: 1 });
+  });
+
   test('sentryTransport', () => {
     jest.useFakeTimers();
 
