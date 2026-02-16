@@ -1,7 +1,9 @@
 import { Contract } from '@ethersproject/contracts';
 import { keyBy, mapValues } from 'lodash';
 import { getProvider } from '@/handlers/web3';
-import { balanceCheckerContractAbi, chainAssets, ETH_ADDRESS, erc20ABI } from '@/references';
+import balanceCheckerContractAbi from '@/references/balances-checker-abi.json';
+import chainAssets from '@/references/chain-assets.json';
+import erc20ABI from '@/references/erc20-abi.json';
 import { parseAddressAsset } from './assets';
 import { RainbowAddressAssets } from './types';
 import { logger, RainbowError } from '@/logger';

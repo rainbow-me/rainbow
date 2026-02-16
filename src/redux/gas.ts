@@ -25,7 +25,7 @@ import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { getProvider } from '@/handlers/web3';
 import { defaultGasParamsFormat, gweiToWei, parseGasFeeParam, parseGasFees, parseGasFeesBySpeed, parseL2GasPrices, parseLegacyGasFeesBySpeed, parseRainbowMeteorologyData, weiToGwei } from '@/parsers/gas';
-import { ethUnits } from '@/references';
+import ethUnits from '@/references/ethereum-units.json';
 import ethereumUtils from '@/utils/ethereumUtils';
 import gasUtils from '@/utils/gas';
 import { ChainId } from '@/state/backendNetworks/types';

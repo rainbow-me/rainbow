@@ -1,7 +1,7 @@
 import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
 import { add, greaterThan } from './utilities';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
-import { supportedNativeCurrencies } from '@/references';
+import { supportedNativeCurrencies } from '@/references/supportedCurrencies';
 import * as i18n from '@/languages';
 import { AssetType } from '@/entities/assetTypes';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';

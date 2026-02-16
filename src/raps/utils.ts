@@ -14,7 +14,7 @@ import type {
 import gasUtils from '@/utils/gas';
 import { add, greaterThan, multiply } from '@/helpers/utilities';
 import { ChainId } from '@/state/backendNetworks/types';
-import { gasUnits } from '@/references';
+import { gasUnits } from '@/references/gasUnits';
 import { toHexNoLeadingZeros } from '@/handlers/web3';
 import { BigNumber } from '@ethersproject/bignumber';
 import { SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
