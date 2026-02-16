@@ -67,10 +67,10 @@ public extension UIView {
 public class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSupport {
   static var swizzled = false
   var config : (UIView & PanModalViewControllerScreen)?
-    public var length: CGFloat = 0
-    public var topAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
-    public var bottomAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
-    public var heightAnchor: NSLayoutDimension = NSLayoutDimension.init()
+  public var length: CGFloat = 0
+  public var topAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
+  public var bottomAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
+  public var heightAnchor: NSLayoutDimension = NSLayoutDimension.init()
   var state: PanModalPresentationController.PresentationState? = nil;
   var disappeared = false
   var hiding = false
@@ -122,7 +122,7 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
 
   var forceDisableShortForm = false
 
-    public func willTransition(to state: PanModalPresentationController.PresentationState) {
+  public func willTransition(to state: PanModalPresentationController.PresentationState) {
     if state == .longForm && config?.disableShortFormAfterTransitionToLongForm ?? false {
       forceDisableShortForm = true
       self.panModalSetNeedsLayoutUpdate()
@@ -137,7 +137,7 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
   }
 
 
-    public func onTouchTop(_ dismissing: Bool) {
+  public func onTouchTop(_ dismissing: Bool) {
     let selector = NSSelectorFromString("onTouchTopWrapper:")
     config?.perform(selector, with: NSNumber.init(value: dismissing))
   }
@@ -166,18 +166,18 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
     }
   }
 
-    public var cornerRadius: CGFloat {
+  public var cornerRadius: CGFloat {
     if (self.config?.cornerRadius == 0.666) {
       return UIScreen.main.displayCornerRadius
     }
     return CGFloat(truncating: self.config?.cornerRadius ?? 0)
   }
 
-    public var ignoreBottomOffset: Bool {
+  public var ignoreBottomOffset: Bool {
     return self.config!.ignoreBottomOffset;
   }
 
-    public var isHapticFeedbackEnabled: Bool = false
+  public var isHapticFeedbackEnabled: Bool = false
 
   func findChildScrollViewDFS(view: UIView)-> UIScrollView? {
     if panScrollableCache != nil {
@@ -215,7 +215,7 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
     }
   }
 
-    public func panModalWillDismiss() {
+  public func panModalWillDismiss() {
     if !didHandleWillDismiss {
       didHandleWillDismiss = true
       callWillDismiss()
@@ -226,22 +226,22 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
     config?.willDismiss()
   }
 
-    public func shouldRespond(to panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
+  public func shouldRespond(to panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
     if (hiding) {
       return false
     }
     return self.config!.dismissable || self.shouldPrioritize(panModalGestureRecognizer: panModalGestureRecognizer)
   }
 
-    public var allowsDragToDismiss: Bool {
+  public var allowsDragToDismiss: Bool {
     return self.config?.allowsDragToDismiss ?? false
   }
 
-    public var allowsTapToDismiss: Bool {
+  public var allowsTapToDismiss: Bool {
     return self.config?.allowsTapToDismiss ?? false
   }
 
-    public var anchorModalToLongForm: Bool {
+  public var anchorModalToLongForm: Bool {
     return self.config?.anchorModalToLongForm ?? false
   }
 
@@ -249,12 +249,12 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
     return self.config?.relevantScrollViewDepth.intValue ?? 1
   }
 
-    public var panModalBackgroundColor: UIColor {
+  public var panModalBackgroundColor: UIColor {
     let backgroundColor: UIColor = self.config?.modalBackgroundColor ?? UIColor.black
     return backgroundColor.withAlphaComponent(CGFloat(truncating: self.config?.backgroundOpacity ?? 1))
   }
 
-    public var scrollIndicatorInsets: UIEdgeInsets {
+  public var scrollIndicatorInsets: UIEdgeInsets {
     guard let scrollView = panScrollable else {
       return UIEdgeInsets(
         top: shouldRoundTopCorners ? cornerRadius : 0,
@@ -278,7 +278,7 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
     )
   }
 
-    public func shouldPrioritize(panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
+  public func shouldPrioritize(panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
     let headerHeight: CGFloat = CGFloat(truncating: self.config!.headerHeight)
 
     var locationY = panModalGestureRecognizer.location(in: view).y
@@ -309,35 +309,35 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
     return self.config?.isShortFormEnabled ?? true
   }
 
-    public var shortFormHeight: PanModalHeight {
+  public var shortFormHeight: PanModalHeight {
     let height: CGFloat = CGFloat(truncating: self.config?.shortFormHeight ?? 0.0)
     return (isShortFormEnabled && !forceDisableShortForm) ? .contentHeight(height) : longFormHeight
   }
 
-    public var springDamping: CGFloat {
+  public var springDamping: CGFloat {
     return CGFloat(truncating: self.config?.springDamping ?? 0)
   }
 
-    public var transitionDuration: Double {
+  public var transitionDuration: Double {
     return Double(truncating: self.config?.transitionDuration ?? 300)
   }
 
-    public var showDragIndicator: Bool {
+  public var showDragIndicator: Bool {
     return config?.showDragIndicator ?? false
   }
 
-    public var topOffset: CGFloat {
+  public var topOffset: CGFloat {
     return CGFloat(truncating: config?.topOffset ?? 0)
   }
 
-    public var panScrollable: UIScrollView? {
+  public var panScrollable: UIScrollView? {
     if !(self.config?.interactWithScrollView ?? false){
       return nil
     }
     return findChildScrollViewDFS(view: self.view!)
   }
 
-    public var longFormHeight: PanModalHeight {
+  public var longFormHeight: PanModalHeight {
     return .contentHeight(CGFloat(truncating: self.config?.longFormHeight ?? 0.0))
   }
 
