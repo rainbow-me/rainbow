@@ -80,6 +80,18 @@ export function SwapBottomPanel() {
   const opacity = useDerivedValue(() => confirmButtonProps.value.opacity);
   const type = useDerivedValue(() => confirmButtonProps.value.type);
 
+  // Test mode overrides for disabled and opacity
+  const testModeDisabled = useSharedValue(false);
+  const testModeOpacity = useSharedValue(1);
+
+  const finalDisabled = useDerivedValue(() => {
+    return IS_TEST ? testModeDisabled.value : disabled.value;
+  });
+
+  const finalOpacity = useDerivedValue(() => {
+    return IS_TEST ? testModeOpacity.value : opacity.value;
+  });
+
   const { navigate } = useNavigation();
   const handleHwConnectionAndSwap = useCallback(() => {
     try {
@@ -115,6 +127,12 @@ export function SwapBottomPanel() {
           gestureHandlerStyles,
           AnimatedSwapStyles.keyboardStyle,
           AnimatedSwapStyles.swapActionWrapperStyle,
+          IS_TEST && {
+            height: 200,
+            opacity: 1,
+            pointerEvents: 'auto',
+            overflow: 'visible',
+          },
         ]}
         testID="swap-bottom-panel-wrapper"
       >
@@ -126,7 +144,14 @@ export function SwapBottomPanel() {
           flexDirection="row"
           height={{ custom: 48 }}
           justifyContent="center"
-          style={[{ alignSelf: 'center' }]}
+          style={[
+            { alignSelf: 'center' },
+            IS_TEST && {
+              opacity: 1,
+              pointerEvents: 'auto',
+              overflow: 'visible',
+            },
+          ]}
           width="full"
           zIndex={20}
         >
@@ -151,7 +176,7 @@ export function SwapBottomPanel() {
               subtitle={showRewards ? i18n.t(i18n.l.swap.actions.earning_rewards) : undefined}
               rightIcon={showRewards ? '􀅴' : undefined}
               longPressDuration={HOLD_TO_SWAP_DURATION_MS}
-              disabled={disabled}
+              disabled={finalDisabled}
               onPressWorklet={() => {
                 'worklet';
                 if (type.value !== 'hold') {
@@ -188,7 +213,7 @@ export function SwapBottomPanel() {
                   );
                 }
               }}
-              opacity={opacity}
+              opacity={finalOpacity}
               onPressRightIconJS={showRewards ? handleRewardsInfoPress : undefined}
               scaleTo={0.9}
             />

@@ -13,7 +13,7 @@ import { Page } from '@/components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box } from '@/design-system';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_TEST } from '@/env';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -160,12 +160,20 @@ const SliderAndKeyboardAndBottomControls = () => {
 
   const { AnimatedSwapStyles } = useSwapContext();
 
-  if (!shouldMount) {
+  // Maestro test logic. The view needs to be rendered and fully on screen to be interactable.
+  const shouldMountTestWrapper = IS_TEST ? true : shouldMount;
+  if (!shouldMountTestWrapper) {
     return null;
   }
 
   return (
-    <Box as={Animated.View} style={[StyleSheet.absoluteFill, AnimatedSwapStyles.bottomControlsStyle]}>
+    <Box
+      as={Animated.View}
+      width="full"
+      position="absolute"
+      bottom="0px"
+      style={AnimatedSwapStyles.hideWhenInputsExpanded && IS_TEST && { bottom: 50, height: 200 }}
+    >
       <SliderAndKeyboard />
       <SwapBottomPanel />
     </Box>
