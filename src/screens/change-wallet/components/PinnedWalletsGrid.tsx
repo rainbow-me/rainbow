@@ -17,7 +17,7 @@ import { IS_DEV, IS_IOS, IS_TEST_FLIGHT } from '@/env';
 import { useTheme } from '@/theme';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { StyleSheet } from 'react-native';
-import { DelegationStatus, useDelegations, useDelegationPreference } from '@rainbow-me/delegation';
+import { useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';
 import type { Address } from 'viem';
 
 const UNPIN_BADGE_SIZE = 28;
@@ -33,15 +33,12 @@ type PinnedWalletsGridProps = {
   editMode: boolean;
 };
 
-function DelegationBadge({ accountAddress, isReadOnly }: { accountAddress: string; isReadOnly: boolean }) {
-  const { delegations } = useDelegations(accountAddress as Address);
-  const { enabled: isDelegationEnabled = true } = useDelegationPreference(accountAddress as Address) ?? {};
-
-  const isDelegated = delegations.some(({ delegationStatus }) => delegationStatus === DelegationStatus.RAINBOW_DELEGATED);
-  const isDisabled = !isDelegationEnabled;
+function DelegationBadge({ accountAddress }: { accountAddress: string }) {
+  const delegations = useDelegations(accountAddress as Address);
+  const isDisabled = useDelegationDisabled(accountAddress as Address);
+  const isDelegated = Boolean(delegations?.length);
 
   return (
-    // eslint-disable-next-line no-nested-ternary
     <Text color={isDisabled ? 'red' : isDelegated ? 'green' : 'labelQuaternary'} size="icon 10px">
       􀋦
     </Text>
@@ -210,19 +207,20 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                     </Box>
                   </JiggleAnimation>
                   <Inline wrap={false} space="4px" alignHorizontal="center" alignVertical="center">
-                    {account.isLedger && (
+                    {account.isLedger ? (
                       <Text color="labelTertiary" size="icon 10px">
                         􀤃
                       </Text>
-                    )}
-                    {account.isReadOnly && (
+                    ) : null}
+
+                    {account.isReadOnly ? (
                       <Text color="labelTertiary" size="icon 10px">
                         􀋮
                       </Text>
-                    )}
-                    {(IS_DEV || IS_TEST_FLIGHT) && !account.isReadOnly && (
-                      <DelegationBadge accountAddress={account.address} isReadOnly={account.isReadOnly} />
-                    )}
+                    ) : null}
+
+                    {(IS_DEV || IS_TEST_FLIGHT) && !account.isReadOnly ? <DelegationBadge accountAddress={account.address} /> : null}
+
                     <Text numberOfLines={1} ellipsizeMode="middle" color="label" size="13pt" weight="bold">
                       {walletName}
                     </Text>
