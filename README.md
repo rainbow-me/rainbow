@@ -14,6 +14,13 @@
 
 ## Setup
 
+> [!TIP]
+> **Internal developers** setting up a fresh Mac can use the
+> [`rainbow-me/rainbow-setup`](https://github.com/rainbow-me/rainbow-setup)
+> script to install all dependencies and configure the project in one step.
+> The manual steps below are for those who already have a working React Native
+> environment.
+
 ### Prerequisites
 
 1. Install nvm: https://github.com/creationix/nvm
