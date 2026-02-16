@@ -16,7 +16,7 @@ import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react
 import { SharedValue } from 'react-native-reanimated';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';

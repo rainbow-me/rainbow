@@ -8,7 +8,7 @@ import Routes from '@/navigation/routesNames';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import React, { useCallback } from 'react';
 import { Source } from 'react-native-fast-image';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { ImgixImage } from '../images';
 
 const imageSize = 72;

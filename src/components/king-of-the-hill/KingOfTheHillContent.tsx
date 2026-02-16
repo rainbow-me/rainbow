@@ -1,5 +1,5 @@
 import hillImage from '@/assets/hill.png';
-import { ShimmerAnimation } from '@/components/animations';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { KingOfTheHillPastWinners } from '@/components/king-of-the-hill/KingOfTheHillPastWinners';
 import { RainbowImage } from '@/components/RainbowImage';
 import { useBackgroundColor, useColorMode } from '@/design-system';

@@ -1,6 +1,6 @@
 import ConditionalWrap from 'conditional-wrap';
 import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { FlexItem } from '@/components/layout';
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import {

@@ -6,7 +6,7 @@ import { SectionList } from 'react-native';
 import * as DeviceInfo from 'react-native-device-info';
 import LinearGradient from 'react-native-linear-gradient';
 import { useDeepCompareMemo } from 'use-deep-compare';
-import { FlyInAnimation } from '../animations';
+import FlyInAnimation from '../animations/FlyInAnimation';
 import { ContactRow, SwipeableContactRow } from '../contacts';
 import { SheetHandleFixedToTopHeight } from '../sheet';
 import { Text } from '../text';

@@ -1,7 +1,8 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { AnimatedText, Box, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
-import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { Tabs } from '../shared/Tabs/Tabs';
 import { TokenInteraction, TokenInteractionDirection, TokenInteractionType } from '@/graphql/__generated__/metadata';

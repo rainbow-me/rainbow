@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';

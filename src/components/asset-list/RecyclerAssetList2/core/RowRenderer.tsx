@@ -1,6 +1,6 @@
 import React from 'react';
 import { CoinDivider } from '../../../coin-divider';
-import { AssetListItemSkeleton } from '../../index';
+import AssetListItemSkeleton from '../../AssetListItemSkeleton';
 import FastBalanceCoinRow from '../FastComponents/FastBalanceCoinRow';
 import WrappedNFT from '../WrappedNFT';
 import WrappedTokenFamilyHeader from '../WrappedTokenFamilyHeader';

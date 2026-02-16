@@ -1,5 +1,5 @@
 import { RainbowImage } from '@/components/RainbowImage';
-import { ShimmerAnimation } from '@/components/animations';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon';
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import type { RainbowToast } from '@/components/rainbow-toast/types';

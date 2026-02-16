@@ -3,7 +3,7 @@ import { StyleSheet, TextInput, View, NativeSyntheticEvent, TextInputChangeEvent
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { PolymarketNavigation } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import { polymarketEventSearchActions } from '@/features/polymarket/stores/polymarketEventSearchStore';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';

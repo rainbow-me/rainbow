@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { InnerBorder } from '../layout';
 import { CardSize } from './CardSize';
 import { UniqueTokenImage } from './UniqueTokenImage';

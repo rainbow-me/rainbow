@@ -3,7 +3,7 @@ import { RewardsSectionCard } from './RewardsSectionCard';
 import { Inline, Stack, Text } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { CustomColor } from '@/design-system/color/useForegroundColor';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
 
 type Props = {

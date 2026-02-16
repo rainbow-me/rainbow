@@ -14,7 +14,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import abbreviations from '@/utils/abbreviations';
 import magicMemo from '@/utils/magicMemo';
 import measureText from '@/utils/measureText';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Centered, Row } from '../layout';
 import { ListHeader, ListHeaderHeight } from '../list';

@@ -26,7 +26,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } 
 import { EmitterSubscription, Keyboard, LayoutChangeEvent, ScrollView } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useRecoilState } from 'recoil';
-import { ButtonPressAnimation } from '../components/animations/';
+import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
 import TintButton from '../components/buttons/TintButton';
 import { RegistrationAvatar, RegistrationCover, TextRecordsForm } from '../components/ens-registration';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';

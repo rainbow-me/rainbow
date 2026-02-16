@@ -4,7 +4,7 @@ import { Animated } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import DeleteIcon from '../../assets/swipeToDelete.png';
 import EditIcon from '../../assets/swipeToEdit.png';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import ContactRow from './ContactRow';

@@ -1,4 +1,4 @@
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import { ImgixImage } from '@/components/images';
 import { SortMenu } from '@/components/nft-offers/SortMenu';

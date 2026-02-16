@@ -5,7 +5,7 @@ import { Box, Stack, Text, useForegroundColor } from '@/design-system';
 import styled from '@/styled-thing';
 import { Icon } from '../icons';
 import deviceUtils from '@/utils/deviceUtils';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { ImgixImage } from '../images';
 import { Source } from 'react-native-fast-image';
 import { TextColor } from '@/design-system/color/palettes';
