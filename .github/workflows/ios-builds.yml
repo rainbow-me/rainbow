@@ -172,8 +172,10 @@ jobs:
           SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
         run: yarn install && yarn setup
 
-      - name: Install Ruby dependencies
-        run: bundle install
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@09a7688d3b55cf0e976497ff046b70949eeaccfd
+        with:
+          bundler-cache: true
 
       - name: Setup code signing with match
         env:
