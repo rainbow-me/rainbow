@@ -7656,12 +7656,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storesjs/stores@npm:0.8.6":
-  version: 0.8.6
-  resolution: "@storesjs/stores@npm:0.8.6"
+"@storesjs/stores@npm:0.8.7":
+  version: 0.8.7
+  resolution: "@storesjs/stores@npm:0.8.7"
   dependencies:
     use-sync-external-store: "npm:1.6.0"
-    zustand: "npm:5.0.8"
+    zustand: "npm:5.0.10"
   peerDependencies:
     react: ">=17.0.0"
     react-native: ">=0.64.0"
@@ -7671,7 +7671,7 @@ __metadata:
       optional: true
     react-native-mmkv:
       optional: true
-  checksum: 10c0/b4a86db4e85b17430744ca57505f5f2a2595e948e923e6f42125519732478c3d1003e63da0d1a2f5d293a489cb6803509c5fbead0a49d3ab2cf54ddac669b601
+  checksum: 10c0/9ad7a1f7e564564d24324fdb41a5abdd26c38e8152ec445c3c8005c66877ca1566a00048ed96d68a630e9c28ab9328df8910aa51dc77b6d8f8465ce2c1965e1c
   languageName: node
   linkType: hard
 
@@ -9886,7 +9886,7 @@ __metadata:
     "@shopify/flash-list": "npm:1.8.2"
     "@shopify/react-native-performance": "npm:4.1.2"
     "@shopify/react-native-skia": "npm:2.4.7"
-    "@storesjs/stores": "npm:0.8.6"
+    "@storesjs/stores": "npm:0.8.7"
     "@tanstack/react-query": "npm:4.2.1"
     "@tanstack/react-query-persist-client": "npm:4.2.1"
     "@testing-library/react-native": "npm:11.2.0"
@@ -29987,9 +29987,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:5.0.8":
-  version: 5.0.8
-  resolution: "zustand@npm:5.0.8"
+"zustand@npm:5.0.10":
+  version: 5.0.10
+  resolution: "zustand@npm:5.0.10"
   peerDependencies:
     "@types/react": ">=18.0.0"
     immer: ">=9.0.6"
@@ -30004,6 +30004,6 @@ __metadata:
       optional: true
     use-sync-external-store:
       optional: true
-  checksum: 10c0/e865a6f7f1c0e03571701db5904151aaa7acefd6f85541a117085e129bf16e8f60b11f8cc82f277472de5c7ad5dcb201e1b0a89035ea0b40c9d9aab3cd24c8ad
+  checksum: 10c0/e6ddabf2b44f2c0b7362b0f549cb457d25516caa4c0465132037b62b6173552a43d48bb494c1707286f8d60b389fa249eb4242aa810f1c1d4b4d0b96df789cb8
   languageName: node
   linkType: hard
