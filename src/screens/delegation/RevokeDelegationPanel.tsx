@@ -21,6 +21,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import * as i18n from '@/languages';
 import useGas from '@/hooks/useGas';
 import { GasFee, LegacyGasFee } from '@/entities/gas';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 /**
  * Reasons for revoking delegation - determines the panel's appearance and messaging
@@ -60,6 +61,10 @@ type SheetContent = {
   accentColor: string;
 };
 
+const DEFAULT_LOCK_GRADIENT_COLORS = ['#3b7fff', '#b724ad'];
+const DEFAULT_LOCK_GRADIENT_LOCATIONS = [0, 1];
+const DEFAULT_LOCK_ACCENT_COLOR = DEFAULT_LOCK_GRADIENT_COLORS[1];
+
 const getSheetContent = (reason: RevokeReason, chainName?: string): SheetContent => {
   switch (reason) {
     // User-triggered
@@ -68,21 +73,21 @@ const getSheetContent = (reason: RevokeReason, chainName?: string): SheetContent
         title: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_smart_wallet_title),
         subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_smart_wallet_subtitle),
         buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_smart_wallet_button),
-        accentColor: globalColors.blue60,
+        accentColor: DEFAULT_LOCK_ACCENT_COLOR,
       };
     case RevokeReason.DISABLE_SINGLE_NETWORK:
       return {
         title: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_single_network_title, { network: chainName || '' }),
         subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_single_network_subtitle),
         buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_single_network_button),
-        accentColor: globalColors.blue60,
+        accentColor: DEFAULT_LOCK_ACCENT_COLOR,
       };
     case RevokeReason.DISABLE_THIRD_PARTY:
       return {
         title: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_third_party_title),
         subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_third_party_subtitle),
         buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_third_party_button),
-        accentColor: globalColors.orange60,
+        accentColor: DEFAULT_LOCK_ACCENT_COLOR,
       };
     // Backend-triggered
     case RevokeReason.ALERT_VULNERABILITY:
@@ -104,7 +109,7 @@ const getSheetContent = (reason: RevokeReason, chainName?: string): SheetContent
         title: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_unrecognized_title),
         subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_unrecognized_subtitle),
         buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_unrecognized_button),
-        accentColor: globalColors.red60,
+        accentColor: DEFAULT_LOCK_ACCENT_COLOR,
       };
     case RevokeReason.ALERT_UNSPECIFIED:
     default:
@@ -112,7 +117,7 @@ const getSheetContent = (reason: RevokeReason, chainName?: string): SheetContent
         title: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_unspecified_title),
         subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_unspecified_subtitle),
         buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_unspecified_button),
-        accentColor: globalColors.red60,
+        accentColor: DEFAULT_LOCK_ACCENT_COLOR,
       };
   }
 };
@@ -265,8 +270,9 @@ export const RevokeDelegationPanel = () => {
   const isProcessing = revokeStatus === 'claiming';
   const isError = revokeStatus === 'recoverableError';
   const isSuccess = revokeStatus === 'success';
-  const isConflict = revokeReason === RevokeReason.DISABLE_THIRD_PARTY;
-  const isBackendAlert = (revokeReason as string).startsWith('alert_');
+  const isCriticalBackendAlert = revokeReason === RevokeReason.ALERT_VULNERABILITY || revokeReason === RevokeReason.ALERT_BUG;
+  const buttonBackgroundColor = isSuccess ? globalColors.green60 : isError ? globalColors.red60 : sheetContent.accentColor;
+  const useDefaultButtonGradient = !isSuccess && !isError && !isCriticalBackendAlert;
 
   return (
     <PanelSheet showHandle showTapToDismiss>
@@ -287,13 +293,11 @@ export const RevokeDelegationPanel = () => {
                 ? [globalColors.red60, globalColors.red80, '#19002d']
                 : isSuccess
                   ? [globalColors.green60, globalColors.green80, '#19002d']
-                  : isBackendAlert
+                  : isCriticalBackendAlert
                     ? [globalColors.red60, globalColors.red80, '#19002d']
-                    : isConflict
-                      ? [globalColors.orange60, globalColors.orange80, '#19002d']
-                      : ['#3b7fff', '#b724ad', '#19002d']
+                    : DEFAULT_LOCK_GRADIENT_COLORS
             }
-            locations={[0.043, 0.887, 1]}
+            locations={DEFAULT_LOCK_GRADIENT_LOCATIONS}
             useAngle
             angle={132.532}
             angleCenter={{ x: 0.5, y: 0.5 }}
@@ -328,20 +332,34 @@ export const RevokeDelegationPanel = () => {
 
       {/* Action Button */}
       <Box paddingTop="24px" paddingHorizontal="20px">
-        <HoldToActivateButton
-          backgroundColor={isSuccess ? globalColors.green60 : isError ? globalColors.red60 : globalColors.blue60}
-          disabledBackgroundColor={'rgba(38, 143, 255, 0.2)'}
-          disabled={isProcessing}
-          isProcessing={isProcessing}
-          label={buttonLabel}
-          onLongPress={handleButtonPress}
-          height={48}
-          showBiometryIcon={isReady}
-          testID="revoke-delegation-button"
-          processingLabel={buttonLabel}
-          borderColor={{ custom: 'rgba(255, 255, 255, 0.08)' }}
-          borderWidth={1}
-        />
+        <Box style={styles.buttonFrame}>
+          {useDefaultButtonGradient && (
+            <LinearGradient
+              colors={[...DEFAULT_LOCK_GRADIENT_COLORS]}
+              locations={[...DEFAULT_LOCK_GRADIENT_LOCATIONS]}
+              useAngle
+              angle={132.532}
+              angleCenter={{ x: 0.5, y: 0.5 }}
+              pointerEvents="none"
+              style={styles.buttonGradient}
+            />
+          )}
+          <HoldToActivateButton
+            backgroundColor={useDefaultButtonGradient ? 'transparent' : buttonBackgroundColor}
+            disabledBackgroundColor={opacity(buttonBackgroundColor, 0.2)}
+            disabled={isProcessing}
+            isProcessing={isProcessing}
+            label={buttonLabel}
+            onLongPress={handleButtonPress}
+            height={48}
+            color={{ custom: globalColors.white100 }}
+            showBiometryIcon={isReady}
+            testID="revoke-delegation-button"
+            processingLabel={buttonLabel}
+            borderColor={{ custom: 'rgba(255, 255, 255, 0.08)' }}
+            borderWidth={1}
+          />
+        </Box>
       </Box>
 
       {/* Gas Fee Preview */}
@@ -371,6 +389,18 @@ export const RevokeDelegationPanel = () => {
 };
 
 const styles = StyleSheet.create({
+  buttonFrame: {
+    height: 48,
+    justifyContent: 'center',
+  },
+  buttonGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 48,
+    borderRadius: 48,
+  },
   iconContainer: {
     overflow: 'hidden',
   },
