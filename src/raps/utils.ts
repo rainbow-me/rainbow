@@ -13,7 +13,7 @@ import { toHexNoLeadingZeros } from '@/handlers/web3';
 import { BigNumber } from '@ethersproject/bignumber';
 import { SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import type { Transaction } from '@/graphql/__generated__/metadataPOST';
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { simulateTransactions } from '@/resources/transactions/transactionSimulation';
 
 export const CHAIN_IDS_WITH_TRACE_SUPPORT: ChainId[] = [mainnet.id];
@@ -250,8 +250,16 @@ export async function estimateTransactionsGasLimit({
       transactions,
     });
 
+    if (results.length !== activeSteps.length) {
+      logger.warn('[estimateTransactionsGasLimit]: Simulation result count mismatch', {
+        expected: activeSteps.length,
+        received: results.length,
+      });
+      return undefined;
+    }
+
     const gasEstimates = await Promise.all(
-      results?.map(async (res, index) => {
+      results.map(async (res, index) => {
         const step = activeSteps[index];
         let gasEstimate = res?.gas?.estimate;
 
@@ -270,13 +278,13 @@ export async function estimateTransactionsGasLimit({
         }
 
         return gasEstimate;
-      }) || []
+      })
     );
 
     return gasEstimates.reduce((acc, limit) => add(acc, limit), '0');
   } catch (e) {
     logger.error(new RainbowError('[estimateTransactionsGasLimit]: Failed to estimate'), {
-      message: (e as Error)?.message,
+      message: ensureError(e).message,
     });
     return undefined;
   }
