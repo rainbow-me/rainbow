@@ -50,7 +50,7 @@ export enum RevokeReason {
 export type RevokeStatus =
   | 'notReady' // preparing the data necessary to revoke
   | 'ready' // ready to revoke state
-  | 'claiming' // user has pressed the revoke button
+  | 'revoking' // user has pressed the revoke button
   | 'pending' // revoke has been submitted but we don't have a tx hash
   | 'success' // revoke has been submitted and we have a tx hash
   | 'recoverableError' // revoke or auth has failed, can try again
@@ -176,7 +176,7 @@ export const RevokeDelegationPanel = () => {
       return;
     }
 
-    setRevokeStatus('claiming');
+    setRevokeStatus('revoking');
 
     try {
       const provider = getProvider({ chainId: currentDelegation.chainId });
@@ -244,7 +244,7 @@ export const RevokeDelegationPanel = () => {
     switch (revokeStatus) {
       case 'ready':
         return sheetContent.buttonLabel;
-      case 'claiming':
+      case 'revoking':
         return i18n.t(i18n.l.wallet.delegations.revoke_panel.revoking);
       case 'success':
         return isLastDelegation ? i18n.t(i18n.l.wallet.delegations.revoke_panel.done) : i18n.t(i18n.l.wallet.delegations.revoke_panel.next);
@@ -267,7 +267,7 @@ export const RevokeDelegationPanel = () => {
   }, [revokeStatus, handleRevoke, isLastDelegation, goBack]);
 
   const isReady = revokeStatus === 'ready';
-  const isProcessing = revokeStatus === 'claiming';
+  const isProcessing = revokeStatus === 'revoking';
   const isError = revokeStatus === 'recoverableError';
   const isSuccess = revokeStatus === 'success';
   const isCriticalBackendAlert = revokeReason === RevokeReason.ALERT_VULNERABILITY || revokeReason === RevokeReason.ALERT_BUG;
