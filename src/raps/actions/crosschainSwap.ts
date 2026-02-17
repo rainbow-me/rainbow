@@ -35,7 +35,8 @@ const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.rout
 export const estimateUnlockAndCrosschainSwap = async ({
   quote,
   chainId,
-}: Pick<RapSwapActionParameters<'crosschainSwap'>, 'quote' | 'chainId'>) => {
+  requiresApprove: requiresApproveInput,
+}: Pick<RapSwapActionParameters<'crosschainSwap'>, 'quote' | 'chainId' | 'requiresApprove'>) => {
   const {
     from: accountAddress,
     sellTokenAddress,
@@ -47,10 +48,11 @@ export const estimateUnlockAndCrosschainSwap = async ({
     allowanceTarget: Address;
     allowanceNeeded: boolean;
   };
+  const requiresApprove = requiresApproveInput ?? allowanceNeeded;
 
   let gasLimits: (string | number)[] = [];
 
-  if (allowanceNeeded) {
+  if (requiresApprove) {
     const unlockGasLimit = await estimateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,
@@ -62,7 +64,7 @@ export const estimateUnlockAndCrosschainSwap = async ({
 
   const swapGasLimit = await estimateCrosschainSwapGasLimit({
     chainId,
-    requiresApprove: allowanceNeeded,
+    requiresApprove,
     quote,
   });
 
@@ -259,6 +261,7 @@ export const crosschainSwap = async ({
     gasLimit = await estimateUnlockAndCrosschainSwap({
       quote,
       chainId,
+      requiresApprove: parameters.requiresApprove,
     });
   } catch (e) {
     logger.error(new RainbowError('[raps/crosschainSwap]: error estimateCrosschainSwapGasLimit'), {

@@ -37,7 +37,7 @@ const getApprovalAmount = async ({
   amount: string;
 }): Promise<{ approvalAmount: string; isUnlimited: boolean }> => {
   const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
-  const { supported: delegationSupported } = await supportsDelegation({ address, chainId, requireFreshStatus: true });
+  const { supported: delegationSupported } = await supportsDelegation({ address, chainId });
   if (delegationEnabled && delegationSupported) {
     return { approvalAmount: amount, isUnlimited: false };
   }
@@ -67,6 +67,44 @@ export const getAssetRawAllowance = async ({
     return null;
   }
 };
+
+function parseRawAmount(value: string): bigint | null {
+  try {
+    return BigInt(value);
+  } catch {
+    return null;
+  }
+}
+
+export async function needsTokenApproval({
+  owner,
+  tokenAddress,
+  spender,
+  amount,
+  chainId,
+}: {
+  owner: Address;
+  tokenAddress: Address;
+  spender: Address;
+  amount: string;
+  chainId: ChainId;
+}): Promise<boolean> {
+  const requiredAmount = parseRawAmount(amount);
+  if (requiredAmount === null) return true;
+
+  const allowance = await getAssetRawAllowance({
+    owner,
+    assetAddress: tokenAddress,
+    spender,
+    chainId,
+  });
+  if (allowance === null) return true;
+
+  const currentAllowance = parseRawAmount(allowance);
+  if (currentAllowance === null) return true;
+
+  return currentAllowance < requiredAmount;
+}
 
 export const estimateApprove = async ({
   owner,
