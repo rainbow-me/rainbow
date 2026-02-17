@@ -13,7 +13,7 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { clearWalletState, updateWallets, useWallets } from '@/state/wallets/walletsStore';
+import { clearWalletState, updateWallets, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { isAuthenticated } from '@/utils/authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -29,7 +29,9 @@ import { addDefaultNotificationGroupSettings } from '@/notifications/settings/in
 import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 import { getFCMToken } from '@/notifications/tokens';
 import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
-import { resetCache as resetDelegationCache } from '@rainbow-me/delegation';
+import { resetCache as resetDelegationCache, getDelegations, DelegationStatus } from '@rainbow-me/delegation';
+import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
+import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { nonceActions } from '@/state/nonces';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
@@ -42,6 +44,7 @@ const DevSection = () => {
   const { config, setConfig } = useContext(RainbowContext) as any;
   const wallets = useWallets();
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
+  const accountAddress = useWalletsStore(state => state.accountAddress);
 
   const [loadingStates, setLoadingStates] = useState({
     clearLocalStorage: false,
@@ -199,6 +202,48 @@ const DevSection = () => {
       screen: Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET,
     });
 
+  const triggerRevokeSheet = useCallback(
+    async (revokeReason: RevokeReason) => {
+      const delegations = await getDelegations({ address: accountAddress });
+      const rainbowDelegations = delegations.filter(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED);
+      const thirdPartyDelegations = delegations.filter(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED);
+
+      const mapToRevokes = (delegationList: typeof delegations) =>
+        delegationList.map(delegation => {
+          const contractAddress = delegation.revokeAddress || delegation.currentContract;
+          return contractAddress
+            ? {
+                chainId: delegation.chainId,
+                contractAddress,
+              }
+            : {
+                chainId: delegation.chainId,
+              };
+        });
+
+      const toRevoke = (() => {
+        switch (revokeReason) {
+          case RevokeReason.DISABLE_SMART_WALLET:
+            return rainbowDelegations.length > 0 ? mapToRevokes(rainbowDelegations) : [{ chainId: ChainId.mainnet }];
+          case RevokeReason.DISABLE_SINGLE_NETWORK: {
+            const baseDelegation = rainbowDelegations.find(d => d.chainId === ChainId.base);
+            return baseDelegation ? mapToRevokes([baseDelegation]) : [{ chainId: ChainId.base }];
+          }
+          case RevokeReason.DISABLE_THIRD_PARTY:
+            return thirdPartyDelegations.length > 0 ? mapToRevokes(thirdPartyDelegations) : [{ chainId: ChainId.mainnet }];
+          default:
+            return [{ chainId: ChainId.mainnet }];
+        }
+      })();
+
+      navigate(Routes.REVOKE_DELEGATION_PANEL, {
+        revokeReason,
+        delegationsToRevoke: toRevoke,
+      });
+    },
+    [accountAddress, navigate]
+  );
+
   return (
     <MenuContainer testID="developer-settings-sheet">
       <Menu header={IS_DEV || IS_TEST_FLIGHT ? 'Normie Settings' : ''}>
@@ -276,12 +321,6 @@ const DevSection = () => {
               onPress={() => clearReactQueryCache()}
               size={52}
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.clear_react_query_cache)} />}
-            />
-            <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="🗑️" isEmoji />}
-              onPress={() => resetDelegationCache()}
-              size={52}
-              titleComponent={<MenuItem.Title text="Delegation Store Reset" />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
@@ -416,6 +455,34 @@ const DevSection = () => {
               size={52}
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.simulate_device_transfer)} />}
             />
+          </Menu>
+          <Menu header="Delegation Settings">
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
+              onPress={() => resetDelegationCache()}
+              size={52}
+              titleComponent={<MenuItem.Title text="Clear Delegation Store" />}
+            />
+            {Object.values(RevokeReason).map(reason => {
+              const label = {
+                [RevokeReason.DISABLE_SMART_WALLET]: 'Simulate Disable Smart Wallet',
+                [RevokeReason.DISABLE_SINGLE_NETWORK]: 'Simulate Disable Single Network',
+                [RevokeReason.DISABLE_THIRD_PARTY]: 'Simulate Disable Third Party',
+                [RevokeReason.ALERT_VULNERABILITY]: 'Simulate Alert Vulnerability',
+                [RevokeReason.ALERT_BUG]: 'Simulate Alert Bug',
+                [RevokeReason.ALERT_UNRECOGNIZED]: 'Simulate Alert Unrecognized',
+                [RevokeReason.ALERT_UNSPECIFIED]: 'Simulate Alert Unspecified',
+              }[reason];
+              return (
+                <MenuItem
+                  key={reason}
+                  leftComponent={<MenuItem.TextIcon icon={(reason as string).startsWith('alert_') ? '⚠️' : '🔧'} isEmoji />}
+                  onPress={() => triggerRevokeSheet(reason)}
+                  size={52}
+                  titleComponent={<MenuItem.Title text={label} />}
+                />
+              );
+            })}
           </Menu>
           <Menu header="Feature Flags">
             {Object.keys(config)
