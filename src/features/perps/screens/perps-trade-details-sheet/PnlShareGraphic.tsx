@@ -24,13 +24,13 @@ import { PERPS_COLORS } from '@/features/perps/constants';
 import { PANEL_WIDTH } from '@/components/PanelSheet/PanelSheet';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { calculateTradePnlPercentage } from '@/features/perps/utils/calculateTradePnlPercentage';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type HlTrade } from '@/features/perps/types';
 import { LinearGradient } from 'expo-linear-gradient';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import rainbowTextLogo from '@/assets/rainbowTextLogo.png';
 import rainbowPlainLogo from '@/assets/rainbows/plain.png';
-import { getPercentageDifferenceWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 
 const ASPECT_RATIO = 16 / 9;
 const DESIGN_REFERENCE_WIDTH = 366;
@@ -370,11 +370,12 @@ export const PnlShareGraphic = memo(function PnlShareGraphic({
   const assetImageUrl = market?.metadata?.iconUrl;
 
   const pnlPercentage = useMemo(() => {
-    const priceChangePercent = getPercentageDifferenceWorklet(entryPrice, trade.price);
-    const directionalChangePercent = trade.isLong ? priceChangePercent : mulWorklet(priceChangePercent, '-1');
-    const leveragedChangePercent = mulWorklet(directionalChangePercent, assumedLeverage);
-
-    return Number(toFixedWorklet(leveragedChangePercent, 2));
+    return calculateTradePnlPercentage({
+      entryPrice,
+      markPrice: trade.price,
+      isLong: trade.isLong,
+      leverage: assumedLeverage,
+    });
   }, [assumedLeverage, entryPrice, trade.isLong, trade.price]);
 
   return (
