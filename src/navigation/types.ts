@@ -35,7 +35,7 @@ import { ActiveTabRef } from '@/components/DappBrowser/types';
 import { WalletNotificationSettings } from '@/notifications/settings';
 import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { UnlockableAppIconKey } from '@/appIcons/appIcons';
+import { UnlockableAppIconKey } from '@/features/app-icon/appIcons';
 import { ChartTime } from '@/hooks/charts/useChartInfo';
 import { AreAllKeysOptional, ExtractOptionalKeys } from '@/types/objects';
 import { ScrollView } from 'react-native';

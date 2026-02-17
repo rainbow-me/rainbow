@@ -3,7 +3,7 @@ import { useNavigation } from '@/navigation';
 import React, { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
 import { AccentColorProvider, Box, Inset, Stack, Text, useBackgroundColor } from '@/design-system';
-import { unlockableAppIcons } from '@/appIcons/appIcons';
+import { unlockableAppIcons } from './appIcons';
 import { ImgixImage } from '@/components/images';
 import { Source } from 'react-native-fast-image';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -14,7 +14,7 @@ import Routes from '@/navigation/routesNames';
 import { SheetActionButton } from '@/components/sheet';
 import { analytics } from '@/analytics';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
-import { SettingsPages } from './SettingsSheet/SettingsPages';
+import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
 import { RootStackParamList } from '@/navigation/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 
