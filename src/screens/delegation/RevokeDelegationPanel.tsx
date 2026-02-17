@@ -63,6 +63,8 @@ type SheetContent = {
   accentColor: string;
 };
 
+const REVOKE_SUCCESS_DELAY_MS = 2000;
+
 const DEFAULT_LOCK_GRADIENT_COLORS = ['#3b7fff', '#b724ad'];
 const DEFAULT_LOCK_GRADIENT_LOCATIONS = [0, 1];
 const DEFAULT_LOCK_ACCENT_COLOR = DEFAULT_LOCK_GRADIENT_COLORS[1];
@@ -228,7 +230,7 @@ export const RevokeDelegationPanel = () => {
           setCurrentIndex(prev => prev + 1);
           setRevokeStatus('ready');
         }
-      }, 2000);
+      }, REVOKE_SUCCESS_DELAY_MS);
     } catch (error) {
       logger.error(new RainbowError('Failed to revoke delegation'), {
         error,
