@@ -22,6 +22,8 @@ import * as i18n from '@/languages';
 import useGas from '@/hooks/useGas';
 import { GasFee, LegacyGasFee } from '@/entities/gas';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 /**
  * Reasons for revoking delegation - determines the panel's appearance and messaging
@@ -143,6 +145,7 @@ export const RevokeDelegationPanel = () => {
 
   // Gas management
   const { startPollingGasFees, stopPollingGasFees, selectedGasFee } = useGas();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   useEffect(() => {
     if (chainId) {
@@ -155,16 +158,14 @@ export const RevokeDelegationPanel = () => {
 
   // Get gas fee display with $0.01 floor
   const gasFeeDisplay = (() => {
+    if (!chainId) return null;
     const gasFee = selectedGasFee?.gasFee;
-    if (!gasFee) return null;
+    if (!gasFee) return i18n.t(i18n.l.swap.loading);
     const isLegacy = !!(gasFee as LegacyGasFee)?.estimatedFee;
     const feeData = isLegacy ? (gasFee as LegacyGasFee)?.estimatedFee : (gasFee as GasFee)?.maxFee;
-    const amount = parseFloat(feeData?.native?.value?.amount || '0');
-    // Round up to $0.01 for very small amounts
-    if (amount > 0 && amount < 0.01) {
-      return '$0.01';
-    }
-    return feeData?.native?.value?.display;
+    const amount = Number(feeData?.native?.value?.amount);
+    if (!Number.isFinite(amount)) return i18n.t(i18n.l.swap.loading);
+    return convertAmountToNativeDisplayWorklet(amount, nativeCurrency, true);
   })();
 
   // Get sheet content based on revoke reason
