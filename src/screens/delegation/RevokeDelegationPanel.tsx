@@ -134,7 +134,7 @@ export const RevokeDelegationPanel = () => {
 
   // Get chain name for display
   const chainsLabel = getChainsLabel();
-  const chainName = chainsLabel[chainId] || `Chain ${chainId}`;
+  const chainName = chainId ? chainsLabel[chainId] || `Chain ${chainId}` : '';
 
   // Gas management
   const { startPollingGasFees, stopPollingGasFees, selectedGasFee } = useGas();
