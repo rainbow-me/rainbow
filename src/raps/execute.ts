@@ -192,13 +192,21 @@ export const walletExecuteRap = async <T extends RapTypes>(
   const rapName = getRapFullName(rap.actions);
 
   // Atomic execution if atomic flow is allowed (user preference) and supported for a chainId
-  const { supported: delegationSupported } = await supportsDelegation({
+  const { supported: delegationSupported, reason: delegationUnsupportedReason } = await supportsDelegation({
     address: parameters.quote?.from as Address,
     chainId: parameters.chainId,
-    requireFreshStatus: true,
   });
   const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
   const executeAtomic = delegationEnabled && delegationSupported && parameters.atomic;
+
+  if (parameters.atomic && delegationEnabled && !delegationSupported) {
+    logger.debug(`[${rapName}] atomic execution unavailable`, {
+      reason: delegationUnsupportedReason,
+      chainId: parameters.chainId,
+      address: parameters.quote?.from,
+    });
+  }
+
   if (executeAtomic && (type === 'swap' || type === 'crosschainSwap')) {
     const swapParams = parameters as RapSwapActionParameters<'swap' | 'crosschainSwap'>;
     const { chainId, quote, gasParams, nonce } = swapParams;
