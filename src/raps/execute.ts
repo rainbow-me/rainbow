@@ -1,11 +1,9 @@
-/* eslint-disable no-async-promise-executor */
-/* eslint-disable no-promise-executor-return */
 import { Signer } from '@ethersproject/abstract-signer';
+import { ErrorCode as EthersErrorCode } from '@ethersproject/logger';
 import { Wallet } from '@ethersproject/wallet';
-import { type BatchCall, executeBatchedTransaction, supportsDelegation } from '@rainbow-me/delegation';
-
+import { type BatchCall, executeBatchedTransaction, supportsDelegation, UnsupportedReason } from '@rainbow-me/delegation';
 import { ChainId } from '@/state/backendNetworks/types';
-import { RainbowError, logger } from '@/logger';
+import { ensureError, RainbowError, logger } from '@/logger';
 import { claim, swap, unlock } from './actions';
 import { crosschainSwap, prepareCrosschainSwap } from './actions/crosschainSwap';
 import { claimBridge } from './actions/claimBridge';
@@ -33,64 +31,54 @@ import { createClaimClaimableRap } from './claimClaimable';
 import { claimClaimable } from './actions/claimClaimable';
 import { IS_TEST } from '@/env';
 import { getProvider } from '@/handlers/web3';
-import { Address } from 'viem';
+import { UserRejectedRequestError } from 'viem';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { DELEGATION, getExperimentalFlag } from '@/config/experimental';
 import { getRemoteConfig } from '@/model/remoteConfig';
+import { isRecordLike } from '@/types/guards';
 
-const PERF_TRACKING_EXEMPTIONS: RapTypes[] = ['claimBridge', 'claimClaimable'];
-
-export function createSwapRapByType<T extends RapTypes>(
-  type: T,
-  swapParameters: RapSwapActionParameters<T>
-): Promise<{ actions: RapAction<RapActionTypes>[] }> {
-  switch (type) {
-    case 'claimBridge':
-      return createClaimAndBridgeRap(swapParameters as RapSwapActionParameters<'claimBridge'>);
-    case 'crosschainSwap':
-      return createUnlockAndCrosschainSwapRap(swapParameters as RapSwapActionParameters<'crosschainSwap'>);
-    case 'swap':
-      return createUnlockAndSwapRap(swapParameters as RapSwapActionParameters<'swap'>);
-    case 'claimClaimable':
-      return createClaimClaimableRap(swapParameters as RapSwapActionParameters<'claimClaimable'>);
-    default:
-      return Promise.resolve({ actions: [] });
-  }
-}
-
-function typeAction<T extends RapActionTypes>(type: T, props: ActionProps<T>) {
-  switch (type) {
-    case 'claim':
-      return () => claim(props as ActionProps<'claim'>);
-    case 'unlock':
-      return () => unlock(props as ActionProps<'unlock'>);
-    case 'swap':
-      return () => swap(props as ActionProps<'swap'>);
-    case 'claimBridge':
-      return () => claimBridge(props as ActionProps<'claimBridge'>);
-    case 'crosschainSwap':
-      return () => crosschainSwap(props as ActionProps<'crosschainSwap'>);
-    case 'claimClaimable':
-      return () => claimClaimable(props as ActionProps<'claimClaimable'>);
-    default:
-      // eslint-disable-next-line react/display-name
-      return () => null;
-  }
-}
-
+type AtomicPrepareActionType = Extract<RapActionTypes, 'unlock' | 'swap' | 'crosschainSwap'>;
 type PrepareActionResult = { call: BatchCall | null } | { call: BatchCall; transaction: Omit<NewTransaction, 'hash'> };
+type RapFactoryResult = { actions: RapAction<RapActionTypes>[] };
 
-function typePrepareAction<T extends RapActionTypes>(type: T, props: PrepareActionProps<T>): () => Promise<PrepareActionResult> {
-  switch (type) {
-    case 'unlock':
-      return () => prepareUnlock(props as PrepareActionProps<'unlock'>);
-    case 'swap':
-      return () => prepareSwap(props as PrepareActionProps<'swap'>);
-    case 'crosschainSwap':
-      return () => prepareCrosschainSwap(props as PrepareActionProps<'crosschainSwap'>);
-    default:
-      throw new Error(`Action type "${type}" does not support atomic execution`);
-  }
+type Executors = {
+  action: { [K in RapActionTypes]: (props: ActionProps<K>) => Promise<RapActionResult> };
+  prepare: { [K in AtomicPrepareActionType]: (props: PrepareActionProps<K>) => Promise<PrepareActionResult> };
+  rapFactory: { [K in RapTypes]: (params: RapSwapActionParameters<K>) => Promise<RapFactoryResult> };
+};
+
+const executors: Executors = {
+  action: {
+    claim,
+    claimBridge,
+    claimClaimable,
+    crosschainSwap,
+    swap,
+    unlock,
+  },
+  prepare: {
+    crosschainSwap: prepareCrosschainSwap,
+    swap: prepareSwap,
+    unlock: prepareUnlock,
+  },
+  rapFactory: {
+    claimBridge: createClaimAndBridgeRap,
+    claimClaimable: createClaimClaimableRap,
+    crosschainSwap: createUnlockAndCrosschainSwapRap,
+    swap: createUnlockAndSwapRap,
+  },
+};
+
+export function createSwapRapByType<T extends RapTypes>(type: T, swapParameters: RapSwapActionParameters<T>): Promise<RapFactoryResult> {
+  return executors.rapFactory[type](swapParameters);
+}
+
+function runAction<T extends RapActionTypes>(type: T, props: ActionProps<T>): Promise<RapActionResult> {
+  return executors.action[type](props);
+}
+
+function runAtomicPrepareAction<T extends AtomicPrepareActionType>(type: T, props: PrepareActionProps<T>): Promise<PrepareActionResult> {
+  return executors.prepare[type](props);
 }
 
 export async function executeAction<T extends RapActionTypes>({
@@ -123,16 +111,14 @@ export async function executeAction<T extends RapActionTypes>({
       gasParams,
       gasFeeParamsBySpeed,
     };
-    const { nonce, hash } = (await typeAction<T>(type, actionProps)()) as RapActionResult;
+    const { nonce, hash } = await runAction(type, actionProps);
     return { baseNonce: nonce, errorMessage: null, hash };
-  } catch (error) {
+  } catch (e) {
+    const error = ensureError(e);
     logger.error(new RainbowError(`[raps/execute]: ${rapName} - error execute action`), {
-      message: (error as Error)?.message,
+      message: error.message,
     });
-    if (index === 0) {
-      return { baseNonce: null, errorMessage: error?.toString() ?? null };
-    }
-    return { baseNonce: null, errorMessage: error?.toString() ?? null };
+    return { baseNonce: null, errorMessage: error.toString() };
   }
 }
 
@@ -141,7 +127,11 @@ function getRapFullName<T extends RapActionTypes>(actions: RapAction<T>[]) {
   return actionTypes.join(' + ');
 }
 
-const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+function delay(ms: number): Promise<void> {
+  return new Promise(res => {
+    setTimeout(res, ms);
+  });
+}
 
 function getNodeAckDelay(chainId: ChainId): number {
   // When testing, give it some time to let approvals through
@@ -155,22 +145,7 @@ function getNodeAckDelay(chainId: ChainId): number {
   }
 }
 
-function isAtomicGasParams(
-  gasParams: RapSwapActionParameters<'swap' | 'crosschainSwap'>['gasParams']
-): gasParams is TransactionGasParamAmounts {
-  return 'maxFeePerGas' in gasParams && 'maxPriorityFeePerGas' in gasParams;
-}
-
-function shouldFallbackToSequential(error: unknown): boolean {
-  if (!(error instanceof Error)) return false;
-
-  const message = error.message.toLowerCase();
-  const isSendRawTransactionError = message.includes('eth_sendrawtransaction');
-  const isInvalidParamsError =
-    message.includes('missing or invalid parameters') || message.includes('invalid params') || message.includes('invalid parameters');
-
-  return isSendRawTransactionError && isInvalidParamsError;
-}
+const PERF_TRACKING_EXEMPTIONS: RapTypes[] = ['claimBridge', 'claimClaimable'];
 
 export const walletExecuteRap = async <T extends RapTypes>(
   wallet: Signer,
@@ -188,18 +163,29 @@ export const walletExecuteRap = async <T extends RapTypes>(
         },
       })(type, parameters);
 
-  const { actions } = rap;
+  const actions = rap.actions;
   const rapName = getRapFullName(rap.actions);
-
-  // Atomic execution if atomic flow is allowed (user preference) and supported for a chainId
-  const { supported: delegationSupported, reason: delegationUnsupportedReason } = await supportsDelegation({
-    address: parameters.quote?.from as Address,
-    chainId: parameters.chainId,
-  });
   const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
-  const executeAtomic = delegationEnabled && delegationSupported && parameters.atomic;
+  const canAttemptAtomic = delegationEnabled && Boolean(parameters.atomic) && isAtomicRapType(type);
 
-  if (parameters.atomic && delegationEnabled && !delegationSupported) {
+  let delegationSupported = false;
+  let delegationUnsupportedReason: UnsupportedReason | 'NO_ADDRESS' | null = null;
+
+  if (canAttemptAtomic) {
+    const address = parameters.quote?.from;
+    if (!address) {
+      delegationUnsupportedReason = 'NO_ADDRESS';
+    } else {
+      const support = await supportsDelegation({
+        address,
+        chainId: parameters.chainId,
+      });
+      delegationSupported = support.supported;
+      delegationUnsupportedReason = support.reason;
+    }
+  }
+
+  if (canAttemptAtomic && !delegationSupported) {
     logger.debug(`[${rapName}] atomic execution unavailable`, {
       reason: delegationUnsupportedReason,
       chainId: parameters.chainId,
@@ -207,9 +193,8 @@ export const walletExecuteRap = async <T extends RapTypes>(
     });
   }
 
-  if (executeAtomic && (type === 'swap' || type === 'crosschainSwap')) {
-    const swapParams = parameters as RapSwapActionParameters<'swap' | 'crosschainSwap'>;
-    const { chainId, quote, gasParams, nonce } = swapParams;
+  if (canAttemptAtomic && delegationSupported && isAtomicRapType(type)) {
+    const { chainId, quote, gasParams, nonce } = parameters;
     const provider = getProvider({ chainId });
     const canExecuteAtomic = nonce !== undefined && isAtomicGasParams(gasParams);
 
@@ -217,22 +202,29 @@ export const walletExecuteRap = async <T extends RapTypes>(
       return { nonce: undefined, hash: null, errorMessage: 'Quote is required for atomic execution' };
     }
 
-    if (canExecuteAtomic) {
+    if (!(wallet instanceof Wallet)) {
+      logger.debug(`[${rapName}] atomic execution skipped, falling back to sequential`, {
+        reason: 'unsupported-signer',
+      });
+    } else if (canExecuteAtomic) {
       try {
         const calls: BatchCall[] = [];
         let pendingTransaction: Omit<NewTransaction, 'hash'> | null = null;
 
         for (const action of actions) {
-          const prepareResult = await typePrepareAction(action.type, {
+          if (!isAtomicPrepareAction(action)) {
+            throw new Error(`Action type "${action.type}" does not support atomic execution`);
+          }
+
+          const prepareResult = await runAtomicPrepareAction(action.type, {
             parameters: action.parameters,
             wallet,
             chainId,
             quote,
-          } as PrepareActionProps<typeof action.type>)();
+          });
 
-          if (prepareResult.call) {
-            calls.push(prepareResult.call);
-          }
+          if (prepareResult.call) calls.push(prepareResult.call);
+
           if ('transaction' in prepareResult) {
             pendingTransaction = prepareResult.transaction;
           }
@@ -247,7 +239,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
           operation: TimeToSignOperation.BroadcastTransaction,
           metadata: { degenMode: swapsStore.getState().degenMode },
         })({
-          signer: wallet as Wallet,
+          signer: wallet,
           chainId,
           provider,
           calls,
@@ -280,14 +272,16 @@ export const walletExecuteRap = async <T extends RapTypes>(
 
         logger.debug(`[${rapName}] executed atomically`, { hash: result.hash });
         return { nonce, hash: result.hash, errorMessage: null };
-      } catch (error) {
-        const fallbackToSequential = shouldFallbackToSequential(error);
+      } catch (e) {
+        const error = ensureError(e);
+        const fallbackToSequential = !isUserRejectionError(error);
         logger.error(new RainbowError(`[raps/execute]: ${rapName} - atomic execution failed`), {
-          message: (error as Error)?.message,
+          message: error.message,
           fallbackToSequential,
         });
+
         if (!fallbackToSequential) {
-          return { nonce: undefined, hash: null, errorMessage: (error as Error)?.message ?? 'Unknown error' };
+          return { nonce: undefined, hash: null, errorMessage: error.message || 'Unknown error' };
         }
 
         logger.debug(`[${rapName}] falling back to sequential execution after atomic failure`);
@@ -352,3 +346,33 @@ export const walletExecuteRap = async <T extends RapTypes>(
   }
   return { errorMessage, hash, nonce };
 };
+
+/**
+ * Detects explicit user-rejection errors so atomic execution can stop immediately.
+ * Recurses through `cause` as provider/wallet wrappers can nest the original error.
+ */
+function isUserRejectionError(error: unknown): boolean {
+  if (!isRecordLike(error)) return false;
+  if (
+    error.code === UserRejectedRequestError.code ||
+    error.code === EthersErrorCode.ACTION_REJECTED ||
+    error.name === UserRejectedRequestError.name
+  ) {
+    return true;
+  }
+  return isUserRejectionError(error.cause);
+}
+
+function isAtomicGasParams(
+  gasParams: RapSwapActionParameters<'swap' | 'crosschainSwap'>['gasParams']
+): gasParams is TransactionGasParamAmounts {
+  return 'maxFeePerGas' in gasParams && 'maxPriorityFeePerGas' in gasParams;
+}
+
+function isAtomicPrepareAction(action: RapAction<RapActionTypes>): action is RapAction<AtomicPrepareActionType> {
+  return action.type === 'unlock' || action.type === 'swap' || action.type === 'crosschainSwap';
+}
+
+function isAtomicRapType(type: RapTypes): type is 'swap' | 'crosschainSwap' {
+  return type === 'swap' || type === 'crosschainSwap';
+}
