@@ -246,7 +246,7 @@ const DevSection = () => {
 
   return (
     <MenuContainer testID="developer-settings-sheet">
-      <Menu header={IS_DEV || IS_TEST_FLIGHT ? 'Normie Settings' : ''}>
+      <Menu header={IS_DEV || IS_TEST_FLIGHT ? i18n.t(i18n.l.developer_settings.headers.normie_settings) : ''}>
         {/* <MenuItem
           disabled
           leftComponent={<MenuItem.TextIcon icon="🕹️" isEmoji />}
@@ -289,7 +289,7 @@ const DevSection = () => {
       </Menu>
       {(IS_DEV || IS_TEST_FLIGHT) && (
         <>
-          <Menu header="Rainbow Developer Settings">
+          <Menu header={i18n.t(i18n.l.developer_settings.headers.rainbow_developer_settings)}>
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🔄" isEmoji />}
               onPress={() => Restart.Restart()}
@@ -456,22 +456,24 @@ const DevSection = () => {
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.simulate_device_transfer)} />}
             />
           </Menu>
-          <Menu header="Delegation Settings">
+          <Menu header={i18n.t(i18n.l.developer_settings.headers.delegation_settings)}>
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
               onPress={() => resetDelegationCache()}
               size={52}
-              titleComponent={<MenuItem.Title text="Clear Delegation Store" />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.delegation_settings.clear_store)} />}
             />
             {Object.values(RevokeReason).map(reason => {
               const label = {
-                [RevokeReason.DISABLE_SMART_WALLET]: 'Simulate Disable Smart Wallet',
-                [RevokeReason.DISABLE_SINGLE_NETWORK]: 'Simulate Disable Single Network',
-                [RevokeReason.DISABLE_THIRD_PARTY]: 'Simulate Disable Third Party',
-                [RevokeReason.ALERT_VULNERABILITY]: 'Simulate Alert Vulnerability',
-                [RevokeReason.ALERT_BUG]: 'Simulate Alert Bug',
-                [RevokeReason.ALERT_UNRECOGNIZED]: 'Simulate Alert Unrecognized',
-                [RevokeReason.ALERT_UNSPECIFIED]: 'Simulate Alert Unspecified',
+                [RevokeReason.DISABLE_SMART_WALLET]: i18n.t(i18n.l.developer_settings.delegation_settings.simulate_disable_smart_wallet),
+                [RevokeReason.DISABLE_SINGLE_NETWORK]: i18n.t(
+                  i18n.l.developer_settings.delegation_settings.simulate_disable_single_network
+                ),
+                [RevokeReason.DISABLE_THIRD_PARTY]: i18n.t(i18n.l.developer_settings.delegation_settings.simulate_disable_third_party),
+                [RevokeReason.ALERT_VULNERABILITY]: i18n.t(i18n.l.developer_settings.delegation_settings.simulate_alert_vulnerability),
+                [RevokeReason.ALERT_BUG]: i18n.t(i18n.l.developer_settings.delegation_settings.simulate_alert_bug),
+                [RevokeReason.ALERT_UNRECOGNIZED]: i18n.t(i18n.l.developer_settings.delegation_settings.simulate_alert_unrecognized),
+                [RevokeReason.ALERT_UNSPECIFIED]: i18n.t(i18n.l.developer_settings.delegation_settings.simulate_alert_unspecified),
               }[reason];
               return (
                 <MenuItem
@@ -484,7 +486,7 @@ const DevSection = () => {
               );
             })}
           </Menu>
-          <Menu header="Feature Flags">
+          <Menu header={i18n.t(i18n.l.developer_settings.headers.feature_flags)}>
             {Object.keys(config)
               .sort()
               .filter(key => (defaultConfig as any)[key]?.settings)

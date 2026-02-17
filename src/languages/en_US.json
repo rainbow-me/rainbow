@@ -562,7 +562,23 @@
       "reset_experimental_config": "Reset Experimental Config",
       "status": "Status",
       "sync_codepush": "Sync CodePush",
-      "simulate_device_transfer": "Simulate Device Transfer"
+      "simulate_device_transfer": "Simulate Device Transfer",
+      "headers": {
+        "normie_settings": "Normie Settings",
+        "rainbow_developer_settings": "Rainbow Developer Settings",
+        "feature_flags": "Feature Flags",
+        "delegation_settings": "Delegation Settings"
+      },
+      "delegation_settings": {
+        "clear_store": "Clear Delegation Store",
+        "simulate_disable_smart_wallet": "Simulate Disable Smart Wallet",
+        "simulate_disable_single_network": "Simulate Disable Single Network",
+        "simulate_disable_third_party": "Simulate Disable Third Party",
+        "simulate_alert_vulnerability": "Simulate Alert Vulnerability",
+        "simulate_alert_bug": "Simulate Alert Bug",
+        "simulate_alert_unrecognized": "Simulate Alert Unrecognized",
+        "simulate_alert_unspecified": "Simulate Alert Unspecified"
+      }
     },
     "discover": {
       "pulse": {
