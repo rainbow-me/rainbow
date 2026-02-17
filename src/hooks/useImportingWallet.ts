@@ -294,8 +294,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
       const isFirstWallet = previousWalletCount === 0;
 
-      // Navigate to wallet screen and dismiss the entire modal stack
       try {
+        // Dismiss the ADD_WALLET_NAVIGATOR modal stack
+        dangerouslyGetParent?.()?.goBack();
+
         if (isFirstWallet) {
           await navigateAfterOnboarding();
         } else {
@@ -303,9 +305,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             screen: Routes.WALLET_SCREEN,
           });
         }
-
-        // Dismiss the ADD_WALLET_NAVIGATOR modal stack
-        dangerouslyGetParent?.()?.goBack();
       } catch (error) {
         logger.error(new RainbowError('[useImportingWallet]: Error navigating to wallet screen'), { error });
         try {
