@@ -32,9 +32,9 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import * as i18n from '@/languages';
 import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
-import { useWillDelegate } from '@rainbow-me/delegation';
 import { ChainId } from '@/state/backendNetworks/types';
 import { Address } from 'viem';
+import { useWillExecuteDelegation } from '@/hooks/useWillExecuteDelegation';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;
 
@@ -237,7 +237,7 @@ const DelegationCallout = memo(function DelegationCallout() {
 });
 
 function WillDelegate(params: { address: Address; chainId: ChainId }) {
-  const willDelegate = useWillDelegate(params.address, params.chainId);
+  const willDelegate = useWillExecuteDelegation(params.address, params.chainId);
   if (!willDelegate) return null;
 
   return (
