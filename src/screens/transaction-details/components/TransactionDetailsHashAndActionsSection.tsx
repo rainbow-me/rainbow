@@ -1,8 +1,8 @@
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SheetActionButton } from '@/components/sheet';
 import { Box, Stack } from '@/design-system';
-import { RainbowTransaction, TransactionStatus } from '@/entities';
+import { RainbowTransaction, TransactionStatus } from '@/entities/transactions';
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

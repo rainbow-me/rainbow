@@ -1,4 +1,4 @@
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { RainbowImage } from '@/components/RainbowImage';

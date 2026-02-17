@@ -22,7 +22,6 @@ import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
-import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import { NotificationPermissionScreen } from '@/features/notifications/screens/NotificationPermissionScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
@@ -86,7 +85,7 @@ import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoShe
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
+import AppIconUnlockSheet from '@/features/app-icon/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
@@ -185,13 +184,6 @@ function BSNavigator() {
           enableHandlePanningGesture: false,
           enablePanDownToClose: false,
           height: '100%',
-        }}
-      />
-      <BSStack.Screen
-        component={ShowcaseSheet}
-        name={Routes.SHOWCASE_SHEET}
-        options={{
-          height: '95%',
         }}
       />
       <BSStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />

@@ -2,7 +2,7 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ImgixImage } from '@/components/images';

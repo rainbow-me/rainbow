@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { lightModeThemeColors } from '../styles/colors';
-import { ParsedAddressAsset } from '@/entities';
+import type { ParsedAddressAsset } from '@/entities/tokens';
 import ethereumUtils from '@/utils/ethereumUtils';
 import isETH from '@/utils/isETH';
 import pseudoRandomArrayItemFromString from '@/utils/pseudoRandomArrayItemFromString';

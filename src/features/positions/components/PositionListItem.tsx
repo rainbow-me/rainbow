@@ -8,8 +8,8 @@ import {
 } from '@/helpers/utilities';
 import { PositionAsset } from '@/features/positions/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ButtonPressAnimation } from '@/components/animations';
 import { opacity } from '@/framework/ui/utils/opacity';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 
 type Props = {
   asset: PositionAsset;

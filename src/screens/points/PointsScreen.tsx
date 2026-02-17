@@ -23,7 +23,7 @@ import { ClaimContent } from './content/ClaimContent';
 import { PlaceholderContent } from './content/PlaceholderContent';
 import { PointsContent } from './content/PointsContent';
 import { ReferralContent } from './content/ReferralContent';
-import { ButtonPressAnimation } from '../../components/animations';
+import ButtonPressAnimation from '../../components/animations/ButtonPressAnimation';
 
 export const POINTS_ROUTES = {
   CLAIM_CONTENT: 'ClaimContent',

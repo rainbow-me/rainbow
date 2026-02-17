@@ -1,41 +1,45 @@
-/* eslint-disable react/no-unused-prop-types */
-/* 👆 Had to disable this ESLint rule it was false positive on shared Props interface */
 import React, { forwardRef, PropsWithChildren, useCallback, useContext, useMemo, useRef } from 'react';
-import { processColor, requireNativeComponent, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { processColor, requireNativeComponent, StyleSheet, View } from 'react-native';
 import { createNativeWrapper, RawButtonProps, State } from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import ReactNativeHapticFeedback, { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import Animated, { AnimatedProps, Easing, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { normalizeTransformOrigin } from './NativeButton';
 import { ScaleButtonContext } from './ScaleButtonZoomable';
-import { BaseButtonAnimationProps } from './types';
+import { ButtonPressAnimationProps } from './types';
 import useLongPressEvents from '@/hooks/useLongPressEvents';
 
-interface BaseProps extends BaseButtonAnimationProps {
-  backgroundColor: string;
-  borderRadius: number;
-  contentContainerStyle: StyleProp<ViewStyle>;
-  exclusive?: boolean;
+interface ButtonElementProps extends ButtonPressAnimationProps {
   isLongPress?: boolean;
-  onLongPressEnded: () => void;
-  overflowMargin: number;
-  reanimatedButton?: boolean;
-  shouldLongPressHoldPress?: boolean;
-  skipTopMargin?: boolean;
-  wrapperStyle: StyleProp<ViewStyle>;
-  hapticType: HapticFeedbackTypes;
-  enableHapticFeedback: boolean;
-  disallowInterruption?: boolean;
 }
 
-type Props = PropsWithChildren<BaseProps>;
+interface ZoomableButtonPressEvent {
+  nativeEvent: { type: 'longPress' | 'longPressEnded' | 'press' };
+}
+
+type ButtonElementPropsWithDefaults = ButtonElementProps &
+  Required<
+    Pick<
+      ButtonElementProps,
+      'duration' | 'minLongPressDuration' | 'overflowMargin' | 'scaleTo' | 'hapticType' | 'enableHapticFeedback' | 'disallowInterruption'
+    >
+  >;
 
 const ZoomableRawButton = requireNativeComponent<
   Omit<
-    BaseProps,
-    'contentContainerStyle' | 'overflowMargin' | 'backgroundColor' | 'borderRadius' | 'onLongPressEnded' | 'wrapperStyle' | 'onLongPress'
+    ButtonElementProps,
+    | 'contentContainerStyle'
+    | 'overflowMargin'
+    | 'backgroundColor'
+    | 'borderRadius'
+    | 'onLongPressEnded'
+    | 'wrapperStyle'
+    | 'onLongPress'
+    | 'onPress'
   > &
-    Pick<RawButtonProps, 'rippleColor'>
+    Pick<RawButtonProps, 'rippleColor'> & {
+      onPress?: (event: ZoomableButtonPressEvent) => void;
+    }
 >('RNZoomableButton');
 
 const ZoomableButton = createNativeWrapper(ZoomableRawButton);
@@ -61,11 +65,11 @@ const ScaleButton = forwardRef(function ScaleButton(
     minLongPressDuration,
     onLongPress,
     onPress,
-    overflowMargin = OVERFLOW_MARGIN,
-    scaleTo = 0.86,
+    overflowMargin,
+    scaleTo,
     wrapperStyle,
     testID,
-  }: Props,
+  }: ButtonElementPropsWithDefaults,
   ref
 ) {
   const parentScale = useContext(ScaleButtonContext);
@@ -166,11 +170,11 @@ const SimpleScaleButton = forwardRef(function SimpleScaleButton(
     wrapperStyle,
     testID,
     disallowInterruption,
-  }: Props,
+  }: ButtonElementPropsWithDefaults,
   ref
 ) {
   const onNativePress = useCallback(
-    ({ nativeEvent: { type } }: any) => {
+    ({ nativeEvent: { type } }: ZoomableButtonPressEvent) => {
       if (type === 'longPress') {
         onLongPress?.();
       } else if (shouldLongPressHoldPress && type === 'longPressEnded') {
@@ -234,7 +238,7 @@ export default forwardRef(function ButtonPressAnimation(
     hapticType = HapticFeedbackTypes.selection,
     enableHapticFeedback = true,
     disallowInterruption = false,
-  }: Props,
+  }: ButtonElementProps,
   ref
 ) {
   const normalizedTransformOrigin = useMemo(() => normalizeTransformOrigin(transformOrigin), [transformOrigin]);

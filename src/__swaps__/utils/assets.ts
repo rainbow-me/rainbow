@@ -26,7 +26,7 @@ import {
 } from '@/helpers/utilities';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { RainbowToken } from '@/entities';
+import type { RainbowToken } from '@/entities/tokens';
 import { userAssetsStore } from '@/state/assets/userAssets';
 
 export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>

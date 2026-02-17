@@ -17,7 +17,7 @@ import { useTheme } from '@/theme';
 import { cloudPlatform } from '@/utils/platform';
 import React, { useCallback, useMemo } from 'react';
 import { Source } from 'react-native-fast-image';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { ImgixImage } from '../images';
 
 const imageSize = 72;

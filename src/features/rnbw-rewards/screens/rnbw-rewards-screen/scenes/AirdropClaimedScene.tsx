@@ -7,7 +7,7 @@ import { createScaleInFadeInSlideEnterAnimation, defaultExitAnimation } from '@/
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import * as i18n from '@/languages';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';

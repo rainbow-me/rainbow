@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useRef, useState } from 'react';
 import ActionSheet from 'react-native-actionsheet';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { omitFlatten, pickShallow } from '@/helpers/utilities';
@@ -17,9 +17,9 @@ const ContextButton = props => (
 
 export default function ContextMenu({
   activeOpacity = 0.2,
-  cancelButtonIndex,
+  cancelButtonIndex = /** @type {number | undefined} */ (undefined),
   children,
-  dynamicOptions,
+  dynamicOptions = /** @type {(() => string[]) | undefined} */ (undefined),
   onPressActionSheet,
   options = [],
   ...props

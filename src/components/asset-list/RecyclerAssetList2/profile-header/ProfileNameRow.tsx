@@ -1,4 +1,4 @@
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { Icon } from '@/components/icons';
 import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';

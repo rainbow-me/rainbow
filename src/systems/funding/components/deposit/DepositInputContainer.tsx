@@ -11,17 +11,24 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { NAVBAR_HEIGHT_WITH_PADDING } from '@/components/navbar/constants';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { BASE_INPUT_WIDTH, ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
+import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT } from '../../constants';
+import { BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT, NavigationSteps } from '../../constants';
 import { useDepositContext } from '../../contexts/DepositContext';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 // ============ Constants ====================================================== //
 
-const INTERPOLATION_OUTPUT_RANGE = Object.freeze([0, 1]);
+const INTERPOLATION_OUTPUT_RANGE = Object.freeze([
+  NavigationSteps.INPUT_ELEMENT_FOCUSED,
+  NavigationSteps.TOKEN_LIST_FOCUSED,
+  NavigationSteps.SEARCH_FOCUSED,
+]);
+const SEARCH_FOCUSED_TRANSLATE_Y = -NAVBAR_HEIGHT_WITH_PADDING;
 
 // ============ Styles Hook ==================================================== //
 
@@ -59,8 +66,14 @@ function useContainerStyles({ progress }: { progress: SharedValue<number> }) {
   });
 
   const containerStyle = useAnimatedStyle(() => {
+    const isSearchFocused = progress.value === NavigationSteps.SEARCH_FOCUSED;
     return {
       shadowColor: isDarkMode ? 'transparent' : getColorValueForThemeWorklet(currentAssetColor.value, isDarkMode),
+      transform: [
+        {
+          translateY: withSpring(isSearchFocused ? SEARCH_FOCUSED_TRANSLATE_Y : 0, SPRING_CONFIGS.keyboardConfig),
+        },
+      ],
     };
   });
 
@@ -68,19 +81,28 @@ function useContainerStyles({ progress }: { progress: SharedValue<number> }) {
     const currentProgress = progress.value;
     return {
       backgroundColor: withTiming(
-        interpolateColor(currentProgress, INTERPOLATION_OUTPUT_RANGE, [bgColor.value, expandedBgColor.value]),
+        interpolateColor(currentProgress, INTERPOLATION_OUTPUT_RANGE, [bgColor.value, expandedBgColor.value, expandedBgColor.value]),
         TIMING_CONFIGS.fadeConfig
       ),
       borderColor: withTiming(
-        interpolateColor(currentProgress, INTERPOLATION_OUTPUT_RANGE, [strokeColor.value, expandedStrokeColor.value]),
+        interpolateColor(currentProgress, INTERPOLATION_OUTPUT_RANGE, [
+          strokeColor.value,
+          expandedStrokeColor.value,
+          expandedStrokeColor.value,
+        ]),
         TIMING_CONFIGS.fadeConfig
       ),
       height: withSpring(
-        interpolate(currentProgress, INTERPOLATION_OUTPUT_RANGE, [BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT]),
+        interpolate(
+          currentProgress,
+          INTERPOLATION_OUTPUT_RANGE,
+          [BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT, TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT],
+          'clamp'
+        ),
         SPRING_CONFIGS.springConfig
       ),
       marginBottom: withSpring(
-        interpolate(currentProgress, INTERPOLATION_OUTPUT_RANGE, [0, safeAreaInsets.bottom]),
+        interpolate(currentProgress, INTERPOLATION_OUTPUT_RANGE, [0, safeAreaInsets.bottom, safeAreaInsets.bottom], 'clamp'),
         SPRING_CONFIGS.springConfig
       ),
     };

@@ -1,18 +1,18 @@
 import React, { useCallback, useMemo } from 'react';
 import { Source } from 'react-native-fast-image';
-import Menu from './Menu';
-import MenuContainer from './MenuContainer';
-import MenuItem from './MenuItem';
+import Menu from '@/screens/SettingsSheet/components/Menu';
+import MenuContainer from '@/screens/SettingsSheet/components/MenuContainer';
+import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
 import { Box } from '@/design-system';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import { logger } from '@/logger';
 import { analytics } from '@/analytics';
-import { AppIcon, AppIconKey, UnlockableAppIcon, UnlockableAppIconKey, freeAppIcons, unlockableAppIcons } from '@/appIcons/appIcons';
-import { unlockableAppIconStorage } from '@/appIconUnlock/unlockableAppIconCheck';
+import { AppIcon, AppIconKey, UnlockableAppIcon, UnlockableAppIconKey, freeAppIcons, unlockableAppIcons } from './appIcons';
+import { unlockableAppIconStorage } from './unlockableAppIconCheck';
 
-const AppIconSection = () => {
+const AppIconSettingsSection = () => {
   const { appIcon, settingsChangeAppIcon } = useAccountSettings();
   const { colors, isDarkMode } = useTheme();
 
@@ -82,4 +82,4 @@ const AppIconSection = () => {
   );
 };
 
-export default AppIconSection;
+export default AppIconSettingsSection;

@@ -1,13 +1,13 @@
 import { analytics } from '@/analytics';
 import { MenuConfig, MenuItem } from '@/components/DropdownMenu';
 import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { FeatureHintTooltip, TooltipRef } from '@/components/tooltips/FeatureHintTooltip';
 import { NOTIFICATIONS, useExperimentalFlag } from '@/config';
 import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
-import { EthereumAddress } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import { isValidHex } from '@/handlers/web3';

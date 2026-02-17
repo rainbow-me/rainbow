@@ -4,7 +4,7 @@ import { Keyboard } from 'react-native';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { DiscoverScreenContent } from '@/components/Discover/DiscoverScreenContent';
 import DiscoverScreenProvider, { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';

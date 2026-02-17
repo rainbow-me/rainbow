@@ -1,5 +1,5 @@
 import { ChainId, Network } from '@/state/backendNetworks/types';
-import { AssetType } from '.';
+import { AssetType } from './assetTypes';
 import { Address } from 'viem';
 import { NftTokenType } from '@/graphql/__generated__/arc';
 

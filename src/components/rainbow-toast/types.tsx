@@ -1,4 +1,4 @@
-import { RainbowTransaction } from '@/entities';
+import { RainbowTransaction } from '@/entities/transactions';
 
 export type RainbowToast = {
   id: string;

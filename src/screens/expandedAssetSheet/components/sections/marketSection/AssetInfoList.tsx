@@ -9,8 +9,8 @@ import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/conte
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { formatDate } from '@/utils/formatDate';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { ShimmerAnimation } from '@/components/animations';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import FastImage from 'react-native-fast-image';

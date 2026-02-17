@@ -2,7 +2,7 @@ import { QueryFunction, useQuery } from '@tanstack/react-query';
 import { QueryConfigWithSelect, createQueryKey, queryClient } from '@/react-query';
 import { SimpleHashListing } from '@/resources/nfts/simplehash/types';
 import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
-import { UniqueAsset } from '@/entities';
+import { UniqueAsset } from '@/entities/uniqueAssets';
 import { arcClient } from '@/graphql';
 import { ChainId } from '@/state/backendNetworks/types';
 import { time } from '@/utils/time';

@@ -1,5 +1,6 @@
 import c from 'chroma-js';
 import { SharedValue } from 'react-native-reanimated';
+import { getAddress, type Address } from 'viem';
 
 import {
   ETH_COLOR,
@@ -19,7 +20,7 @@ import { supportedNativeCurrencies } from '@/references';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { CrosschainQuote, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, Quote, QuoteError, QuoteParams } from '@rainbow-me/swaps';
+import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteError, QuoteParams } from '@rainbow-me/swaps';
 import { swapsStore } from '../../state/swaps/swapsStore';
 import {
   divWorklet,
@@ -43,7 +44,7 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 // DO NOT REMOVE THESE COMMENTED ENV VARS
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IS_APK_BUILD } from 'react-native-dotenv';
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_TEST } from '@/env';
 
 const DEFAULT_SLIPPAGE_BIPS = 500;
@@ -601,7 +602,7 @@ export function getQuotePrice(
 }
 
 type BuildQuoteParamsProps = {
-  currentAddress: string;
+  currentAddress: Address;
   inputAmount: BigNumberish;
   outputAmount: BigNumberish;
   inputAsset: ExtendedAnimatedAssetWithColors | null;
@@ -634,8 +635,8 @@ export const buildQuoteParams = ({
     source: source === 'auto' ? undefined : source,
     chainId: inputAsset.chainId,
     fromAddress: currentAddress,
-    sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : inputAsset.address,
-    buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : outputAsset.address,
+    sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS : getAddress(inputAsset.address),
+    buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS : getAddress(outputAsset.address),
     sellAmount:
       lastTypedInput === 'inputAmount' || lastTypedInput === 'inputNativeValue'
         ? convertAmountToRawAmount(inputAmount.toString(), inputAsset.decimals)

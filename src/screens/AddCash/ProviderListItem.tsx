@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid/non-secure';
 import { logger, RainbowError } from '@/logger';
 import { ProviderConfig } from '@/screens/AddCash/types';
 import { ProviderCard } from '@/screens/AddCash/components/ProviderCard';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { analytics } from '@/analytics';
 import { WrappedAlert } from '@/helpers/alert';
 import * as i18n from '@/languages';

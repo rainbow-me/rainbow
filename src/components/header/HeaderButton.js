@@ -1,4 +1,4 @@
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 

@@ -3,7 +3,7 @@ import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { SharedValue, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Border, globalColors, Text, useColorMode } from '@/design-system';
 import { DEFAULT_SPORTS_LEAGUE_KEY } from '@/features/polymarket/constants';
 import { LEAGUE_SELECTOR_ORDER, SPORT_LEAGUES, LeagueId } from '@/features/polymarket/leagues';

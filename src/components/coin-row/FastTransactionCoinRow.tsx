@@ -1,9 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 import { Bleed, Box, Inline, Text, globalColors, useForegroundColor } from '@/design-system';
-import { NativeCurrencyKey, RainbowTransaction, TransactionStatus, TransactionType } from '@/entities';
+import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { RainbowTransaction, TransactionStatus, TransactionType } from '@/entities/transactions';
 import { ThemeContextProps } from '@/theme';
 import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';

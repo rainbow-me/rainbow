@@ -1,7 +1,8 @@
 // @refresh reset
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { ParsedAddressAsset, RainbowTransaction } from '@/entities';
+import { ParsedAddressAsset } from '@/entities/tokens';
+import { RainbowTransaction } from '@/entities/transactions';
 
 import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, TextProps } from '@/design-system';
 

@@ -1,11 +1,6 @@
-import {
-  NewTransaction,
-  ParsedAddressAsset,
-  TransactionDirection,
-  TransactionGasParamAmounts,
-  TransactionStatus,
-  TxHash,
-} from '@/entities';
+import { NewTransaction, TransactionDirection, TransactionStatus, TxHash } from '@/entities/transactions';
+import { ParsedAddressAsset } from '@/entities/tokens';
+import { TransactionGasParamAmounts } from '@/entities/gas';
 import { getProvider } from '@/handlers/web3';
 import { add, addBuffer, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';

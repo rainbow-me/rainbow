@@ -1,4 +1,4 @@
-type Numberish = number | string;
+export type Numberish = number | string;
 
 export interface Fee {
   native: { value: { amount: string; display: string } };

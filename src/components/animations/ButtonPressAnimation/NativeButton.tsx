@@ -1,23 +1,10 @@
 import React, { LegacyRef, useMemo } from 'react';
 import { requireNativeComponent, View, ViewStyle } from 'react-native';
-import { BaseButtonAnimationProps, TransformOrigin } from './types';
+import { ButtonPressAnimationProps, TransformOrigin } from './types';
 import styled from '@/styled-thing';
 import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 
-interface Props extends BaseButtonAnimationProps {
-  compensateForTransformOrigin?: boolean;
-  enableHapticFeedback?: boolean;
-  hapticType?: HapticFeedbackTypes;
-  onCancel?: () => void;
-  onLongPressEnded?: () => void;
-  onPressStart?: () => void;
-  pressOutDuration?: number;
-  shouldLongPressHoldPress?: boolean;
-  throttle?: boolean;
-  useLateHaptic?: boolean;
-}
-
-interface SpecificRawNativeButtonProps extends Props {
+interface SpecificRawNativeButtonProps extends ButtonPressAnimationProps {
   transformOrigin?: TransformOrigin;
 }
 
@@ -75,7 +62,7 @@ const NativeButton = React.forwardRef(
       transformOrigin,
       testID,
       ...props
-    }: Props,
+    }: ButtonPressAnimationProps,
     ref
   ) => {
     const normalizedTransformOrigin = useMemo(() => normalizeTransformOrigin(transformOrigin), [transformOrigin]);

@@ -14,11 +14,12 @@ import {
   LegacySelectedGasFee,
   LegacyTransactionGasParamAmounts,
   MaxPriorityFeeSuggestions,
-  NativeCurrencyKey,
+  MeteorologyResponse,
   Numberish,
   SelectedGasFee,
   TransactionGasParamAmounts,
-} from '@/entities';
+} from '@/entities/gas';
+import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { toHex } from '@/handlers/web3';
 import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
 import { ethUnits, timeUnits } from '@/references';
@@ -32,7 +33,6 @@ import {
   multiply,
   toFixedDecimals,
 } from '@/helpers/utilities';
-import { MeteorologyResponse } from '@/entities/gas';
 
 type BigNumberish = number | string | BigNumber;
 

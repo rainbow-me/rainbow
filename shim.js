@@ -9,6 +9,7 @@ import { mmkvStorageBackend } from '@/handlers/localstorage/mmkvStorageBackend';
 import { logger } from '@/logger';
 import 'fast-text-encoding';
 import globalVariables from './globalVariables';
+// @ts-ignore – Event shadows the global, triggering TS2866 under isolatedModules
 import { Event, EventTarget } from 'event-target-shim';
 
 if (typeof BigInt === 'undefined') global.BigInt = require('big-integer');

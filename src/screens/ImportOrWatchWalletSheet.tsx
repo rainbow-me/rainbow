@@ -7,7 +7,7 @@ import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { colors } from '@/styles';
 import React, { useCallback, useRef } from 'react';
 import * as i18n from '@/languages';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { LoadingOverlay } from '@/components/modal/LoadingOverlay';
@@ -55,7 +55,7 @@ export const ImportOrWatchWalletSheet = () => {
     }
   };
 
-  const buttonDisabled = seedPhrase && !isSecretValid;
+  const buttonDisabled = !!seedPhrase && !isSecretValid;
 
   return (
     <>

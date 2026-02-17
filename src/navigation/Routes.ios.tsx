@@ -22,7 +22,6 @@ import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import { SettingsSheet } from '../screens/SettingsSheet/SettingsSheet';
-import ShowcaseScreen from '../screens/ShowcaseSheet';
 import { SignTransactionSheet } from '../screens/SignTransactionSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import { NotificationPermissionScreen } from '@/features/notifications/screens/NotificationPermissionScreen';
@@ -109,7 +108,7 @@ import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
-import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
+import AppIconUnlockSheet from '@/features/app-icon/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import CheckIdentifierScreen from '@/screens/CheckIdentifierScreen';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
@@ -201,13 +200,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} {...expandedAssetSheetConfigWithLimit} />
       <NativeStack.Screen component={MintSheet} name={Routes.MINT_SHEET} {...expandedAssetSheetConfigWithLimit} />
       <NativeStack.Screen component={PositionSheet} name={Routes.POSITION_SHEET} {...positionSheetConfig} />
-      <NativeStack.Screen
-        component={ShowcaseScreen}
-        name={Routes.SHOWCASE_SHEET}
-        options={{
-          customStack: true,
-        }}
-      />
       <NativeStack.Screen
         component={SelectUniqueTokenSheet}
         name={Routes.SELECT_UNIQUE_TOKEN_SHEET}

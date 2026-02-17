@@ -9,7 +9,8 @@ import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import usePendingTransactions from './usePendingTransactions';
 
 import { refreshWalletInfo, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
-import { PendingTransaction, Records, RegistrationParameters } from '@/entities';
+import { PendingTransaction } from '@/entities/transactions';
+import { Records, RegistrationParameters } from '@/entities/ensRegistration';
 import { fetchResolver } from '@/handlers/ens';
 import { saveNameFromLabelhash } from '@/handlers/localstorage/ens';
 import { uploadImage } from '@/handlers/pinata';

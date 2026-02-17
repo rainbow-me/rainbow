@@ -7,7 +7,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import React, { useMemo } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';

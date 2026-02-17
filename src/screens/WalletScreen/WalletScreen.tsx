@@ -1,12 +1,11 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { AssetList } from '../../components/asset-list';
+import RecyclerAssetList2 from '../../components/asset-list/RecyclerAssetList2';
 import { Page } from '../../components/layout';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { Box } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import useFetchOpenCollectionsOnMount from '@/hooks/useFetchOpenCollectionsOnMount';
 import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
@@ -22,7 +21,6 @@ import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from 
 import { debounce } from 'lodash';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { SessionEntryPromptSync } from '@/state/sync/SessionEntryPromptSync';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { InteractionManager } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -64,25 +62,12 @@ function extractTokenRowIds(items: CellTypes[]) {
 }
 
 function WalletScreen() {
-  const { network: currentNetwork } = useAccountSettings();
-  const accountAddress = useAccountAddress();
   const insets = useSafeAreaInsets();
   const route = useRoute();
 
-  const {
-    isWalletEthZero,
-    isLoadingUserAssets,
-    isLoadingBalance,
-    briefSectionsData: walletBriefSectionsData,
-  } = useWalletSectionsData({ type: 'wallet' });
+  const { isLoadingUserAssets, briefSectionsData: walletBriefSectionsData } = useWalletSectionsData({ type: 'wallet' });
 
-  const isLoadingUserAssetsAndAddress = isLoadingUserAssets && !!accountAddress;
   const { highContrastAccentColor } = useAccountAccentColor();
-
-  const disableRefreshControl = useMemo(
-    () => isLoadingUserAssetsAndAddress || isLoadingBalance,
-    [isLoadingUserAssetsAndAddress, isLoadingBalance]
-  );
 
   const listContainerStyle = useMemo(() => ({ flex: 1, marginTop: -(navbarHeight + insets.top) }), [insets.top]);
 
@@ -133,11 +118,8 @@ function WalletScreen() {
   return (
     <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
       <Box as={Page} flex={1} testID="wallet-screen" onLayout={handleWalletScreenMount} style={listContainerStyle}>
-        <AssetList
+        <RecyclerAssetList2
           accentColor={highContrastAccentColor}
-          disableRefreshControl={disableRefreshControl}
-          isWalletEthZero={isWalletEthZero}
-          network={currentNetwork}
           onEndReached={useNftsStore.getState().fetchNextNftCollectionPage}
           walletBriefSectionsData={walletBriefSectionsData}
           onViewableItemsChanged={handleViewableItemsChanged}

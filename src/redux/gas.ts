@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
-import {
+import type {
   BlocksToConfirmation,
   CurrentBlockParams,
   GasFee,
@@ -16,9 +16,11 @@ import {
   LegacyGasFeeParamsBySpeed,
   LegacyGasFeesBySpeed,
   LegacySelectedGasFee,
-  NativeCurrencyKey,
+  MeteorologyLegacyResponse,
+  MeteorologyResponse,
   SelectedGasFee,
-} from '@/entities';
+} from '@/entities/gas';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { getProvider } from '@/handlers/web3';
@@ -38,7 +40,6 @@ import ethereumUtils from '@/utils/ethereumUtils';
 import gasUtils from '@/utils/gas';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { addBuffer } from '@/helpers/utilities';
 
 const { CUSTOM, NORMAL, URGENT } = gasUtils;

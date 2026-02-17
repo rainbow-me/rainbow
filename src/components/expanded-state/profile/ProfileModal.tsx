@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React, { useCallback, useRef } from 'react';
 import { View } from 'react-native';
 import Divider from '@/components/Divider';
-import { ButtonPressAnimation } from '../../animations';
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { BiometricButtonContent } from '../../buttons';
 import CopyTooltip from '../../copy-tooltip';
 import { Centered, ColumnWithDividers } from '../../layout';

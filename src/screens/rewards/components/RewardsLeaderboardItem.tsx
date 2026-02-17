@@ -11,7 +11,7 @@ import { getGradientColorsForRank } from '@/screens/rewards/helpers/getGradientC
 import { useTheme } from '@/theme';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
 import { analytics } from '@/analytics';
 

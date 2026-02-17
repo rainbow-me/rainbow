@@ -18,7 +18,8 @@ import {
   Text,
   TextProps,
 } from '@/design-system';
-import { AssetType, UniqueAsset } from '@/entities';
+import { AssetType } from '@/entities/assetTypes';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import isHttpUrl from '@/helpers/isHttpUrl';
@@ -54,7 +55,7 @@ import URL from 'url-parse';
 import partyLogo from '../../assets/partyLogo.png';
 import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import ImagePreviewOverlay from '../images/ImagePreviewOverlay';
 import ImgixImage from '../images/ImgixImage';
 import { SendActionButton, SheetActionButton, SheetHandle, SlackSheet } from '../sheet';

@@ -29,7 +29,7 @@ import magicMemo from '@/utils/magicMemo';
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import { colors } from '@/styles';
 import ExchangeTokenRow from '@/components/ExchangeTokenRow';
-import { SwappableAsset } from '@/entities';
+import type { SwappableAsset } from '@/entities/tokens';
 import { toggleFavorite, useFavorites } from '@/resources/favorites';
 import ConditionalWrap from 'conditional-wrap';
 import { EasingGradient } from './easing-gradient/EasingGradient';

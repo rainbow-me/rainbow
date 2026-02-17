@@ -30,7 +30,7 @@ import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { clamp, getColorValueForThemeWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { sanitizeAmount } from '@/worklets/strings';
-import { FOOTER_HEIGHT, INITIAL_SLIDER_PROGRESS, SLIDER_WIDTH, SLIDER_WITH_LABELS_HEIGHT } from '../constants';
+import { FOOTER_HEIGHT, INITIAL_SLIDER_PROGRESS, NavigationSteps, SLIDER_WIDTH, SLIDER_WITH_LABELS_HEIGHT } from '../constants';
 import { DepositProvider, useDepositContext } from '../contexts/DepositContext';
 import { computeMaxSwappableAmount } from '../stores/createDepositStore';
 import { DepositConfig, DepositQuoteStatus, FundingScreenTheme, getAccentColor } from '../types';
@@ -46,11 +46,6 @@ type DepositScreenProps = {
   config: DepositConfig;
   theme: FundingScreenTheme;
 };
-
-enum NavigationSteps {
-  INPUT_ELEMENT_FOCUSED = 0,
-  TOKEN_LIST_FOCUSED = 1,
-}
 
 // ============ Main Screen ==================================================== //
 
@@ -123,6 +118,14 @@ const DepositScreenContent = memo(function DepositScreenContent() {
     return getInputAmountError(displayedAmount.value, balance);
   });
 
+  const focusedSearchNavbarStyle = useAnimatedStyle(() => {
+    const isSearchFocused = inputProgress.value === NavigationSteps.SEARCH_FOCUSED;
+    return {
+      opacity: withTiming(isSearchFocused ? 0 : 1, TIMING_CONFIGS.fadeConfig),
+      pointerEvents: isSearchFocused ? 'none' : 'auto',
+    };
+  });
+
   const accentColor = getAccentColor(theme, isDarkMode);
 
   return (
@@ -135,8 +138,10 @@ const DepositScreenContent = memo(function DepositScreenContent() {
         testID="deposit-screen"
         width="full"
       >
-        <SheetHandle backgroundColor={isDarkMode ? theme.backgroundDark : theme.backgroundLight} withoutGradient />
-        <Box paddingVertical="8px">
+        <Animated.View style={focusedSearchNavbarStyle}>
+          <SheetHandle backgroundColor={isDarkMode ? theme.backgroundDark : theme.backgroundLight} withoutGradient />
+        </Animated.View>
+        <Box as={Animated.View} paddingVertical="8px" style={focusedSearchNavbarStyle}>
           <Navbar hasStatusBarInset leftComponent={<AccountImage />} title={i18n.t(i18n.l.perps.deposit.title)} />
         </Box>
 
@@ -269,6 +274,7 @@ const DepositInput = ({ inputProgress }: { inputProgress: SharedValue<number> })
         () => (
           <TokenListOverlay inputProgress={inputProgress}>
             <DepositTokenList
+              inputProgress={inputProgress}
               onSelectToken={token => {
                 inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
                 handleSelectAsset(token);
@@ -287,7 +293,7 @@ const DepositInput = ({ inputProgress }: { inputProgress: SharedValue<number> })
 
 const TokenListOverlay = ({ children, inputProgress }: { children: ReactNode; inputProgress: SharedValue<number> }) => {
   const overlayStyle = useAnimatedStyle(() => {
-    const isVisible = inputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED;
+    const isVisible = inputProgress.value !== NavigationSteps.INPUT_ELEMENT_FOCUSED;
     return {
       opacity: withTiming(isVisible ? 1 : 0, TIMING_CONFIGS.fadeConfig),
       pointerEvents: isVisible ? 'auto' : 'none',

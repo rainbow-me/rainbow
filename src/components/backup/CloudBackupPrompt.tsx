@@ -10,7 +10,7 @@ import { cloudPlatform } from '@/utils/platform';
 import { format } from 'date-fns';
 import React, { useCallback } from 'react';
 import { Source } from 'react-native-fast-image';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { ImgixImage } from '../images';
 import { useCreateBackup } from './useCreateBackup';
 

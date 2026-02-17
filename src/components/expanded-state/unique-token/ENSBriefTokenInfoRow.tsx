@@ -4,7 +4,7 @@ import * as i18n from '@/languages';
 import React, { useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { ENSConfirmRenewSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';
-import { ButtonPressAnimation } from '../../animations';
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { TokenInfoItem, TokenInfoValue } from '../../token-info';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { Column, Columns, Inset } from '@/design-system';

@@ -31,7 +31,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
@@ -41,7 +41,7 @@ import { CANDLESTICK_DATA_MONITOR, useExperimentalFlag } from '@/config';
 import { Text, TextIcon, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { TextSegment, useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
-import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities';
+import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_DEV, IS_IOS } from '@/env';
 import { areCandlesEqual, formatCandlestickPrice } from '@/features/charts/candlestick/utils';
 import { candlestickActions, fetchHistoricalCandles, useCandlestickStore } from '@/features/charts/stores/candlestickStore';

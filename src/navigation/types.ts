@@ -2,7 +2,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Routes, { Route } from '@/navigation/routesNames';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
-import { ParsedAddressAsset, PendingTransaction, RainbowTransaction, UniqueAsset } from '@/entities';
+import { ParsedAddressAsset } from '@/entities/tokens';
+import { PendingTransaction, RainbowTransaction } from '@/entities/transactions';
+import { UniqueAsset } from '@/entities/uniqueAssets';
 import { Claimable, RainbowClaimable } from '@/resources/addys/claimables/types';
 import { RequestData, WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/walletConnect/types';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
@@ -33,7 +35,7 @@ import { ActiveTabRef } from '@/components/DappBrowser/types';
 import { WalletNotificationSettings } from '@/notifications/settings';
 import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { UnlockableAppIconKey } from '@/appIcons/appIcons';
+import { UnlockableAppIconKey } from '@/features/app-icon/appIcons';
 import { ChartTime } from '@/hooks/charts/useChartInfo';
 import { AreAllKeysOptional, ExtractOptionalKeys } from '@/types/objects';
 import { ScrollView } from 'react-native';
@@ -384,10 +386,6 @@ type RouteParams = {
     contentHeight?: number;
     onSearchForNewName?: () => void;
     onSelectExistingName?: () => void;
-  };
-  [Routes.SHOWCASE_SHEET]: {
-    address: string;
-    fromRoute: string;
   };
   [Routes.PROFILE_SHEET]: {
     address: string;

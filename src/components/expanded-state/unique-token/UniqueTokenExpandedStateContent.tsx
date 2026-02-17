@@ -10,7 +10,7 @@ import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
 import useAnimationType from '@/hooks/useAnimationType';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { DerivedValue, SharedValue } from 'react-native-reanimated';
 import { IS_IOS } from '@/env';
 

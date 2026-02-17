@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '@/theme/ThemeContext';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ConditionalWrap from 'conditional-wrap';
 import { Box, Inline, Stack, Text, useForegroundColor, useColorMode, TextIcon } from '@/design-system';
 import { AddressItem, AddressMenuAction } from '@/screens/change-wallet/ChangeWalletSheet';

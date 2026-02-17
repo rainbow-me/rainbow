@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
-import { SpinAnimation } from '../../animations';
+import { SpinAnimation } from '../../animations/SpinAnimation';
 import Svg from '../Svg';
 
 const SpinnerIcon = ({ color, colors, size = 12 }) => (

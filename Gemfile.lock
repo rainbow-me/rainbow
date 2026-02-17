@@ -5,6 +5,7 @@ GEM
       base64
       nkf
       rexml
+    abbrev (0.1.2)
     activesupport (7.0.8.7)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
@@ -19,24 +20,27 @@ GEM
     atomos (0.1.3)
     aws-eventstream (1.4.0)
     aws-partitions (1.1116.0)
-    aws-sdk-core (3.225.2)
+    aws-sdk-core (3.242.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
       base64
+      bigdecimal
       jmespath (~> 1, >= 1.6.1)
       logger
     aws-sdk-kms (1.105.0)
       aws-sdk-core (~> 3, >= 3.225.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-s3 (1.189.1)
-      aws-sdk-core (~> 3, >= 3.225.0)
+    aws-sdk-s3 (1.213.0)
+      aws-sdk-core (~> 3, >= 3.241.4)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.5)
     aws-sigv4 (1.12.1)
       aws-eventstream (~> 1, >= 1.0.2)
     babosa (1.0.4)
-    base64 (0.3.0)
+    base64 (0.2.0)
+    benchmark (0.5.0)
+    bigdecimal (4.0.1)
     claide (1.1.0)
     cocoapods (1.16.2)
       addressable (~> 2.8)
@@ -80,6 +84,7 @@ GEM
     commander (4.6.0)
       highline (~> 2.0.0)
     concurrent-ruby (1.3.4)
+    csv (3.3.5)
     declarative (0.0.20)
     digest-crc (0.7.0)
       rake (>= 12.0.0, < 14.0.0)
@@ -119,15 +124,19 @@ GEM
     faraday_middleware (1.2.1)
       faraday (~> 1.0)
     fastimage (2.4.0)
-    fastlane (2.228.0)
+    fastlane (2.232.1)
       CFPropertyList (>= 2.3, < 4.0.0)
+      abbrev (~> 0.1.2)
       addressable (>= 2.8, < 3.0.0)
       artifactory (~> 3.0)
-      aws-sdk-s3 (~> 1.0)
+      aws-sdk-s3 (~> 1.197)
       babosa (>= 1.0.3, < 2.0.0)
-      bundler (>= 1.12.0, < 3.0.0)
+      base64 (~> 0.2.0)
+      benchmark (>= 0.1.0)
+      bundler (>= 1.17.3, < 5.0.0)
       colored (~> 1.2)
       commander (~> 4.6)
+      csv (~> 3.3)
       dotenv (>= 2.1.1, < 3.0.0)
       emoji_regex (>= 0.1, < 4.0)
       excon (>= 0.71.0, < 1.0.0)
@@ -139,16 +148,20 @@ GEM
       gh_inspector (>= 1.1.2, < 2.0.0)
       google-apis-androidpublisher_v3 (~> 0.3)
       google-apis-playcustomapp_v1 (~> 0.1)
-      google-cloud-env (>= 1.6.0, < 2.0.0)
+      google-cloud-env (>= 1.6.0, <= 2.1.1)
       google-cloud-storage (~> 1.31)
       highline (~> 2.0)
       http-cookie (~> 1.0.5)
       json (< 3.0.0)
       jwt (>= 2.1.0, < 3)
+      logger (>= 1.6, < 2.0)
       mini_magick (>= 4.9.4, < 5.0.0)
       multipart-post (>= 2.0.0, < 3.0.0)
+      mutex_m (~> 0.3.0)
       naturally (~> 2.2)
+      nkf (~> 0.2.0)
       optparse (>= 0.1.1, < 1.0.0)
+      ostruct (>= 0.1.0)
       plist (>= 3.1.0, < 4.0.0)
       rubyzip (>= 2.0.0, < 3.0.0)
       security (= 0.1.5)
@@ -229,6 +242,7 @@ GEM
     nkf (0.2.0)
     optparse (0.6.0)
     os (1.1.4)
+    ostruct (0.6.3)
     plist (3.7.2)
     public_suffix (4.0.7)
     rake (13.3.0)
@@ -284,11 +298,12 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport (>= 6.1.7.5, < 7.1.0)
+  bigdecimal
   cocoapods (>= 1.13, != 1.15.1, != 1.15.0)
   fastlane
 
 RUBY VERSION
-   ruby 2.7.5p203
+  ruby 3.4.8
 
 BUNDLED WITH
-   2.2.31
+  4.0.6

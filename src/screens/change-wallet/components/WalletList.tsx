@@ -2,9 +2,9 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import * as i18n from '@/languages';
-import { EmptyAssetList } from '@/components/asset-list';
+import EmptyAssetList from '@/components/asset-list/EmptyAssetList';
 import { AddressRow } from './AddressRow';
-import { EthereumAddress } from '@rainbow-me/entities';
+import { EthereumAddress } from '@/entities/wallet';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import {

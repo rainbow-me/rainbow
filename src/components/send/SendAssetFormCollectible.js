@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { OpacityToggler } from '../animations';
+import OpacityToggler from '../animations/OpacityToggler';
 import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
 import { Column } from '../layout';
 import useDimensions from '@/hooks/useDimensions';

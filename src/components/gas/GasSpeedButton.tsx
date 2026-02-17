@@ -8,7 +8,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { InteractionManager, Keyboard, View } from 'react-native';
 import { Easing } from 'react-native-reanimated';
 import { darkModeThemeColors } from '../../styles/colors';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
@@ -29,7 +29,7 @@ import { ContextMenu } from '../context-menu';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ThemeContextProps, useTheme } from '@/theme';
-import { ParsedAddressAsset } from '@/entities';
+import type { ParsedAddressAsset } from '@/entities/tokens';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { opacity } from '@/framework/ui/utils/opacity';

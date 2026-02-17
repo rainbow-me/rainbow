@@ -1,4 +1,4 @@
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { supportedNativeCurrencies } from '@/references';
 import { greaterThanOrEqualToWorklet } from '@/safe-math/SafeMath';

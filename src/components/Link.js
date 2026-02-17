@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { useTheme } from '../theme/ThemeContext';
 import formatURLForDisplay from '@/utils/formatURLForDisplay';
 import magicMemo from '@/utils/magicMemo';
-import { ButtonPressAnimation } from './animations';
+import ButtonPressAnimation from './animations/ButtonPressAnimation';
 import { Icon } from './icons';
 import { RowWithMargins } from './layout';
 import { Text } from './text';

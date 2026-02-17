@@ -1,6 +1,6 @@
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
-import { UnlockableAppIconKey } from '@/appIcons/appIcons';
+import { UnlockableAppIconKey } from '@/features/app-icon/appIcons';
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';

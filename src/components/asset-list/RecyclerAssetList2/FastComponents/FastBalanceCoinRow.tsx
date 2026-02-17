@@ -1,8 +1,8 @@
 import React, { useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { CoinIconIndicator } from '@/components/coin-icon';
+import CoinIconIndicator from '@/components/coin-icon/CoinIconIndicator';
 import { Icon } from '@/components/icons';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ExtendedState } from '../core/RawRecyclerList';
 import { Text } from '@/design-system';
 import useAccountAsset from '@/hooks/useAccountAsset';
@@ -10,7 +10,7 @@ import { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions'
 import Routes from '@/navigation/routesNames';
 import { borders, colors, padding, shadow } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { ChainId } from '@/state/backendNetworks/types';
 import { Navigation } from '@/navigation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';

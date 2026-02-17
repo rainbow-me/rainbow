@@ -1,6 +1,6 @@
 import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { FastTransactionCoinRow } from '@/components/coin-row';
-import { RainbowTransaction } from '@/entities';
+import { RainbowTransaction } from '@/entities/transactions';
 import { TransactionSection } from '@/helpers/buildTransactionsSectionsSelector';
 import useAccountTransactions from '@/hooks/useAccountTransactions';
 import { Skeleton } from '@/screens/points/components/Skeleton';
@@ -16,7 +16,7 @@ import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react
 import { SharedValue } from 'react-native-reanimated';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';

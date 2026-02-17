@@ -1,4 +1,4 @@
-import { EthereumAddress } from '.';
+import { EthereumAddress } from './wallet';
 import { Chain } from '@wagmi/chains';
 import { ChainId } from '@/state/backendNetworks/types';
 import { TokenColors } from '@/graphql/__generated__/metadata';
