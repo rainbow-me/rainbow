@@ -78,6 +78,7 @@ patched by the postinstall script from `GOOGLE_SERVICE_API_KEY` in your `.env`.
    brew install --cask zulu@17
    ```
 2. Add to your shell profile (`~/.zshrc` or `~/.bashrc`):
+
    ```sh
    export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
    export ANDROID_HOME=$HOME/Library/Android/sdk  # macOS
@@ -85,7 +86,8 @@ patched by the postinstall script from `GOOGLE_SERVICE_API_KEY` in your `.env`.
    export PATH=$PATH:$ANDROID_HOME/emulator
    export PATH=$PATH:$ANDROID_HOME/platform-tools
    ```
-On Linux, also install system dependencies: `sudo apt install libsecret-tools watchman`
+
+   On Linux, also install system dependencies: `sudo apt install libsecret-tools watchman`
 
 3. Install [Android Studio](https://developer.android.com/studio) (the standard
    setup wizard is fine).
@@ -104,12 +106,12 @@ On Linux, also install system dependencies: `sudo apt install libsecret-tools wa
    ```
 9. Quit Android Studio completely, then reopen it from the terminal so Gradle
    sync picks up the generated headers:
-    ```
-    open -a "Android Studio"  # macOS
-    ```
-    Always launch Android Studio this way so it inherits your shell PATH
-    (including `node` from nvm). Launching from Spotlight or the Dock will
-    cause Gradle sync to fail with "Cannot run program node".
+   ```
+   open -a "Android Studio"  # macOS
+   ```
+   Always launch Android Studio this way so it inherits your shell PATH
+   (including `node` from nvm). Launching from Spotlight or the Dock will
+   cause Gradle sync to fail with "Cannot run program node".
 
 ## Developing
 
