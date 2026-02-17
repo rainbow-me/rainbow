@@ -60,70 +60,68 @@ Set up these **before** running `yarn install`, as the postinstall script reads
 The iOS `GoogleService-Info.plist` is already in the repo and gets its API key
 patched by the postinstall script from `GOOGLE_SERVICE_API_KEY` in your `.env`.
 
-### MacOS
+### iOS (macOS only)
 
-1. Install the [latest version of XCode](https://developer.apple.com/xcode/).
-
-2. Install Watchman:
-
-   ```shell
-   brew install watchman
+1. Install Xcode from the Mac App Store.
+2. Install Watchman: `brew install watchman`
+3. Install the required bundles and Pods:
    ```
-
-3. Install the required bundles (including CocoaPods) and Pods for this project:
-   ```shell
    yarn install-bundle && yarn install-pods
    ```
 
-### Linux
+### Android
 
-1. Install system dependencies:
-
-   ```shell
-   sudo apt install libsecret-tools watchman
+1. Install JDK 17. Do **not** use the JDK bundled with Android Studio (it's
+   JDK 21, which [causes build
+   failures](https://reactnative.dev/docs/set-up-your-environment)). On macOS:
+   ```sh
+   brew install --cask zulu@17
    ```
+2. Add to your shell profile (`~/.zshrc` or `~/.bashrc`):
+   ```sh
+   export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+   export ANDROID_HOME=$HOME/Library/Android/sdk  # macOS
+   # export ANDROID_HOME=$HOME/Android/Sdk        # Linux
+   export PATH=$PATH:$ANDROID_HOME/emulator
+   export PATH=$PATH:$ANDROID_HOME/platform-tools
+   ```
+On Linux, also install system dependencies: `sudo apt install libsecret-tools watchman`
 
-2. Follow the [React Native environment setup
-   instructions](https://reactnative.dev/docs/environment-setup) carefully,
-   which will involve installing Android Studio, the Android SDK, the emulator,
-   etc. and making them available in your `$PATH`.
-
-3. Ensure at least one [AVD
-   image](https://developer.android.com/studio/run/managing-avds) is available
-   for the emulator (unless using a physical device).
+3. Install [Android Studio](https://developer.android.com/studio) (the standard
+   setup wizard is fine).
+4. Increase the IDE memory: **Android Studio > Settings > Memory Settings** and
+   set the heap to at least 4096 MB. This project is large enough that the
+   default 2048 MB will cause slow syncs and builds.
+5. Set the Gradle JDK: **Settings > Build, Execution, Deployment > Build
+   Tools > Gradle > Gradle JDK** and select the `JAVA_HOME` (Azul Zulu 17)
+   entry. The default points to the bundled JDK 21.
+6. Restart any open terminals so the new environment variables take effect.
+7. Create an emulator via Android Studio > Device Manager (unless using a physical device).
+8. Run the first build from the terminal to generate native headers that
+   Android Studio needs for Gradle sync:
+   ```
+   cd android && ./gradlew assembleDebug && cd ..
+   ```
+9. Quit Android Studio completely, then reopen it from the terminal so Gradle
+   sync picks up the generated headers:
+    ```
+    open -a "Android Studio"  # macOS
+    ```
+    Always launch Android Studio this way so it inherits your shell PATH
+    (including `node` from nvm). Launching from Spotlight or the Dock will
+    cause Gradle sync to fail with "Cannot run program node".
 
 ## Developing
 
-If you are new to React Native, this is a helpful introduction:
-https://reactnative.dev/docs/getting-started
+Start Metro in one terminal:
 
-### MacOS
+```
+yarn start
+```
 
-_Note: Darwin versions of the application can only be developed/built on Darwin
-platforms with XCode._
+Then build and run:
 
-1. Start a React Native webserver with:
-
-   ```shell
-   yarn start
-   ```
-
-2. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode.
-
-3. Run the project by clicking the play button.
-
-### Linux
-
-_Note: Linux development environments cannot develop or build Darwin versions of the
-project._
-
-1. Start a React Native webserver with:
-
-   ```shell
-   yarn start
-   ```
-
-2. Build/install/start the debug version of the app in an emulator with:
-   ```shell
-   yarn android
-   ```
+- **iOS:** Open `ios/Rainbow.xcworkspace` in Xcode (not the `.xcodeproj`) and
+  press Cmd+R, or run `yarn ios` from the terminal.
+- **Android:** Open the `android/` folder in Android Studio, or run
+  `yarn android` from the terminal.
