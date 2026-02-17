@@ -46,7 +46,11 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 
 const WRAP_GAS_PADDING = 1.002;
 
-export const estimateUnlockAndSwap = async ({ quote, chainId }: Pick<RapSwapActionParameters<'swap'>, 'quote' | 'chainId'>) => {
+export const estimateUnlockAndSwap = async ({
+  quote,
+  chainId,
+  requiresApprove: requiresApproveInput,
+}: Pick<RapSwapActionParameters<'swap'>, 'quote' | 'chainId' | 'requiresApprove'>) => {
   const {
     from: accountAddress,
     sellTokenAddress,
@@ -56,18 +60,21 @@ export const estimateUnlockAndSwap = async ({ quote, chainId }: Pick<RapSwapActi
     sellTokenAddress: Address;
     allowanceNeeded: boolean;
   };
-
+  const requiresApprove = requiresApproveInput ?? allowanceNeeded;
   const targetAddress = getTargetAddress(quote);
+  if (requiresApprove && !targetAddress) {
+    throw new Error('Target address not found');
+  }
 
   let gasLimits: (string | number)[] = [];
 
-  if (allowanceNeeded) {
+  if (requiresApprove) {
     // Try simulation-based estimation first
     const provider = getProvider({ chainId });
     const approveTransaction = await populateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,
-      spender: targetAddress as Address,
+      spender: targetAddress,
       chainId,
       amount: quote.sellAmount.toString(),
     });
@@ -112,7 +119,7 @@ export const estimateUnlockAndSwap = async ({ quote, chainId }: Pick<RapSwapActi
     const unlockGasLimit = await estimateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,
-      spender: targetAddress as Address,
+      spender: targetAddress,
       chainId,
     });
     gasLimits = gasLimits.concat(unlockGasLimit);
@@ -120,7 +127,7 @@ export const estimateUnlockAndSwap = async ({ quote, chainId }: Pick<RapSwapActi
 
   const swapGasLimit = await estimateSwapGasLimit({
     chainId,
-    requiresApprove: allowanceNeeded,
+    requiresApprove,
     quote,
   });
 
@@ -344,7 +351,7 @@ export const swap = async ({
 }: ActionProps<'swap'>): Promise<RapActionResult> => {
   let gasParamsToUse = gasParams;
 
-  const { assetToSell, quote, chainId, sellAmount } = parameters;
+  const { quote, chainId } = parameters;
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
 
   if (currentRap.actions.length - 1 > index) {
@@ -360,6 +367,7 @@ export const swap = async ({
     gasLimit = await estimateUnlockAndSwap({
       chainId,
       quote,
+      requiresApprove: parameters.requiresApprove,
     });
   } catch (e) {
     logger.error(new RainbowError('[raps/swap]: error estimateSwapGasLimit'), {

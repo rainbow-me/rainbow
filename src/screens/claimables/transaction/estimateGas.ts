@@ -3,7 +3,7 @@ import { getProvider } from '@/handlers/web3';
 import { Address } from 'viem';
 import { ChainId } from '@/state/backendNetworks/types';
 import { estimateTransactionsGasLimit, populateSwap } from '@/raps/utils';
-import { estimateApprove, populateApprove } from '@/raps/actions/unlock';
+import { estimateApprove, needsTokenApproval, populateApprove } from '@/raps/actions/unlock';
 import { logger, RainbowError } from '@/logger';
 import { estimateSwapGasLimit } from '@/raps/actions/swap';
 
@@ -35,6 +35,15 @@ export const estimateClaimUnlockSwap = async ({
 
   if (quote) {
     const { from: accountAddress, sellTokenAddress, allowanceNeeded, allowanceTarget, sellTokenAsset, sellAmount } = quote;
+    const requiresApprove =
+      allowanceNeeded &&
+      (await needsTokenApproval({
+        owner: accountAddress,
+        tokenAddress: sellTokenAddress,
+        spender: allowanceTarget as Address,
+        amount: sellAmount.toString(),
+        chainId,
+      }));
 
     if (!sellTokenAsset) {
       logger.error(new RainbowError('[estimateClaimUnlockSwap]: Quote is missing sellTokenAsset'));
@@ -43,10 +52,10 @@ export const estimateClaimUnlockSwap = async ({
 
     const provider = getProvider({ chainId });
 
-    if (allowanceNeeded) {
+    if (requiresApprove) {
       const approveTransaction = await populateApprove({
-        owner: accountAddress as Address,
-        tokenAddress: sellTokenAddress as Address,
+        owner: accountAddress,
+        tokenAddress: sellTokenAddress,
         spender: allowanceTarget as Address,
         chainId,
         amount: sellAmount.toString(),
@@ -63,8 +72,8 @@ export const estimateClaimUnlockSwap = async ({
           label: 'approve',
           fallbackEstimate: () =>
             estimateApprove({
-              owner: accountAddress as Address,
-              tokenAddress: sellTokenAddress as Address,
+              owner: accountAddress,
+              tokenAddress: sellTokenAddress,
               spender: allowanceTarget as Address,
               chainId,
             }),
@@ -92,7 +101,7 @@ export const estimateClaimUnlockSwap = async ({
         fallbackEstimate: () =>
           estimateSwapGasLimit({
             chainId,
-            requiresApprove: allowanceNeeded,
+            requiresApprove,
             quote,
           }),
       });
