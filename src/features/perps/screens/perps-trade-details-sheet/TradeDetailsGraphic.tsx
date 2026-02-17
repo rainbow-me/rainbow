@@ -1,25 +1,20 @@
 import { opacity } from '@/framework/ui/utils/opacity';
 import { PANEL_BACKGROUND_DARK, PANEL_BACKGROUND_LIGHT } from '@/components/PanelSheet/PanelSheet';
-import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Box, useColorMode } from '@/design-system';
 import { FloatingSparks } from '@/features/perps/screens/perps-trade-details-sheet/FloatingSparks';
 import { PerspectiveGrid } from '@/features/perps/screens/perps-trade-details-sheet/PerspectiveGrid';
-import { SkiaBadge } from '@/components/SkiaBadge';
 import { type HlTrade, TradeExecutionType } from '@/features/perps/types';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import useDimensions from '@/hooks/useDimensions';
-import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { divWorklet, mulWorklet, subWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { Blur, Canvas, Group, LinearGradient, Oval, Rect, vec } from '@shopify/react-native-skia';
-import { memo, useMemo } from 'react';
-import * as i18n from '@/languages';
+import { memo } from 'react';
 
 const CONFIG = {
   layout: {
     horizontalInset: 16,
-    topSectionHeight: 225,
+    topSectionHeight: 175,
     gridHeight: 70,
     gridOverflow: 164,
-    outcomeInfoOffset: 32 + 40 + 8,
+    outcomeInfoOffset: 32,
     ovalTranslateY: 60,
   },
   grid: {
@@ -143,9 +138,6 @@ export const TradeDetailsGraphic = memo(function TradeDetailsGraphic({ trade }: 
           <Blur blur={CONFIG.backgroundBlurredOval.blur} />
         </Group>
       </Canvas>
-      <Box width="full" position="absolute" top={{ custom: CONFIG.layout.outcomeInfoOffset }}>
-        <OutcomeInfo trade={trade} />
-      </Box>
     </Box>
   );
 });
@@ -197,126 +189,3 @@ function getGridBackgroundGradient(trade: HlTrade) {
       return ['#62DFBC', opacity('#62DFBC', 0)];
   }
 }
-
-function getTitleText(trade: HlTrade) {
-  if (trade.executionType === TradeExecutionType.LONG_LIQUIDATED || trade.executionType === TradeExecutionType.SHORT_LIQUIDATED) {
-    return i18n.t(i18n.l.perps.trade_details_sheet.outcome.liquidated);
-  }
-  if (trade.executionType === TradeExecutionType.LONG_OPENED || trade.executionType === TradeExecutionType.SHORT_OPENED) {
-    return i18n.t(i18n.l.perps.trade_details_sheet.outcome.opened);
-  }
-  if (trade.executionType === TradeExecutionType.LONG_CLOSED || trade.executionType === TradeExecutionType.SHORT_CLOSED) {
-    if (Number(trade.pnl) < 0) {
-      return i18n.t(i18n.l.perps.trade_details_sheet.outcome.lost);
-    }
-    return i18n.t(i18n.l.perps.trade_details_sheet.outcome.earned);
-  }
-  if (trade.executionType === TradeExecutionType.STOP_LOSS_EXECUTED) {
-    return i18n.t(i18n.l.perps.trade_details_sheet.outcome.lost);
-  }
-  if (trade.executionType === TradeExecutionType.TAKE_PROFIT_EXECUTED) {
-    return i18n.t(i18n.l.perps.trade_details_sheet.outcome.earned);
-  }
-}
-
-const OutcomeInfo = ({ trade }: { trade: HlTrade }) => {
-  const { isDarkMode } = useColorMode();
-  const green = useForegroundColor('green');
-  const red = useForegroundColor('red');
-  const longGreen = isDarkMode ? '#1F9E39' : green;
-  const shortRed = isDarkMode ? '#D53F35' : red;
-
-  const labelSecondary = useForegroundColor('labelSecondary');
-  const displayType = getDisplayType(trade);
-  const titleText = getTitleText(trade);
-  const market = useHyperliquidMarketsStore(state => state.getMarket(trade.symbol));
-  // The leverage actually used is currently not available in the trade object
-  const assumedLeverage = market?.maxLeverage ?? 1;
-
-  const numberText = useMemo(() => {
-    if (displayType !== 'loss' && displayType !== 'profit') {
-      return formatCurrency(mulWorklet(trade.size, trade.price));
-    }
-
-    const entryPrice = trade.entryPrice ?? trade.price;
-    const exitPrice = trade.price;
-
-    if (!entryPrice || !exitPrice) {
-      return '0.00%';
-    }
-
-    const priceDifferential = subWorklet(exitPrice, entryPrice);
-    const baseChange = divWorklet(priceDifferential, entryPrice, '0');
-    const directionalChange = trade.isLong ? baseChange : mulWorklet(baseChange, '-1');
-    const leveragedChange = mulWorklet(directionalChange, assumedLeverage);
-    const percentValue = mulWorklet(leveragedChange, '100');
-    const formattedPercent = toFixedWorklet(percentValue, 2);
-    const numericPercent = Number(formattedPercent);
-    if (!Number.isFinite(numericPercent)) {
-      return '0.00%';
-    }
-    const normalizedPercent = numericPercent === 0 ? '0.00' : formattedPercent;
-
-    return `${normalizedPercent}%`;
-  }, [assumedLeverage, displayType, trade.entryPrice, trade.isLong, trade.price, trade.size]);
-
-  const textColor = useMemo(() => {
-    switch (displayType) {
-      case 'loss':
-        return '#FF655A';
-      case 'profit':
-        return '#23D246';
-      case 'info':
-        return '#40D0AE';
-    }
-  }, [displayType]);
-
-  return (
-    <Box width="full" alignItems="center" gap={20}>
-      <Box gap={14}>
-        <Text align="center" size="22pt" weight="heavy" color={{ custom: textColor }}>
-          {titleText}
-        </Text>
-        <Text align="center" size="44pt" weight="heavy" color={{ custom: textColor }}>
-          {numberText}
-        </Text>
-      </Box>
-      <Box flexDirection="row" gap={8}>
-        <SkiaBadge
-          text={`${assumedLeverage}x`}
-          height={27}
-          paddingHorizontal={8}
-          fillColor={['rgba(255, 255, 255, 0.16)', 'rgba(0, 0, 0, 0.1)']}
-          textColor={isDarkMode ? 'label' : { custom: opacity(labelSecondary, 0.8) }}
-          strokeColor={
-            isDarkMode ? ['rgba(255, 255, 255, 0.08)', 'rgba(0, 0, 0, 0.20)'] : ['rgba(255, 255, 255, 0.07)', 'rgba(0, 0, 0, 0.12)']
-          }
-          strokeWidth={isDarkMode ? 2 : 5 / 3}
-          // TODO: Temporarily disabled. Banding effect from the blur is too noticeable.
-          // dropShadows={isDarkMode ? [{ dx: 0, dy: 4, blur: 6, color: 'rgba(0, 0, 0, 0.06)' }] : undefined}
-          innerShadows={[{ dx: 0, dy: 1, blur: 2.5, color: 'rgba(255, 255, 255, 0.28)' }]}
-          fontSize="15pt"
-          fontWeight="heavy"
-        />
-        <SkiaBadge
-          text={i18n.t(trade.isLong ? i18n.l.perps.position_side.long : i18n.l.perps.position_side.short).toUpperCase()}
-          height={27}
-          paddingHorizontal={8}
-          fillColor={trade.isLong ? longGreen : shortRed}
-          textColor={{ custom: '#FFFFFF' }}
-          strokeColor={'rgba(255, 255, 255, 0.12)'}
-          strokeWidth={isDarkMode ? 2 : 2 / 3}
-          // TODO: Temporarily disabled. Banding effect from the blur is too noticeable.
-          // dropShadows={[
-          //   { dx: 0, dy: 8, blur: 12, color: opacity(trade.isLong ? '#1F9E39' : '#D53F35', 0.12) },
-          //   { dx: 0, dy: 4, blur: 6, color: 'rgba(0, 0, 0, 0.06)' },
-          // ]}
-          innerShadows={[{ dx: 0, dy: 1, blur: 2.5, color: 'rgba(255, 255, 255, 0.28)' }]}
-          fontSize="15pt"
-          fontWeight="heavy"
-          lineHeight={20}
-        />
-      </Box>
-    </Box>
-  );
-};
