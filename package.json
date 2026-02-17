@@ -109,7 +109,7 @@
     "@notifee/react-native": "7.8.2",
     "@polymarket/builder-relayer-client": "0.0.7",
     "@polymarket/clob-client": "4.22.8",
-    "@rainbow-me/delegation": "0.2.1",
+    "@rainbow-me/delegation": "file:./delegation-local.tgz",
     "@rainbow-me/provider": "0.1.2",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/swaps": "0.41.0",
