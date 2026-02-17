@@ -707,7 +707,8 @@ type RouteParams = {
   [Routes.REVOKE_DELEGATION_PANEL]: {
     delegationsToRevoke: Array<{
       chainId: number;
-      contractAddress: Address;
+      // Optional in simulated/debug revoke flows
+      contractAddress?: Address;
     }>;
     onSuccess?: () => void;
     revokeReason?: RevokeReason;

@@ -126,9 +126,8 @@ const getSheetContent = (reason: RevokeReason, chainName?: string): SheetContent
 
 export const RevokeDelegationPanel = () => {
   const { goBack } = useNavigation();
-  const {
-    params: { delegationsToRevoke, onSuccess, revokeReason = RevokeReason.ALERT_UNSPECIFIED },
-  } = useRoute<RouteProp<RootStackParamList, typeof Routes.REVOKE_DELEGATION_PANEL>>();
+  const { params: { delegationsToRevoke = [], onSuccess, revokeReason = RevokeReason.ALERT_UNSPECIFIED } = {} } =
+    useRoute<RouteProp<RootStackParamList, typeof Routes.REVOKE_DELEGATION_PANEL>>();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [revokeStatus, setRevokeStatus] = useState<RevokeStatus>('ready');
