@@ -1,5 +1,3 @@
-import type { Address } from 'viem';
-import { prepareBatchedTransaction, type BatchCall } from '@rainbow-me/delegation';
 import { createQueryKey, QueryConfig, QueryFunctionArgs } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { RainbowError, logger } from '@/logger';
@@ -17,7 +15,6 @@ import {
 import { isNil } from 'lodash';
 import { RequestData } from '@/walletConnect/types';
 import { ChainId } from '@/state/backendNetworks/types';
-import { getNextNonce } from '@/state/nonces';
 
 // ///////////////////////////////////////////////
 // Types
@@ -44,22 +41,7 @@ type SimulationResult = {
 
 export const simulateTransactions = async (args: SimulateTransactionsQueryVariables) => {
   if (!args.transactions) return [];
-
-  const transactions = Array.isArray(args.transactions) ? args.transactions : [args.transactions];
-  if (transactions.length === 0) return [];
-
-  const nonce = await getNextNonce({ address: transactions[0].from as Address, chainId: args.chainId });
-
-  // Converts transaction representation to delegation formats if applicable
-  // Casting is safe as we are casting string to Hex string type
-  const preparedTransaction = await prepareBatchedTransaction({
-    from: transactions[0].from as Address,
-    chainId: args.chainId,
-    calls: transactions as BatchCall[],
-    nonce,
-  });
-
-  const response = await metadataPOSTClient.simulateTransactions({ ...args, transactions: preparedTransaction });
+  const response = await metadataPOSTClient.simulateTransactions(args);
   return response?.simulateTransactions ?? [];
 };
 
