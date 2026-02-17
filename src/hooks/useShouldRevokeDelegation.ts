@@ -7,12 +7,17 @@ import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
 import { DELEGATION, getExperimentalFlag } from '@/config';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import type { Address } from 'viem';
+import { EthereumWalletType } from '@/helpers/walletTypes';
 
 export function useShouldRevokeDelegation() {
-  const accountAddress = useWalletsStore(state => state.accountAddress);
+  const { accountAddress, walletType } = useWalletsStore(state => ({
+    accountAddress: state.accountAddress,
+    walletType: state.selected?.type,
+  }));
 
   useEffect(() => {
-    if (!accountAddress) return;
+    // Hardware wallets are not supported for delegation
+    if (!accountAddress || walletType === EthereumWalletType.readOnly || walletType === EthereumWalletType.bluetooth) return;
 
     const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
     if (!delegationEnabled) return;
@@ -33,5 +38,5 @@ export function useShouldRevokeDelegation() {
     };
 
     check();
-  }, [accountAddress]);
+  }, [accountAddress, walletType]);
 }
