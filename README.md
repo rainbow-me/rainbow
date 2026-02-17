@@ -21,7 +21,10 @@
 
 1. Install nvm: https://github.com/creationix/nvm
 2. Install the required Node.js version: `nvm install`
-3. Enable yarn: `corepack enable`
+3. Install Ruby (version specified in `.ruby-version`). macOS system Ruby is
+   too old and will not work. Use a version manager such as
+   [rbenv](https://github.com/rbenv/rbenv) or [rvm](https://rvm.io/).
+4. Enable yarn: `corepack enable`
 
 **Note:** On future terminal sessions, run `nvm use` to activate the correct
 Node.js version. Alternatively, set up
@@ -67,13 +70,7 @@ patched by the postinstall script from `GOOGLE_SERVICE_API_KEY` in your `.env`.
    brew install watchman
    ```
 
-3. Install CocoaPods:
-
-   ```shell
-   sudo gem install cocoapods
-   ```
-
-4. Install the required bundles and Pods for this project:
+3. Install the required bundles (including CocoaPods) and Pods for this project:
    ```shell
    yarn install-bundle && yarn install-pods
    ```
