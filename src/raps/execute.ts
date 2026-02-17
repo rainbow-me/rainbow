@@ -242,6 +242,8 @@ export const walletExecuteRap = async <T extends RapTypes>(
         const transaction: NewTransaction = {
           ...pendingTransaction,
           hash: result.hash,
+          batch: true,
+          delegation: result.type === 'eip7702',
         };
         addNewTransaction({
           address: quote.from,
