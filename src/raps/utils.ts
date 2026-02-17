@@ -221,6 +221,9 @@ export const populateSwap = async ({
   }
 };
 
+/**
+ * Estimates pre-sign gas for non-atomic, non-delegated RAP steps.
+ */
 export async function estimateTransactionsGasLimit({
   chainId,
   steps,
