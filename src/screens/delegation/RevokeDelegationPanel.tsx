@@ -20,22 +20,28 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import * as i18n from '@/languages';
 import useGas from '@/hooks/useGas';
-import { GasFee, LegacyGasFee } from '@/entities';
+import { GasFee, LegacyGasFee } from '@/entities/gas';
 
 /**
  * Reasons for revoking delegation - determines the panel's appearance and messaging
  */
 export enum RevokeReason {
-  /** User manually chose to disable Smart Wallet for all chains */
+  // User-triggered
+  /** Toggle off Smart Wallet — revokes all chains */
   DISABLE_SMART_WALLET = 'disable_smart_wallet',
-  /** User manually chose to revoke a single network delegation */
-  REVOKE_SINGLE_NETWORK = 'revoke_single_network',
-  /** Third-party Smart Wallet provider detected - user can switch to Rainbow */
-  THIRD_PARTY_CONFLICT = 'third_party_conflict',
-  /** Security concern - unknown delegation detected */
-  SECURITY_ALERT = 'security_alert',
-  /** User-initiated revoke from settings */
-  SETTINGS_REVOKE = 'settings_revoke',
+  /** Disable a single Rainbow-delegated chain */
+  DISABLE_SINGLE_NETWORK = 'disable_single_network',
+  /** Disable a third-party delegated chain */
+  DISABLE_THIRD_PARTY = 'disable_third_party',
+  // Backend-triggered (from shouldRevokeDelegation())
+  /** Contract has a known exploit */
+  ALERT_VULNERABILITY = 'alert_vulnerability',
+  /** Contract has a known bug */
+  ALERT_BUG = 'alert_bug',
+  /** Unrecognized revoke reason from backend */
+  ALERT_UNRECOGNIZED = 'alert_unrecognized',
+  /** Catch-all for unspecified backend revoke signals */
+  ALERT_UNSPECIFIED = 'alert_unspecified',
 }
 
 export type RevokeStatus =
@@ -56,41 +62,57 @@ type SheetContent = {
 
 const getSheetContent = (reason: RevokeReason, chainName?: string): SheetContent => {
   switch (reason) {
+    // User-triggered
     case RevokeReason.DISABLE_SMART_WALLET:
       return {
-        title: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_title),
-        subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_subtitle),
-        buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_button),
+        title: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_smart_wallet_title),
+        subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_smart_wallet_subtitle),
+        buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_smart_wallet_button),
         accentColor: globalColors.blue60,
       };
-    case RevokeReason.REVOKE_SINGLE_NETWORK:
+    case RevokeReason.DISABLE_SINGLE_NETWORK:
       return {
-        title: i18n.t(i18n.l.wallet.delegations.revoke_panel.revoke_network_title, { network: chainName || '' }),
-        subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.revoke_network_subtitle),
-        buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.revoke_network_button),
+        title: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_single_network_title, { network: chainName || '' }),
+        subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_single_network_subtitle),
+        buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_single_network_button),
         accentColor: globalColors.blue60,
       };
-    case RevokeReason.THIRD_PARTY_CONFLICT:
+    case RevokeReason.DISABLE_THIRD_PARTY:
       return {
-        title: i18n.t(i18n.l.wallet.delegations.revoke_panel.conflict_title),
-        subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.conflict_subtitle),
-        buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.conflict_button),
+        title: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_third_party_title),
+        subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_third_party_subtitle),
+        buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.disable_third_party_button),
         accentColor: globalColors.orange60,
       };
-    case RevokeReason.SECURITY_ALERT:
+    // Backend-triggered
+    case RevokeReason.ALERT_VULNERABILITY:
       return {
-        title: i18n.t(i18n.l.wallet.delegations.revoke_panel.security_title),
-        subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.security_subtitle),
-        buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.security_button),
+        title: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_vulnerability_title),
+        subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_vulnerability_subtitle),
+        buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_vulnerability_button),
         accentColor: globalColors.red60,
       };
-    case RevokeReason.SETTINGS_REVOKE:
+    case RevokeReason.ALERT_BUG:
+      return {
+        title: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_bug_title),
+        subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_bug_subtitle),
+        buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_bug_button),
+        accentColor: globalColors.red60,
+      };
+    case RevokeReason.ALERT_UNRECOGNIZED:
+      return {
+        title: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_unrecognized_title),
+        subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_unrecognized_subtitle),
+        buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_unrecognized_button),
+        accentColor: globalColors.red60,
+      };
+    case RevokeReason.ALERT_UNSPECIFIED:
     default:
       return {
-        title: i18n.t(i18n.l.wallet.delegations.revoke_panel.settings_title),
-        subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.settings_subtitle),
-        buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.settings_button),
-        accentColor: globalColors.blue60,
+        title: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_unspecified_title),
+        subtitle: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_unspecified_subtitle),
+        buttonLabel: i18n.t(i18n.l.wallet.delegations.revoke_panel.alert_unspecified_button),
+        accentColor: globalColors.red60,
       };
   }
 };
@@ -98,7 +120,7 @@ const getSheetContent = (reason: RevokeReason, chainName?: string): SheetContent
 export const RevokeDelegationPanel = () => {
   const { goBack } = useNavigation();
   const {
-    params: { delegationsToRevoke, onSuccess, revokeReason = RevokeReason.SETTINGS_REVOKE },
+    params: { delegationsToRevoke, onSuccess, revokeReason = RevokeReason.ALERT_UNSPECIFIED },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.REVOKE_DELEGATION_PANEL>>();
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -144,7 +166,10 @@ export const RevokeDelegationPanel = () => {
   const sheetContent = getSheetContent(revokeReason, chainName);
 
   const handleRevoke = useCallback(async () => {
-    if (!currentDelegation || !accountAddress) return;
+    if (!currentDelegation || !accountAddress) {
+      goBack();
+      return;
+    }
 
     setRevokeStatus('claiming');
 
@@ -236,16 +261,12 @@ export const RevokeDelegationPanel = () => {
     }
   }, [revokeStatus, handleRevoke, isLastDelegation, goBack]);
 
-  if (!currentDelegation) {
-    return null;
-  }
-
   const isReady = revokeStatus === 'ready';
   const isProcessing = revokeStatus === 'claiming';
   const isError = revokeStatus === 'recoverableError';
   const isSuccess = revokeStatus === 'success';
-  const isConflict = revokeReason === RevokeReason.THIRD_PARTY_CONFLICT;
-  const isSecurityAlert = revokeReason === RevokeReason.SECURITY_ALERT;
+  const isConflict = revokeReason === RevokeReason.DISABLE_THIRD_PARTY;
+  const isBackendAlert = (revokeReason as string).startsWith('alert_');
 
   return (
     <PanelSheet showHandle showTapToDismiss>
@@ -266,7 +287,7 @@ export const RevokeDelegationPanel = () => {
                 ? [globalColors.red60, globalColors.red80, '#19002d']
                 : isSuccess
                   ? [globalColors.green60, globalColors.green80, '#19002d']
-                  : isSecurityAlert
+                  : isBackendAlert
                     ? [globalColors.red60, globalColors.red80, '#19002d']
                     : isConflict
                       ? [globalColors.orange60, globalColors.orange80, '#19002d']
