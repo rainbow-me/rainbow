@@ -1,18 +1,20 @@
 import { Signer } from '@ethersproject/abstract-signer';
-import { CrosschainQuote, fillCrosschainQuote, SwapType } from '@rainbow-me/swaps';
-import { Address } from 'viem';
+import { CrosschainQuote, fillCrosschainQuote, prepareFillCrosschainQuote, SwapType } from '@rainbow-me/swaps';
+import type { Address, Hash, Hex } from 'viem';
+import type { BatchCall } from '@rainbow-me/delegation';
+
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { add } from '@/helpers/utilities';
 import { estimateApprove } from './unlock';
 
 import { REFERRER, gasUnits, ReferrerType } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
-import { NewTransaction, TransactionDirection, TransactionStatus, TxHash } from '@/entities/transactions';
+import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, ensureError, logger } from '@/logger';
 
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { ActionProps, RapActionResult, RapSwapActionParameters } from '../references';
+import { ActionProps, PrepareActionProps, RapActionResult, RapSwapActionParameters } from '../references';
 
 import {
   CHAIN_IDS_WITH_TRACE_SUPPORT,
@@ -152,6 +154,86 @@ export const executeCrosschainSwap = async ({
   return fillCrosschainQuote(quote, transactionParams, wallet, referrer);
 };
 
+function isBridging(assetToSell: ParsedAsset, assetToBuy: ParsedAsset): boolean {
+  return !!assetToSell.networks && !!assetToBuy.chainId && assetToSell.networks[assetToBuy.chainId]?.address === assetToBuy.address;
+}
+
+function buildCrosschainSwapTransaction(
+  parameters: RapSwapActionParameters<'crosschainSwap'>,
+  gasParams: TransactionGasParams | TransactionLegacyGasParams,
+  nonce?: number
+): Omit<NewTransaction, 'hash'> {
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
+
+  const nativePriceForAssetToBuy = (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice
+    ? { value: (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice }
+    : parameters.assetToBuy.price;
+
+  const nativePriceForAssetToSell = (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice
+    ? { value: (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice }
+    : parameters.assetToSell.price;
+
+  const assetToBuy = {
+    ...parameters.assetToBuy,
+    network: chainsName[parameters.assetToBuy.chainId],
+    networks: parameters.assetToBuy.networks as Record<string, AddysNetworkDetails>,
+    colors: parameters.assetToBuy.colors as TokenColors,
+    price: nativePriceForAssetToBuy,
+  } satisfies ParsedAsset;
+
+  const updatedAssetToSell = {
+    ...parameters.assetToSell,
+    network: chainsName[parameters.assetToSell.chainId],
+    networks: parameters.assetToSell.networks as Record<string, AddysNetworkDetails>,
+    colors: parameters.assetToSell.colors as TokenColors,
+    price: nativePriceForAssetToSell,
+  } satisfies ParsedAsset;
+
+  return {
+    chainId: parameters.chainId,
+    data: parameters.quote.data,
+    from: parameters.quote.from,
+    to: parameters.quote.to as Address,
+    value: parameters.quote.value?.toString(),
+    asset: assetToBuy,
+    changes: [
+      {
+        direction: TransactionDirection.OUT,
+        asset: { ...updatedAssetToSell, native: undefined },
+        value: parameters.quote.sellAmount.toString(),
+      },
+      {
+        direction: TransactionDirection.IN,
+        asset: { ...assetToBuy, native: undefined },
+        value: parameters.quote.buyAmountMinusFees.toString(),
+      },
+    ],
+    nonce,
+    network: chainsName[parameters.chainId],
+    status: TransactionStatus.pending,
+    type: isBridging(updatedAssetToSell, assetToBuy) ? 'bridge' : 'swap',
+    ...gasParams,
+  } as Omit<NewTransaction, 'hash'>;
+}
+
+export const prepareCrosschainSwap = async ({
+  parameters,
+  quote,
+}: PrepareActionProps<'crosschainSwap'>): Promise<{
+  call: BatchCall;
+  transaction: Omit<NewTransaction, 'hash'>;
+}> => {
+  const tx = await prepareFillCrosschainQuote(quote as CrosschainQuote, REFERRER);
+  return {
+    call: {
+      to: tx.to as Address,
+      value: toHex(tx.value ?? 0),
+      data: tx.data as Hex,
+    },
+    transaction: buildCrosschainSwapTransaction(parameters, parameters.gasParams),
+  };
+};
+
 export const crosschainSwap = async ({
   wallet,
   currentRap,
@@ -215,69 +297,10 @@ export const crosschainSwap = async ({
 
   if (!swap) throw new RainbowError('[raps/crosschainSwap]: error executeCrosschainSwap');
 
-  const nativePriceForAssetToBuy = (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice
-    ? {
-        value: (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice,
-      }
-    : parameters.assetToBuy.price;
-
-  const nativePriceForAssetToSell = (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice
-    ? {
-        value: (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice,
-      }
-    : parameters.assetToSell.price;
-
-  const chainsName = useBackendNetworksStore.getState().getChainsName();
-
-  const assetToBuy = {
-    ...parameters.assetToBuy,
-    network: chainsName[parameters.assetToBuy.chainId],
-    networks: parameters.assetToBuy.networks as Record<string, AddysNetworkDetails>,
-    colors: parameters.assetToBuy.colors as TokenColors,
-    price: nativePriceForAssetToBuy,
-  } satisfies ParsedAsset;
-
-  const updatedAssetToSell = {
-    ...parameters.assetToSell,
-    network: chainsName[parameters.assetToSell.chainId],
-    networks: parameters.assetToSell.networks as Record<string, AddysNetworkDetails>,
-    colors: parameters.assetToSell.colors as TokenColors,
-    price: nativePriceForAssetToSell,
-  } satisfies ParsedAsset;
-
-  const transaction = {
-    chainId,
-    data: parameters.quote.data,
-    from: parameters.quote.from,
-    to: parameters.quote.to as Address,
-    value: parameters.quote.value?.toString(),
-    asset: assetToBuy,
-    changes: [
-      {
-        direction: TransactionDirection.OUT,
-        asset: {
-          ...updatedAssetToSell,
-          native: undefined,
-        },
-        value: quote.sellAmount.toString(),
-      },
-      {
-        direction: TransactionDirection.IN,
-        asset: {
-          ...assetToBuy,
-          native: undefined,
-        },
-        value: quote.buyAmountMinusFees.toString(),
-      },
-    ],
-    gasLimit,
-    hash: swap.hash as TxHash,
-    network: chainsName[parameters.chainId],
-    nonce: swap.nonce,
-    status: TransactionStatus.pending,
-    type: isBridging(updatedAssetToSell, assetToBuy) ? 'bridge' : 'swap',
-    ...gasParamsToUse,
-  } satisfies NewTransaction;
+  const transaction: NewTransaction = {
+    ...buildCrosschainSwapTransaction(parameters, gasParamsToUse, swap.nonce),
+    hash: swap.hash as Hash,
+  };
 
   addNewTransaction({
     address: parameters.quote.from,
@@ -290,7 +313,3 @@ export const crosschainSwap = async ({
     hash: swap.hash,
   };
 };
-
-function isBridging(assetToSell: ParsedAsset, assetToBuy: ParsedAsset): boolean {
-  return !!assetToSell.networks && !!assetToBuy.chainId && assetToSell.networks[assetToBuy.chainId]?.address === assetToBuy.address;
-}

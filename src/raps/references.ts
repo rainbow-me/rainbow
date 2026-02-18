@@ -73,6 +73,7 @@ export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap' | '
   quote: QuoteTypeMap[T];
   address?: Address;
   additionalParams?: AdditionalParamsMap[T];
+  atomic?: boolean;
 }
 
 export interface RapUnlockActionParameters {
@@ -166,6 +167,13 @@ export interface ActionProps<T extends RapActionTypes> {
   currentRap: Rap;
   gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
   gasFeeParamsBySpeed: SwapsGasFeeParamsBySpeed | GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
+}
+
+export interface PrepareActionProps<T extends RapActionTypes> {
+  parameters: RapActionParameterMap[T];
+  wallet: Signer;
+  chainId: ChainId;
+  quote: Quote | CrosschainQuote;
 }
 
 export interface WalletExecuteRapProps {

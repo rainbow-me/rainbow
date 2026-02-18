@@ -1,9 +1,11 @@
 import { Signer } from '@ethersproject/abstract-signer';
 import { Transaction } from '@ethersproject/transactions';
+import type { Address, Hash, Hex } from 'viem';
 import {
   Quote,
   SwapType,
   fillQuote,
+  prepareFillQuote,
   getQuoteExecutionDetails,
   getTargetAddress,
   getWrappedAssetAddress,
@@ -11,18 +13,18 @@ import {
   unwrapNativeAsset,
   wrapNativeAsset,
 } from '@rainbow-me/swaps';
-import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
-import { Address } from 'viem';
+import type { BatchCall } from '@rainbow-me/delegation';
 
+import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { ChainId } from '@/state/backendNetworks/types';
-import { NewTransaction, TxHash, TransactionStatus, TransactionDirection } from '@/entities/transactions';
+import { NewTransaction, TransactionStatus, TransactionDirection } from '@/entities/transactions';
 import { add } from '@/helpers/utilities';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, ensureError, logger } from '@/logger';
 
 import { gasUnits, REFERRER } from '@/references';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { ActionProps, RapActionResult, RapSwapActionParameters } from '../references';
+import { ActionProps, PrepareActionProps, RapActionResult, RapSwapActionParameters } from '../references';
 import {
   CHAIN_IDS_WITH_TRACE_SUPPORT,
   SWAP_GAS_PADDING,
@@ -245,6 +247,92 @@ export const executeSwap = async ({
   return null;
 };
 
+function buildSwapTransaction(
+  parameters: RapSwapActionParameters<'swap'>,
+  gasParams: TransactionGasParams | TransactionLegacyGasParams,
+  nonce?: number
+): Omit<NewTransaction, 'hash'> {
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
+
+  const nativePriceForAssetToBuy = (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice
+    ? { value: (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice }
+    : parameters.assetToBuy.price;
+
+  const nativePriceForAssetToSell = (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice
+    ? { value: (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice }
+    : parameters.assetToSell.price;
+
+  const assetToBuy = {
+    ...parameters.assetToBuy,
+    network: chainsName[parameters.assetToBuy.chainId],
+    networks: parameters.assetToBuy.networks as Record<string, AddysNetworkDetails>,
+    colors: parameters.assetToBuy.colors as TokenColors,
+    price: nativePriceForAssetToBuy,
+  } satisfies ParsedAsset;
+
+  const updatedAssetToSell = {
+    ...parameters.assetToSell,
+    network: chainsName[parameters.assetToSell.chainId],
+    networks: parameters.assetToSell.networks as Record<string, AddysNetworkDetails>,
+    colors: parameters.assetToSell.colors as TokenColors,
+    price: nativePriceForAssetToSell,
+  } satisfies ParsedAsset;
+
+  return {
+    chainId: parameters.chainId,
+    data: parameters.quote.data,
+    from: parameters.quote.from,
+    to: getTargetAddress(parameters.quote) as Address,
+    value: parameters.quote.value?.toString(),
+    asset: assetToBuy,
+    changes: [
+      {
+        direction: TransactionDirection.OUT,
+        asset: { ...updatedAssetToSell, native: undefined },
+        value: parameters.quote.sellAmount.toString(),
+      },
+      {
+        direction: TransactionDirection.IN,
+        asset: { ...assetToBuy, native: undefined },
+        value: parameters.quote.buyAmountMinusFees.toString(),
+      },
+    ],
+    nonce,
+    network: chainsName[parameters.chainId],
+    status: TransactionStatus.pending,
+    type: 'swap',
+    swap: {
+      type: SwapType.normal,
+      fromChainId: parameters.assetToSell.chainId,
+      toChainId: parameters.assetToBuy.chainId,
+      isBridge:
+        parameters.assetToBuy.chainId !== parameters.assetToSell.chainId &&
+        parameters.assetToSell.mainnetAddress === parameters.assetToBuy.mainnetAddress,
+    },
+    ...gasParams,
+  } as Omit<NewTransaction, 'hash'>;
+}
+
+export const prepareSwap = async ({
+  parameters,
+  quote,
+  wallet,
+  chainId,
+}: PrepareActionProps<'swap'>): Promise<{
+  call: BatchCall;
+  transaction: Omit<NewTransaction, 'hash'>;
+}> => {
+  const tx = await prepareFillQuote(quote as Quote, {}, wallet, false, chainId as number, REFERRER);
+  return {
+    call: {
+      to: tx.to as Address,
+      value: toHex(tx.value ?? 0),
+      data: tx.data as Hex,
+    },
+    transaction: buildSwapTransaction(parameters, parameters.gasParams),
+  };
+};
+
 export const swap = async ({
   currentRap,
   wallet,
@@ -310,77 +398,10 @@ export const swap = async ({
 
   if (!swap || !swap?.hash) throw new RainbowError('swap: error executeSwap');
 
-  const nativePriceForAssetToBuy = (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice
-    ? {
-        value: (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice,
-      }
-    : parameters.assetToBuy.price;
-
-  const nativePriceForAssetToSell = (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice
-    ? {
-        value: (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice,
-      }
-    : parameters.assetToSell.price;
-
-  const chainsName = useBackendNetworksStore.getState().getChainsName();
-
-  const assetToBuy = {
-    ...parameters.assetToBuy,
-    network: chainsName[parameters.assetToBuy.chainId],
-    networks: parameters.assetToBuy.networks as Record<string, AddysNetworkDetails>,
-    colors: parameters.assetToBuy.colors as TokenColors,
-    price: nativePriceForAssetToBuy,
-  } satisfies ParsedAsset;
-
-  const updatedAssetToSell = {
-    ...parameters.assetToSell,
-    network: chainsName[parameters.assetToSell.chainId],
-    networks: parameters.assetToSell.networks as Record<string, AddysNetworkDetails>,
-    colors: parameters.assetToSell.colors as TokenColors,
-    price: nativePriceForAssetToSell,
-  } satisfies ParsedAsset;
-
-  const transaction = {
-    chainId: parameters.chainId,
-    data: swap.data,
-    from: parameters.quote.from,
-    to: getTargetAddress(parameters.quote) as Address,
-    value: parameters.quote.value?.toString(),
-    asset: assetToBuy,
-    changes: [
-      {
-        direction: TransactionDirection.OUT,
-        asset: {
-          ...updatedAssetToSell,
-          native: undefined,
-        },
-        value: quote.sellAmount.toString(),
-      },
-      {
-        direction: TransactionDirection.IN,
-        asset: {
-          ...assetToBuy,
-          native: undefined,
-        },
-        value: quote.buyAmountMinusFees.toString(),
-      },
-    ],
-    gasLimit,
-    hash: swap.hash as TxHash,
-    network: chainsName[parameters.chainId],
-    nonce: swap.nonce,
-    status: TransactionStatus.pending,
-    type: 'swap',
-    swap: {
-      type: SwapType.normal,
-      fromChainId: parameters.assetToSell.chainId,
-      toChainId: parameters.assetToBuy.chainId,
-      isBridge:
-        parameters.assetToBuy.chainId !== parameters.assetToSell.chainId &&
-        parameters.assetToSell.mainnetAddress === parameters.assetToBuy.mainnetAddress,
-    },
-    ...gasParamsToUse,
-  } satisfies NewTransaction;
+  const transaction: NewTransaction = {
+    ...buildSwapTransaction(parameters, gasParamsToUse, swap.nonce),
+    hash: swap.hash as Hash,
+  };
 
   if (parameters.meta && swap.hash) {
     swapMetadataStorage.set(swap.hash.toLowerCase(), JSON.stringify({ type: 'swap', data: parameters.meta }));

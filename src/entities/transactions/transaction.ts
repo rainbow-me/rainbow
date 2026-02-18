@@ -1,16 +1,17 @@
 import { BigNumberish } from '@ethersproject/bignumber';
+import { SwapType } from '@rainbow-me/swaps';
+import { Hash } from 'viem';
+import { BytesLike } from '@ethersproject/bytes';
+import { TransactionResponse } from '@ethersproject/providers';
+
 import { ProtocolType } from '../protocolTypes';
 import { ParsedAddressAsset, ZerionAsset } from '../tokens';
 import { EthereumAddress } from '../wallet';
 import { AddCashCurrencyAsset } from '@/references';
-import { SwapType } from '@rainbow-me/swaps';
 import { SwapMetadata } from '@/raps/references';
 import { UniqueAsset } from '../uniqueAssets';
 import { ParsedAsset, AddysAsset } from '@/resources/assets/types';
 import { ChainId, Network } from '@/state/backendNetworks/types';
-import { TransactionResponse } from '@ethersproject/providers';
-
-import { BytesLike } from '@ethersproject/bytes';
 import { Transaction } from '@/features/positions/types/generated/transaction/transaction';
 
 export enum TransactionDirection {
@@ -104,6 +105,10 @@ export interface RainbowTransaction {
   fee?: RainbowTransactionFee;
   explorerLabel?: string;
   explorerUrl?: string;
+  /** True when transaction uses batched execution (atomic swaps) - applies to both type 2 and type 4 */
+  batch?: boolean;
+  /** True when transaction includes a new EIP-7702 delegation (type 4 only) */
+  delegation?: boolean;
 }
 
 export type MinedTransaction = RainbowTransaction & {
@@ -226,8 +231,6 @@ export interface AssetPricesReceivedMessage {
   meta?: MessageMeta;
 }
 
-export type TxHash = `0x${string}`;
-
 export type PendingTransaction = RainbowTransaction & {
   status: TransactionStatus.pending;
 };
@@ -269,8 +272,8 @@ export interface ExecuteRapResponse extends TransactionResponse {
 
 export type TransactionApiResponse = {
   status: TransactionStatus;
-  id: TxHash;
-  hash: TxHash;
+  id: Hash;
+  hash: Hash;
   network: Network;
   protocol?: string;
   direction?: TransactionDirection;
