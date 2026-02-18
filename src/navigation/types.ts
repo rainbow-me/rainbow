@@ -10,7 +10,7 @@ import { RequestData, WalletconnectApprovalSheetRouteParams, WalletconnectResult
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 import { RainbowWallet } from '@/model/wallet';
 import { RainbowPosition } from '@/features/positions/types';
-import { Address } from 'viem';
+import type { Address } from 'viem';
 import { SharedValue } from 'react-native-reanimated';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
@@ -42,6 +42,7 @@ import { ScrollView } from 'react-native';
 import { HlTrade, PerpMarket, PerpsPosition, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
 import { PolymarketPosition } from '@/features/polymarket/types';
 import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
 
 export type PortalSheetProps = {
   children: React.FC;
@@ -702,6 +703,15 @@ type RouteParams = {
   };
   [Routes.RNBW_REWARDS_ESTIMATE_SHEET]: {
     estimatedAmount: string;
+  };
+  [Routes.REVOKE_DELEGATION_PANEL]: {
+    delegationsToRevoke: Array<{
+      chainId: number;
+      // Optional in simulated/debug revoke flows
+      contractAddress?: Address;
+    }>;
+    onSuccess?: () => void;
+    revokeReason?: RevokeReason;
   };
 };
 
