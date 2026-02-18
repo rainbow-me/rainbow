@@ -15,6 +15,7 @@ import { SupportCategoryPickerView } from './components/support/SupportCategoryP
 import WalletNotificationsSettings from './components/WalletNotificationsSettings';
 import { settingsOptions } from '@/navigation/config';
 import ViewCloudBackups from './components/Backups/ViewCloudBackups';
+import ViewWalletDelegations from './components/Backups/ViewWalletDelegations';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import Routes from '@/navigation/routesNames';
 import useAccountSettings from '@/hooks/useAccountSettings';
@@ -105,6 +106,14 @@ export function SettingsSheet() {
             <Stack.Screen
               component={ViewCloudBackups}
               name={Routes.VIEW_CLOUD_BACKUPS}
+              options={({ route }: any) => ({
+                cardStyleInterpolator: settingsCardStyleInterpolator,
+                title: route.params?.title,
+              })}
+            />
+            <Stack.Screen
+              component={ViewWalletDelegations}
+              name={Routes.VIEW_WALLET_DELEGATIONS}
               options={({ route }: any) => ({
                 cardStyleInterpolator: settingsCardStyleInterpolator,
                 title: route.params?.title,
