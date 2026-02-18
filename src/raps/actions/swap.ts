@@ -1,7 +1,6 @@
 import { Signer } from '@ethersproject/abstract-signer';
 import { Transaction } from '@ethersproject/transactions';
 import {
-  CrosschainQuote,
   Quote,
   SwapType,
   fillQuote,
@@ -15,7 +14,6 @@ import {
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { Address } from 'viem';
 
-import { metadataPOSTClient } from '@/graphql';
 import { ChainId } from '@/state/backendNetworks/types';
 import { NewTransaction, TxHash, TransactionStatus, TransactionDirection } from '@/entities/transactions';
 import { add } from '@/helpers/utilities';
@@ -29,6 +27,7 @@ import {
   CHAIN_IDS_WITH_TRACE_SUPPORT,
   SWAP_GAS_PADDING,
   estimateSwapGasLimitWithFakeApproval,
+  estimateTransactionsGasLimit,
   getDefaultGasLimitForTrade,
   overrideWithFastSpeedIfNeeded,
   populateSwap,
@@ -61,16 +60,53 @@ export const estimateUnlockAndSwap = async ({ quote, chainId }: Pick<RapSwapActi
   let gasLimits: (string | number)[] = [];
 
   if (allowanceNeeded) {
-    const gasLimitFromMetadata = await estimateUnlockAndSwapFromMetadata({
-      swapAssetNeedsUnlocking: allowanceNeeded,
+    // Try simulation-based estimation first
+    const provider = getProvider({ chainId });
+    const approveTransaction = await populateApprove({
+      owner: accountAddress,
+      tokenAddress: sellTokenAddress,
+      spender: targetAddress as Address,
       chainId,
-      accountAddress,
-      sellTokenAddress,
-      quote,
+      amount: quote.sellAmount.toString(),
     });
-    if (gasLimitFromMetadata) {
-      return gasLimitFromMetadata;
+    const swapTransaction = await populateSwap({ provider, quote });
+
+    if (
+      approveTransaction?.to &&
+      approveTransaction?.data &&
+      approveTransaction?.from &&
+      swapTransaction?.to &&
+      swapTransaction?.data &&
+      swapTransaction?.from
+    ) {
+      const gasLimitFromSimulation = await estimateTransactionsGasLimit({
+        chainId,
+        steps: [
+          {
+            transaction: {
+              to: approveTransaction.to,
+              data: approveTransaction.data,
+              from: approveTransaction.from,
+              value: approveTransaction.value?.toString() || '0x0',
+            },
+            label: 'approve',
+          },
+          {
+            transaction: {
+              to: swapTransaction.to,
+              data: swapTransaction.data,
+              from: swapTransaction.from,
+              value: swapTransaction.value?.toString() || '0x0',
+            },
+            label: 'swap',
+          },
+        ],
+      });
+      if (gasLimitFromSimulation) {
+        return gasLimitFromSimulation;
+      }
     }
+
     const unlockGasLimit = await estimateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,
@@ -167,81 +203,6 @@ export const estimateSwapGasLimit = async ({
       return getDefaultGasLimitForTrade(quote, chainId);
     }
   }
-};
-
-export const estimateUnlockAndSwapFromMetadata = async ({
-  swapAssetNeedsUnlocking,
-  chainId,
-  accountAddress,
-  sellTokenAddress,
-  quote,
-}: {
-  swapAssetNeedsUnlocking: boolean;
-  chainId: ChainId;
-  accountAddress: Address;
-  sellTokenAddress: Address;
-  quote: Quote | CrosschainQuote;
-}) => {
-  try {
-    const targetAddress = getTargetAddress(quote);
-    const approveTransaction = await populateApprove({
-      owner: accountAddress,
-      tokenAddress: sellTokenAddress,
-      spender: targetAddress as Address,
-      chainId,
-      amount: quote.sellAmount.toString(),
-    });
-
-    const provider = getProvider({ chainId });
-    const swapTransaction = await populateSwap({
-      provider,
-      quote,
-    });
-    if (
-      approveTransaction?.to &&
-      approveTransaction?.data &&
-      approveTransaction?.from &&
-      swapTransaction?.to &&
-      swapTransaction?.data &&
-      swapTransaction?.from
-    ) {
-      const transactions = swapAssetNeedsUnlocking
-        ? [
-            {
-              to: approveTransaction?.to,
-              data: approveTransaction?.data || '0x0',
-              from: approveTransaction?.from,
-              value: approveTransaction?.value?.toString() || '0x0',
-            },
-            {
-              to: swapTransaction?.to,
-              data: swapTransaction?.data || '0x0',
-              from: swapTransaction?.from,
-              value: swapTransaction?.value?.toString() || '0x0',
-            },
-          ]
-        : [
-            {
-              to: swapTransaction?.to,
-              data: swapTransaction?.data || '0x0',
-              from: swapTransaction?.from,
-              value: swapTransaction?.value?.toString() || '0x0',
-            },
-          ];
-
-      const response = await metadataPOSTClient.simulateTransactions({
-        chainId,
-        transactions,
-      });
-      const gasLimit = response.simulateTransactions
-        ?.map(res => res?.gas?.estimate)
-        .reduce((acc, limit) => (acc && limit ? add(acc, limit) : acc), '0');
-      return gasLimit;
-    }
-  } catch (e) {
-    return null;
-  }
-  return null;
 };
 
 export const executeSwap = async ({
