@@ -22,7 +22,7 @@ import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { logger, RainbowError } from '@/logger';
 import { isBuilderDexAssetId } from '@/features/perps/utils/hyperliquidSymbols';
 
-type OrderStatusResponse = hl.OrderSuccessResponse['response']['data']['statuses'][number];
+export type OrderStatusResponse = hl.OrderSuccessResponse['response']['data']['statuses'][number];
 
 export class HyperliquidExchangeClient {
   private accountClient: HyperliquidAccountClient;

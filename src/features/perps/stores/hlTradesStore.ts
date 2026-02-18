@@ -31,6 +31,7 @@ export const tradeExecutionDescriptions: Readonly<Record<TradeExecutionType, str
 
 type HlTradesStoreActions = {
   getTrade: (tradeId: number) => HlTrade | undefined;
+  getTradeByOrderId: ({ symbol, orderId }: { symbol: string; orderId: number }) => HlTrade | null;
   getTrades: () => HlTrade[] | undefined;
   getTradesBySymbol: () => Record<string, HlTrade[]> | undefined;
 };
@@ -48,6 +49,11 @@ export const useHlTradesStore = createQueryStore<FetchHlTradesResponse, HlTrades
       get()
         .getData()
         ?.trades.find(trade => trade.id === tradeId),
+
+    getTradeByOrderId: ({ symbol, orderId }: { symbol: string; orderId: number }) => {
+      const trades = get().getData()?.tradesBySymbol[symbol] ?? [];
+      return trades.find(trade => trade.orderId === orderId) ?? null;
+    },
 
     getTrades: () => get().getData()?.trades,
 
