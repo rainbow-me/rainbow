@@ -38,9 +38,11 @@ export function isCrosschainQuote(data: Quote | CrosschainQuote | QuoteError | n
 
 // ============ Crosschain Validation ========================================== //
 
+const EMPTY_TRANSACTIONS = Object.freeze([]);
+
 /**
- * Ensures all recipient fields in a crosschain quote (when present) match the expected recipient.
- * Empty routes are treated as valid.
+ * Ensures all recipient fields in a crosschain quote (when present)
+ * match the expected recipient. Empty routes are treated as valid.
  */
 export function crosschainQuoteTargetsRecipient(quote: CrosschainQuote, recipient: string): boolean {
   if (!recipient) return false;
@@ -50,7 +52,7 @@ export function crosschainQuoteTargetsRecipient(quote: CrosschainQuote, recipien
 
   return quote.routes.every(route => {
     const routeRecipientOk = !route.recipient || route.recipient.toLowerCase() === normalized;
-    const txRecipientsOk = (route.userTxs ?? []).every(tx => !tx.recipient || tx.recipient.toLowerCase() === normalized);
+    const txRecipientsOk = (route.userTxs ?? EMPTY_TRANSACTIONS).every(tx => !tx.recipient || tx.recipient.toLowerCase() === normalized);
     return routeRecipientOk && txRecipientsOk;
   });
 }
