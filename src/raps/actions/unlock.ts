@@ -233,7 +233,7 @@ export const estimateERC721Approval = async ({
     return gasLimit ? gasLimit.toString() : `${gasUnits.basic_approval}`;
   } catch (error) {
     logger.error(new RainbowError('[raps/unlock]: error estimateApproval'), {
-      message: (error as Error)?.message,
+      message: ensureError(error).message,
     });
     return `${gasUnits.basic_approval}`;
   }
@@ -319,7 +319,7 @@ export const unlock = async ({
     });
   } catch (e) {
     logger.error(new RainbowError('[raps/unlock]: error estimateApprove'), {
-      message: (e as Error)?.message,
+      message: ensureError(e).message,
     });
     throw e;
   }
@@ -352,7 +352,7 @@ export const unlock = async ({
     });
   } catch (e) {
     logger.error(new RainbowError('[raps/unlock]: error executeApprove'), {
-      message: (e as Error)?.message,
+      message: ensureError(e).message,
     });
     throw e;
   }

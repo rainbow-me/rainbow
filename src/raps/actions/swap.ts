@@ -371,7 +371,7 @@ export const swap = async ({
     });
   } catch (e) {
     logger.error(new RainbowError('[raps/swap]: error estimateSwapGasLimit'), {
-      message: (e as Error)?.message,
+      message: ensureError(e).message,
     });
 
     throw e;
