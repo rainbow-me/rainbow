@@ -169,7 +169,7 @@ export const RevokeDelegationPanel = () => {
   const sheetContent = getSheetContent(revokeReason, chainName);
 
   const handleRevoke = useCallback(async () => {
-    if (!currentDelegation || !accountAddress) {
+    if (!currentDelegation || !address) {
       goBack();
       return;
     }
