@@ -170,15 +170,15 @@ export const LeaderboardRow = memo(function LeaderboardRow({
   let icon;
   switch (rank) {
     case 1:
-      gradient = ['#FFE456', '#CF9500'] as const;
+      gradient = ['#FFE456', '#CF9500'];
       icon = '🥇';
       break;
     case 2:
-      gradient = ['#FBFCFE', '#B3BCC7'] as const;
+      gradient = ['#FBFCFE', '#B3BCC7'];
       icon = '🥈';
       break;
     case 3:
-      gradient = ['#DE8F38', '#AE5F25'] as const;
+      gradient = ['#DE8F38', '#AE5F25'];
       icon = '🥉';
       break;
     default:

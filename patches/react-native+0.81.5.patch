@@ -1,15 +1,13 @@
-diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
-index 6d18765..f2ccfd5 100644
---- a/node_modules/react-native/React/Views/RCTView.m
-+++ b/node_modules/react-native/React/Views/RCTView.m
-@@ -830,6 +830,10 @@ - (void)displayLayer:(CALayer *)layer
- 
-   UIColor *backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection];
- 
-+  if (@available(iOS 13.0, *)) {
-+    layer.cornerCurve = kCACornerCurveContinuous;
-+  }
-+
-   if (useIOSBorderRendering) {
-     layer.cornerRadius = cornerRadii.topLeftHorizontal;
-     layer.borderColor = borderColors.left.CGColor;
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp b/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
+index 1234567..abcdefg 100644
+--- a/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
+@@ -542,7 +542,7 @@ static void RCTAddContourEffectToLayer(
+       .borderColors = borderColors.resolve(isRTL, {}),
+       .borderWidths = borderWidths.resolve(isRTL, 0),
+       .borderRadii = ensureNoOverlap(radii, layoutMetrics.frame.size),
+-      .borderCurves = borderCurves.resolve(isRTL, BorderCurve::Circular),
++      .borderCurves = borderCurves.resolve(isRTL, BorderCurve::Continuous),
+       .borderStyles = borderStyles.resolve(isRTL, BorderStyle::Solid),
+   };
+ }

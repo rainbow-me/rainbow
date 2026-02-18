@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
+import { Bleed, Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { TOP_RANK_SYMBOLS } from '@/screens/rewards/constants';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
