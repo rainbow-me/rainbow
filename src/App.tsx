@@ -26,6 +26,7 @@ import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { analytics } from '@/analytics';
 import { getOrCreateDeviceId } from '@/analytics/utils';
 import { logger, RainbowError } from '@/logger';
+import { createServiceLogger } from '@/logger/createServiceLogger';
 import * as ls from '@/storage';
 import { migrate } from '@/migrations';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
@@ -41,6 +42,10 @@ import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
 import { RainbowToastDisplay } from '@/components/rainbow-toast/RainbowToast';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { ReducedMotionConfig, ReduceMotion } from 'react-native-reanimated';
+import { configure as configureDelegationClient } from '@rainbow-me/delegation';
+import { getPlatformClient } from '@/resources/platform/client';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -174,6 +179,16 @@ async function initializeApplication() {
     initializeRemoteConfig(),
     migrate(),
     loadSettingsData(), // load i18n early for first-render
+    configureDelegationClient({
+      platformClient: getPlatformClient(),
+      logger: createServiceLogger(logger.DebugContext.delegation),
+      // Note: Chains are configured once at startup. If backend networks are updated
+      // after initialization, the delegation SDK won't automatically know about new chains.
+      // If this becomes an issue, we should add a subscription to backend networks changes
+      // and reconfigure the SDK when chains are updated.
+      chains: useBackendNetworksStore.getState().getSupportedChains(),
+      currentAddress: $ => $(useWalletsStore).accountAddress || null,
+    }),
   ]);
 
   const isReturningUser = ls.device.get(['isReturningUser']);
