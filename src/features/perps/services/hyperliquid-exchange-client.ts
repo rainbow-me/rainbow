@@ -3,7 +3,7 @@ import * as hl from '@nktkas/hyperliquid';
 import { type CancelSuccessResponse } from '@nktkas/hyperliquid';
 import { type Address, type Hex } from 'viem';
 import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS, RAINBOW_REFERRAL_CODE } from '../constants';
-import { PerpPositionSide, type TriggerOrder, type TriggerOrderType } from '../types';
+import { PerpPositionSide, type PerpsPosition, type TriggerOrder, type TriggerOrderType } from '../types';
 import { type HyperliquidAccountClient } from './hyperliquid-account-client';
 import { type Wallet } from '@ethersproject/wallet';
 import { isPositive, toFixedWorklet } from '@/framework/core/safeMath';
@@ -21,6 +21,7 @@ import { loadWallet } from '@/model/wallet';
 import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { logger, RainbowError } from '@/logger';
 import { isBuilderDexAssetId } from '@/features/perps/utils/hyperliquidSymbols';
+import { generateCloid } from '@/features/perps/utils/hyperliquidCloid';
 
 export type OrderStatusResponse = hl.OrderSuccessResponse['response']['data']['statuses'][number];
 
@@ -202,12 +203,14 @@ export class HyperliquidExchangeClient {
     price,
     sizeDecimals,
     size,
+    position,
     slippageBips = DEFAULT_SLIPPAGE_BIPS,
   }: {
     assetId: number;
     price: string;
     size: string;
     sizeDecimals: number;
+    position: PerpsPosition;
     slippageBips?: number;
   }): Promise<OrderStatusResponse | undefined> {
     if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
@@ -222,6 +225,7 @@ export class HyperliquidExchangeClient {
       sizeDecimals,
       slippageBips,
       reduceOnly: true,
+      clientOrderId: generateCloid(position.leverage),
     });
 
     const exchangeClient = await this.getExchangeClient();
