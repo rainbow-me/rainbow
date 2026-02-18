@@ -155,96 +155,112 @@ function getNodeAckDelay(chainId: ChainId): number {
   }
 }
 
-const executeAtomic = async (
+export const walletExecuteRap = async <T extends RapTypes>(
   wallet: Signer,
-  actions: RapAction<RapActionTypes>[],
-  parameters: RapSwapActionParameters<'swap' | 'crosschainSwap'>,
-  rapName: string
+  type: T,
+  parameters: RapSwapActionParameters<T>
 ): Promise<{ errorMessage: string | null; hash: string | null; nonce: number | undefined }> => {
-  const { chainId, quote, gasParams } = parameters;
-  const provider = getProvider({ chainId });
-  const eip1559 = gasParams as TransactionGasParamAmounts;
+  // NOTE: We don't care to track claimBridge raps
+  const rap = PERF_TRACKING_EXEMPTIONS.includes(type)
+    ? await createSwapRapByType(type, parameters)
+    : await executeFn(createSwapRapByType, {
+        screen: Screens.SWAPS,
+        operation: TimeToSignOperation.CreateRap,
+        metadata: {
+          degenMode: swapsStore.getState().degenMode,
+        },
+      })(type, parameters);
 
-  if (!quote) {
-    return { nonce: undefined, hash: null, errorMessage: 'Quote is required for atomic execution' };
-  }
+  const { actions } = rap;
+  const rapName = getRapFullName(rap.actions);
 
-  try {
-    const calls: BatchCall[] = [];
-    let pendingTransaction: Omit<NewTransaction, 'hash'> | null = null;
+  // Atomic execution if atomic flow is allowed (user preference) and supported for a chainId
+  const { supported: delegationSupported } = await supportsDelegation({
+    address: parameters.quote?.from as Address,
+    chainId: parameters.chainId,
+  });
+  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
+  const executeAtomic = delegationEnabled && delegationSupported && parameters.atomic;
+  if (executeAtomic && (type === 'swap' || type === 'crosschainSwap')) {
+    const swapParams = parameters as RapSwapActionParameters<'swap' | 'crosschainSwap'>;
+    const { chainId, quote, gasParams } = swapParams;
+    const provider = getProvider({ chainId });
+    const eip1559 = gasParams as TransactionGasParamAmounts;
 
-    for (const action of actions) {
-      const prepareResult = await typePrepareAction(action.type, {
-        parameters: action.parameters,
-        wallet,
-        chainId,
-        quote,
-      } as PrepareActionProps<typeof action.type>)();
+    if (!quote) {
+      return { nonce: undefined, hash: null, errorMessage: 'Quote is required for atomic execution' };
+    }
 
-      if (prepareResult.call) {
-        calls.push(prepareResult.call);
+    try {
+      const calls: BatchCall[] = [];
+      let pendingTransaction: Omit<NewTransaction, 'hash'> | null = null;
+
+      for (const action of actions) {
+        const prepareResult = await typePrepareAction(action.type, {
+          parameters: action.parameters,
+          wallet,
+          chainId,
+          quote,
+        } as PrepareActionProps<typeof action.type>)();
+
+        if (prepareResult.call) {
+          calls.push(prepareResult.call);
+        }
+        if ('transaction' in prepareResult) {
+          pendingTransaction = prepareResult.transaction;
+        }
       }
-      if ('transaction' in prepareResult) {
-        pendingTransaction = prepareResult.transaction;
+
+      if (!calls.length) {
+        return { nonce: undefined, hash: null, errorMessage: 'No calls to execute' };
       }
-    }
 
-    if (!calls.length) {
-      return { nonce: undefined, hash: null, errorMessage: 'No calls to execute' };
-    }
-
-    const result = await executeFn(executeBatchedTransaction, {
-      screen: Screens.SWAPS,
-      operation: TimeToSignOperation.BroadcastTransaction,
-      metadata: { degenMode: swapsStore.getState().degenMode },
-    })({
-      signer: wallet as Wallet,
-      address: quote.from as Address,
-      chainId,
-      provider,
-      calls,
-      value: BigInt(quote.value?.toString() ?? '0'),
-      transactionOptions: {
-        maxFeePerGas: BigInt(eip1559.maxFeePerGas),
-        maxPriorityFeePerGas: BigInt(eip1559.maxPriorityFeePerGas),
-        gasLimit: null,
-      },
-      nonce: parameters.nonce!,
-    });
-
-    if (!result.hash) {
-      return { nonce: undefined, hash: null, errorMessage: 'Transaction failed - no hash returned' };
-    }
-
-    if (pendingTransaction) {
-      const transaction: NewTransaction = {
-        ...pendingTransaction,
-        hash: result.hash,
-      };
-      addNewTransaction({
-        address: quote.from,
+      const result = await executeFn(executeBatchedTransaction, {
+        screen: Screens.SWAPS,
+        operation: TimeToSignOperation.BroadcastTransaction,
+        metadata: { degenMode: swapsStore.getState().degenMode },
+      })({
+        signer: wallet as Wallet,
+        address: quote.from as Address,
         chainId,
-        transaction,
+        provider,
+        calls,
+        value: BigInt(quote.value?.toString() ?? '0'),
+        transactionOptions: {
+          maxFeePerGas: BigInt(eip1559.maxFeePerGas),
+          maxPriorityFeePerGas: BigInt(eip1559.maxPriorityFeePerGas),
+          gasLimit: null,
+        },
+        nonce: swapParams.nonce!,
       });
+
+      if (!result.hash) {
+        return { nonce: undefined, hash: null, errorMessage: 'Transaction failed - no hash returned' };
+      }
+
+      if (pendingTransaction) {
+        const transaction: NewTransaction = {
+          ...pendingTransaction,
+          hash: result.hash,
+        };
+        addNewTransaction({
+          address: quote.from,
+          chainId,
+          transaction,
+        });
+      }
+
+      logger.debug(`[${rapName}] executed atomically`, { hash: result.hash });
+      return { nonce: swapParams.nonce, hash: result.hash, errorMessage: null };
+    } catch (error) {
+      logger.error(new RainbowError(`[raps/execute]: ${rapName} - atomic execution failed`), {
+        message: (error as Error)?.message,
+      });
+      return { nonce: undefined, hash: null, errorMessage: (error as Error)?.message ?? 'Unknown error' };
     }
-
-    logger.debug(`[${rapName}] executed atomically`, { hash: result.hash });
-    return { nonce: parameters.nonce, hash: result.hash, errorMessage: null };
-  } catch (error) {
-    logger.error(new RainbowError(`[raps/execute]: ${rapName} - atomic execution failed`), {
-      message: (error as Error)?.message,
-    });
-    return { nonce: undefined, hash: null, errorMessage: (error as Error)?.message ?? 'Unknown error' };
   }
-};
 
-const executeSequential = async <T extends RapTypes>(
-  wallet: Signer,
-  rap: { actions: RapAction<RapActionTypes>[] },
-  actions: RapAction<RapActionTypes>[],
-  parameters: RapSwapActionParameters<T>,
-  rapName: string
-): Promise<{ errorMessage: string | null; hash: string | null; nonce: number | undefined }> => {
+  // Sequential execution path
   let nonce = parameters?.nonce;
   let errorMessage: string | null = null;
   let hash: string | null = null;
@@ -296,39 +312,4 @@ const executeSequential = async <T extends RapTypes>(
     }
   }
   return { errorMessage, hash, nonce };
-};
-
-export const walletExecuteRap = async <T extends RapTypes>(
-  wallet: Signer,
-  type: T,
-  parameters: RapSwapActionParameters<T>
-): Promise<{ errorMessage: string | null; hash: string | null; nonce: number | undefined }> => {
-  // NOTE: We don't care to track claimBridge raps
-  const rap = PERF_TRACKING_EXEMPTIONS.includes(type)
-    ? await createSwapRapByType(type, parameters)
-    : await executeFn(createSwapRapByType, {
-        screen: Screens.SWAPS,
-        operation: TimeToSignOperation.CreateRap,
-        metadata: {
-          degenMode: swapsStore.getState().degenMode,
-        },
-      })(type, parameters);
-
-  const { actions } = rap;
-  const rapName = getRapFullName(actions);
-
-  if (parameters.atomic && (type === 'swap' || type === 'crosschainSwap')) {
-    const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
-    if (delegationEnabled) {
-      const { supported } = await supportsDelegation({
-        address: parameters.quote?.from as Address,
-        chainId: parameters.chainId,
-      });
-      if (supported) {
-        return executeAtomic(wallet, actions, parameters as RapSwapActionParameters<'swap' | 'crosschainSwap'>, rapName);
-      }
-    }
-  }
-
-  return executeSequential(wallet, rap, actions, parameters, rapName);
 };
