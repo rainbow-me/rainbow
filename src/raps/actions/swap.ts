@@ -1,6 +1,6 @@
 import { Signer } from '@ethersproject/abstract-signer';
 import { Transaction } from '@ethersproject/transactions';
-import type { Address, Hash, Hex } from 'viem';
+import type { Hash } from 'viem';
 import {
   Quote,
   SwapType,
@@ -43,6 +43,7 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { requireAddress, requireHex } from '../validation';
 
 const WRAP_GAS_PADDING = 1.002;
 
@@ -51,15 +52,7 @@ export const estimateUnlockAndSwap = async ({
   chainId,
   requiresApprove: requiresApproveInput,
 }: Pick<RapSwapActionParameters<'swap'>, 'quote' | 'chainId' | 'requiresApprove'>) => {
-  const {
-    from: accountAddress,
-    sellTokenAddress,
-    allowanceNeeded,
-  } = quote as {
-    from: Address;
-    sellTokenAddress: Address;
-    allowanceNeeded: boolean;
-  };
+  const { from: accountAddress, sellTokenAddress, allowanceNeeded } = quote;
   const requiresApprove = requiresApproveInput ?? allowanceNeeded;
   const targetAddress = getTargetAddress(quote);
   if (requiresApprove && !targetAddress) {
@@ -289,7 +282,7 @@ function buildSwapTransaction(
     chainId: parameters.chainId,
     data: parameters.quote.data,
     from: parameters.quote.from,
-    to: getTargetAddress(parameters.quote) as Address,
+    to: requireAddress(getTargetAddress(parameters.quote), 'swap target address'),
     value: parameters.quote.value?.toString(),
     asset: assetToBuy,
     changes: [
@@ -332,9 +325,9 @@ export const prepareSwap = async ({
   const tx = await prepareFillQuote(quote as Quote, {}, wallet, false, chainId as number, REFERRER);
   return {
     call: {
-      to: tx.to as Address,
+      to: requireAddress(tx.to, 'swap prepared tx.to'),
       value: toHex(tx.value ?? 0),
-      data: tx.data as Hex,
+      data: requireHex(tx.data, 'swap prepared tx.data'),
     },
     transaction: buildSwapTransaction(parameters, parameters.gasParams),
   };

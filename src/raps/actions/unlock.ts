@@ -21,6 +21,7 @@ import { ParsedAsset } from '@/resources/assets/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { DELEGATION, getExperimentalFlag } from '@/config/experimental';
+import { requireAddress, requireHex } from '../validation';
 
 /**
  * Determines the approval amount based on delegation support.
@@ -167,9 +168,10 @@ export const populateApprove = async ({
 };
 
 export const prepareUnlock = async ({ parameters }: PrepareActionProps<'unlock'>): Promise<{ call: BatchCall | null }> => {
+  const tokenAddress = requireAddress(parameters.assetToUnlock.address, 'unlock asset address');
   const tx = await populateApprove({
     owner: parameters.fromAddress,
-    tokenAddress: parameters.assetToUnlock.address as Address,
+    tokenAddress,
     spender: parameters.contractAddress,
     chainId: parameters.chainId,
     amount: parameters.amount,
@@ -177,9 +179,9 @@ export const prepareUnlock = async ({ parameters }: PrepareActionProps<'unlock'>
   if (!tx?.data) return { call: null };
   return {
     call: {
-      to: parameters.assetToUnlock.address as Address,
+      to: tokenAddress,
       value: toHex(tx?.value ?? 0),
-      data: tx.data as Hex,
+      data: requireHex(tx.data, 'unlock prepared tx.data'),
     },
   };
 };
