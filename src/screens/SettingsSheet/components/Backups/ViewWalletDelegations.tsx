@@ -13,7 +13,7 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import { ChainId } from '@/state/backendNetworks/types';
 import { fonts } from '@/design-system/typography/typography';
 import { useTheme } from '@/theme';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ContextCircleButton } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_IOS } from '@/env';
@@ -279,9 +279,8 @@ const ViewWalletDelegations = () => {
                       <LinearGradient
                         colors={['#3b7fff', '#b724ad', '#19002d']}
                         locations={[0.043, 0.887, 1]}
-                        useAngle
-                        angle={132.532}
-                        angleCenter={{ x: 0.5, y: 0.5 }}
+                        start={{ x: 0, y: 1 }}
+                        end={{ x: 1, y: 0 }}
                         style={StyleSheet.absoluteFill}
                       />
                       <Box alignItems="center" justifyContent="center" width="full" height="full">

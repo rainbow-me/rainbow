@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Wallet } from '@ethersproject/wallet';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@/navigation';
 import { Box, Text, globalColors, Separator } from '@/design-system';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
@@ -300,9 +300,8 @@ export const RevokeDelegationPanel = () => {
                     : DEFAULT_LOCK_GRADIENT_COLORS
             }
             locations={DEFAULT_LOCK_GRADIENT_LOCATIONS}
-            useAngle
-            angle={132.532}
-            angleCenter={{ x: 0.5, y: 0.5 }}
+            start={{ x: 0, y: 1 }}
+            end={{ x: 1, y: 0 }}
             style={StyleSheet.absoluteFill}
           />
           <Box alignItems="center" justifyContent="center" width="full" height="full">
@@ -339,9 +338,8 @@ export const RevokeDelegationPanel = () => {
             <LinearGradient
               colors={[...DEFAULT_LOCK_GRADIENT_COLORS]}
               locations={[...DEFAULT_LOCK_GRADIENT_LOCATIONS]}
-              useAngle
-              angle={132.532}
-              angleCenter={{ x: 0.5, y: 0.5 }}
+              start={{ x: 0, y: 1 }}
+              end={{ x: 1, y: 0 }}
               pointerEvents="none"
               style={styles.buttonGradient}
             />
