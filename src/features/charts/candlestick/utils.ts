@@ -1,7 +1,7 @@
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { supportedNativeCurrencies } from '@/references';
-import { greaterThanOrEqualToWorklet } from '@/safe-math/SafeMath';
+import { greaterThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { addCommasToNumber } from '@/__swaps__/utils/swaps';
 import { CandleResolution } from '../types';
 import { Bar, CandlestickEndpointResponse, Price } from './types';

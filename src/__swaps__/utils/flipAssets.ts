@@ -1,7 +1,7 @@
 import { SharedValue, withSpring } from 'react-native-reanimated';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { supportedNativeCurrencies } from '@/references';
-import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { InputKeys, InputMethods, InputValues } from '@/__swaps__/types/swap';
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';

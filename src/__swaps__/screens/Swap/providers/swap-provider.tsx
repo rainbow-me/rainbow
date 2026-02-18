@@ -15,7 +15,7 @@ import {
   withSpring,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { divWorklet, equalWorklet, lessThanOrEqualToWorklet, mulWorklet, sumWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, equalWorklet, lessThanOrEqualToWorklet, mulWorklet, sumWorklet } from '@/framework/core/safeMath';
 import {
   INITIAL_SLIDER_POSITION,
   SLIDER_COLLAPSED_HEIGHT,

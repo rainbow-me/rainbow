@@ -1,5 +1,5 @@
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
-import { greaterThanWorklet, lessThanWorklet } from '@/safe-math/SafeMath';
+import { greaterThanWorklet, lessThanWorklet } from '@/framework/core/safeMath';
 import { useState } from 'react';
 import { useDerivedValue, SharedValue } from 'react-native-reanimated';
 

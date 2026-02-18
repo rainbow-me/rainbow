@@ -31,7 +31,7 @@ import { externalTokenQueryFunction, externalTokenQueryKey } from '@/resources/a
 import { walletExecuteRap } from '@/raps/execute';
 import { executeClaim } from '../claim';
 import { weiToGwei } from '@/parsers';
-import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
+import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { ClaimStatus } from '../../shared/types';
 import { analytics } from '@/analytics';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';

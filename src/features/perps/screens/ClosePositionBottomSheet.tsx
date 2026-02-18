@@ -17,7 +17,7 @@ import { SheetHandleFixedToTop } from '@/components/sheet';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { HANDLE_COLOR, LIGHT_HANDLE_COLOR, MIN_ORDER_SIZE_USD, SLIDER_WIDTH } from '@/features/perps/constants';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { divWorklet, mulWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { logger, RainbowError } from '@/logger';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { colors } from '@/styles';

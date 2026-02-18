@@ -5,7 +5,7 @@ import { PolymarketEvent, PolymarketMarketEvent, PolymarketMarket } from '@/feat
 import { getMarketsGroupedByBetType } from '@/features/polymarket/screens/polymarket-event-screen/utils/getMarketsGroupedByBetType';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
-import { toPercentageWorklet } from '@/safe-math/SafeMath';
+import { toPercentageWorklet } from '@/framework/core/safeMath';
 import { isDrawMarket } from '@/features/polymarket/utils/sports';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';

@@ -8,7 +8,7 @@ import { HlTrade, TradeExecutionType } from '@/features/perps/types';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import useDimensions from '@/hooks/useDimensions';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { divWorklet, mulWorklet, subWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, mulWorklet, subWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { Blur, Canvas, Group, LinearGradient, Oval, Rect, vec } from '@shopify/react-native-skia';
 import { memo, useMemo } from 'react';
 import * as i18n from '@/languages';

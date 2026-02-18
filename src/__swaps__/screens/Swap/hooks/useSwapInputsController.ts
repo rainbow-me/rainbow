@@ -29,7 +29,7 @@ import {
 } from '@/helpers/utilities';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import { logger } from '@/logger';
-import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
 import { CrosschainQuote, Quote, QuoteError, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';

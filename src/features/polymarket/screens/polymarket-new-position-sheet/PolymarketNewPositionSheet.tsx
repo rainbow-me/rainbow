@@ -18,7 +18,7 @@ import { getSolidColorEquivalent } from '@/worklets/colors';
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { marketBuyToken } from '@/features/polymarket/utils/orders';
-import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/safe-math/SafeMath';
+import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { POLYMARKET_CLOB_API_ERRORS } from '@/features/polymarket/errors';

@@ -1,5 +1,5 @@
 import { PerpMarket } from '@/features/perps/types';
-import { divWorklet } from '@/safe-math/SafeMath';
+import { divWorklet } from '@/framework/core/safeMath';
 
 export function calculateMaxMarginForLeverage({
   marginTiers,

@@ -17,7 +17,7 @@ import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-screen/LiquidationInfo';
 import { useDerivedValue } from 'react-native-reanimated';
-import { divWorklet, greaterThanWorklet, mulWorklet, sumWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, greaterThanWorklet, mulWorklet, sumWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { buildLiquidationInfo } from '@/features/perps/utils/buildLiquidationInfo';
 import { buildOrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';

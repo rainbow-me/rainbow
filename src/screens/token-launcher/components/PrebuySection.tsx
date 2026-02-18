@@ -19,7 +19,7 @@ import { SingleFieldInput, SingleFieldInputRef } from './SingleFieldInput';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { convertAmountToBalanceDisplay, lessThan, subtract } from '@/helpers/utilities';
-import { lessThanWorklet } from '@/safe-math/SafeMath';
+import { lessThanWorklet } from '@/framework/core/safeMath';
 import { useDebouncedCallback } from 'use-debounce';
 
 function PrebuyAmountButton({

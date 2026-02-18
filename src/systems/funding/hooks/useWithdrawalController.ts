@@ -3,7 +3,7 @@ import { runOnJS, runOnUI, useAnimatedReaction, useSharedValue, withSpring } fro
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
-import { equalWorklet, greaterThanOrEqualToWorklet } from '@/safe-math/SafeMath';
+import { equalWorklet, greaterThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { RainbowStore } from '@/state/internal/types';

@@ -16,7 +16,7 @@ import * as i18n from '@/languages';
 import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { roundWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
+import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { createOpacityPalette } from '@/worklets/colors';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';

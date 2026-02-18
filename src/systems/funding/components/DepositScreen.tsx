@@ -23,7 +23,7 @@ import { SLIDER_MAX, SliderColors } from '@/features/perps/components/Slider/Sli
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
-import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';

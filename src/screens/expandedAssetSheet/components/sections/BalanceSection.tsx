@@ -12,7 +12,7 @@ import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { useCandlestickPrice } from '@/features/charts/stores/derived/useCandlestickPrice';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
-import { greaterThanWorklet, mulWorklet } from '@/safe-math/SafeMath';
+import { greaterThanWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { arePricesEqual } from '@/features/charts/candlestick/utils';
 import { useChartType } from '@/features/charts/stores/chartsStore';
 import { ChartType } from '@/features/charts/types';

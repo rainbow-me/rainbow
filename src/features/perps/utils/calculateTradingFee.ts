@@ -1,5 +1,5 @@
 import { HYPERLIQUID_MAKER_FEE_BIPS, HYPERLIQUID_TAKER_FEE_BIPS, RAINBOW_FEE_BIPS } from '@/features/perps/constants';
-import { mulWorklet } from '@/safe-math/SafeMath';
+import { mulWorklet } from '@/framework/core/safeMath';
 
 /**
  * Calculate trading fee for a given size and price.

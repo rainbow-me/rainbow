@@ -8,7 +8,7 @@ import {
   orderOfMagnitudeWorklet,
   toFixedWorklet,
   truncateToDecimals,
-} from '@/safe-math/SafeMath';
+} from '@/framework/core/safeMath';
 import { clamp } from '@/worklets/numbers';
 import { sanitizeAmount } from '@/worklets/strings';
 
