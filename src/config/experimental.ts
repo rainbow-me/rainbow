@@ -42,6 +42,7 @@ export const PERPS = 'Perps';
 export const POLYMARKET = 'Polymarket';
 export const DEFI_POSITIONS_THRESHOLD_FILTER = 'DeFi Minimum Value Filter';
 export const RNBW_REWARDS = 'RNBW Rewards';
+export const DELEGATION = '7702 Delegation';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -93,6 +94,7 @@ const config = {
   [DEFI_POSITIONS_THRESHOLD_FILTER]: { settings: true, value: true },
   [POLYMARKET]: { settings: true, value: false },
   [RNBW_REWARDS]: { settings: true, value: false },
+  [DELEGATION]: { settings: true, value: false },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */
