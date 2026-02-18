@@ -20,7 +20,7 @@ export enum LogLevel {
 
 type Transport = (level: LogLevel, message: string | RainbowError, metadata: Metadata) => void;
 
-type ContextualLogger = {
+type ServiceLogger = {
   debug(message: string, metadata?: Record<string, unknown>): void;
   info(message: string, metadata?: Record<string, unknown>): void;
   warn(message: string, metadata?: Record<string, unknown>): void;
@@ -277,11 +277,12 @@ export class Logger {
   }
 
   /**
-   * Creates a context-bound logger for external services.
+   * Creates a scoped logger for service/SDK integration boundaries with
+   * `[context]:` prefixed messages and debug-context filtering.
    *
-   * Prefixes messages with `[context]:` and normalizes errors into `RainbowError`.
+   * Normalizes errors to `RainbowError`.
    */
-  createContextualLogger(context: string): ContextualLogger {
+  createServiceLogger(context: string): ServiceLogger {
     const prefix = `[${context}]: `;
     return {
       debug: (message, metadata) => {

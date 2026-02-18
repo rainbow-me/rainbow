@@ -180,7 +180,7 @@ async function initializeApplication() {
     loadSettingsData(), // load i18n early for first-render
     configureDelegationClient({
       platformClient: getPlatformClient(),
-      logger: logger.createContextualLogger(logger.DebugContext.delegation),
+      logger: logger.createServiceLogger(logger.DebugContext.delegation),
       // Note: Chains are configured once at startup. If backend networks are updated
       // after initialization, the delegation SDK won't automatically know about new chains.
       // If this becomes an issue, we should add a subscription to backend networks changes
