@@ -1,22 +1,13 @@
 import { getTargetAddress, isAllowedTargetContract } from '@rainbow-me/swaps';
-import { Address } from 'viem';
 import { createNewAction, createNewRap } from './common';
-import { RapAction, RapSwapActionParameters, RapUnlockActionParameters } from './references';
+import { RapAction, RapSwapActionParameters } from './references';
 import { needsTokenApproval } from './actions/unlock';
 
 export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParameters<'swap'>) => {
   let actions: RapAction<'swap' | 'unlock'>[] = [];
 
   const { sellAmount, quote, chainId, assetToSell, assetToBuy } = swapParameters;
-  const {
-    allowanceNeeded,
-    from: accountAddress,
-    sellTokenAddress,
-  } = quote as {
-    allowanceNeeded: boolean;
-    from: Address;
-    sellTokenAddress: Address;
-  };
+  const { allowanceNeeded, from: accountAddress, sellTokenAddress } = quote;
   const targetAddress = getTargetAddress(quote);
   let requiresApprove = false;
 
@@ -24,7 +15,7 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
     if (!targetAddress) {
       throw new Error('Target address not found');
     }
-    const isAllowedTarget = isAllowedTargetContract(targetAddress, chainId as number);
+    const isAllowedTarget = isAllowedTargetContract(targetAddress, chainId);
     if (!isAllowedTarget) {
       throw new Error('Target address not allowed');
     }
@@ -46,7 +37,7 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
         assetToUnlock: assetToSell,
         chainId,
         contractAddress: targetAddress,
-      } satisfies RapUnlockActionParameters);
+      });
       actions = actions.concat(unlock);
     }
   }
@@ -63,7 +54,7 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
     assetToBuy,
     gasParams: swapParameters.gasParams,
     gasFeeParamsBySpeed: swapParameters.gasFeeParamsBySpeed,
-  } satisfies RapSwapActionParameters<'swap'>);
+  });
   actions = actions.concat(swap);
 
   // create the overall rap
