@@ -18,6 +18,7 @@ import { ContextCircleButton } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_IOS } from '@/env';
 import * as ethereumUtils from '@/utils/ethereumUtils';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { DelegationStatus, useDelegationPreference, useDelegations } from '@rainbow-me/delegation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import type { Address } from 'viem';
@@ -302,7 +303,7 @@ const ViewWalletDelegations = () => {
 
                     {/* Title */}
                     <Text color="label" size="20pt" weight="heavy" align="center">
-                      Smart Wallet
+                      {i18n.t(i18n.l.wallet.delegations.smart_wallet)}
                     </Text>
 
                     {/* Status Badge */}
@@ -314,7 +315,7 @@ const ViewWalletDelegations = () => {
                     {/* Description */}
                     <Box width={{ custom: 288 }}>
                       <Text color="labelQuaternary" size="13pt" weight="semibold" align="center" style={{ lineHeight: 17.55 }}>
-                        Smart wallets enable a faster, cheaper, and more reliable wallet experience.
+                        {i18n.t(i18n.l.wallet.delegations.smart_wallet_description)}
                       </Text>
                     </Box>
                   </Stack>
@@ -337,7 +338,7 @@ const ViewWalletDelegations = () => {
                 {/* Section Header */}
                 <Box paddingHorizontal="10px">
                   <Text color="labelSecondary" size="15pt" weight="bold">
-                    Activated Networks
+                    {i18n.t(i18n.l.wallet.delegations.activated_networks)}
                   </Text>
                 </Box>
 
@@ -411,7 +412,7 @@ const ViewWalletDelegations = () => {
                 {/* Section Header */}
                 <Box paddingHorizontal="10px">
                   <Text color="labelSecondary" size="15pt" weight="bold">
-                    Other Smart Accounts
+                    {i18n.t(i18n.l.wallet.delegations.other_smart_accounts)}
                   </Text>
                 </Box>
 
@@ -456,12 +457,14 @@ const ViewWalletDelegations = () => {
                               if (contractAddress) {
                                 return (
                                   <MenuItem.Label
-                                    text={`Delegated to ${network.currentContractName || `${contractAddress.slice(0, 6)}...${contractAddress.slice(-4)}`}`}
+                                    text={i18n.t(i18n.l.wallet.delegations.delegated_to, {
+                                      name: network.currentContractName || formatAddressForDisplay(contractAddress),
+                                    })}
                                   />
                                 );
                               }
                               // Fallback for third-party delegations where contract address isn't provided
-                              return <MenuItem.Label text="Delegated to another wallet" />;
+                              return <MenuItem.Label text={i18n.t(i18n.l.wallet.delegations.delegated_to_another_wallet)} />;
                             })()}
                             rightComponent={
                               <Text color="labelQuinary" size="17pt" weight="bold">

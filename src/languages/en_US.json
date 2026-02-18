@@ -2995,6 +2995,12 @@
       "delegations": {
         "active": "Active",
         "not_active": "Not active",
+        "smart_wallet": "Smart Wallet",
+        "smart_wallet_description": "Smart wallets enable a faster, cheaper, and more reliable wallet experience.",
+        "activated_networks": "Activated Networks",
+        "other_smart_accounts": "Other Smart Accounts",
+        "delegated_to": "Delegated to %{name}",
+        "delegated_to_another_wallet": "Delegated to another wallet",
         "enable_smart_wallet": "Enable Smart Wallet",
         "disable_smart_wallet": "Disable Smart Wallet",
         "enabled_description": "You'll miss out on faster transactions and lower network costs",
