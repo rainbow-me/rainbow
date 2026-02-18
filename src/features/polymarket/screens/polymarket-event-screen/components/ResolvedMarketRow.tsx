@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { LinearGradient } from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet } from 'react-native';
 import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import ImgixImage from '@/components/images/ImgixImage';

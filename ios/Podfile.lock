@@ -1,8 +1,6 @@
 PODS:
   - boost (1.84.0)
   - Branch (1.40.2)
-  - BVLinearGradient (2.8.3):
-    - React-Core
   - CocoaAsyncSocket (7.6.5)
   - CoinbaseWalletSDK/Client (1.1.2)
   - CoinbaseWalletSDK/Host (1.1.2):
@@ -53,6 +51,8 @@ PODS:
   - ExpoImagePicker (17.0.0-canary-20250713-8f814f8):
     - ExpoModulesCore
   - ExpoKeepAwake (14.1.4):
+    - ExpoModulesCore
+  - ExpoLinearGradient (14.1.5):
     - ExpoModulesCore
   - ExpoModulesCore (2.5.0):
     - DoubleConversion
@@ -2687,7 +2687,6 @@ PODS:
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
-  - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - EXImageLoader (from `../node_modules/expo-image-loader/ios`)
@@ -2698,6 +2697,7 @@ DEPENDENCIES:
   - ExpoImageManipulator (from `../node_modules/expo-image-manipulator/ios`)
   - ExpoImagePicker (from `../node_modules/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
+  - ExpoLinearGradient (from `../node_modules/expo-linear-gradient/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core`)
   - ExpoStoreReview (from `../node_modules/expo-store-review/ios`)
   - ExpoWebBrowser (from `../node_modules/expo-web-browser/ios`)
@@ -2902,8 +2902,6 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
-  BVLinearGradient:
-    :path: "../node_modules/react-native-linear-gradient"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXConstants:
@@ -2924,6 +2922,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-image-picker/ios"
   ExpoKeepAwake:
     :path: "../node_modules/expo-keep-awake/ios"
+  ExpoLinearGradient:
+    :path: "../node_modules/expo-linear-gradient/ios"
   ExpoModulesCore:
     :path: "../node_modules/expo-modules-core"
   ExpoStoreReview:
@@ -3227,7 +3227,6 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   Branch: d99436c6f3d5b2529ba948d273e47e732830f207
-  BVLinearGradient: cb006ba232a1f3e4f341bb62c42d1098c284da70
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CoinbaseWalletSDK: f8cef9d72e86d6ac4782e4d0054baf9302cf05bb
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
@@ -3240,6 +3239,7 @@ SPEC CHECKSUMS:
   ExpoImageManipulator: 1e06e7a1e56f454e75d01b7032c1e44963bfc865
   ExpoImagePicker: 22173f80af3010361068865d8f6d03e8d1b7f976
   ExpoKeepAwake: bf0811570c8da182bfb879169437d4de298376e7
+  ExpoLinearGradient: 7734c8059972fcf691fb4330bcdf3390960a152d
   ExpoModulesCore: f55e7872391bae03ee5547c83152c81750d89508
   ExpoStoreReview: f70e5929ba4a594078dd3285d5151427167f48fa
   ExpoWebBrowser: 06fb5f767f53ad53944b068cdd207984cb998712

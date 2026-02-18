@@ -4,7 +4,7 @@ import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { memo, useMemo } from 'react';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { LinearGradient } from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import ImgixImage from '@/components/images/ImgixImage';
 import { toPercentageWorklet } from '@/safe-math/SafeMath';
 import { formatNumber } from '@/helpers/strings';

@@ -10,7 +10,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { formatNumber } from '@/helpers/strings';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { createOpacityPalette, getSolidColorEquivalent } from '@/worklets/colors';

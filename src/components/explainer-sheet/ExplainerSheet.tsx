@@ -6,7 +6,7 @@ import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { SheetHandle } from '@/components/sheet';
 import { Box, Separator, AnimatedText } from '@/design-system';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient, LinearGradientProps } from 'expo-linear-gradient';
 import { downscalePagerIndex, SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Extrapolation, interpolate, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
@@ -85,7 +85,7 @@ const DefaultPanelBackground = memo(function DefaultPanelBackground({ gradientCo
     <View style={StyleSheet.absoluteFill}>
       <LinearGradient
         locations={[0, 0.25, 0.5, 1]}
-        colors={reverseGradientColors}
+        colors={reverseGradientColors as unknown as LinearGradientProps['colors']}
         style={{ ...StyleSheet.absoluteFillObject, opacity: 0.1 }}
       />
     </View>
