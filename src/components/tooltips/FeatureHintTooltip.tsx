@@ -259,8 +259,8 @@ export const FeatureHintTooltip = forwardRef<TooltipRef, FeatureHintTooltipProps
                 >
                   <LinearGradient
                     colors={['#268FFF1F', '#268FFF14']}
-                    start={{ x: 0, y: 1 }}
-                    end={{ x: 1, y: 0 }}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
                     style={styles.iconContainer}
                   >
                     <Text weight="heavy" size="17pt" color={{ custom: '#268FFF' }}>
