@@ -129,6 +129,7 @@ export type HlTrade = {
   triggerOrderType?: TriggerOrderType;
   triggerOrderPrice?: string;
   isLong: boolean;
+  leverage: number | null;
 };
 
 export type TriggerOrder = {

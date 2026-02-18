@@ -365,7 +365,7 @@ export const PnlShareGraphic = memo(function PnlShareGraphic({
   pnlShareImageRef: React.RefObject<PnlShareImageHandle | null>;
 }) {
   const market = useHyperliquidMarketsStore(state => state.getMarket(trade.symbol));
-  const assumedLeverage = market?.maxLeverage ?? 1;
+  const leverage = trade.leverage ?? market?.maxLeverage ?? 1;
   const entryPrice = trade.entryPrice ?? trade.price;
   const assetImageUrl = market?.metadata?.iconUrl;
 
@@ -374,9 +374,9 @@ export const PnlShareGraphic = memo(function PnlShareGraphic({
       entryPrice,
       markPrice: trade.price,
       isLong: trade.isLong,
-      leverage: assumedLeverage,
+      leverage,
     });
-  }, [assumedLeverage, entryPrice, trade.isLong, trade.price]);
+  }, [entryPrice, leverage, trade.isLong, trade.price]);
 
   return (
     <PnlShareImage
@@ -385,7 +385,7 @@ export const PnlShareGraphic = memo(function PnlShareGraphic({
       pnlPercentage={pnlPercentage}
       assetSymbol={extractBaseSymbol(trade.symbol)}
       assetImageUrl={assetImageUrl}
-      leverage={assumedLeverage}
+      leverage={leverage}
       entryPrice={formatPerpAssetPrice(entryPrice)}
       markPrice={formatPerpAssetPrice(trade.price)}
       isLong={trade.isLong}

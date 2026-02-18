@@ -39,7 +39,7 @@ function PerpsTradeDetailsSheetContent({ trade }: { trade: HlTrade }) {
   const pnlShareImageRef = useRef<PnlShareImageHandle>(null);
   const [isSharing, setIsSharing] = useState(false);
   const market = useHyperliquidMarketsStore(state => state.getMarket(trade.symbol));
-  const assumedLeverage = market?.maxLeverage ?? 1;
+  const leverage = trade.leverage ?? market?.maxLeverage ?? 1;
   const entryPrice = trade.entryPrice ?? trade.price;
   const pnlPercentage = useMemo(
     () =>
@@ -47,9 +47,9 @@ function PerpsTradeDetailsSheetContent({ trade }: { trade: HlTrade }) {
         entryPrice,
         markPrice: trade.price,
         isLong: trade.isLong,
-        leverage: assumedLeverage,
+        leverage,
       }),
-    [assumedLeverage, entryPrice, trade.isLong, trade.price]
+    [entryPrice, leverage, trade.isLong, trade.price]
   );
 
   const handleShare = useCallback(async () => {
