@@ -10,7 +10,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { NewTransaction, TransactionStatus } from '@/entities';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { RainbowError, logger } from '@/logger';
+import { RainbowError, ensureError, logger } from '@/logger';
 
 import { ETH_ADDRESS, gasUnits } from '@/references';
 import { ActionProps, PrepareActionProps, RapActionResult, RapUnlockActionParameters } from '../references';
@@ -62,7 +62,7 @@ export const getAssetRawAllowance = async ({
     return allowance.toString();
   } catch (error) {
     logger.error(new RainbowError('[raps/unlock]: error'), {
-      message: (error as Error)?.message,
+      message: ensureError(error).message,
     });
     return null;
   }
@@ -131,7 +131,7 @@ export const estimateApprove = async ({
     return gasLimit.toString();
   } catch (error) {
     logger.error(new RainbowError('[raps/unlock]: error estimateApprove'), {
-      message: (error as Error)?.message,
+      message: ensureError(error).message,
     });
     return `${gasUnits.basic_approval}`;
   }
@@ -160,7 +160,7 @@ export const populateApprove = async ({
     return approveTransaction;
   } catch (error) {
     logger.error(new RainbowError('[raps/unlock]: error populateApprove'), {
-      message: (error as Error)?.message,
+      message: ensureError(error).message,
     });
     return null;
   }
