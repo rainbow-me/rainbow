@@ -1,5 +1,5 @@
 import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
-import { RainbowFetchClient } from '@/rainbow-fetch';
+import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';

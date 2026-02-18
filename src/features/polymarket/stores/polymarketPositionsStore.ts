@@ -1,7 +1,7 @@
 import { RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
-import { rainbowFetch } from '@/rainbow-fetch';
+import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { POLYMARKET_DATA_API_URL, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { PolymarketPosition, RawPolymarketPosition } from '@/features/polymarket/types';

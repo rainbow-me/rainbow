@@ -1,4 +1,4 @@
-import { RainbowFetchClient } from '@/rainbow-fetch';
+import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { IS_PROD } from '@/env';
 import { ProviderConfig } from '@/screens/AddCash/types';
 import { Address } from 'viem';

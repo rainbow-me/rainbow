@@ -1,5 +1,5 @@
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
-import { rainbowFetch } from '@/rainbow-fetch';
+import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { GammaEvent, GammaEventRaw, GammaMarket, GammaMarketRaw } from '../types';
 
 // ============ Constants ====================================================== //

@@ -1,4 +1,4 @@
-import { rainbowFetch, RainbowFetchRequestOpts } from '@/rainbow-fetch';
+import { rainbowFetch, RainbowFetchRequestOpts } from '@/framework/data/http/rainbowFetch';
 import { DocumentNode } from 'graphql';
 import { resolveRequestDocument } from 'graphql-request';
 import { buildGetQueryParams } from '@/graphql/utils/buildGetQueryParams';

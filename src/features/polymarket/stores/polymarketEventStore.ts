@@ -1,4 +1,4 @@
-import { rainbowFetch } from '@/rainbow-fetch';
+import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { time } from '@/utils/time';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { RawPolymarketEvent, PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
