@@ -44,19 +44,19 @@ export const time: TimeUtils = {
   },
   minutes: minutes => {
     'worklet';
-    return time.seconds(minutes * 60);
+    return minutes * 60 * 1000;
   },
   hours: hours => {
     'worklet';
-    return time.minutes(hours * 60);
+    return hours * 60 * 60 * 1000;
   },
   days: days => {
     'worklet';
-    return time.hours(days * 24);
+    return days * 24 * 60 * 60 * 1000;
   },
   weeks: weeks => {
     'worklet';
-    return time.days(weeks * 7);
+    return weeks * 7 * 24 * 60 * 60 * 1000;
   },
   infinity: Infinity,
   zero: 0,

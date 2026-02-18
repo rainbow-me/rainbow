@@ -23,6 +23,7 @@
       android:roundIcon="@mipmap/og_round"
       android:allowBackup="false"
       android:theme="@style/BootTheme"
+      android:usesCleartextTraffic="${usesCleartextTraffic}"
       android:networkSecurityConfig="@xml/network_security_config"
       android:requestLegacyExternalStorage="true"
       android:resizeableActivity="false"

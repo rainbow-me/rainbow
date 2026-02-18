@@ -1,13 +1,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-const blacklist = require('metro-config/src/defaults/exclusionList');
-// @ts-ignore — types ship in dist/ but only via `exports` field, which moduleResolution:"node" ignores. Resolvable after migrating to moduleResolution:"bundler".
+const exclusionList = require('metro-config/private/defaults/exclusionList').default;
 const { mergeConfig, getDefaultConfig } = require('@react-native/metro-config');
 const { withSentryConfig } = require('@sentry/react-native/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
 
 // Deny list is a function that takes an array of regexes and combines
-// them with the default blacklist to return a single regex.
-const blacklistRE = blacklist([
+// them with the default exclusion list to return a single regex.
+const blockList = exclusionList([
   // react-native-animated-charts
   /src\/react-native-animated-charts\/Example\/.*/,
   /src\/react-native-animated-charts\/node_modules\/.*/,
@@ -38,7 +37,7 @@ if (process.env.CI) {
  */
 const rainbowConfig = {
   resolver: {
-    blacklistRE,
+    blockList,
     resolveRequest: (context, moduleName, platform) => {
       try {
         return context.resolveRequest(context, moduleName, platform);
@@ -93,8 +92,5 @@ const config = mergeConfig(getDefaultConfig(__dirname), rainbowConfig);
 const sentryConfig = withSentryConfig(config, {
   annotateReactComponents: true,
 });
-
-// Need support for import.meta to enable this.
-sentryConfig.resolver.unstable_enablePackageExports = false;
 
 module.exports = wrapWithReanimatedMetroConfig(sentryConfig);

@@ -27,7 +27,7 @@ import { StackNavigationOptions } from '@react-navigation/stack';
 import { ExplainSheetRouteParams, ExplainSheetType, PartialNavigatorConfigOptions, RootStackParamList } from '@/navigation/types';
 import { BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
 import { Box } from '@/design-system';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import Routes from './routesNames';
 import { getWalletErrorSheetHeight } from '@/components/wallet-error/WalletErrorSheet';
@@ -721,16 +721,12 @@ export const walletErrorSheetConfig: PartialNavigatorConfigOptions = {
   }),
 };
 
-export const stackNavigationConfig = {
-  headerMode: 'none',
-  keyboardHandlingEnabled: ios,
-  mode: 'modal',
-};
-
 export const defaultScreenStackOptions: StackNavigationOptions = {
   animationTypeForReplace: 'pop',
   gestureEnabled: true,
   presentation: 'transparentModal',
+  keyboardHandlingEnabled: IS_IOS,
+  headerShown: false,
 };
 
 export const closeKeyboardOnClose = {

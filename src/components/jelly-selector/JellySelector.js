@@ -10,8 +10,6 @@ const springConfig = {
   damping: 38,
   mass: 1,
   overshootClamping: false,
-  restDisplacementThreshold: 0.001,
-  restSpeedThreshold: 0.001,
   stiffness: 600,
 };
 

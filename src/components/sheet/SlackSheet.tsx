@@ -32,12 +32,12 @@ interface ContainerProps {
   contentHeight?: number;
   deferredHeight?: boolean;
   deviceHeight: number;
-  borderRadius?: number;
+  topBorderRadius?: number;
 }
 
 const Container = styled(Centered).attrs({
   direction: 'column',
-})(({ backgroundColor, additionalTopPadding, contentHeight, deferredHeight, deviceHeight, borderRadius }: ContainerProps) => ({
+})(({ backgroundColor, additionalTopPadding, contentHeight, deferredHeight, deviceHeight, topBorderRadius }: ContainerProps) => ({
   ...(deferredHeight || IS_IOS
     ? {}
     : {
@@ -48,7 +48,7 @@ const Container = styled(Centered).attrs({
               ? deviceHeight - contentHeight
               : 0,
       }),
-  ...(IS_ANDROID ? { borderTopLeftRadius: borderRadius ?? 30, borderTopRightRadius: borderRadius ?? 30 } : {}),
+  ...(IS_ANDROID ? { borderTopLeftRadius: topBorderRadius ?? 30, borderTopRightRadius: topBorderRadius ?? 30 } : {}),
   backgroundColor: backgroundColor,
   bottom: 0,
   left: 0,
@@ -107,7 +107,7 @@ interface SlackSheetProps extends ViewStyle {
   hideHandle?: boolean;
   limitScrollViewContent?: boolean;
   onContentSizeChange?: () => void;
-  renderHeader?: (yPosition: Animated.SharedValue<number>) => React.ReactNode;
+  renderHeader?: (yPosition: SharedValue<number>) => React.ReactNode;
   scrollEnabled?: boolean;
   scrollIndicatorInsets?: Insets;
   showsHorizontalScrollIndicator?: boolean;
@@ -209,7 +209,7 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
         deferredHeight={deferredHeight}
         deviceHeight={deviceHeight}
         testID={testID}
-        borderRadius={borderRadius}
+        topBorderRadius={borderRadius}
         {...props}
       >
         {IS_ANDROID && (

@@ -5,8 +5,6 @@ import { runOnJS, useSharedValue, withSpring } from 'react-native-reanimated';
 export const springConfigEnter = { damping: 14, mass: 1, stiffness: 121.6 };
 
 export const springConfigDismiss = {
-  restDisplacementThreshold: 0.5,
-  restSpeedThreshold: 5,
   damping: 20,
   mass: 0.8,
   stiffness: 250,

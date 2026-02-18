@@ -62,7 +62,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
     : ([opacity(accentColor, 0), opacity(accentColor, 0.06)] as const);
 
   const executionStore = useMemo(() => createSellExecutionStore(tokenId, sellAmountTokens), [tokenId, sellAmountTokens]);
-  const { worstPrice, bestPrice, expectedPayoutUsd, averagePrice, fee, spread } = executionStore(state => state);
+  const { worstPrice, bestPrice, expectedPayoutUsd, averagePrice, spread } = executionStore(state => state);
   const formattedBestPrice = `${trimTrailingZeros(toFixedWorklet(mulWorklet(bestPrice, 100), 1))}¢`;
   const formattedAveragePrice = `${trimTrailingZeros(toFixedWorklet(mulWorklet(averagePrice, 100), 1))}¢`;
 

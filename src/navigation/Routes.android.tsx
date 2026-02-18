@@ -31,13 +31,7 @@ import { WelcomeScreen } from '../screens/WelcomeScreen/WelcomeScreen';
 import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import { createBottomSheetNavigator } from './bottom-sheet';
-import {
-  closeKeyboardOnClose,
-  defaultScreenStackOptions,
-  stackNavigationConfig,
-  learnWebViewScreenConfig,
-  backupSheetSizes,
-} from './config';
+import { closeKeyboardOnClose, defaultScreenStackOptions, learnWebViewScreenConfig, backupSheetSizes } from './config';
 import {
   addWalletNavigatorPreset,
   androidRecievePreset,
@@ -131,7 +125,7 @@ const BSStack = createBottomSheetNavigator();
 function MainNavigator() {
   const initialRoute = useContext(InitialRouteContext) as unknown as string;
   return (
-    <Stack.Navigator initialRouteName={initialRoute} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
+    <Stack.Navigator initialRouteName={initialRoute} screenOptions={defaultScreenStackOptions}>
       <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} options={expandedPreset} />
       <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER} options={emojiPreset} />
       <Stack.Screen component={ConnectedDappsSheet} name={Routes.CONNECTED_DAPPS} options={expandedPreset} />
@@ -160,7 +154,7 @@ function MainNavigator() {
 // FIXME do it in one navigator
 function MainOuterNavigator() {
   return (
-    <OuterStack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
+    <OuterStack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR} screenOptions={defaultScreenStackOptions}>
       <OuterStack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR} />
     </OuterStack.Navigator>
   );
@@ -304,11 +298,7 @@ function BSNavigator() {
 
 function AuthNavigator() {
   return (
-    <AuthStack.Navigator
-      {...stackNavigationConfig}
-      initialRouteName={Routes.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR}
-      screenOptions={defaultScreenStackOptions}
-    >
+    <AuthStack.Navigator initialRouteName={Routes.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR} screenOptions={defaultScreenStackOptions}>
       <AuthStack.Screen component={BSNavigator} name={Routes.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR} />
       <AuthStack.Screen
         component={PinAuthenticationScreen}

@@ -1,5 +1,5 @@
 import { getAddress, type Address } from 'viem';
-import { ChainId as SwapsChainId, CrosschainQuote, Quote, QuoteParams, Source, SwapType, TokenAsset, ETH_ADDRESS } from '@rainbow-me/swaps';
+import { ChainId as SwapsChainId, Quote, QuoteParams, Source, SwapType, TokenAsset, ETH_ADDRESS } from '@rainbow-me/swaps';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { equalWorklet, greaterThanWorklet } from '@/safe-math/SafeMath';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -16,6 +16,7 @@ import {
   DepositQuoteStoreParams,
   DepositQuoteStoreType,
   DepositStoreType,
+  DepositQuoteResult,
 } from '../types';
 import { fetchAndValidateCrosschainQuote } from '../utils/crosschainQuote';
 import { isValidSwapsChainId } from '../utils/quotes';
@@ -31,7 +32,7 @@ export function createDepositQuoteStore(
   useDepositStore: DepositStoreType
 ): DepositQuoteStoreType {
   const recipientStore = config.to.recipient;
-  return createQueryStore({
+  return createQueryStore<DepositQuoteResult, DepositQuoteStoreParams>({
     fetcher: createQuoteFetcher(config),
     params: {
       accountAddress: $ => $(useWalletsStore).accountAddress,
@@ -45,14 +46,6 @@ export function createDepositQuoteStore(
 }
 
 // ============ Quote Fetcher ================================================== //
-
-type DepositQuoteResult =
-  | Quote
-  | CrosschainQuote
-  | DepositQuoteStatus.Error
-  | DepositQuoteStatus.InsufficientBalance
-  | DepositQuoteStatus.InsufficientGas
-  | null;
 
 function createQuoteFetcher(config: DepositConfig) {
   return async function fetchQuote(

@@ -60,7 +60,6 @@ import {
   sendConfirmationSheetConfig,
   settingsSheetConfig,
   signTransactionSheetConfig,
-  stackNavigationConfig,
   learnWebViewScreenConfig,
   transactionDetailsConfig,
   addWalletNavigatorConfig,
@@ -151,7 +150,7 @@ const NativeStack = createNativeStackCoolModalNavigator();
 
 function SendFlowNavigator() {
   return (
-    <Stack.Navigator {...stackNavigationConfig} initialRouteName={Routes.SEND_SHEET}>
+    <Stack.Navigator initialRouteName={Routes.SEND_SHEET} screenOptions={defaultScreenStackOptions}>
       <Stack.Screen component={ModalScreen} name={Routes.MODAL_SCREEN} options={overlayExpandedPreset} />
       <Stack.Screen component={SendSheet} name={Routes.SEND_SHEET} options={sheetPreset} />
     </Stack.Navigator>
@@ -162,7 +161,7 @@ function MainNavigator() {
   const initialRoute = useContext(InitialRouteContext) as unknown as string;
 
   return (
-    <Stack.Navigator initialRouteName={initialRoute} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
+    <Stack.Navigator initialRouteName={initialRoute} screenOptions={defaultScreenStackOptions}>
       <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
       <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER} options={emojiPreset} />
@@ -174,7 +173,7 @@ function MainNavigator() {
 
 function MainStack() {
   return (
-    <Stack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR_WRAPPER} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
+    <Stack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR_WRAPPER} screenOptions={defaultScreenStackOptions}>
       <Stack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
     </Stack.Navigator>
   );

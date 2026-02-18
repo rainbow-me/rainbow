@@ -222,10 +222,15 @@ export type DepositQuoteStoreParams = {
   recipient: Address | null;
 };
 
-export type DepositQuoteStoreType = QueryStore<
-  Quote | CrosschainQuote | DepositQuoteStatus.InsufficientBalance | DepositQuoteStatus.InsufficientGas,
-  DepositQuoteStoreParams
->;
+export type DepositQuoteResult =
+  | Quote
+  | CrosschainQuote
+  | DepositQuoteStatus.Error
+  | DepositQuoteStatus.InsufficientBalance
+  | DepositQuoteStatus.InsufficientGas
+  | null;
+
+export type DepositQuoteStoreType = QueryStore<DepositQuoteResult, DepositQuoteStoreParams>;
 
 // ============ Gas Store Types ================================================ //
 

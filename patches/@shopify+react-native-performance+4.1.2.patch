@@ -1,3 +1,16 @@
+diff --git a/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/PerformanceMarker.kt b/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/PerformanceMarker.kt
+index 19b8fb4..9096d34 100644
+--- a/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/PerformanceMarker.kt
++++ b/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/PerformanceMarker.kt
+@@ -121,7 +121,7 @@ class PerformanceMarkerManager : SimpleViewManager<PerformanceMarker>() {
+         view.componentInstanceId = componentInstanceId
+     }
+ 
+-    override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
++    override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> {
+         return MapBuilder.builder<String, Any>().put(
+                 "onRenderComplete",
+                 MapBuilder.of(
 diff --git a/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/ReactNativePerformanceModule.kt b/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/ReactNativePerformanceModule.kt
 index 13fa3f6..6f9879c 100644
 --- a/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/ReactNativePerformanceModule.kt
@@ -11,7 +24,7 @@ index 13fa3f6..6f9879c 100644
 +        hashMapOf("startupTimestamp" to ReactNativePerformance.nativeStartupTimestamp.toString())
  }
 diff --git a/node_modules/@shopify/react-native-performance/ios/ReactNativePerformance/ReactNativePerformanceModule.swift b/node_modules/@shopify/react-native-performance/ios/ReactNativePerformance/ReactNativePerformanceModule.swift
-index db07d54..a0f43e2 100644
+index db07d54..75b1f86 100644
 --- a/node_modules/@shopify/react-native-performance/ios/ReactNativePerformance/ReactNativePerformanceModule.swift
 +++ b/node_modules/@shopify/react-native-performance/ios/ReactNativePerformance/ReactNativePerformanceModule.swift
 @@ -26,6 +26,10 @@ class ReactNativePerformanceModule: NSObject {

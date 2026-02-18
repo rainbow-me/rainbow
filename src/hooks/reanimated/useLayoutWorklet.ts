@@ -1,6 +1,6 @@
 import { useEvent } from 'react-native-reanimated';
-import { WorkletFunction } from 'react-native-reanimated/lib/typescript/commonTypes';
 import { IS_IOS } from '@/env';
+import { type WorkletFunction } from 'react-native-worklets';
 
 interface Layout {
   x: number;

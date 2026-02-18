@@ -5,7 +5,7 @@ export type TransformOrigin = [number, number];
 export type Direction = 'bottom' | 'left' | 'right' | 'top';
 
 export interface ButtonPressAnimationProps
-  extends Pick<PressableProps, 'disabled' | 'hitSlop' | 'onLayout' | 'testID'>,
+  extends Pick<PressableProps, 'disabled' | 'hitSlop' | 'onLayout' | 'testID' | 'accessible'>,
     Pick<ViewProps, 'style'> {
   children?: React.ReactNode;
   onPress?: ((event?: GestureResponderEvent) => void) | null | undefined;

@@ -29,7 +29,7 @@ const BORDER_RADIUS = 24;
 const ICON_SIZE = 36;
 
 /*
-  This draws the entire tooltip, including the arrow, in one path 
+  This draws the entire tooltip, including the arrow, in one path
   This allows the arrow to blend into the tooltip background nicely
 */
 const calculateTooltipPath = (side: Side, align: Align, width: number): string => {

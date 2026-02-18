@@ -106,8 +106,6 @@ export const ProfileAvatarRow = React.memo(function ProfileAvatarRow({ size = Pr
         {
           scale: withSpring(scale.value, {
             damping: 12,
-            restDisplacementThreshold: 0.001,
-            restSpeedThreshold: 0.001,
             stiffness: 280,
           }),
         },

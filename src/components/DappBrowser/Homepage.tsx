@@ -127,7 +127,7 @@ const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
       <Bleed space="24px">
         <ScrollView
           horizontal
-          decelerationRate="fast"
+          decelerationRate={IS_IOS ? 'fast' : undefined}
           disableIntervalMomentum
           showsHorizontalScrollIndicator={false}
           snapToOffsets={data.dApps.map((_, index) => index * (CARD_WIDTH + CARD_PADDING))}

@@ -8,6 +8,7 @@ import { Emoji, Text } from '@/components/text';
 import { ThemeContextProps } from '@/theme';
 import { RowWithMargins } from '@/components/layout';
 import { shadow } from '@/styles';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 const ButtonContainer = styled(Reanimated.View)({
   borderRadius: ({ height }: { height: number }) => height / 2,
@@ -44,7 +45,14 @@ const DarkShadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: {
   width: 236,
 }));
 const Shadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: { theme: ThemeContextProps }) => ({
-  ...shadow.buildAsObject(0, 5, 15, colors.shadow, isDarkMode ? 0 : 0.4),
+  boxShadow: [
+    {
+      offsetX: 0,
+      offsetY: 5,
+      blurRadius: 15,
+      color: opacity(colors.shadow, isDarkMode ? 0 : 0.4),
+    },
+  ],
   borderRadius: 30,
   height: 60,
   position: 'absolute',
@@ -54,9 +62,7 @@ const Shadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: { the
         left: -3,
         top: -3,
       }
-    : {
-        elevation: 30,
-      }),
+    : {}),
 }));
 
 interface Props extends ButtonPressAnimationProps {

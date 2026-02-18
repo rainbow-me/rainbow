@@ -41,6 +41,11 @@
     "src/browser",
     "src/react-native-animated-charts/Example",
     "patches",
-    "InjectedJSBundle.js"
+    "InjectedJSBundle.js",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js",
+    "src/codegen/ios",
+    "src/codegen/android"
   ]
 }

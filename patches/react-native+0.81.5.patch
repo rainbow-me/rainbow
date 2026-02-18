@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp b/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
+index 1234567..abcdefg 100644
+--- a/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
+@@ -542,7 +542,7 @@ static void RCTAddContourEffectToLayer(
+       .borderColors = borderColors.resolve(isRTL, {}),
+       .borderWidths = borderWidths.resolve(isRTL, 0),
+       .borderRadii = ensureNoOverlap(radii, layoutMetrics.frame.size),
+-      .borderCurves = borderCurves.resolve(isRTL, BorderCurve::Circular),
++      .borderCurves = borderCurves.resolve(isRTL, BorderCurve::Continuous),
+       .borderStyles = borderStyles.resolve(isRTL, BorderStyle::Solid),
+   };
+ }
