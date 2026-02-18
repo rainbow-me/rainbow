@@ -121,7 +121,7 @@ describe('general functionality', () => {
     expect(mockTransport).toHaveBeenCalledWith(LogLevel.Error, new RainbowError(`logger.error was not provided a RainbowError`), {});
   });
 
-  test('createContextualLogger debug honors context filtering and prefixes messages', () => {
+  test('createServiceLogger debug honors context filtering and prefixes messages', () => {
     const logger = new Logger({
       enabled: true,
       debug: 'delegation',
@@ -129,21 +129,21 @@ describe('general functionality', () => {
     const mockTransport = jest.fn();
     logger.addTransport(mockTransport);
 
-    logger.createContextualLogger('delegation').debug('matched');
+    logger.createServiceLogger('delegation').debug('matched');
     expect(mockTransport).toHaveBeenCalledWith(LogLevel.Debug, '[delegation]: matched', {});
 
     mockTransport.mockClear();
-    logger.createContextualLogger('wallet').debug('ignored');
+    logger.createServiceLogger('wallet').debug('ignored');
     expect(mockTransport).not.toHaveBeenCalled();
   });
 
-  test('createContextualLogger error wraps external errors into RainbowError', () => {
+  test('createServiceLogger error wraps external errors into RainbowError', () => {
     const logger = new Logger({ enabled: true, level: LogLevel.Error });
     const mockTransport = jest.fn();
     logger.addTransport(mockTransport);
 
     const cause = new Error('boom');
-    logger.createContextualLogger('delegation').error(cause, { chainId: 1 });
+    logger.createServiceLogger('delegation').error(cause, { chainId: 1 });
 
     expect(mockTransport).toHaveBeenCalledTimes(1);
 
