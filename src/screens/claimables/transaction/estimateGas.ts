@@ -1,11 +1,11 @@
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import { getProvider } from '@/handlers/web3';
-import { Address } from 'viem';
 import { ChainId } from '@/state/backendNetworks/types';
 import { estimateTransactionsGasLimit, populateSwap } from '@/raps/utils';
 import { estimateApprove, needsTokenApproval, populateApprove } from '@/raps/actions/unlock';
 import { logger, RainbowError } from '@/logger';
 import { estimateSwapGasLimit } from '@/raps/actions/swap';
+import { getQuoteAllowanceTargetAddress } from '@/raps/validation';
 
 /**
  * Estimates the gas limit for claim + unlock + swap transactions using transaction simulation.
@@ -34,16 +34,17 @@ export const estimateClaimUnlockSwap = async ({
   }));
 
   if (quote) {
-    const { from: accountAddress, sellTokenAddress, allowanceNeeded, allowanceTarget, sellTokenAsset, sellAmount } = quote;
-    const requiresApprove =
-      allowanceNeeded &&
-      (await needsTokenApproval({
-        owner: accountAddress,
-        tokenAddress: sellTokenAddress,
-        spender: allowanceTarget as Address,
-        amount: sellAmount.toString(),
-        chainId,
-      }));
+    const { from: accountAddress, sellTokenAddress, allowanceNeeded, sellTokenAsset, sellAmount } = quote;
+    const allowanceTargetAddress = allowanceNeeded ? getQuoteAllowanceTargetAddress(quote) : null;
+    const requiresApprove = allowanceTargetAddress
+      ? await needsTokenApproval({
+          owner: accountAddress,
+          tokenAddress: sellTokenAddress,
+          spender: allowanceTargetAddress,
+          amount: sellAmount.toString(),
+          chainId,
+        })
+      : false;
 
     if (!sellTokenAsset) {
       logger.error(new RainbowError('[estimateClaimUnlockSwap]: Quote is missing sellTokenAsset'));
@@ -52,11 +53,11 @@ export const estimateClaimUnlockSwap = async ({
 
     const provider = getProvider({ chainId });
 
-    if (requiresApprove) {
+    if (requiresApprove && allowanceTargetAddress) {
       const approveTransaction = await populateApprove({
         owner: accountAddress,
         tokenAddress: sellTokenAddress,
-        spender: allowanceTarget as Address,
+        spender: allowanceTargetAddress,
         chainId,
         amount: sellAmount.toString(),
       });
@@ -74,7 +75,7 @@ export const estimateClaimUnlockSwap = async ({
             estimateApprove({
               owner: accountAddress,
               tokenAddress: sellTokenAddress,
-              spender: allowanceTarget as Address,
+              spender: allowanceTargetAddress,
               chainId,
             }),
         });

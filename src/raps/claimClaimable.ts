@@ -1,15 +1,14 @@
-import { Address } from 'viem';
 import { createNewAction, createNewRap } from './common';
 import { RapAction, RapSwapActionParameters } from './references';
 import { logger, RainbowError } from '@/logger';
-import { CrosschainQuote } from '@rainbow-me/swaps';
 import { needsTokenApproval } from './actions/unlock';
+import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
+import { getQuoteAllowanceTargetAddress } from './validation';
 
 export async function createClaimClaimableRap(parameters: RapSwapActionParameters<'claimClaimable'>) {
   let actions: RapAction<'claimClaimable' | 'crosschainSwap' | 'unlock' | 'swap'>[] = [];
 
-  const { sellAmount, assetToBuy, quote, chainId, toChainId, assetToSell, meta, gasFeeParamsBySpeed, gasParams, additionalParams } =
-    parameters;
+  const { sellAmount, assetToBuy, quote, chainId, assetToSell, meta, gasFeeParamsBySpeed, gasParams, additionalParams } = parameters;
 
   if (!additionalParams?.claimTxns.length) {
     logger.error(new RainbowError('[raps/claimClaimable]: claimTxns is undefined'));
@@ -24,44 +23,35 @@ export async function createClaimClaimableRap(parameters: RapSwapActionParameter
     actions = actions.concat(claim);
   }
 
-  const {
-    from: accountAddress,
-    sellTokenAddress,
-    allowanceTarget,
-    allowanceNeeded,
-  } = quote as {
-    from: Address;
-    sellTokenAddress: Address;
-    allowanceTarget: Address;
-    allowanceNeeded: boolean;
-  };
-  const requiresApprove =
-    allowanceNeeded &&
-    (await needsTokenApproval({
-      owner: accountAddress,
-      tokenAddress: sellTokenAddress,
-      spender: allowanceTarget,
-      amount: sellAmount,
-      chainId,
-    }));
+  const { from: accountAddress, sellTokenAddress, allowanceNeeded } = quote;
+  const allowanceTargetAddress = allowanceNeeded ? getQuoteAllowanceTargetAddress(quote) : null;
+  const requiresApprove = allowanceTargetAddress
+    ? await needsTokenApproval({
+        owner: accountAddress,
+        tokenAddress: sellTokenAddress,
+        spender: allowanceTargetAddress,
+        amount: sellAmount,
+        chainId,
+      })
+    : false;
 
-  if (requiresApprove) {
+  if (requiresApprove && allowanceTargetAddress) {
     const unlock = createNewAction('unlock', {
       fromAddress: accountAddress,
       assetToUnlock: assetToSell,
       chainId,
-      contractAddress: allowanceTarget,
+      contractAddress: allowanceTargetAddress,
       amount: sellAmount,
     });
     actions = actions.concat(unlock);
   }
 
-  if (chainId === toChainId) {
+  if (!isCrosschainQuote(quote)) {
     // create a swap rap
     const swap = createNewAction('swap', {
       chainId: chainId,
       requiresApprove,
-      quote: quote as CrosschainQuote,
+      quote,
       meta: meta,
       assetToSell,
       sellAmount,
@@ -75,7 +65,7 @@ export async function createClaimClaimableRap(parameters: RapSwapActionParameter
     const crosschainSwap = createNewAction('crosschainSwap', {
       chainId: chainId,
       requiresApprove,
-      quote: quote as CrosschainQuote,
+      quote: quote,
       meta: meta,
       assetToSell,
       sellAmount,
