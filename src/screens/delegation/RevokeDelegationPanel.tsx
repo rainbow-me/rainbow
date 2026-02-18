@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Wallet } from '@ethersproject/wallet';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@/navigation';
 import { Box, Text, globalColors, Separator } from '@/design-system';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
@@ -64,8 +64,8 @@ type SheetContent = {
 
 const REVOKE_SUCCESS_DELAY_MS = 2000;
 
-const DEFAULT_LOCK_GRADIENT_COLORS = ['#3b7fff', '#b724ad'];
-const DEFAULT_LOCK_GRADIENT_LOCATIONS = [0, 1];
+const DEFAULT_LOCK_GRADIENT_COLORS = ['#3b7fff', '#b724ad'] as const;
+const DEFAULT_LOCK_GRADIENT_LOCATIONS = [0, 1] as const;
 const DEFAULT_LOCK_ACCENT_COLOR = DEFAULT_LOCK_GRADIENT_COLORS[1];
 
 const getSheetContent = (reason: RevokeReason, chainName?: string): SheetContent => {
@@ -284,18 +284,17 @@ export const RevokeDelegationPanel = () => {
         >
           <LinearGradient
             colors={
-              isError
+              (isError
                 ? [globalColors.red60, globalColors.red80, '#19002d']
                 : isSuccess
                   ? [globalColors.green60, globalColors.green80, '#19002d']
                   : isCriticalBackendAlert
                     ? [globalColors.red60, globalColors.red80, '#19002d']
-                    : DEFAULT_LOCK_GRADIENT_COLORS
+                    : DEFAULT_LOCK_GRADIENT_COLORS) as [string, string, ...string[]]
             }
             locations={DEFAULT_LOCK_GRADIENT_LOCATIONS}
-            useAngle
-            angle={132.532}
-            angleCenter={{ x: 0.5, y: 0.5 }}
+            start={{ x: 0, y: 1 }}
+            end={{ x: 1, y: 0 }}
             style={StyleSheet.absoluteFill}
           />
           <Box alignItems="center" justifyContent="center" width="full" height="full">
@@ -330,11 +329,10 @@ export const RevokeDelegationPanel = () => {
         <Box style={styles.buttonFrame}>
           {useDefaultButtonGradient && (
             <LinearGradient
-              colors={[...DEFAULT_LOCK_GRADIENT_COLORS]}
-              locations={[...DEFAULT_LOCK_GRADIENT_LOCATIONS]}
-              useAngle
-              angle={132.532}
-              angleCenter={{ x: 0.5, y: 0.5 }}
+              colors={DEFAULT_LOCK_GRADIENT_COLORS}
+              locations={DEFAULT_LOCK_GRADIENT_LOCATIONS}
+              start={{ x: 0, y: 1 }}
+              end={{ x: 1, y: 0 }}
               pointerEvents="none"
               style={styles.buttonGradient}
             />
