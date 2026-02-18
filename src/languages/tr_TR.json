@@ -698,10 +698,6 @@
         "balance": "Bakiye",
         "get_asset": "Al %{assetSymbol}",
         "market_cap": "Piyasa değeri",
-        "read_more_button": "Daha fazla oku",
-        "available_networks": "%{availableNetworks} ağında mevcut",
-        "available_network": "%{availableNetwork} ağı üzerinde mevcut",
-        "available_networkv2": "Ayrıca %{availableNetwork}üzerinde de mevcut",
         "l2_disclaimer": "Bu %{symbol} %{network} ağı üzerinde",
         "l2_disclaimer_send": "%{network} ağı üzerinde gönderme yapıyorum",
         "l2_disclaimer_dapp": "Bu uygulama %{network} ağı üzerinde",
@@ -2536,7 +2532,6 @@
         "networks": "Ağlar",
         "filter_by_network": "Ağa Göre Filtrele",
         "switch_networks": "Ağları Değiştir",
-        "nothing_found": "Hiçbir şey bulunamadı",
         "nothing_found_description": "Bazı tokenlar başarılı bir %{action}gerçekleştirmek için yeterli likiditeye sahip değil.",
         "nothing_found_description_l2": "Bazı tokenlar başarılı bir %{action} gerçekleştirmek için yeterli katman 2 likiditesine sahip değil.",
         "output_quotes_disabled": "Çıktı alıntıları devre dışı"
@@ -2585,6 +2580,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "Hiçbir şey bulunamadı",
       "section_header": {
         "recent": "Son",
         "popular": "Rainbow'da Popüler",
@@ -3294,7 +3290,6 @@
     "walletconnect": {
       "connecting": "Bağlanıyor",
       "loading": "Yükleniyor",
-      "requests": "İstekler",
       "wants_to_connect": "Cüzdanınıza bağlanmak istiyor",
       "wants_to_connect_to_network": "%{network} ağına bağlanmak istiyor",
       "available_networks": "Kullanılabilir Ağlar",

@@ -698,10 +698,6 @@
         "balance": "Баланс",
         "get_asset": "Получите %{assetSymbol}",
         "market_cap": "Рыночная капитализация",
-        "read_more_button": "Читать далее",
-        "available_networks": "Доступна на сетях %{availableNetworks}",
-        "available_network": "Доступна на сети %{availableNetwork}",
-        "available_networkv2": "Также доступна на %{availableNetwork}",
         "l2_disclaimer": "Это %{symbol} находится в сети %{network}",
         "l2_disclaimer_send": "Отправка в сети %{network}",
         "l2_disclaimer_dapp": "Это приложение в сети %{network}",
@@ -2536,7 +2532,6 @@
         "networks": "Сети",
         "filter_by_network": "Фильтр по сети",
         "switch_networks": "Сменить сеть",
-        "nothing_found": "Ничего не найдено",
         "nothing_found_description": "У некоторых токенов недостаточно ликвидности для успешного %{action}.",
         "nothing_found_description_l2": "У некоторых токенов недостаточно ликвидности на уровне 2 для успешного %{action}.",
         "output_quotes_disabled": "Отключена выдача котировок"
@@ -2585,6 +2580,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "Ничего не найдено",
       "section_header": {
         "recent": "Последние",
         "popular": "Популярное в Rainbow",
@@ -3294,7 +3290,6 @@
     "walletconnect": {
       "connecting": "Подключение",
       "loading": "Загрузка",
-      "requests": "Запросы",
       "wants_to_connect": "хочет получить доступ к вашему кошельку",
       "wants_to_connect_to_network": "хочет подключиться к сети %{network}",
       "available_networks": "Доступные сети",

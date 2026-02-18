@@ -698,10 +698,6 @@
         "balance": "बैलेंस",
         "get_asset": "प्राप्त करें %{assetSymbol}",
         "market_cap": "बाजार की सीमा",
-        "read_more_button": "अधिक पढ़ें",
-        "available_networks": "%{availableNetworks} नेटवर्क्स पर उपलब्ध",
-        "available_network": "%{availableNetwork} नेटवर्क पर उपलब्ध",
-        "available_networkv2": "%{availableNetwork}पर भी उपलब्ध",
         "l2_disclaimer": "यह %{symbol} का नेटवर्क पर है %{network}",
         "l2_disclaimer_send": "भेजना नेटवर्क पर %{network}",
         "l2_disclaimer_dapp": "यह ऐप नेटवर्क पर %{network}",
@@ -2536,7 +2532,6 @@
         "networks": "नेटवर्क",
         "filter_by_network": "नेटवर्क के आधार पर फ़िल्टर करें",
         "switch_networks": "नेटवर्क बदलें",
-        "nothing_found": "कुछ नहीं मिला",
         "nothing_found_description": "कुछ टोकनों में सफलतापूर्वक %{action} करने के लिए पर्याप्त तरलता नहीं है।",
         "nothing_found_description_l2": "कुछ टोकनों में सफलतापूर्वक %{action} करने के लिए पर्याप्त लेयर 2 तरलता नहीं है।",
         "output_quotes_disabled": "आउटपुट कोट्स अक्षम"
@@ -2585,6 +2580,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "कुछ नहीं मिला",
       "section_header": {
         "recent": "हाल का",
         "popular": "रेनबो में लोकप्रिय",
@@ -3294,7 +3290,6 @@
     "walletconnect": {
       "connecting": "जोड़ रहा है",
       "loading": "लोड हो रहा है",
-      "requests": "अनुरोध",
       "wants_to_connect": "आपके वॉलेट के साथ कनेक्ट करना चाहता है",
       "wants_to_connect_to_network": "नेटवर्क %{network} के साथ कनेक्ट करना चाहता है",
       "available_networks": "उपलब्ध नेटवर्क",
