@@ -6,10 +6,12 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { Panel, controlPanelStyles, PANEL_BOTTOM_OFFSET } from '@/components/SmoothPager/ListPanel';
 import { type RouteProp, useRoute, useNavigation } from '@react-navigation/native';
-import type Routes from '@/navigation/routesNames';
+import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import Navigation from '@/navigation/Navigation';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
+import { waitForTradeByOrderId } from '@/features/perps/utils/waitForTradeByOrderId';
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { PositionPercentageSlider } from '@/features/perps/components/PositionPercentageSlider';
@@ -25,10 +27,12 @@ import * as i18n from '@/languages';
 import { analytics } from '@/analytics';
 import { useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
 import { TriggerOrderType } from '@/features/perps/types';
-import { Alert } from 'react-native';
+import { Alert, InteractionManager } from 'react-native';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
+import { type OrderStatusResponse } from '@/features/perps/services/hyperliquid-exchange-client';
 
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { time } from '@/utils/time';
 
 function PanelSheet({ children }: { children: React.ReactNode }) {
   const { isDarkMode } = useColorMode();
@@ -46,6 +50,12 @@ function PanelSheet({ children }: { children: React.ReactNode }) {
 type PanelContentProps = {
   symbol: string;
 };
+
+function getOrderIdFromCloseStatus(status: OrderStatusResponse | undefined): number | undefined {
+  if (!status) return;
+  if ('filled' in status) return status.filled.oid;
+  if ('resting' in status) return status.resting.oid;
+}
 
 function PanelContent({ symbol }: PanelContentProps) {
   const { isDarkMode } = useColorMode();
@@ -116,7 +126,7 @@ function PanelContent({ symbol }: PanelContentProps) {
     const closePercentage = Number(divWorklet(closeProgress.value, SLIDER_MAX));
 
     try {
-      await hyperliquidAccountActions.closePosition({
+      const closeStatus = await hyperliquidAccountActions.closePosition({
         symbol,
         price: liveTokenPrice,
         size: mulWorklet(position.size, closePercentage),
@@ -146,7 +156,20 @@ function PanelContent({ symbol }: PanelContentProps) {
         triggerOrders,
       });
 
+      const closedTrade = await waitForTradeByOrderId({
+        symbol,
+        orderId: getOrderIdFromCloseStatus(closeStatus),
+      });
+
       navigation.goBack();
+
+      if (closedTrade) {
+        setTimeout(() => {
+          InteractionManager.runAfterInteractions(() => {
+            Navigation.handleAction(Routes.PERPS_TRADE_DETAILS_SHEET, { trade: closedTrade });
+          });
+        }, time.ms(250));
+      }
     } catch (e) {
       const errorMessage = parseHyperliquidErrorMessage(e);
       analytics.track(analytics.event.perpsClosePositionFailed, {
@@ -158,8 +181,8 @@ function PanelContent({ symbol }: PanelContentProps) {
       });
       Alert.alert(i18n.t(i18n.l.perps.common.error_submitting_order), errorMessage);
       logger.error(new RainbowError('[ClosePositionBottomSheet] Failed to close position', e));
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   }, [position, symbol, liveTokenPrice, navigation, closeProgress]);
 
   if (!position) return null;

@@ -127,6 +127,15 @@ export class HyperliquidAccountClient {
     );
   }
 
+  async isOrderFilled(orderId: number): Promise<boolean> {
+    const orderStatus = await infoClient.orderStatus({
+      user: this.userAddress,
+      oid: orderId,
+    });
+
+    return orderStatus.status === 'order' && orderStatus.order.status === 'filled';
+  }
+
   async isBuilderFeeApproved(): Promise<boolean> {
     const approvedBuilderFee = await infoClient.maxBuilderFee({
       builder: RAINBOW_BUILDER_SETTINGS.b,
