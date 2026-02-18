@@ -257,7 +257,7 @@ export const crosschainSwap = async ({
     });
   } catch (e) {
     logger.error(new RainbowError('[raps/crosschainSwap]: error estimateCrosschainSwapGasLimit'), {
-      message: (e as Error)?.message,
+      message: ensureError(e).message,
     });
     throw e;
   }
