@@ -15,11 +15,12 @@ import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { GasSpeed } from '@/__swaps__/types/gas';
+import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
 import { createExternalTokenStore, FormattedExternalAsset } from './createExternalTokenStore';
 import { computeMaxSwappableAmount } from './createDepositStore';
-import { isCrosschainQuote, isValidQuote } from '../utils/quotes';
+import { isValidQuote } from '../utils/quotes';
 import {
   DepositConfig,
   DepositGasLimitParams,
