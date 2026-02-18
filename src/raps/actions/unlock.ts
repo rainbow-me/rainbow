@@ -4,6 +4,7 @@ import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
 import { getProvider, toHex } from '@/handlers/web3';
 import { Address, erc20Abi, erc721Abi } from 'viem';
+import { supportsDelegation } from '@rainbow-me/delegation';
 
 import { ChainId } from '@/state/backendNetworks/types';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
@@ -12,14 +13,36 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
 import { ETH_ADDRESS, gasUnits } from '@/references';
-import { ParsedAsset as SwapsParsedAsset } from '@/__swaps__/types/assets';
-import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
 import { ActionProps, RapActionResult } from '../references';
 
 import { overrideWithFastSpeedIfNeeded } from './../utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { getRemoteConfig } from '@/model/remoteConfig';
+import { DELEGATION, getExperimentalFlag } from '@/config/experimental';
+
+/**
+ * Determines the approval amount based on delegation support.
+ * If the address supports delegation (EIP-7702), use finite approvals for better security.
+ * Otherwise, use unlimited approvals (MaxUint256) for better UX.
+ */
+const getApprovalAmount = async ({
+  address,
+  chainId,
+  amount,
+}: {
+  address: Address;
+  chainId: ChainId;
+  amount: string;
+}): Promise<{ approvalAmount: string; isUnlimited: boolean }> => {
+  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
+  const { supported: delegationSupported } = await supportsDelegation({ address, chainId });
+  if (delegationEnabled && delegationSupported) {
+    return { approvalAmount: amount, isUnlimited: false };
+  }
+  return { approvalAmount: MaxUint256.toString(), isUnlimited: true };
+};
 
 export const getAssetRawAllowance = async ({
   owner,
@@ -43,33 +66,6 @@ export const getAssetRawAllowance = async ({
     });
     return null;
   }
-};
-
-export const assetNeedsUnlocking = async ({
-  owner,
-  amount,
-  assetToUnlock,
-  spender,
-  chainId,
-}: {
-  owner: Address;
-  amount: string;
-  assetToUnlock: SwapsParsedAsset;
-  spender: Address;
-  chainId: ChainId;
-}) => {
-  if (assetToUnlock.isNativeAsset || assetToUnlock.address === ETH_ADDRESS) return false;
-
-  const allowance = await getAssetRawAllowance({
-    owner,
-    assetAddress: assetToUnlock.address,
-    spender,
-    chainId,
-  });
-
-  const rawAmount = convertAmountToRawAmount(amount, assetToUnlock.decimals);
-  const needsUnlocking = !greaterThan(allowance, rawAmount);
-  return needsUnlocking;
 };
 
 export const estimateApprove = async ({
@@ -108,16 +104,19 @@ export const populateApprove = async ({
   tokenAddress,
   spender,
   chainId,
+  amount,
 }: {
   owner: Address;
   tokenAddress: Address;
   spender: Address;
   chainId: ChainId;
+  amount: string;
 }): Promise<PopulatedTransaction | null> => {
   try {
+    const { approvalAmount } = await getApprovalAmount({ address: owner, chainId, amount });
     const provider = getProvider({ chainId });
     const tokenContract = new Contract(tokenAddress, erc20Abi, provider);
-    const approveTransaction = await tokenContract.populateTransaction.approve(spender, MaxUint256, {
+    const approveTransaction = await tokenContract.populateTransaction.approve(spender, approvalAmount, {
       from: owner,
     });
     return approveTransaction;
@@ -186,6 +185,7 @@ export const executeApprove = async ({
   spender,
   tokenAddress,
   wallet,
+  amount,
 }: {
   chainId: ChainId;
   gasLimit: string;
@@ -194,9 +194,10 @@ export const executeApprove = async ({
   spender: Address;
   tokenAddress: Address;
   wallet: Signer;
+  amount: string;
 }) => {
   const exchange = new Contract(tokenAddress, erc20Abi, wallet);
-  return exchange.approve(spender, MaxUint256, {
+  return exchange.approve(spender, amount, {
     gasLimit: toHex(gasLimit) || undefined,
     // In case it's an L2 with legacy gas price like arbitrum
     gasPrice: gasParams.gasPrice,
@@ -246,6 +247,12 @@ export const unlock = async ({
 
   const nonce = baseNonce ? baseNonce + index : undefined;
 
+  const { approvalAmount, isUnlimited } = await getApprovalAmount({
+    address: parameters.fromAddress,
+    chainId,
+    amount: parameters.amount,
+  });
+
   let approval;
   try {
     approval = await executeApprove({
@@ -256,6 +263,7 @@ export const unlock = async ({
       wallet,
       nonce,
       chainId,
+      amount: approvalAmount,
     });
   } catch (e) {
     logger.error(new RainbowError('[raps/unlock]: error executeApprove'), {
@@ -285,7 +293,7 @@ export const unlock = async ({
     nonce: approval.nonce,
     status: TransactionStatus.pending,
     type: 'approve',
-    approvalAmount: 'UNLIMITED',
+    approvalAmount: isUnlimited ? 'UNLIMITED' : approvalAmount,
     ...gasParams,
   } satisfies NewTransaction;
 

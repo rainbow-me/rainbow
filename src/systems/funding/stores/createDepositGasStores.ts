@@ -161,18 +161,14 @@ function createGasLimitFetcher(
 
     if (isCrosschainQuote(quote)) {
       return estimateUnlockAndCrosschainSwap({
-        assetToSell: asset,
         chainId,
         quote,
-        sellAmount: quote.sellAmount.toString(),
       });
     }
 
     return estimateUnlockAndSwap({
-      assetToSell: asset,
       chainId,
       quote,
-      sellAmount: quote.sellAmount.toString(),
     });
   };
 }

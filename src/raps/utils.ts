@@ -1,5 +1,4 @@
 import { Block, Provider } from '@ethersproject/abstract-provider';
-import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { CrosschainQuote, Quote, getQuoteExecutionDetails, getTargetAddress } from '@rainbow-me/swaps';
@@ -61,11 +60,12 @@ const getStateDiff = async (provider: Provider, quote: Quote | CrosschainQuote):
   const fromAddr = quote.from;
   const toAddr = quote.swapType === 'normal' ? getTargetAddress(quote) : (quote as CrosschainQuote).allowanceTarget;
   const tokenContract = new Contract(tokenAddress, erc20Abi, provider);
+  const approvalAmount = quote.sellAmount;
 
   const { number: blockNumber } = await (provider.getBlock as () => Promise<Block>)();
 
   // Get data
-  const { data } = await tokenContract.populateTransaction.approve(toAddr, MaxUint256.toHexString());
+  const { data } = await tokenContract.populateTransaction.approve(toAddr, approvalAmount);
 
   // trace_call default params
   const callParams = [
@@ -87,7 +87,7 @@ const getStateDiff = async (provider: Provider, quote: Quote | CrosschainQuote):
       const formattedStateDiff = {
         [tokenAddress]: {
           stateDiff: {
-            [slotAddress]: MaxUint256.toHexString(),
+            [slotAddress]: BigNumber.from(approvalAmount).toHexString(),
           },
         },
       };
