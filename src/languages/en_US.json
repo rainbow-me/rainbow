@@ -562,7 +562,23 @@
       "reset_experimental_config": "Reset Experimental Config",
       "status": "Status",
       "sync_codepush": "Sync CodePush",
-      "simulate_device_transfer": "Simulate Device Transfer"
+      "simulate_device_transfer": "Simulate Device Transfer",
+      "headers": {
+        "normie_settings": "Normie Settings",
+        "rainbow_developer_settings": "Rainbow Developer Settings",
+        "feature_flags": "Feature Flags",
+        "delegation_settings": "Delegation Settings"
+      },
+      "delegation_settings": {
+        "clear_store": "Clear Delegation Store",
+        "simulate_disable_smart_wallet": "Simulate Disable Smart Wallet",
+        "simulate_disable_single_network": "Simulate Disable Single Network",
+        "simulate_disable_third_party": "Simulate Disable Third Party",
+        "simulate_alert_vulnerability": "Simulate Alert Vulnerability",
+        "simulate_alert_bug": "Simulate Alert Bug",
+        "simulate_alert_unrecognized": "Simulate Alert Unrecognized",
+        "simulate_alert_unspecified": "Simulate Alert Unspecified"
+      }
     },
     "discover": {
       "pulse": {
@@ -885,6 +901,7 @@
         "minimum_received": "Minimum Received",
         "preferred_network": "Preferred Network",
         "rainbow_fee": "Included Rainbow Fee",
+        "smart_wallet_activation_fee": "Est. Smart Wallet Fee",
         "settings": "Settings"
       },
       "token_index": {
@@ -1039,6 +1056,10 @@
       "gas": {
         "text": "This is the \"gas fee\" used by the %{networkName} blockchain to securely validate your transaction.\n\nThis fee varies depending on the complexity of your transaction and how busy the network is!",
         "title": "%{networkName} network fee"
+      },
+      "smart_wallet_activation": {
+        "text": "This transaction includes a one-time Smart Wallet activation on %{networkName}. This upgrades your wallet to support batched transactions and other smart account features.\n\nThe activation fee is included in the network fee for this swap.",
+        "title": "Smart Wallet activation"
       },
       "max_base_fee": {
         "text": "This is the maximum base fee you’re willing to pay for this transaction.\n\nSetting a higher max base fee prevents your transaction from getting stuck if fees rise.",
@@ -2483,6 +2504,8 @@
         "hold_to_swap": "Hold to Swap",
         "hold_to_bridge": "Hold to Bridge",
         "earning_rewards": "Earning Rewards",
+        "eip7702_delegate": "7702 Delegate",
+        "eip7702_batch": "7702 Batch",
         "save": "Save",
         "enter_amount": "Enter Amount",
         "review": "Review",
@@ -3041,6 +3064,9 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Watching",
         "ledger": "Ledger",
+        "delegated": "Delegated",
+        "not_delegated": "Not Delegated",
+        "disabled": "Disabled",
         "wallets": "Wallets",
         "all_wallets": "All Wallets",
         "total_balance": "Total Balance",
