@@ -1,4 +1,5 @@
-import { UniqueAsset, AssetType } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { AssetType } from '@/entities/assetTypes';
 import { gretch } from 'gretchen';
 import { paths } from '@reservoir0x/reservoir-sdk';
 import { RainbowError, logger } from '@/logger';

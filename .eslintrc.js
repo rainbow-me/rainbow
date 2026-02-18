@@ -102,7 +102,6 @@ const allowedBarrelFiles = [
   'src/screens/NotificationsPromoSheet/index.tsx',
   'src/screens/Portal/index.tsx',
   'src/screens/token-launcher/types/index.ts',
-  'src/screens/WelcomeScreen/index.tsx',
   'src/state/appSessions/index.ts',
   'src/state/browserHistory/index.ts',
   'src/state/connectedToAnvil/index.ts',

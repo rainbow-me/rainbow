@@ -1,6 +1,6 @@
 import { RecyclerListView, RecyclerListViewProps } from 'recyclerlistview';
 import { RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { RainbowPosition } from '@/features/positions/types';

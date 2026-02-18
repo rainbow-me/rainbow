@@ -1,0 +1,13 @@
+diff --git a/node_modules/expo-linear-gradient/ios/LinearGradientLayer.swift b/node_modules/expo-linear-gradient/ios/LinearGradientLayer.swift
+index 1234567..abcdefg 100644
+--- a/node_modules/expo-linear-gradient/ios/LinearGradientLayer.swift
++++ b/node_modules/expo-linear-gradient/ios/LinearGradientLayer.swift
+@@ -76,7 +76,7 @@ final class LinearGradientLayer: CALayer {
+ 
+     ctx.saveGState()
+ 
+-    let colorSpace = CGColorSpaceCreateDeviceRGB()
++    let colorSpace = CGColorSpace(name: CGColorSpace.displayP3)!
+     let locations = colors.enumerated().map { (offset: Int, _: UIColor) -> CGFloat in
+       if self.locations.count > offset {
+         return self.locations[offset]

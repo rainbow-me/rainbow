@@ -23,7 +23,7 @@ test('returns gradient color for no. 3 rank properly', () => {
   expect(getGradientColorsForRank(3, true)).toEqual(DARK_RANK_3_GRADIENT_COLORS);
 });
 
-test('returns transparent for other ranks', () => {
+test('returns transparent fallback for other ranks', () => {
   expect(getGradientColorsForRank(4, false)).toEqual(['transparent', 'transparent']);
   expect(getGradientColorsForRank(4, true)).toEqual(['transparent', 'transparent']);
 });

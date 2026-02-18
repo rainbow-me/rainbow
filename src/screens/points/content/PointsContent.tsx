@@ -790,9 +790,10 @@ export function PointsContent() {
                       as={LinearGradient}
                       style={{ padding: 5 / 3, borderRadius: 18 + 5 / 3 }}
                       colors={['#31BCC4', '#57EA5F', '#F0D83F', '#DF5337', '#B756A7']}
+                      locations={[0, 0.25, 0.5, 0.75, 1]}
                       // -15 deg angle
-                      start={{ x: 0, y: 0.633975 }}
-                      end={{ x: 1, y: 0.366025 }}
+                      start={{ x: 0, y: 0.5 }}
+                      end={{ x: 1, y: 0.5 }}
                     >
                       <Box
                         background="surfaceSecondaryElevated"

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { RainbowTransaction } from '@/entities';
+import { RainbowTransaction } from '@/entities/transactions';
 import { useNavigation } from '@/navigation';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';

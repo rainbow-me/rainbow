@@ -1,5 +1,5 @@
 import { analytics } from '@/analytics';
-import { NativeCurrencyKey } from '@/entities';
+import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResult';

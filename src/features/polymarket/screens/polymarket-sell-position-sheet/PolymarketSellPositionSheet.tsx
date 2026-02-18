@@ -58,8 +58,8 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
     opacity: 0.4,
   });
   const gradientFillColors = isDarkMode
-    ? [opacity(accentColor, 0.22), opacity(accentColor, 0)]
-    : [opacity(accentColor, 0), opacity(accentColor, 0.06)];
+    ? ([opacity(accentColor, 0.22), opacity(accentColor, 0)] as const)
+    : ([opacity(accentColor, 0), opacity(accentColor, 0.06)] as const);
 
   const executionStore = useMemo(() => createSellExecutionStore(tokenId, sellAmountTokens), [tokenId, sellAmountTokens]);
   const { worstPrice, bestPrice, expectedPayoutUsd, averagePrice, spread } = executionStore(state => state);

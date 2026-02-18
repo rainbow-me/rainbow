@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entities';
+import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entities/transactions';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
 import { buildTransactionTitle, isValidTransactionStatus } from '@/parsers/transactions';

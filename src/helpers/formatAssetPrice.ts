@@ -1,6 +1,6 @@
 import { supportedNativeCurrencies } from '@/references';
 import { convertAmountToNativeDisplayWorklet } from './utilities';
-import { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import {
   equalWorklet as safeEqualWorklet,
   divWorklet as safeDivWorklet,

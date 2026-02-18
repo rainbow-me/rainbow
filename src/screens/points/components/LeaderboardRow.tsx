@@ -166,7 +166,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
 
   const menuConfig = useMemo(() => ({ menuItems, ...(IS_IOS && { menuTitle: '' }) }), [menuItems]);
 
-  let gradient;
+  let gradient: readonly [string, string] | undefined;
   let icon;
   switch (rank) {
     case 1:

@@ -3,7 +3,7 @@ import { SWAP_ICON_INTERSECT, SWAP_ICON_WIDTH, TOAST_ICON_SIZE } from '@/compone
 import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon';
 import { RainbowToast } from '@/components/rainbow-toast/types';
 import { RainbowImage } from '@/components/RainbowImage';
-import { TransactionStatus } from '@/entities';
+import { TransactionStatus } from '@/entities/transactions';
 import { ChainId } from '@/state/backendNetworks/types';
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { memo } from 'react';

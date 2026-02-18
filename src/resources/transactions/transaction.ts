@@ -1,4 +1,5 @@
-import { NativeCurrencyKey, TransactionStatus, MinedTransaction, RainbowTransaction, TransactionType } from '@/entities';
+import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { TransactionStatus, MinedTransaction, RainbowTransaction, TransactionType } from '@/entities/transactions';
 import { createQueryKey, queryClient, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { consolidatedTransactionsQueryFunction, consolidatedTransactionsQueryKey } from './consolidatedTransactions';

@@ -1,4 +1,6 @@
-import { AssetType, NativeCurrencyKey, RainbowTransaction, TransactionStatus } from '@/entities';
+import { AssetType } from '@/entities/assetTypes';
+import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { RainbowTransaction, TransactionStatus } from '@/entities/transactions';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,

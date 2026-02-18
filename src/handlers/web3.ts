@@ -7,7 +7,10 @@ import { Block, JsonRpcBatchProvider, StaticJsonRpcProvider, TransactionRequest 
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
-import { AssetType, NewTransaction, ParsedAddressAsset, UniqueAsset } from '@/entities';
+import { AssetType } from '@/entities/assetTypes';
+import { NewTransaction } from '@/entities/transactions';
+import { ParsedAddressAsset } from '@/entities/tokens';
+import { UniqueAsset } from '@/entities/uniqueAssets';
 import { isNativeAsset } from '@/handlers/assets';
 import { isUnstoppableAddressFormat } from '@/helpers/validators';
 import { ethUnits, smartContractMethods, CRYPTO_KITTIES_NFT_ADDRESS, CRYPTO_PUNKS_NFT_ADDRESS } from '@/references';

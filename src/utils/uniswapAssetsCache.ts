@@ -1,4 +1,5 @@
-import { EthereumAddress, RainbowToken } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
+import type { RainbowToken } from '@/entities/tokens';
 
 const cache: Record<string, Record<EthereumAddress, RainbowToken>> = {};
 

@@ -2,7 +2,7 @@ import type { Address } from 'viem';
 import { time } from '@/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
-import type { NativeCurrencyKey } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import type { ListPositionsResponse } from '../types/generated/positions/positions';
 
 // ============ Constants ====================================================== //

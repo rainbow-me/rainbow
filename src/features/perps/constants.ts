@@ -9,7 +9,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { LinearTransition } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { supportedNativeCurrencies } from '@/references';
-import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities';
+import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 
 export const DEFAULT_SLIPPAGE_BIPS = 500;
 export const RAINBOW_BUILDER_SETTINGS = {

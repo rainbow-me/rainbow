@@ -259,7 +259,6 @@ export const FeatureHintTooltip = forwardRef<TooltipRef, FeatureHintTooltipProps
                 >
                   <LinearGradient
                     colors={['#268FFF1F', '#268FFF14']}
-                    // 135 deg angle
                     start={{ x: 0, y: 1 }}
                     end={{ x: 1, y: 0 }}
                     style={styles.iconContainer}

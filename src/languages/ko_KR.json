@@ -698,10 +698,6 @@
         "balance": "균형",
         "get_asset": "%{assetSymbol}얻기",
         "market_cap": "시가총액",
-        "read_more_button": "더 읽기",
-        "available_networks": "%{availableNetworks} 네트워크에서 사용 가능",
-        "available_network": "%{availableNetwork} 네트워크에서 사용 가능",
-        "available_networkv2": "또한 %{availableNetwork}에서 사용 가능",
         "l2_disclaimer": "이 %{symbol} 은 %{network} 네트워크에 있습니다",
         "l2_disclaimer_send": "%{network} 네트워크에서 전송 중",
         "l2_disclaimer_dapp": "이 앱은 %{network} 네트워크에 있습니다",
@@ -2536,7 +2532,6 @@
         "networks": "네트워크",
         "filter_by_network": "네트워크별 필터링",
         "switch_networks": "네트워크 전환",
-        "nothing_found": "아무것도 찾을 수 없음",
         "nothing_found_description": "일부 토큰은 충분한 유동성이 없어 성공적인 %{action}수행이 불가합니다.",
         "nothing_found_description_l2": "일부 토큰은 레이어 2 유동성이 충분하지 않아 성공적인 %{action}수행이 불가합니다.",
         "output_quotes_disabled": "출력 견적 비활성화"
@@ -2585,6 +2580,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "아무것도 찾을 수 없음",
       "section_header": {
         "recent": "최근",
         "popular": "레인보우에서 인기",
@@ -3294,7 +3290,6 @@
     "walletconnect": {
       "connecting": "연결 중",
       "loading": "불러오는 중",
-      "requests": "요청",
       "wants_to_connect": "당신의 지갑에 연결하려 합니다",
       "wants_to_connect_to_network": "%{network} 네트워크에 연결하려 합니다",
       "available_networks": "사용 가능한 네트워크",

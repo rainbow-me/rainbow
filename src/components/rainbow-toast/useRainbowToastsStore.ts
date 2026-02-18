@@ -1,6 +1,6 @@
 import { TOAST_HIDE_TIMEOUT_MS } from '@/components/rainbow-toast/constants';
 import type { RainbowToast } from '@/components/rainbow-toast/types';
-import { type RainbowTransaction } from '@/entities';
+import type { RainbowTransaction } from '@/entities/transactions';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useMemo } from 'react';
 

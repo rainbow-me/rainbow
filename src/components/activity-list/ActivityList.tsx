@@ -1,6 +1,6 @@
 import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { FastTransactionCoinRow } from '@/components/coin-row';
-import { RainbowTransaction } from '@/entities';
+import { RainbowTransaction } from '@/entities/transactions';
 import { TransactionSection } from '@/helpers/buildTransactionsSectionsSelector';
 import useAccountTransactions from '@/hooks/useAccountTransactions';
 import { Skeleton } from '@/screens/points/components/Skeleton';

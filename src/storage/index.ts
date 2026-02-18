@@ -1,7 +1,7 @@
 import { createMMKV, MMKV } from 'react-native-mmkv';
 
 import { Cards, Campaigns, Device, Review, WatchedWalletCohort } from '@/storage/schema';
-import { RainbowTransaction } from '@/entities';
+import { RainbowTransaction } from '@/entities/transactions';
 import { SecureStorage } from '@coinbase/mobile-wallet-protocol-host';
 
 /**

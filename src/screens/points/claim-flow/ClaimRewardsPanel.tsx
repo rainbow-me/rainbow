@@ -10,7 +10,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Bleed, Box, Text, TextShadow, globalColors, useBackgroundColor, useColorMode } from '@/design-system';
-import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { IS_IOS } from '@/env';
 import { PointsErrorType } from '@/graphql/__generated__/metadata';
 import { getProvider } from '@/handlers/web3';

@@ -30,7 +30,6 @@ export function TestDeeplinkHandler() {
           });
           Navigation.replace(Routes.SWIPE_LAYOUT, {
             screen: Routes.WALLET_SCREEN,
-            params: { initialized: true },
           });
           break;
         default:

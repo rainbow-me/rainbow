@@ -202,13 +202,7 @@ const CustomizeNetworksBanner = !shouldShowCustomizeNetworksBanner(customizeNetw
             >
               <BlurView blurStyle="extraLight" blurIntensity={6} style={sx.bannerBlurView} />
               <View style={sx.bannerContent}>
-                <LinearGradient
-                  colors={['#268FFF1F', '#268FFF14']}
-                  // 135 deg angle
-                  start={{ x: 0, y: 1 }}
-                  end={{ x: 1, y: 0 }}
-                  style={sx.bannerGradient}
-                >
+                <LinearGradient colors={['#268FFF1F', '#268FFF14']} start={{ x: 0, y: 1 }} end={{ x: 1, y: 0 }} style={sx.bannerGradient}>
                   <Text color={{ custom: blue }} size="17pt" weight="heavy">
                     􀍱
                   </Text>
