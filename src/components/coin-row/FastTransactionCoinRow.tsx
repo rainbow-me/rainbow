@@ -21,6 +21,8 @@ import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperT
 import { activityValues, useTransactionLaunchToken } from '@/helpers/transactions';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
+import smartWalletIcon from '@/assets/smartWalletIcon.png';
+import smartWalletRevoke from '@/assets/smartWalletRevoke.png';
 
 const getIconTopMargin = (type: TransactionType) => {
   switch (type) {
@@ -223,6 +225,24 @@ export const ActivityIcon = ({
       coinIconUrl = rainbowSuperToken?.imageUrl;
     }
     contractIconUrl = undefined;
+  }
+
+  if (transaction?.type === 'delegate' || transaction?.type === 'revoke_delegation') {
+    return (
+      <View style={sx.iconContainer}>
+        <ImgixImage
+          size={size}
+          style={{ width: size, height: size }}
+          source={transaction.type === 'revoke_delegation' ? smartWalletRevoke : smartWalletIcon}
+        />
+        <ChainImage
+          badgeXPosition={-10}
+          badgeYPosition={6}
+          chainId={transaction.chainId}
+          showBadge={badge && transaction.chainId !== ChainId.mainnet}
+        />
+      </View>
+    );
   }
 
   if (contractIconUrl) {
