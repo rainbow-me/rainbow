@@ -14,6 +14,8 @@ import { address } from '@/utils/abbreviations';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { IS_DEV, IS_IOS, IS_TEST_FLIGHT } from '@/env';
+import { DELEGATION, getExperimentalFlag } from '@/config';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import { useTheme } from '@/theme';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { StyleSheet } from 'react-native';
@@ -47,6 +49,7 @@ function DelegationBadge({ accountAddress }: { accountAddress: string }) {
 
 export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, onPressMenuItem }: PinnedWalletsGridProps) {
   const { colors, isDarkMode } = useTheme();
+  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
 
   const removePinnedAddress = usePinnedWalletsStore(state => state.removePinnedAddress);
   const setPinnedAddresses = usePinnedWalletsStore(state => state.setPinnedAddresses);
@@ -219,7 +222,9 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                       </Text>
                     ) : null}
 
-                    {(IS_DEV || IS_TEST_FLIGHT) && !account.isReadOnly ? <DelegationBadge accountAddress={account.address} /> : null}
+                    {(IS_DEV || IS_TEST_FLIGHT) && delegationEnabled && !account.isReadOnly ? (
+                      <DelegationBadge accountAddress={account.address} />
+                    ) : null}
 
                     <Text numberOfLines={1} ellipsizeMode="middle" color="label" size="13pt" weight="bold">
                       {walletName}
