@@ -17,7 +17,6 @@ The `css` export is a pass-through re-export from the `styled-components` packag
 ## Origin
 
 - PR [#2730](https://github.com/rainbow-me/rainbow/pull/2730), February 2022
-- Authors: Terry Sahaidak, Mark Dalgleish, osdnk, Skylar Barrera, Jin Chung
 
 ## Status: Gradually Being Replaced
 
