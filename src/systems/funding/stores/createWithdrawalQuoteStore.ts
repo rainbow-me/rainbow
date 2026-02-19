@@ -50,7 +50,7 @@ export function createWithdrawalQuoteStore<TBalanceStore extends BalanceQuerySto
     { fastMode: true }
   );
 
-  return createQueryStore({
+  return createQueryStore<QuoteResult, WithdrawalQuoteStoreParams>({
     fetcher: createQuoteFetcher(route),
     params: {
       amount: $ => $(useAmountStore, state => state.amount),
