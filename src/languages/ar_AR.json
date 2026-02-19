@@ -698,10 +698,6 @@
         "balance": "رصيد",
         "get_asset": "احصل على %{assetSymbol}",
         "market_cap": "قيمة السوق",
-        "read_more_button": "اقرأ المزيد",
-        "available_networks": "متاح على %{availableNetworks} شبكات",
-        "available_network": "متوفر على الشبكة %{availableNetwork}",
-        "available_networkv2": "متاح أيضا على %{availableNetwork}",
         "l2_disclaimer": "هذا %{symbol} هو على الشبكة %{network}",
         "l2_disclaimer_send": "الإرسال على الشبكة %{network}",
         "l2_disclaimer_dapp": "هذا التطبيق على الشبكة %{network}",
@@ -2536,7 +2532,6 @@
         "networks": "الشبكات",
         "filter_by_network": "الفلترة حسب الشبكة",
         "switch_networks": "تبديل الشبكات",
-        "nothing_found": "لم يتم العثور على شيء",
         "nothing_found_description": "بعض الرموز لا تمتلك سيولة كافية لإجراء %{action}ناجح.",
         "nothing_found_description_l2": "بعض الرموز لا تمتلك سيولة للطبقة 2 كافية لإجراء %{action}ناجح.",
         "output_quotes_disabled": "تعطيل اقتباسات الإخراج"
@@ -2585,6 +2580,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "لم يتم العثور على شيء",
       "section_header": {
         "recent": "الأخير",
         "popular": "شائع في Rainbow",
@@ -3294,7 +3290,6 @@
     "walletconnect": {
       "connecting": "جارٍ الاتصال",
       "loading": "جار التحميل",
-      "requests": "طلبات",
       "wants_to_connect": "يرغب في الاتصال بمحفظتك",
       "wants_to_connect_to_network": "يرغب في الاتصال بالشبكة %{network}",
       "available_networks": "الشبكات المتاحة",

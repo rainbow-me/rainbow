@@ -4,6 +4,7 @@ import { globalColors } from '@/design-system/color/palettes';
 import currentColors from '../theme/currentColors';
 import { memoFn } from '../utils/memoFn';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { LinearGradientProps } from 'expo-linear-gradient';
 
 export type Colors = ReturnType<typeof getColorsByTheme>;
 
@@ -214,7 +215,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     warningTint: ['#FFFDF6', '#FFFBF2'],
     white80ToTransparent: [opacity(base.whiteLabel, 0.8), opacity(base.whiteLabel, 0)],
     whiteButton: ['#FFFFFF', '#F7F9FA'],
-  };
+  } satisfies Record<string, LinearGradientProps['colors']>;
 
   const sendScreen = {
     brightBlue: base.appleBlue, // '14, 118, 253'
@@ -303,7 +304,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
       warningTint: ['#201F1E', '#201C18'],
       white80ToTransparent: [opacity(base.whiteLabel, 0.8), opacity(base.whiteLabel, 0)],
       whiteButton: ['#404656', opacity('#404656', 0.8)],
-    };
+    } satisfies Record<string, LinearGradientProps['colors']>;
 
     listHeaders = {
       firstGradient: '#12131Aff',

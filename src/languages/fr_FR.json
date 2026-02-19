@@ -698,10 +698,6 @@
         "balance": "Solde",
         "get_asset": "Obtenir %{assetSymbol}",
         "market_cap": "Capitalisation boursière",
-        "read_more_button": "En savoir plus",
-        "available_networks": "Disponible sur %{availableNetworks} réseaux",
-        "available_network": "Disponible sur le %{availableNetwork} réseau",
-        "available_networkv2": "Également disponible sur %{availableNetwork}",
         "l2_disclaimer": "Ce %{symbol} est sur le réseau %{network}",
         "l2_disclaimer_send": "Envoi sur le réseau %{network}",
         "l2_disclaimer_dapp": "Cette application sur le réseau %{network}",
@@ -2536,7 +2532,6 @@
         "networks": "Réseaux",
         "filter_by_network": "Filtrer par réseau",
         "switch_networks": "Changer de réseau",
-        "nothing_found": "Rien trouvé",
         "nothing_found_description": "Certains tokens n’ont pas assez de liquidités pour effectuer un %{action}réussi.",
         "nothing_found_description_l2": "Certains tokens n'ont pas assez de liquidités en couche 2 pour effectuer un %{action}réussi.",
         "output_quotes_disabled": "Cottages de sortie désactivées"
@@ -2585,6 +2580,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "Rien trouvé",
       "section_header": {
         "recent": "Récent",
         "popular": "Populaire sur Rainbow",
@@ -3294,7 +3290,6 @@
     "walletconnect": {
       "connecting": "Connexion en cours",
       "loading": "Chargement",
-      "requests": "Demandes",
       "wants_to_connect": "veut se connecter à votre portefeuille",
       "wants_to_connect_to_network": "veut se connecter au %{network} réseau",
       "available_networks": "Réseaux disponibles",

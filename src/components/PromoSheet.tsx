@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useReducer } from 'react';
 import { ImageSourcePropType, ImageBackground } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient, LinearGradientProps } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
 import { analytics } from '@/analytics';
@@ -34,7 +34,7 @@ type PromoSheetProps = {
     icon: string;
     title: string;
     description: string;
-    gradient: string[];
+    gradient: LinearGradientProps['colors'];
   }[];
 };
 

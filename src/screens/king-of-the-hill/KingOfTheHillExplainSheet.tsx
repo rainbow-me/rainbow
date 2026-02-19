@@ -9,6 +9,7 @@ import { fonts } from '@/styles';
 import { ExplainerSheet, ExplainerSheetStep } from '@/components/explainer-sheet/ExplainerSheet';
 import { GradientText } from '@/components/text';
 import chroma from 'chroma-js';
+import { LinearGradientProps } from 'expo-linear-gradient';
 
 const GRADIENT_COLORS = ['#8754C8', '#EE431D', '#FFF000', '#02ADDE'];
 const PANEL_INNER_WIDTH = 332;
@@ -106,7 +107,7 @@ export function KingOfTheHillExplainSheet() {
       <ExplainerSheet
         steps={STEPS}
         headerTitleComponent={() => (
-          <GradientText colors={textGradientColors} locations={[0, 0.5, 0.75, 1]}>
+          <GradientText colors={textGradientColors as unknown as LinearGradientProps['colors']} locations={[0, 0.5, 0.75, 1]}>
             <Text size="20pt" weight="black" color="label" uppercase style={{ letterSpacing: 0.6 }}>
               {i18n.t(i18n.l.king_of_hill.king_of_the_hill)}
             </Text>

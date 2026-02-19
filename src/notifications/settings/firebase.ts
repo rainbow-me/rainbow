@@ -7,7 +7,7 @@ import {
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import { getFCMToken, saveFCMToken } from '@/notifications/tokens';
-import { rainbowFetch } from '@/rainbow-fetch';
+import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 
 const NOTIFICATION_SUBSCRIPTIONS_URL = 'https://notifications.p.rainbow.me/api/v1/subscriptions';
 

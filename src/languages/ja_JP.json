@@ -698,10 +698,6 @@
         "balance": "残高",
         "get_asset": "%{assetSymbol}を入手",
         "market_cap": "時価総額",
-        "read_more_button": "続きを読む",
-        "available_networks": "%{availableNetworks} ネットワークで利用可能",
-        "available_network": "%{availableNetwork} ネットワークで利用可能",
-        "available_networkv2": "%{availableNetwork}でも利用可能",
         "l2_disclaimer": "この %{symbol} は %{network} ネットワーク上にあります",
         "l2_disclaimer_send": "%{network} ネットワークで送信",
         "l2_disclaimer_dapp": "このアプリは %{network} ネットワーク上にあります",
@@ -2536,7 +2532,6 @@
         "networks": "ネットワーク",
         "filter_by_network": "ネットワークでフィルタリング",
         "switch_networks": "ネットワークを切り替える",
-        "nothing_found": "何も見つかりません",
         "nothing_found_description": "一部のトークンは成功した%{action}を行うための十分な流動性がありません。",
         "nothing_found_description_l2": "一部のトークンは、成功した%{action}を実行するための十分なレイヤー2の流動性がありません。",
         "output_quotes_disabled": "出力の見積もりは無効です"
@@ -2585,6 +2580,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "何も見つかりません",
       "section_header": {
         "recent": "最近の",
         "popular": "Rainbowの人気",
@@ -3294,7 +3290,6 @@
     "walletconnect": {
       "connecting": "接続中",
       "loading": "読み込み中",
-      "requests": "リクエスト",
       "wants_to_connect": "あなたのウォレットに接続を許可します",
       "wants_to_connect_to_network": "%{network} ネットワークに接続を許可します",
       "available_networks": "利用可能なネットワーク",

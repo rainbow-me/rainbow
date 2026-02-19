@@ -5,7 +5,7 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import infinityIcon from '@/assets/infinity.png';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
 import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';

@@ -18,7 +18,7 @@ import {
 } from '@/graphql/__generated__/arc';
 import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
-import { RainbowFetchClient } from '@/rainbow-fetch';
+import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
 import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';

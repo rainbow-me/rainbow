@@ -698,10 +698,6 @@
         "balance": "ยอดเงิน",
         "get_asset": "ได้รับ %{assetSymbol}",
         "market_cap": "มูลค่าตามราคาตลาด",
-        "read_more_button": "อ่านเพิ่มเติม",
-        "available_networks": "สามารถใช้งานได้บน %{availableNetworks} เครือข่าย",
-        "available_network": "สามารถใช้งานได้บนเครือข่าย %{availableNetwork}",
-        "available_networkv2": "สามารถใช้งานได้บน %{availableNetwork}ด้วย",
         "l2_disclaimer": "%{symbol} นี้อยู่บนเครือข่าย %{network}",
         "l2_disclaimer_send": "กำลังส่งในเครือข่าย %{network}",
         "l2_disclaimer_dapp": "แอปนี้บนเครือข่าย %{network}",
@@ -2536,7 +2532,6 @@
         "networks": "เครือข่าย",
         "filter_by_network": "กรองตามเครือข่าย",
         "switch_networks": "เปลี่ยนเครือข่าย",
-        "nothing_found": "ไม่พบอะไร",
         "nothing_found_description": "บางโทเคนมีขาดแคลนความชื้นเพื่อทำการ %{action}อย่างสำเร็จ",
         "nothing_found_description_l2": "บางโทเคนไม่มีความสุกใสขั้นที่ 2 เพียงพอที่จะทำ %{action}อย่างสำเร็จ",
         "output_quotes_disabled": "ปิดใช้งานคำพูดผลลัพธ์"
@@ -2585,6 +2580,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "ไม่พบอะไร",
       "section_header": {
         "recent": "ล่าสุด",
         "popular": "เป็นที่นิยมใน Rainbow",
@@ -3294,7 +3290,6 @@
     "walletconnect": {
       "connecting": "กำลังเชื่อมต่อ",
       "loading": "กำลังโหลด",
-      "requests": "คำร้องขอ",
       "wants_to_connect": "ต้องการเชื่อมต่อกับกระเป๋าสตางค์ของคุณ",
       "wants_to_connect_to_network": "ต้องการเชื่อมต่อกับเครือข่าย %{network}",
       "available_networks": "เครือข่ายที่ใช้ได้",

@@ -698,10 +698,6 @@
         "balance": "余额",
         "get_asset": "获取 %{assetSymbol}",
         "market_cap": "市值",
-        "read_more_button": "阅读更多",
-        "available_networks": "在 %{availableNetworks} 网络上可用",
-        "available_network": "在 %{availableNetwork} 网络上可用",
-        "available_networkv2": "也在 %{availableNetwork}上可用",
         "l2_disclaimer": "这个 %{symbol} 在 %{network} 网络上",
         "l2_disclaimer_send": "在 %{network} 网络上发送",
         "l2_disclaimer_dapp": "这款应用在 %{network} 网络上",
@@ -2536,7 +2532,6 @@
         "networks": "网络",
         "filter_by_network": "按网络筛选",
         "switch_networks": "切换网络",
-        "nothing_found": "没找到什么",
         "nothing_found_description": "一些代币没有足够的流动性来执行成功的 %{action}。",
         "nothing_found_description_l2": "一些代币没有足够的第二层流动性来执行成功的 %{action}。",
         "output_quotes_disabled": "禁用输出报价"
@@ -2585,6 +2580,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "没找到什么",
       "section_header": {
         "recent": "最近",
         "popular": "在 Rainbow 中流行",
@@ -3294,7 +3290,6 @@
     "walletconnect": {
       "connecting": "正在连接",
       "loading": "加载中",
-      "requests": "请求",
       "wants_to_connect": "愿意连接到您的钱包",
       "wants_to_connect_to_network": "想要连接到 %{network} 网络",
       "available_networks": "可用网络",
