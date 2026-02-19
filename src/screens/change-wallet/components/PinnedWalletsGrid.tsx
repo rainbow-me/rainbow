@@ -19,7 +19,7 @@ import { getRemoteConfig } from '@/model/remoteConfig';
 import { useTheme } from '@/theme';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { StyleSheet } from 'react-native';
-import { useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';
+import { DelegationStatus, useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';
 import type { Address } from 'viem';
 
 const UNPIN_BADGE_SIZE = 28;
@@ -38,10 +38,11 @@ type PinnedWalletsGridProps = {
 function DelegationBadge({ accountAddress }: { accountAddress: string }) {
   const delegations = useDelegations(accountAddress as Address);
   const isDisabled = useDelegationDisabled(accountAddress as Address);
-  const isDelegated = Boolean(delegations?.length);
+  const isDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED) ?? false;
+  const isThirdPartyDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED) ?? false;
 
   return (
-    <Text color={isDisabled ? 'red' : isDelegated ? 'green' : 'labelQuaternary'} size="icon 10px">
+    <Text color={isDisabled ? 'red' : isDelegated ? 'green' : isThirdPartyDelegated ? 'labelTertiary' : 'labelQuaternary'} size="icon 10px">
       􀋦
     </Text>
   );
