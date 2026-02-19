@@ -329,8 +329,8 @@ export const RevokeDelegationPanel = () => {
         <Box style={styles.buttonFrame}>
           {useDefaultButtonGradient && (
             <LinearGradient
-              colors={DEFAULT_LOCK_GRADIENT_COLORS}
-              locations={DEFAULT_LOCK_GRADIENT_LOCATIONS}
+              colors={[...DEFAULT_LOCK_GRADIENT_COLORS]}
+              locations={[...DEFAULT_LOCK_GRADIENT_LOCATIONS]}
               start={{ x: 0, y: 1 }}
               end={{ x: 1, y: 0 }}
               pointerEvents="none"
