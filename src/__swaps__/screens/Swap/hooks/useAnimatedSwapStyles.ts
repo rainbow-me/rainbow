@@ -17,7 +17,7 @@ import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/con
 import { useColorMode } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
 import { getTokenSearchButtonWrapperStyle } from '@/components/token-search/styles';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_ANDROID } from '@/env';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DerivedValue, SharedValue, interpolate, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { NavigationSteps } from '../providers/swap-provider';
@@ -207,18 +207,12 @@ export function useAnimatedSwapStyles({
         SPRING_CONFIGS.springConfig
       ),
       borderRadius: withSpring(isBottomSheetOpen ? 40 : 0, SPRING_CONFIGS.springConfig),
-      bottom: IS_TEST
-        ? isBottomSheetOpen
-          ? 125
-          : -2
-        : withSpring(isBottomSheetOpen ? Math.max(safeAreaInsetValues.bottom, 28) : -2, SPRING_CONFIGS.springConfig),
+      bottom: withSpring(isBottomSheetOpen ? Math.max(safeAreaInsetValues.bottom, 28) : -2, SPRING_CONFIGS.springConfig),
       height: withSpring(heightForCurrentSheet, SPRING_CONFIGS.springConfig),
       left: withSpring(isBottomSheetOpen ? 12 : -2, SPRING_CONFIGS.springConfig),
       right: withSpring(isBottomSheetOpen ? 12 : -2, SPRING_CONFIGS.springConfig),
       paddingHorizontal: withSpring((isBottomSheetOpen ? 16 : 18) - THICK_BORDER_WIDTH, SPRING_CONFIGS.springConfig),
       paddingTop: withSpring((isBottomSheetOpen ? 28 : 16) - THICK_BORDER_WIDTH, SPRING_CONFIGS.springConfig),
-      overflow: IS_TEST ? 'visible' : 'hidden',
-      position: IS_TEST ? 'relative' : 'absolute',
     };
   });
 
@@ -292,6 +286,16 @@ export function useAnimatedSwapStyles({
     });
   });
 
+  const bottomControlsStyle = useAnimatedStyle(() => {
+    return {
+      opacity:
+        inputProgress.value > 0 || outputProgress.value > 0
+          ? withTiming(0, TIMING_CONFIGS.fadeConfig)
+          : withTiming(1, TIMING_CONFIGS.fadeConfig),
+      pointerEvents: inputProgress.value > 0 || outputProgress.value > 0 ? 'none' : 'box-none',
+    };
+  });
+
   return {
     flipButtonStyle,
     focusedSearchStyle,
@@ -314,5 +318,6 @@ export function useAnimatedSwapStyles({
     searchOutputAssetButtonWrapperStyle,
     removeWhenNoPriceImpact,
     removeWhenPriceImpact,
+    bottomControlsStyle,
   };
 }
