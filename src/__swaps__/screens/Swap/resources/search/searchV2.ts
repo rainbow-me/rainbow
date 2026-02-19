@@ -4,7 +4,7 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 import { groupBy } from 'lodash';
 import { getProvider } from '@/handlers/web3';
 import { RainbowError, logger } from '@/logger';
-import { RainbowFetchClient } from '@/rainbow-fetch';
+import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { Contract } from '@ethersproject/contracts';
 import { erc20ABI } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';

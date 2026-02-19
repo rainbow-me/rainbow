@@ -1,4 +1,4 @@
-import { rainbowFetch } from '@/rainbow-fetch';
+import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { time } from '@/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';

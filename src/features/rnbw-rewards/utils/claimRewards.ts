@@ -7,7 +7,7 @@ import { pollClaimStatus, type PollClaimStatusResult } from '@/features/rnbw-rew
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet, signTypedDataMessage } from '@/model/wallet';
-import { RainbowFetchResponse } from '@/rainbow-fetch';
+import { RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
 import { getPlatformClient } from '@/resources/platform/client';
 import { ChainId } from '@rainbow-me/swaps';
 import { Address } from 'viem';
