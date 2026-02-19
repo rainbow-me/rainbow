@@ -1,4 +1,4 @@
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 
 const InnerBorder = styled.View.withConfig({

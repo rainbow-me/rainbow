@@ -15,7 +15,7 @@ import SendEmptyState from './SendEmptyState';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { useTheme } from '@/theme';
 import { filterList } from '@/utils/search';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';

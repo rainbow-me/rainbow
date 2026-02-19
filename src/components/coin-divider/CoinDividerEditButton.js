@@ -6,7 +6,7 @@ import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import OpacityToggler from '../animations/OpacityToggler';
 import { Row } from '../layout';
 import { Text } from '../text';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding, shadow } from '@/styles';
 import { opacity } from '@/framework/ui/utils/opacity';
 

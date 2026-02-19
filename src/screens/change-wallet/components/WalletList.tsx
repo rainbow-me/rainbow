@@ -5,7 +5,7 @@ import * as i18n from '@/languages';
 import EmptyAssetList from '@/components/asset-list/EmptyAssetList';
 import { AddressRow } from './AddressRow';
 import { EthereumAddress } from '@/entities/wallet';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import {
   AddressItem,

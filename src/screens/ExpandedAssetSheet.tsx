@@ -5,7 +5,7 @@ import { CustomGasState, UniqueTokenExpandedState } from '../components/expanded
 import { Centered } from '../components/layout';
 import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';

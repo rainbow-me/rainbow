@@ -10,7 +10,7 @@ import { AvatarCircle } from '../../profile';
 import { Text, TruncatedAddress } from '../../text';
 import ProfileModalContainer from './ProfileModalContainer';
 import ProfileNameInput from './ProfileNameInput';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { margin, padding, position } from '@/styles';
 import { useTheme } from '@/theme';
 import { opacity } from '@/framework/ui/utils/opacity';

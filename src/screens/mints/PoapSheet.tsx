@@ -14,7 +14,7 @@ import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
 import watchingAlert from '@/utils/watchingAlert';

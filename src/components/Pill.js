@@ -2,7 +2,7 @@ import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { useTheme } from '../theme/ThemeContext';
 import { TruncatedText } from './text';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 import { Box, Text } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';

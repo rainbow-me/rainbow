@@ -1,6 +1,6 @@
 import React, { Children, ReactNode } from 'react';
 import { FlexItem, Row } from '../../layout';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 
 interface ContainerProps {

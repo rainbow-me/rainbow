@@ -3,7 +3,7 @@ import { Column } from '../layout';
 import SendAssetFormField from './SendAssetFormField';
 import useDimensions from '@/hooks/useDimensions';
 import { supportedNativeCurrencies } from '@/references';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { removeLeadingZeros } from '@/utils/formatters';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';

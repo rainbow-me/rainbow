@@ -1,6 +1,6 @@
 import React from 'react';
 import Animated, { AnimatedProps, Easing, FadeInDown, FadeOut } from 'react-native-reanimated';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { ViewProps } from 'react-native';
 
 const AnimatedContainer = styled(Animated.View)({

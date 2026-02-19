@@ -7,7 +7,7 @@ import AssetListHeader from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';
 import { times } from '@/helpers/utilities';
 import useRefreshAccountData from '@/hooks/useRefreshAccountData';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import { navbarHeight } from '../navbar/Navbar';
 

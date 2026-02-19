@@ -4,7 +4,7 @@ import { Text as RNText } from '../text';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { margin, padding } from '@/styles';
 import { Box, Stack } from '@/design-system';
 import { sharedCoolModalTopOffset } from '@/navigation/config';

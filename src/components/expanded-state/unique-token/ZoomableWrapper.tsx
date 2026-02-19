@@ -1,5 +1,5 @@
 import useDimensions from '@/hooks/useDimensions';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';

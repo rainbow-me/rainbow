@@ -11,7 +11,7 @@ import useColorForAsset from '@/hooks/useColorForAsset';
 import useGas from '@/hooks/useGas';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { useNavigation } from '@/navigation';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { margin } from '@/styles';
 import deviceUtils from '@/utils/deviceUtils';
 import FeesPanel from '@/components/FeesPanel';

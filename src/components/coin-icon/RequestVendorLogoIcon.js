@@ -5,7 +5,7 @@ import { initials } from '@/utils/formatters';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { ImgixImage } from '@/components/images';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { ChainImage } from './ChainImage';
