@@ -138,7 +138,7 @@ const ViewWalletBackup = () => {
   const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
 
-  const delegationEnabled = getRemoteConfig().delegation_enabled && getExperimentalFlag(DELEGATION);
+  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
 
   const backupWalletsToCloud = useCallback(async () => {
     executeFnIfCloudBackupAvailable({
