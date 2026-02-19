@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useCallback } from 'react';
 import { ImageBackground, StyleSheet, Image, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { Box, Stack, Text, Bleed, Column, Columns, ColorModeProvider } from '@/design-system';
