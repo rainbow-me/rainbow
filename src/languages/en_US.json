@@ -2771,6 +2771,7 @@
       "network_fee": "Network Fee",
       "hash_copied": "\uDBC0\uDC63 Transaction hash copied",
       "address_copied": "\uDBC0\uDC63 Address copied",
+      "smart_account": "Smart Account",
       "try_again": "\uDBC0\uDD49 Try again",
       "context_menu": {
         "copy_address": "Copy Address",

@@ -39,6 +39,13 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { checkForPendingSwap } from '@/helpers/transactions';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { ImgixImage } from '@/components/images';
+import { DelegationStatus, useDelegations } from '@rainbow-me/delegation';
+import type { Address } from 'viem';
+
+import rainbowIcon from '@/assets/rainbow-icon-circle.png';
+import smartWalletIcon from '@/assets/smartWalletIcon.png';
 
 const TransactionMastheadHeight = android ? 153 : 135;
 
@@ -71,6 +78,7 @@ function CurrencyTile({
   showAsset,
   image,
   fallback,
+  chainId,
   onAddressCopied,
 }: {
   asset?: ParsedAddressAsset;
@@ -78,9 +86,10 @@ function CurrencyTile({
   contactAddress?: string;
   title?: string;
   subtitle?: string;
-  image?: string;
+  image?: string | number;
   fallback?: string;
   address?: string;
+  chainId?: ChainId;
   onAddressCopied: () => void;
 }) {
   const accountAddress = useAccountAddress();
@@ -113,7 +122,7 @@ function CurrencyTile({
 
   const name = accountName || fetchedEnsName || addressContact?.nickname || addressContact?.ens || formattedAddress;
 
-  if (accountAddress?.toLowerCase() === address?.toLowerCase() && !showAsset) {
+  if (accountAddress?.toLowerCase() === address?.toLowerCase() && !showAsset && !title) {
     title = i18n.t(i18n.l.transaction_details.you);
   }
 
@@ -175,6 +184,15 @@ function CurrencyTile({
                 icon={asset?.icon_url}
                 symbol={asset?.symbol || ''}
               />
+            ) : typeof image === 'number' ? (
+              <Box style={{ height: 40 }}>
+                <ImgixImage size={40} source={image} style={{ width: 40, height: 40 }} />
+                <ChainImage
+                  badgeXPosition={-10}
+                  chainId={chainId || ChainId.mainnet}
+                  showBadge={!!chainId && chainId !== ChainId.mainnet}
+                />
+              </Box>
             ) : (
               <>
                 <Animated.View style={ensAvatarAnimatedStyle}>
@@ -352,6 +370,15 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
     };
   }, [isPendingSwap, nativeCurrency, transaction?.changes]);
 
+  const accountAddress = useAccountAddress();
+  const delegations = useDelegations(accountAddress as Address);
+  const delegation = useMemo(() => {
+    if (transaction.type !== 'delegate' && transaction.type !== 'revoke_delegation') return undefined;
+    return delegations?.find(d => d.chainId === transaction.chainId);
+  }, [delegations, transaction.chainId, transaction.type]);
+  const delegationContract = delegation?.currentContract || delegation?.revokeAddress || undefined;
+  const isRainbowDelegation = delegation?.delegationStatus === DelegationStatus.RAINBOW_DELEGATED;
+
   const contractImage = transaction?.contract?.iconUrl;
   const contractName = transaction?.contract?.name;
 
@@ -359,7 +386,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
   const toAddress = (transaction.type === 'mint' ? transaction?.from : transaction?.to) || undefined;
   const fromAddress = (transaction.type === 'mint' ? transaction?.to : transaction?.from) || undefined;
 
-  const getRightMasteadData = (): { title?: string; subtitle?: string; image?: string } => {
+  const getRightMasteadData = (): { title?: string; subtitle?: string; image?: string | number; chainId?: ChainId } => {
     if (transaction.type === 'swap') {
       return {
         title: inputAsset?.inAssetValueDisplay,
@@ -371,6 +398,16 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
         title: contractName,
         subtitle: transaction?.from || '',
         image: contractImage,
+      };
+    }
+    if (transaction.type === 'delegate' || transaction.type === 'revoke_delegation') {
+      return {
+        title: isRainbowDelegation
+          ? i18n.t(i18n.l.transaction_details.smart_account)
+          : delegation?.currentContractName || i18n.t(i18n.l.transaction_details.smart_account),
+        subtitle: delegationContract ? formatAddressForDisplay(delegationContract, 4, 6) : undefined,
+        image: isRainbowDelegation ? rainbowIcon : smartWalletIcon,
+        chainId: transaction.chainId,
       };
     }
 
@@ -422,6 +459,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
             title={rightMasteadData?.title}
             subtitle={rightMasteadData?.subtitle}
             image={rightMasteadData?.image}
+            chainId={rightMasteadData?.chainId}
             fallback={transaction?.asset?.symbol}
             onAddressCopied={() => {}}
           />
