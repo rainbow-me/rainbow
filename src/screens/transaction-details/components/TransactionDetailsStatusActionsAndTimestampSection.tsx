@@ -30,7 +30,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
   const { icon, color, gradient } = getIconColorAndGradientForTransactionStatus(colors, status);
 
   const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
-  const canBeResubmitted = isOutgoing && !minedAt;
+  const canBeResubmitted = isOutgoing && !minedAt && !transaction.delegation;
   const canBeCancelled = canBeResubmitted && !(type === 'cancel' && status === TransactionStatus.pending);
 
   const menuConfig = useMemo(

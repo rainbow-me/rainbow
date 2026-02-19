@@ -10,6 +10,7 @@ import CloudBackedUpIcon from '@/assets/BackedUpCloud.png';
 import BackupWarningIcon from '@/assets/BackupWarning.png';
 import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
+import { DELEGATION, getExperimentalFlag } from '@/config';
 import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -23,6 +24,7 @@ import useENSAvatar from '@/hooks/useENSAvatar';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import { RainbowAccount } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -135,6 +137,8 @@ const ViewWalletBackup = () => {
 
   const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
+
+  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
 
   const backupWalletsToCloud = useCallback(async () => {
     executeFnIfCloudBackupAvailable({
@@ -262,7 +266,7 @@ const ViewWalletBackup = () => {
           iconValue: 'square.on.square',
         },
       },
-    ],
+    ].filter(item => delegationEnabled || item.actionKey !== WalletMenuAction.EditSmartWallet),
   };
 
   const onPressMenuItem = ({ nativeEvent: { actionKey: menuAction }, account }: MenuEvent) => {

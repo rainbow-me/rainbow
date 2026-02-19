@@ -17,6 +17,8 @@ import { Icon } from '@/components/icons';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
 import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
+import { DELEGATION, getExperimentalFlag } from '@/config';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import { useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';
 import type { Address } from 'viem';
 
@@ -78,6 +80,8 @@ interface AddressRowProps {
 
 export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem }: AddressRowProps) {
   const { address, color, emoji, balance, isSelected, isReadOnly, isLedger, label, image } = data;
+
+  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
 
   const delegations = useDelegations(address as Address);
   const isDelegationDisabled = useDelegationDisabled(address as Address);
@@ -202,7 +206,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
                 )}
               </>
             )}
-            {(IS_DEV || IS_TEST_FLIGHT) && !isReadOnly && !editMode && (
+            {(IS_DEV || IS_TEST_FLIGHT) && delegationEnabled && !isReadOnly && !editMode && (
               <Box
                 paddingHorizontal="8px"
                 paddingVertical="6px"
