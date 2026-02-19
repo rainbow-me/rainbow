@@ -237,6 +237,7 @@ const DevSection = () => {
       })();
 
       navigate(Routes.REVOKE_DELEGATION_PANEL, {
+        address: accountAddress,
         revokeReason,
         delegationsToRevoke: toRevoke,
       });

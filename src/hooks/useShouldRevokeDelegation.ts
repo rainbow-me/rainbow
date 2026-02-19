@@ -27,6 +27,7 @@ export function useShouldRevokeDelegation() {
 
       if (result.shouldRevoke && result.revokes.length > 0) {
         Navigation.handleAction(Routes.REVOKE_DELEGATION_PANEL, {
+          address: accountAddress as Address,
           delegationsToRevoke: result.revokes.map(r => ({
             chainId: r.chainId,
             contractAddress: r.address,
