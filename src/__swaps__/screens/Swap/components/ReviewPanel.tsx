@@ -40,6 +40,8 @@ import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { REVIEW_SHEET_ROW_HEIGHT } from '../constants';
 import { useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useWillExecuteDelegation } from '@/hooks/useWillExecuteDelegation';
+import { ATOMIC_SWAPS, getExperimentalFlag } from '@/config';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
@@ -253,7 +255,8 @@ export function ReviewPanel() {
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
   const accountAddress = useAccountAddress();
   const inputChainId = useSwapsStore(state => state.inputAsset?.chainId ?? ChainId.mainnet);
-  const willDelegate = useWillExecuteDelegation(accountAddress, inputChainId);
+  const atomicSwapsEnabled = getExperimentalFlag(ATOMIC_SWAPS) || getRemoteConfig().atomic_swaps_enabled;
+  const willDelegate = useWillExecuteDelegation(accountAddress, inputChainId) && atomicSwapsEnabled;
 
   const labelTertiary = useForegroundColor('labelTertiary');
   const separator = useForegroundColor('separator');

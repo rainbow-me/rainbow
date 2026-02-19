@@ -1,8 +1,8 @@
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { Box, Separator, Text, globalColors, useColorMode } from '@/design-system';
-import { RNBW_REWARDS, useExperimentalFlag } from '@/config';
-import { useRemoteConfig } from '@/model/remoteConfig';
+import { ATOMIC_SWAPS, RNBW_REWARDS, getExperimentalFlag, useExperimentalFlag } from '@/config';
+import { getRemoteConfig, useRemoteConfig } from '@/model/remoteConfig';
 import React, { memo, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureDetector } from 'react-native-gesture-handler';
@@ -237,7 +237,8 @@ const DelegationCallout = memo(function DelegationCallout() {
 });
 
 function WillDelegate(params: { address: Address; chainId: ChainId }) {
-  const willDelegate = useWillExecuteDelegation(params.address, params.chainId);
+  const atomicSwapsEnabled = getExperimentalFlag(ATOMIC_SWAPS) || getRemoteConfig().atomic_swaps_enabled;
+  const willDelegate = useWillExecuteDelegation(params.address, params.chainId) && atomicSwapsEnabled;
   if (!willDelegate) return null;
 
   return (
