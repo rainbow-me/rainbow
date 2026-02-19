@@ -5922,9 +5922,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/delegation@npm:0.3.0":
-  version: 0.3.0
-  resolution: "@rainbow-me/delegation@npm:0.3.0"
+"@rainbow-me/delegation@npm:0.3.1":
+  version: 0.3.1
+  resolution: "@rainbow-me/delegation@npm:0.3.1"
   peerDependencies:
     "@storesjs/stores": ^0.8.6
     ethers: ^5.7.0
@@ -5935,7 +5935,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/679eb83ba10ee87617463c200a942d5b8438673723e6e1dc1dad7370a80b6a7b2f92f9b821769952b4adaa7bc25436a4259729716a1020f896266fa51d1656e2
+  checksum: 10c0/663adf5ab1475ca4e1404ad8607c4c0a3f3a6f33619f5bedf5b5f600d55e1150eb4c1e3c64f1a943355533a57bb421417925546d53d070e40c06cbe39ff997e2
   languageName: node
   linkType: hard
 
@@ -9852,7 +9852,7 @@ __metadata:
     "@notifee/react-native": "npm:7.8.2"
     "@polymarket/builder-relayer-client": "npm:0.0.7"
     "@polymarket/clob-client": "npm:4.22.8"
-    "@rainbow-me/delegation": "npm:0.3.0"
+    "@rainbow-me/delegation": "npm:0.3.1"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
     "@rainbow-me/swaps": "npm:0.41.0"
