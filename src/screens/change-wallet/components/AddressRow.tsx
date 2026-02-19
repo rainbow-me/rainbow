@@ -19,7 +19,7 @@ import { address as abbreviateAddress } from '@/utils/abbreviations';
 import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
 import { DELEGATION, getExperimentalFlag } from '@/config';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';
+import { DelegationStatus, useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';
 import type { Address } from 'viem';
 
 const ROW_HEIGHT_WITH_PADDING = 64;
@@ -85,7 +85,8 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
 
   const delegations = useDelegations(address as Address);
   const isDelegationDisabled = useDelegationDisabled(address as Address);
-  const isDelegated = Boolean(delegations?.length);
+  const isDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED) ?? false;
+  const isThirdPartyDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED) ?? false;
 
   const walletName = useMemo(() => {
     return removeFirstEmojiFromString(label) || abbreviateAddress(address, 4, 6);
@@ -223,7 +224,9 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
                     ? i18n.t(i18n.l.wallet.change_wallet.disabled)
                     : isDelegated
                       ? i18n.t(i18n.l.wallet.change_wallet.delegated)
-                      : i18n.t(i18n.l.wallet.change_wallet.not_delegated)}
+                      : isThirdPartyDelegated
+                        ? i18n.t(i18n.l.wallet.change_wallet.alt_delegation)
+                        : i18n.t(i18n.l.wallet.change_wallet.not_delegated)}
                 </Text>
               </Box>
             )}

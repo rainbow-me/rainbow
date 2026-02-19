@@ -3077,6 +3077,7 @@
         "watching": "Watching",
         "ledger": "Ledger",
         "delegated": "Delegated",
+        "alt_delegation": "Alt Delegation",
         "not_delegated": "Not Delegated",
         "disabled": "Disabled",
         "wallets": "Wallets",
