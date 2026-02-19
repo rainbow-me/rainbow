@@ -6,7 +6,7 @@ import { RainbowTransaction } from '@/entities/transactions';
 
 import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, TextProps } from '@/design-system';
 
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';

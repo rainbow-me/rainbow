@@ -3,7 +3,7 @@ import { ThemeContextProps, useTheme } from '../../theme/ThemeContext';
 import { Input } from '../inputs';
 import { cloudBackupPasswordMinLength } from '@/handlers/cloudBackup';
 import useDimensions from '@/hooks/useDimensions';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { Box } from '@/design-system';

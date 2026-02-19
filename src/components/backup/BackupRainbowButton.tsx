@@ -6,7 +6,7 @@ import { RowWithMargins } from '@/components/layout';
 import { Text } from '@/components/text';
 import RainbowButtonTypes from '@/components/buttons/rainbow-button/RainbowButtonTypes';
 import useDimensions from '@/hooks/useDimensions';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { shadow } from '@/styles';
 import ShadowView from '@/react-native-shadow-stack/ShadowView';
 import BackupRainbowButtonBackground from './BackupRainbowButtonBackground';

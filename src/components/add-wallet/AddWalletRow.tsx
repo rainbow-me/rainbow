@@ -2,7 +2,7 @@ import React from 'react';
 import { ImageSourcePropType } from 'react-native';
 
 import { Box, Stack, Text, useForegroundColor } from '@/design-system';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { Icon } from '../icons';
 import deviceUtils from '@/utils/deviceUtils';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';

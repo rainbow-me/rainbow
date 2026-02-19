@@ -40,7 +40,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { useAccountAddress, useIsReadOnlyWallet, useIsHardwareWallet } from '@/state/wallets/walletsStore';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
 import abbreviations from '@/utils/abbreviations';

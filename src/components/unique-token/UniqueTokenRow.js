@@ -5,7 +5,7 @@ import { Row } from '../layout';
 import { CardSize, UniqueTokenCardMargin, UniqueTokenRowPadding } from './CardSize';
 import UniqueTokenCard from './UniqueTokenCard';
 import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding, position } from '@/styles';
 import { Navigation } from '@/navigation';
 

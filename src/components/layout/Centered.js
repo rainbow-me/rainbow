@@ -1,5 +1,5 @@
 import Flex from './Flex';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 
 const Centered = styled(Flex).attrs({
   align: 'center',

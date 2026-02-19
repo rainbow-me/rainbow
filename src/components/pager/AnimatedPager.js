@@ -3,7 +3,7 @@ import React, { Children, Component } from 'react';
 import { Animated, Easing } from 'react-native';
 import deviceUtils from '@/utils/deviceUtils';
 import AnimatedPagerItem from './AnimatedPagerItem';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 
 const buildPagerAnimation = toValue => ({

@@ -6,7 +6,7 @@ import ButtonPressAnimation from './animations/ButtonPressAnimation';
 import { Icon } from './icons';
 import { RowWithMargins } from './layout';
 import { Text } from './text';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 const Container = styled(RowWithMargins).attrs({

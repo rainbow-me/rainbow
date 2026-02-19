@@ -4,7 +4,7 @@ import { MiniButton } from '../buttons';
 import ExchangeInput from '@/components/ExchangeInput';
 import { Column, Row } from '../layout';
 import useDimensions from '@/hooks/useDimensions';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 const BubbleInput = styled(ExchangeInput).attrs(({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({

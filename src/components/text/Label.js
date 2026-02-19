@@ -1,5 +1,5 @@
 import Text from './Text';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 
 const Label = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.blueGreyDark,

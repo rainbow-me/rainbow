@@ -6,7 +6,7 @@ import RadialGradient from 'react-native-radial-gradient';
 import { darkModeThemeColors } from '@/styles/colors';
 import { useTheme } from '@/theme';
 import RainbowButtonTypes from '@/components/buttons/rainbow-button/RainbowButtonTypes';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { margin } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
 

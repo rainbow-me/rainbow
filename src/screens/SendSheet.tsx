@@ -58,7 +58,7 @@ import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getWallets, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { borders } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
 import deviceUtils from '@/utils/deviceUtils';

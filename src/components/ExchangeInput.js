@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import TextInputMask from 'react-native-text-input-mask';
 import { Text } from '@/components/text';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { buildTextStyles } from '@/styles';
 import { opacity } from '@/framework/ui/utils/opacity';
 import magicMemo from '@/utils/magicMemo';

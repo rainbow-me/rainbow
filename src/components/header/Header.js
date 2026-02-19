@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row } from '../layout';
 import useDimensions from '@/hooks/useDimensions';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 const StatusBarHeight = safeAreaInsetValues.top;

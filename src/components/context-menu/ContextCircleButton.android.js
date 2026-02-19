@@ -3,7 +3,7 @@ import RadialGradient from 'react-native-radial-gradient';
 import { Text } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import useLatestCallback from '@/hooks/useLatestCallback';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { borders, position } from '@/styles';
 import { opacity } from '@/framework/ui/utils/opacity';
 

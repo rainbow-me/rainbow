@@ -21,7 +21,7 @@ import useGas from '@/hooks/useGas';
 import usePrevious from '@/hooks/usePrevious';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
 import gasUtils from '@/utils/gas';
 import { IS_ANDROID } from '@/env';

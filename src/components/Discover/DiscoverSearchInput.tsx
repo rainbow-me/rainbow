@@ -9,7 +9,7 @@ import { Row } from '@/components/layout';
 import { TextIcon } from '@/design-system';
 import { analytics } from '@/analytics';
 import { ImgixImage } from '@/components/images';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 import deviceUtils from '@/utils/deviceUtils';
 import { ThemeContextProps, useTheme } from '@/theme';

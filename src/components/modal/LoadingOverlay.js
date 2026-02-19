@@ -7,7 +7,7 @@ import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding, position } from '@/styles';
 import { opacity } from '@/framework/ui/utils/opacity';
 import neverRerender from '@/utils/neverRerender';

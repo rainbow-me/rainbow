@@ -32,7 +32,7 @@ import { useInteractionsCount } from '@/resources/addys/interactions';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { startTimeToSignTracking, Screens } from '@/state/performance/performance';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
 import promiseUtils from '@/utils/promise';

@@ -7,7 +7,7 @@ import currentColors from './currentColors';
 import { DesignSystemProvider } from '@/design-system';
 import { getTheme, saveTheme } from '@/handlers/localstorage/theme';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
-import { StyleThingThemeProvider } from '@/styled-thing';
+import { StyleThingThemeProvider } from '@/framework/ui/styled-thing';
 
 export const Themes = {
   DARK: 'dark',

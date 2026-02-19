@@ -2,7 +2,7 @@ import React from 'react';
 import { RowWithMargins } from '../layout';
 import TokenInfoValue from './TokenInfoValue';
 import useColorForAsset from '@/hooks/useColorForAsset';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import magicMemo from '@/utils/magicMemo';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { View } from 'react-native';

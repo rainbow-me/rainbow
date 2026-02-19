@@ -4,7 +4,7 @@ import { RouteProp } from '@react-navigation/native';
 
 import { useTheme } from '@/theme/ThemeContext';
 import colors from '@/theme/currentColors';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { fonts } from '@/styles';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import deviceUtils from '@/utils/deviceUtils';

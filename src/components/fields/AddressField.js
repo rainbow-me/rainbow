@@ -5,7 +5,7 @@ import { Input } from '../inputs';
 import { Row } from '../layout';
 import useClipboard from '@/hooks/useClipboard';
 import useDimensions from '@/hooks/useDimensions';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import abbreviations from '@/utils/abbreviations';
 import addressUtils from '@/utils/address';

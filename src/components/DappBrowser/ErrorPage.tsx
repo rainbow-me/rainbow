@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React from 'react';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { Colors } from '../../styles/colors';
 import { Box } from '@/design-system';
 import { useTheme } from '@/theme';

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { ViewPropTypes } from 'deprecated-react-native-prop-types';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { buildTextStyles } from '@/styles';
 
 const Text = styled.Text.attrs({ allowFontScaling: false })(buildTextStyles.object);

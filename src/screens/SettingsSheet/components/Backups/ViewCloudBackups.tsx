@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import React, { useCallback } from 'react';
 import { Text as RNText } from '@/components/text';
 import Menu from '../Menu';

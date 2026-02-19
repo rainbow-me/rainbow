@@ -21,7 +21,7 @@ import useClipboard from '@/hooks/useClipboard';
 import useDimensions from '@/hooks/useDimensions';
 import useContacts from '@/hooks/useContacts';
 import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import profileUtils from '@/utils/profileUtils';
