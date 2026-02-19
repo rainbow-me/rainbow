@@ -25,8 +25,6 @@ function getSeedChannelValue(normalizedHex: string, start: number): number {
 }
 
 function getColorFromSeed(seed: string): string {
-  if (!seed) return '#4d82ff';
-
   const seedHex = getNormalizedSeedHex(seed).replace('0x', '').padStart(64, '0');
   const hexLength = seedHex.length;
 
