@@ -30,11 +30,11 @@ while ! grep -q "Maestro session started. Keep this running in the background." 
 done
 echo "✅ Maestro session is ready."
 
-npx @perf-profiler/maestro@latest test -e APP_ID="$APP_ID" e2e/utils/PreparePerf.yaml
+npx @perf-profiler/maestro@latest test --config e2e/config.yaml -e APP_ID="$APP_ID" e2e/utils/PreparePerf.yaml
 
 mkdir -p e2e-artifacts/perf/results
 flashlight test --bundleId "$APP_ID" \
-  --testCommand "npx @perf-profiler/maestro@latest test -e APP_ID=\"$APP_ID\" e2e/perf/TTI.yaml" \
+  --testCommand "npx @perf-profiler/maestro@latest test --config e2e/config.yaml -e APP_ID=\"$APP_ID\" e2e/perf/TTI.yaml" \
   --duration 20000 \
   --resultsFilePath e2e-artifacts/perf/results/tti.json \
   "$@"
