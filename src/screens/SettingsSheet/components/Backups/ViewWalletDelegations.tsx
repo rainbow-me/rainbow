@@ -12,11 +12,12 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import { ChainId } from '@/state/backendNetworks/types';
 import { fonts } from '@/design-system/typography/typography';
 import { useTheme } from '@/theme';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ContextCircleButton } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_DEV, IS_IOS } from '@/env';
 import * as ethereumUtils from '@/utils/ethereumUtils';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
 import {
   DelegationStatus,
   DelegationWithChainId,
@@ -286,8 +287,8 @@ export const ViewWalletDelegations = () => {
           const delegation = delegations.find(d => d.chainId === chainId);
           const revokeReason =
             delegation?.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED
-              ? RevokeReason.THIRD_PARTY_CONFLICT
-              : RevokeReason.REVOKE_SINGLE_NETWORK;
+              ? RevokeReason.DISABLE_THIRD_PARTY
+              : RevokeReason.DISABLE_SINGLE_NETWORK;
           handleRevokeDelegation(chainId, revokeReason);
           break;
         }
@@ -360,9 +361,8 @@ export const ViewWalletDelegations = () => {
                       <LinearGradient
                         colors={['#3b7fff', '#b724ad', '#19002d']}
                         locations={[0.043, 0.887, 1]}
-                        useAngle
-                        angle={132.532}
-                        angleCenter={{ x: 0.5, y: 0.5 }}
+                        start={{ x: 0, y: 1 }}
+                        end={{ x: 1, y: 0 }}
                         style={StyleSheet.absoluteFill}
                       />
                       <Box alignItems="center" justifyContent="center" width="full" height="full">
@@ -384,7 +384,7 @@ export const ViewWalletDelegations = () => {
 
                     {/* Title */}
                     <Text color="label" size="20pt" weight="heavy" align="center">
-                      Smart Wallet
+                      {i18n.t(i18n.l.wallet.delegations.smart_wallet)}
                     </Text>
 
                     {/* Status Badge */}
@@ -396,7 +396,7 @@ export const ViewWalletDelegations = () => {
                     {/* Description */}
                     <Box width={{ custom: 288 }}>
                       <Text color="labelQuaternary" size="13pt" weight="semibold" align="center" style={{ lineHeight: 17.55 }}>
-                        Smart wallets enable a faster, cheaper, and more reliable wallet experience.
+                        {i18n.t(i18n.l.wallet.delegations.smart_wallet_description)}
                       </Text>
                     </Box>
                   </Stack>
@@ -419,7 +419,7 @@ export const ViewWalletDelegations = () => {
                 {/* Section Header */}
                 <Box paddingHorizontal="10px">
                   <Text color="labelSecondary" size="15pt" weight="bold">
-                    Activated Networks
+                    {i18n.t(i18n.l.wallet.delegations.activated_networks)}
                   </Text>
                 </Box>
 
@@ -493,7 +493,7 @@ export const ViewWalletDelegations = () => {
                 {/* Section Header */}
                 <Box paddingHorizontal="10px">
                   <Text color="labelSecondary" size="15pt" weight="bold">
-                    Other Smart Accounts
+                    {i18n.t(i18n.l.wallet.delegations.other_smart_accounts)}
                   </Text>
                 </Box>
 
@@ -538,12 +538,14 @@ export const ViewWalletDelegations = () => {
                               if (contractAddress) {
                                 return (
                                   <MenuItem.Label
-                                    text={`Delegated to ${network.currentContractName || `${contractAddress.slice(0, 6)}...${contractAddress.slice(-4)}`}`}
+                                    text={i18n.t(i18n.l.wallet.delegations.delegated_to, {
+                                      name: network.currentContractName || formatAddressForDisplay(contractAddress),
+                                    })}
                                   />
                                 );
                               }
                               // Fallback for third-party delegations where contract address isn't provided
-                              return <MenuItem.Label text="Delegated to another wallet" />;
+                              return <MenuItem.Label text={i18n.t(i18n.l.wallet.delegations.delegated_to_another_wallet)} />;
                             })()}
                             rightComponent={
                               <Text color="labelQuinary" size="17pt" weight="bold">

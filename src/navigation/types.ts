@@ -719,6 +719,8 @@ type RouteParams = {
     address: Address;
     delegationsToRevoke: Array<{
       chainId: number;
+      // Optional in simulated/debug revoke flows
+      contractAddress?: Address;
     }>;
     onSuccess?: () => void;
     revokeReason?: RevokeReason;

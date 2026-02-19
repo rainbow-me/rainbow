@@ -28,6 +28,7 @@ import { useRecoilValue } from 'recoil';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useRoute } from '@/navigation/Navigation';
+import { useShouldRevokeDelegation } from '@/hooks/useShouldRevokeDelegation';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
@@ -54,6 +55,7 @@ const WalletScreenEffects = memo(function WalletScreenEffects() {
   useWalletCohort();
   useAppIconIdentify();
   useFetchOpenCollectionsOnMount();
+  useShouldRevokeDelegation();
   return null;
 });
 
