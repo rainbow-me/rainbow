@@ -290,6 +290,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       try {
         // Dismiss the ADD_WALLET_NAVIGATOR modal stack
         dangerouslyGetParent?.()?.goBack();
+        await navigateAfterOnboarding();
       } catch (error) {
         logger.error(new RainbowError('[useImportingWallet]: Error navigating to wallet screen'), { error });
         try {
