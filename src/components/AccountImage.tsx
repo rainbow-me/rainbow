@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { ContactAvatar } from '@/components/contacts';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Navigation } from '@/navigation';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import Routes from '@/navigation/routesNames';

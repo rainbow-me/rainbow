@@ -1,4 +1,5 @@
-import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
+import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import type { ParsedAddressAsset } from '@/entities/tokens';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { Network } from '@/state/backendNetworks/types';
 

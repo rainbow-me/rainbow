@@ -2,7 +2,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Routes, { Route } from '@/navigation/routesNames';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
-import { ParsedAddressAsset, PendingTransaction, RainbowTransaction, UniqueAsset } from '@/entities';
+import { ParsedAddressAsset } from '@/entities/tokens';
+import { PendingTransaction, RainbowTransaction } from '@/entities/transactions';
+import { UniqueAsset } from '@/entities/uniqueAssets';
 import { Claimable, RainbowClaimable } from '@/resources/addys/claimables/types';
 import { RequestData, WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/walletConnect/types';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
@@ -33,7 +35,7 @@ import { ActiveTabRef } from '@/components/DappBrowser/types';
 import { WalletNotificationSettings } from '@/notifications/settings';
 import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { UnlockableAppIconKey } from '@/appIcons/appIcons';
+import { UnlockableAppIconKey } from '@/features/app-icon/appIcons';
 import { ChartTime } from '@/hooks/charts/useChartInfo';
 import { AreAllKeysOptional, ExtractOptionalKeys } from '@/types/objects';
 import { ScrollView } from 'react-native';
@@ -309,13 +311,6 @@ export type SendParams = {
   shouldShowChecks?: boolean;
 };
 
-export type WalletScreenParams =
-  | {
-      initialized?: boolean;
-      emptyWallet?: boolean;
-    }
-  | undefined;
-
 export type SettingsSheetParams = {
   initialRoute?: keyof SettingsStackParams;
 };
@@ -343,7 +338,7 @@ type RouteParams = {
     type: 'speed_up' | 'cancel';
   };
   [Routes.SWIPE_LAYOUT]: NavigatorScreenParams<{
-    [Routes.WALLET_SCREEN]: WalletScreenParams | undefined;
+    [Routes.WALLET_SCREEN]: undefined;
   }>;
   [Routes.SETTINGS_SECTION_BACKUP]: {
     walletId?: string;
@@ -386,7 +381,6 @@ type RouteParams = {
   };
   [Routes.EXPLAIN_SHEET]: ExplainSheetRouteParams;
   [Routes.PORTAL]: PortalSheetProps;
-  [Routes.WALLET_SCREEN]: WalletScreenParams;
   [Routes.ENS_CONFIRM_REGISTER_SHEET]: {
     externalAvatarUrl?: string | null;
     longFormHeight?: number;

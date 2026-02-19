@@ -5,7 +5,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { NftOffer } from '@/graphql/__generated__/arc';
 import { ImgixImage } from '@/components/images';
 import { convertAmountToNativeDisplay, handleSignificantDecimals } from '@/helpers/utilities';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';

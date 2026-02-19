@@ -1,6 +1,6 @@
 import { analytics } from '@/analytics';
 import EthIcon from '@/assets/eth-icon.png';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { Page } from '@/components/layout';
@@ -58,7 +58,7 @@ import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useState
 import { RefreshControl, Share, StyleProp, ViewStyle } from 'react-native';
 import FastImage, { Source } from 'react-native-fast-image';
 import { ScrollView } from 'react-native-gesture-handler';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { useRecoilState } from 'recoil';
 import { InfoCard } from '../components/InfoCard';
@@ -790,9 +790,10 @@ export function PointsContent() {
                       as={LinearGradient}
                       style={{ padding: 5 / 3, borderRadius: 18 + 5 / 3 }}
                       colors={['#31BCC4', '#57EA5F', '#F0D83F', '#DF5337', '#B756A7']}
-                      useAngle={true}
-                      angle={-15}
-                      angleCenter={{ x: 0.5, y: 0.5 }}
+                      locations={[0, 0.25, 0.5, 0.75, 1]}
+                      // -15 deg angle
+                      start={{ x: 0, y: 0.5 }}
+                      end={{ x: 1, y: 0.5 }}
                     >
                       <Box
                         background="surfaceSecondaryElevated"

@@ -2,13 +2,13 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
-import { erc20Abi, erc721Abi, type Hash, type Address, type Hex } from 'viem';
+import { erc20Abi, erc721Abi, type Hash, type Address } from 'viem';
 import { type BatchCall, supportsDelegation } from '@rainbow-me/delegation';
 
 import { getProvider, toHex } from '@/handlers/web3';
 import { ChainId } from '@/state/backendNetworks/types';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { NewTransaction, TransactionStatus } from '@/entities';
+import { NewTransaction, TransactionStatus } from '@/entities/transactions';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, ensureError, logger } from '@/logger';
 

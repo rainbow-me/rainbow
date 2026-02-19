@@ -1,5 +1,5 @@
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { NewTransaction, TransactionStatus } from '@/entities';
+import { NewTransaction, TransactionStatus } from '@/entities/transactions';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';

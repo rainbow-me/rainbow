@@ -25,7 +25,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import { useAccountAddress } from '../../state/wallets/walletsStore';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { ImgixImage } from '../images';
 import { Media } from '../Media';
 

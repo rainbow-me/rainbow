@@ -2,7 +2,7 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useWatchPendingTransactions } from '@/hooks/useWatchPendingTxs';
 import { useTransactionWatcher } from '@/hooks/useTransactionWatcher';
 import { memo } from 'react';
-import { RainbowTransaction } from '@/entities';
+import { RainbowTransaction } from '@/entities/transactions';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 
 const EMPTY_PENDING_TRANSACTIONS: RainbowTransaction[] = [];

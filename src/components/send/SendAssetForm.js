@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import { ButtonPressAnimation } from '../animations';
+import { LinearGradient } from 'expo-linear-gradient';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { SendCoinRow } from '../coin-row';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
 import { Column } from '../layout';

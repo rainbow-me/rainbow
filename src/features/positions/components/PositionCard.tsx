@@ -4,7 +4,7 @@ import { useTheme } from '@/theme';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import startCase from 'lodash/startCase';
-import { RequestVendorLogoIcon } from '@/components/coin-icon';
+import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
@@ -13,8 +13,8 @@ import { capitalize, uniqBy } from 'lodash';
 import { PositionAsset, RainbowPosition } from '@/features/positions/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { NativeCurrencyKeys } from '@/entities';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
 
 type PositionCardProps = {
   position: RainbowPosition;

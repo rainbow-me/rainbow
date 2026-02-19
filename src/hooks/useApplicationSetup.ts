@@ -7,6 +7,7 @@ import Routes from '@/navigation/routesNames';
 import { saveFCMToken } from '@/notifications/tokens';
 import { PerformanceReports, PerformanceTracking } from '@/performance/tracking';
 import { initListeners as initWalletConnectListeners, initWalletConnectPushNotifications } from '@/walletConnect';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 export function useApplicationSetup() {
   const [initialRoute, setInitialRoute] = useState<InitialRoute>(null);
@@ -25,7 +26,10 @@ async function runSetup(setInitialRoute: Dispatch<SetStateAction<InitialRoute>>)
     initWalletConnectPushNotifications();
   });
 
-  if (address) InteractionManager.runAfterInteractions(checkIdentifierOnLaunch);
+  if (address) {
+    void initializeWallet({ shouldRunMigrations: true });
+    InteractionManager.runAfterInteractions(checkIdentifierOnLaunch);
+  }
 
   const initialRoute = address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN;
 

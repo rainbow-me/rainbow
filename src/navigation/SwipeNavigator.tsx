@@ -1,6 +1,6 @@
 import ConditionalWrap from 'conditional-wrap';
 import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { FlexItem } from '@/components/layout';
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import {
@@ -66,7 +66,7 @@ import { KingOfTheHillScreen } from '@/screens/KingOfTheHill';
 import { setActiveRoute, useNavigationStore } from '@/state/navigation/navigationStore';
 import { darkModeThemeColors, lightModeThemeColors } from '@/styles/colors';
 import { BlurGradient } from '@/components/blur/BlurGradient';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';

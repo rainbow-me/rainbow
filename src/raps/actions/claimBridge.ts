@@ -1,8 +1,9 @@
 import { AddressZero } from '@ethersproject/constants';
 import { CrosschainQuote, QuoteError, getClaimBridgeQuote } from '@rainbow-me/swaps';
 import type { Address, Hash } from 'viem';
-
-import { NewTransaction, ParsedAddressAsset, TransactionDirection, TransactionGasParamAmounts, TransactionStatus } from '@/entities';
+import { TransactionGasParamAmounts } from '@/entities/gas';
+import { ParsedAddressAsset } from '@/entities/tokens';
+import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { getProvider } from '@/handlers/web3';
 import { add, addBuffer, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';

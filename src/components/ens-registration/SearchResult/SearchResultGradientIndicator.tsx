@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
 import React from 'react';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient, LinearGradientProps } from 'expo-linear-gradient';
 import { AccentColorProvider, Box, Inset, Text } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
 import { useTheme } from '@/theme';
@@ -16,7 +16,7 @@ type Props = {
 const SearchResultGradientIndicator = ({ type, isRegistered = false, price, expirationDate, testID }: Props) => {
   const { colors } = useTheme();
   const { isSmallPhone } = useDimensions();
-  let text: string | undefined, gradient: string[];
+  let text: string | undefined, gradient: LinearGradientProps['colors'];
   switch (type) {
     case 'availability':
       if (isRegistered) {

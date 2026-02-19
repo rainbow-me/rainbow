@@ -3,7 +3,7 @@ import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { logger, RainbowError } from '@/logger';
 import * as i18n from '@/languages';
 
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import * as kc from '@/keychain';

@@ -5,7 +5,7 @@ import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocuse
 import { Border, Box, Text, TextShadow, useColorMode } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import Routes from '@/navigation/routesNames';
 import Animated, { useAnimatedRef } from 'react-native-reanimated';
@@ -30,7 +30,7 @@ import { getSolidColorEquivalent } from '@/worklets/colors';
 import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import * as i18n from '@/languages';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { IS_ANDROID } from '@/env';
 import { analytics } from '@/analytics';
 

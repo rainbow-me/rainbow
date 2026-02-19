@@ -5,7 +5,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { ImagePickerAsset } from 'expo-image-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import useImagePicker, { ImagePickerOptions } from './useImagePicker';
-import { UniqueAsset } from '@/entities';
+import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { uploadImage, UploadImageReturnData } from '@/handlers/pinata';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

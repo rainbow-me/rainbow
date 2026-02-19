@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { RainbowTransaction } from '@/entities';
+import { RainbowTransaction } from '@/entities/transactions';
 import { RainbowError, logger } from '@/logger';
 import { MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
 import { time } from '@/utils/time';

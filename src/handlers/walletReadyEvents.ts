@@ -1,7 +1,8 @@
 import { runLocalCampaignChecks } from '@/components/remote-promo-sheet/localCampaignChecks';
-import { EthereumAddress } from '@/entities';
+import type { EthereumAddress } from '@/entities/wallet';
 import { IS_TEST } from '@/env';
-import { featureUnlockChecks } from '@/featuresToUnlock';
+import { UnlockableAppIconKey, unlockableAppIcons } from '@/features/app-icon/appIcons';
+import { unlockableAppIconCheck } from '@/features/app-icon/unlockableAppIconCheck';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
@@ -95,9 +96,9 @@ export const runFeatureUnlockChecks = async (): Promise<boolean> => {
 
   logger.debug('[walletReadyEvents]: Feature Unlocks: Running Checks');
 
-  // short circuits once the first feature is unlocked
-  for (const featureUnlockCheck of featureUnlockChecks) {
-    const unlockNow = await featureUnlockCheck(walletsToCheck);
+  // short circuits once the first icon is unlocked
+  for (const appIconKey of Object.keys(unlockableAppIcons) as UnlockableAppIconKey[]) {
+    const unlockNow = await unlockableAppIconCheck(appIconKey, walletsToCheck);
     if (unlockNow) {
       return true;
     }

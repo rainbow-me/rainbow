@@ -1,10 +1,10 @@
 import { opacity } from '@/framework/ui/utils/opacity';
 import Divider from '@/components/Divider';
-import { ShimmerAnimation } from '@/components/animations';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { Box, Heading, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
-import { AssetType } from '@/entities';
+import { AssetType } from '@/entities/assetTypes';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import {
   estimateENSReclaimGasLimit,

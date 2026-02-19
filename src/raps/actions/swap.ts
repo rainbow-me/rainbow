@@ -17,7 +17,7 @@ import type { BatchCall } from '@rainbow-me/delegation';
 
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { ChainId } from '@/state/backendNetworks/types';
-import { NewTransaction, TransactionStatus, TransactionDirection } from '@/entities';
+import { NewTransaction, TransactionStatus, TransactionDirection } from '@/entities/transactions';
 import { add } from '@/helpers/utilities';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, ensureError, logger } from '@/logger';

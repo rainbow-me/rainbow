@@ -172,8 +172,10 @@ jobs:
           SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
         run: yarn install && yarn setup
 
-      - name: Install Ruby dependencies
-        run: bundle install
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@09a7688d3b55cf0e976497ff046b70949eeaccfd
+        with:
+          bundler-cache: true
 
       - name: Setup code signing with match
         env:
@@ -203,7 +205,7 @@ jobs:
           echo "::add-mask::$CERT_BASE64"
 
           # Find and export the provisioning profile
-          PP_PATH=$(find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" -exec grep -l "me.rainbow" {} \; | grep -v PriceWidget | grep -v Intent | grep -v Notification | grep -v OpenIn | grep -v ShareWith | head -1)
+          PP_PATH=$(find ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" -exec grep -l "me.rainbow" {} \; 2>/dev/null | grep -v PriceWidget | grep -v Intent | grep -v Notification | grep -v OpenIn | grep -v ShareWith | head -1)
 
           base64 -i "$PP_PATH" > /tmp/pp_b64.txt
           PROFILE_BASE64=$(cat /tmp/pp_b64.txt)

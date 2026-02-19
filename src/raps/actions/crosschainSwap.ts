@@ -9,7 +9,7 @@ import { estimateApprove } from './unlock';
 
 import { REFERRER, gasUnits, ReferrerType } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
-import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities';
+import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, ensureError, logger } from '@/logger';
 

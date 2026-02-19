@@ -16,7 +16,7 @@ import { type RainbowToast } from '@/components/rainbow-toast/types';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import { useRainbowToasts, useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { Box, useColorMode, useForegroundColor } from '@/design-system';
-import { TransactionStatus } from '@/entities';
+import { TransactionStatus } from '@/entities/transactions';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
@@ -24,7 +24,7 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   interpolate,
   runOnJS,

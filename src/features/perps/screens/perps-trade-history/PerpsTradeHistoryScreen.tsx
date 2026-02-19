@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import infinityIcon from '@/assets/infinity.png';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const ESTIMATED_ITEM_HEIGHT = 68;

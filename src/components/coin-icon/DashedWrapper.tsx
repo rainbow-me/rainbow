@@ -1,6 +1,6 @@
 import React from 'react';
 import MaskedView from '@react-native-masked-view/masked-view';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient, LinearGradientProps } from 'expo-linear-gradient';
 import { Circle } from 'react-native-svg';
 import Svg from '../icons/Svg';
 import { Box } from '@/design-system';
@@ -25,7 +25,7 @@ interface DashedWrapperProps {
   children: React.ReactElement;
   size: number;
   childXPosition: number;
-  colors: string[];
+  colors: LinearGradientProps['colors'];
 }
 
 export default function DashedWrapper(props: DashedWrapperProps) {

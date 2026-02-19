@@ -6,7 +6,7 @@ import { MaxUint256 } from '@ethersproject/constants';
 import { Token } from '../entities/tokens';
 import { estimateGasWithPadding, getProvider, toHexNoLeadingZeros } from './web3';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { Asset } from '@/entities';
+import type { Asset } from '@/entities/tokens';
 import { add, convertRawAmountToDecimalFormat, divide, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { erc20ABI, ethUnits } from '@/references';
 import ethereumUtils from '@/utils/ethereumUtils';

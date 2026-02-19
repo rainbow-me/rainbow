@@ -5,7 +5,8 @@ import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/
 import { RainbowToast } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Text } from '@/design-system';
-import { AssetType, TransactionStatus } from '@/entities';
+import { AssetType } from '@/entities/assetTypes';
+import { TransactionStatus } from '@/entities/transactions';
 import { useTransactionLaunchToken } from '@/helpers/transactions';
 import * as i18n from '@/languages';
 import React, { memo } from 'react';

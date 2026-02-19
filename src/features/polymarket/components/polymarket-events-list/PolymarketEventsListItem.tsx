@@ -1,9 +1,10 @@
 import { memo, useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
 import { globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
@@ -30,7 +31,7 @@ const GRADIENT_CONFIGS = {
   },
   outcomePill: {
     end: { x: 0.76, y: 0 },
-    locations: [0.06, 1],
+    locations: [0.06, 1] as const,
     start: { x: -0.06, y: 0 },
   },
   outcomePillBorder: {
@@ -90,10 +91,12 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
   const colors = useMemo(() => {
     const palette = createOpacityPalette(eventColor, OPACITIES);
     return {
-      cardBorderGradient: isDarkMode ? [palette.opacity16, palette.opacity0] : [globalColors.white100, globalColors.white100],
-      outcomePillBorderGradient: [palette.opacity16, palette.opacity0],
-      cardGradient: isDarkMode ? [palette.opacity24, palette.opacity0] : [palette.opacity14, palette.opacity0],
-      outcomePillGradient: [eventColor, palette.opacity0],
+      cardBorderGradient: isDarkMode
+        ? ([palette.opacity16, palette.opacity0] as const)
+        : ([globalColors.white100, globalColors.white100] as const),
+      outcomePillBorderGradient: [palette.opacity16, palette.opacity0] as const,
+      cardGradient: isDarkMode ? ([palette.opacity24, palette.opacity0] as const) : ([palette.opacity14, palette.opacity0] as const),
+      outcomePillGradient: [eventColor, palette.opacity0] as const,
       textColor: { custom: eventColor },
     };
   }, [eventColor, isDarkMode]);

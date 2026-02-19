@@ -4,7 +4,7 @@ import { Box, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { PolymarketNavigation } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
 import Routes from '@/navigation/routesNames';
 import { opacity } from '@/framework/ui/utils/opacity';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'react-native-blur-view';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

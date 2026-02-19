@@ -3,14 +3,14 @@ import { StyleSheet, TextInput, View, NativeSyntheticEvent, TextInputChangeEvent
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { PolymarketNavigation } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import { polymarketEventSearchActions } from '@/features/polymarket/stores/polymarketEventSearchStore';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { fontWithWidth } from '@/styles/buildTextStyles';
 import font from '@/styles/fonts';
 import { BlurView } from 'react-native-blur-view';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { time } from '@/utils/time';
 import { useDebouncedCallback } from 'use-debounce';

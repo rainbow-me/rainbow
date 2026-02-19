@@ -3,7 +3,7 @@ import pWaitFor from 'p-wait-for';
 import React, { useCallback } from 'react';
 import { AppState, Linking } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Text } from '../text';
 import { delay } from '@/utils/delay';

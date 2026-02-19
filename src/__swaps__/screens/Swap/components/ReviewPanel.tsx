@@ -4,7 +4,7 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
 import { convertRawAmountToBalance, convertRawAmountToBalanceWorklet, handleSignificantDecimals, multiply } from '@/helpers/utilities';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { ButtonPressAnimation } from '@/components/animations';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import {
   AnimatedText,

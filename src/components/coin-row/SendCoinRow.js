@@ -1,9 +1,9 @@
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';

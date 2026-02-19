@@ -1,6 +1,6 @@
 import { AccentColorProvider, Box, Text, useAccentColor } from '@/design-system';
 import React from 'react';
-import { ButtonPressAnimation } from '../../animations';
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import ConditionalWrap from 'conditional-wrap';
 import { colors } from '@/styles';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';

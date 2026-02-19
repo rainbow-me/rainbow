@@ -698,10 +698,6 @@
         "balance": "Saldo",
         "get_asset": "Dapatkan %{assetSymbol}",
         "market_cap": "Kap pasar",
-        "read_more_button": "Baca lebih lanjut",
-        "available_networks": "Tersedia di %{availableNetworks} jaringan",
-        "available_network": "Tersedia di jaringan %{availableNetwork}",
-        "available_networkv2": "Juga tersedia di %{availableNetwork}",
         "l2_disclaimer": "Ini %{symbol} berada di jaringan %{network}",
         "l2_disclaimer_send": "Mengirim di jaringan %{network}",
         "l2_disclaimer_dapp": "Aplikasi ini di jaringan %{network}",
@@ -2536,7 +2532,6 @@
         "networks": "Jaringan",
         "filter_by_network": "Filter berdasarkan Jaringan",
         "switch_networks": "Ganti Jaringan",
-        "nothing_found": "Tidak ada yang ditemukan",
         "nothing_found_description": "Beberapa token tidak memiliki cukup likuiditas untuk melakukan %{action}yang sukses.",
         "nothing_found_description_l2": "Beberapa token tidak memiliki cukup likuiditas layer 2 untuk melakukan %{action}yang sukses.",
         "output_quotes_disabled": "Kutipan keluaran dinonaktifkan"
@@ -2585,6 +2580,7 @@
       }
     },
     "token_search": {
+      "nothing_found": "Tidak ada yang ditemukan",
       "section_header": {
         "recent": "Baru-baru ini",
         "popular": "Populer di Rainbow",
@@ -3294,7 +3290,6 @@
     "walletconnect": {
       "connecting": "Menghubungkan",
       "loading": "Memuat",
-      "requests": "Permintaan",
       "wants_to_connect": "ingin terhubung ke dompet Anda",
       "wants_to_connect_to_network": "ingin terhubung ke jaringan %{network}",
       "available_networks": "Jaringan yang Tersedia",

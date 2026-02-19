@@ -4,15 +4,10 @@ import { StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/provid
 import { serialize } from '@ethersproject/transactions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import {
-  EthereumAddress,
-  GasFee,
-  LegacySelectedGasFee,
-  NewTransaction,
-  ParsedAddressAsset,
-  RainbowTransaction,
-  SelectedGasFee,
-} from '@/entities';
+import { EthereumAddress } from '@/entities/wallet';
+import { GasFee, LegacySelectedGasFee, SelectedGasFee } from '@/entities/gas';
+import { NewTransaction, RainbowTransaction } from '@/entities/transactions';
+import { ParsedAddressAsset } from '@/entities/tokens';
 import { IS_IOS } from '@/env';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { getProvider, isTestnetChain, toHex } from '@/handlers/web3';

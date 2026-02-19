@@ -3,7 +3,7 @@ import * as i18n from '@/languages';
 import React from 'react';
 import AddCashIconSource from '../../../assets/addCashIcon.png';
 import { useTheme } from '../../../theme/ThemeContext';
-import { ButtonPressAnimation } from '../../animations';
+import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { RowWithMargins } from '../../layout';
 import { Text } from '../../text';
 import RainbowButtonBackground from './RainbowButtonBackground';

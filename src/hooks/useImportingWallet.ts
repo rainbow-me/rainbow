@@ -14,7 +14,6 @@ import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
-import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { sanitizeSeedPhrase } from '@/utils/formatters';
@@ -27,7 +26,7 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { loadWallets, useWallets, useAccountAddress } from '@/state/wallets/walletsStore';
+import { useWallets, useAccountAddress } from '@/state/wallets/walletsStore';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const accountAddress = useAccountAddress();
@@ -294,7 +293,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       try {
         navigate(Routes.SWIPE_LAYOUT, {
           screen: Routes.WALLET_SCREEN,
-          params: { initialized: true },
         });
 
         // Dismiss the ADD_WALLET_NAVIGATOR modal stack
@@ -339,21 +337,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           loadingState: WalletLoadingStates.IMPORTING_WALLET,
         });
 
-        if (!showImportModal) {
-          await walletInit({
-            seedPhrase: input,
-            color,
-            name: name ? name : '',
-            overwrite: false,
-            checkedWallet,
-            image,
-            silent: true,
-          });
-          await loadWallets();
-          handleImportSuccess(input, isWalletEthZero, backupProvider, keys(wallets).length);
-          return;
-        }
-
         const previousWalletCount = keys(wallets).length;
 
         const success = await initializeWallet({
@@ -362,6 +345,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           name: name ? name : '',
           checkedWallet,
           image,
+          silent: !showImportModal,
         });
 
         if (success) {
