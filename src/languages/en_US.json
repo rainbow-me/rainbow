@@ -3888,7 +3888,8 @@
         "hide_lost_bets": "Hide Lost Bets",
         "show_lost_bets": "Show Lost Bets",
         "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
-      }
+      },
+      "in_review": "In Review"
     },
     "rnbw_rewards": {
       "introduction": {

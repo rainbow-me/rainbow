@@ -132,7 +132,7 @@ export type RawPolymarketMarket = {
   enableOrderBook: boolean;
   orderPriceMinTickSize: number;
   orderMinSize: number;
-  umaResolutionStatus?: string;
+  umaResolutionStatus?: 'pending' | 'proposed' | 'disputed' | 'resolved';
   curationOrder: number;
   volumeNum: number;
   liquidityNum: number;
