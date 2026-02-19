@@ -386,7 +386,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
   const toAddress = (transaction.type === 'mint' ? transaction?.from : transaction?.to) || undefined;
   const fromAddress = (transaction.type === 'mint' ? transaction?.to : transaction?.from) || undefined;
 
-  const getRightMasteadData = (): { title?: string; subtitle?: string; image?: string | number; chainId?: ChainId } => {
+  const getRightMasteadData = (): { title?: string; subtitle?: string; image?: string | number; chainId?: ChainId; address?: string } => {
     if (transaction.type === 'swap') {
       return {
         title: inputAsset?.inAssetValueDisplay,
@@ -408,6 +408,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
         subtitle: delegationContract ? formatAddressForDisplay(delegationContract, 4, 6) : undefined,
         image: isRainbowDelegation ? rainbowIcon : smartWalletIcon,
         chainId: transaction.chainId,
+        address: delegationContract,
       };
     }
 
@@ -453,7 +454,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
           />
 
           <CurrencyTile
-            address={toAddress}
+            address={rightMasteadData?.address || toAddress}
             asset={inputAsset}
             showAsset={transaction.type === 'swap' || transaction.type === 'bridge'}
             title={rightMasteadData?.title}
