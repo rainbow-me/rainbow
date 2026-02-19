@@ -227,6 +227,10 @@ export const ActivityIcon = ({
     contractIconUrl = undefined;
   }
 
+  if (transaction?.type === 'approve') {
+    contractIconUrl = undefined;
+  }
+
   if (transaction?.type === 'delegate' || transaction?.type === 'revoke_delegation') {
     return (
       <View style={sx.iconContainer}>

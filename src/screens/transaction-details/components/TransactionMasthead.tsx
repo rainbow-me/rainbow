@@ -29,7 +29,7 @@ import { AppState } from '@/redux/store';
 import useContacts from '@/hooks/useContacts';
 import useUserAccounts from '@/hooks/useUserAccounts';
 import { useTiming } from 'react-native-redash';
-import Animated, { Easing, interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -42,6 +42,7 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ImgixImage } from '@/components/images';
 import { DelegationStatus, useDelegations } from '@rainbow-me/delegation';
+import usePrevious from '@/hooks/usePrevious';
 import type { Address } from 'viem';
 
 import rainbowIcon from '@/assets/rainbow-icon-circle.png';
@@ -253,10 +254,17 @@ type AnimatedTextProps = Omit<TextProps, 'children'> & {
   loadedText: string | undefined;
 };
 const AnimatedText = ({ text, loadedText, size, weight, color, align, ...props }: AnimatedTextProps) => {
-  const loadedTextValue = useTiming(!!loadedText, {
-    duration: 420,
-    easing: Easing.linear,
-  });
+  const previousLoadedText = usePrevious(loadedText);
+  const loadedTextValue = useSharedValue(0);
+
+  useEffect(() => {
+    const shouldAnimate = Boolean(loadedText) && !previousLoadedText;
+    loadedTextValue.value = withTiming(loadedText ? 1 : 0, {
+      duration: shouldAnimate ? 420 : 0,
+      easing: Easing.linear,
+    });
+  }, [loadedText, previousLoadedText, loadedTextValue]);
+
   const textStyle = useAnimatedStyle(() => ({
     opacity: interpolate(loadedTextValue.value, [0, 0.5, 1], [1, 0, 0]),
   }));
@@ -376,7 +384,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
     if (transaction.type !== 'delegate' && transaction.type !== 'revoke_delegation') return undefined;
     return delegations?.find(d => d.chainId === transaction.chainId);
   }, [delegations, transaction.chainId, transaction.type]);
-  const delegationContract = delegation?.currentContract || delegation?.revokeAddress || undefined;
+  const delegationContract = delegation?.currentContract || delegation?.revokeAddress || transaction.to || undefined;
   const isRainbowDelegation = delegation?.delegationStatus === DelegationStatus.RAINBOW_DELEGATED;
 
   const contractImage = transaction?.contract?.iconUrl;
@@ -393,7 +401,13 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
         subtitle: inputAsset?.inAssetNativeDisplay,
       };
     }
-    if (transaction.type === 'contract_interaction' || transaction.type === 'approve') {
+    if (transaction.type === 'approve') {
+      return {
+        title: transaction.asset?.name,
+        subtitle: transaction.to ? formatAddressForDisplay(transaction.to, 4, 6) : undefined,
+      };
+    }
+    if (transaction.type === 'contract_interaction') {
       return {
         title: contractName,
         subtitle: transaction?.from || '',
@@ -455,8 +469,8 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
 
           <CurrencyTile
             address={rightMasteadData?.address || toAddress}
-            asset={inputAsset}
-            showAsset={transaction.type === 'swap' || transaction.type === 'bridge'}
+            asset={transaction.type === 'approve' ? (transaction.asset as ParsedAddressAsset | undefined) : inputAsset}
+            showAsset={transaction.type === 'swap' || transaction.type === 'bridge' || transaction.type === 'approve'}
             title={rightMasteadData?.title}
             subtitle={rightMasteadData?.subtitle}
             image={rightMasteadData?.image}
