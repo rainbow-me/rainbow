@@ -282,29 +282,14 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       return;
     }
 
-    const handleImportSuccess = async (
-      input: string,
-      isWalletEthZero: boolean,
-      backupProvider: string | undefined,
-      previousWalletCount = 0
-    ) => {
+    const handleImportSuccess = async (input: string, isWalletEthZero: boolean, backupProvider: string | undefined) => {
       setImporting(false);
       setBusy(false);
       walletLoadingStore.setState({ loadingState: null });
 
-      const isFirstWallet = previousWalletCount === 0;
-
       try {
         // Dismiss the ADD_WALLET_NAVIGATOR modal stack
         dangerouslyGetParent?.()?.goBack();
-
-        if (isFirstWallet) {
-          await navigateAfterOnboarding();
-        } else {
-          Navigation.handleAction(Routes.SWIPE_LAYOUT, {
-            screen: Routes.WALLET_SCREEN,
-          });
-        }
       } catch (error) {
         logger.error(new RainbowError('[useImportingWallet]: Error navigating to wallet screen'), { error });
         try {
@@ -345,8 +330,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           loadingState: WalletLoadingStates.IMPORTING_WALLET,
         });
 
-        const previousWalletCount = keys(wallets).length;
-
         const success = await initializeWallet({
           seedPhrase: input,
           color,
@@ -358,7 +341,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
         if (success) {
           // Navigate to wallet screen
-          await handleImportSuccess(input, isWalletEthZero, backupProvider, previousWalletCount);
+          await handleImportSuccess(input, isWalletEthZero, backupProvider);
         } else {
           // Import failed
           logger.error(new RainbowError('[useImportingWallet]: Import failed'));
