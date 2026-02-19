@@ -20,6 +20,7 @@ import { ChainImage } from '../coin-icon/ChainImage';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 import { activityValues, useTransactionLaunchToken } from '@/helpers/transactions';
 import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
 
 const getIconTopMargin = (type: TransactionType) => {
   switch (type) {
@@ -53,7 +54,9 @@ const activityTypeIcon: Record<TransactionType, string> = {
   unstake: '􀄲',
   withdraw: '􀄲',
   deposit: '􀄷',
+  delegate: '􀁢',
   revoke: '􀁎',
+  revoke_delegation: '􀁎',
   speed_up: '􀓎',
   claim: '􀄩',
   borrow: '􀄩',
@@ -109,6 +112,14 @@ const BottomRow = React.memo(function BottomRow({
   if (type === 'contract_interaction' && to) {
     description = transaction.contract?.name || address(to, 6, 4);
     tag = transaction.description;
+  }
+
+  if (type === 'delegate') {
+    description = i18n.t(i18n.l.transactions.delegate_description);
+  }
+
+  if (type === 'revoke_delegation') {
+    description = i18n.t(i18n.l.transactions.revoke_delegation_description);
   }
 
   if (type === 'launch' && launchToken) {

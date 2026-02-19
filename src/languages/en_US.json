@@ -2708,6 +2708,16 @@
           "confirmed": "Revoked",
           "failed": "Revoke Failed"
         },
+        "delegate": {
+          "pending": "Delegating",
+          "confirmed": "Approved",
+          "failed": "Delegation Failed"
+        },
+        "revoke_delegation": {
+          "pending": "Revoking",
+          "confirmed": "Revoked",
+          "failed": "Revoke Failed"
+        },
         "sale": {
           "pending": "Selling",
           "confirmed": "Sold",
@@ -2747,6 +2757,8 @@
       "savings": "Savings",
       "signed": "Signed",
       "contract_interaction": "Contract Interaction",
+      "delegate_description": "Wallet Delegation",
+      "revoke_delegation_description": "Wallet Delegation",
       "deposited_with_token": "Deposited %{name}",
       "withdrew_with_token": "Withdrew %{name}"
     },
