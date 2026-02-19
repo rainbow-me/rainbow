@@ -1,6 +1,6 @@
 import { getNumberFormatter } from '@/helpers/intl';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
-import { equalWorklet } from '@/safe-math/SafeMath';
+import { equalWorklet } from '@/framework/core/safeMath';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { InferStoreState } from '@/state/internal/types';
 import { shallowEqual } from '@/worklets/comparisons';

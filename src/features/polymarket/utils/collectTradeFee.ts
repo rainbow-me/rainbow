@@ -5,7 +5,7 @@ import { GELATO_API_KEY } from 'react-native-dotenv';
 import { getPolymarketClobClient, usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { getProvider } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { mulWorklet } from '@/safe-math/SafeMath';
+import { mulWorklet } from '@/framework/core/safeMath';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
 import { POLYGON_USDC_ADDRESS, RAINBOW_POLYMARKET_FEE_ADDRESS, USD_FEE_PER_TOKEN } from '../constants';

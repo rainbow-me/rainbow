@@ -14,7 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { getSolidColorEquivalent } from '@/worklets/colors';
-import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/safe-math/SafeMath';
+import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import { marketSellTotalPosition } from '@/features/polymarket/utils/orders';
 import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
 import Navigation from '@/navigation/Navigation';

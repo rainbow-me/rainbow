@@ -8,7 +8,7 @@ import {
   greaterThanWorklet,
   lessThanOrEqualToWorklet,
   equalWorklet,
-} from '@/safe-math/SafeMath';
+} from '@/framework/core/safeMath';
 
 // Implemented from reference implementation: https://github.com/hyperliquid-dex/ts-examples/blob/main/examples/LiquidationPx.tsx
 

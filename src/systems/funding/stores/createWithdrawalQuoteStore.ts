@@ -1,7 +1,7 @@
 import { getAddress } from 'viem';
 import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteParams, Source } from '@rainbow-me/swaps';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
-import { equalWorklet, greaterThanWorklet } from '@/safe-math/SafeMath';
+import { equalWorklet, greaterThanWorklet } from '@/framework/core/safeMath';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';

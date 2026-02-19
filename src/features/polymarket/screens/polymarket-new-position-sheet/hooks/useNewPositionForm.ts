@@ -1,5 +1,5 @@
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { toPercentageWorklet } from '@/safe-math/SafeMath';
+import { toPercentageWorklet } from '@/framework/core/safeMath';
 import { useMemo } from 'react';
 import { useStableValue } from '@/hooks/useStableValue';
 import { createOrderFormStore } from '../stores/createOrderFormStore';

@@ -1,5 +1,5 @@
 import { isNativeAsset } from '@/handlers/assets';
-import { divWorklet, greaterThanWorklet, powWorklet, subWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, greaterThanWorklet, powWorklet, subWorklet } from '@/framework/core/safeMath';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';

@@ -14,7 +14,7 @@ import { Navigation } from '@/navigation';
 import { walletExecuteRap } from '@/raps/execute';
 import { RapSwapActionParameters, rapTypes } from '@/raps/references';
 import { erc20ABI } from '@/references';
-import { sumWorklet } from '@/safe-math/SafeMath';
+import { sumWorklet } from '@/framework/core/safeMath';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';

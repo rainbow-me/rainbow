@@ -19,7 +19,7 @@ import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsA
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { toFixedWorklet } from '@/safe-math/SafeMath';
+import { toFixedWorklet } from '@/framework/core/safeMath';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { addCommasToNumber, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';

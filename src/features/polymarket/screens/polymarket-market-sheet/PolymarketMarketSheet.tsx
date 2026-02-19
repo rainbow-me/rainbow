@@ -17,7 +17,7 @@ import { PolymarketChart } from '@/features/charts/polymarket/components/Polymar
 import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
 import { getChartLineColors } from '@/features/charts/polymarket/utils/getChartLineColors';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
-import { toPercentageWorklet } from '@/safe-math/SafeMath';
+import { toPercentageWorklet } from '@/framework/core/safeMath';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 

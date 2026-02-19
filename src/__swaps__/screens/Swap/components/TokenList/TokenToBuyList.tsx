@@ -7,7 +7,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Inline, Text, TextIcon, useColorMode } from '@/design-system';
 import { palettes } from '@/design-system/color/palettes';
 import * as i18n from '@/languages';
-import { equalWorklet } from '@/safe-math/SafeMath';
+import { equalWorklet } from '@/framework/core/safeMath';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';

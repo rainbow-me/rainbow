@@ -25,7 +25,7 @@ import { convertRawAmountToBalanceWorklet, convertRawAmountToNativeDisplay } fro
 import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { openInBrowser } from '@/utils/openInBrowser';
 import * as i18n from '@/languages';
-import { minWorklet, mulWorklet, subWorklet, sumWorklet } from '@/safe-math/SafeMath';
+import { minWorklet, mulWorklet, subWorklet, sumWorklet } from '@/framework/core/safeMath';
 import { useTokenInteractions } from '@/resources/metadata/tokenInteractions';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';

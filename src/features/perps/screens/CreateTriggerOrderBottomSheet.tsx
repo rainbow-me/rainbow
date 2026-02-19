@@ -25,7 +25,7 @@ import {
   greaterThanOrEqualToWorklet,
   mulWorklet,
   subWorklet,
-} from '@/safe-math/SafeMath';
+} from '@/framework/core/safeMath';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';

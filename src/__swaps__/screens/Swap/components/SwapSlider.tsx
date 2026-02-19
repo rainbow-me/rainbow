@@ -20,7 +20,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Bleed, Box, Column, Columns, Inline, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { greaterThanWorklet } from '@/safe-math/SafeMath';
+import { greaterThanWorklet } from '@/framework/core/safeMath';
 import { SCRUBBER_WIDTH, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH, pulsingConfig } from '@/__swaps__/screens/Swap/constants';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { clamp, getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';

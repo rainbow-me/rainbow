@@ -8,7 +8,7 @@ import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/p
 import { PolymarketTeamInfo, TeamSide } from '@/features/polymarket/types';
 import { isDrawMarket } from '@/features/polymarket/utils/sports';
 import { getEventTeams } from '@/features/polymarket/utils/sportsEventTeams';
-import { roundWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
+import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 
 export type BetCellData = {

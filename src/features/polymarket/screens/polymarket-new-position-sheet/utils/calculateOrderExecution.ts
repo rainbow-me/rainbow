@@ -7,7 +7,7 @@ import {
   mulWorklet,
   subWorklet,
   sumWorklet,
-} from '@/safe-math/SafeMath';
+} from '@/framework/core/safeMath';
 import { USD_FEE_PER_TOKEN } from '@/features/polymarket/constants';
 
 export type OrderExecution = {

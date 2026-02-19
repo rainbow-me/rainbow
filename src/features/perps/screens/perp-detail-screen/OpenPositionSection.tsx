@@ -3,7 +3,7 @@ import { PerpMarket, PerpsPosition } from '@/features/perps/types';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { Box, Text, TextShadow, Separator, useColorMode } from '@/design-system';
 import { abs, greaterThan, isEqual, isPositive, multiply } from '@/helpers/utilities';
-import { toFixedWorklet, getPercentageDifferenceWorklet } from '@/safe-math/SafeMath';
+import { toFixedWorklet, getPercentageDifferenceWorklet } from '@/framework/core/safeMath';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';

@@ -5,7 +5,7 @@ import { PolymarketPosition } from '@/features/polymarket/types';
 import { memo, useCallback, useMemo } from 'react';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import ImgixImage from '@/components/images/ImgixImage';
-import { mulWorklet, subWorklet, toPercentageWorklet } from '@/safe-math/SafeMath';
+import { mulWorklet, subWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

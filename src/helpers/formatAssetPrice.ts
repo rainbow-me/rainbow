@@ -13,7 +13,7 @@ import {
   removeDecimalWorklet as safeRemoveDecimalWorklet,
   toFixedWorklet as safeToFixedWorklet,
   toStringWorklet as safeToStringWorklet,
-} from '../safe-math/SafeMath';
+} from '@/framework/core/safeMath';
 import { toSubscript, toSuperscript } from './strings';
 
 interface ThresholdConfig {
