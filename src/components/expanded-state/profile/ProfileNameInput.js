@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useEffect, useRef } from 'react';
 import { Input } from '../../inputs';
 import { PlaceholderText } from '../../text';
 import useMagicAutofocus from '@/hooks/useMagicAutofocus';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { fonts, fontWithWidth } from '@/styles';
 
 const NameInput = styled(Input).attrs({

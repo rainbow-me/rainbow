@@ -110,7 +110,7 @@ const allowedBarrelFiles = [
   'src/state/staleBalances/index.ts',
   'src/state/walletConnectRequests/index.ts',
   'src/storage/index.ts',
-  'src/styled-thing/index.tsx',
+  'src/framework/ui/styled-thing/index.tsx',
   'src/theme/index.ts',
   'src/walletConnect/index.tsx',
 ];

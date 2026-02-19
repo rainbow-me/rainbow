@@ -9,7 +9,7 @@ import { OrderSuccessResponse } from '@nktkas/hyperliquid/api/exchange';
 import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { hlOpenOrdersStoreActions } from '@/features/perps/stores/hlOpenOrdersStore';
 import { refetchHyperliquidStores } from '@/features/perps/utils';
-import { truncateToDecimals } from '@/safe-math/SafeMath';
+import { truncateToDecimals } from '@/framework/core/safeMath';
 import { USD_DECIMALS } from '@/features/perps/constants';
 
 type HyperliquidAccountActions = {

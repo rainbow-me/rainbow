@@ -6,7 +6,7 @@ import { memo, useMemo } from 'react';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LinearGradient } from 'expo-linear-gradient';
 import ImgixImage from '@/components/images/ImgixImage';
-import { toPercentageWorklet } from '@/safe-math/SafeMath';
+import { toPercentageWorklet } from '@/framework/core/safeMath';
 import { formatNumber } from '@/helpers/strings';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';

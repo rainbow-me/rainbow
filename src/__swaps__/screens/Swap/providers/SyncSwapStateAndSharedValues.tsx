@@ -12,7 +12,7 @@ import {
   sumWorklet,
   toFixedWorklet,
   toScaledIntegerWorklet,
-} from '@/safe-math/SafeMath';
+} from '@/framework/core/safeMath';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';

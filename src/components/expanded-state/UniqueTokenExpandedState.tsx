@@ -35,7 +35,7 @@ import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme';
 import magicMemo from '@/utils/magicMemo';

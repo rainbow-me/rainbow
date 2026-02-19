@@ -4,7 +4,7 @@ import RadialGradient from 'react-native-radial-gradient';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { Text } from '../text';
 import useDimensions from '@/hooks/useDimensions';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { ThemeContextProps } from '@/theme';
 
 const FontSizeMultiple = 0.24;

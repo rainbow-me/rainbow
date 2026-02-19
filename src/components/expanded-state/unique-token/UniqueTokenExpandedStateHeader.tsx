@@ -14,7 +14,7 @@ import useHiddenTokens from '@/hooks/useHiddenTokens';
 import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation/Navigation';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import ethereumUtils from '@/utils/ethereumUtils';

@@ -9,7 +9,7 @@ import { logger, RainbowError } from '@/logger';
 import { Alert } from 'react-native';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { toFixedWorklet, subWorklet, mulWorklet } from '@/safe-math/SafeMath';
+import { toFixedWorklet, subWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrderButton';
 import * as i18n from '@/languages';
 import { LAYOUT_ANIMATION } from '@/features/perps/constants';

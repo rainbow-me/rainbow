@@ -33,7 +33,7 @@ import {
   powWorklet,
   roundWorklet,
   toFixedWorklet,
-} from '@/safe-math/SafeMath';
+} from '@/framework/core/safeMath';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
 import { InputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';

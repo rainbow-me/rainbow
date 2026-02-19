@@ -2,7 +2,7 @@ import React, { ForwardedRef } from 'react';
 import { TextInput as TextInputPrimitive, TextInputProps, StyleProp, TextStyle } from 'react-native';
 import { useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { buildTextStyles, fonts } from '@/styles';
 import { opacity } from '@/framework/ui/utils/opacity';
 

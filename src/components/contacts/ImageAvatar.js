@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Centered } from '../layout';
 import { ImgixImage } from '@/components/images';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { borders } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { IS_ANDROID } from '@/env';

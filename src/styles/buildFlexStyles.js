@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 import position from './position';
-import { css } from '@/styled-thing';
+import { css } from '@/framework/ui/styled-thing';
 
 export const getFlexStylesFromShorthand = style => (style === 'end' || style === 'start' ? `flex-${style}` : style);
 

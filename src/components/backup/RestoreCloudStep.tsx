@@ -16,7 +16,7 @@ import { RootStackParamList } from '@/navigation/types';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { loadWallets } from '@/state/wallets/walletsStore';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { cloudPlatform } from '@/utils/platform';

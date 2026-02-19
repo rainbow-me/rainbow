@@ -14,7 +14,7 @@ import { getRemoteConfig } from '@/model/remoteConfig';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
-import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';

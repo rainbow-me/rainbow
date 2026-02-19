@@ -1,5 +1,5 @@
 import { TruncatedText } from '../text';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 
 const CoinName = styled(TruncatedText).attrs(({ color, size, theme: { colors } }) => ({
   color: color || colors.dark,

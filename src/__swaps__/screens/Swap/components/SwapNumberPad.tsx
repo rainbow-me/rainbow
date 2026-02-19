@@ -15,7 +15,7 @@ import { supportedNativeCurrencies } from '@/references';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Bleed, Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { equalWorklet } from '@/safe-math/SafeMath';
+import { equalWorklet } from '@/framework/core/safeMath';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { colors } from '@/styles';
 import { CUSTOM_KEYBOARD_HEIGHT, LONG_PRESS_DELAY_DURATION, LONG_PRESS_REPEAT_DURATION } from '@/__swaps__/screens/Swap/constants';

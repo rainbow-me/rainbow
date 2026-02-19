@@ -25,7 +25,7 @@ import { useDappMetadata } from '@/resources/metadata/dapp';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { WalletconnectMeta } from '@/walletConnect/types';
 import { RouteProp, useRoute } from '@react-navigation/native';

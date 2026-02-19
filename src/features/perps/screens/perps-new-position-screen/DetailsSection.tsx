@@ -5,7 +5,7 @@ import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated
 import { opacity } from '@/framework/ui/utils/opacity';
 import { PerpMarket } from '@/features/perps/types';
 import { DEFAULT_SLIPPAGE_BIPS } from '@/features/perps/constants';
-import { mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 

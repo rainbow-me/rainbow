@@ -12,7 +12,7 @@ import { loadWallet } from '@/model/wallet';
 import { weiToGwei } from '@/parsers';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { isStaging } from '@/resources/addys/client';
-import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
+import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';

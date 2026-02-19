@@ -6,7 +6,7 @@ import { Sheet } from '@/components/sheet';
 import { Text } from '@/components/text';
 import { useNavigation } from '@/navigation/Navigation';
 import useAppState from '@/hooks/useAppState';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';

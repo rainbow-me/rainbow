@@ -2,7 +2,7 @@ import { ButtonPressAnimationProps } from '@/components/animations/ButtonPressAn
 import { StyleProp, ViewStyle } from 'react-native';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import React from 'react';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import Reanimated from 'react-native-reanimated';
 import { Emoji, Text } from '@/components/text';
 import { ThemeContextProps } from '@/theme';

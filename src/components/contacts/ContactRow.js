@@ -15,7 +15,7 @@ import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import useContacts from '@/hooks/useContacts';
 import useDimensions from '@/hooks/useDimensions';
 import useENSAvatar from '@/hooks/useENSAvatar';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { margin } from '@/styles';
 import * as i18n from '@/languages';
 import { StyleSheet } from 'react-native';

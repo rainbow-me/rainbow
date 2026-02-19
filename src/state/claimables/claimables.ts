@@ -5,7 +5,7 @@ import { CacheEntry } from '@/state/internal/queryStore/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { time } from '@/utils/time';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
-import { sumWorklet } from '@/safe-math/SafeMath';
+import { sumWorklet } from '@/framework/core/safeMath';
 
 export type ClaimablesStore = {
   claimables: Claimable[];

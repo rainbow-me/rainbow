@@ -7,7 +7,7 @@ import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import useDimensions from '@/hooks/useDimensions';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding, position, shadow } from '@/styles';
 
 const springConfig: WithSpringConfig = {

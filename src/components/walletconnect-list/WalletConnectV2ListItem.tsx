@@ -7,7 +7,7 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding, position } from '@/styles';
 import { useTheme } from '@/theme';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';

@@ -12,7 +12,7 @@ import { analytics } from '@/analytics';
 import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid } from '@/handlers/cloudBackup';
 import useDimensions from '@/hooks/useDimensions';
 import useMagicAutofocus from '@/hooks/useMagicAutofocus';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 import { Box, Inset, Stack } from '@/design-system';
 import { ImgixImage } from '../images';

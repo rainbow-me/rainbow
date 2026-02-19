@@ -4,7 +4,7 @@ import { useForegroundColor } from '@/design-system';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { divWorklet, greaterThanOrEqualToWorklet, mulWorklet, subWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, greaterThanOrEqualToWorklet, mulWorklet, subWorklet } from '@/framework/core/safeMath';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { highPriceImpactThreshold, severePriceImpactThreshold } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';

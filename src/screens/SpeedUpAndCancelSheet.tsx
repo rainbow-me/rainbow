@@ -20,7 +20,7 @@ import { ethUnits } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { updateTransaction } from '@/state/pendingTransactions';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
 import gasUtils from '@/utils/gas';

@@ -21,7 +21,7 @@ import {
   greaterThanWorklet,
   mulWorklet,
   toFixedWorklet,
-} from '@/safe-math/SafeMath';
+} from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { useDebouncedCallback } from 'use-debounce';
 import { time } from '@/utils/time';

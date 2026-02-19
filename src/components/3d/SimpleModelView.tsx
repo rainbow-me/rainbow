@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, PanResponder, StyleSheet, View, ViewStyle } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import { ImgixImage } from '@/components/images';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding, position } from '@/styles';
 import { FULL_NFT_IMAGE_SIZE } from '@/utils/handleNFTImages';
 

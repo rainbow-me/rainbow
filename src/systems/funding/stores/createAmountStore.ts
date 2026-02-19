@@ -1,4 +1,4 @@
-import { equalWorklet, trimTrailingZeros } from '@/safe-math/SafeMath';
+import { equalWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';

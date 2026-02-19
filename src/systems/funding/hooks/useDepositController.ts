@@ -6,7 +6,14 @@ import { NumberPadField } from '@/features/perps/components/NumberPad/NumberPadK
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
 import { handleSignificantDecimalsWorklet } from '@/helpers/utilities';
 import { useStableValue } from '@/hooks/useStableValue';
-import { divWorklet, equalWorklet, greaterThanOrEqualToWorklet, mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/safe-math/SafeMath';
+import {
+  divWorklet,
+  equalWorklet,
+  greaterThanOrEqualToWorklet,
+  mulWorklet,
+  toFixedWorklet,
+  trimTrailingZeros,
+} from '@/framework/core/safeMath';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';

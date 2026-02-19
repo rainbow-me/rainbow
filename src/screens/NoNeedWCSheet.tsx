@@ -4,7 +4,7 @@ import { Centered } from '../components/layout';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { useTheme } from '@/theme';
 import { Colors } from '../styles/colors';
 import { Box } from '@/design-system';

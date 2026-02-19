@@ -21,7 +21,7 @@ import {
 } from './constants';
 import { getButtonDisabledBgColor, getButtonShadows } from './helpers/buttonStyleValues';
 import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding, position } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
 import haptics from '@/utils/haptics';
