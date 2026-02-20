@@ -2504,8 +2504,6 @@
         "hold_to_swap": "Hold to Swap",
         "hold_to_bridge": "Hold to Bridge",
         "earning_rewards": "Earning Rewards",
-        "eip7702_delegate": "7702 Delegate",
-        "eip7702_batch": "7702 Batch",
         "save": "Save",
         "enter_amount": "Enter Amount",
         "review": "Review",
@@ -2710,6 +2708,16 @@
           "confirmed": "Revoked",
           "failed": "Revoke Failed"
         },
+        "delegate": {
+          "pending": "Delegating",
+          "confirmed": "Approved",
+          "failed": "Delegation Failed"
+        },
+        "revoke_delegation": {
+          "pending": "Revoking",
+          "confirmed": "Revoked",
+          "failed": "Revoke Failed"
+        },
         "sale": {
           "pending": "Selling",
           "confirmed": "Sold",
@@ -2749,6 +2757,8 @@
       "savings": "Savings",
       "signed": "Signed",
       "contract_interaction": "Contract Interaction",
+      "delegate_description": "Wallet Delegation",
+      "revoke_delegation_description": "Wallet Delegation",
       "deposited_with_token": "Deposited %{name}",
       "withdrew_with_token": "Withdrew %{name}"
     },
@@ -2761,6 +2771,7 @@
       "network_fee": "Network Fee",
       "hash_copied": "\uDBC0\uDC63 Transaction hash copied",
       "address_copied": "\uDBC0\uDC63 Address copied",
+      "smart_account": "Smart Account",
       "try_again": "\uDBC0\uDD49 Try again",
       "context_menu": {
         "copy_address": "Copy Address",
@@ -3028,6 +3039,7 @@
         "disable_smart_wallet": "Disable Smart Wallet",
         "enabled_description": "You'll miss out on faster transactions and lower network costs",
         "disabled_description": "Updates will take effect on your next swap",
+        "will_delegate_callout": "Includes smart wallet activation",
         "revoke_panel": {
           "disable_smart_wallet_title": "Disable Smart Wallet",
           "disable_smart_wallet_subtitle": "This will revoke all active delegations and disable Smart Wallet features.",
@@ -3065,6 +3077,7 @@
         "watching": "Watching",
         "ledger": "Ledger",
         "delegated": "Delegated",
+        "alt_delegation": "Alt Delegation",
         "not_delegated": "Not Delegated",
         "disabled": "Disabled",
         "wallets": "Wallets",

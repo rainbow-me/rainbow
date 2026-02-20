@@ -1,6 +1,6 @@
 import { Signer } from '@ethersproject/abstract-signer';
 import { CrosschainQuote, fillCrosschainQuote, prepareFillCrosschainQuote, SwapType } from '@rainbow-me/swaps';
-import type { Address, Hash, Hex } from 'viem';
+import type { Hash } from 'viem';
 import type { BatchCall } from '@rainbow-me/delegation';
 
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
@@ -29,32 +29,26 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { getQuoteAllowanceTargetAddress, requireAddress, requireHex } from '../validation';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
 export const estimateUnlockAndCrosschainSwap = async ({
   quote,
   chainId,
-}: Pick<RapSwapActionParameters<'crosschainSwap'>, 'quote' | 'chainId'>) => {
-  const {
-    from: accountAddress,
-    sellTokenAddress,
-    allowanceTarget,
-    allowanceNeeded,
-  } = quote as {
-    from: Address;
-    sellTokenAddress: Address;
-    allowanceTarget: Address;
-    allowanceNeeded: boolean;
-  };
+  requiresApprove: requiresApproveInput,
+}: Pick<RapSwapActionParameters<'crosschainSwap'>, 'quote' | 'chainId' | 'requiresApprove'>) => {
+  const { from: accountAddress, sellTokenAddress, allowanceNeeded } = quote;
+  const requiresApprove = requiresApproveInput ?? allowanceNeeded;
 
   let gasLimits: (string | number)[] = [];
 
-  if (allowanceNeeded) {
+  if (requiresApprove) {
+    const allowanceTargetAddress = getQuoteAllowanceTargetAddress(quote);
     const unlockGasLimit = await estimateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,
-      spender: allowanceTarget,
+      spender: allowanceTargetAddress,
       chainId,
     });
     gasLimits = gasLimits.concat(unlockGasLimit);
@@ -62,7 +56,7 @@ export const estimateUnlockAndCrosschainSwap = async ({
 
   const swapGasLimit = await estimateCrosschainSwapGasLimit({
     chainId,
-    requiresApprove: allowanceNeeded,
+    requiresApprove,
     quote,
   });
 
@@ -193,7 +187,7 @@ function buildCrosschainSwapTransaction(
     chainId: parameters.chainId,
     data: parameters.quote.data,
     from: parameters.quote.from,
-    to: parameters.quote.to as Address,
+    to: requireAddress(parameters.quote.to, 'crosschain quote.to'),
     value: parameters.quote.value?.toString(),
     asset: assetToBuy,
     changes: [
@@ -226,9 +220,9 @@ export const prepareCrosschainSwap = async ({
   const tx = await prepareFillCrosschainQuote(quote as CrosschainQuote, REFERRER);
   return {
     call: {
-      to: tx.to as Address,
+      to: requireAddress(tx.to, 'crosschain prepared tx.to'),
       value: toHex(tx.value ?? 0),
-      data: tx.data as Hex,
+      data: requireHex(tx.data, 'crosschain prepared tx.data'),
     },
     transaction: buildCrosschainSwapTransaction(parameters, parameters.gasParams),
   };
@@ -259,10 +253,11 @@ export const crosschainSwap = async ({
     gasLimit = await estimateUnlockAndCrosschainSwap({
       quote,
       chainId,
+      requiresApprove: parameters.requiresApprove,
     });
   } catch (e) {
     logger.error(new RainbowError('[raps/crosschainSwap]: error estimateCrosschainSwapGasLimit'), {
-      message: (e as Error)?.message,
+      message: ensureError(e).message,
     });
     throw e;
   }

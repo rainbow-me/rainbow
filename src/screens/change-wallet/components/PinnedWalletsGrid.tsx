@@ -14,10 +14,12 @@ import { address } from '@/utils/abbreviations';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { IS_DEV, IS_IOS, IS_TEST_FLIGHT } from '@/env';
+import { DELEGATION, getExperimentalFlag } from '@/config';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import { useTheme } from '@/theme';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { StyleSheet } from 'react-native';
-import { DelegationStatus, useDelegations, useDelegationPreference } from '@rainbow-me/delegation';
+import { DelegationStatus, useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';
 import type { Address } from 'viem';
 
 const UNPIN_BADGE_SIZE = 28;
@@ -33,16 +35,14 @@ type PinnedWalletsGridProps = {
   editMode: boolean;
 };
 
-function DelegationBadge({ accountAddress, isReadOnly }: { accountAddress: string; isReadOnly: boolean }) {
-  const { delegations } = useDelegations(accountAddress as Address);
-  const { enabled: isDelegationEnabled = true } = useDelegationPreference(accountAddress as Address) ?? {};
-
-  const isDelegated = delegations.some(({ delegationStatus }) => delegationStatus === DelegationStatus.RAINBOW_DELEGATED);
-  const isDisabled = !isDelegationEnabled;
+function DelegationBadge({ accountAddress }: { accountAddress: string }) {
+  const delegations = useDelegations(accountAddress as Address);
+  const isDisabled = useDelegationDisabled(accountAddress as Address);
+  const isDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED) ?? false;
+  const isThirdPartyDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED) ?? false;
 
   return (
-    // eslint-disable-next-line no-nested-ternary
-    <Text color={isDisabled ? 'red' : isDelegated ? 'green' : 'labelQuaternary'} size="icon 10px">
+    <Text color={isDisabled ? 'red' : isDelegated ? 'green' : isThirdPartyDelegated ? 'labelTertiary' : 'labelQuaternary'} size="icon 10px">
       􀋦
     </Text>
   );
@@ -50,6 +50,7 @@ function DelegationBadge({ accountAddress, isReadOnly }: { accountAddress: strin
 
 export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, onPressMenuItem }: PinnedWalletsGridProps) {
   const { colors, isDarkMode } = useTheme();
+  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
 
   const removePinnedAddress = usePinnedWalletsStore(state => state.removePinnedAddress);
   const setPinnedAddresses = usePinnedWalletsStore(state => state.setPinnedAddresses);
@@ -210,19 +211,22 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                     </Box>
                   </JiggleAnimation>
                   <Inline wrap={false} space="4px" alignHorizontal="center" alignVertical="center">
-                    {account.isLedger && (
+                    {account.isLedger ? (
                       <Text color="labelTertiary" size="icon 10px">
                         􀤃
                       </Text>
-                    )}
-                    {account.isReadOnly && (
+                    ) : null}
+
+                    {account.isReadOnly ? (
                       <Text color="labelTertiary" size="icon 10px">
                         􀋮
                       </Text>
-                    )}
-                    {(IS_DEV || IS_TEST_FLIGHT) && !account.isReadOnly && (
-                      <DelegationBadge accountAddress={account.address} isReadOnly={account.isReadOnly} />
-                    )}
+                    ) : null}
+
+                    {(IS_DEV || IS_TEST_FLIGHT) && delegationEnabled && !account.isReadOnly ? (
+                      <DelegationBadge accountAddress={account.address} />
+                    ) : null}
+
                     <Text numberOfLines={1} ellipsizeMode="middle" color="label" size="13pt" weight="bold">
                       {walletName}
                     </Text>

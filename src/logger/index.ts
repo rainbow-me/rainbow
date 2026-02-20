@@ -20,6 +20,13 @@ export enum LogLevel {
 
 type Transport = (level: LogLevel, message: string | RainbowError, metadata: Metadata) => void;
 
+type ServiceLogger = {
+  debug(message: string, metadata?: Record<string, unknown>): void;
+  info(message: string, metadata?: Record<string, unknown>): void;
+  warn(message: string, metadata?: Record<string, unknown>): void;
+  error(error: Error | string, metadata?: Record<string, unknown>): void;
+};
+
 /**
  * A union of some of Sentry's breadcrumb properties as well as Sentry's
  * `captureException` parameter, `CaptureContext`.
@@ -175,13 +182,12 @@ export const sentryTransport: Transport = (level: LogLevel, message, { type, tag
     });
   }
 };
+
 export class RainbowError extends Error {
   constructor(message: string, cause?: Error | unknown, options: ErrorOptions = {}) {
-    if (cause !== undefined) {
-      // eslint-disable-next-line no-param-reassign
-      options = { ...options, cause };
-    }
-    super(message, options);
+    let resolvedOptions = options;
+    if (cause) resolvedOptions = { ...options, cause };
+    super(message, resolvedOptions);
     this.name = this.constructor.name;
   }
 
@@ -197,6 +203,8 @@ export function ensureError(error: unknown): Error {
   if (error instanceof Error) return error;
   return new Error(String(error));
 }
+
+const EMPTY_METADATA: Metadata = Object.freeze({});
 
 /**
  * Main class. Defaults are provided in the constructor so that subclasses are
@@ -228,24 +236,24 @@ export class Logger {
     });
   }
 
-  debug(message: string, metadata: Metadata = {}, context?: string) {
+  debug(message: string, metadata?: Metadata, context?: string) {
     if (context && !this.debugContextRegexes.find(reg => reg.test(context))) return;
     this.transport(LogLevel.Debug, message, metadata);
   }
 
-  info(message: string, metadata: Metadata = {}) {
+  info(message: string, metadata?: Metadata) {
     this.transport(LogLevel.Info, message, metadata);
   }
 
-  log(message: string, metadata: Metadata = {}) {
+  log(message: string, metadata?: Metadata) {
     this.transport(LogLevel.Log, message, metadata);
   }
 
-  warn(message: string, metadata: Metadata = {}) {
+  warn(message: string, metadata?: Metadata) {
     this.transport(LogLevel.Warn, message, metadata);
   }
 
-  error(error: RainbowError, metadata: Metadata = {}) {
+  error(error: RainbowError, metadata?: Metadata) {
     if (error instanceof RainbowError) {
       this.transport(LogLevel.Error, error, metadata);
     } else {
@@ -268,13 +276,46 @@ export class Logger {
     this.enabled = true;
   }
 
-  protected transport(level: LogLevel, message: string | RainbowError, metadata: Metadata = {}) {
+  /**
+   * Creates a scoped logger for service/SDK integration boundaries with
+   * `[context]:` prefixed messages and debug-context filtering.
+   *
+   * Normalizes errors to `RainbowError`.
+   */
+  createServiceLogger(context: string): ServiceLogger {
+    const prefix = `[${context}]: `;
+    return {
+      debug: (message, metadata) => {
+        this.debug(`${prefix}${message}`, metadata ?? EMPTY_METADATA, context);
+      },
+
+      info: (message, metadata) => {
+        this.info(`${prefix}${message}`, metadata ?? EMPTY_METADATA);
+      },
+
+      warn: (message, metadata) => {
+        this.warn(`${prefix}${message}`, metadata ?? EMPTY_METADATA);
+      },
+
+      error: (error, metadata) => {
+        const resolvedMetadata = metadata ?? EMPTY_METADATA;
+        if (typeof error === 'string') {
+          this.error(new RainbowError(`${prefix}${error}`), resolvedMetadata);
+          return;
+        }
+        this.error(new RainbowError(`${prefix}${error.message}`, error), resolvedMetadata);
+      },
+    };
+  }
+
+  protected transport(level: LogLevel, message: string | RainbowError, metadata?: Metadata) {
     if (!this.enabled) return;
     if (!enabledLogLevels[this.level].includes(level)) return;
 
+    const resolvedMetadata = metadata || EMPTY_METADATA;
     for (const transport of this.transports) {
       // metadata fallback accounts for JS usage
-      transport(level, message, metadata || {});
+      transport(level, message, resolvedMetadata);
     }
   }
 }

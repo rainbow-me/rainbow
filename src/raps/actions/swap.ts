@@ -1,6 +1,6 @@
 import { Signer } from '@ethersproject/abstract-signer';
 import { Transaction } from '@ethersproject/transactions';
-import type { Address, Hash, Hex } from 'viem';
+import type { Hash } from 'viem';
 import {
   Quote,
   SwapType,
@@ -43,31 +43,31 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { requireAddress, requireHex } from '../validation';
 
 const WRAP_GAS_PADDING = 1.002;
 
-export const estimateUnlockAndSwap = async ({ quote, chainId }: Pick<RapSwapActionParameters<'swap'>, 'quote' | 'chainId'>) => {
-  const {
-    from: accountAddress,
-    sellTokenAddress,
-    allowanceNeeded,
-  } = quote as {
-    from: Address;
-    sellTokenAddress: Address;
-    allowanceNeeded: boolean;
-  };
-
+export const estimateUnlockAndSwap = async ({
+  quote,
+  chainId,
+  requiresApprove: requiresApproveInput,
+}: Pick<RapSwapActionParameters<'swap'>, 'quote' | 'chainId' | 'requiresApprove'>) => {
+  const { from: accountAddress, sellTokenAddress, allowanceNeeded } = quote;
+  const requiresApprove = requiresApproveInput ?? allowanceNeeded;
   const targetAddress = getTargetAddress(quote);
+  if (requiresApprove && !targetAddress) {
+    throw new Error('Target address not found');
+  }
 
   let gasLimits: (string | number)[] = [];
 
-  if (allowanceNeeded) {
+  if (requiresApprove) {
     // Try simulation-based estimation first
     const provider = getProvider({ chainId });
     const approveTransaction = await populateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,
-      spender: targetAddress as Address,
+      spender: targetAddress,
       chainId,
       amount: quote.sellAmount.toString(),
     });
@@ -112,7 +112,7 @@ export const estimateUnlockAndSwap = async ({ quote, chainId }: Pick<RapSwapActi
     const unlockGasLimit = await estimateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,
-      spender: targetAddress as Address,
+      spender: targetAddress,
       chainId,
     });
     gasLimits = gasLimits.concat(unlockGasLimit);
@@ -120,7 +120,7 @@ export const estimateUnlockAndSwap = async ({ quote, chainId }: Pick<RapSwapActi
 
   const swapGasLimit = await estimateSwapGasLimit({
     chainId,
-    requiresApprove: allowanceNeeded,
+    requiresApprove,
     quote,
   });
 
@@ -282,7 +282,7 @@ function buildSwapTransaction(
     chainId: parameters.chainId,
     data: parameters.quote.data,
     from: parameters.quote.from,
-    to: getTargetAddress(parameters.quote) as Address,
+    to: requireAddress(getTargetAddress(parameters.quote), 'swap target address'),
     value: parameters.quote.value?.toString(),
     asset: assetToBuy,
     changes: [
@@ -325,9 +325,9 @@ export const prepareSwap = async ({
   const tx = await prepareFillQuote(quote as Quote, {}, wallet, false, chainId as number, REFERRER);
   return {
     call: {
-      to: tx.to as Address,
+      to: requireAddress(tx.to, 'swap prepared tx.to'),
       value: toHex(tx.value ?? 0),
-      data: tx.data as Hex,
+      data: requireHex(tx.data, 'swap prepared tx.data'),
     },
     transaction: buildSwapTransaction(parameters, parameters.gasParams),
   };
@@ -344,7 +344,7 @@ export const swap = async ({
 }: ActionProps<'swap'>): Promise<RapActionResult> => {
   let gasParamsToUse = gasParams;
 
-  const { assetToSell, quote, chainId, sellAmount } = parameters;
+  const { quote, chainId } = parameters;
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
 
   if (currentRap.actions.length - 1 > index) {
@@ -360,10 +360,11 @@ export const swap = async ({
     gasLimit = await estimateUnlockAndSwap({
       chainId,
       quote,
+      requiresApprove: parameters.requiresApprove,
     });
   } catch (e) {
     logger.error(new RainbowError('[raps/swap]: error estimateSwapGasLimit'), {
-      message: (e as Error)?.message,
+      message: ensureError(e).message,
     });
 
     throw e;

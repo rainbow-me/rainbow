@@ -2,7 +2,7 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
-import { erc20Abi, erc721Abi, type Hash, type Address, type Hex } from 'viem';
+import { erc20Abi, erc721Abi, type Hash, type Address } from 'viem';
 import { type BatchCall, supportsDelegation } from '@rainbow-me/delegation';
 
 import { getProvider, toHex } from '@/handlers/web3';
@@ -10,7 +10,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { NewTransaction, TransactionStatus } from '@/entities/transactions';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { RainbowError, logger } from '@/logger';
+import { RainbowError, ensureError, logger } from '@/logger';
 
 import { ETH_ADDRESS, gasUnits } from '@/references';
 import { ActionProps, PrepareActionProps, RapActionResult, RapUnlockActionParameters } from '../references';
@@ -21,6 +21,7 @@ import { ParsedAsset } from '@/resources/assets/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { DELEGATION, getExperimentalFlag } from '@/config/experimental';
+import { requireAddress, requireHex } from '../validation';
 
 /**
  * Determines the approval amount based on delegation support.
@@ -62,11 +63,49 @@ export const getAssetRawAllowance = async ({
     return allowance.toString();
   } catch (error) {
     logger.error(new RainbowError('[raps/unlock]: error'), {
-      message: (error as Error)?.message,
+      message: ensureError(error).message,
     });
     return null;
   }
 };
+
+function parseRawAmount(value: string): bigint | null {
+  try {
+    return BigInt(value);
+  } catch {
+    return null;
+  }
+}
+
+export async function needsTokenApproval({
+  owner,
+  tokenAddress,
+  spender,
+  amount,
+  chainId,
+}: {
+  owner: Address;
+  tokenAddress: Address;
+  spender: Address;
+  amount: string;
+  chainId: ChainId;
+}): Promise<boolean> {
+  const requiredAmount = parseRawAmount(amount);
+  if (requiredAmount === null) return true;
+
+  const allowance = await getAssetRawAllowance({
+    owner,
+    assetAddress: tokenAddress,
+    spender,
+    chainId,
+  });
+  if (allowance === null) return true;
+
+  const currentAllowance = parseRawAmount(allowance);
+  if (currentAllowance === null) return true;
+
+  return currentAllowance < requiredAmount;
+}
 
 export const estimateApprove = async ({
   owner,
@@ -93,7 +132,7 @@ export const estimateApprove = async ({
     return gasLimit.toString();
   } catch (error) {
     logger.error(new RainbowError('[raps/unlock]: error estimateApprove'), {
-      message: (error as Error)?.message,
+      message: ensureError(error).message,
     });
     return `${gasUnits.basic_approval}`;
   }
@@ -122,16 +161,17 @@ export const populateApprove = async ({
     return approveTransaction;
   } catch (error) {
     logger.error(new RainbowError('[raps/unlock]: error populateApprove'), {
-      message: (error as Error)?.message,
+      message: ensureError(error).message,
     });
     return null;
   }
 };
 
 export const prepareUnlock = async ({ parameters }: PrepareActionProps<'unlock'>): Promise<{ call: BatchCall | null }> => {
+  const tokenAddress = requireAddress(parameters.assetToUnlock.address, 'unlock asset address');
   const tx = await populateApprove({
     owner: parameters.fromAddress,
-    tokenAddress: parameters.assetToUnlock.address as Address,
+    tokenAddress,
     spender: parameters.contractAddress,
     chainId: parameters.chainId,
     amount: parameters.amount,
@@ -139,9 +179,9 @@ export const prepareUnlock = async ({ parameters }: PrepareActionProps<'unlock'>
   if (!tx?.data) return { call: null };
   return {
     call: {
-      to: parameters.assetToUnlock.address as Address,
+      to: tokenAddress,
       value: toHex(tx?.value ?? 0),
-      data: tx.data as Hex,
+      data: requireHex(tx.data, 'unlock prepared tx.data'),
     },
   };
 };
@@ -195,7 +235,7 @@ export const estimateERC721Approval = async ({
     return gasLimit ? gasLimit.toString() : `${gasUnits.basic_approval}`;
   } catch (error) {
     logger.error(new RainbowError('[raps/unlock]: error estimateApproval'), {
-      message: (error as Error)?.message,
+      message: ensureError(error).message,
     });
     return `${gasUnits.basic_approval}`;
   }
@@ -281,7 +321,7 @@ export const unlock = async ({
     });
   } catch (e) {
     logger.error(new RainbowError('[raps/unlock]: error estimateApprove'), {
-      message: (e as Error)?.message,
+      message: ensureError(e).message,
     });
     throw e;
   }
@@ -314,7 +354,7 @@ export const unlock = async ({
     });
   } catch (e) {
     logger.error(new RainbowError('[raps/unlock]: error executeApprove'), {
-      message: (e as Error)?.message,
+      message: ensureError(e).message,
     });
     throw e;
   }

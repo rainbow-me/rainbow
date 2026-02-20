@@ -1,7 +1,6 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import React, { useCallback } from 'react';
-import { useNavigation } from '@/navigation';
-import { StyleSheet, Text as NativeText } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { StyleSheet, Text as NativeText, Alert } from 'react-native';
 import { Box, Separator, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
@@ -16,13 +15,22 @@ import { useTheme } from '@/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ContextCircleButton } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { IS_IOS } from '@/env';
+import { IS_DEV, IS_IOS } from '@/env';
 import * as ethereumUtils from '@/utils/ethereumUtils';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
-import { DelegationStatus, useDelegationPreference, useDelegations } from '@rainbow-me/delegation';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import {
+  DelegationStatus,
+  DelegationWithChainId,
+  disableDelegation,
+  enableDelegation,
+  useDelegationDisabled,
+  useDelegations,
+  willDelegate,
+} from '@rainbow-me/delegation';
+import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import type { Address } from 'viem';
 import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
+import { navigate } from '@/navigation/Navigation';
 
 type ViewWalletDelegationsParams = {
   ViewWalletDelegations: { walletId: string; address: Address; title: string };
@@ -31,6 +39,9 @@ type ViewWalletDelegationsParams = {
 const enum NetworkMenuAction {
   RevokeDelegation = 'revoke_delegation',
   ViewOnExplorer = 'view_on_explorer',
+  // -- Dev Settings
+  RefreshData = 'refresh_data',
+  ShowChainState = 'show_chain_state',
 }
 
 type NetworkMenuEvent = {
@@ -100,48 +111,53 @@ const SmartWalletStatusBadge = ({ status, text }: SmartWalletStatusBadgeProps) =
   );
 };
 
-const ViewWalletDelegations = () => {
+const EMPTY_DELEGATIONS: DelegationWithChainId[] = [];
+
+function getChainName(chainId: ChainId): string {
+  return backendNetworksActions.getChainsLabel()[chainId] || `Chain ${chainId}`;
+}
+
+function isDelegated(status: DelegationStatus): boolean {
+  if (status === DelegationStatus.RAINBOW_DELEGATED) return true;
+  if (status === DelegationStatus.THIRD_PARTY_DELEGATED) return true;
+  return false;
+}
+
+export const ViewWalletDelegations = () => {
   const { params } = useRoute<RouteProp<ViewWalletDelegationsParams, typeof Routes.VIEW_WALLET_DELEGATIONS>>();
   const { address } = params;
 
-  const { navigate } = useNavigation();
+  const delegations = useDelegations(address) ?? EMPTY_DELEGATIONS;
+  const isSmartWalletDisabled = useDelegationDisabled(address);
 
-  const getChainsLabel = useBackendNetworksStore(state => state.getChainsLabel);
-
-  // Get delegations from SDK store (reactive)
-  const { delegations = [] } = useDelegations(address);
-
-  // Get chain labels for display
-  const chainsLabel = getChainsLabel();
-  const getChainName = (chainId: number) => chainsLabel[chainId as ChainId] || `Chain ${chainId}`;
-
-  // Get delegation preference from SDK store (reactive)
-  const { enabled: isSmartWalletEnabled = true, setEnabled } = useDelegationPreference(address) ?? {};
-
-  const activatedNetworks = delegations.filter(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED);
-
-  const inactiveNetworks = delegations.filter(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED);
+  const { rainbowDelegations, thirdPartyDelegations } = useMemo(
+    () => ({
+      rainbowDelegations: delegations.filter(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED),
+      thirdPartyDelegations: delegations.filter(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED),
+    }),
+    [delegations]
+  );
 
   const handleRevokeDelegation = useCallback(
     (chainId: ChainId, revokeReason: RevokeReason) => {
       const delegation = delegations.find(d => d.chainId === chainId);
       if (!delegation) return;
 
-      // Use currentContract for Rainbow delegations, revokeAddress for third-party delegations
-      const contractAddress = delegation.currentContract || delegation.revokeAddress;
-      if (!contractAddress) return;
+      const status = delegation.delegationStatus;
+      const canRevoke = isDelegated(status);
+      if (!canRevoke) return;
 
       navigate(Routes.REVOKE_DELEGATION_PANEL, {
+        address,
         delegationsToRevoke: [
           {
             chainId,
-            contractAddress,
           },
         ],
         revokeReason,
       });
     },
-    [delegations, navigate]
+    [address, delegations]
   );
 
   const handleViewOnExplorer = useCallback(
@@ -152,41 +168,65 @@ const ViewWalletDelegations = () => {
   );
 
   const handleToggleSmartWallet = useCallback(() => {
-    if (isSmartWalletEnabled) {
-      // Disabling smart wallet - revoke all active delegations
-      const delegationsToRevoke = activatedNetworks
-        .filter(network => network.currentContract)
-        .map(network => ({
-          chainId: network.chainId,
-          contractAddress: network.currentContract!,
-        }));
-
-      if (delegationsToRevoke.length > 0) {
-        // Navigate to revoke panel with callback to disable preference after success
-        navigate(Routes.REVOKE_DELEGATION_PANEL, {
-          delegationsToRevoke,
-          revokeReason: RevokeReason.DISABLE_SMART_WALLET,
-          onSuccess: () => {
-            // Set delegation preference to disabled after successful revocation
-            setEnabled?.(false);
-          },
-        });
-      } else {
-        // No active delegations to revoke, just disable the preference
-        setEnabled?.(false);
-      }
-    } else {
-      // Enabling smart wallet - set preference to enabled
-      setEnabled?.(true);
+    if (isSmartWalletDisabled) {
+      enableDelegation(address);
+      return;
     }
-  }, [isSmartWalletEnabled, activatedNetworks, navigate, setEnabled]);
+
+    // Disabling smart wallet - revoke all active Rainbow delegations.
+    const delegationsToRevoke = rainbowDelegations.map(network => ({
+      chainId: network.chainId,
+    }));
+
+    if (delegationsToRevoke.length === 0) {
+      disableDelegation(address);
+      return;
+    }
+
+    if (delegationsToRevoke.length > 0) {
+      // Navigate to revoke panel with callback to disable preference after success
+      navigate(Routes.REVOKE_DELEGATION_PANEL, {
+        address,
+        delegationsToRevoke,
+        revokeReason: RevokeReason.DISABLE_SMART_WALLET,
+        onSuccess: () => {
+          // Set delegation preference to disabled after successful revocation
+          disableDelegation(address);
+        },
+      });
+    } else {
+      // No active delegations to revoke, just disable the preference
+      disableDelegation(address);
+    }
+  }, [address, isSmartWalletDisabled, rainbowDelegations]);
 
   const activeNetworkMenuConfig = {
     menuTitle: '',
     menuItems: [
+      ...(IS_DEV
+        ? [
+            {
+              actionKey: NetworkMenuAction.ShowChainState,
+              actionTitle: 'Show Chain State',
+              icon: {
+                iconType: 'SYSTEM',
+                iconValue: 'info',
+              },
+            },
+            {
+              actionKey: NetworkMenuAction.RefreshData,
+              actionTitle: 'Refresh Data',
+              icon: {
+                iconType: 'SYSTEM',
+                iconValue: 'arrow.trianglehead.2.counterclockwise',
+              },
+            },
+          ]
+        : []),
       {
         actionKey: NetworkMenuAction.RevokeDelegation,
         actionTitle: 'Disable Account',
+        menuAttributes: ['destructive' as const],
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'xmark.circle',
@@ -198,9 +238,30 @@ const ViewWalletDelegations = () => {
   const inactiveNetworkMenuConfig = {
     menuTitle: '',
     menuItems: [
+      ...(IS_DEV
+        ? [
+            {
+              actionKey: NetworkMenuAction.ShowChainState,
+              actionTitle: 'Show Chain State',
+              icon: {
+                iconType: 'SYSTEM',
+                iconValue: 'info',
+              },
+            },
+            {
+              actionKey: NetworkMenuAction.RefreshData,
+              actionTitle: 'Refresh Data',
+              icon: {
+                iconType: 'SYSTEM',
+                iconValue: 'arrow.trianglehead.2.counterclockwise',
+              },
+            },
+          ]
+        : []),
       {
         actionKey: NetworkMenuAction.RevokeDelegation,
         actionTitle: 'Disable Account',
+        menuAttributes: ['destructive' as const],
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'xmark.circle',
@@ -234,11 +295,32 @@ const ViewWalletDelegations = () => {
         case NetworkMenuAction.ViewOnExplorer:
           handleViewOnExplorer(chainId);
           break;
+
+        // -- Dev Settings
+        case NetworkMenuAction.RefreshData:
+          willDelegate({ address, chainId, requireFreshStatus: true })
+            .then(data => {
+              Alert.alert(`Refreshed Data for ${getChainName(chainId)}`, JSON.stringify(data, null, 2));
+            })
+            .catch(error => {
+              Alert.alert(`Error Refreshing Data for ${getChainName(chainId)}`, error instanceof Error ? error.message : 'Unknown error');
+            });
+          break;
+        case NetworkMenuAction.ShowChainState:
+          Alert.alert(
+            getChainName(chainId),
+            `Current Chain State: ${JSON.stringify(
+              delegations.find(d => d.chainId === chainId),
+              null,
+              2
+            )}` || 'No state found.'
+          );
+          break;
         default:
           break;
       }
     },
-    [delegations, handleRevokeDelegation, handleViewOnExplorer]
+    [address, delegations, handleRevokeDelegation, handleViewOnExplorer]
   );
 
   return (
@@ -307,8 +389,8 @@ const ViewWalletDelegations = () => {
 
                     {/* Status Badge */}
                     <SmartWalletStatusBadge
-                      status={isSmartWalletEnabled ? 'active' : 'disabled'}
-                      text={i18n.t(isSmartWalletEnabled ? i18n.l.wallet.delegations.active : i18n.l.wallet.delegations.not_active)}
+                      status={isSmartWalletDisabled ? 'disabled' : 'active'}
+                      text={i18n.t(isSmartWalletDisabled ? i18n.l.wallet.delegations.not_active : i18n.l.wallet.delegations.active)}
                     />
 
                     {/* Description */}
@@ -324,8 +406,8 @@ const ViewWalletDelegations = () => {
           </Menu>
         </Box>
 
-        {/* Activated Networks Section */}
-        {activatedNetworks.length > 0 && (
+        {/* Rainbow Delegations */}
+        {rainbowDelegations.length > 0 && (
           <>
             {/* Separator */}
             <Box paddingHorizontal="8px">
@@ -343,7 +425,7 @@ const ViewWalletDelegations = () => {
 
                 {/* Networks List */}
                 <Menu>
-                  {activatedNetworks.map((network, index) => {
+                  {rainbowDelegations.map((network, index) => {
                     const NetworkContextMenuWrapper = ({ children }: { children: React.ReactNode }) => {
                       return IS_IOS ? (
                         <ContextMenuButton
@@ -384,7 +466,7 @@ const ViewWalletDelegations = () => {
                             }
                           />
                         </NetworkContextMenuWrapper>
-                        {index < activatedNetworks.length - 1 && (
+                        {index < rainbowDelegations.length - 1 && (
                           <Box paddingHorizontal="16px">
                             <Separator color="separatorTertiary" thickness={1} />
                           </Box>
@@ -399,7 +481,7 @@ const ViewWalletDelegations = () => {
         )}
 
         {/* Other Smart Accounts Section */}
-        {inactiveNetworks.length > 0 && (
+        {thirdPartyDelegations.length > 0 && (
           <>
             {/* Separator */}
             <Box paddingHorizontal="8px">
@@ -417,7 +499,7 @@ const ViewWalletDelegations = () => {
 
                 {/* Other Smart Accounts List */}
                 <Menu>
-                  {inactiveNetworks.map((network, index) => {
+                  {thirdPartyDelegations.map((network, index) => {
                     const NetworkContextMenuWrapper = ({ children }: { children: React.ReactNode }) => {
                       return IS_IOS ? (
                         <ContextMenuButton
@@ -472,7 +554,7 @@ const ViewWalletDelegations = () => {
                             }
                           />
                         </NetworkContextMenuWrapper>
-                        {index < inactiveNetworks.length - 1 && (
+                        {index < thirdPartyDelegations.length - 1 && (
                           <Box paddingHorizontal="16px">
                             <Separator color="separatorTertiary" thickness={1} />
                           </Box>
@@ -497,7 +579,7 @@ const ViewWalletDelegations = () => {
             description={
               <Text color="labelSecondary" size="13pt" weight="medium">
                 {i18n.t(
-                  isSmartWalletEnabled ? i18n.l.wallet.delegations.enabled_description : i18n.l.wallet.delegations.disabled_description
+                  isSmartWalletDisabled ? i18n.l.wallet.delegations.disabled_description : i18n.l.wallet.delegations.enabled_description
                 )}
               </Text>
             }
@@ -506,11 +588,11 @@ const ViewWalletDelegations = () => {
               size={52}
               hasSfSymbol
               onPress={handleToggleSmartWallet}
-              leftComponent={<MenuItem.TextIcon icon={isSmartWalletEnabled ? '􀎽' : '􀁍'} isLink />}
+              leftComponent={<MenuItem.TextIcon icon={isSmartWalletDisabled ? '􀁍' : '􀎽'} isLink />}
               titleComponent={
                 <MenuItem.Title
                   text={i18n.t(
-                    isSmartWalletEnabled ? i18n.l.wallet.delegations.disable_smart_wallet : i18n.l.wallet.delegations.enable_smart_wallet
+                    isSmartWalletDisabled ? i18n.l.wallet.delegations.enable_smart_wallet : i18n.l.wallet.delegations.disable_smart_wallet
                   )}
                   isLink
                 />
@@ -522,5 +604,3 @@ const ViewWalletDelegations = () => {
     </MenuContainer>
   );
 };
-
-export default ViewWalletDelegations;

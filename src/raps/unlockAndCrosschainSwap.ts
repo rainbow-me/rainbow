@@ -1,29 +1,40 @@
-import { Address } from 'viem';
-
 import { createNewAction, createNewRap } from './common';
 import { RapAction, RapSwapActionParameters, RapUnlockActionParameters } from './references';
+import { needsTokenApproval } from './actions/unlock';
+import { getQuoteAllowanceTargetAddress } from './validation';
 
 export const createUnlockAndCrosschainSwapRap = async (swapParameters: RapSwapActionParameters<'crosschainSwap'>) => {
   let actions: RapAction<'crosschainSwap' | 'unlock'>[] = [];
   const { sellAmount, assetToBuy, quote, chainId, assetToSell } = swapParameters;
 
-  const { from: accountAddress, allowanceNeeded } = quote as { from: Address; allowanceNeeded: boolean };
+  const { from: accountAddress, sellTokenAddress, allowanceNeeded } = quote;
+  const allowanceTargetAddress = allowanceNeeded ? getQuoteAllowanceTargetAddress(quote) : null;
 
-  if (allowanceNeeded) {
+  const requiresApprove = allowanceTargetAddress
+    ? await needsTokenApproval({
+        owner: accountAddress,
+        tokenAddress: sellTokenAddress,
+        spender: allowanceTargetAddress,
+        amount: sellAmount,
+        chainId,
+      })
+    : false;
+
+  if (requiresApprove && allowanceTargetAddress) {
     const unlock = createNewAction('unlock', {
       fromAddress: accountAddress,
       amount: sellAmount,
       assetToUnlock: assetToSell,
       chainId,
-      contractAddress: quote.to,
-    } as RapUnlockActionParameters);
+      contractAddress: allowanceTargetAddress,
+    } satisfies RapUnlockActionParameters);
     actions = actions.concat(unlock);
   }
 
   // create a swap rap
   const swap = createNewAction('crosschainSwap', {
     chainId,
-    requiresApprove: allowanceNeeded,
+    requiresApprove,
     quote,
     meta: swapParameters.meta,
     assetToSell,

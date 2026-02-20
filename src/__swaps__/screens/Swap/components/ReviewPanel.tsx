@@ -39,7 +39,10 @@ import Animated, {
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { REVIEW_SHEET_ROW_HEIGHT } from '../constants';
 import { useSelectedGasSpeed } from '../hooks/useSelectedGas';
-import { useSwapWillDelegate } from '../hooks/useSwapWillDelegate';
+import { useWillExecuteDelegation } from '@/hooks/useWillExecuteDelegation';
+import { ATOMIC_SWAPS, getExperimentalFlag } from '@/config';
+import { getRemoteConfig } from '@/model/remoteConfig';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
@@ -250,7 +253,10 @@ export function ReviewPanel() {
   const { isDarkMode } = useColorMode();
   const { configProgress, lastTypedInput, internalSelectedInputAsset, internalSelectedOutputAsset, quote } = useSwapContext();
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
-  const willDelegate = useSwapWillDelegate();
+  const accountAddress = useAccountAddress();
+  const inputChainId = useSwapsStore(state => state.inputAsset?.chainId ?? ChainId.mainnet);
+  const atomicSwapsEnabled = getExperimentalFlag(ATOMIC_SWAPS) || getRemoteConfig().atomic_swaps_enabled;
+  const willDelegate = useWillExecuteDelegation(accountAddress, inputChainId) && atomicSwapsEnabled;
 
   const labelTertiary = useForegroundColor('labelTertiary');
   const separator = useForegroundColor('separator');
@@ -383,7 +389,7 @@ export function ReviewPanel() {
 
           <Separator color={{ custom: opacity(separator, 0.03) }} thickness={THICK_BORDER_WIDTH} />
 
-          <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
+          <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify" wrap={false}>
             <ButtonPressAnimation onPress={openGasExplainer} scaleTo={0.925}>
               <Stack space="10px">
                 <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>

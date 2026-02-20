@@ -716,6 +716,7 @@ type RouteParams = {
     estimatedAmount: string;
   };
   [Routes.REVOKE_DELEGATION_PANEL]: {
+    address: Address;
     delegationsToRevoke: Array<{
       chainId: number;
       // Optional in simulated/debug revoke flows
