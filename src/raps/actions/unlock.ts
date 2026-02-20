@@ -1,24 +1,24 @@
-import { Signer } from '@ethersproject/abstract-signer';
+import { type Signer } from '@ethersproject/abstract-signer';
 import { MaxUint256 } from '@ethersproject/constants';
-import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
+import { Contract, type PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
 import { getProvider, toHex } from '@/handlers/web3';
-import { Address, erc20Abi, erc721Abi } from 'viem';
+import { type Address, erc20Abi, erc721Abi } from 'viem';
 
-import { ChainId } from '@/state/backendNetworks/types';
-import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { NewTransaction, TransactionStatus, TxHash } from '@/entities/transactions';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
+import { type NewTransaction, TransactionStatus, type TxHash } from '@/entities/transactions';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
 import { ETH_ADDRESS, gasUnits } from '@/references';
-import { ParsedAsset as SwapsParsedAsset } from '@/__swaps__/types/assets';
+import { type ParsedAsset as SwapsParsedAsset } from '@/__swaps__/types/assets';
 import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
-import { ActionProps, RapActionResult } from '../references';
+import { type ActionProps, type RapActionResult } from '../references';
 
 import { overrideWithFastSpeedIfNeeded } from './../utils';
-import { TokenColors } from '@/graphql/__generated__/metadata';
-import { ParsedAsset } from '@/resources/assets/types';
+import { type TokenColors } from '@/graphql/__generated__/metadata';
+import { type ParsedAsset } from '@/resources/assets/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const getAssetRawAllowance = async ({

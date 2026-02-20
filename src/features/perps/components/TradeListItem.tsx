@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { HlTrade, TradeExecutionType } from '@/features/perps/types';
+import { type HlTrade, TradeExecutionType } from '@/features/perps/types';
 import { Box, Text, TextIcon } from '@/design-system';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { format } from 'date-fns';

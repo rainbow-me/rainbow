@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
+import { type NativeScrollEvent, type NativeSyntheticEvent, StyleSheet, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
@@ -12,7 +12,7 @@ import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-n
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
 import { usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
 import { useListen } from '@/state/internal/hooks/useListen';
-import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { LEAGUE_SELECTOR_HEIGHT } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketLeagueSelector';
 
 export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEventsScreen() {

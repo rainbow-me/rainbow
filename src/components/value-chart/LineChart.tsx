@@ -6,7 +6,7 @@ import { useTheme } from '@/theme';
 import useChartThrottledPoints from '@/hooks/charts/useChartThrottledPoints';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
-import { SharedValue, useAnimatedReaction } from 'react-native-reanimated';
+import { type SharedValue, useAnimatedReaction } from 'react-native-reanimated';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { NoChartData } from '@/features/charts/components/NoChartData';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';

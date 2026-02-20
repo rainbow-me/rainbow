@@ -2,16 +2,16 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import { opacity } from '@/framework/ui/utils/opacity';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Cover, useColorMode, useForegroundColor } from '@/design-system';
-import { AnimatedText, SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
+import { AnimatedText, type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
 import { IS_IOS } from '@/env';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import chroma from 'chroma-js';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, type ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   Easing,
   interpolate,
-  SharedValue,
+  type SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withSpring,

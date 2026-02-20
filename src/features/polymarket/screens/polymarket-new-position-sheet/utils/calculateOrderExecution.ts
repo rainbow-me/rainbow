@@ -1,4 +1,4 @@
-import { OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
+import { type OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import {
   ceilWorklet,
   divWorklet,

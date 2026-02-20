@@ -1,4 +1,4 @@
-import { PerpMarket, PerpPositionSide } from '@/features/perps/types';
+import { type PerpMarket, PerpPositionSide } from '@/features/perps/types';
 import { getApplicableMaxLeverage } from '@/features/perps/utils/getApplicableMaxLeverage';
 import {
   divWorklet,

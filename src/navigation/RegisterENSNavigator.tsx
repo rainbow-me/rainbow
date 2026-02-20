@@ -1,4 +1,4 @@
-import { useRoute, RouteProp } from '@react-navigation/native';
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSetRecoilState } from 'recoil';
@@ -17,7 +17,7 @@ import usePrevious from '@/hooks/usePrevious';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import deviceUtils from '@/utils/deviceUtils';
-import { RootStackParamList } from './types';
+import { type RootStackParamList } from './types';
 
 const Swipe = createMaterialTopTabNavigator();
 

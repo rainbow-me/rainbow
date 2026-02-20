@@ -1,7 +1,7 @@
-import React, { Children, isValidElement, ReactElement, ReactNode } from 'react';
-import { Space, space as spaceTokens } from '../../layout/space';
+import React, { Children, isValidElement, type ReactElement, type ReactNode } from 'react';
+import { type Space, space as spaceTokens } from '../../layout/space';
 import { Box, resolveToken } from '../Box/Box';
-import { Width } from '@/design-system/layout/size';
+import { type Width } from '@/design-system/layout/size';
 
 const alignHorizontalToFlexAlign = {
   center: 'center',

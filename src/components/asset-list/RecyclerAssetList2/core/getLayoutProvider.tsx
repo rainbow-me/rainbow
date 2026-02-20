@@ -1,11 +1,11 @@
-import { Dimension, Layout, LayoutManager, LayoutProvider } from 'recyclerlistview';
+import { type Dimension, type Layout, type LayoutManager, LayoutProvider } from 'recyclerlistview';
 import ViewDimensions from './ViewDimensions';
-import { CellType, CellTypes } from './ViewTypes';
+import { CellType, type CellTypes } from './ViewTypes';
 import deviceUtils from '@/utils/deviceUtils';
-import { RainbowConfig } from '@/model/remoteConfig';
+import { type RainbowConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED } from '@/config';
-import { useContext } from 'react';
-import { RainbowContextType } from '@/helpers/RainbowContext';
+import { type useContext } from 'react';
+import { type RainbowContextType } from '@/helpers/RainbowContext';
 
 const getStyleOverridesForIndex = (indices: number[]) => (index: number) => {
   if (indices.includes(index)) {

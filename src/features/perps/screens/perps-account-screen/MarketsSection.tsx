@@ -5,7 +5,7 @@ import { PerpMarketRow } from '@/features/perps/components/PerpMarketRow';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
 import { useHyperliquidMarketsStore, useSortedHyperliquidMarkets } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { PerpMarket } from '@/features/perps/types';
+import { type PerpMarket } from '@/features/perps/types';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';

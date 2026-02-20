@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { AnimatedStyle, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { type AnimatedStyle, useAnimatedStyle } from 'react-native-reanimated';
 import { globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { clamp } from '@/__swaps__/utils/swaps';

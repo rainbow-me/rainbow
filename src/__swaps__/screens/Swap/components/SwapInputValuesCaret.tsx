@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {
   Easing,
-  SharedValue,
+  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   withRepeat,
@@ -14,7 +14,7 @@ import { SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, caretConfig } from '@/__swaps__
 import { equalWorklet } from '@/framework/core/safeMath';
 import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { InputKeys } from '@/__swaps__/types/swap';
+import { type InputKeys } from '@/__swaps__/types/swap';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { IS_TEST } from '@/env';
 

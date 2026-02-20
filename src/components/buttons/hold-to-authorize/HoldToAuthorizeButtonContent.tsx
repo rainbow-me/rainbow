@@ -1,8 +1,8 @@
-import React, { Fragment, PropsWithChildren, useCallback, useEffect, useState } from 'react';
+import React, { Fragment, type PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import { Keyboard } from 'react-native';
 import {
   State as GestureHandlerState,
-  HandlerStateChangeEvent,
+  type HandlerStateChangeEvent,
   LongPressGestureHandler,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
@@ -20,10 +20,10 @@ import {
   TINY_BUTTON_HEIGHT,
 } from './constants';
 import { getButtonDisabledBgColor, getButtonShadows } from './helpers/buttonStyleValues';
-import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
+import { type HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
 import styled from '@/framework/ui/styled-thing';
 import { padding, position } from '@/styles';
-import { ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme';
 import haptics from '@/utils/haptics';
 import ShadowStack from 'react-native-shadow-stack';
 import * as i18n from '@/languages';

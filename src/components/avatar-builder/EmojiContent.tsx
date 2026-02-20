@@ -3,8 +3,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TouchableOpacity as GHTouchableOpacity } from 'react-native-gesture-handler';
 import { EMOJIS_CONTAINER_HORIZONTAL_MARGIN } from './constants';
 import { charFromEmojiObject } from './helpers/charFromEmojiObject';
-import { AllEmojiContentEntry } from './helpers/getFormattedAllEmojiList';
-import { EmojiEntry } from './types';
+import { type AllEmojiContentEntry } from './helpers/getFormattedAllEmojiList';
+import { type EmojiEntry } from './types';
 import { useTheme } from '@/theme';
 
 type Props = AllEmojiContentEntry & {

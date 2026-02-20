@@ -1,13 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { PropsWithChildren } from 'react';
+import React, { type PropsWithChildren } from 'react';
 import {
   ContextMenuButton,
-  ContextMenuButtonProps,
-  DynamicColor,
-  MenuAttributes,
-  MenuElementSize,
-  MenuState,
-  UIMenuOptions,
+  type ContextMenuButtonProps,
+  type DynamicColor,
+  type MenuAttributes,
+  type MenuElementSize,
+  type MenuState,
+  type UIMenuOptions,
 } from 'react-native-ios-context-menu';
 
 /**

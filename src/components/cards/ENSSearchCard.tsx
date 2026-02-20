@@ -11,7 +11,7 @@ import React, { useEffect } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useNavigation } from '../../navigation/Navigation';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { GenericCard, Gradient } from './GenericCard';
+import { GenericCard, type Gradient } from './GenericCard';
 import { IconOrb } from './reusables/IconOrb';
 
 const TRANSLATIONS = i18n.l.cards.ens_search;

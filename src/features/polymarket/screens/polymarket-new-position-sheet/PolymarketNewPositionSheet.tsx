@@ -1,7 +1,7 @@
 import { memo, useCallback, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '@/navigation/types';
+import { type RouteProp, useRoute } from '@react-navigation/native';
+import { type RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';

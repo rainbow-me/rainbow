@@ -1,4 +1,4 @@
-import { QueryConfigWithSelect, createQueryKey } from '@/react-query';
+import { type QueryConfigWithSelect, createQueryKey } from '@/react-query';
 import { useMutation } from '@tanstack/react-query';
 import { arcPOSTClient } from '@/graphql';
 

@@ -1,6 +1,6 @@
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { METADATA_BASE_URL } from 'react-native-dotenv';
 import { IS_TEST } from '@/env';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';

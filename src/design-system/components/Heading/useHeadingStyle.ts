@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useForegroundColor } from '../../color/useForegroundColor';
 import { headingSizes, headingWeights } from '../../typography/typography';
-import { HeadingProps } from './Heading';
+import { type HeadingProps } from './Heading';
 
 export function useHeadingStyle({ align: textAlign, color, size, weight }: Pick<HeadingProps, 'align' | 'color' | 'size' | 'weight'>) {
   if (__DEV__) {

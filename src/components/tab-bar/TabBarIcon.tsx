@@ -1,6 +1,6 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
-import Animated, { interpolate, interpolateColor, useAnimatedStyle, SharedValue, AnimatedStyle } from 'react-native-reanimated';
+import Animated, { interpolate, interpolateColor, useAnimatedStyle, type SharedValue, type AnimatedStyle } from 'react-native-reanimated';
 import { Icon } from '@/components/icons';
 import { Box, Cover, useColorMode } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';

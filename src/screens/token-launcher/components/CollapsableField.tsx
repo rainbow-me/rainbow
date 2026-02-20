@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
-import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
 import Animated, {
   FadeIn,
   interpolate,
-  SharedValue,
+  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,

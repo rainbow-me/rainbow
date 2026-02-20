@@ -1,9 +1,9 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
-import { ScrollView, ScrollViewProps, StyleProp, StyleSheet, ViewStyle, View } from 'react-native';
+import { ScrollView, type ScrollViewProps, type StyleProp, StyleSheet, type ViewStyle, View } from 'react-native';
 import Animated, {
-  DerivedValue,
+  type DerivedValue,
   runOnJS,
-  SharedValue,
+  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,

@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { Easing, SharedValue, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
+import { Easing, type SharedValue, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 
 interface TimerConfig {
   /** Whether the timer should start automatically. @default false */

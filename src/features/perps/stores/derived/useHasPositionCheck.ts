@@ -1,9 +1,9 @@
 import { usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { PerpsPosition } from '@/features/perps/types';
-import { VirtualNavigationStore } from '@/navigation/createVirtualNavigator';
+import { type PerpsPosition } from '@/features/perps/types';
+import { type VirtualNavigationStore } from '@/navigation/createVirtualNavigator';
 import Routes from '@/navigation/routesNames';
-import { PerpsRoute } from '@/navigation/types';
+import { type PerpsRoute } from '@/navigation/types';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 
 export const useHasPositionCheck = createDerivedStore(

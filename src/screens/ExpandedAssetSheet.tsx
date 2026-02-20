@@ -1,4 +1,4 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import React, { createElement } from 'react';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { CustomGasState, UniqueTokenExpandedState } from '../components/expanded-state';
@@ -7,8 +7,8 @@ import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation';
 import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
-import { RootStackParamList } from '@/navigation/types';
-import Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import type Routes from '@/navigation/routesNames';
 
 const ScreenTypes = {
   custom_gas: CustomGasState,

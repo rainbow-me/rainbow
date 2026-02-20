@@ -4,7 +4,7 @@ import * as i18n from '@/languages';
 import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
 import { RewardsLeaderboardItem } from '@/screens/rewards/components/RewardsLeaderboardItem';
 import { differenceInDays, fromUnixTime } from 'date-fns';
-import { RewardsLeaderboardAccount, RewardsMetaStatus } from '@/graphql/__generated__/metadata';
+import { type RewardsLeaderboardAccount, RewardsMetaStatus } from '@/graphql/__generated__/metadata';
 
 const getRHSValueBasedOnStatus = (status: RewardsMetaStatus, daysLeftValue: number) => {
   switch (status) {

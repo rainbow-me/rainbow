@@ -1,4 +1,4 @@
-import { MintableCollection, MintedNft } from '@/graphql/__generated__/arc';
+import { type MintableCollection, type MintedNft } from '@/graphql/__generated__/arc';
 import React, { useEffect, useState } from 'react';
 import { getTimeElapsedFromDate } from '../utils';
 import { Bleed, Box, Cover, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';

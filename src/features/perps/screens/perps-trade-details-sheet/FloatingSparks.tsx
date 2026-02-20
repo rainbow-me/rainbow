@@ -1,6 +1,6 @@
 import { Blur, Circle, Group, vec } from '@shopify/react-native-skia';
 import { memo, useEffect, useMemo } from 'react';
-import { Easing, makeMutable, useDerivedValue, withTiming, SharedValue } from 'react-native-reanimated';
+import { Easing, makeMutable, useDerivedValue, withTiming, type SharedValue } from 'react-native-reanimated';
 import { getRandomInt } from '@/worklets/numbers';
 import { time } from '@/utils/time';
 

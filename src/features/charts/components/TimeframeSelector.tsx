@@ -1,9 +1,9 @@
-import React, { memo, RefObject, useCallback, useMemo, useRef } from 'react';
-import { ScrollView, ScrollViewProps, StyleSheet, View } from 'react-native';
+import React, { memo, type RefObject, useCallback, useMemo, useRef } from 'react';
+import { ScrollView, type ScrollViewProps, StyleSheet, View } from 'react-native';
 import Animated, {
-  AnimatedStyle,
-  DerivedValue,
-  SharedValue,
+  type AnimatedStyle,
+  type DerivedValue,
+  type SharedValue,
   runOnJS,
   useAnimatedStyle,
   useDerivedValue,
@@ -22,7 +22,7 @@ import { getSolidColorEquivalent } from '@/worklets/colors';
 import { GREEN_CANDLE_COLOR, RED_CANDLE_COLOR } from '../candlestick/constants';
 import { CANDLE_RESOLUTIONS, LINE_CHART_TIME_PERIODS } from '../constants';
 import { chartsActions, useChartsStore, useChartType } from '../stores/chartsStore';
-import { CandleResolution, ChartType, LineChartTimePeriod } from '../types';
+import { type CandleResolution, ChartType, type LineChartTimePeriod } from '../types';
 
 // ============ Constants ====================================================== //
 

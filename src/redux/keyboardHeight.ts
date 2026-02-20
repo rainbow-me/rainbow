@@ -1,8 +1,9 @@
 import produce from 'immer';
-import { Dispatch } from 'redux';
+import { type Dispatch } from 'redux';
 import { getKeyboardHeight as loadKeyboardHeights, setKeyboardHeight as saveKeyboardHeight } from '@/handlers/localstorage/globalSettings';
-import KeyboardTypes, { KeyboardType } from '@/helpers/keyboardTypes';
-import { AppGetState } from '@/redux/store';
+import type KeyboardTypes from '@/helpers/keyboardTypes';
+import { KeyboardType } from '@/helpers/keyboardTypes';
+import { type AppGetState } from '@/redux/store';
 import { getDefaultKeyboardHeight } from '@/utils/keyboardHeight';
 
 // -- Constants --------------------------------------- //

@@ -1,6 +1,6 @@
-import React, { PropsWithChildren, useMemo } from 'react';
+import React, { type PropsWithChildren, useMemo } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
@@ -9,7 +9,7 @@ import { containsEmoji } from '@/helpers/strings';
 import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
-import { StyleProp, ViewStyle } from 'react-native';
+import { type StyleProp, type ViewStyle } from 'react-native';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 export type SheetActionButtonProps = PropsWithChildren<{

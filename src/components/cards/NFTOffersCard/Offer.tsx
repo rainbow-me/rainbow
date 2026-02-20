@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import ConditionalWrap from 'conditional-wrap';
-import { TextColor, globalColors } from '@/design-system/color/palettes';
+import { type TextColor, globalColors } from '@/design-system/color/palettes';
 import { ImgixImage } from '@/components/images';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { convertAmountToNativeDisplay, getFormattedTimeQuantity, handleSignificantDecimals } from '@/helpers/utilities';
-import { NftOffer, SortCriterion } from '@/graphql/__generated__/arc';
+import { type NftOffer, SortCriterion } from '@/graphql/__generated__/arc';
 import { AccentColorProvider, Box, Inline, Inset, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { RainbowError, logger } from '@/logger';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -20,8 +20,8 @@ import { View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { Network } from '@/state/backendNetworks/types';
-import { AddressOrEth } from '@/__swaps__/types/assets';
+import { type Network } from '@/state/backendNetworks/types';
+import { type AddressOrEth } from '@/__swaps__/types/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 

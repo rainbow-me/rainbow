@@ -3,13 +3,14 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { MarqueeList } from '../../list';
 import { Box, Stack, Text } from '@/design-system';
-import useENSRecords, { ensRecordsQueryKey } from '@/hooks/useENSRecords';
+import type useENSRecords from '@/hooks/useENSRecords';
+import { ensRecordsQueryKey } from '@/hooks/useENSRecords';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import { queryClient } from '@/react-query';
 import Routes from '@/navigation/routesNames';
 import { useEnsMarquee } from '@/resources/metadata/ensMarqueeQuery';
-import { EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
+import { type EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
 import { ensIntroMarqueeNames } from '@/references';
 
 type MarqueeItemType = {

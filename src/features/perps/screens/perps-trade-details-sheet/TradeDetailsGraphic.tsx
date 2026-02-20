@@ -4,7 +4,7 @@ import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { FloatingSparks } from '@/features/perps/screens/perps-trade-details-sheet/FloatingSparks';
 import { PerspectiveGrid } from '@/features/perps/screens/perps-trade-details-sheet/PerspectiveGrid';
 import { SkiaBadge } from '@/components/SkiaBadge';
-import { HlTrade, TradeExecutionType } from '@/features/perps/types';
+import { type HlTrade, TradeExecutionType } from '@/features/perps/types';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import useDimensions from '@/hooks/useDimensions';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';

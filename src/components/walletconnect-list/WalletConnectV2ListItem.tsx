@@ -12,7 +12,7 @@ import { padding, position } from '@/styles';
 import { useTheme } from '@/theme';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { changeAccount, disconnectSession } from '@/walletConnect';
-import { SessionTypes } from '@walletconnect/types';
+import { type SessionTypes } from '@walletconnect/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { getAccountProfileInfo } from '@/state/wallets/walletsStore';

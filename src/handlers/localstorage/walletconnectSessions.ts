@@ -1,4 +1,4 @@
-import WalletConnect from '@walletconnect/client';
+import type WalletConnect from '@walletconnect/client';
 import { getGlobal, saveGlobal } from './common';
 import { omitFlatten, pickBy } from '@/helpers/utilities';
 

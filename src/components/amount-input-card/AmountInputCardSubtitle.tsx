@@ -8,8 +8,8 @@ import { useOrderAmountValidation } from '@/features/perps/stores/derived/useOrd
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import * as i18n from '@/languages';
 import { equalWorklet, truncateToDecimals } from '@/framework/core/safeMath';
-import { ReadOnlySharedValue, useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
+import { type ReadOnlySharedValue, useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { type OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
 
 const translations = {
   availableSuffix: i18n.t(i18n.l.perps.inputs.available),

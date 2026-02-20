@@ -10,7 +10,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
+import { type AppState } from '@/redux/store';
 import { analytics } from '@/analytics';
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
 import { getNumberFormatter } from '@/helpers/intl';

@@ -1,6 +1,6 @@
 import { formatUnits } from 'viem';
-import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
+import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/entities/gas';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
 import { gweiToWei, weiToGwei } from '@/parsers';
@@ -10,25 +10,25 @@ import { gasUnits } from '@/references/gasUnits';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { InferStoreState } from '@/state/internal/types';
-import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { type InferStoreState } from '@/state/internal/types';
+import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
-import { createExternalTokenStore, FormattedExternalAsset } from './createExternalTokenStore';
+import { createExternalTokenStore, type FormattedExternalAsset } from './createExternalTokenStore';
 import { computeMaxSwappableAmount } from './createDepositStore';
 import { isCrosschainQuote, isValidQuote } from '../utils/quotes';
 import {
-  DepositConfig,
-  DepositGasLimitParams,
-  DepositGasSuggestions,
-  DepositGasStoresType,
-  DepositMeteorologyActions,
-  DepositMeteorologyParams,
-  DepositQuoteStoreType,
-  DepositStoreType,
+  type DepositConfig,
+  type DepositGasLimitParams,
+  type DepositGasSuggestions,
+  type DepositGasStoresType,
+  type DepositMeteorologyActions,
+  type DepositMeteorologyParams,
+  type DepositQuoteStoreType,
+  type DepositStoreType,
 } from '../types';
 
 // ============ Types ========================================================= //

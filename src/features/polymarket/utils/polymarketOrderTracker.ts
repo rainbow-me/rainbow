@@ -6,8 +6,8 @@ import { ensureError } from '@/logger';
 import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
-import { OpenOrder } from '@polymarket/clob-client';
-import { SuccessfulOrderResult } from '@/features/polymarket/utils/orders';
+import { type OpenOrder } from '@polymarket/clob-client';
+import { type SuccessfulOrderResult } from '@/features/polymarket/utils/orders';
 
 const POLL_INTERVAL = time.seconds(1);
 const POLL_TIMEOUT = time.minutes(2);

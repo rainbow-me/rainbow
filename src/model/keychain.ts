@@ -1,4 +1,4 @@
-import { SetOptions, GetOptions, UserCredentials } from 'react-native-keychain';
+import { type SetOptions, type GetOptions, type UserCredentials } from 'react-native-keychain';
 import * as kc from '@/keychain';
 
 /**

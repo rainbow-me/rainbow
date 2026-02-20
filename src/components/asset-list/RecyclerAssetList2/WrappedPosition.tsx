@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box, BoxProps } from '@/design-system';
+import { Box, type BoxProps } from '@/design-system';
 import { PositionCard } from '@/features/positions/components/PositionCard';
-import { RainbowPosition } from '@/features/positions/types';
+import { type RainbowPosition } from '@/features/positions/types';
 
 type Props = {
   position: RainbowPosition;

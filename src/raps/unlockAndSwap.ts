@@ -1,8 +1,8 @@
 import { getTargetAddress, isAllowedTargetContract } from '@rainbow-me/swaps';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { assetNeedsUnlocking } from './actions';
 import { createNewAction, createNewRap } from './common';
-import { RapAction, RapSwapActionParameters, RapUnlockActionParameters } from './references';
+import { type RapAction, type RapSwapActionParameters, type RapUnlockActionParameters } from './references';
 
 export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParameters<'swap'>) => {
   let actions: RapAction<'swap' | 'unlock'>[] = [];

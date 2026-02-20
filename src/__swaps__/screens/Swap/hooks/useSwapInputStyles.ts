@@ -1,5 +1,5 @@
 import {
-  SharedValue,
+  type SharedValue,
   interpolate,
   interpolateColor,
   useAnimatedStyle,
@@ -11,7 +11,7 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
 import { globalColors, useColorMode } from '@/design-system';
 import { BASE_INPUT_HEIGHT, ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, EXPANDED_INPUT_HEIGHT } from '@/__swaps__/screens/Swap/constants';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { NavigationSteps } from './useSwapNavigation';

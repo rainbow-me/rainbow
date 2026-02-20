@@ -1,11 +1,11 @@
 import { createMMKV } from 'react-native-mmkv';
-import { RapAction, RapActionParameterMap, RapActionTypes } from './references';
+import { type RapAction, type RapActionParameterMap, type RapActionTypes } from './references';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { logger } from '@/logger';
 import type { EthereumAddress } from '@/entities/wallet';
 import type { LegacyGasFeeParamsBySpeed, LegacySelectedGasFee, SelectedGasFee, GasFeeParamsBySpeed } from '@/entities/gas';
 import type { Records } from '@/entities/ensRegistration';
-import { REGISTRATION_MODES } from '@/helpers/ens';
+import { type REGISTRATION_MODES } from '@/helpers/ens';
 
 export enum ENSRapActionType {
   commitENS = 'commitENS',

@@ -1,4 +1,4 @@
-import { Dispatch } from 'redux';
+import { type Dispatch } from 'redux';
 
 // TODO get rid of this redux state soon. Currently we use this in a few selectors
 

@@ -1,13 +1,13 @@
-import { TransactionRequest } from '@ethersproject/abstract-provider';
+import { type TransactionRequest } from '@ethersproject/abstract-provider';
 import { arrayify } from '@ethersproject/bytes';
 import { HDNode } from '@ethersproject/hdnode';
-import { Provider, StaticJsonRpcProvider } from '@ethersproject/providers';
-import { Transaction } from '@ethersproject/transactions';
+import { type Provider, type StaticJsonRpcProvider } from '@ethersproject/providers';
+import { type Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
-import { signTypedData, SignTypedDataVersion, TypedMessage } from '@metamask/eth-sig-util';
+import { signTypedData, type SignTypedDataVersion, type TypedMessage } from '@metamask/eth-sig-util';
 import { generateMnemonic } from 'bip39';
 import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
-import { hdkey as EthereumHDKey, default as LibWallet } from 'ethereumjs-wallet';
+import { type hdkey as EthereumHDKey, type default as LibWallet } from 'ethereumjs-wallet';
 import * as i18n from '@/languages';
 import { analytics } from '@/analytics';
 import { findKey, isEmpty } from 'lodash';
@@ -36,17 +36,17 @@ import ethereumUtils from '@/utils/ethereumUtils';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { deriveAccountFromBluetoothHardwareWallet, deriveAccountFromMnemonic, deriveAccountFromWalletInput } from '@/utils/wallet';
 import {
-  AddressWithRelationship,
+  type AddressWithRelationship,
   initializeNotificationSettingsForAddresses,
   WalletNotificationRelationship,
 } from '@/notifications/settings';
 import { DebugContext } from '@/logger/debugContext';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
-import { Signer } from '@ethersproject/abstract-signer';
+import { type Signer } from '@ethersproject/abstract-signer';
 import { sanitizeTypedData } from '@/utils/signingUtils';
-import { executeFn, ExecuteFnParams, Screen } from '@/state/performance/performance';
+import { executeFn, type ExecuteFnParams, type Screen } from '@/state/performance/performance';
 import { Network } from '@/state/backendNetworks/types';
-import { GetOptions, SetOptions } from 'react-native-keychain';
+import { type GetOptions, type SetOptions } from 'react-native-keychain';
 import { getIsDamagedWallet, getWalletWithAccount, setWalletDamaged } from '@/state/wallets/walletsStore';
 import Routes from '@/navigation/routesNames';
 import Navigation from '@/navigation/Navigation';

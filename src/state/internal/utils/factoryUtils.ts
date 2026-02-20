@@ -1,10 +1,10 @@
 import {
-  BaseRainbowStore,
-  InferStoreState,
-  OptionallyPersistedRainbowStore,
-  PersistedRainbowStore,
-  SubscribeArgs,
-  UnsubscribeFn,
+  type BaseRainbowStore,
+  type InferStoreState,
+  type OptionallyPersistedRainbowStore,
+  type PersistedRainbowStore,
+  type SubscribeArgs,
+  type UnsubscribeFn,
 } from '../types';
 
 type PortableSubscription<Store extends BaseRainbowStore<State>, State = InferStoreState<Store>> = {

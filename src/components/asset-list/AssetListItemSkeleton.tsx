@@ -1,9 +1,9 @@
 import React from 'react';
-import { ThemeContextProps, withThemeContext } from '@/theme/ThemeContext';
+import { type ThemeContextProps, withThemeContext } from '@/theme/ThemeContext';
 import { CoinRowHeight } from '@/components/coin-row';
 import Skeleton, { FakeAvatar, FakeRow, FakeText } from '@/components/skeleton/Skeleton';
 import { padding, colors } from '@/styles';
-import { View, ViewProps } from 'react-native';
+import { View, type ViewProps } from 'react-native';
 import styled from '@/framework/ui/styled-thing';
 import { ColumnWithMargins, RowWithMargins } from '@/components/layout';
 

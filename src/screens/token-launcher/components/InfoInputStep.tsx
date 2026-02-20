@@ -4,7 +4,7 @@ import { Bleed, Box, Text, Separator } from '@/design-system';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { FOOTER_HEIGHT } from './TokenLauncherFooter';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT, TOKEN_LAUNCHER_SCROLL_INDICATOR_INSETS } from './TokenLauncherHeader';
-import { SingleFieldInput, SingleFieldInputRef } from './SingleFieldInput';
+import { SingleFieldInput, type SingleFieldInputRef } from './SingleFieldInput';
 import { TokenLogo } from './TokenLogo';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { NetworkField } from './NetworkField';
@@ -17,7 +17,7 @@ import { Icon } from '@/components/icons';
 import { IS_ANDROID } from '@/env';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet } from 'react-native';
+import { type NativeScrollEvent, type NativeSyntheticEvent, StyleSheet } from 'react-native';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { PrebuySection } from '@/screens/token-launcher/components/PrebuySection';
 

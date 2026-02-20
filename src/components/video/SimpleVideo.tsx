@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Animated, RegisteredStyle, StyleSheet, View, ViewStyle } from 'react-native';
-import Video, { VideoRef } from 'react-native-video';
+import { Animated, type RegisteredStyle, StyleSheet, View, type ViewStyle } from 'react-native';
+import Video, { type VideoRef } from 'react-native-video';
 import { ImgixImage } from '@/components/images';
 import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';

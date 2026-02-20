@@ -1,7 +1,7 @@
 import { parseUri } from '@walletconnect/utils';
 import URL from 'url-parse';
 
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { analytics } from '@/analytics';
 import { showWalletConnectToast } from '@/components/toasts/WalletConnectToast';
@@ -9,7 +9,7 @@ import { FiatProviderName } from '@/entities/f2c';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
 import { logger } from '@/logger';
 import { Navigation } from '@/navigation';
-import { InitialRoute } from '@/navigation/initialRoute';
+import { type InitialRoute } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import { queryClient } from '@/react-query';
 import store from '@/redux/store';
@@ -19,9 +19,9 @@ import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueId } from '@/
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/walletConnect';
-import { useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
+import { type useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
 
-import { navigateToSwaps, NavigateToSwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { navigateToSwaps, type NavigateToSwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { searchVerifiedTokens, TokenLists } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { clamp } from '@/__swaps__/utils/swaps';

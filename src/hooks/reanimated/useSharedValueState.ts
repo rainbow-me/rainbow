@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DerivedValue, SharedValue } from 'react-native-reanimated';
+import { type DerivedValue, type SharedValue } from 'react-native-reanimated';
 import { useSyncSharedValue } from './useSyncSharedValue';
 
 /**

@@ -1,4 +1,4 @@
-import { TrimmedCards, useCardCollectionQuery } from '@/resources/cards/cardCollectionQuery';
+import { type TrimmedCards, useCardCollectionQuery } from '@/resources/cards/cardCollectionQuery';
 import { remoteCardsStore } from '../remoteCards/remoteCards';
 import { IS_TEST } from '@/env';
 import { useCallback, memo } from 'react';

@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Box, IconContainer, Inline, Text, TextShadow } from '@/design-system';
-import { HlOpenOrder, useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
+import { type HlOpenOrder, useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
 import { PerpPositionSide, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
 import { TriggerOrderCard } from '@/features/perps/components/TriggerOrderCard';
 import { abs, isZero } from '@/helpers/utilities';

@@ -1,5 +1,5 @@
-import React, { PropsWithChildren } from 'react';
-import Animated, { useAnimatedProps, SharedValue } from 'react-native-reanimated';
+import React, { type PropsWithChildren } from 'react';
+import Animated, { useAnimatedProps, type SharedValue } from 'react-native-reanimated';
 import { G, Path } from 'react-native-svg';
 import { Centered } from '../../layout';
 import Svg from '../Svg';

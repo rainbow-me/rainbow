@@ -1,5 +1,5 @@
 import { globalColors } from '@/design-system';
-import { CardColor, CardColorway, LearnCardDetails, LearnCategory } from './types';
+import { type CardColor, type CardColorway, type LearnCardDetails, LearnCategory } from './types';
 
 export const getCardColorways: (isDarkMode: boolean) => {
   [key in CardColor]: CardColorway;

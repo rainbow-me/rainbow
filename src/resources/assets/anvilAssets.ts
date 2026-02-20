@@ -3,12 +3,12 @@ import { keyBy, mapValues } from 'lodash';
 import { getProvider } from '@/handlers/web3';
 import { balanceCheckerContractAbi, chainAssets, ETH_ADDRESS, erc20ABI } from '@/references';
 import { parseAddressAsset } from './assets';
-import { RainbowAddressAssets } from './types';
+import { type RainbowAddressAssets } from './types';
 import { logger, RainbowError } from '@/logger';
-import { AddressOrEth, UniqueId, ZerionAsset } from '@/__swaps__/types/assets';
+import { type AddressOrEth, type UniqueId, type ZerionAsset } from '@/__swaps__/types/assets';
 import { AddressZero } from '@ethersproject/constants';
 import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
-import { ChainId, ChainName, Network } from '@/state/backendNetworks/types';
+import { ChainId, ChainName, type Network } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 

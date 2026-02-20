@@ -1,14 +1,14 @@
 import { abbreviateNumber, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { DEFAULT_CHAIN_ID, DEFAULT_MAX_AIRDROP_RECIPIENTS, DEFAULT_TOTAL_SUPPLY, MAX_TOTAL_SUPPLY } from '../constants';
-import { makeMutable, runOnUI, SharedValue, withTiming } from 'react-native-reanimated';
+import { makeMutable, runOnUI, type SharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import chroma from 'chroma-js';
 import { memoFn } from '@/utils/memoFn';
 import { calculateTokenomics } from '../helpers/calculateTokenomics';
 import store from '@/redux/store';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { Network } from '@/state/backendNetworks/types';
+import { type Network } from '@/state/backendNetworks/types';
 import { formatCurrency } from '@/helpers/strings';
 import {
   formatLinkInputToUrl,
@@ -18,23 +18,23 @@ import {
   validateTotalSupplyWorklet,
 } from '../helpers/inputValidators';
 import * as i18n from '@/languages';
-import { Wallet } from '@ethersproject/wallet';
+import { type Wallet } from '@ethersproject/wallet';
 import { parseUnits } from '@ethersproject/units';
-import { TransactionOptions } from '@rainbow-me/swaps';
+import { type TransactionOptions } from '@rainbow-me/swaps';
 import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
-import { LaunchTokenResponse, TokenLauncherSDKError } from '@rainbow-me/token-launcher';
+import { type LaunchTokenResponse, TokenLauncherSDKError } from '@rainbow-me/token-launcher';
 import { Alert } from 'react-native';
 import { logger, RainbowError } from '@/logger';
 import { analytics } from '@/analytics';
 import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
-import { Link, LinkType } from '../types';
+import { type Link, type LinkType } from '../types';
 import { useSuperTokenStore } from './rainbowSuperTokenStore';
 import { calculateAndCacheDominantColor } from '@/hooks/usePersistentDominantColorFromImage';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { NewTransaction, TransactionStatus } from '@/entities/transactions/transaction';
+import { type NewTransaction, TransactionStatus } from '@/entities/transactions/transaction';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { ParsedAsset } from '@/resources/assets/types';
+import { type ParsedAsset } from '@/resources/assets/types';
 import { tokenLaunchErrorToErrorMessage } from '../helpers/tokenLaunchErrorToErrorMessage';
 
 // TODO: Remove this — temporary option for testing

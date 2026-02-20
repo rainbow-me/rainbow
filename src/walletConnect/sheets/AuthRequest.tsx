@@ -10,12 +10,12 @@ import { useDappMetadata } from '@/resources/metadata/dapp';
 import { getAccountProfileInfo, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { initials } from '@/utils/formatters';
-import { AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason } from '@/walletConnect/types';
+import { type AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason } from '@/walletConnect/types';
 import { useNavigation } from '@/navigation/Navigation';
-import { WalletKitTypes } from '@reown/walletkit';
-import { Verify } from '@walletconnect/types';
+import { type WalletKitTypes } from '@reown/walletkit';
+import { type Verify } from '@walletconnect/types';
 import React from 'react';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 
 export function AuthRequest({
   requesterMeta,

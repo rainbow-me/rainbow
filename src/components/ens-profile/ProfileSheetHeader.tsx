@@ -1,4 +1,4 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import React, { useContext, useMemo } from 'react';
 import { ModalContext } from '../../react-native-cool-modals/NativeStackView';
 import { ProfileSheetConfigContext } from '../../screens/ProfileSheet';
@@ -19,8 +19,8 @@ import useOpenENSNFTHandler from '@/hooks/useOpenENSNFTHandler';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
-import { RootStackParamList } from '@/navigation/types';
-import Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import type Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 
 export default function ProfileSheetHeader({

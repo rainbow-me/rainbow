@@ -4,7 +4,7 @@ import { AnimatedText, Box, Separator, TextShadow, useForegroundColor } from '@/
 import { CollapsableField } from './CollapsableField';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { runOnJS, SharedValue, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { runOnJS, type SharedValue, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import {
   ERROR_RED,
   FIELD_BORDER_RADIUS,
@@ -15,7 +15,7 @@ import {
   TOTAL_SUPPLY_PREBUY_PERCENTAGES,
 } from '../constants';
 import { Grid } from './Grid';
-import { SingleFieldInput, SingleFieldInputRef } from './SingleFieldInput';
+import { SingleFieldInput, type SingleFieldInputRef } from './SingleFieldInput';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { convertAmountToBalanceDisplay, lessThan, subtract } from '@/helpers/utilities';

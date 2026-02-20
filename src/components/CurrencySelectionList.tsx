@@ -1,10 +1,10 @@
-import React, { forwardRef, ForwardRefRenderFunction } from 'react';
-import { SectionList } from 'react-native';
+import React, { forwardRef, type ForwardRefRenderFunction } from 'react';
+import { type SectionList } from 'react-native';
 import magicMemo from '@/utils/magicMemo';
 import EmptyAssetList from '@/components/asset-list/EmptyAssetList';
 import { Centered } from '@/components/layout';
 import { NoResults } from '@/components/list';
-import ExchangeAssetList, { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
+import ExchangeAssetList, { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { Box } from '@/design-system';
 import { NoResultsType } from '@/components/list/NoResults';
 import type { SearchAsset } from '@/__swaps__/types/search';

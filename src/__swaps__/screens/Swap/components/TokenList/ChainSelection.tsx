@@ -1,7 +1,7 @@
 import c from 'chroma-js';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Text as RNText, StyleSheet } from 'react-native';
-import Animated, { AnimatedRef, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import Animated, { type AnimatedRef, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import * as i18n from '@/languages';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -16,9 +16,9 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import Routes from '@/navigation/routesNames';
 import { Navigation } from '@/navigation';
-import { TokenToBuyListItem } from '@/__swaps__/types/search';
+import { type TokenToBuyListItem } from '@/__swaps__/types/search';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { UserAssetFilter } from '@/__swaps__/types/assets';
+import { type UserAssetFilter } from '@/__swaps__/types/assets';
 
 type ChainSelectionProps = {
   allText?: string;

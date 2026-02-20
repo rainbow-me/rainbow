@@ -1,10 +1,10 @@
 import React, { memo, useMemo } from 'react';
 import { Bleed, Box, Inline, Separator, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '@/navigation/types';
-import Routes from '@/navigation/routesNames';
+import { type RouteProp, useRoute } from '@react-navigation/native';
+import { type RootStackParamList } from '@/navigation/types';
+import type Routes from '@/navigation/routesNames';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
-import { PerpMarket, PerpPositionSide } from '@/features/perps/types';
+import { type PerpMarket, PerpPositionSide } from '@/features/perps/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { Chart } from '@/components/value-chart/Chart';

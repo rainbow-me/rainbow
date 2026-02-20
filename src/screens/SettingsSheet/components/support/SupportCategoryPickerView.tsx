@@ -3,7 +3,7 @@ import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
 import * as i18n from '@/languages';
-import { useSendFeedback, SupportCategory } from '@/hooks/useSendFeedback';
+import { useSendFeedback, type SupportCategory } from '@/hooks/useSendFeedback';
 
 const categoryI18n = i18n.l.settings.support.category;
 const entryI18n = i18n.l.settings.support.entry;

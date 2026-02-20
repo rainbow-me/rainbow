@@ -1,15 +1,15 @@
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { NewTransaction, TransactionStatus } from '@/entities/transactions';
-import { TokenColors } from '@/graphql/__generated__/metadata';
+import { type NewTransaction, TransactionStatus } from '@/entities/transactions';
+import { type TokenColors } from '@/graphql/__generated__/metadata';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { sendTransaction } from '@/model/wallet';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { TransactionClaimableTxPayload } from './types';
-import { Signer } from '@ethersproject/abstract-signer';
-import { ParsedAsset as SwapsParsedAsset } from '@/__swaps__/types/assets';
-import { AddysNetworkDetails, ParsedAsset } from '@/resources/assets/types';
-import { RapActionResult } from '@/raps/references';
+import { type TransactionClaimableTxPayload } from './types';
+import { type Signer } from '@ethersproject/abstract-signer';
+import { type ParsedAsset as SwapsParsedAsset } from '@/__swaps__/types/assets';
+import { type AddysNetworkDetails, type ParsedAsset } from '@/resources/assets/types';
+import { type RapActionResult } from '@/raps/references';
 
 // also used by raps
 export async function executeClaim({

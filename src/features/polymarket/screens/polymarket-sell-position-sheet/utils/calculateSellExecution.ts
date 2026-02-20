@@ -1,4 +1,4 @@
-import { OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
+import { type OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import { divWorklet, greaterThanOrEqualToWorklet, greaterThanWorklet, mulWorklet, subWorklet, sumWorklet } from '@/framework/core/safeMath';
 import { USD_FEE_PER_TOKEN } from '@/features/polymarket/constants';
 

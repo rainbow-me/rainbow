@@ -1,8 +1,8 @@
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import reduxStore from '@/redux/store';
-import { SupportedCurrencyKey } from '@/references';
+import { type SupportedCurrencyKey } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { UserAssetsStoreType } from './types';
+import { type UserAssetsStoreType } from './types';
 
 export type StoreManagerState = {
   address: Address | string | null;

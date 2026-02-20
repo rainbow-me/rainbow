@@ -1,6 +1,6 @@
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { useHlNewPositionStore } from '../hlNewPositionStore';
-import { LiquidationData, buildLiquidationInfo } from '@/features/perps/utils/buildLiquidationInfo';
+import { type LiquidationData, buildLiquidationInfo } from '@/features/perps/utils/buildLiquidationInfo';
 
 export const useLiquidationInfo = createDerivedStore(
   $ => {

@@ -1,16 +1,16 @@
 import { getAddress } from '@ethersproject/address';
-import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
+import { BigNumber, type BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
-import { Contract } from '@ethersproject/contracts';
+import { type Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
-import { Block, JsonRpcBatchProvider, StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
+import { type Block, JsonRpcBatchProvider, StaticJsonRpcProvider, type TransactionRequest } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
 import { AssetType } from '@/entities/assetTypes';
-import { NewTransaction } from '@/entities/transactions';
-import { ParsedAddressAsset } from '@/entities/tokens';
-import { UniqueAsset } from '@/entities/uniqueAssets';
+import { type NewTransaction } from '@/entities/transactions';
+import { type ParsedAddressAsset } from '@/entities/tokens';
+import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { isNativeAsset } from '@/handlers/assets';
 import { isUnstoppableAddressFormat } from '@/helpers/validators';
 import { ethUnits, smartContractMethods, CRYPTO_KITTIES_NFT_ADDRESS, CRYPTO_PUNKS_NFT_ADDRESS } from '@/references';
@@ -31,7 +31,7 @@ import { ChainId, chainAnvil } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { NftTokenType } from '@/graphql/__generated__/arc';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 
 export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
 

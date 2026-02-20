@@ -1,4 +1,4 @@
-import { TokenLauncherSDKError, TokenLauncherErrorCode } from '@rainbow-me/token-launcher';
+import { type TokenLauncherSDKError, TokenLauncherErrorCode } from '@rainbow-me/token-launcher';
 import * as i18n from '@/languages';
 
 export const tokenLaunchErrorToErrorMessage = (error: TokenLauncherSDKError) => {

@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
-import React, { PropsWithChildren, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { LayoutChangeEvent } from 'react-native';
+import React, { type PropsWithChildren, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { type LayoutChangeEvent } from 'react-native';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
 
 import { ACTION_BUTTON_HEIGHT } from '@/__swaps__/screens/Swap/constants';
@@ -29,11 +29,11 @@ import Routes from '@/navigation/routesNames';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import gasUtils from '@/utils/gas';
-import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
+import { type GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
 import { getSelectedGas, setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { ExplainSheetParams, gasTrendToTrendType } from '@/navigation/types';
+import { type ExplainSheetParams, gasTrendToTrendType } from '@/navigation/types';
 
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 

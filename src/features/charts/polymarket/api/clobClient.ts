@@ -1,6 +1,6 @@
 import { POLYMARKET_CLOB_PROXY_URL } from '@/features/polymarket/constants';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
-import { FIDELITY_MAP, PolymarketInterval, PricePoint } from '../types';
+import { FIDELITY_MAP, type PolymarketInterval, type PricePoint } from '../types';
 
 // ============ Constants ====================================================== //
 

@@ -1,8 +1,8 @@
-import React, { Fragment, PropsWithChildren, memo, useLayoutEffect } from 'react';
-import { Insets, ViewProps } from 'react-native';
-import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring, WithSpringConfig } from 'react-native-reanimated';
+import React, { Fragment, type PropsWithChildren, memo, useLayoutEffect } from 'react';
+import { type Insets, type ViewProps } from 'react-native';
+import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring, type WithSpringConfig } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ThemeContextProps, useTheme } from '../../theme/ThemeContext';
+import { type ThemeContextProps, useTheme } from '../../theme/ThemeContext';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';

@@ -1,11 +1,11 @@
-import { UniqueId } from '@/__swaps__/types/assets';
+import { type UniqueId } from '@/__swaps__/types/assets';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import type { EthereumAddress } from '@/entities/wallet';
 import type { RainbowToken } from '@/entities/tokens';
 import { createQueryKey, persistOptions, queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { persistQueryClientRestore, persistQueryClientSave } from '@tanstack/react-query-persist-client';
-import { Migration, MigrationName } from '../types';
+import { type Migration, MigrationName } from '../types';
 
 const favoritesV1QueryKey = createQueryKey('favorites', {}, { persisterVersion: 1 });
 const favoritesV2QueryKey = createQueryKey('favorites', {}, { persisterVersion: 2 });

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Source } from './utils/source.macro';
+import type React from 'react';
+import { type Source } from './utils/source.macro';
 
 export type Docs = {
   meta: Meta;

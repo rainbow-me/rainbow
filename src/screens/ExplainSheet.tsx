@@ -1,4 +1,4 @@
-import { RouteProp, useRoute, NavigationProp } from '@react-navigation/native';
+import { type RouteProp, useRoute, type NavigationProp } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,14 +17,14 @@ import gasUtils from '@/utils/gas';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { buildRainbowLearnUrl, LearnUTMCampaign } from '@/utils/buildRainbowUrl';
 import { cloudPlatformAccountName } from '@/utils/platform';
-import { ThemeContextProps, useTheme } from '@/theme';
-import Routes from '@/navigation/routesNames';
+import { type ThemeContextProps, useTheme } from '@/theme';
+import type Routes from '@/navigation/routesNames';
 
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { openInBrowser } from '@/utils/openInBrowser';
-import { ChainId } from '@/state/backendNetworks/types';
-import { ExplainSheetRouteParams, RootStackParamList } from '@/navigation/types';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type ExplainSheetRouteParams, type RootStackParamList } from '@/navigation/types';
 import { logger } from '@/logger';
 import { opacity } from '@/framework/ui/utils/opacity';
 

@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
 import React from 'react';
-import { Source } from 'react-native-fast-image';
+import { type Source } from 'react-native-fast-image';
 import brain from '../../../assets/brain.png';
 import { RegistrationReviewRows } from '../../../components/ens-registration';
 import { Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';

@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
-import { ViewProps } from 'react-native';
+import { type ViewProps } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEasingGradient, UseEasingGradientParams } from '@/hooks/useEasingGradient';
+import { useEasingGradient, type UseEasingGradientParams } from '@/hooks/useEasingGradient';
 
 type EasingGradientProps = UseEasingGradientParams & ViewProps;
 

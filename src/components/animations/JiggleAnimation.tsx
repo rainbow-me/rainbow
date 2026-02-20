@@ -6,7 +6,7 @@ import Animated, {
   withRepeat,
   cancelAnimation,
   useAnimatedReaction,
-  SharedValue,
+  type SharedValue,
   withSequence,
 } from 'react-native-reanimated';
 

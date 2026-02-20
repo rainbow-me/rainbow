@@ -1,6 +1,6 @@
-import { TextColor } from '@/design-system/color/palettes';
+import { type TextColor } from '@/design-system/color/palettes';
 import { USD_DECIMALS } from '@/features/perps/constants';
-import { PerpsPosition } from '@/features/perps/types';
+import { type PerpsPosition } from '@/features/perps/types';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { abs, add, divide, greaterThan, isEqual, isZero, multiply, subtract } from '@/helpers/utilities';
 import { toFixedWorklet, truncateToDecimals } from '@/framework/core/safeMath';

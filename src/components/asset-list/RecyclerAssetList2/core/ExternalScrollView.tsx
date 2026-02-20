@@ -1,7 +1,8 @@
 import React, { useContext, useImperativeHandle } from 'react';
-import { Animated as RNAnimated, ScrollViewProps, ViewStyle } from 'react-native';
+import { Animated as RNAnimated, type ScrollViewProps, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import BaseScrollView, { ScrollViewDefaultProps } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
+import { type ScrollViewDefaultProps } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
+import type BaseScrollView from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 import { useMemoOne } from 'use-memo-one';
 import { useRecyclerAssetListPosition } from './Contexts';
 import { StickyHeaderContext } from './StickyHeaders';

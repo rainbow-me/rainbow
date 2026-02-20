@@ -1,6 +1,6 @@
 import React from 'react';
-import { RouteParams, UseRouteHook, UseRouteProvider } from '@/navigation/Navigation';
-import { Route } from '@/navigation/routesNames';
+import { type RouteParams, type UseRouteHook, UseRouteProvider } from '@/navigation/Navigation';
+import { type Route } from '@/navigation/routesNames';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { setActiveRoute } from '@/state/navigation/navigationStore';

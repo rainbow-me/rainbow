@@ -1,13 +1,13 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import { Wallet } from '@ethersproject/wallet';
-import React, { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { createContext, type PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { createMMKV } from 'react-native-mmkv';
 import { useSharedValue } from 'react-native-reanimated';
 import DevButton from '../components/dev-buttons/DevButton';
 import Emoji from '../components/text/Emoji';
 import { showConnectToAnvilButton, showReloadButton, showSwitchModeButton } from '../config/debug';
-import { defaultConfig, defaultConfigValues } from '@/config/experimental';
+import { type defaultConfig, defaultConfigValues } from '@/config/experimental';
 import { useTheme } from '../theme/ThemeContext';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { logger, RainbowError } from '@/logger';

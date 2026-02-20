@@ -1,7 +1,7 @@
 import produce from 'immer';
-import { Dispatch } from 'redux';
+import { type Dispatch } from 'redux';
 import { getImageMetadata, saveImageMetadata } from '@/handlers/localstorage/globalSettings';
-import { AppGetState } from '@/redux/store';
+import { type AppGetState } from '@/redux/store';
 
 // -- Constants --------------------------------------- //
 const CLEAR = 'imageMetadata/CLEAR';

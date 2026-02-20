@@ -1,8 +1,8 @@
 import ConditionalWrap from 'conditional-wrap';
 import React, { memo, useCallback, useMemo } from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, type TextInput } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
-import { AnimatedRef, runOnJS, runOnUI, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import { type AnimatedRef, runOnJS, runOnUI, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { AnimatedText, Bleed, Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';

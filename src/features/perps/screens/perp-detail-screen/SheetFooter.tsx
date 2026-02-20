@@ -7,7 +7,7 @@ import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidA
 import Routes from '@/navigation/routesNames';
 import Navigation from '@/navigation/Navigation';
 import { navigateToNewPositionScreen } from '@/features/perps/utils';
-import { PerpMarket } from '@/features/perps/types';
+import { type PerpMarket } from '@/features/perps/types';
 import { useNavigation } from '@react-navigation/native';
 import { InteractionManager, View } from 'react-native';
 import { useUserAssetsStore } from '@/state/assets/userAssets';

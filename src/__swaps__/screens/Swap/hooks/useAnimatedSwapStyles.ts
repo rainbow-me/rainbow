@@ -8,8 +8,8 @@ import {
   SETTINGS_SHEET_HEIGHT,
   SETTINGS_SHEET_ROW_GAP,
 } from '@/__swaps__/screens/Swap/constants';
-import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { SwapWarningType, type useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { spinnerExitConfig } from '@/components/animations/AnimatedSpinner';
@@ -19,7 +19,15 @@ import { foregroundColors } from '@/design-system/color/palettes';
 import { getTokenSearchButtonWrapperStyle } from '@/components/token-search/styles';
 import { IS_ANDROID } from '@/env';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { DerivedValue, SharedValue, interpolate, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
+import {
+  type DerivedValue,
+  type SharedValue,
+  interpolate,
+  useAnimatedStyle,
+  useDerivedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { NavigationSteps } from '../providers/swap-provider';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 

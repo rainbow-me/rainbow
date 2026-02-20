@@ -1,5 +1,5 @@
 import { analytics } from '@/analytics';
-import { GestureResponderEvent } from 'react-native';
+import { type GestureResponderEvent } from 'react-native';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
 import { IS_IOS } from '@/env';
@@ -12,7 +12,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-charts/src';
 import { ETH_ADDRESS } from '@/references';
-import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { type FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';

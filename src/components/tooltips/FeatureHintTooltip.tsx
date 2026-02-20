@@ -1,5 +1,5 @@
 import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef } from 'react';
-import { StyleSheet, View, LayoutChangeEvent, useWindowDimensions } from 'react-native';
+import { StyleSheet, View, type LayoutChangeEvent, useWindowDimensions } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS } from 'react-native-reanimated';
 import { Box, globalColors, HitSlop, Text } from '@/design-system';

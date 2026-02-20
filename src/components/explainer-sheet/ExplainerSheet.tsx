@@ -1,4 +1,4 @@
-import React, { memo, useCallback, ReactNode } from 'react';
+import React, { memo, useCallback, type ReactNode } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Panel, PANEL_WIDTH, TapToDismiss } from '@/components/SmoothPager/ListPanel';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -6,10 +6,10 @@ import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { SheetHandle } from '@/components/sheet';
 import { Box, Separator, AnimatedText } from '@/design-system';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
-import { LinearGradient, LinearGradientProps } from 'expo-linear-gradient';
+import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
 import { downscalePagerIndex, SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Extrapolation, interpolate, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import { Extrapolation, interpolate, type SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { useNavigation } from '@/navigation';
 import { Canvas, LinearGradient as SkiaLinearGradient, RadialGradient, vec, Circle, Group, Blur } from '@shopify/react-native-skia';
 import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';

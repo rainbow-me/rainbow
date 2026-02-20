@@ -2,15 +2,15 @@ import React from 'react';
 import { nanoid } from 'nanoid/non-secure';
 
 import { logger, RainbowError } from '@/logger';
-import { ProviderConfig } from '@/screens/AddCash/types';
+import { type ProviderConfig } from '@/screens/AddCash/types';
 import { ProviderCard } from '@/screens/AddCash/components/ProviderCard';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { analytics } from '@/analytics';
 import { WrappedAlert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 import { openInBrowser } from '@/utils/openInBrowser';
-import { GetWidgetURL } from '@/resources/f2c';
-import { Address } from 'viem';
+import { type GetWidgetURL } from '@/resources/f2c';
+import { type Address } from 'viem';
 import { FiatProviderName } from '@/entities/f2c';
 
 interface ProviderListItemProps {

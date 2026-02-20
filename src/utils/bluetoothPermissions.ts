@@ -7,7 +7,7 @@ import {
   PERMISSIONS,
   RESULTS,
   request as requestPermission,
-  AndroidPermission,
+  type AndroidPermission,
   requestMultiple as requestMultiplePermissions,
 } from 'react-native-permissions';
 

@@ -1,5 +1,5 @@
-import { TextColor } from '@/design-system/color/palettes';
-import { PerpMarket, PerpPositionSide } from '@/features/perps/types';
+import { type TextColor } from '@/design-system/color/palettes';
+import { type PerpMarket, type PerpPositionSide } from '@/features/perps/types';
 import { calculateIsolatedLiquidationPriceFromMargin } from '@/features/perps/utils/calculateLiquidationPrice';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 

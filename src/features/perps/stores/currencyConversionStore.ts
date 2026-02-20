@@ -1,7 +1,7 @@
-import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
+import { type NativeCurrencyKey, NativeCurrencyKeys } from '@/entities/nativeCurrencyTypes';
 import { multiply } from '@/helpers/utilities';
 import { getPlatformClient } from '@/resources/platform/client';
-import { PlatformResponse } from '@/resources/platform/types';
+import { type PlatformResponse } from '@/resources/platform/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';

@@ -1,5 +1,5 @@
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
-import { RainbowAccount, RainbowWallet } from '@/model/wallet';
+import { type RainbowAccount, type RainbowWallet } from '@/model/wallet';
 import { updateWallets, useWallets } from '@/state/wallets/walletsStore';
 import { useCallback, useMemo } from 'react';
 

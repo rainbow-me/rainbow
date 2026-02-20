@@ -1,16 +1,16 @@
 import {
-  DataModule,
+  type DataModule,
   FontWeight,
-  SkFontMgr,
-  SkParagraphBuilder,
-  SkTypefaceFontProvider,
+  type SkFontMgr,
+  type SkParagraphBuilder,
+  type SkTypefaceFontProvider,
   Skia,
   TextAlign as SkiaTextAlign,
 } from '@shopify/react-native-skia';
 import { Platform } from '@shopify/react-native-skia/src/Platform';
-import { Dispatch, RefObject, SetStateAction, useEffect, useState } from 'react';
-import { TextAlign } from '@/components/text/types';
-import { TextWeight } from '@/design-system/components/Text/Text';
+import { type Dispatch, type RefObject, type SetStateAction, useEffect, useState } from 'react';
+import { type TextAlign } from '@/components/text/types';
+import { type TextWeight } from '@/design-system/components/Text/Text';
 import { IS_DEV, IS_IOS } from '@/env';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useLazyRef } from '@/hooks/useLazyRef';

@@ -7,7 +7,7 @@ import { HYPERLIQUID_COLORS, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } fro
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { TradeListItem } from '@/features/perps/components/TradeListItem';
 import { useHlTradesStore } from '@/features/perps/stores/hlTradesStore';
-import { HlTrade } from '@/features/perps/types';
+import { type HlTrade } from '@/features/perps/types';
 import { Box, Separator, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

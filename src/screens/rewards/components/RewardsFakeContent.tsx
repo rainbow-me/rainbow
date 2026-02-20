@@ -1,6 +1,6 @@
 import React from 'react';
 import Skeleton from '@/components/skeleton/Skeleton';
-import { Box, BoxProps, useForegroundColor } from '@/design-system';
+import { Box, type BoxProps, useForegroundColor } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
 
 const BORDER_RADIUS = 18;

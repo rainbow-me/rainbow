@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -13,7 +13,7 @@ import * as i18n from '@/languages';
 //   polymarketRecommendationsActions,
 //   usePolymarketRecommendationsStore,
 // } from '@/features/polymarket/stores/polymarketRecommendationsStore';
-import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';

@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { createQueryKey, queryClient, QueryConfig, QueryFunctionResult } from '@/react-query';
+import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionResult } from '@/react-query';
 
 import { arcClient } from '@/graphql';
-import { Card, GetCardCollectionQuery } from '@/graphql/__generated__/arc';
+import { type Card, type GetCardCollectionQuery } from '@/graphql/__generated__/arc';
 import { pick } from 'lodash';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { REMOTE_CARDS, useExperimentalFlag } from '@/config';

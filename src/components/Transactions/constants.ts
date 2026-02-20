@@ -1,9 +1,9 @@
 import * as i18n from '@/languages';
 import { Screens } from '@/state/performance/operations';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-import { TransitionConfig } from 'moti';
+import { type TransitionConfig } from 'moti';
 import { Easing } from 'react-native-reanimated';
-import { EventInfo } from '@/components/Transactions/types';
+import { type EventInfo } from '@/components/Transactions/types';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 
 export const SCREEN_BOTTOM_INSET = safeAreaInsetValues.bottom + 20;

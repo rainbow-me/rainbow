@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import * as i18n from '@/languages';
-import React, { PropsWithChildren, useState } from 'react';
+import React, { type PropsWithChildren, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 

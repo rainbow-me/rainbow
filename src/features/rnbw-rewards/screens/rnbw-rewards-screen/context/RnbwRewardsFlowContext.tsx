@@ -1,10 +1,10 @@
-import { RnbwRewardsScene, RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { type RnbwRewardsScene, RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { useHasCompletedAirdropFlow } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/hooks/useHasCompletedAirdropFlow';
 import { rewardsFlowActions, useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import usePrevious from '@/hooks/usePrevious';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { createContext, ReactNode, useContext, useEffect } from 'react';
-import { SharedValue, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+import { createContext, type ReactNode, useContext, useEffect } from 'react';
+import { type SharedValue, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
