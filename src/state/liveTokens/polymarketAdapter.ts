@@ -3,48 +3,80 @@ import { type TokenData, type PriceReliabilityStatus } from './liveTokensStore';
 import { POLYMARKET_CLOB_URL, POLYMARKET_TOKEN_ID_SUFFIX } from '@/features/polymarket/constants';
 import { logger, RainbowError } from '@/logger';
 
-export type PolymarketPriceSide = 'buy' | 'sell';
+const SUFFIX_BASE = `:${POLYMARKET_TOKEN_ID_SUFFIX}:`;
 
-const POLYMARKET_TOKEN_SUFFIX_BASE = `:${POLYMARKET_TOKEN_ID_SUFFIX}:`;
-const POLYMARKET_TOKEN_SUFFIX_BUY = `${POLYMARKET_TOKEN_SUFFIX_BASE}buy`;
-const POLYMARKET_TOKEN_SUFFIX_SELL = `${POLYMARKET_TOKEN_SUFFIX_BASE}sell`;
-
-const SIDE_TO_CLOB_SIDE: Record<PolymarketPriceSide, 'BUY' | 'SELL'> = {
+const POLYMARKET_PRICE_TYPE_SIDES = {
   buy: 'BUY',
   sell: 'SELL',
-};
+  midpoint: null,
+} as const;
+
+export type PolymarketPriceType = keyof typeof POLYMARKET_PRICE_TYPE_SIDES;
+type PolymarketSide = NonNullable<(typeof POLYMARKET_PRICE_TYPE_SIDES)[PolymarketPriceType]>;
+type PolymarketSidePricesResponse = Record<string, Partial<Record<PolymarketSide, string>>>;
+type PolymarketMidpointPricesResponse = Record<string, string>;
+
+function parseTokenId(tokenId: string): { tokenId: string; polymarketTokenId: string; type: PolymarketPriceType } | null {
+  const suffixIndex = tokenId.lastIndexOf(SUFFIX_BASE);
+  if (suffixIndex === -1) return null;
+
+  const type = tokenId.slice(suffixIndex + SUFFIX_BASE.length);
+  if (!(type in POLYMARKET_PRICE_TYPE_SIDES)) return null;
+
+  return {
+    tokenId,
+    polymarketTokenId: tokenId.slice(0, suffixIndex),
+    type: type as PolymarketPriceType,
+  };
+}
 
 export async function fetchPolymarketPrices(tokenIds: string[]): Promise<Record<string, TokenData>> {
-  const parsedTokens = tokenIds.map(tokenId => {
-    const side = getPolymarketTokenSide(tokenId);
-    const rawTokenId = extractPolymarketRawTokenId(tokenId);
-    return { tokenId, rawTokenId, side };
-  });
+  const buyTokenIds: string[] = [];
+  const sellTokenIds: string[] = [];
+  const midpointTokenIds: string[] = [];
 
-  const body = parsedTokens.map(({ rawTokenId, side }) => ({
-    token_id: rawTokenId,
-    side: SIDE_TO_CLOB_SIDE[side ?? 'sell'],
-  }));
+  const parsedTokens = tokenIds.map(tokenId => parseTokenId(tokenId)).filter(Boolean);
+
+  for (const { polymarketTokenId, type } of parsedTokens) {
+    if (type === 'midpoint') {
+      midpointTokenIds.push(polymarketTokenId);
+    } else if (type === 'buy') {
+      buyTokenIds.push(polymarketTokenId);
+    } else if (type === 'sell') {
+      sellTokenIds.push(polymarketTokenId);
+    }
+  }
+
+  const sideTokens: { tokenId: string; side: PolymarketSide }[] = [
+    ...buyTokenIds.map(tokenId => ({ tokenId, side: POLYMARKET_PRICE_TYPE_SIDES.buy })),
+    ...sellTokenIds.map(tokenId => ({ tokenId, side: POLYMARKET_PRICE_TYPE_SIDES.sell })),
+  ];
 
   try {
-    const url = `${POLYMARKET_CLOB_URL}/prices`;
-    const options = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    };
-
-    const response = await rainbowFetch(url, options);
-    const data = response.data as Record<string, { BUY?: string; SELL?: string }>;
+    const [sidePrices, midpointPrices] = await Promise.all([
+      sideTokens.length > 0
+        ? rainbowFetch<PolymarketSidePricesResponse>(`${POLYMARKET_CLOB_URL}/prices`, {
+            method: 'post',
+            body: JSON.stringify(sideTokens.map(t => ({ token_id: t.tokenId, side: t.side }))),
+          }).then(r => r.data)
+        : ({} as PolymarketSidePricesResponse),
+      midpointTokenIds.length > 0
+        ? rainbowFetch<PolymarketMidpointPricesResponse>(`${POLYMARKET_CLOB_URL}/midpoints`, {
+            method: 'post',
+            body: JSON.stringify(midpointTokenIds.map(id => ({ token_id: id }))),
+          }).then(r => r.data)
+        : ({} as PolymarketMidpointPricesResponse),
+    ]);
 
     const tokens: Record<string, TokenData> = {};
-    parsedTokens.forEach(({ tokenId, rawTokenId, side }) => {
-      const clobSide = SIDE_TO_CLOB_SIDE[side ?? 'sell'];
-      const price = data[rawTokenId]?.[clobSide];
+    for (const { tokenId, polymarketTokenId, type } of parsedTokens) {
+      const midPrice = midpointPrices[polymarketTokenId] ?? null;
+      const side = POLYMARKET_PRICE_TYPE_SIDES[type];
+      const price = side ? sidePrices[polymarketTokenId]?.[side] ?? midPrice : midPrice;
       if (price) {
-        tokens[tokenId] = transformPolymarketPriceToTokenData(price);
+        tokens[tokenId] = transformPolymarketPriceToTokenData(price, midPrice);
       }
-    });
+    }
 
     return tokens;
   } catch (error) {
@@ -53,10 +85,14 @@ export async function fetchPolymarketPrices(tokenIds: string[]): Promise<Record<
   }
 }
 
-export function transformPolymarketPriceToTokenData(price: string, updateTime: string = new Date().toISOString()): TokenData {
+export function transformPolymarketPriceToTokenData(
+  price: string,
+  midPrice: string | null,
+  updateTime: string = new Date().toISOString()
+): TokenData {
   return {
-    price: price,
-    midPrice: null,
+    price,
+    midPrice,
     change: {
       change5mPct: '0',
       change1hPct: '0',
@@ -78,19 +114,9 @@ export function transformPolymarketPriceToTokenData(price: string, updateTime: s
 }
 
 export function isPolymarketToken(tokenId: string): boolean {
-  return tokenId.endsWith(POLYMARKET_TOKEN_SUFFIX_BUY) || tokenId.endsWith(POLYMARKET_TOKEN_SUFFIX_SELL);
+  return parseTokenId(tokenId) !== null;
 }
 
-export function getPolymarketTokenSide(tokenId: string): PolymarketPriceSide | null {
-  if (tokenId.endsWith(POLYMARKET_TOKEN_SUFFIX_BUY)) return 'buy';
-  if (tokenId.endsWith(POLYMARKET_TOKEN_SUFFIX_SELL)) return 'sell';
-  return null;
-}
-
-function extractPolymarketRawTokenId(tokenId: string): string {
-  return tokenId.replace(POLYMARKET_TOKEN_SUFFIX_BUY, '').replace(POLYMARKET_TOKEN_SUFFIX_SELL, '');
-}
-
-export function getPolymarketTokenId(tokenId: string, side: PolymarketPriceSide): string {
-  return `${tokenId}${side === 'buy' ? POLYMARKET_TOKEN_SUFFIX_BUY : POLYMARKET_TOKEN_SUFFIX_SELL}`;
+export function getPolymarketTokenId(tokenId: string, type: PolymarketPriceType): string {
+  return `${tokenId}${SUFFIX_BASE}${type}`;
 }
