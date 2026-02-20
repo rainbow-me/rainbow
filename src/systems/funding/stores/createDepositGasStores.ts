@@ -16,6 +16,7 @@ import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
+import { isLegacyMeteorologyFeeData } from '@/resources/meteorology/classification';
 import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
 import { createExternalTokenStore, FormattedExternalAsset } from './createExternalTokenStore';
@@ -191,7 +192,7 @@ function selectGasSettings(meteorologyData: DepositGasSuggestions | undefined, s
 
 function selectGasSuggestions(meteorologyData: MeteorologyData | null): DepositGasSuggestions | null {
   if (!meteorologyData) return null;
-  if ('legacy' in meteorologyData.data) {
+  if (isLegacyMeteorologyFeeData(meteorologyData)) {
     const { fastGasPrice, proposeGasPrice, safeGasPrice } = meteorologyData.data.legacy;
     return {
       [GasSpeed.CUSTOM]: undefined,
@@ -199,16 +200,15 @@ function selectGasSuggestions(meteorologyData: MeteorologyData | null): DepositG
       [GasSpeed.NORMAL]: { gasPrice: gweiToWei(safeGasPrice), isEIP1559: false },
       [GasSpeed.URGENT]: { gasPrice: gweiToWei(fastGasPrice), isEIP1559: false },
     };
-  } else if ('data' in meteorologyData) {
-    const { baseFeeSuggestion, maxPriorityFeeSuggestions } = meteorologyData.data;
-    return {
-      [GasSpeed.CUSTOM]: undefined,
-      [GasSpeed.FAST]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.fast },
-      [GasSpeed.NORMAL]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.normal },
-      [GasSpeed.URGENT]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.urgent },
-    };
   }
-  return null;
+
+  const { baseFeeSuggestion, maxPriorityFeeSuggestions } = meteorologyData.data;
+  return {
+    [GasSpeed.CUSTOM]: undefined,
+    [GasSpeed.FAST]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.fast },
+    [GasSpeed.NORMAL]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.normal },
+    [GasSpeed.URGENT]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.urgent },
+  };
 }
 
 // ============ Gas Fee Calculation =========================================== //
