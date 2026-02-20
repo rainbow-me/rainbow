@@ -3830,6 +3830,10 @@
         "confirming_order": "ऑर्डर की पुष्टि हो रही है...",
         "deposit_funds": "फंड जमा करें",
         "average_price": "औसत मूल्य",
+        "no_liquidity_title": "कोई तरलता नहीं",
+        "no_liquidity_description": "इस परिणाम के लिए कोई विक्रेता नहीं है।",
+        "insufficient_liquidity_title": "पर्याप्त तरलता नहीं",
+        "insufficient_liquidity_description": "इस ऑर्डर के लिए कम राशि आज़माएँ।",
         "errors": {
           "not_enough_liquidity": "पूरी ऑर्डर के लिए पर्याप्त तरलता नहीं है।",
           "please_lower_amount": "कृपया राशि को कम करें और पुनः प्रयास करें।",
@@ -3853,7 +3857,11 @@
         "profit_loss": "लाभ / हानि",
         "receive": "प्राप्त करें",
         "spread": "विस्तार",
-        "cash_out": "नकद निकालें"
+        "cash_out": "नकद निकालें",
+        "no_liquidity_title": "कोई तरलता नहीं",
+        "no_liquidity_description": "इस परिणाम के लिए कोई खरीदार नहीं है।",
+        "insufficient_liquidity_title": "पर्याप्त तरलता नहीं",
+        "insufficient_liquidity_description": "कैश आउट करने के लिए कम राशि आज़माएँ।"
       },
       "search": {
         "placeholder": "भविष्यवाणी बाज़ार खोजें",
@@ -3926,7 +3934,8 @@
         "hide_lost_bets": "खोई हुई बाजियाँ छुपाएँ",
         "show_lost_bets": "खोई हुई बाजियाँ दिखाएँ",
         "lost_bets_dont_clear": "खोई हुई बाजियाँ स्वचालित रूप से नहीं हटती हैं। आप उन्हें नीचे साफ कर सकते हैं।"
-      }
+      },
+      "in_review": "समीक्षा में"
     },
     "rnbw_rewards": {
       "introduction": {
