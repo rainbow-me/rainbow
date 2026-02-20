@@ -3,7 +3,7 @@ import { lightModeThemeColors } from '../styles/colors';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import ethereumUtils from '@/utils/ethereumUtils';
 import isETH from '@/utils/isETH';
-import pseudoRandomArrayItemFromString from '@/utils/pseudoRandomArrayItemFromString';
+import { getDeterministicIndex } from '@/framework/core/utils/getDeterministicIndex';
 import { getHighContrastColor } from './useAccountAccentColor';
 import { usePersistentDominantColorFromImage } from './usePersistentDominantColorFromImage';
 import { useTheme } from '@/theme';
@@ -32,7 +32,7 @@ export default function useColorForAsset(
           ? colors.appleBlue
           : colors.brighten(lightModeThemeColors.dark)
         : colors.dark
-      : pseudoRandomArrayItemFromString(resolvedAddress, colors.avatarBackgrounds);
+      : colors.avatarBackgrounds[getDeterministicIndex({ seed: resolvedAddress, length: colors.avatarBackgrounds.length })];
     return color;
   }, [colors, forceETHColor, isDarkMode, resolvedAddress]);
 
