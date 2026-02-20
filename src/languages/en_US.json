@@ -2708,6 +2708,16 @@
           "confirmed": "Revoked",
           "failed": "Revoke Failed"
         },
+        "delegate": {
+          "pending": "Delegating",
+          "confirmed": "Approved",
+          "failed": "Delegation Failed"
+        },
+        "revoke_delegation": {
+          "pending": "Revoking",
+          "confirmed": "Revoked",
+          "failed": "Revoke Failed"
+        },
         "sale": {
           "pending": "Selling",
           "confirmed": "Sold",
@@ -2747,6 +2757,8 @@
       "savings": "Savings",
       "signed": "Signed",
       "contract_interaction": "Contract Interaction",
+      "delegate_description": "Wallet Delegation",
+      "revoke_delegation_description": "Wallet Delegation",
       "deposited_with_token": "Deposited %{name}",
       "withdrew_with_token": "Withdrew %{name}"
     },
@@ -2759,6 +2771,7 @@
       "network_fee": "Network Fee",
       "hash_copied": "\uDBC0\uDC63 Transaction hash copied",
       "address_copied": "\uDBC0\uDC63 Address copied",
+      "smart_account": "Smart Account",
       "try_again": "\uDBC0\uDD49 Try again",
       "context_menu": {
         "copy_address": "Copy Address",
@@ -3064,6 +3077,7 @@
         "watching": "Watching",
         "ledger": "Ledger",
         "delegated": "Delegated",
+        "alt_delegation": "Alt Delegation",
         "not_delegated": "Not Delegated",
         "disabled": "Disabled",
         "wallets": "Wallets",

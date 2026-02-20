@@ -236,7 +236,7 @@ export type PendingTransaction = RainbowTransaction & {
 };
 
 export const TransactionTypeMap = {
-  withoutChanges: ['cancel', 'contract_interaction', 'deployment', 'approve', 'revoke', 'speed_up'],
+  withoutChanges: ['cancel', 'contract_interaction', 'delegate', 'deployment', 'approve', 'revoke', 'revoke_delegation', 'speed_up'],
   withChanges: [
     'sale',
     'bridge',
