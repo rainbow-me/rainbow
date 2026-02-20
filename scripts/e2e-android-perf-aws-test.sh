@@ -41,11 +41,11 @@ done
 echo "✅ Maestro session is ready."
 
 echo "Running prepare step..."
-maestro test --config e2e/config.yaml -e APP_ID="$APP_ID" e2e/utils/PreparePerf.yaml
+maestro test -e APP_ID="$APP_ID" e2e/utils/PreparePerf.yaml
 
 echo "Running Flashlight performance test..."
 flashlight test --bundleId "$APP_ID" \
-  --testCommand "maestro test --config e2e/config.yaml -e APP_ID=\"$APP_ID\" e2e/perf/TTI.yaml" \
+  --testCommand "maestro test -e APP_ID=\"$APP_ID\" e2e/perf/TTI.yaml" \
   --duration 20000 \
   --resultsFilePath $DEVICEFARM_LOG_DIR/tti.json \
   --iterationCount 10 \
