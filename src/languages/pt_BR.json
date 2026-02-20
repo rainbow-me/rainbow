@@ -3830,6 +3830,10 @@
         "confirming_order": "Confirmando Pedido...",
         "deposit_funds": "Deposite Fundos",
         "average_price": "Preço Médio",
+        "no_liquidity_title": "Sem Liquidez",
+        "no_liquidity_description": "Não há vendedores para este resultado.",
+        "insufficient_liquidity_title": "Liquidez Insuficiente",
+        "insufficient_liquidity_description": "Tente um valor menor para esta ordem.",
         "errors": {
           "not_enough_liquidity": "Não há liquidez suficiente para realizar o pedido completo.",
           "please_lower_amount": "Por favor, reduza o valor e tente novamente.",
@@ -3853,7 +3857,11 @@
         "profit_loss": "Lucro / Perda",
         "receive": "Receber",
         "spread": "Spread",
-        "cash_out": "Retirar"
+        "cash_out": "Retirar",
+        "no_liquidity_title": "Sem Liquidez",
+        "no_liquidity_description": "Não há compradores para este resultado.",
+        "insufficient_liquidity_title": "Liquidez Insuficiente",
+        "insufficient_liquidity_description": "Tente um valor menor para sacar."
       },
       "search": {
         "placeholder": "Pesquisar por mercados de previsão",
@@ -3926,7 +3934,8 @@
         "hide_lost_bets": "Ocultar Apostas Perdidas",
         "show_lost_bets": "Mostrar Apostas Perdidas",
         "lost_bets_dont_clear": "As apostas perdidas não são removidas automaticamente. Você pode limpá-las abaixo."
-      }
+      },
+      "in_review": "Em revisão"
     },
     "rnbw_rewards": {
       "introduction": {
