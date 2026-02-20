@@ -3830,6 +3830,10 @@
         "confirming_order": "جارٍ تأكيد الطلب...",
         "deposit_funds": "إيداع الأموال",
         "average_price": "السعر المتوسط",
+        "no_liquidity_title": "لا توجد سيولة",
+        "no_liquidity_description": "لا يوجد بائعون لهذه النتيجة.",
+        "insufficient_liquidity_title": "السيولة غير كافية",
+        "insufficient_liquidity_description": "جرّب مبلغًا أصغر لهذا الطلب.",
         "errors": {
           "not_enough_liquidity": "لا يوجد سيولة كافية لتنفيذ الطلب بالكامل.",
           "please_lower_amount": "يرجى تقليل الكمية والمحاولة مرة أخرى.",
@@ -3853,7 +3857,11 @@
         "profit_loss": "الربح / الخسارة",
         "receive": "استلم",
         "spread": "الانتشار",
-        "cash_out": "سحب النقد"
+        "cash_out": "سحب النقد",
+        "no_liquidity_title": "لا توجد سيولة",
+        "no_liquidity_description": "لا يوجد مشترون لهذه النتيجة.",
+        "insufficient_liquidity_title": "السيولة غير كافية",
+        "insufficient_liquidity_description": "جرّب مبلغًا أصغر للسحب النقدي."
       },
       "search": {
         "placeholder": "ابحث عن أسواق التنبؤ",
@@ -3926,7 +3934,8 @@
         "hide_lost_bets": "إخفاء الرهانات الخاسرة",
         "show_lost_bets": "عرض الرهانات الخاسرة",
         "lost_bets_dont_clear": "لا تتم إزالة الرهانات الخاسرة تلقائيًا. يمكنك مسحها أدناه."
-      }
+      },
+      "in_review": "قيد المراجعة"
     },
     "rnbw_rewards": {
       "introduction": {
