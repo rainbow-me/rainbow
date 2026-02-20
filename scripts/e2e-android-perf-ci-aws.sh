@@ -94,16 +94,48 @@ while true; do
 done
 
 RESULT=$(aws devicefarm get-run --arn "$RUN_ARN" --query "run.result" --output text)
+
+# Create local artifact dir
+ARTIFACTS_DIR="e2e-artifacts"
+mkdir -p "$ARTIFACTS_DIR"
+
+# Download logs first (before checking result so we have logs on failure)
+echo "📥 Downloading Device Farm logs..."
+LOGS_DIR="$ARTIFACTS_DIR/logs"
+mkdir -p "$LOGS_DIR"
+
+# List all jobs for the run
+JOB_ARNS=$(aws devicefarm list-jobs --arn "$RUN_ARN" --query "jobs[*].arn" --output text)
+for JOB_ARN in $JOB_ARNS; do
+  # Download LOG artifacts (device logs, test spec output, etc.)
+  LOG_ARTIFACTS=$(aws devicefarm list-artifacts --arn "$JOB_ARN" --type LOG --query "artifacts[*].[name,url]" --output text)
+  while IFS=$'\t' read -r LOG_NAME LOG_URL; do
+    if [[ -n "$LOG_URL" ]]; then
+      SAFE_NAME=$(echo "$LOG_NAME" | tr ' /' '_')
+      echo "  Downloading log: $LOG_NAME"
+      curl -s -o "$LOGS_DIR/$SAFE_NAME.log" "$LOG_URL"
+    fi
+  done <<< "$LOG_ARTIFACTS"
+
+  # Download FILE artifacts (customer artifacts, video, etc.)
+  FILE_ARTIFACTS=$(aws devicefarm list-artifacts --arn "$JOB_ARN" --type FILE --query "artifacts[*].[name,url,extension]" --output text)
+  while IFS=$'\t' read -r FILE_NAME FILE_URL FILE_EXT; do
+    if [[ -n "$FILE_URL" ]]; then
+      SAFE_NAME=$(echo "$FILE_NAME" | tr ' /' '_')
+      echo "  Downloading file: $FILE_NAME"
+      curl -s -o "$LOGS_DIR/$SAFE_NAME.$FILE_EXT" "$FILE_URL"
+    fi
+  done <<< "$FILE_ARTIFACTS"
+done
+
+echo "✅ Device Farm logs downloaded."
+
 if [[ "$RESULT" == "PASSED" ]]; then
   echo "✅ Run completed successfully."
 else
   echo "❌ Test run failed with result: $RESULT"
   exit 1
 fi
-
-# Create local artifact dir
-PERF_DIR="e2e-artifacts"
-mkdir -p "$PERF_DIR"
 
 echo "📥 Downloading Customer Artifacts..."
 
@@ -115,13 +147,11 @@ ARTIFACT_ZIP_URL=$(aws devicefarm list-artifacts \
   --output text)
 
 # Download and extract
-ARTIFACTS_DIR="e2e-artifacts"
-mkdir -p "$ARTIFACTS_DIR"
 curl -s -o "$ARTIFACTS_DIR/results.zip" "$ARTIFACT_ZIP_URL"
 unzip -o "$ARTIFACTS_DIR/results.zip" -d "$ARTIFACTS_DIR"
 
 # Locate tti.json within extracted ZIP
-TTI_JSON_PATH=$(find "$PERF_DIR" -name "tti.json" | head -n1)
+TTI_JSON_PATH=$(find "$ARTIFACTS_DIR" -name "tti.json" | head -n1)
 
 # Copy to a location that is easily accessible for GitHub Actions
 mkdir -p "$ARTIFACTS_DIR/perf"
