@@ -16,6 +16,7 @@ export type OrderExecution = {
   fee: string;
   tokensBought: string;
   hasInsufficientLiquidity: boolean;
+  hasNoLiquidityAtMarketPrice: boolean;
   spread: string;
   minBuyAmountUsd: string;
   bestPrice: string;
@@ -37,6 +38,7 @@ export function calculateOrderExecution({
       fee: '0',
       tokensBought: '0',
       hasInsufficientLiquidity: false,
+      hasNoLiquidityAtMarketPrice: false,
       spread: '0',
       minBuyAmountUsd: '0',
       bestPrice: '0',
@@ -74,6 +76,7 @@ export function calculateOrderExecution({
 
   const bestAskPrice = orderBook.asks.at(-1)?.price ?? '0';
   const bestBidPrice = orderBook.bids.at(-1)?.price ?? '0';
+  const hasNoLiquidityAtMarketPrice = !greaterThanWorklet(bestAskPrice, '0');
   const spread = subWorklet(bestAskPrice, bestBidPrice);
 
   // There is an orderBook.min_order_size, but in practice it is always $1
@@ -91,6 +94,7 @@ export function calculateOrderExecution({
     fee,
     tokensBought,
     hasInsufficientLiquidity,
+    hasNoLiquidityAtMarketPrice,
     spread,
     minBuyAmountUsd: String(minBuyAmountUsd),
   };

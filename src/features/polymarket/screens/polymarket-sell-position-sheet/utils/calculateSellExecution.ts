@@ -11,6 +11,7 @@ export type SellExecution = {
   grossProceedsUsd: string;
   expectedPayoutUsd: string;
   hasInsufficientLiquidity: boolean;
+  hasNoLiquidityAtMarketPrice: boolean;
   spread: string;
 };
 
@@ -33,6 +34,7 @@ export function calculateSellExecution({
       grossProceedsUsd: '0',
       expectedPayoutUsd: '0',
       hasInsufficientLiquidity: false,
+      hasNoLiquidityAtMarketPrice: false,
       spread: '0',
     };
   }
@@ -66,6 +68,7 @@ export function calculateSellExecution({
 
   const bestAskPrice = orderBook.asks.at(-1)?.price ?? '0';
   const bestBidPrice = orderBook.bids.at(-1)?.price ?? '0';
+  const hasNoLiquidityAtMarketPrice = !greaterThanWorklet(bestBidPrice, '0');
   const spread =
     greaterThanWorklet(bestAskPrice, '0') && greaterThanWorklet(bestBidPrice, '0') ? subWorklet(bestAskPrice, bestBidPrice) : '0';
 
@@ -78,6 +81,7 @@ export function calculateSellExecution({
     grossProceedsUsd,
     expectedPayoutUsd,
     hasInsufficientLiquidity,
+    hasNoLiquidityAtMarketPrice,
     spread,
   };
 }
