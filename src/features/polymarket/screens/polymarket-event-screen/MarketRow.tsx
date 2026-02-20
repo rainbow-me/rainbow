@@ -16,6 +16,7 @@ import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { opacity } from '@/framework/ui/utils/opacity';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import * as i18n from '@/languages';
+import { type UmaResolutionStatus } from '@/features/polymarket/types/polymarket-event';
 
 type MarketRowProps = {
   accentColor: string;
@@ -23,7 +24,7 @@ type MarketRowProps = {
   image?: string | undefined;
   title: string;
   volume?: string;
-  resolutionStatus?: string;
+  umaResolutionStatus?: UmaResolutionStatus;
   tokenId: string;
   price: string;
   minTickSize: number;
@@ -40,7 +41,7 @@ export const MarketRow = memo(function MarketRow({
   image,
   title,
   volume,
-  resolutionStatus,
+  umaResolutionStatus,
   tokenId,
   price,
   minTickSize,
@@ -51,7 +52,7 @@ export const MarketRow = memo(function MarketRow({
 
   const shouldShowPriceChange = priceChange !== undefined && Math.abs(priceChange) >= 0.01;
   const priceChangeIsPositive = priceChange !== undefined && priceChange > 0;
-  const isResolutionInReview = resolutionStatus && resolutionStatus !== 'resolved';
+  const isResolutionInReview = umaResolutionStatus && umaResolutionStatus !== 'resolved';
 
   const livePrice = useLiveTokenValue({
     tokenId: getPolymarketTokenId(tokenId, 'sell'),
