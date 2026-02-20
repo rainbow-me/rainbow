@@ -238,6 +238,7 @@ const ThreeWayMoneylineMarkets = memo(function ThreeWayMoneylineMarkets({
               image={image}
               priceChange={0}
               title={market.groupItemTitle}
+              umaResolutionStatus={market.umaResolutionStatus}
               tokenId={market.clobTokenIds[0]}
               price={market.outcomePrices[0]}
               minTickSize={market.orderPriceMinTickSize}

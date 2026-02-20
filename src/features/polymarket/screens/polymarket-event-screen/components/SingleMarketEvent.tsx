@@ -52,6 +52,7 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
             image={outcomeImage}
             priceChange={0}
             title={outcomeTitles?.[index] ?? outcome}
+            umaResolutionStatus={market.umaResolutionStatus}
             tokenId={market.clobTokenIds[index]}
             price={market.outcomePrices[index]}
             minTickSize={market.orderPriceMinTickSize}

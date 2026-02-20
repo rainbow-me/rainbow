@@ -81,6 +81,7 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
                 image={showMarketImages ? market.icon : undefined}
                 title={market.groupItemTitle}
                 volume={market.volume}
+                umaResolutionStatus={market.umaResolutionStatus}
                 tokenId={market.clobTokenIds[0]}
                 price={market.lastTradePrice ? String(market.lastTradePrice) : '0'}
                 minTickSize={market.orderPriceMinTickSize}
