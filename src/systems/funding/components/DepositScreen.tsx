@@ -18,7 +18,7 @@ import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box, useColorMode, useForegroundColor } from '@/design-system';
 import { NumberPad } from '@/features/perps/components/NumberPad/NumberPad';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
-import { SliderWithLabels } from '@/features/perps/components/Slider';
+import { SliderWithLabels } from '@/features/perps/components/Slider/SliderWithLabels';
 import { SLIDER_MAX, SliderColors } from '@/features/perps/components/Slider/Slider';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { useStableValue } from '@/hooks/useStableValue';
