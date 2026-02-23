@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { type StyleProp, type ViewStyle, StyleSheet } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import { useTheme } from '../../theme/ThemeContext';
 import ActivityIndicator from '../ActivityIndicator';
