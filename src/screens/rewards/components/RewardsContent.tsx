@@ -1,7 +1,7 @@
 import React from 'react';
 import { RewardsTitle } from '@/screens/rewards/components/RewardsTitle';
 import { RewardsEarnings } from '@/screens/rewards/components/RewardsEarnings';
-import { GetRewardsDataForWalletQuery } from '@/graphql/__generated__/metadata';
+import { type GetRewardsDataForWalletQuery } from '@/graphql/__generated__/metadata';
 import { RewardsStats } from './RewardsStats';
 import { RewardsFakeContent } from '@/screens/rewards/components/RewardsFakeContent';
 import { RewardsProgramStatus } from '@/screens/rewards/components/RewardsProgramStatus';

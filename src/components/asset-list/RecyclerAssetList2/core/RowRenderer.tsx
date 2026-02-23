@@ -4,23 +4,23 @@ import AssetListItemSkeleton from '../../AssetListItemSkeleton';
 import FastBalanceCoinRow from '../FastComponents/FastBalanceCoinRow';
 import WrappedNFT from '../WrappedNFT';
 import WrappedTokenFamilyHeader from '../WrappedTokenFamilyHeader';
-import { ExtendedState } from './RawRecyclerList';
+import { type ExtendedState } from './RawRecyclerList';
 import {
   CellType,
-  ClaimableExtraData,
-  ClaimablesHeaderExtraData,
-  CoinDividerExtraData,
-  CoinExtraData,
-  LegacyNFTExtraData,
-  LegacyNFTFamilyExtraData,
-  NFTExtraData,
-  NFTFamilyExtraData,
-  PositionExtraData,
-  PositionHeaderExtraData,
-  PerpsBalanceExtraData,
-  PerpsPositionExtraData,
-  PolymarketBalanceExtraData,
-  PolymarketPositionExtraData,
+  type ClaimableExtraData,
+  type ClaimablesHeaderExtraData,
+  type CoinDividerExtraData,
+  type CoinExtraData,
+  type LegacyNFTExtraData,
+  type LegacyNFTFamilyExtraData,
+  type NFTExtraData,
+  type NFTFamilyExtraData,
+  type PositionExtraData,
+  type PositionHeaderExtraData,
+  type PerpsBalanceExtraData,
+  type PerpsPositionExtraData,
+  type PolymarketBalanceExtraData,
+  type PolymarketPositionExtraData,
 } from './ViewTypes';
 import assertNever from '@/helpers/assertNever';
 import { ProfileRowWrapper } from '../profile-header/ProfileRowWrapper';

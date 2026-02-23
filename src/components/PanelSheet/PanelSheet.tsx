@@ -1,6 +1,6 @@
-import React, { ComponentProps, memo, useMemo } from 'react';
-import { StyleProp, StyleSheet, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
-import Animated, { AnimatedStyle } from 'react-native-reanimated';
+import React, { type ComponentProps, memo, useMemo } from 'react';
+import { type StyleProp, StyleSheet, TouchableWithoutFeedback, View, type ViewStyle } from 'react-native';
+import Animated, { type AnimatedStyle } from 'react-native-reanimated';
 import { Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { IS_IOS } from '@/env';

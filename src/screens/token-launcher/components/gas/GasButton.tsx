@@ -2,10 +2,10 @@ import React from 'react';
 import { Box } from '@/design-system';
 import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { GasMenu } from './GasMenu';
-import { GasSpeed } from '@/__swaps__/types/gas';
+import { type GasSpeed } from '@/__swaps__/types/gas';
 import { SelectedGasSpeed } from './SelectedGasSpeed';
 import { EstimatedGasFee } from './EstimatedGasFee';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 
 type GasButtonProps = {
   gasSpeed: GasSpeed;

@@ -8,7 +8,7 @@ import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
 import { Box, Cover, Text, useForegroundColor } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { UploadImageReturnData } from '@/handlers/pinata';
+import { type UploadImageReturnData } from '@/handlers/pinata';
 import useENSModifiedRegistration from '@/hooks/useENSModifiedRegistration';
 import useENSRegistration from '@/hooks/useENSRegistration';
 import useENSRegistrationForm from '@/hooks/useENSRegistrationForm';
@@ -17,7 +17,7 @@ import { ImgixImage } from '@/components/images';
 import magicMemo from '@/utils/magicMemo';
 import { stringifyENSNFTRecord } from '@/utils/ens';
 import { ENS_RECORDS } from '@/helpers/ens';
-import { ImagePickerAsset } from 'expo-image-picker';
+import { type ImagePickerAsset } from 'expo-image-picker';
 
 export const coverMetadataAtom = atom<ImagePickerAsset | undefined>({
   default: undefined,

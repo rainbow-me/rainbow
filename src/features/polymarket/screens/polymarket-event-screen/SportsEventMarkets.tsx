@@ -4,11 +4,11 @@ import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/
 import React, { memo, useMemo, useState } from 'react';
 import {
   BET_TYPE,
-  BetType,
+  type BetType,
   getMarketsGroupedByBetType,
-  GroupedSportsMarkets,
-  LineBasedGroup,
-  MoneylineGroup,
+  type GroupedSportsMarkets,
+  type LineBasedGroup,
+  type MoneylineGroup,
 } from '@/features/polymarket/screens/polymarket-event-screen/utils/getMarketsGroupedByBetType';
 import useDimensions from '@/hooks/useDimensions';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
@@ -16,10 +16,10 @@ import { SingleMarketEventOutcomes } from '@/features/polymarket/screens/polymar
 import { ItemSelector } from '@/features/polymarket/screens/polymarket-event-screen/ItemSelector';
 import { BetTypeSelector } from '@/features/polymarket/screens/polymarket-event-screen/BetTypeSelector';
 import { MarketRow } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
-import { PolymarketTeamInfo } from '@/features/polymarket/types';
+import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
 
@@ -238,6 +238,7 @@ const ThreeWayMoneylineMarkets = memo(function ThreeWayMoneylineMarkets({
               image={image}
               priceChange={0}
               title={market.groupItemTitle}
+              umaResolutionStatus={market.umaResolutionStatus}
               tokenId={market.clobTokenIds[0]}
               price={market.outcomePrices[0]}
               minTickSize={market.orderPriceMinTickSize}

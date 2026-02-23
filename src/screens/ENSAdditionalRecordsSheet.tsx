@@ -1,4 +1,4 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import React, { useMemo } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useRecoilState } from 'recoil';
@@ -9,8 +9,8 @@ import { accentColorAtom, textRecordFields } from '@/helpers/ens';
 import useENSRegistrationForm from '@/hooks/useENSRegistrationForm';
 import deviceUtils from '@/utils/deviceUtils';
 import { IS_ANDROID } from '@/env';
-import Routes from '@/navigation/routesNames';
-import { RootStackParamList } from '@/navigation/types';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
 
 export const ENSAdditionalRecordsSheetHeight = 262;
 const recordLineHeight = 30;

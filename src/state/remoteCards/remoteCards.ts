@@ -1,7 +1,7 @@
 import { RainbowError, logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { queryClient } from '@/react-query';
-import { TrimmedCard, TrimmedCards, cardCollectionQueryKey } from '@/resources/cards/cardCollectionQuery';
+import { type TrimmedCard, type TrimmedCards, cardCollectionQueryKey } from '@/resources/cards/cardCollectionQuery';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 export type CardKey = string;

@@ -6,7 +6,7 @@ import { Box, Inline, Separator, Text } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { IS_ANDROID } from '@/env';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
-import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { type LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider } from '@/handlers/web3';
 import { BiometryTypes } from '@/helpers';
 import useBiometryType from '@/hooks/useBiometryType';
@@ -19,7 +19,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
-import { Wallet } from '@ethersproject/wallet';
+import { type Wallet } from '@ethersproject/wallet';
 import React, { useCallback, useState } from 'react';
 import { Keyboard, Share } from 'react-native';
 import Animated, {

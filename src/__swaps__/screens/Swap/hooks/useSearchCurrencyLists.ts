@@ -2,7 +2,7 @@ import { isAddress } from '@ethersproject/address';
 import { rankings } from 'match-sorter';
 import { useEffect, useMemo, useRef } from 'react';
 import { useDeepCompareMemo } from 'use-deep-compare';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { analytics } from '@/analytics';
 import { isNativeAsset } from '@/handlers/assets';
 import { addHexPrefix } from '@/handlers/web3';
@@ -16,9 +16,9 @@ import {
   useTokenSearchStore,
   useUnverifiedTokenSearchStore,
 } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-import { AddressOrEth, AssetType, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { AssetToBuySectionId, FavoritedAsset, SearchAsset, TokenToBuyListItem } from '@/__swaps__/types/search';
-import { RecentSwap } from '@/__swaps__/types/swap';
+import { type AddressOrEth, type AssetType, type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { type AssetToBuySectionId, type FavoritedAsset, type SearchAsset, type TokenToBuyListItem } from '@/__swaps__/types/search';
+import { type RecentSwap } from '@/__swaps__/types/swap';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { filterList } from '@/utils/search';
 import { time } from '@/utils/time';

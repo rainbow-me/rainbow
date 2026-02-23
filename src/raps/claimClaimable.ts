@@ -1,8 +1,8 @@
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { createNewAction, createNewRap } from './common';
-import { RapAction, RapSwapActionParameters } from './references';
+import { type RapAction, type RapSwapActionParameters } from './references';
 import { logger, RainbowError } from '@/logger';
-import { CrosschainQuote } from '@rainbow-me/swaps';
+import { type CrosschainQuote } from '@rainbow-me/swaps';
 import { assetNeedsUnlocking } from './actions';
 
 export async function createClaimClaimableRap(parameters: RapSwapActionParameters<'claimClaimable'>) {

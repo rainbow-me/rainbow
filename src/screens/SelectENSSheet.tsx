@@ -1,4 +1,4 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
@@ -14,10 +14,10 @@ import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
 import deviceUtils from '@/utils/deviceUtils';
-import { ListRenderItem, View } from 'react-native';
-import { BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
-import { RootStackParamList } from '@/navigation/types';
-import Routes from '@/navigation/routesNames';
+import { type ListRenderItem, View } from 'react-native';
+import { type BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
+import { type RootStackParamList } from '@/navigation/types';
+import type Routes from '@/navigation/routesNames';
 
 export const SelectENSSheetHeight = 400;
 

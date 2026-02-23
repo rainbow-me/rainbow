@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useMemo } from 'react';
+import React, { type ReactNode, useCallback, useMemo } from 'react';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
@@ -8,8 +8,8 @@ import { IS_ANDROID } from '@/env';
 import { add, formatNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { weiToGwei } from '@/parsers';
-import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
-import { GasSpeed } from '@/__swaps__/types/gas';
+import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { type GasSpeed } from '@/__swaps__/types/gas';
 import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
 import gasUtils from '@/utils/gas';
 

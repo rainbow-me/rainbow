@@ -1,5 +1,5 @@
 import React from 'react';
-import { Path, SvgProps } from 'react-native-svg';
+import { Path, type SvgProps } from 'react-native-svg';
 import Svg from '../Svg';
 
 const CaretDownIcon = ({ color, ...props }: SvgProps) => (

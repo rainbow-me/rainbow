@@ -1,5 +1,5 @@
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { MarketFilter, PolymarketInterval } from '../types';
+import { type MarketFilter, type PolymarketInterval } from '../types';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
 // ============ Types ========================================================== //

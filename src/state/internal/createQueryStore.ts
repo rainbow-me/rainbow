@@ -8,31 +8,31 @@ import { time } from '@/utils/time';
 import { createRainbowStore } from './createRainbowStore';
 import { SubscriptionManager } from './queryStore/classes/SubscriptionManager';
 import {
-  BaseQueryStoreState,
-  CacheEntry,
-  FetchOptions,
-  InternalStateKeys,
-  ParamResolvable,
-  QueryStatusInfo,
+  type BaseQueryStoreState,
+  type CacheEntry,
+  type FetchOptions,
+  type InternalStateKeys,
+  type ParamResolvable,
+  type QueryStatusInfo,
   QueryStatuses,
-  QueryStoreConfig,
-  QueryStoreParams,
-  QueryStoreState,
-  QueryStoreStateCreator,
-  QueryStore,
-  ResolvedEnabledResult,
-  ResolvedParamsResult,
-  StoreState,
+  type QueryStoreConfig,
+  type QueryStoreParams,
+  type QueryStoreState,
+  type QueryStoreStateCreator,
+  type QueryStore,
+  type ResolvedEnabledResult,
+  type ResolvedParamsResult,
+  type StoreState,
 } from './queryStore/types';
-import { $, AttachValue, SignalFunction, Unsubscribe, attachValueSubscriptionMap } from './signal';
+import { $, type AttachValue, type SignalFunction, type Unsubscribe, attachValueSubscriptionMap } from './signal';
 import {
-  OptionallyPersistedRainbowStore,
-  PersistedRainbowStore,
-  RainbowPersistConfig,
-  RainbowStateCreator,
-  RainbowStore,
-  SubscribeArgs,
-  SubscribeOverloads,
+  type OptionallyPersistedRainbowStore,
+  type PersistedRainbowStore,
+  type RainbowPersistConfig,
+  type RainbowStateCreator,
+  type RainbowStore,
+  type SubscribeArgs,
+  type SubscribeOverloads,
 } from './types';
 import { omitStoreMethods } from './utils/persistUtils';
 

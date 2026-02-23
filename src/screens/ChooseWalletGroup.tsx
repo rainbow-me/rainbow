@@ -8,7 +8,7 @@ import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { createWallet, RainbowAccount, RainbowWallet } from '@/model/wallet';
+import { createWallet, type RainbowAccount, type RainbowWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { backupsStore } from '@/state/backups/backups';

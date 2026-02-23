@@ -1,6 +1,6 @@
-import { StateCreator } from 'zustand';
-import { AttachValue, SignalFunction } from '../signal';
-import { BaseRainbowStore, DebounceOptions, RainbowStore } from '../types';
+import { type StateCreator } from 'zustand';
+import { type AttachValue, type SignalFunction } from '../signal';
+import { type BaseRainbowStore, type DebounceOptions, type RainbowStore } from '../types';
 
 /**
  * Helper type that represents the store returned by `createQueryStore()`.

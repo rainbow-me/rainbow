@@ -1,14 +1,14 @@
 import { analytics } from '@/analytics';
-import { MinimalNotification } from '@/notifications/types';
+import { type MinimalNotification } from '@/notifications/types';
 import { getPermissionStatus } from '@/notifications/permissions';
 import { RESULTS } from 'react-native-permissions';
 import {
   WalletNotificationRelationship,
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
-  GroupSettings,
-  GlobalNotificationTopicType,
-  WalletNotificationSettings,
+  type GroupSettings,
+  type GlobalNotificationTopicType,
+  type WalletNotificationSettings,
   notificationSettingsStorage,
 } from '@/notifications/settings';
 

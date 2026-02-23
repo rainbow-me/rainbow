@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import {
-  DerivedValue,
-  SharedValue,
+  type DerivedValue,
+  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,

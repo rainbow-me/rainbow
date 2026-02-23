@@ -2,7 +2,7 @@ import { Bleed, Box, Text, TextIcon, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { memo, useMemo, useState } from 'react';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
-import { PolymarketEvent, PolymarketMarket, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -81,6 +81,7 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
                 image={showMarketImages ? market.icon : undefined}
                 title={market.groupItemTitle}
                 volume={market.volume}
+                umaResolutionStatus={market.umaResolutionStatus}
                 tokenId={market.clobTokenIds[0]}
                 price={market.lastTradePrice ? String(market.lastTradePrice) : '0'}
                 minTickSize={market.orderPriceMinTickSize}

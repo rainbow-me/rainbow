@@ -3,13 +3,12 @@ import { time } from '@/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { getGammaLeagueId } from '@/features/polymarket/leagues';
-import { PolymarketGameMetadata, RawPolymarketTeamInfo, PolymarketTeamInfo } from '@/features/polymarket/types';
-import colors from '@/styles/colors';
-import { addressHashedColorIndex } from '@/utils/profileUtils';
+import { type PolymarketGameMetadata, type RawPolymarketTeamInfo, type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { buildGammaUrl } from '@/features/charts/polymarket/api/gammaClient';
-import { PolymarketMarket, RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { GammaMarket } from '@/features/charts/polymarket/types';
+import { type PolymarketMarket, type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type GammaMarket } from '@/features/charts/polymarket/types';
+import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
 
 export async function fetchGameMetadata(eventTicker: string) {
   try {
@@ -210,11 +209,15 @@ function filterFetchedTeams(teams: PolymarketTeamInfo[], teamNames: string[]): P
 
 function enrichTeamsWithColor(teams: RawPolymarketTeamInfo[]): PolymarketTeamInfo[] {
   return teams.map(team => {
-    const defaultColor = colors.avatarBackgrounds[addressHashedColorIndex(String(team.id)) ?? 0];
-    const color = team.color ?? defaultColor;
+    const color = team.color
+      ? {
+          light: getHighContrastColor(team.color, false),
+          dark: getHighContrastColor(team.color, true),
+        }
+      : getColorBySeed(String(team.id));
     return {
       ...team,
-      color: { light: getHighContrastColor(color, false), dark: getHighContrastColor(color, true) },
+      color,
     };
   });
 }

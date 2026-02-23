@@ -2,7 +2,7 @@ import React from 'react';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box } from '@/design-system';
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme';
 import RainbowCoinIcon from './RainbowCoinIcon';
 

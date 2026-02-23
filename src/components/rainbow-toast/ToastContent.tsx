@@ -2,7 +2,7 @@ import { SWAP_ICON_WIDTH, TOAST_ICON_SIZE } from '@/components/rainbow-toast/con
 import { BaseToastIcon } from '@/components/rainbow-toast/icons/BaseToastIcon';
 import { SendToastIcon } from '@/components/rainbow-toast/icons/SendToastIcon';
 import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
-import { RainbowToast } from '@/components/rainbow-toast/types';
+import { type RainbowToast } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Text } from '@/design-system';
 import { AssetType } from '@/entities/assetTypes';

@@ -1,4 +1,4 @@
-import { BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
+import { type BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
 import { getGlobal, saveGlobal } from './common';
 
 export type ENSDataType = 'avatar' | 'header' | 'registrant' | 'owner' | 'address' | 'records' | 'resolver' | 'firstTxTimestamp';

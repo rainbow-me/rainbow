@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
 import { Categories } from './Categories';
 import TabBar from './TabBar';
-import { EmojiCategory } from './types';
+import { type EmojiCategory } from './types';
 import { ImgixImage } from '@/components/images';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';

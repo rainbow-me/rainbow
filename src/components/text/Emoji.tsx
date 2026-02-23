@@ -1,9 +1,9 @@
 import { isString } from 'lodash';
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import Text from './Text';
 import { emojis } from '@/references';
-import { TextAlign, TextLetterSpacing, TextSize, TextLineHeight } from './types';
-import { TextStyle, StyleProp } from 'react-native';
+import { type TextAlign, type TextLetterSpacing, type TextSize, type TextLineHeight } from './types';
+import { type TextStyle, type StyleProp } from 'react-native';
 
 const emojiData = Object.entries(emojis).map(([emojiChar, { name }]) => {
   return [name, emojiChar];

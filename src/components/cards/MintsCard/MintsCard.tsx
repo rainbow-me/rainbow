@@ -5,7 +5,7 @@ import { Menu } from './Menu';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { mintsQueryKey, useMints, useMintsFilter } from '@/resources/mints';
-import { MintableCollection } from '@/graphql/__generated__/arc';
+import { type MintableCollection } from '@/graphql/__generated__/arc';
 import { queryClient } from '@/react-query';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';

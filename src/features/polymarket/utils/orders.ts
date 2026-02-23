@@ -1,5 +1,5 @@
 import { getPolymarketClobClient, usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
-import { PolymarketPosition } from '@/features/polymarket/types';
+import { type PolymarketPosition } from '@/features/polymarket/types';
 import { ensureTradingApprovals } from '@/features/polymarket/utils/proxyWallet';
 import { RainbowError } from '@/logger';
 import { OrderType, Side } from '@polymarket/clob-client';

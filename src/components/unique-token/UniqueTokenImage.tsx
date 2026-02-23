@@ -6,7 +6,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import { useColorMode, Text } from '@/design-system';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
-import { Colors } from '@/styles';
+import { type Colors } from '@/styles';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { RainbowImage } from '../RainbowImage';
 import { logger } from '@/logger';

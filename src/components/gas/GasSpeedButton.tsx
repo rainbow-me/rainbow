@@ -28,9 +28,9 @@ import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme';
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import { GasSpeed } from '@/__swaps__/types/gas';
+import { type GasSpeed } from '@/__swaps__/types/gas';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { opacity } from '@/framework/ui/utils/opacity';
 

@@ -1,4 +1,4 @@
-import { PermissionStatus, requestNotifications, RESULTS, checkNotifications } from 'react-native-permissions';
+import { type PermissionStatus, requestNotifications, RESULTS, checkNotifications } from 'react-native-permissions';
 import { subscribeExistingNotificationsSettings } from '@/notifications/settings/initialization';
 import { Alert } from '@/components/alerts';
 import * as i18n from '@/languages';

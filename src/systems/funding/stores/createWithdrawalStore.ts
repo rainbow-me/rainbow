@@ -1,8 +1,8 @@
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { RainbowPersistConfig } from '@/state/internal/types';
+import { type RainbowPersistConfig } from '@/state/internal/types';
 import { time } from '@/utils/time';
-import { BalanceQueryStore, WithdrawalConfig, WithdrawalStoreState, WithdrawalStoreType } from '../types';
+import { type BalanceQueryStore, type WithdrawalConfig, type WithdrawalStoreState, type WithdrawalStoreType } from '../types';
 
 // ============ Store Factory ================================================== //
 

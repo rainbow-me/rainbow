@@ -1,4 +1,4 @@
-import { BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
+import { type BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
 import { fetchAccountDomains } from '@/handlers/ens';
 import { getENSDomains, setENSDomains } from '@/handlers/localstorage/ens';
 import { queryClient } from '@/react-query';

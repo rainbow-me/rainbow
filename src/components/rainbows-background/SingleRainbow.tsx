@@ -6,9 +6,9 @@ import Animated, {
   useSharedValue,
   withDelay,
   withSpring,
-  SharedValue,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { RainbowAnimationDetails } from './types';
+import { type RainbowAnimationDetails } from './types';
 import styled from '@/framework/ui/styled-thing';
 import { ImgixImage } from '../images';
 

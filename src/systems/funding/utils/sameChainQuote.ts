@@ -1,4 +1,4 @@
-import { buildRainbowQuoteUrl, Quote, QuoteError, QuoteParams, SwapType } from '@rainbow-me/swaps';
+import { buildRainbowQuoteUrl, type Quote, type QuoteError, type QuoteParams, SwapType } from '@rainbow-me/swaps';
 
 import { isQuote, isQuoteError, shouldSuppressQuoteError } from './quotes';
 

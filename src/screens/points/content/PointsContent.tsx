@@ -17,7 +17,7 @@ import {
   Inline,
   Inset,
   Separator,
-  Space,
+  type Space,
   Stack,
   Text,
   TextShadow,
@@ -27,7 +27,7 @@ import {
 } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_ANDROID, IS_TEST } from '@/env';
-import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
+import { type GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
@@ -55,8 +55,8 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { isNil } from 'lodash';
 import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { RefreshControl, Share, StyleProp, ViewStyle } from 'react-native';
-import FastImage, { Source } from 'react-native-fast-image';
+import { RefreshControl, Share, type StyleProp, type ViewStyle } from 'react-native';
+import FastImage, { type Source } from 'react-native-fast-image';
 import { ScrollView } from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';

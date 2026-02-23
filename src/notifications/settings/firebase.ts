@@ -1,10 +1,10 @@
 import { NOTIFICATIONS_API_KEY } from 'react-native-dotenv';
 import { logger, RainbowError } from '@/logger';
 import {
-  GlobalNotificationTopics,
-  GlobalNotificationTopicType,
-  NotificationSubscriptionWalletsType,
-  WalletNotificationSettings,
+  type GlobalNotificationTopics,
+  type GlobalNotificationTopicType,
+  type NotificationSubscriptionWalletsType,
+  type WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import { getFCMToken, saveFCMToken } from '@/notifications/tokens';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';

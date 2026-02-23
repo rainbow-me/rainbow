@@ -1,20 +1,20 @@
-import React, { ComponentType, forwardRef, PropsWithChildren, RefObject, useImperativeHandle, useMemo, useRef } from 'react';
-import { LayoutRectangle, StyleProp, View, ViewStyle } from 'react-native';
+import React, { type ComponentType, forwardRef, type PropsWithChildren, type RefObject, useImperativeHandle, useMemo, useRef } from 'react';
+import { type LayoutRectangle, type StyleProp, View, type ViewStyle } from 'react-native';
 import {
   Gesture,
   GestureDetector,
-  GestureEventPayload,
-  GestureStateChangeEvent,
-  GestureType,
-  GestureUpdateEvent,
-  PanGestureHandlerEventPayload,
+  type GestureEventPayload,
+  type GestureStateChangeEvent,
+  type GestureType,
+  type GestureUpdateEvent,
+  type PanGestureHandlerEventPayload,
   State,
 } from 'react-native-gesture-handler';
-import ReactNativeHapticFeedback, { HapticFeedbackTypes } from 'react-native-haptic-feedback';
+import ReactNativeHapticFeedback, { type HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import { cancelAnimation, runOnJS, useAnimatedReaction, useSharedValue, type WithSpringConfig } from 'react-native-reanimated';
 import {
   DndContext,
-  DraggableStates,
+  type DraggableStates,
   type DndContextValue,
   type DraggableOptions,
   type DroppableOptions,
@@ -24,7 +24,7 @@ import {
 } from './DndContext';
 import { useSharedPoint } from './hooks';
 import type { UniqueIdentifier } from './types';
-import { animatePointWithSpring, applyOffset, includesPoint, overlapsRectangle, Point, Rectangle } from './utils';
+import { animatePointWithSpring, applyOffset, includesPoint, overlapsRectangle, type Point, type Rectangle } from './utils';
 
 type WaitForRef =
   | React.RefObject<GestureType | undefined>

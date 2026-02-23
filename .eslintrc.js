@@ -150,6 +150,16 @@ module.exports = {
     },
   ],
   rules: {
+    'no-duplicate-imports': 'off',
+    'import/no-duplicates': 'error',
+    '@typescript-eslint/consistent-type-imports': [
+      'error',
+      {
+        prefer: 'type-imports',
+        fixStyle: 'inline-type-imports',
+        disallowTypeAnnotations: false,
+      },
+    ],
     'no-restricted-imports': [
       'warn',
       {

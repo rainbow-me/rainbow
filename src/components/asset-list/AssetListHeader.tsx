@@ -8,7 +8,7 @@ import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import styled from '@/framework/ui/styled-thing';
 import { fonts, position } from '@/styles';
 import { useTheme } from '@/theme';
-import React, { ComponentProps, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { type ComponentProps, useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import abbreviations from '@/utils/abbreviations';

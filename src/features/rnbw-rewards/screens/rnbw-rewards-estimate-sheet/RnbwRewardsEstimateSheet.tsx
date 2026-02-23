@@ -5,7 +5,7 @@ import { ColorModeProvider, Stack, Text } from '@/design-system';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useRoute } from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
+import type Routes from '@/navigation/routesNames';
 import { BlurView } from 'react-native-blur-view';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native-skia';

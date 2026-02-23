@@ -1,11 +1,11 @@
-import { RefObject, useMemo } from 'react';
+import { type RefObject, useMemo } from 'react';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useRoute } from '@/navigation/Navigation';
-import { Route } from '@/navigation/routesNames';
-import { ListenHandleTuple, ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { Listener, Selector } from '@/state/internal/types';
-import { NavigationState, useNavigationStore } from '@/state/navigation/navigationStore';
-import { ListenHandle, useListen } from './useListen';
+import { type Route } from '@/navigation/routesNames';
+import { type ListenHandleTuple, type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { type Listener, type Selector } from '@/state/internal/types';
+import { type NavigationState, useNavigationStore } from '@/state/navigation/navigationStore';
+import { type ListenHandle, useListen } from './useListen';
 
 // ============ Types ========================================================== //
 

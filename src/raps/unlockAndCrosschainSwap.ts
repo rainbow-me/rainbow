@@ -1,8 +1,8 @@
-import { Address } from 'viem';
+import { type Address } from 'viem';
 
 import { assetNeedsUnlocking } from './actions';
 import { createNewAction, createNewRap } from './common';
-import { RapAction, RapSwapActionParameters, RapUnlockActionParameters } from './references';
+import { type RapAction, type RapSwapActionParameters, type RapUnlockActionParameters } from './references';
 
 export const createUnlockAndCrosschainSwapRap = async (swapParameters: RapSwapActionParameters<'crosschainSwap'>) => {
   let actions: RapAction<'crosschainSwap' | 'unlock'>[] = [];

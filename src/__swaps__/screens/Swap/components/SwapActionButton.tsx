@@ -1,11 +1,11 @@
 import chroma from 'chroma-js';
 import React, { useState } from 'react';
-import { StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import { type StyleProp, StyleSheet, type TextStyle, View, type ViewStyle } from 'react-native';
 import Animated, {
-  DerivedValue,
+  type DerivedValue,
   interpolate,
   runOnJS,
-  SharedValue,
+  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -13,13 +13,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Column, Columns, Cover, Stack, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
+import { type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
 import { IS_IOS } from '@/env';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { DepositContextType } from '@/systems/funding/types';
+import { type DepositContextType } from '@/systems/funding/types';
 import { useSwapContext } from '../providers/swap-provider';
-import { GestureHandlerButton, GestureHandlerButtonProps } from '@/components/buttons/GestureHandlerButton';
+import { GestureHandlerButton, type GestureHandlerButtonProps } from '@/components/buttons/GestureHandlerButton';
 
 const getSwapButtonPadding = ({ outline, rightIcon, small }: { outline?: boolean; rightIcon?: string; small?: boolean }) => {
   const horizontalPadding = small ? 14 : 20 - (outline ? 2 : 0);

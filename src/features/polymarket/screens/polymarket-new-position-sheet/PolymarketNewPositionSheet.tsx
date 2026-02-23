@@ -1,7 +1,7 @@
 import { memo, useCallback, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '@/navigation/types';
+import { type RouteProp, useRoute } from '@react-navigation/native';
+import { type RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
@@ -29,6 +29,7 @@ import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePo
 import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
+import { PolymarketNoLiquidityCard } from '@/features/polymarket/components/PolymarketNoLiquidityCard';
 
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const {
@@ -62,7 +63,17 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     setBuyAmount,
     buyAmount,
     averagePrice,
+    hasNoLiquidityAtMarketPrice,
+    hasInsufficientLiquidity,
   } = useNewPositionForm({ tokenId });
+
+  const hasBlockedLiquidity = hasNoLiquidityAtMarketPrice || hasInsufficientLiquidity;
+  const noLiquidityTitle = hasNoLiquidityAtMarketPrice
+    ? i18n.t(i18n.l.predictions.new_position.no_liquidity_title)
+    : i18n.t(i18n.l.predictions.new_position.insufficient_liquidity_title);
+  const noLiquidityDescription = hasNoLiquidityAtMarketPrice
+    ? i18n.t(i18n.l.predictions.new_position.no_liquidity_description)
+    : i18n.t(i18n.l.predictions.new_position.insufficient_liquidity_description);
 
   const { title: outcomeTitle, subtitle: outcomeSubtitle } = getOutcomeDescriptions({
     eventTitle: event.title,
@@ -75,6 +86,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   const formattedSpread = `${trimTrailingZeros(toFixedWorklet(mulWorklet(spread, 100), 1))}¢`;
 
   const handleMarketBuyPosition = useCallback(async () => {
+    if (hasBlockedLiquidity) return;
     if (checkIfReadOnlyWallet(usePolymarketClients.getState().address)) return;
     setIsProcessing(true);
     const amountToBuy = subWorklet(buyAmount, fee);
@@ -133,7 +145,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     } finally {
       setIsProcessing(false);
     }
-  }, [bestPrice, buyAmount, event.slug, fee, market.slug, outcome, spread, tokenId, worstPrice, fromRoute]);
+  }, [bestPrice, buyAmount, event.slug, fee, market.slug, outcome, spread, tokenId, worstPrice, fromRoute, hasBlockedLiquidity]);
 
   const handleDepositFunds = useCallback(() => {
     Navigation.handleAction(Routes.POLYMARKET_DEPOSIT_SCREEN);
@@ -216,6 +228,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               </TextShadow>
             </Box>
           </Box>
+          {hasBlockedLiquidity && <PolymarketNoLiquidityCard title={noLiquidityTitle} description={noLiquidityDescription} />}
           {hasBalance ? (
             <HoldToActivateButton
               onLongPress={handleMarketBuyPosition}
@@ -224,16 +237,12 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
               isProcessing={isProcessing}
               showBiometryIcon={false}
               backgroundColor={buttonColor}
-              disabledBackgroundColor={opacity(accentColor, 0.12)}
-              disabled={!isValidOrderAmount}
+              disabledBackgroundColor={opacity(buttonColor, 0.02)}
+              disabled={!isValidOrderAmount || hasBlockedLiquidity}
               height={48}
               borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
               borderWidth={2}
-              textStyle={{
-                color: 'white',
-                fontSize: 20,
-                fontWeight: '900',
-              }}
+              color={hasBlockedLiquidity ? 'labelQuaternary' : 'white'}
               progressColor="white"
             />
           ) : (

@@ -5,10 +5,10 @@ import { Box, Separator, Text, TextIcon, useForegroundColor } from '@/design-sys
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import Routes from '@/navigation/routesNames';
-import { RootStackParamList } from '@/navigation/types';
-import { PerpMarket, PerpsPosition } from '@/features/perps/types';
+import { type RouteProp, useRoute } from '@react-navigation/native';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import { type PerpMarket, type PerpsPosition } from '@/features/perps/types';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
 import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';

@@ -1,6 +1,6 @@
-import React, { memo, ReactNode, RefObject, useMemo } from 'react';
-import { ScrollView, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import Animated, { DerivedValue, SharedValue, useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
+import React, { memo, type ReactNode, type RefObject, useMemo } from 'react';
+import { ScrollView, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import Animated, { type DerivedValue, type SharedValue, useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS, easing } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { AnimatedText, useColorMode, useForegroundColor } from '@/design-system';

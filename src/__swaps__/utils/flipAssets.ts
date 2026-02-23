@@ -1,9 +1,9 @@
-import { SharedValue, withSpring } from 'react-native-reanimated';
+import { type SharedValue, withSpring } from 'react-native-reanimated';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { supportedNativeCurrencies } from '@/references';
 import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { InputKeys, InputMethods, InputValues } from '@/__swaps__/types/swap';
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { type InputKeys, type InputMethods, type InputValues } from '@/__swaps__/types/swap';
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import { niceIncrementFormatter } from '@/__swaps__/utils/swaps';
 import { INITIAL_SLIDER_POSITION, SLIDER_WIDTH, snappySpringConfig } from '../screens/Swap/constants';

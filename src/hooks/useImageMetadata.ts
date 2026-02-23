@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useDimensions from './useDimensions';
-import { ImageMetadata, updateImageMetadataCache } from '@/redux/imageMetadata';
-import { AppState } from '@/redux/store';
+import { type ImageMetadata, updateImageMetadataCache } from '@/redux/imageMetadata';
+import { type AppState } from '@/redux/store';
 import { position } from '@/styles';
 
 export default function useImageMetadata(imageUrl: string | null) {

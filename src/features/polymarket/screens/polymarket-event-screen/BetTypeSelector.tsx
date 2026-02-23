@@ -4,8 +4,8 @@ import { useAnimatedStyle } from 'react-native-reanimated';
 import { AnimatedText, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
-import { ItemSelector, Item, RenderItemProps } from './ItemSelector';
-import { BET_TYPE, BetType } from './utils/getMarketsGroupedByBetType';
+import { ItemSelector, type Item, type RenderItemProps } from './ItemSelector';
+import { BET_TYPE, type BetType } from './utils/getMarketsGroupedByBetType';
 
 // ============ Constants ====================================================== //
 

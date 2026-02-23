@@ -1,7 +1,7 @@
 import { mapValues, reverse } from 'lodash';
-import { Dispatch } from 'redux';
-import { AppGetState } from './store';
-import ChartTypes, { ChartType } from '@/helpers/chartTypes';
+import { type Dispatch } from 'redux';
+import { type AppGetState } from './store';
+import ChartTypes, { type ChartType } from '@/helpers/chartTypes';
 
 // -- Constants --------------------------------------- //
 

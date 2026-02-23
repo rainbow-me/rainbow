@@ -4,7 +4,7 @@ import { globalColors } from '@/design-system/color/palettes';
 import currentColors from '../theme/currentColors';
 import { memoFn } from '../utils/memoFn';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { LinearGradientProps } from 'expo-linear-gradient';
+import { type LinearGradientProps } from 'expo-linear-gradient';
 
 export type Colors = ReturnType<typeof getColorsByTheme>;
 

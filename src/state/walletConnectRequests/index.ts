@@ -1,4 +1,4 @@
-import { WalletconnectRequestData } from '@/walletConnect/types';
+import { type WalletconnectRequestData } from '@/walletConnect/types';
 import { createStore } from '../internal/createStore';
 import { omitFlatten } from '@/helpers/utilities';
 

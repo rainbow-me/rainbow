@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageSourcePropType } from 'react-native';
+import { type ImageSourcePropType } from 'react-native';
 
 import { Box, Stack, Text, useForegroundColor } from '@/design-system';
 import styled from '@/framework/ui/styled-thing';
@@ -7,8 +7,8 @@ import { Icon } from '../icons';
 import deviceUtils from '@/utils/deviceUtils';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { ImgixImage } from '../images';
-import { Source } from 'react-native-fast-image';
-import { TextColor } from '@/design-system/color/palettes';
+import { type Source } from 'react-native-fast-image';
+import { type TextColor } from '@/design-system/color/palettes';
 
 const CaretIcon = styled(Icon).attrs(({ color }: { color: string }) => ({
   name: 'caret',

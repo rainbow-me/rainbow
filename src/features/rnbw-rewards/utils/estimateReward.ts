@@ -1,4 +1,4 @@
-import { CrosschainQuote, getTargetAddress, Quote } from '@rainbow-me/swaps';
+import { type CrosschainQuote, getTargetAddress, type Quote } from '@rainbow-me/swaps';
 import { getPlatformClient } from '@/resources/platform/client';
 
 type EstimateRewardToken = {

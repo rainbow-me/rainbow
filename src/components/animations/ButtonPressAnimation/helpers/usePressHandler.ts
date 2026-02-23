@@ -1,5 +1,5 @@
-import { MutableRefObject, useCallback, useEffect, useRef } from 'react';
-import { Handle } from 'react-native';
+import { type MutableRefObject, useCallback, useEffect, useRef } from 'react';
+import { type Handle } from 'react-native';
 
 interface UsePressHandlerParams {
   minLongPressDuration: number;

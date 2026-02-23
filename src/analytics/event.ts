@@ -1,29 +1,29 @@
-import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { SwapAssetType } from '@/__swaps__/types/swap';
-import { UnlockableAppIconKey } from '@/features/app-icon/appIcons';
-import { CardType } from '@/components/cards/GenericCard';
-import { LearnCategory } from '@/components/cards/utils/types';
-import { FiatProviderName } from '@/entities/f2c';
-import { CandleResolution, ChartType } from '@/features/charts/types';
-import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
-import { TokenLauncherAnalyticsParams } from '@/screens/token-launcher/state/tokenLauncherStore';
-import { ChainId, Network } from '@/state/backendNetworks/types';
+import { type AddressOrEth, type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { type SwapAssetType } from '@/__swaps__/types/swap';
+import { type UnlockableAppIconKey } from '@/features/app-icon/appIcons';
+import { type CardType } from '@/components/cards/GenericCard';
+import { type LearnCategory } from '@/components/cards/utils/types';
+import { type FiatProviderName } from '@/entities/f2c';
+import { type CandleResolution, type ChartType } from '@/features/charts/types';
+import { type TrendingToken } from '@/resources/trendingTokens/trendingTokens';
+import { type TokenLauncherAnalyticsParams } from '@/screens/token-launcher/state/tokenLauncherStore';
+import { type ChainId, type Network } from '@/state/backendNetworks/types';
 import {
-  DepositFailureMetadata,
-  DepositSuccessMetadata,
-  WithdrawalFailureMetadata,
-  WithdrawalSuccessMetadata,
+  type DepositFailureMetadata,
+  type DepositSuccessMetadata,
+  type WithdrawalFailureMetadata,
+  type WithdrawalSuccessMetadata,
 } from '@/systems/funding/types';
-import { FavoritedSite } from '@/state/browser/favoriteDappsStore';
-import { RequestSource } from '@/utils/requestNavigationHandlers';
-import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { ENSRapActionType } from '../raps/common';
-import { AnyPerformanceLog, Screen } from '../state/performance/operations';
-import { PairHardwareWalletNavigatorParams } from '@/navigation/types';
-import { SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import { PerpPositionSide, TriggerOrderType } from '@/features/perps/types';
-import { EthereumWalletType } from '@/helpers/walletTypes';
-import { WalletLibraryType } from '@/model/wallet';
+import { type FavoritedSite } from '@/state/browser/favoriteDappsStore';
+import { type RequestSource } from '@/utils/requestNavigationHandlers';
+import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
+import { type ENSRapActionType } from '../raps/common';
+import { type AnyPerformanceLog, type Screen } from '../state/performance/operations';
+import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
+import { type SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
+import { type EthereumWalletType } from '@/helpers/walletTypes';
+import { type WalletLibraryType } from '@/model/wallet';
 
 /**
  * All events, used by `analytics.track()`

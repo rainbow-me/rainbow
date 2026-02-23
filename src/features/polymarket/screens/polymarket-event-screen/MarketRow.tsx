@@ -1,5 +1,5 @@
 import { StyleSheet, View } from 'react-native';
-import { Box, Text, TextShadow, useBackgroundColor, useColorMode } from '@/design-system';
+import { Box, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { memo, useMemo } from 'react';
@@ -15,6 +15,8 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { opacity } from '@/framework/ui/utils/opacity';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import * as i18n from '@/languages';
+import { type UmaResolutionStatus } from '@/features/polymarket/types/polymarket-event';
 
 type MarketRowProps = {
   accentColor: string;
@@ -22,6 +24,7 @@ type MarketRowProps = {
   image?: string | undefined;
   title: string;
   volume?: string;
+  umaResolutionStatus?: UmaResolutionStatus;
   tokenId: string;
   price: string;
   minTickSize: number;
@@ -38,15 +41,18 @@ export const MarketRow = memo(function MarketRow({
   image,
   title,
   volume,
+  umaResolutionStatus,
   tokenId,
   price,
   minTickSize,
   onPress,
 }: MarketRowProps) {
   const { isDarkMode } = useColorMode();
+  const labelSecondary = useForegroundColor('labelSecondary');
 
   const shouldShowPriceChange = priceChange !== undefined && Math.abs(priceChange) >= 0.01;
   const priceChangeIsPositive = priceChange !== undefined && priceChange > 0;
+  const isResolutionInReview = umaResolutionStatus && umaResolutionStatus !== 'resolved';
 
   const livePrice = useLiveTokenValue({
     tokenId: getPolymarketTokenId(tokenId, 'sell'),
@@ -105,10 +111,22 @@ export const MarketRow = memo(function MarketRow({
                 </Box>
               )}
             </Box>
-            {volume !== undefined && (
-              <Text size="15pt" weight="bold" color="labelSecondary">
-                {formatNumber(volume, { useOrderSuffix: true, decimals: 1, style: '$' })}
-              </Text>
+            {(volume !== undefined || isResolutionInReview) && (
+              <Box flexDirection="row" alignItems="center" gap={8}>
+                {volume !== undefined && (
+                  <Text size="15pt" weight="bold" color="labelSecondary">
+                    {formatNumber(volume, { useOrderSuffix: true, decimals: 1, style: '$' })}
+                  </Text>
+                )}
+                {isResolutionInReview && (
+                  <>
+                    {volume !== undefined && <Box width={4} height={4} borderRadius={2} backgroundColor={labelSecondary} />}
+                    <Text size="15pt" weight="bold" color="yellow">
+                      {i18n.t(i18n.l.predictions.in_review)}
+                    </Text>
+                  </>
+                )}
+              </Box>
             )}
           </Box>
           <Box

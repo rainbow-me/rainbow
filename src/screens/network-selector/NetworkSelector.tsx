@@ -22,19 +22,19 @@ import * as i18n from '@/languages';
 import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
 import chroma from 'chroma-js';
-import { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, StyleSheet, View, TextInput, ScrollView } from 'react-native';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { memo, type PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Pressable, StyleSheet, View, type TextInput, ScrollView } from 'react-native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import Animated, {
-  DerivedValue,
+  type DerivedValue,
   Easing,
   FadeIn,
   FadeOutUp,
   runOnJS,
-  SharedValue,
+  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -52,7 +52,7 @@ import {
   networkSwitcherStore,
   shouldShowCustomizeNetworksBanner,
 } from '@/state/networkSwitcher/networkSwitcher';
-import { RootStackParamList } from '@/navigation/types';
+import { type RootStackParamList } from '@/navigation/types';
 import { IS_IOS } from '@/env';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { noop } from 'lodash';
@@ -61,11 +61,11 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { Navigation, useNavigation } from '@/navigation';
-import { UserAssetFilter } from '@/__swaps__/types/assets';
-import Routes from '@/navigation/routesNames';
+import { type UserAssetFilter } from '@/__swaps__/types/assets';
+import type Routes from '@/navigation/routesNames';
 import { SEARCH_BAR_HEIGHT, SearchBar } from './components/SearchBar';
 import { KeyboardStickyView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { Chain } from 'viem/chains';
+import { type Chain } from 'viem/chains';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 type RouteParams = RouteProp<RootStackParamList, 'NetworkSelector'>['params'];

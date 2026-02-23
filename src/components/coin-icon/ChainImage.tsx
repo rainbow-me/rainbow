@@ -1,8 +1,8 @@
 import { FasterImageView } from '@candlefinance/faster-image';
 import { useColorMode } from '@/design-system';
 import React, { memo, useMemo } from 'react';
-import { StyleProp, View, ViewStyle } from 'react-native';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type StyleProp, View, type ViewStyle } from 'react-native';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { BLANK_BASE64_PIXEL } from '../DappBrowser/constants';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '../images/ImgixImage';

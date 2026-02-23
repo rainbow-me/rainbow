@@ -1,9 +1,9 @@
 import { DEFAULT_ENABLED_TOPIC_SETTINGS } from '@/notifications/settings/constants';
 import {
-  GlobalNotificationTopics,
-  GlobalNotificationTopicType,
-  WalletNotificationTopicType,
-  WalletNotificationSettings,
+  type GlobalNotificationTopics,
+  type GlobalNotificationTopicType,
+  type WalletNotificationTopicType,
+  type WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import {
   getAllGlobalNotificationSettingsFromStorage,

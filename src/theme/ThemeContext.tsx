@@ -1,8 +1,8 @@
-import React, { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, type PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
 import { Appearance, LayoutAnimation, useColorScheme } from 'react-native';
 import { useDarkMode } from 'react-native-dark-mode';
 import { ThemeProvider } from 'styled-components';
-import { Colors, darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
+import { type Colors, darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
 import currentColors from './currentColors';
 import { DesignSystemProvider } from '@/design-system';
 import { getTheme, saveTheme } from '@/handlers/localstorage/theme';

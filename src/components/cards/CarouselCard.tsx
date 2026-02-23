@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import { Bleed, Box, Column, Columns, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
 import React, { useEffect, useRef, useState } from 'react';
-import { FlashList, ListRenderItem } from '@shopify/flash-list';
+import { FlashList, type ListRenderItem } from '@shopify/flash-list';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import useDimensions from '@/hooks/useDimensions';
 import ActivityIndicator from '@/components/ActivityIndicator';

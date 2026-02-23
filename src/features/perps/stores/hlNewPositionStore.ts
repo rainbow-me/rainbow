@@ -1,4 +1,4 @@
-import { PerpMarket, PerpPositionSide, TriggerOrderType } from '@/features/perps/types';
+import { type PerpMarket, PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';

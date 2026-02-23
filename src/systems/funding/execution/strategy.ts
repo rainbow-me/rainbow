@@ -1,5 +1,5 @@
-import { Quote } from '@rainbow-me/swaps';
-import { DepositConfig } from '../types';
+import { type Quote } from '@rainbow-me/swaps';
+import { type DepositConfig } from '../types';
 
 // ============ Execution Strategy Types ====================================== //
 

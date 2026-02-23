@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Bleed } from '@/design-system';
 import { Text as RNText, StyleSheet } from 'react-native';
-import { HapticType, triggerHaptics } from 'react-native-turbo-haptics';
+import { type HapticType, triggerHaptics } from 'react-native-turbo-haptics';
 import { useTheme } from '@/theme';
 import { useAnimationContext } from '../contexts/AnimationContext';
 import {

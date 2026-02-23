@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import * as i18n from '@/languages';
 import { Box, Text, TextShadow, useColorMode } from '@/design-system';
-import { PolymarketEvent, PolymarketMarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketEvent, type PolymarketMarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getMarketsGroupedByBetType } from '@/features/polymarket/screens/polymarket-event-screen/utils/getMarketsGroupedByBetType';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
@@ -10,7 +10,7 @@ import { isDrawMarket } from '@/features/polymarket/utils/sports';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
-import { PolymarketTeamInfo } from '@/features/polymarket/types';
+import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { formatNumber } from '@/helpers/strings';
 
 const BAR_HEIGHT = 8;

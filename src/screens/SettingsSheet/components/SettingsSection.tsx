@@ -28,7 +28,7 @@ import { openInBrowser } from '@/utils/openInBrowser';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import React, { useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
-import { ContextMenuButton, MenuActionConfig } from 'react-native-ios-context-menu';
+import { ContextMenuButton, type MenuActionConfig } from 'react-native-ios-context-menu';
 import { SettingsExternalURLs } from '../constants';
 import { checkLocalWalletsForBackupStatus } from '../utils';
 import Menu from './Menu';

@@ -1,4 +1,4 @@
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { AssetType } from '@/entities/assetTypes';
 import {
@@ -16,11 +16,11 @@ import { isStaging } from '@/resources/addys/client';
 import { fetchAnvilBalancesByChainId } from '@/resources/assets/anvilAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId, ChainName } from '@/state/backendNetworks/types';
-import { AddressOrEth, ParsedSearchAsset, UniqueId, UserAssetFilter, ZerionAsset } from '@/__swaps__/types/assets';
+import { type AddressOrEth, type ParsedSearchAsset, type UniqueId, type UserAssetFilter, type ZerionAsset } from '@/__swaps__/types/assets';
 import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { isNativeAsset } from '@/handlers/assets';
-import { UserAssetsState, UserAssetsParams, GetAssetsResponse, Asset, UserAsset } from './types';
+import { type UserAssetsState, type UserAssetsParams, type GetAssetsResponse, type Asset, type UserAsset } from './types';
 import { userAssetsStore } from './userAssets';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 import { getPlatformClient } from '@/resources/platform/client';

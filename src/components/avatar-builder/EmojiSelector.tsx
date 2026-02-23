@@ -1,16 +1,16 @@
-import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, StyleSheet, View, ViewStyle } from 'react-native';
+import React, { type PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Dimensions, StyleSheet, View, type ViewStyle } from 'react-native';
 import {
   State as GestureHandlerState,
   ScrollView,
   TapGestureHandler,
-  TapGestureHandlerStateChangeEvent,
+  type TapGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';
 import { DataProvider, LayoutProvider, ProgressiveListView } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import 'string.fromcodepoint';
-import { ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
+import { type ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 import deviceUtils from '@/utils/deviceUtils';
 import { Categories } from './Categories';
 import EmojiContent from './EmojiContent';
@@ -21,8 +21,12 @@ import InitialEmojis from './InitialEmojis';
 import TabsWithShadows from './TabsWithShadows';
 import { charFromEmojiObject } from './helpers/charFromEmojiObject';
 import getEmojiCellsProperties from './helpers/getEmojiCellProperties';
-import getFormattedAllEmojiList, { AllEmojiContentEntry, AllEmojiEntry, AllEmojiHeaderEntry } from './helpers/getFormattedAllEmojiList';
-import { EmojiCategory, EmojiEntry } from './types';
+import getFormattedAllEmojiList, {
+  type AllEmojiContentEntry,
+  type AllEmojiEntry,
+  type AllEmojiHeaderEntry,
+} from './helpers/getFormattedAllEmojiList';
+import { type EmojiCategory, type EmojiEntry } from './types';
 import { useTheme } from '@/theme';
 
 const { width } = Dimensions.get('screen');

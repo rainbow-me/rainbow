@@ -1,4 +1,4 @@
-import { TextColor } from '@/design-system/color/palettes';
+import { type TextColor } from '@/design-system/color/palettes';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_IOS } from '@/env';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';

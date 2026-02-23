@@ -3,9 +3,9 @@ import useAccountAsset from './useAccountAsset';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
-import { ChainId } from '@/state/backendNetworks/types';
-import { Address } from 'viem';
+import { type AppState } from '@/redux/store';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type Address } from 'viem';
 
 // To fetch an asset from account assets,
 // generic assets, and uniqueTokens

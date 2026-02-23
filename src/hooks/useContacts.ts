@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { contactsAddOrUpdate, removeContact } from '../redux/contacts';
-import { AppState } from '@/redux/store';
+import { type AppState } from '@/redux/store';
 
 const contactsSelector = createSelector(
   ({ contacts: { contacts } }: AppState) => contacts,

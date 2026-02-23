@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, type TextInput } from 'react-native';
 import Animated, {
-  AnimatedRef,
+  type AnimatedRef,
   runOnJS,
   runOnUI,
-  SharedValue,
+  type SharedValue,
   useAnimatedProps,
   useAnimatedReaction,
   useSharedValue,

@@ -1,6 +1,6 @@
 import { Box, useColorMode } from '@/design-system';
 import { memo } from 'react';
-import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { ResolvedMarketRow } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketRow';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 

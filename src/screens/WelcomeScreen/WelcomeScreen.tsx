@@ -85,27 +85,29 @@ export function WelcomeScreen() {
       })
     );
 
-    createWalletButtonAnimation.value = withDelay(
-      initialDuration,
-      withTiming(1.02, { duration: 1000 }, finished => {
-        if (!finished) return;
-        createWalletButtonAnimation.value = withRepeat(
-          withTiming(0.98, {
-            duration: 1000,
-          }),
-          -1,
-          true
-        );
-      })
-    );
+    if (!IS_TEST) {
+      createWalletButtonAnimation.value = withDelay(
+        initialDuration,
+        withTiming(1.02, { duration: 1000 }, finished => {
+          if (!finished) return;
+          createWalletButtonAnimation.value = withRepeat(
+            withTiming(0.98, {
+              duration: 1000,
+            }),
+            -1,
+            true
+          );
+        })
+      );
 
-    colorAnimation.value = withRepeat(
-      withTiming(5, {
-        duration: 2500,
-        easing: Easing.linear,
-      }),
-      -1
-    );
+      colorAnimation.value = withRepeat(
+        withTiming(5, {
+          duration: 2500,
+          easing: Easing.linear,
+        }),
+        -1
+      );
+    }
   }, [shouldAnimateRainbows, contentAnimation, createWalletButtonAnimation, colorAnimation]);
 
   useEffect(() => {

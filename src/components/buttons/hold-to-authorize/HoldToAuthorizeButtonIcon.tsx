@@ -5,7 +5,7 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
-  SharedValue,
+  type SharedValue,
 } from 'react-native-reanimated';
 import { Icon } from '../../icons';
 import { Centered } from '../../layout';

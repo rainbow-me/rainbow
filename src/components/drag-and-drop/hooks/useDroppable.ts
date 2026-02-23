@@ -1,5 +1,5 @@
 import { useCallback, useLayoutEffect } from 'react';
-import { ViewProps, type LayoutRectangle } from 'react-native';
+import { type ViewProps, type LayoutRectangle } from 'react-native';
 import { runOnUI, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import { IS_IOS } from '@/env';
 import { useLayoutWorklet } from '@/hooks/reanimated/useLayoutWorklet';

@@ -1,5 +1,5 @@
-import { EthereumAddress } from './wallet';
-import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
+import { type EthereumAddress } from './wallet';
+import { type ENS_RECORDS, type REGISTRATION_MODES } from '@/helpers/ens';
 
 export type Records = { [key in ENS_RECORDS]?: string };
 

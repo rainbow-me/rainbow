@@ -1,9 +1,9 @@
 import { analytics } from '@/analytics';
-import { EventProperties } from '@/analytics/event';
-import { RapSwapActionParameters } from '@/raps/references';
+import { type EventProperties } from '@/analytics/event';
+import { type RapSwapActionParameters } from '@/raps/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { SwapsParams } from '../screens/Swap/navigateToSwaps';
+import { type SwapsParams } from '../screens/Swap/navigateToSwaps';
 
 type SwapEventTypes = typeof analytics.event.swapsSubmitted | typeof analytics.event.swapsFailed;
 

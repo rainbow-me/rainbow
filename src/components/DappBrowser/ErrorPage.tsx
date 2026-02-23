@@ -3,7 +3,7 @@ import React from 'react';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import styled from '@/framework/ui/styled-thing';
-import { Colors } from '../../styles/colors';
+import { type Colors } from '../../styles/colors';
 import { Box } from '@/design-system';
 import { useTheme } from '@/theme';
 import { View } from 'moti';

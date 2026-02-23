@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { textColors } from '../../color/palettes';
 import { useForegroundColor } from '../../color/useForegroundColor';
 import { textSizes, textWeights } from '../../typography/typography';
-import { TextProps } from './Text';
+import { type TextProps } from './Text';
 
 export function useTextStyle({
   align: textAlign,

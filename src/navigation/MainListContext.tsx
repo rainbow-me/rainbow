@@ -1,5 +1,5 @@
-import { LegendListRef } from '@legendapp/list';
-import React, { createContext, RefObject, useEffect, useMemo, useRef } from 'react';
+import { type LegendListRef } from '@legendapp/list';
+import React, { createContext, type RefObject, useEffect, useMemo, useRef } from 'react';
 
 type ListScrollToTopRef = {
   scrollToTop: () => void;

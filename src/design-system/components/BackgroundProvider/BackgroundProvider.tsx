@@ -1,8 +1,8 @@
 import React, { useContext, useMemo } from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import { type StyleProp, type ViewStyle } from 'react-native';
 import { AccentColorContext } from '../../color/AccentColorContext';
 import { ColorModeContext, ColorModeProvider } from '../../color/ColorMode';
-import { BackgroundColor, backgroundColors, getDefaultAccentColorForColorMode } from '../../color/palettes';
+import { type BackgroundColor, backgroundColors, getDefaultAccentColorForColorMode } from '../../color/palettes';
 
 export type BackgroundProviderProps = {
   color: BackgroundColor | 'accent' | string;

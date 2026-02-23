@@ -2,7 +2,7 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { AccentColorProvider, Box, useBackgroundColor, useColorMode } from '@/design-system';
 import React from 'react';
-import { DimensionValue } from 'react-native';
+import { type DimensionValue } from 'react-native';
 
 export const Skeleton = ({ width, height }: { width: DimensionValue; height: DimensionValue }) => {
   const { isDarkMode } = useColorMode();

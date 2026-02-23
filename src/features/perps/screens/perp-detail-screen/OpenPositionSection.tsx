@@ -1,5 +1,5 @@
 import { memo, useMemo, Fragment } from 'react';
-import { PerpMarket, PerpsPosition } from '@/features/perps/types';
+import { type PerpMarket, type PerpsPosition } from '@/features/perps/types';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { Box, Text, TextShadow, Separator, useColorMode } from '@/design-system';
 import { abs, greaterThan, isEqual, isPositive, multiply } from '@/helpers/utilities';

@@ -12,7 +12,7 @@ import {
   supportedNetworksCard,
   web3Card,
 } from './utils/constants';
-import { LearnCardDetails } from './utils/types';
+import { type LearnCardDetails } from './utils/types';
 
 export const LEARN_CARD_HEIGHT = 185;
 

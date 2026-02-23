@@ -5,9 +5,9 @@ import { runOnJS, useAnimatedReaction, useDerivedValue, useSharedValue } from 'r
 import { opacity } from '@/framework/ui/utils/opacity';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { Panel, controlPanelStyles, PANEL_BOTTOM_OFFSET } from '@/components/SmoothPager/ListPanel';
-import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
-import Routes from '@/navigation/routesNames';
-import { RootStackParamList } from '@/navigation/types';
+import { type RouteProp, useRoute, useNavigation } from '@react-navigation/native';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';

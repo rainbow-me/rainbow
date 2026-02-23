@@ -1,7 +1,7 @@
 import { analytics } from '@/analytics';
-import { ENSRegistrationRecords } from '@/entities/ensRegistration';
-import { NewTransaction, TransactionStatus } from '@/entities/transactions';
-import { TransactionGasParamAmounts } from '@/entities/gas';
+import { type ENSRegistrationRecords } from '@/entities/ensRegistration';
+import { type NewTransaction, TransactionStatus } from '@/entities/transactions';
+import { type TransactionGasParamAmounts } from '@/entities/gas';
 import { IS_TEST } from '@/env';
 import { estimateENSTransactionGasLimit, formatRecordsForTransaction } from '@/handlers/ens';
 import { toHex } from '@/handlers/web3';
@@ -9,13 +9,13 @@ import { ENSRegistrationTransactionType, getENSExecutionDetails, REGISTRATION_MO
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { parseGasParamAmounts } from '@/parsers';
-import { ENSActionParameters, ENSRap, ENSRapActionType, RapENSAction, RapENSActionParameters } from '@/raps/common';
+import { type ENSActionParameters, type ENSRap, ENSRapActionType, type RapENSAction, type RapENSActionParameters } from '@/raps/common';
 import { saveCommitRegistrationParameters, updateTransactionRegistrationParameters } from '@/redux/ensRegistration';
 import store from '@/redux/store';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { Signer } from '@ethersproject/abstract-signer';
+import { type Signer } from '@ethersproject/abstract-signer';
 import { Logger } from '@ethersproject/logger';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
 import {

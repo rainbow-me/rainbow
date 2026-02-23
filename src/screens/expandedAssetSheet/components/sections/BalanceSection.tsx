@@ -4,7 +4,7 @@ import { AnimatedText, Box, Text, TextShadow } from '@/design-system';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { SheetSeparator } from '../shared/Separator';
-import Animated, { useDerivedValue, useAnimatedStyle, DerivedValue } from 'react-native-reanimated';
+import Animated, { useDerivedValue, useAnimatedStyle, type DerivedValue } from 'react-native-reanimated';
 import { LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { useLiveTokenSharedValue, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import useAccountSettings from '@/hooks/useAccountSettings';

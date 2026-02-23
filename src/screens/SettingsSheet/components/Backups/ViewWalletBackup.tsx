@@ -3,7 +3,7 @@ import { ContextCircleButton } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { cloudPlatform } from '@/utils/platform';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 
 import { analytics } from '@/analytics';
 import CloudBackedUpIcon from '@/assets/BackedUpCloud.png';
@@ -23,7 +23,7 @@ import useENSAvatar from '@/hooks/useENSAvatar';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
-import { RainbowAccount } from '@/model/wallet';
+import { type RainbowAccount } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';

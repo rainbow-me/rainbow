@@ -1,5 +1,5 @@
 import { transformHyperliquidMarketToTokenData } from './hyperliquidAdapter';
-import { TokenData } from './liveTokensStore';
+import { type TokenData } from './liveTokensStore';
 import { logger, RainbowError } from '@/logger';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { getAllMarketsInfo } from '@/features/perps/utils/hyperliquid';

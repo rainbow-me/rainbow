@@ -1,15 +1,15 @@
-import { NotifyOnChangeProps, useQuery } from '@tanstack/react-query';
+import { type NotifyOnChangeProps, useQuery } from '@tanstack/react-query';
 
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { abs, lessThan, subtract, isZero } from '@/helpers/utilities';
 import { gweiToWei } from '@/parsers';
-import { QueryConfig, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
+import { type QueryConfig, type QueryFunctionArgs, type QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { useCallback } from 'react';
-import { GasSettings } from '../screens/Swap/hooks/useCustomGas';
+import { type GasSettings } from '../screens/Swap/hooks/useCustomGas';
 import { getSelectedGasSpeed, useGasSettings } from '../screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '../types/gas';
-import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
+import { type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/entities/gas';
 import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
 import { IS_TEST } from '@/env';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';

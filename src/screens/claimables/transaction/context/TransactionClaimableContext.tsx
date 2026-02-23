@@ -1,8 +1,8 @@
-import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { ChainId } from '@/state/backendNetworks/types';
-import { TokenToReceive, TransactionClaimableTxPayload } from '../types';
-import { CrosschainQuote, ETH_ADDRESS, getCrosschainQuote, getQuote, Quote, QuoteParams } from '@rainbow-me/swaps';
-import { Claimable, ClaimableType, TransactionClaimable } from '@/resources/addys/claimables/types';
+import React, { type Dispatch, type SetStateAction, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type TokenToReceive, type TransactionClaimableTxPayload } from '../types';
+import { type CrosschainQuote, ETH_ADDRESS, getCrosschainQuote, getQuote, type Quote, type QuoteParams } from '@rainbow-me/swaps';
+import { type Claimable, ClaimableType, type TransactionClaimable } from '@/resources/addys/claimables/types';
 import { logger, RainbowError } from '@/logger';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import {
@@ -32,7 +32,7 @@ import { walletExecuteRap } from '@/raps/execute';
 import { executeClaim } from '../claim';
 import { weiToGwei } from '@/parsers';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
-import { ClaimStatus } from '../../shared/types';
+import { type ClaimStatus } from '../../shared/types';
 import { analytics } from '@/analytics';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { getRemoteConfig } from '@/model/remoteConfig';

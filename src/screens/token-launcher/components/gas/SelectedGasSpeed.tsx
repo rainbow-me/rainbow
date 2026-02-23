@@ -1,5 +1,5 @@
 import React from 'react';
-import { GasSpeed } from '@/__swaps__/types/gas';
+import { type GasSpeed } from '@/__swaps__/types/gas';
 import { Inline, Text, TextIcon } from '@/design-system';
 import * as i18n from '@/languages';
 import { IS_ANDROID } from '@/env';

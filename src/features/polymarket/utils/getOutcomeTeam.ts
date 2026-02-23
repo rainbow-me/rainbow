@@ -1,8 +1,6 @@
-import { ResponseByTheme } from '@/__swaps__/utils/swaps';
-import { PolymarketTeamInfo } from '@/features/polymarket/types';
-import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
-import colors from '@/styles/colors';
-import { addressHashedColorIndex } from '@/utils/profileUtils';
+import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { type PolymarketTeamInfo } from '@/features/polymarket/types';
+import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
 
 export function getOutcomeTeam({
   outcome,
@@ -40,11 +38,5 @@ export function getOutcomeTeamColor({
   teams?: PolymarketTeamInfo[];
 }): ResponseByTheme<string> {
   const team = getOutcomeTeam({ outcome, outcomeIndex, teams });
-  return team?.color ?? getOutcomeTeamFallbackColor(outcome);
-}
-
-function getOutcomeTeamFallbackColor(outcome: string): ResponseByTheme<string> {
-  const fallbackColorIndex = addressHashedColorIndex(outcome) ?? 0;
-  const fallbackColor = colors.avatarBackgrounds[fallbackColorIndex];
-  return { light: getHighContrastColor(fallbackColor, false), dark: getHighContrastColor(fallbackColor, true) };
+  return team?.color ?? getColorBySeed(outcome);
 }

@@ -1,8 +1,8 @@
 // @ts-expect-error - changeIcon has no declaration file
 import { changeIcon } from 'react-native-change-icon';
 import * as i18n from '@/languages';
-import { Dispatch } from 'redux';
-import { ThunkDispatch } from 'redux-thunk';
+import { type Dispatch } from 'redux';
+import { type ThunkDispatch } from 'redux-thunk';
 import { Language, updateLanguageLocale } from '../languages';
 import { analytics } from '@/analytics';
 import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
@@ -21,9 +21,9 @@ import {
   saveTestnetsEnabled,
 } from '@/handlers/localstorage/globalSettings';
 import { getProvider } from '@/handlers/web3';
-import { AppState } from '@/redux/store';
+import { type AppState } from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
-import { Network, ChainId } from '@/state/backendNetworks/types';
+import { Network, type ChainId } from '@/state/backendNetworks/types';
 
 // -- Constants ------------------------------------------------------------- //
 const SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS = 'settings/SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS';

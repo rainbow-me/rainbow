@@ -1,5 +1,5 @@
 import { AddWalletList } from '@/components/add-wallet/AddWalletList';
-import { AddWalletItem } from '@/components/add-wallet/AddWalletRow';
+import { type AddWalletItem } from '@/components/add-wallet/AddWalletRow';
 import { Box, globalColors, Inset } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -16,9 +16,9 @@ import PairHairwareWallet from '@/assets/PairHardwareWallet.png';
 import ImportSecretPhraseOrPrivateKey from '@/assets/ImportSecretPhraseOrPrivateKey.png';
 import WatchWalletIcon from '@/assets/watchWallet.png';
 import { cloudPlatform } from '@/utils/platform';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
-import { RootStackParamList } from '@/navigation/types';
+import { type RootStackParamList } from '@/navigation/types';
 import { IS_DEV } from '@/env';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;

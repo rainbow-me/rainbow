@@ -1,4 +1,4 @@
-import { PerpMarket } from '@/features/perps/types';
+import { type PerpMarket } from '@/features/perps/types';
 import { divWorklet } from '@/framework/core/safeMath';
 
 export function calculateMaxMarginForLeverage({
