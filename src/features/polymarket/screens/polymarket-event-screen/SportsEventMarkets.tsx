@@ -235,7 +235,7 @@ const ThreeWayMoneylineMarkets = memo(function ThreeWayMoneylineMarkets({
             <MarketRow
               key={market.id}
               accentColor={outcomeColor}
-              image={image}
+              icon={image}
               priceChange={0}
               title={market.groupItemTitle}
               umaResolutionStatus={market.umaResolutionStatus}

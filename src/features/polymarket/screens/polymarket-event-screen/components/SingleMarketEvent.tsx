@@ -9,6 +9,7 @@ import { ResolvedMarketRow } from '@/features/polymarket/screens/polymarket-even
 import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
 import { isTeamBasedOutcome } from '@/features/polymarket/utils/marketClassification';
+import { OverUnderIcon } from '@/features/polymarket/screens/polymarket-event-screen/components/OverUnderIcon';
 
 export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes({
   market,
@@ -33,12 +34,16 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
           ? getOutcomeColor({ market, outcome, outcomeIndex: index, isDarkMode, teams })
           : getOutcomeColor({ market, outcome, outcomeIndex: index, isDarkMode });
 
+        const outcomeLower = outcome.toLowerCase();
+        const isOverUnder = outcomeLower === 'over' || outcomeLower === 'under';
+        const icon = isOverUnder ? <OverUnderIcon direction={outcomeLower} /> : outcomeImage;
+
         if (winningOutcomeIndex !== null) {
           return (
             <ResolvedMarketRow
               key={outcome}
               accentColor={outcomeColor}
-              image={outcomeImage}
+              icon={icon}
               title={outcomeTitles?.[index] ?? outcome}
               isWinningOutcome={index === winningOutcomeIndex}
             />
@@ -49,7 +54,7 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
           <MarketRow
             key={outcome}
             accentColor={outcomeColor}
-            image={outcomeImage}
+            icon={icon}
             priceChange={0}
             title={outcomeTitles?.[index] ?? outcome}
             umaResolutionStatus={market.umaResolutionStatus}
