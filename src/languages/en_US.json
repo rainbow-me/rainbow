@@ -3066,7 +3066,11 @@
           "done": "Done",
           "next": "Next",
           "try_again": "Try Again",
-          "gas_fee": "to revoke on %{chainName}"
+          "gas_fee": "to revoke on %{chainName}",
+          "gas_fee_multi": "to revoke on %{count} networks",
+          "insufficient_gas": "Insufficient Gas",
+          "estimating_gas_fee": "Estimating gas fee...",
+          "simulated": "This is a simulated revoke"
         }
       },
       "balance_title": "Balance",

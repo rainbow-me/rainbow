@@ -1,28 +1,20 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { type RouteProp, useRoute } from '@react-navigation/native';
-import { type Wallet } from '@ethersproject/wallet';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@/navigation';
+import { type RootStackParamList } from '@/navigation/types';
+import type Routes from '@/navigation/routesNames';
 import { Box, Text, globalColors, Separator } from '@/design-system';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { type RootStackParamList } from '@/navigation/types';
-import type Routes from '@/navigation/routesNames';
-import { logger, RainbowError } from '@/logger';
-import haptics from '@/utils/haptics';
-import { executeRevokeDelegation } from '@rainbow-me/delegation';
-import { loadWallet } from '@/model/wallet';
-import { getProvider } from '@/handlers/web3';
-import { getNextNonce } from '@/state/nonces';
+import * as i18n from '@/languages';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
-import * as i18n from '@/languages';
-import useGas from '@/hooks/useGas';
-import { type GasFee, type LegacyGasFee } from '@/entities/gas';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useRevokeDelegation } from './useRevokeDelegation';
+import { useRevokeDelegationGasFee } from './useRevokeDelegationGas';
+import { RevokeReason, type RevokeStatus } from './types';
 
 type SheetContent = {
   title: string;
@@ -94,145 +86,71 @@ const getSheetContent = (reason: RevokeReason, chainName?: string): SheetContent
   }
 };
 
+const getButtonLabel = (revokeStatus: RevokeStatus, sheetContent: SheetContent): string => {
+  switch (revokeStatus) {
+    case 'ready':
+    case 'notReady':
+      return sheetContent.buttonLabel;
+    case 'revoking':
+      return i18n.t(i18n.l.wallet.delegations.revoke_panel.revoking);
+    case 'success':
+      return i18n.t(i18n.l.wallet.delegations.revoke_panel.done);
+    case 'error':
+      return i18n.t(i18n.l.wallet.delegations.revoke_panel.try_again);
+    case 'insufficientGas':
+      return i18n.t(i18n.l.wallet.delegations.revoke_panel.insufficient_gas);
+    default:
+      return sheetContent.buttonLabel;
+  }
+};
+
 export const RevokeDelegationPanel = () => {
   const { goBack } = useNavigation();
   const { params: { address, delegationsToRevoke = [], onSuccess, revokeReason = RevokeReason.ALERT_UNSPECIFIED } = {} } =
     useRoute<RouteProp<RootStackParamList, typeof Routes.REVOKE_DELEGATION_PANEL>>();
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [revokeStatus, setRevokeStatus] = useState<RevokeStatus>('ready');
+  const delegationChainIdsKey = useMemo(
+    () =>
+      delegationsToRevoke
+        .map(d => d.chainId)
+        .sort((a, b) => a - b)
+        .join(','),
+    [delegationsToRevoke]
+  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const stableDelegationsToRevoke = useMemo(() => delegationsToRevoke, [delegationChainIdsKey]);
 
-  const currentDelegation = delegationsToRevoke[currentIndex];
-  const isLastDelegation = currentIndex === delegationsToRevoke.length - 1;
-  const chainId = currentDelegation?.chainId as ChainId;
+  const firstChainId = delegationsToRevoke[0]?.chainId as ChainId | undefined;
+  const chainName = firstChainId ? backendNetworksActions.getChainsLabel()[firstChainId] || `Chain ${firstChainId}` : '';
 
-  // Get chain name for display
-  const chainName = chainId ? backendNetworksActions.getChainsLabel()[chainId] || `Chain ${chainId}` : '';
+  const { revokeStatus, handleRevoke, revokeCount } = useRevokeDelegation({
+    address,
+    delegationsToRevoke: stableDelegationsToRevoke,
+    onSuccess,
+  });
+  const gasFeeDisplay = useRevokeDelegationGasFee(stableDelegationsToRevoke, address);
 
-  // Gas management
-  const { startPollingGasFees, stopPollingGasFees, selectedGasFee } = useGas();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
-
+  // Auto-dismiss on success
   useEffect(() => {
-    if (chainId) {
-      startPollingGasFees(chainId);
-    }
-    return () => {
-      stopPollingGasFees();
-    };
-  }, [chainId, startPollingGasFees, stopPollingGasFees]);
+    if (revokeStatus !== 'success') return;
+    const timer = setTimeout(() => goBack(), REVOKE_SUCCESS_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [revokeStatus, goBack]);
 
-  // Get gas fee display with $0.01 floor
-  const gasFeeDisplay = (() => {
-    if (!chainId) return null;
-    const gasFee = selectedGasFee?.gasFee;
-    if (!gasFee) return i18n.t(i18n.l.swap.loading);
-    const isLegacy = !!(gasFee as LegacyGasFee)?.estimatedFee;
-    const feeData = isLegacy ? (gasFee as LegacyGasFee)?.estimatedFee : (gasFee as GasFee)?.maxFee;
-    const amount = Number(feeData?.native?.value?.amount);
-    if (!Number.isFinite(amount)) return i18n.t(i18n.l.swap.loading);
-    return convertAmountToNativeDisplayWorklet(amount, nativeCurrency, true);
-  })();
-
-  // Get sheet content based on revoke reason
-  const sheetContent = getSheetContent(revokeReason, chainName);
-
-  const handleRevoke = useCallback(async () => {
-    if (!currentDelegation || !address) {
-      goBack();
-      return;
-    }
-
-    setRevokeStatus('revoking');
-
-    try {
-      const provider = getProvider({ chainId: currentDelegation.chainId });
-
-      const wallet = await loadWallet({
-        address,
-        provider,
-      });
-
-      if (!wallet) {
-        throw new Error('Failed to load wallet');
-      }
-
-      // Get current gas prices from provider
-      const feeData = await provider.getFeeData();
-      const maxFeePerGas = feeData.maxFeePerGas?.toBigInt() ?? 0n;
-      const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas?.toBigInt() ?? 0n;
-
-      const nonce = await getNextNonce({ address, chainId: currentDelegation.chainId });
-
-      const result = await executeRevokeDelegation({
-        signer: wallet as Wallet,
-        provider,
-        chainId: currentDelegation.chainId,
-        transactionOptions: {
-          maxFeePerGas,
-          maxPriorityFeePerGas,
-          gasLimit: null,
-        },
-        nonce,
-      });
-
-      logger.info('Delegation removed successfully', {
-        hash: result.hash,
-        chainId: currentDelegation.chainId,
-      });
-
-      haptics.notificationSuccess();
-      setRevokeStatus('success');
-
-      // Move to next delegation or finish
-      setTimeout(() => {
-        if (isLastDelegation) {
-          onSuccess?.();
-          goBack();
-        } else {
-          setCurrentIndex(prev => prev + 1);
-          setRevokeStatus('ready');
-        }
-      }, REVOKE_SUCCESS_DELAY_MS);
-    } catch (error) {
-      logger.error(new RainbowError('Failed to revoke delegation'), {
-        error,
-        chainId: currentDelegation.chainId,
-      });
-      haptics.notificationError();
-      setRevokeStatus('recoverableError');
-    }
-  }, [address, currentDelegation, isLastDelegation, goBack, onSuccess]);
-
-  const buttonLabel = (() => {
-    switch (revokeStatus) {
-      case 'ready':
-        return sheetContent.buttonLabel;
-      case 'revoking':
-        return i18n.t(i18n.l.wallet.delegations.revoke_panel.revoking);
-      case 'success':
-        return isLastDelegation ? i18n.t(i18n.l.wallet.delegations.revoke_panel.done) : i18n.t(i18n.l.wallet.delegations.revoke_panel.next);
-      case 'recoverableError':
-        return i18n.t(i18n.l.wallet.delegations.revoke_panel.try_again);
-      default:
-        return sheetContent.buttonLabel;
-    }
-  })();
-
-  const handleButtonPress = useCallback(() => {
-    if (revokeStatus === 'ready' || revokeStatus === 'recoverableError') {
+  const onButtonPress = useCallback(() => {
+    if (revokeStatus === 'ready' || revokeStatus === 'error') {
       handleRevoke();
-    } else if (revokeStatus === 'success' && !isLastDelegation) {
-      setCurrentIndex(prev => prev + 1);
-      setRevokeStatus('ready');
     } else {
       goBack();
     }
-  }, [revokeStatus, handleRevoke, isLastDelegation, goBack]);
+  }, [revokeStatus, handleRevoke, goBack]);
+
+  const sheetContent = getSheetContent(revokeReason, chainName);
+  const buttonLabel = getButtonLabel(revokeStatus, sheetContent);
 
   const isReady = revokeStatus === 'ready';
   const isProcessing = revokeStatus === 'revoking';
-  const isError = revokeStatus === 'recoverableError';
+  const isError = revokeStatus === 'error' || revokeStatus === 'insufficientGas';
   const isSuccess = revokeStatus === 'success';
   const isCriticalBackendAlert = revokeReason === RevokeReason.ALERT_VULNERABILITY || revokeReason === RevokeReason.ALERT_BUG;
   const buttonBackgroundColor = isSuccess ? globalColors.green60 : isError ? globalColors.red60 : sheetContent.accentColor;
@@ -312,7 +230,7 @@ export const RevokeDelegationPanel = () => {
             disabled={isProcessing}
             isProcessing={isProcessing}
             label={buttonLabel}
-            onLongPress={handleButtonPress}
+            onLongPress={onButtonPress}
             height={48}
             color={{ custom: globalColors.white100 }}
             showBiometryIcon={isReady}
@@ -325,27 +243,37 @@ export const RevokeDelegationPanel = () => {
       </Box>
 
       {/* Gas Fee Preview */}
-      <Box paddingTop="24px" paddingBottom="24px" alignItems="center" justifyContent="center">
-        <Box flexDirection="row" alignItems="center" gap={4}>
-          <Text size="13pt" weight="heavy" color="labelTertiary" align="center">
-            􀵟
-          </Text>
+      {revokeCount > 0 ? (
+        <Box paddingTop="24px" paddingBottom="24px" alignItems="center" justifyContent="center">
+          <Box flexDirection="row" alignItems="center" gap={4}>
+            <Text size="13pt" weight="heavy" color="labelTertiary" align="center">
+              􀵟
+            </Text>
+            <Text size="13pt" weight="bold" color="labelTertiary" align="center">
+              {gasFeeDisplay ? (
+                <>
+                  <Text size="13pt" weight="bold" color="labelTertiary">
+                    {gasFeeDisplay}
+                  </Text>
+                  <Text size="13pt" weight="semibold" color="labelQuaternary">
+                    {revokeCount === 1
+                      ? ` ${i18n.t(i18n.l.wallet.delegations.revoke_panel.gas_fee, { chainName })}`
+                      : ` ${i18n.t(i18n.l.wallet.delegations.revoke_panel.gas_fee_multi, { count: revokeCount })}`}
+                  </Text>
+                </>
+              ) : (
+                i18n.t(i18n.l.wallet.delegations.revoke_panel.estimating_gas_fee)
+              )}
+            </Text>
+          </Box>
+        </Box>
+      ) : (
+        <Box paddingTop="24px" paddingBottom="24px" alignItems="center" justifyContent="center">
           <Text size="13pt" weight="bold" color="labelTertiary" align="center">
-            {gasFeeDisplay ? (
-              <>
-                <Text size="13pt" weight="bold" color="labelTertiary">
-                  {gasFeeDisplay}
-                </Text>
-                <Text size="13pt" weight="semibold" color="labelQuaternary">
-                  {` ${i18n.t(i18n.l.wallet.delegations.revoke_panel.gas_fee, { chainName })}`}
-                </Text>
-              </>
-            ) : (
-              i18n.t(i18n.l.wallet.delegations.revoke_panel.gas_fee, { chainName })
-            )}
+            {i18n.t(i18n.l.wallet.delegations.revoke_panel.simulated)}
           </Text>
         </Box>
-      </Box>
+      )}
     </PanelSheet>
   );
 };
