@@ -1,5 +1,5 @@
 import React from 'react';
-import { Source } from 'react-native-fast-image';
+import { type Source } from 'react-native-fast-image';
 import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';
 import CheckmarkCircledIcon from '../../../components/icons/svg/CheckmarkCircledIcon';
 import WarningIcon from '../../../components/icons/svg/WarningIcon';
@@ -8,8 +8,8 @@ import Caret from '@/assets/family-dropdown-arrow.png';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
-import { ImageSourcePropType } from 'react-native';
-import { Width } from '@/design-system/layout/size';
+import { type ImageSourcePropType } from 'react-native';
+import { type Width } from '@/design-system/layout/size';
 import { colors } from '@/styles';
 import { opacity } from '@/framework/ui/utils/opacity';
 

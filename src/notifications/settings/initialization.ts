@@ -4,7 +4,7 @@ import {
   WalletNotificationRelationship,
   WALLET_GROUPS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
-import { AddressWithRelationship, WalletNotificationSettings } from '@/notifications/settings/types';
+import { type AddressWithRelationship, type WalletNotificationSettings } from '@/notifications/settings/types';
 import { publishAndSaveNotificationSettings } from '@/notifications/settings/settings';
 import {
   getAllGlobalNotificationSettingsFromStorage,

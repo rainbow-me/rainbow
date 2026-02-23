@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
-import { Gesture, GestureDetector, LongPressGestureHandlerProperties } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, type LongPressGestureHandlerProperties } from 'react-native-gesture-handler';
 import Animated, {
   FadeIn,
   cancelAnimation,
@@ -9,19 +9,19 @@ import Animated, {
   useAnimatedReaction,
   useSharedValue,
   withDelay,
-  WithSpringConfig,
+  type WithSpringConfig,
   withTiming,
-  WithTimingConfig,
+  type WithTimingConfig,
   interpolateColor,
   useDerivedValue,
   interpolate,
 } from 'react-native-reanimated';
 import { getYForX } from 'react-native-redash';
-import Svg, { Path, PathProps } from 'react-native-svg';
+import Svg, { Path, type PathProps } from 'react-native-svg';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 // @ts-ignore this library is no longer maintained independently of the app, so this is fine
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { ChartData, PathData } from '../../helpers/ChartContext';
+import { type ChartData, type PathData } from '../../helpers/ChartContext';
 import { requireOnWorklet, useWorkletValue } from '../../helpers/requireOnWorklet';
 import { useChartData } from '../../helpers/useChartData';
 

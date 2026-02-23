@@ -8,7 +8,7 @@ import { deleteImgixMMKVCache } from '@/migrations/migrations/deleteImgixMMKVCac
 import { migrateNotificationSettingsToV2 } from '@/migrations/migrations/migrateNotificationSettingsToV2';
 import { migrateNotificationSettingsToV3 } from '@/migrations/migrations/migrateNotificationSettingsToV3';
 import { prepareDefaultNotificationGroupSettingsState } from '@/migrations/migrations/prepareDefaultNotificationGroupSettingsState';
-import { Migration, MigrationName, MIGRATIONS_DEBUG_CONTEXT, MIGRATIONS_STORAGE_ID } from '@/migrations/types';
+import { type Migration, type MigrationName, MIGRATIONS_DEBUG_CONTEXT, MIGRATIONS_STORAGE_ID } from '@/migrations/types';
 import { changeLanguageKeys } from './migrations/changeLanguageKeys';
 import { fixHiddenUSDC } from './migrations/fixHiddenUSDC';
 import { migrateFavoritesV2, migrateFavoritesV3 } from './migrations/migrateFavorites';

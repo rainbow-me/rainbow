@@ -1,9 +1,9 @@
-import { BigNumberish } from '@ethersproject/bignumber';
-import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
-import { CrosschainQuote, getQuoteExecutionDetails, getTargetAddress, Quote } from '@rainbow-me/swaps';
+import { type BigNumberish } from '@ethersproject/bignumber';
+import { type Block, type StaticJsonRpcProvider } from '@ethersproject/providers';
+import { type CrosschainQuote, getQuoteExecutionDetails, getTargetAddress, type Quote } from '@rainbow-me/swaps';
 import { Contract } from '@ethersproject/contracts';
 import { MaxUint256 } from '@ethersproject/constants';
-import { Token } from '../entities/tokens';
+import { type Token } from '../entities/tokens';
 import { estimateGasWithPadding, getProvider, toHexNoLeadingZeros } from './web3';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import type { Asset } from '@/entities/tokens';

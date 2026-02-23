@@ -1,7 +1,7 @@
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { CandleResolution, ChartType } from '@/features/charts/types';
-import { Language } from '@/languages';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type CandleResolution, type ChartType } from '@/features/charts/types';
+import { type Language } from '@/languages';
+import { type ChainId } from '@/state/backendNetworks/types';
 
 // have to put this here or redux gets important and tests break
 type PushNotificationPermissionStatus = 'enabled' | 'disabled' | 'never asked';

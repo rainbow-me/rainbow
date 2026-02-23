@@ -1,5 +1,5 @@
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
-import { TokenData, PriceReliabilityStatus } from './liveTokensStore';
+import { type TokenData, type PriceReliabilityStatus } from './liveTokensStore';
 import { POLYMARKET_CLOB_URL, POLYMARKET_TOKEN_ID_SUFFIX } from '@/features/polymarket/constants';
 import { logger, RainbowError } from '@/logger';
 

@@ -1,5 +1,5 @@
-import { ChainId as SwapsChainId, CrosschainQuote, Quote, QuoteError, SwapType } from '@rainbow-me/swaps';
-import { ChainId } from '@/state/backendNetworks/types';
+import { ChainId as SwapsChainId, type CrosschainQuote, type Quote, type QuoteError, SwapType } from '@rainbow-me/swaps';
+import { type ChainId } from '@/state/backendNetworks/types';
 
 import { DepositQuoteStatus } from '../types';
 

@@ -1,4 +1,4 @@
-import { Docs } from '../../docs/types';
+import { type Docs } from '../../docs/types';
 
 import * as examples from './BackgroundProvider.examples';
 import meta from './BackgroundProvider.meta';

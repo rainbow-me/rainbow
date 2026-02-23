@@ -1,9 +1,9 @@
 import type { Address } from 'viem';
 
-import { ETH_ADDRESS } from '@/references';
-import { ChainId, ChainName } from '@/state/backendNetworks/types';
-import { SearchAsset } from '@/__swaps__/types/search';
-import { ResponseByTheme } from '../utils/swaps';
+import { type ETH_ADDRESS } from '@/references';
+import { type ChainId, type ChainName } from '@/state/backendNetworks/types';
+import { type SearchAsset } from '@/__swaps__/types/search';
+import { type ResponseByTheme } from '../utils/swaps';
 
 export type AddressOrEth = Address | typeof ETH_ADDRESS;
 

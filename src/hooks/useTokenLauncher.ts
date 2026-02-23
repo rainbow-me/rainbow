@@ -1,5 +1,5 @@
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { TokenLauncher as TL, SDKConfig as TokenLauncherConfig } from '@rainbow-me/token-launcher';
+import { TokenLauncher as TL, type SDKConfig as TokenLauncherConfig } from '@rainbow-me/token-launcher';
 import { useEffect } from 'react';
 import {
   TOKEN_LAUNCHER_URL,

@@ -1,17 +1,17 @@
-import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { MeteorologyGasSuggestions } from '@/__swaps__/utils/meteorology';
+import { type MeteorologyGasSuggestions } from '@/__swaps__/utils/meteorology';
 import { logger, RainbowError } from '@/logger';
-import { RainbowClaimable } from '@/resources/addys/claimables/types';
+import { type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAirdropsStore } from '@/state/claimables/airdropsStore';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { MutableRefObject, useCallback, useMemo, useRef } from 'react';
-import { runOnJS, SharedValue, useSharedValue } from 'react-native-reanimated';
+import { type MutableRefObject, useCallback, useMemo, useRef } from 'react';
+import { runOnJS, type SharedValue, useSharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { executeAirdropClaim, GasInfo, getAirdropClaimGasLimit, getGasInfo } from './utils';
+import { executeAirdropClaim, type GasInfo, getAirdropClaimGasLimit, getGasInfo } from './utils';
 
 export interface AirdropGasInfo extends GasInfo {
   lastUpdated: number;

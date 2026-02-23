@@ -1,4 +1,4 @@
-import { PolymarketPosition } from '@/features/polymarket/types';
+import { type PolymarketPosition } from '@/features/polymarket/types';
 
 export const PositionAction = {
   CLEAR: 'clear',

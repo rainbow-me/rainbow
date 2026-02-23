@@ -1,7 +1,7 @@
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { time } from '@/utils/time';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { RawPolymarketEvent, PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { type RawPolymarketEvent, type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { CATEGORIES, DEFAULT_CATEGORY_KEY, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { usePolymarketCategoryStore } from './usePolymarketCategoryStore';

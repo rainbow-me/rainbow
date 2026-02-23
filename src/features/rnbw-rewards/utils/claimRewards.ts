@@ -1,5 +1,5 @@
 import { analytics } from '@/analytics';
-import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResult';
@@ -7,15 +7,15 @@ import { pollClaimStatus, type PollClaimStatusResult } from '@/features/rnbw-rew
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet, signTypedDataMessage } from '@/model/wallet';
-import { RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
+import { type RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
 import { getPlatformClient } from '@/resources/platform/client';
 import { ChainId } from '@rainbow-me/swaps';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import {
-  ClaimRewardsResult,
-  ClaimRewardsResponse,
-  GetClaimIntentResponse,
-  GetClaimIntentResult,
+  type ClaimRewardsResult,
+  type ClaimRewardsResponse,
+  type GetClaimIntentResponse,
+  type GetClaimIntentResult,
 } from '@/features/rnbw-rewards/types/claimRewardsTypes';
 import { time } from '@/utils/time';
 import { LedgerSigner } from '@/handlers/LedgerSigner';

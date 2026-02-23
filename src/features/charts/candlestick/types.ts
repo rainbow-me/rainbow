@@ -1,4 +1,4 @@
-import { CandleResolution } from '../types';
+import { type CandleResolution } from '../types';
 
 // ============ Internal Types ================================================= //
 

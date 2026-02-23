@@ -1,5 +1,5 @@
 import { createRainbowStore } from '../internal/createRainbowStore';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { type WalletLoadingStates } from '@/helpers/walletLoadingStates';
 
 type WalletLoadingState = {
   loadingState: WalletLoadingStates | null;

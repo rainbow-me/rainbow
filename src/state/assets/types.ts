@@ -1,12 +1,12 @@
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import { SupportedCurrencyKey } from '@/references';
-import { ChainId } from '@/state/backendNetworks/types';
-import { QueryStoreState } from '@/state/internal/queryStore/types';
-import { OptionallyPersistedRainbowStore } from '@/state/internal/types';
-import { ParsedAssetsDictByChain, ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
-import { UserAssetsStateToPersist } from './persistence';
-import { LiveTokensData } from '../liveTokens/liveTokensStore';
+import { type SupportedCurrencyKey } from '@/references';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type QueryStoreState } from '@/state/internal/queryStore/types';
+import { type OptionallyPersistedRainbowStore } from '@/state/internal/types';
+import { ParsedAssetsDictByChain, type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
+import { type UserAssetsStateToPersist } from './persistence';
+import { type LiveTokensData } from '../liveTokens/liveTokensStore';
 
 export type UserAssetsStoreType = OptionallyPersistedRainbowStore<
   QueryStoreState<FetchedUserAssetsData, UserAssetsParams, UserAssetsState>,

@@ -5,7 +5,7 @@ import Animated, {
   Easing,
   interpolate,
   runOnJS,
-  SharedValue,
+  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,

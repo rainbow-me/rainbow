@@ -1,6 +1,6 @@
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { GasSpeed } from '@/__swaps__/types/gas';
-import { InputKeys, InputMethods } from '@/__swaps__/types/swap';
+import { type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { type GasSpeed } from '@/__swaps__/types/gas';
+import { type InputKeys, type InputMethods } from '@/__swaps__/types/swap';
 import { getInputValuesForSliderPositionWorklet } from '@/__swaps__/utils/flipAssets';
 import {
   getDefaultSlippage,
@@ -18,7 +18,7 @@ import { divWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMat
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
-import { SwapsState, useSwapsStore } from '@/state/swaps/swapsStore';
+import { type SwapsState, useSwapsStore } from '@/state/swaps/swapsStore';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import watchingAlert from '@/utils/watchingAlert';
 import { INITIAL_SLIDER_POSITION, SLIDER_WIDTH } from './constants';

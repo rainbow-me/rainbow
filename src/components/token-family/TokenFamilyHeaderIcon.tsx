@@ -1,12 +1,12 @@
 import * as i18n from '@/languages';
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Source } from 'react-native-fast-image';
+import { type Source } from 'react-native-fast-image';
 import eyeSlash from '../../assets/sf-eye.slash.png';
 import { Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { borders } from '@/styles';
-import { ThemeContextProps } from '@/theme';
+import { type ThemeContextProps } from '@/theme';
 import FallbackIcon from '@/utils/CoinIcons/FallbackIcon';
 import { initials } from '@/utils/formatters';
 import ShadowStack from '@/react-native-shadow-stack';

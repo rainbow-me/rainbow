@@ -1,6 +1,6 @@
 import React from 'react';
-import { negateSpace, Space } from '../../layout/space';
-import { Box, BoxProps } from '../Box/Box';
+import { negateSpace, type Space } from '../../layout/space';
+import { Box, type BoxProps } from '../Box/Box';
 
 export type BleedProps = {
   children: BoxProps['children'];

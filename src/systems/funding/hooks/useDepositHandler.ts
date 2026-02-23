@@ -1,9 +1,9 @@
 import { ethers } from 'ethers';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
-import { SharedValue } from 'react-native-reanimated';
+import { type SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { ParsedAsset } from '@/__swaps__/types/assets';
+import { type ParsedAsset } from '@/__swaps__/types/assets';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
@@ -12,27 +12,27 @@ import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import { walletExecuteRap } from '@/raps/execute';
-import { RapSwapActionParameters, rapTypes } from '@/raps/references';
+import { type RapSwapActionParameters, rapTypes } from '@/raps/references';
 import { erc20ABI } from '@/references';
 import { sumWorklet } from '@/framework/core/safeMath';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
 import { executeFn, Screens, startTimeToSignTracking, TimeToSignOperation } from '@/state/performance/performance';
-import { StoreActions } from '@/state/internal/utils/createStoreActions';
-import { determineStrategy, ExecutionStrategy } from '../execution/strategy';
+import { type StoreActions } from '@/state/internal/utils/createStoreActions';
+import { determineStrategy, type ExecutionStrategy } from '../execution/strategy';
 import { crosschainQuoteTargetsRecipient, isCrosschainQuote, isValidQuote } from '../utils/quotes';
-import { executeRefreshSchedule, RefreshConfig } from '../utils/scheduleRefreshes';
+import { executeRefreshSchedule, type RefreshConfig } from '../utils/scheduleRefreshes';
 import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import {
-  AmountStoreType,
-  DepositConfig,
-  DepositGasStoresType,
-  DepositMeteorologyActions,
-  DepositQuoteStoreType,
-  DepositStoreType,
-  DepositToken,
+  type AmountStoreType,
+  type DepositConfig,
+  type DepositGasStoresType,
+  type DepositMeteorologyActions,
+  type DepositQuoteStoreType,
+  type DepositStoreType,
+  type DepositToken,
 } from '../types';
 
 // ============ Handler Hook ================================================== //

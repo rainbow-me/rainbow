@@ -3,14 +3,14 @@ import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { add, convertAmountToNativeDisplayWorklet, convertRawAmountToBalanceWorklet } from '@/helpers/utilities';
 import { parseAsset } from '@/resources/assets/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { Network } from '@/state/backendNetworks/types';
+import { type Network } from '@/state/backendNetworks/types';
 import {
   acceptedClaimableTypes,
-  AddysClaimable,
-  BaseClaimable,
-  Claimable,
-  RainbowClaimable,
-  AcceptedClaimableType,
+  type AddysClaimable,
+  type BaseClaimable,
+  type Claimable,
+  type RainbowClaimable,
+  type AcceptedClaimableType,
   ClaimableType,
 } from './types';
 

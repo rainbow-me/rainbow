@@ -1,14 +1,14 @@
 // @refresh reset
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { ParsedAddressAsset } from '@/entities/tokens';
-import { RainbowTransaction } from '@/entities/transactions';
+import { type ParsedAddressAsset } from '@/entities/tokens';
+import { type RainbowTransaction } from '@/entities/transactions';
 
-import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, TextProps } from '@/design-system';
+import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, type TextProps } from '@/design-system';
 
 import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
-import { ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import RowWithMargins from '@/components/layout/RowWithMargins';
 import { IS_ANDROID } from '@/env';
@@ -25,7 +25,7 @@ import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { ContactAvatar } from '@/components/contacts';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
+import { type AppState } from '@/redux/store';
 import useContacts from '@/hooks/useContacts';
 import useUserAccounts from '@/hooks/useUserAccounts';
 import { useTiming } from 'react-native-redash';

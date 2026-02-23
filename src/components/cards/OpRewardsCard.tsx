@@ -1,5 +1,5 @@
 import React from 'react';
-import { GenericCard, Gradient } from './GenericCard';
+import { GenericCard, type Gradient } from './GenericCard';
 import { AccentColorProvider, Box, Cover, globalColors, Stack, Text, useColorMode } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImageBackground } from 'react-native';

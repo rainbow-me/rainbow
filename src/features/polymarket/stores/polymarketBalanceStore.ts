@@ -1,5 +1,5 @@
 import { ChainId } from '@rainbow-me/swaps';
-import { BigNumber, ethers } from 'ethers';
+import { type BigNumber, ethers } from 'ethers';
 import { USD_DECIMALS } from '@/features/perps/constants';
 import { POLYGON_USDC_ADDRESS } from '@/features/polymarket/constants';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';

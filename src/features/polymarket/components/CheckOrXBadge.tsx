@@ -1,8 +1,8 @@
 import { opacity } from '@/framework/ui/utils/opacity';
 import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { TextSize } from '@/design-system/typography/typeHierarchy';
+import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { PolymarketPosition } from '@/features/polymarket/types';
+import { type PolymarketPosition } from '@/features/polymarket/types';
 import { memo, useMemo } from 'react';
 
 export const CheckOrXBadge = memo(function CheckOrXBadge({

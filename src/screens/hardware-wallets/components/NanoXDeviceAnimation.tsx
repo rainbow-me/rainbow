@@ -1,10 +1,10 @@
 import { BackdropBlur, Canvas, Circle, Group, Paint, Rect, mix } from '@shopify/react-native-skia';
 import React, { useEffect } from 'react';
-import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
-import { Source } from 'react-native-fast-image';
+import { type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
+import { type Source } from 'react-native-fast-image';
 import Animated, {
   Easing,
-  SharedValue,
+  type SharedValue,
   interpolateColor,
   useAnimatedReaction,
   useAnimatedStyle,

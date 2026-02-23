@@ -28,7 +28,7 @@ import {
   updateTabGestureState,
 } from '../utils/gestureUtils';
 import { calculateScrollPositionToCenterTab } from '../utils/layoutUtils';
-import { TabHitResult, tabHitTest } from '../utils/tabHitTest';
+import { type TabHitResult, tabHitTest } from '../utils/tabHitTest';
 
 const ENABLE_PAN_LOGS = false;
 const ENABLE_SCROLL_VIEW_LOGS = false;

@@ -1,9 +1,9 @@
-import React, { ComponentProps, ReactElement, useCallback, useMemo } from 'react';
-import { CellRendererProps } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
-import Animated, { AnimatedProps, useAnimatedRef, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+import React, { type ComponentProps, type ReactElement, useCallback, useMemo } from 'react';
+import { type CellRendererProps } from 'react-native';
+import { type FlatList } from 'react-native-gesture-handler';
+import Animated, { type AnimatedProps, useAnimatedRef, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useDndContext } from '../DndContext';
-import { UseDraggableStackOptions } from '../features';
+import { type UseDraggableStackOptions } from '../features';
 import type { UniqueIdentifier } from '../types';
 import { swapByItemCenterPoint } from '../utils';
 import { Draggable } from './Draggable';

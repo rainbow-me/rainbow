@@ -1,11 +1,15 @@
-import { createQueryKey, QueryConfig, QueryFunctionArgs } from '@/react-query';
+import { createQueryKey, type QueryConfig, type QueryFunctionArgs } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { RainbowError, logger } from '@/logger';
 import { metadataPOSTClient } from '@/graphql';
-import { TransactionErrorType, TransactionScanResultType, TransactionSimulationResult } from '@/graphql/__generated__/metadataPOST';
+import {
+  type TransactionErrorType,
+  type TransactionScanResultType,
+  type TransactionSimulationResult,
+} from '@/graphql/__generated__/metadataPOST';
 import { isNil } from 'lodash';
-import { RequestData } from '@/walletConnect/types';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type RequestData } from '@/walletConnect/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 
 type SimulationArgs = {
   address: string;

@@ -3,18 +3,18 @@ import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import { RainbowPositions } from '@/features/positions/types';
-import { UniqueId } from '@/__swaps__/types/assets';
-import { Language } from '@/languages';
-import { Network } from '@/state/backendNetworks/types';
-import { BooleanMap } from '@/hooks/useCoinListEditOptions';
-import { useExperimentalConfig } from '@/config/experimentalHooks';
-import { ClaimablesStore } from '@/state/claimables/claimables';
-import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
-import { Collection, CollectionId } from '@/state/nfts/types';
-import { PerpsWalletListData } from '@/features/perps/types';
-import { PolymarketWalletListData } from '@/features/polymarket/types';
+import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { type RainbowPositions } from '@/features/positions/types';
+import { type UniqueId } from '@/__swaps__/types/assets';
+import { type Language } from '@/languages';
+import { type Network } from '@/state/backendNetworks/types';
+import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
+import { type useExperimentalConfig } from '@/config/experimentalHooks';
+import { type ClaimablesStore } from '@/state/claimables/claimables';
+import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
+import { type Collection, type CollectionId } from '@/state/nfts/types';
+import { type PerpsWalletListData } from '@/features/perps/types';
+import { type PolymarketWalletListData } from '@/features/polymarket/types';
 
 const CONTENT_PLACEHOLDER: CellTypes[] = [
   { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-1' },

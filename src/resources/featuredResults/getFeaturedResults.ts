@@ -1,4 +1,4 @@
-import { QueryConfigWithSelect, createQueryKey } from '@/react-query';
+import { type QueryConfigWithSelect, createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { arcClient } from '@/graphql';
 

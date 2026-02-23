@@ -7,7 +7,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import React, { useCallback } from 'react';
-import { Source } from 'react-native-fast-image';
+import { type Source } from 'react-native-fast-image';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { ImgixImage } from '../images';
 

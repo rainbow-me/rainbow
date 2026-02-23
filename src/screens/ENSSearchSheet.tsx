@@ -2,7 +2,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { Source } from 'react-native-fast-image';
+import { type Source } from 'react-native-fast-image';
 import { useDebounce } from 'use-debounce';
 import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';

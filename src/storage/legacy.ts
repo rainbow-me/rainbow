@@ -1,7 +1,7 @@
 import { Storage } from '@/storage';
 import { deprecatedGetLocal, deprecatedRemoveLocal } from '@/handlers/localstorage/common';
 
-import { Legacy } from '@/storage/schema';
+import { type Legacy } from '@/storage/schema';
 import { logger, RainbowError } from '@/logger';
 
 export const REACT_QUERY_STORAGE_ID = 'rainbow.react-query';

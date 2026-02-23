@@ -1,4 +1,4 @@
-import { QuoteError } from '@rainbow-me/swaps';
+import { type QuoteError } from '@rainbow-me/swaps';
 import * as i18n from '@/languages';
 
 export interface ExchangeQuoteError extends QuoteError {

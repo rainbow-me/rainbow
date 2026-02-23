@@ -1,8 +1,8 @@
-import { SkCanvas, SkPath, Skia } from '@shopify/react-native-skia';
-import { ResponseByTheme } from '@/__swaps__/utils/swaps';
-import { InteractionConfig, LineEffectsConfig, LineSeries, LineSeriesConfig, MinMax } from './LineSeries';
-import { LineSmoothing } from './LineSmoothingAlgorithms';
-import { DrawParams } from './types';
+import { type SkCanvas, type SkPath, Skia } from '@shopify/react-native-skia';
+import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { type InteractionConfig, type LineEffectsConfig, LineSeries, type LineSeriesConfig, type MinMax } from './LineSeries';
+import { type LineSmoothing } from './LineSmoothingAlgorithms';
+import { type DrawParams } from './types';
 
 export type SeriesDataInput = {
   color: ResponseByTheme<string>;

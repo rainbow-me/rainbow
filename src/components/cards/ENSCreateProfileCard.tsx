@@ -15,7 +15,7 @@ import ENSIcon from '../../assets/ensIcon.png';
 import { useNavigation } from '../../navigation/Navigation';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import ImgixImage from '../images/ImgixImage';
-import { GenericCard, Gradient } from './GenericCard';
+import { GenericCard, type Gradient } from './GenericCard';
 import { ORB_SIZE } from './reusables/IconOrb';
 
 const ASPECT_RATIO = 112 / 350;

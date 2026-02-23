@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { noop } from 'lodash';
 
-import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
+import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
 
 import { arcClient } from '@/graphql';
 

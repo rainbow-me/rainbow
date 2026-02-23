@@ -4,7 +4,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {
   Easing,
-  SharedValue,
+  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   withRepeat,

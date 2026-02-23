@@ -1,10 +1,10 @@
 import { memo } from 'react';
-import { PolymarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { Box, useColorMode } from '@/design-system';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { MarketRow } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
-import { PolymarketTeamInfo } from '@/features/polymarket/types';
+import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { ResolvedMarketRow } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketRow';
 import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';

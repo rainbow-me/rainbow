@@ -10,7 +10,7 @@ import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
-import { PositionAsset, RainbowPosition } from '@/features/positions/types';
+import { type PositionAsset, type RainbowPosition } from '@/features/positions/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { opacity } from '@/framework/ui/utils/opacity';

@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, ViewProps } from 'react-native';
+import { View, type ViewProps } from 'react-native';
 import { IS_ANDROID } from '@/env';
 import styled from '@/framework/ui/styled-thing';
-import { Colors } from '@/styles';
+import { type Colors } from '@/styles';
 import { useTheme } from '@/theme';
 import { opacity } from '@/framework/ui/utils/opacity';
 

@@ -8,7 +8,7 @@ import { getSdk as getMetadataSdk } from './__generated__/metadata';
 import { getSdk as getArcSdk } from './__generated__/arc';
 import { getSdk as getArcDevSdk } from './__generated__/arcDev';
 import { IS_PROD } from '@/env';
-import { RainbowFetchRequestOpts } from '@/framework/data/http/rainbowFetch';
+import { type RainbowFetchRequestOpts } from '@/framework/data/http/rainbowFetch';
 
 export const metadataRequester = getFetchRequester(config.metadata);
 

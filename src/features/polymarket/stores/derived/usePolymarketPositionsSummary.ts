@@ -1,4 +1,4 @@
-import { TextColor } from '@/design-system/color/palettes';
+import { type TextColor } from '@/design-system/color/palettes';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
 import { abs, add, divide, greaterThan, isEqual, multiply, subtract } from '@/helpers/utilities';

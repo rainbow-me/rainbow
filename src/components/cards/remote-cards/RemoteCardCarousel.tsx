@@ -8,10 +8,10 @@ import { REMOTE_CARDS, getExperimentalFlag } from '@/config';
 import { Separator, useColorMode } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import Routes from '@/navigation/routesNames';
+import type Routes from '@/navigation/routesNames';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { FlashList } from '@shopify/flash-list';
+import { type FlashList } from '@shopify/flash-list';
 
 type RenderItemProps = {
   item: string;

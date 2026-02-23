@@ -1,5 +1,5 @@
-import { PlatformResponse } from '@/features/rnbw-rewards/types/platformResponseTypes';
-import { RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
+import { type PlatformResponse } from '@/features/rnbw-rewards/types/platformResponseTypes';
+import { type RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
 
 /**
  * This should in theory not be possible, and is only a sanity check. It should be replaced with Zod schema parsing if we decide we want to use Zod for this.

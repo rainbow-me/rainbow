@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { Insets, StyleSheet } from 'react-native';
+import { type Insets, StyleSheet } from 'react-native';
 import Animated, { runOnUI, useAnimatedRef, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 import { analytics } from '@/analytics';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
@@ -15,7 +15,7 @@ import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { useSearchCurrencyLists } from '@/__swaps__/screens/Swap/hooks/useSearchCurrencyLists';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { AssetToBuySectionId, SearchAsset, TokenToBuyListItem } from '@/__swaps__/types/search';
+import { type AssetToBuySectionId, type SearchAsset, type TokenToBuyListItem } from '@/__swaps__/types/search';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { getChainColorWorklet } from '@/__swaps__/utils/swaps';

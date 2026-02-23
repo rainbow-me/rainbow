@@ -9,7 +9,7 @@ import { useBrowserContext } from './BrowserContext';
 import { TAB_VIEW_COLUMN_WIDTH } from './Dimensions';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
 import { RAINBOW_HOME } from './constants';
-import { TabId, TabViewGestureStates } from './types';
+import { type TabId, TabViewGestureStates } from './types';
 import { getTabInfo } from './utils/getTabInfo';
 
 export const X_BUTTON_SIZE = 22;

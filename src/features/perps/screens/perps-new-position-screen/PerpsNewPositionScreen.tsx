@@ -14,7 +14,7 @@ import { FOOTER_HEIGHT_WITH_SAFE_AREA, LAYOUT_ANIMATION, PERPS_BACKGROUND_DARK, 
 import { MarketInfoSection } from './MarketInfoSection';
 import { HeaderFade } from '@/features/perps/components/HeaderFade';
 import { IS_ANDROID } from '@/env';
-import { PerpMarket } from '@/features/perps/types';
+import { type PerpMarket } from '@/features/perps/types';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';

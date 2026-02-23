@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { GestureResponderEvent, StyleSheet, View } from 'react-native';
+import { type GestureResponderEvent, StyleSheet, View } from 'react-native';
 import { Box, Inline, Stack, Text, AccentColorProvider, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LinearGradient } from 'expo-linear-gradient';

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Svg, { ClipPath, Defs, G, Path, SvgProps } from 'react-native-svg';
+import Svg, { ClipPath, Defs, G, Path, type SvgProps } from 'react-native-svg';
 
 export const CameraMaskSvg = ({ ...props }: SvgProps) => (
   <Svg width={374} height={374} fill="none" viewBox="0 0 374 374" {...props}>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Source } from 'react-native-fast-image';
+import { type Source } from 'react-native-fast-image';
 import { Easing, useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { ImgixImage } from '@/components/images';
 

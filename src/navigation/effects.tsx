@@ -1,6 +1,6 @@
 import React from 'react';
 import { Animated, View } from 'react-native';
-import { StackNavigationOptions, TransitionPreset } from '@react-navigation/stack';
+import { type StackNavigationOptions, type TransitionPreset } from '@react-navigation/stack';
 
 import { IS_ANDROID } from '@/env';
 import { lightModeThemeColors } from '@/styles';
@@ -12,7 +12,7 @@ import { HeaderHeightWithStatusBar } from '@/components/header';
 import AvatarCircle from '@/components/profile/AvatarCircle';
 import Routes from '@/navigation/routesNames';
 import { EmojiAvatar, ProfileAvatarSize } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
-import { BottomSheetNavigationOptions } from './bottom-sheet/types';
+import { type BottomSheetNavigationOptions } from './bottom-sheet/types';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 
 const statusBarHeight = safeAreaInsetValues.top;

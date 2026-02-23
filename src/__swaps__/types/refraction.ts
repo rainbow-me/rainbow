@@ -1,6 +1,6 @@
-import { ZerionAsset } from '@/__swaps__/types/assets';
-import { ChainId, ChainName } from '@/state/backendNetworks/types';
-import { PaginatedTransactionsApiResponse } from '@/entities/transactions';
+import { type ZerionAsset } from '@/__swaps__/types/assets';
+import { type ChainId, type ChainName } from '@/state/backendNetworks/types';
+import { type PaginatedTransactionsApiResponse } from '@/entities/transactions';
 
 /**
  * Metadata for a message from the Zerion API.

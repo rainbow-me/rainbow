@@ -1,7 +1,7 @@
 import { LOG_LEVEL, LOG_DEBUG } from 'react-native-dotenv';
 import format from 'date-fns/format';
 import * as Sentry from '@sentry/react-native';
-import { SeverityLevel } from '@sentry/types';
+import { type SeverityLevel } from '@sentry/types';
 
 import * as env from '@/env';
 import { DebugContext } from '@/logger/debugContext';

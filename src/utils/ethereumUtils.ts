@@ -1,13 +1,13 @@
 import { queryClient } from '@/react-query';
-import { BigNumberish } from '@ethersproject/bignumber';
-import { StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
+import { type BigNumberish } from '@ethersproject/bignumber';
+import { type StaticJsonRpcProvider, type TransactionRequest } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AddressOrEth } from '@/__swaps__/types/assets';
-import { EthereumAddress } from '@/entities/wallet';
-import { GasFee, LegacySelectedGasFee, SelectedGasFee } from '@/entities/gas';
-import { NewTransaction, RainbowTransaction } from '@/entities/transactions';
-import { ParsedAddressAsset } from '@/entities/tokens';
+import { type AddressOrEth } from '@/__swaps__/types/assets';
+import { type EthereumAddress } from '@/entities/wallet';
+import { type GasFee, type LegacySelectedGasFee, type SelectedGasFee } from '@/entities/gas';
+import { type NewTransaction, type RainbowTransaction } from '@/entities/transactions';
+import { type ParsedAddressAsset } from '@/entities/tokens';
 import { IS_IOS } from '@/env';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { getProvider, isTestnetChain, toHex } from '@/handlers/web3';
@@ -22,12 +22,12 @@ import { ETH_ADDRESS, ethUnits, optimismGasOracleAbi, OVM_GAS_PRICE_ORACLE } fro
 import {
   externalTokenQueryKey,
   fetchExternalToken,
-  FormattedExternalAsset,
+  type FormattedExternalAsset,
   useExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId, Network } from '@/state/backendNetworks/types';
+import { ChainId, type Network } from '@/state/backendNetworks/types';
 import { Contract } from '@ethersproject/contracts';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
 import { parse } from 'eth-url-parser';

@@ -1,5 +1,5 @@
 // lower number = higher precedence
-import { UniqueAssetTrait } from '../entities/uniqueAssets';
+import { type UniqueAssetTrait } from '../entities/uniqueAssets';
 
 const displayTypeRanks: Record<string, number> = {
   boost_number: 1,

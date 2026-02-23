@@ -1,13 +1,13 @@
 import { time } from '@/utils/time';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { NavigationState, useNavigationStore } from '@/state/navigation/navigationStore';
+import { type NavigationState, useNavigationStore } from '@/state/navigation/navigationStore';
 import { useUserAssetsStore } from '../assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { ETH_ADDRESS, SupportedCurrencyKey, WETH_ADDRESS } from '@/references';
+import { ETH_ADDRESS, type SupportedCurrencyKey, WETH_ADDRESS } from '@/references';
 import { getPlatformClient } from '@/resources/platform/client';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, greaterThan, multiply } from '@/helpers/utilities';
 import { fetchHyperliquidPrices } from './hyperliquidPriceService';
-import Routes, { Route } from '@/navigation/routesNames';
+import Routes, { type Route } from '@/navigation/routesNames';
 import { isHyperliquidToken, parseHyperliquidTokenId } from './hyperliquidAdapter';
 import { isPolymarketToken, fetchPolymarketPrices } from '@/state/liveTokens/polymarketAdapter';
 

@@ -1,7 +1,7 @@
 import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
 import { PolymarketNavigation } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
-import { VirtualNavigator } from '@/navigation/createVirtualNavigator';
-import Routes, { Route } from '@/navigation/routesNames';
+import { type VirtualNavigator } from '@/navigation/createVirtualNavigator';
+import Routes, { type Route } from '@/navigation/routesNames';
 import { deepFreeze } from '@/utils/deepFreeze';
 
 type VirtualNavigators = Readonly<{

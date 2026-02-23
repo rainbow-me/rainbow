@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Box, Inset, globalColors } from '@/design-system';
-import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
+import { type RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
 
 import { RainbowPointsFlowSteps, SCREEN_BOTTOM_INSET } from './constants';
@@ -14,8 +14,8 @@ import { Share } from './content/console/share';
 import { Review } from './content/console/review';
 import { ViewWeeklyEarnings } from './content/console/view-weekly-earnings';
 import { RequireWalletBalance } from './content/console/require-wallet-balance';
-import Routes from '@/navigation/routesNames';
-import { RootStackParamList } from '@/navigation/types';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
 
 export const ConsoleSheet = () => {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CONSOLE_SHEET>>();

@@ -5,16 +5,16 @@ import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { useColorMode } from '@/design-system';
 import { useTheme } from '@/theme';
 import { DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR } from '../constants';
-import { BackendNetwork } from '@/state/backendNetworks/types';
+import { type BackendNetwork } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { SkImage, useAnimatedImageValue, useImage } from '@shopify/react-native-skia';
+import { type SkImage, useAnimatedImageValue, useImage } from '@shopify/react-native-skia';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
-import { SharedValue } from 'react-native-reanimated';
+import { type SharedValue } from 'react-native-reanimated';
 import { logger, RainbowError } from '@/logger';
 import { useCleanup } from '@/hooks/useCleanup';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { ScrollView } from 'react-native';
+import { type ScrollView } from 'react-native';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 type TokenLauncherContextType = {

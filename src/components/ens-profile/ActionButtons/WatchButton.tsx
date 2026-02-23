@@ -1,7 +1,7 @@
 import ConditionalWrap from 'conditional-wrap';
 import * as i18n from '@/languages';
 import React, { useCallback, useMemo, useState } from 'react';
-import { ContextMenuButton, MenuConfig } from 'react-native-ios-context-menu';
+import { ContextMenuButton, type MenuConfig } from 'react-native-ios-context-menu';
 import ActionButton from './ActionButton';
 import useWatchWallet from '@/hooks/useWatchWallet';
 

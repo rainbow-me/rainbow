@@ -6,10 +6,10 @@ import { AddWalletSheet } from '@/screens/AddWalletSheet';
 import { ChooseWalletGroup } from '@/screens/ChooseWalletGroup';
 import { ImportOrWatchWalletSheet } from '@/screens/ImportOrWatchWalletSheet';
 import { BackgroundProvider } from '@/design-system';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { setActiveRoute } from '@/state/navigation/navigationStore';
-import { RootStackParamList } from './types';
+import { type RootStackParamList } from './types';
 
 const Swipe = createMaterialTopTabNavigator();
 

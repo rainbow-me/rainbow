@@ -1,5 +1,5 @@
 import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
-import { ParsedAsset } from '@/__swaps__/types/assets';
+import { type ParsedAsset } from '@/__swaps__/types/assets';
 import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { ListHeader, ListPanel, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
@@ -23,7 +23,7 @@ import { loadWallet } from '@/model/wallet';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import { walletExecuteRap } from '@/raps/execute';
-import { RapSwapActionParameters } from '@/raps/references';
+import { type RapSwapActionParameters } from '@/raps/references';
 import { invalidatePointsQuery, usePoints } from '@/resources/points';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

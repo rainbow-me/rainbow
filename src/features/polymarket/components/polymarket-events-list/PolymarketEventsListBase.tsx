@@ -1,8 +1,8 @@
-import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { type NativeScrollEvent, type NativeSyntheticEvent, StyleSheet, View } from 'react-native';
+import { type FlatList } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { ComponentProps, ComponentType, ReactElement, RefObject, memo, useMemo } from 'react';
+import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { type ComponentProps, type ComponentType, type ReactElement, type RefObject, memo, useMemo } from 'react';
 import { NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {

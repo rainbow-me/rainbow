@@ -1,5 +1,5 @@
 import { format, parse } from 'date-fns';
-import { UniqueAssetTrait } from '../entities/uniqueAssets';
+import { type UniqueAssetTrait } from '../entities/uniqueAssets';
 
 interface AdditionalProperties {
   color: string;

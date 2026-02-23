@@ -5,7 +5,7 @@ import RNFS from 'react-native-fs';
 import AesEncryptor from '../handlers/aesEncryption';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { BackupFile, CloudBackups } from '@/model/backup';
+import { type BackupFile, type CloudBackups } from '@/model/backup';
 
 const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 export const USERDATA_FILE = 'UserData.json';

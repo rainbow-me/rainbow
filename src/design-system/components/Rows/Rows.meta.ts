@@ -1,4 +1,4 @@
-import { Meta } from '../../docs/types';
+import { type Meta } from '../../docs/types';
 
 const meta: Meta = {
   category: 'Layout',

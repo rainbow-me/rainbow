@@ -1,5 +1,5 @@
 import { Fragment, memo, useState } from 'react';
-import { PerpMarket } from '@/features/perps/types';
+import { type PerpMarket } from '@/features/perps/types';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useHlTradesStore } from '@/features/perps/stores/hlTradesStore';
 import { Box, Separator, Text, TextShadow } from '@/design-system';

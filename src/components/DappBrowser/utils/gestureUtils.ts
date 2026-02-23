@@ -1,8 +1,8 @@
-import { SharedValue } from 'react-native-reanimated';
+import { type SharedValue } from 'react-native-reanimated';
 import { TAB_VIEW_COLUMN_WIDTH } from '../Dimensions';
 import { RAINBOW_HOME } from '../constants';
-import { ActiveTabCloseGestures, GestureManagerState, TabCloseGesture, TabId } from '../types';
-import { TabHitResult } from '../utils/tabHitTest';
+import { type ActiveTabCloseGestures, type GestureManagerState, type TabCloseGesture, type TabId } from '../types';
+import { type TabHitResult } from '../utils/tabHitTest';
 
 const GESTURE_THRESHOLDS = {
   CLOSE_GESTURE_X: 4,

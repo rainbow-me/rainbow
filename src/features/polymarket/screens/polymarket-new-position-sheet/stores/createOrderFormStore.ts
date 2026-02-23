@@ -1,7 +1,7 @@
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { divWorklet, greaterThanWorklet } from '@/framework/core/safeMath';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { RainbowStore } from '@/state/internal/types';
+import { type RainbowStore } from '@/state/internal/types';
 
 type OrderFormState = {
   buyAmount: string;

@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from 'react';
 import { Box, globalColors, Separator, Text, TextShadow } from '@/design-system';
-import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketEvent, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import * as i18n from '@/languages';
 import { opacity } from '@/framework/ui/utils/opacity';

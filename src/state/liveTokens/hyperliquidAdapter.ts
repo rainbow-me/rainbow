@@ -1,5 +1,5 @@
-import { TokenData, PriceReliabilityStatus } from './liveTokensStore';
-import { PerpMarket } from '@/features/perps/types';
+import { type TokenData, type PriceReliabilityStatus } from './liveTokensStore';
+import { type PerpMarket } from '@/features/perps/types';
 import { HYPERLIQUID_TOKEN_ID_SUFFIX } from '@/features/perps/constants';
 
 // Arbitrary value, only set for type compatibility

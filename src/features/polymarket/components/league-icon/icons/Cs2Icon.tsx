@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Svg, { Path } from 'react-native-svg';
-import { IconProps, DEFAULT_SIZE } from '../LeagueIcon';
+import { type IconProps, DEFAULT_SIZE } from '../LeagueIcon';
 
 export const Cs2Icon = ({ color, width = DEFAULT_SIZE, height = DEFAULT_SIZE }: IconProps) => (
   <Svg viewBox="0 0 24 24" width={width} height={height} fill="none">

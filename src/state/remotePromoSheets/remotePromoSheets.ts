@@ -1,4 +1,4 @@
-import { GetPromoSheetCollectionQuery, PromoSheet } from '@/graphql/__generated__/arc';
+import { type GetPromoSheetCollectionQuery, type PromoSheet } from '@/graphql/__generated__/arc';
 import { RainbowError, logger } from '@/logger';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 

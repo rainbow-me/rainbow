@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
-import SheetActionButton, { SheetActionButtonProps } from './SheetActionButton';
+import SheetActionButton, { type SheetActionButtonProps } from './SheetActionButton';
 import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
 import { getIsDamagedWallet } from '@/state/wallets/walletsStore';

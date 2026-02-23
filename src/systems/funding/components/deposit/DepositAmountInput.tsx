@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
-import Animated, { SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import Animated, { type SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { ImgixImage } from '@/components/images';
 import { AnimatedText, Bleed, Box, Column, Columns, Separator, Stack, Text, useColorMode } from '@/design-system';
-import { TextColor } from '@/design-system/color/palettes';
+import { type TextColor } from '@/design-system/color/palettes';
 import { InputValueCaret } from '@/features/perps/components/InputValueCaret';
 import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton';
 import * as i18n from '@/languages';

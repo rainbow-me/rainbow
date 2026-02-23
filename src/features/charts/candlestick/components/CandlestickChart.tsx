@@ -4,10 +4,10 @@ import {
   ClipOp,
   PaintStyle,
   Picture,
-  SkCanvas,
-  SkColor,
-  SkParagraph,
-  SkPicture,
+  type SkCanvas,
+  type SkColor,
+  type SkParagraph,
+  type SkPicture,
   Skia,
   StrokeCap,
   StrokeJoin,
@@ -19,7 +19,7 @@ import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector, State as GestureState } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
-  SharedValue,
+  type SharedValue,
   runOnJS,
   runOnUI,
   useAnimatedReaction,
@@ -40,7 +40,7 @@ import { MountWhenFocused } from '@/components/utilities/MountWhenFocused';
 import { CANDLESTICK_DATA_MONITOR, useExperimentalFlag } from '@/config';
 import { Text, TextIcon, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
-import { TextSegment, useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
+import { type TextSegment, useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
 import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_DEV, IS_IOS } from '@/env';
 import { areCandlesEqual, formatCandlestickPrice } from '@/features/charts/candlestick/utils';
@@ -54,26 +54,30 @@ import { useStableValue } from '@/hooks/useStableValue';
 import Routes from '@/navigation/routesNames';
 import { supportedNativeCurrencies } from '@/references';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { clamp } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { DeepPartial } from '@/types/objects';
+import { type DeepPartial } from '@/types/objects';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { time } from '@/utils/time';
-import { DampingMassStiffnessConfig, normalizeSpringConfig } from '@/worklets/animations';
+import { type DampingMassStiffnessConfig, normalizeSpringConfig } from '@/worklets/animations';
 import { createBlankPicture } from '@/worklets/skia';
 import { NoChartData } from '../../components/NoChartData';
-import { HyperliquidSymbol, Token } from '../../types';
-import { IndicatorPosition, PerpsIndicatorData, PerpsIndicatorBuilder } from '@/features/perps/charts-plugin/PerpsIndicatorBuilder';
+import { type HyperliquidSymbol, type Token } from '../../types';
+import {
+  type IndicatorPosition,
+  type PerpsIndicatorData,
+  PerpsIndicatorBuilder,
+} from '@/features/perps/charts-plugin/PerpsIndicatorBuilder';
 import { usePerpsIndicatorData } from '@/features/perps/charts-plugin/usePerpsIndicatorData';
 import { Animator } from '../classes/Animator';
-import { EmaIndicator, IndicatorBuilder, IndicatorKey } from '../classes/IndicatorBuilder';
+import { EmaIndicator, IndicatorBuilder, type IndicatorKey } from '../classes/IndicatorBuilder';
 import { TimeFormatter } from '../classes/TimeFormatter';
 import { GREEN_CANDLE_COLOR, RED_CANDLE_COLOR } from '../constants';
-import { Bar, CandlestickResponse } from '../types';
+import { type Bar, type CandlestickResponse } from '../types';
 import { ActiveCandleCard } from './ActiveCandleCard';
 
 export type PartialCandlestickConfig = DeepPartial<

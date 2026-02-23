@@ -6,21 +6,21 @@ import {
   Rect,
   RoundedRect,
   Shadow,
-  SkParagraph,
+  type SkParagraph,
   rect,
   rrect,
   vec,
-  Vector,
+  type Vector,
   type LinearGradientProps,
-  SkRRect,
+  type SkRRect,
 } from '@shopify/react-native-skia';
 import { memo, useCallback, useMemo } from 'react';
 import Animated, { type SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { SkiaText, useColorMode } from '@/design-system';
-import { TextSize } from '@/design-system/typography/typeHierarchy';
-import { TextWeight } from '@/design-system/components/Text/Text';
-import { TextColor } from '@/design-system/color/palettes';
-import { CustomColor } from '@/design-system/color/useForegroundColor';
+import { type TextSize } from '@/design-system/typography/typeHierarchy';
+import { type TextWeight } from '@/design-system/components/Text/Text';
+import { type TextColor } from '@/design-system/color/palettes';
+import { type CustomColor } from '@/design-system/color/useForegroundColor';
 
 type Shadow = {
   dx: number;

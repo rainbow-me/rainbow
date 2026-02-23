@@ -4,7 +4,7 @@ import { Directions, Gesture, GestureDetector } from 'react-native-gesture-handl
 import Animated, {
   Easing,
   runOnJS,
-  SharedValue,
+  type SharedValue,
   useAnimatedReaction,
   useAnimatedScrollHandler,
   useAnimatedStyle,
@@ -15,7 +15,7 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Bleed, Box, Inline, Inset, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
-import { Dapp, useBrowserDappsStore } from '@/resources/metadata/dapps';
+import { type Dapp, useBrowserDappsStore } from '@/resources/metadata/dapps';
 import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from '../../BrowserContext';
 import { SEARCH_BAR_HEIGHT } from '../../Dimensions';

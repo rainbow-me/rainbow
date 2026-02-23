@@ -1,11 +1,11 @@
 import { CANDLE_RESOLUTION_TO_HYPERLIQUID_INTERVAL, LINE_CHART_TIME_PERIODS } from '@/features/charts/constants';
 import {
-  CandleResolution,
-  HyperliquidInterval,
-  HyperliquidSymbol,
-  LineChartTimePeriod,
-  LineChartTimespan,
-  Token,
+  type CandleResolution,
+  type HyperliquidInterval,
+  type HyperliquidSymbol,
+  type LineChartTimePeriod,
+  type LineChartTimespan,
+  type Token,
 } from '@/features/charts/types';
 
 /**

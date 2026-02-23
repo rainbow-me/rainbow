@@ -1,4 +1,4 @@
-import { ActionFn } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
+import { type ActionFn } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
 import type { EthereumAddress } from '@/entities/wallet';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
 

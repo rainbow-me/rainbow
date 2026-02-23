@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { Bleed, Box, Text, useColorMode } from '@/design-system';
-import { PolymarketPosition } from '@/features/polymarket/types';
+import { type PolymarketPosition } from '@/features/polymarket/types';
 import ImgixImage from '@/components/images/ImgixImage';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Navigation } from '@/navigation';

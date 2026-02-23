@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { type ReactNode, useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
 const styles = StyleSheet.create({

@@ -1,11 +1,17 @@
 import { debounce } from 'lodash';
-import { PersistOptions, PersistStorage, persist, subscribeWithSelector } from 'zustand/middleware';
+import { type PersistOptions, type PersistStorage, persist, subscribeWithSelector } from 'zustand/middleware';
 import { createWithEqualityFn } from 'zustand/traditional';
 import { IS_IOS, IS_TEST } from '@/env';
 import { RainbowError, logger } from '@/logger';
 import { time } from '@/utils/time';
 import { rainbowStorage } from './rainbowStorage';
-import { LazyPersistParams, OptionallyPersistedRainbowStore, RainbowPersistConfig, RainbowStateCreator, RainbowStore } from './types';
+import {
+  type LazyPersistParams,
+  type OptionallyPersistedRainbowStore,
+  type RainbowPersistConfig,
+  type RainbowStateCreator,
+  type RainbowStore,
+} from './types';
 import { defaultDeserializeState, defaultSerializeState, omitStoreMethods } from './utils/persistUtils';
 
 /**

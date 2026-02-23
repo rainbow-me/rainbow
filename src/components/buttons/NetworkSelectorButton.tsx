@@ -1,14 +1,14 @@
 import React, { useCallback, useMemo } from 'react';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { Bleed, Inline, Text, TextProps } from '@/design-system';
+import { Bleed, Inline, Text, type TextProps } from '@/design-system';
 import * as i18n from '@/languages';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { RootStackParamList } from '@/navigation/types';
-import { RouteProp } from '@react-navigation/native';
+import { type RootStackParamList } from '@/navigation/types';
+import { type RouteProp } from '@react-navigation/native';
 
 interface DefaultButtonOptions {
   iconColor?: TextProps['color'];

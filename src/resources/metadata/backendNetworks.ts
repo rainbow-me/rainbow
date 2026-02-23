@@ -1,4 +1,4 @@
-import { BackendNetwork } from '@/state/backendNetworks/types';
+import { type BackendNetwork } from '@/state/backendNetworks/types';
 import { BACKEND_NETWORKS_QUERY } from './sharedQueries';
 import { METADATA_BASE_URL } from 'react-native-dotenv';
 

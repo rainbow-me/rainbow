@@ -7,7 +7,7 @@ import { ensRegistrantQueryKey, fetchENSRegistrant } from './useENSRegistrant';
 import { ensResolverQueryKey, fetchENSResolver } from './useENSResolver';
 import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { getENSProfile, saveENSProfile } from '@/handlers/localstorage/ens';
-import { queryClient, QueryConfigDeprecated, UseQueryData } from '@/react-query';
+import { queryClient, type QueryConfigDeprecated, type UseQueryData } from '@/react-query';
 import { fetchENSAddress } from '@/resources/ens/ensAddressQuery';
 
 const queryKey = (name: string, { supportedRecordsOnly }: { supportedRecordsOnly?: boolean } = {}) => [

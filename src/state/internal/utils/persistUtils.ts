@@ -1,4 +1,4 @@
-import { StorageValue } from 'zustand/middleware';
+import { type StorageValue } from 'zustand/middleware';
 import { RainbowError, logger } from '@/logger';
 
 /**

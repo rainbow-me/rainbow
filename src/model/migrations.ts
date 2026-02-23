@@ -1,5 +1,5 @@
-import { UniqueId } from '@/__swaps__/types/assets';
-import { UnlockableAppIconKey, unlockableAppIcons } from '@/features/app-icon/appIcons';
+import { type UniqueId } from '@/__swaps__/types/assets';
+import { type UnlockableAppIconKey, unlockableAppIcons } from '@/features/app-icon/appIcons';
 import type { EthereumAddress } from '@/entities/wallet';
 import type { RainbowToken } from '@/entities/tokens';
 import { unlockableAppIconStorage } from '@/features/app-icon/unlockableAppIconCheck';
@@ -31,7 +31,7 @@ import { deprecatedRemoveLocal, getGlobal } from '../handlers/localstorage/commo
 import { getNativeCurrency, IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import { getMigrationVersion, setMigrationVersion } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
-import { BooleanMap } from '../hooks/useCoinListEditOptions';
+import { type BooleanMap } from '../hooks/useCoinListEditOptions';
 import store from '../redux/store';
 import { RB_TOKEN_LIST_CACHE, RB_TOKEN_LIST_ETAG } from '../references/rainbow-token-list';
 import colors, { getRandomColor } from '../styles/colors';
@@ -46,7 +46,15 @@ import {
   signingWalletAddress,
 } from '../utils/keychainConstants';
 import { hasKey, loadString, publicAccessControlOptions, saveString } from './keychain';
-import { DEFAULT_WALLET_NAME, EncryptionType, getAllWallets, loadAddress, RainbowAccount, RainbowWallet, saveAddress } from './wallet';
+import {
+  DEFAULT_WALLET_NAME,
+  EncryptionType,
+  getAllWallets,
+  loadAddress,
+  type RainbowAccount,
+  type RainbowWallet,
+  saveAddress,
+} from './wallet';
 import { IS_IOS } from '@/env';
 
 export default async function runMigrations() {

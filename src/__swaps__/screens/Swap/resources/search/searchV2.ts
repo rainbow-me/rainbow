@@ -12,7 +12,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
+import { type SearchAsset, type TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { time } from '@/utils/time';
 import { parseTokenSearchResults, parseTokenSearchAcrossNetworks } from './utils';
 import { TOKEN_SEARCH_URL } from 'react-native-dotenv';

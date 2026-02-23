@@ -16,7 +16,7 @@ import { useWalletCohort } from '@/hooks/useWalletCohort';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
-import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { debounce } from 'lodash';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';

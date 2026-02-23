@@ -1,10 +1,10 @@
-import { OnboardPointsMutation, PointsErrorType, PointsOnboardingCategory } from '@/graphql/__generated__/metadataPOST';
+import { type OnboardPointsMutation, PointsErrorType, type PointsOnboardingCategory } from '@/graphql/__generated__/metadataPOST';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { pointsQueryKey } from '@/resources/points';
 import { noop } from 'lodash';
-import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useMemo, useState } from 'react';
+import React, { type Dispatch, type SetStateAction, createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { RainbowPointsFlowSteps, buildTwitterIntentMessage } from '../constants';
 
 import { analytics } from '@/analytics';

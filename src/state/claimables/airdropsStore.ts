@@ -1,17 +1,17 @@
 import { qs } from 'url-parse';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { logger, RainbowError } from '@/logger';
 import Routes from '@/navigation/routesNames';
-import { AddysClaimable, RainbowClaimable } from '@/resources/addys/claimables/types';
+import { type AddysClaimable, type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { parseClaimables } from '@/resources/addys/claimables/utils';
 import { getAddysHttpClient } from '@/resources/addys/client';
-import { AddysConsolidatedError } from '@/resources/addys/types';
+import { type AddysConsolidatedError } from '@/resources/addys/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { CacheEntry } from '@/state/internal/queryStore/types';
+import { type CacheEntry } from '@/state/internal/queryStore/types';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { time } from '@/utils/time';
 

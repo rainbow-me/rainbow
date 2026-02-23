@@ -2,7 +2,7 @@ import React from 'react';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
 import { StyleSheet } from 'react-native';
-import { Claimable } from '@/resources/addys/claimables/types';
+import { type Claimable } from '@/resources/addys/claimables/types';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { opacity } from '@/framework/ui/utils/opacity';

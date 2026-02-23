@@ -6,7 +6,7 @@ import { DocsAccordion } from '../components/DocsAccordion';
 import * as docs from '../docs';
 import { Blockquote, Code, Heading, Stack, Text } from '../system';
 import { sprinkles } from '../system/sprinkles.css';
-import { Docs } from '../types';
+import { type Docs } from '../types';
 
 const categoryOrder: [string, string[]][] = [
   ['Layout', ['Introduction', 'Box']],

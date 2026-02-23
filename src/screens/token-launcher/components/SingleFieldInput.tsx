@@ -1,6 +1,6 @@
 import React, { useCallback, forwardRef, useImperativeHandle, useState } from 'react';
 import { AnimatedText, Box, Text, useTextStyle } from '@/design-system';
-import { AnimatedTextChildProps } from '@/design-system/components/Text/AnimatedText';
+import { type AnimatedTextChildProps } from '@/design-system/components/Text/AnimatedText';
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import Animated, {
   withTiming,
@@ -10,9 +10,9 @@ import Animated, {
   useSharedValue,
   runOnJS,
   useAnimatedReaction,
-  AnimatedStyle,
+  type AnimatedStyle,
 } from 'react-native-reanimated';
-import { TextInput, TextInputProps, StyleProp, TextStyle, ViewStyle } from 'react-native';
+import { type TextInput, type TextInputProps, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { FieldContainer } from './FieldContainer';

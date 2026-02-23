@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
-import SheetActionButton, { SheetActionButtonProps } from './SheetActionButton';
+import SheetActionButton, { type SheetActionButtonProps } from './SheetActionButton';
 import Routes from '@/navigation/routesNames';
 import { Text } from '@/design-system';
 import { colors } from '@/styles';

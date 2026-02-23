@@ -1,5 +1,5 @@
 import React from 'react';
-import { RefreshControl, RefreshControlProps } from 'react-native';
+import { RefreshControl, type RefreshControlProps } from 'react-native';
 import useRefreshAccountData from '@/hooks/useRefreshAccountData';
 import { useTheme } from '@/theme';
 import { navbarHeight } from '@/components/navbar/Navbar';

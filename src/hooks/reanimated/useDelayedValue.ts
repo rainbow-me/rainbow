@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { DerivedValue, SharedValue, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
+import { type DerivedValue, type SharedValue, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import { deepEqual, shallowEqual } from '@/worklets/comparisons';
 import { useAnimatedTime } from './useAnimatedTime';
 

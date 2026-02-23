@@ -1,6 +1,6 @@
 import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
-import { RefreshControl, ScrollView, ViewProps } from 'react-native';
+import { RefreshControl, ScrollView, type ViewProps } from 'react-native';
 import AddFundsInterstitial from '../AddFundsInterstitial';
 import { Centered, Column } from '../layout';
 import AssetListHeader from './AssetListHeader';

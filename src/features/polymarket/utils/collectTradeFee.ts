@@ -1,6 +1,6 @@
-import { GelatoRelay, SponsoredCallRequest, TaskState } from '@gelatonetwork/relay-sdk';
+import { GelatoRelay, type SponsoredCallRequest, TaskState } from '@gelatonetwork/relay-sdk';
 import { ChainId } from '@rainbow-me/swaps';
-import { Address, erc20Abi, encodeFunctionData, parseUnits, zeroAddress } from 'viem';
+import { type Address, erc20Abi, encodeFunctionData, parseUnits, zeroAddress } from 'viem';
 import { GELATO_API_KEY } from 'react-native-dotenv';
 import { getPolymarketClobClient, usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { getProvider } from '@/handlers/web3';

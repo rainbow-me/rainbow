@@ -1,10 +1,10 @@
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { AnimatedText, useColorMode } from '@/design-system';
 import { fonts } from '@/styles';
 import React from 'react';
-import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import Animated, { SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import { StyleSheet, type TextStyle, type ViewStyle } from 'react-native';
+import Animated, { type SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 
 const sx = StyleSheet.create({
   container: {

@@ -1,8 +1,8 @@
-import { getColorValueForThemeWorklet, ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { palettes } from '@/design-system/color/palettes';
 import { isDrawMarket } from '@/features/polymarket/utils/sports';
-import { PolymarketPosition, PolymarketTeamInfo } from '@/features/polymarket/types';
-import { PolymarketMarket, RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketPosition, type PolymarketTeamInfo } from '@/features/polymarket/types';
+import { type PolymarketMarket, type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { isTeamBasedOutcome } from '@/features/polymarket/utils/marketClassification';

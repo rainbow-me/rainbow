@@ -1,4 +1,4 @@
-import { PerpMarket } from '@/features/perps/types';
+import { type PerpMarket } from '@/features/perps/types';
 import { greaterThanOrEqualToWorklet, mulWorklet } from '@/framework/core/safeMath';
 
 /**

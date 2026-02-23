@@ -10,9 +10,13 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { Box, Inline, Stack, Text } from '@/design-system';
-import { TextColor } from '@/design-system/color/palettes';
+import { type TextColor } from '@/design-system/color/palettes';
 
-import { TransactionErrorType, TransactionSimulationResult, TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
+import {
+  type TransactionErrorType,
+  type TransactionSimulationResult,
+  TransactionScanResultType,
+} from '@/graphql/__generated__/metadataPOST';
 
 import { isEmpty } from 'lodash';
 import { TransactionSimulatedEventRow } from '@/components/Transactions/TransactionSimulatedEventRow';
@@ -27,7 +31,7 @@ import {
   rotationConfig,
   timingConfig,
 } from '@/components/Transactions/constants';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 interface TransactionSimulationCardProps {

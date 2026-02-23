@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { LayoutChangeEvent } from 'react-native';
+import { type LayoutChangeEvent } from 'react-native';
 
 export default function useHeight(defaultHeight = 0) {
   const [height, setHeight] = useState(defaultHeight);

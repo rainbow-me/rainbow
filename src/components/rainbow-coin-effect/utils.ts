@@ -1,6 +1,6 @@
-import { SkPath, SkPoint, SkRect, point } from '@shopify/react-native-skia';
-import { Easing, SharedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
-import { ViewStyle } from 'react-native';
+import { type SkPath, type SkPoint, type SkRect, point } from '@shopify/react-native-skia';
+import { Easing, type SharedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import { type ViewStyle } from 'react-native';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors } from '@/design-system';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';

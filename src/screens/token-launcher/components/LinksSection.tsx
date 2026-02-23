@@ -24,7 +24,7 @@ import FastImage from 'react-native-fast-image';
 import { Grid } from './Grid';
 import { validateLinkWorklet } from '../helpers/inputValidators';
 import { colors } from '@/styles';
-import { Link, LinkType } from '../types';
+import { type Link, type LinkType } from '../types';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 export const LINK_SETTINGS = {

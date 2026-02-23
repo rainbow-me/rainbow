@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import Animated, {
-  SharedValue,
+  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -14,7 +14,7 @@ import { AnimatedText, Bleed, Column, Columns, Inline, useColorMode, useForegrou
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { pulsingConfig } from '@/__swaps__/screens/Swap/constants';
-import { Slider, SliderProps, SliderVisualState, SLIDER_DEFAULT_WIDTH } from './Slider';
+import { Slider, type SliderProps, type SliderVisualState, SLIDER_DEFAULT_WIDTH } from './Slider';
 import { GestureHandlerButton } from '@/components/buttons';
 
 export type SliderLabels = {
