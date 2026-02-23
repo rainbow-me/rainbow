@@ -3566,29 +3566,6 @@
         "title": "Üzgünüz, resminizi yüklerken bir hata oluştu.",
         "subtitle": "Lütfen tekrar deneyin."
       },
-      "allocation_breakdown": {
-        "my_share": "PAYIM",
-        "airdropping": "HAVAYA ATMA",
-        "start_price": "BAŞLANGIÇ FİYATI",
-        "sections": {
-          "my_share": {
-            "title": "Yaratıcı Payı",
-            "description": "Projede kişisel hisseniz"
-          },
-          "airdropping": {
-            "title": "Airdrop Payı",
-            "description": "Arkadaşlara ve destekçilere dağıtılır"
-          },
-          "liquidity_pool": {
-            "title": "Likidite Havuzu Payı",
-            "description": "Sorunsuz ticaret ve likidite sağlar"
-          },
-          "rainbow_share": {
-            "title": "Gökkuşağı Üzerine",
-            "description": "Gelecek Topluluk Dağıtımları"
-          }
-        }
-      },
       "network_field": {
         "balance": "Bakiye: %{balance}",
         "not_enough_funds": "Token başlatmak için yeterli fon yok"

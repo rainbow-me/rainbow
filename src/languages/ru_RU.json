@@ -3566,29 +3566,6 @@
         "title": "Извините, произошла ошибка при загрузке вашего изображения.",
         "subtitle": "Попробуйте снова."
       },
-      "allocation_breakdown": {
-        "my_share": "МОЙ ДОЛЯ",
-        "airdropping": "РАСПРОСТРАНЕНИЕ AIRDROP",
-        "start_price": "СТАРТОВАЯ ЦЕНА",
-        "sections": {
-          "my_share": {
-            "title": "Доля создателя",
-            "description": "Ваша личная доля в проекте"
-          },
-          "airdropping": {
-            "title": "Доля аирдропа",
-            "description": "Распределено среди друзей и сторонников"
-          },
-          "liquidity_pool": {
-            "title": "Доля ликвидного пула",
-            "description": "Обеспечивает плавную торговлю и ликвидность"
-          },
-          "rainbow_share": {
-            "title": "Сверх радуги",
-            "description": "Будущие распределения для сообщества"
-          }
-        }
-      },
       "network_field": {
         "balance": "Баланс: %{balance}",
         "not_enough_funds": "Недостаточно средств для запуска токена"

@@ -3548,30 +3548,6 @@
         "title": "Sorry, there was an error uploading your image.",
         "subtitle": "Please try again."
       },
-      "allocation_breakdown": {
-        "my_share": "MY SHARE",
-        "airdropping": "AIRDROPPING",
-        "start_price": "START PRICE",
-
-        "sections": {
-          "my_share": {
-            "title": "Creator Share",
-            "description": "Your personal stake in the project"
-          },
-          "airdropping": {
-            "title": "Airdrop Share",
-            "description": "Distributed to friends and supporters"
-          },
-          "liquidity_pool": {
-            "title": "Liquidity Pool Share",
-            "description": "Ensures smooth trading and liquidity"
-          },
-          "rainbow_share": {
-            "title": "Over the Rainbow",
-            "description": "Future Community Distributions"
-          }
-        }
-      },
       "network_field": {
         "balance": "Balance: %{balance}",
         "not_enough_funds": "Not enough funds to launch a token"

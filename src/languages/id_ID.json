@@ -3566,29 +3566,6 @@
         "title": "Maaf, terjadi kesalahan saat mengunggah gambar Anda.",
         "subtitle": "Silakan coba lagi."
       },
-      "allocation_breakdown": {
-        "my_share": "BAGIKU",
-        "airdropping": "AIR TERDROP",
-        "start_price": "HARGA AWAL",
-        "sections": {
-          "my_share": {
-            "title": "Bagikan Pencipta",
-            "description": "Pertaruhan pribadi Anda di proyek ini"
-          },
-          "airdropping": {
-            "title": "Bagikan Airdrop",
-            "description": "Didistribusikan kepada teman dan pendukung"
-          },
-          "liquidity_pool": {
-            "title": "Bagikan Pool Likuiditas",
-            "description": "Memastikan perdagangan dan likuiditas yang mulus"
-          },
-          "rainbow_share": {
-            "title": "Di Atas Pelangi",
-            "description": "Distribusi Komunitas Masa Depan"
-          }
-        }
-      },
       "network_field": {
         "balance": "Saldo: %{balance}",
         "not_enough_funds": "Dana tidak cukup untuk meluncurkan token"
