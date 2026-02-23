@@ -18,7 +18,7 @@ import AppIconBaggy from '@/assets/appIconBaggy.png';
 import AppIconChonks from '@/assets/appIconChonks.png';
 import AppIconMog from '@/assets/appIconMog.png';
 import { globalColors } from '@/design-system';
-import { type TokenGateCheckerNetwork, type TokenInfo } from './tokenGatedUtils';
+import { type TokenGateCheckerNetwork, type TokenInfo } from '../utils/tokenGatedUtils';
 import { Network } from '@/state/backendNetworks/types';
 
 const OPTIMISTIC_EXPLORER_NFT_ADDRESS: EthereumAddress = '0x81b30ff521D1fEB67EDE32db726D95714eb00637';
