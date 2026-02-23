@@ -30,7 +30,7 @@ import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 import { getFCMToken } from '@/notifications/tokens';
 import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
 import { resetCache as resetDelegationCache, getDelegations, DelegationStatus } from '@rainbow-me/delegation';
-import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
+import { RevokeReason } from '@/screens/delegation/types';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { nonceActions } from '@/state/nonces';

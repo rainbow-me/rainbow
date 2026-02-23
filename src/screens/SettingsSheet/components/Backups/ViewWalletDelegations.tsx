@@ -29,7 +29,7 @@ import {
 } from '@rainbow-me/delegation';
 import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import type { Address } from 'viem';
-import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
+import { RevokeReason } from '@/screens/delegation/types';
 import { navigate } from '@/navigation/Navigation';
 
 type ViewWalletDelegationsParams = {
