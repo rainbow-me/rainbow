@@ -6,8 +6,12 @@ import { maybeSignSource } from '../../handlers/imgix';
 import { IS_IOS } from '@/env';
 
 export type ImgixImageProps = FastImageProps & {
-  readonly Component?: React.ElementType;
-  readonly size?: number;
+  Component?: React.ElementType;
+  ref?: React.Ref<any>;
+  size?: number;
+  fm?: string;
+  enableFasterImage?: boolean;
+  fasterImageConfig?: Omit<ImageOptions, 'borderRadius' | 'url'>;
 };
 
 export const DEFAULT_FASTER_IMAGE_CONFIG: Partial<ImageOptions> = {
@@ -17,20 +21,9 @@ export const DEFAULT_FASTER_IMAGE_CONFIG: Partial<ImageOptions> = {
   transitionDuration: 0.175,
 };
 
-// Here we're emulating the pattern used in react-native-fast-image:
-// https://github.com/DylanVann/react-native-fast-image/blob/0439f7190f141e51a391c84890cdd8a7067c6ad3/src/index.tsx#L146
-type HiddenImgixImageProps = {
-  ref?: React.Ref<any>;
-  size?: number;
-  fm?: string;
-  enableFasterImage?: boolean;
-  fasterImageConfig?: Omit<ImageOptions, 'borderRadius' | 'url'>;
-};
-type MergedImgixImageProps = ImgixImageProps & HiddenImgixImageProps;
-
 const PIXEL_RATIO = PixelRatio.get();
 
-const ImgixImage = React.memo(function ImgixImage(props: MergedImgixImageProps) {
+const ImgixImage = React.memo(function ImgixImage(props: ImgixImageProps) {
   const { Component: maybeComponent, onLoad, onError, ...restProps } = props;
 
   const shouldUseFasterImage = Boolean(props.enableFasterImage || props.fasterImageConfig);
