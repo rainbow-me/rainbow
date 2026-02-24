@@ -2,7 +2,7 @@
  * Anvil JSON-RPC helpers for Maestro E2E tests.
  *
  * Method names match Anvil's RPC interface. Params pass through directly.
- * Uses GraalJS Java interop (java.net.http.HttpClient) for synchronous HTTP.
+ * Uses Maestro's built-in http client for HTTP calls.
  *
  * Setup — load once per flow:
  *   - runScript: { file: ../../helpers/anvil.js }
@@ -20,24 +20,14 @@ const ANVIL_URL = 'http://127.0.0.1:' + ANVIL_PORT;
 
 // --- Internals ---
 
-/* eslint-disable no-undef */
-const HttpClient = java.net.http.HttpClient;
-const HttpRequest = java.net.http.HttpRequest;
-const HttpResponse = java.net.http.HttpResponse;
-const URI = java.net.URI;
-/* eslint-enable no-undef */
-
-const client = HttpClient.newHttpClient();
-
 function rpc(method, params) {
   const body = JSON.stringify({ jsonrpc: '2.0', method: method, params: params || [], id: 1 });
-  const request = HttpRequest.newBuilder()
-    .uri(URI.create(ANVIL_URL))
-    .header('Content-Type', 'application/json')
-    .POST(HttpRequest.BodyPublishers.ofString(body))
-    .build();
-  const response = client.send(request, HttpResponse.BodyHandlers.ofString()).body();
-  const parsed = JSON.parse(response);
+  // eslint-disable-next-line no-undef
+  const response = http.post(ANVIL_URL, {
+    headers: { 'Content-Type': 'application/json' },
+    body: body,
+  });
+  const parsed = JSON.parse(response.body);
   if (parsed.error) {
     throw new Error(method + ' failed: ' + parsed.error.message);
   }
