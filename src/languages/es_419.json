@@ -3566,29 +3566,6 @@
         "title": "Lo sentimos, hubo un error al cargar su imagen.",
         "subtitle": "Por favor inténtelo de nuevo."
       },
-      "allocation_breakdown": {
-        "my_share": "MI PARTE",
-        "airdropping": "AIRDROPPING",
-        "start_price": "PRECIO INICIAL",
-        "sections": {
-          "my_share": {
-            "title": "Cuota del Creador",
-            "description": "Tu participación personal en el proyecto"
-          },
-          "airdropping": {
-            "title": "Cuota de Airdrop",
-            "description": "Distribuido a amigos y seguidores"
-          },
-          "liquidity_pool": {
-            "title": "Cuota de Pool de Liquidez",
-            "description": "Asegura el comercio fluido y la liquidez"
-          },
-          "rainbow_share": {
-            "title": "Sobre el Arcoíris",
-            "description": "Distribuciones futuras para la comunidad"
-          }
-        }
-      },
       "network_field": {
         "balance": "Balance: %{balance}",
         "not_enough_funds": "Fondos insuficientes para lanzar un token"
