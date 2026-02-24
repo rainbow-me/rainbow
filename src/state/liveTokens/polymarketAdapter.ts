@@ -72,7 +72,7 @@ export async function fetchPolymarketPrices(tokenIds: string[]): Promise<Record<
     for (const { tokenId, polymarketTokenId, type } of parsedTokens) {
       const midPrice = midpointPrices[polymarketTokenId] ?? null;
       const side = POLYMARKET_PRICE_TYPE_SIDES[type];
-      const price = side ? sidePrices[polymarketTokenId]?.[side] ?? midPrice : midPrice;
+      const price = (side && sidePrices[polymarketTokenId]?.[side]) ?? midPrice;
       if (price) {
         tokens[tokenId] = transformPolymarketPriceToTokenData(price, midPrice);
       }
