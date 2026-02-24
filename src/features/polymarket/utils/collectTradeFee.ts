@@ -1,4 +1,4 @@
-import { createGelatoEvmRelayerClient } from '@gelatocloud/gasless';
+import { createGelatoEvmRelayerClient } from '@gelatocloud/gasless/_dist/relayer/evm/index.js';
 import { ChainId } from '@rainbow-me/swaps';
 import { type Address, erc20Abi, encodeFunctionData, parseUnits, zeroAddress } from 'viem';
 import { GELATO_API_KEY } from 'react-native-dotenv';
@@ -141,7 +141,7 @@ export async function collectTradeFee(tokenAmount: string): Promise<CollectTrade
       data: execData,
     });
 
-    const receipt = await gelatoRelayer.waitForReceipt({ id: taskId });
+    const receipt = await gelatoRelayer.waitForReceipt({ id: taskId }, { usePolling: true });
     const result: CollectTradeFeeResult = {
       success: true,
       taskId,
