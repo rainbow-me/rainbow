@@ -3566,29 +3566,6 @@
         "title": "عذرًا، حدث خطأ أثناء تحميل صورتك.",
         "subtitle": "يرجى المحاولة مرة أخرى."
       },
-      "allocation_breakdown": {
-        "my_share": "مشاركتي",
-        "airdropping": "الإسقاط",
-        "start_price": "سعر البدء",
-        "sections": {
-          "my_share": {
-            "title": "حصة المنشئ",
-            "description": "نصيبك الشخصي في المشروع"
-          },
-          "airdropping": {
-            "title": "حصة الإسقاط",
-            "description": "تم توزيعها على الأصدقاء والداعمين"
-          },
-          "liquidity_pool": {
-            "title": "حصة مجموعة السيولة",
-            "description": "ضمان تداول سلس وسيولة"
-          },
-          "rainbow_share": {
-            "title": "فوق قوس قزح",
-            "description": "توزيعات المجتمع المستقبلية"
-          }
-        }
-      },
       "network_field": {
         "balance": "الرصيد: %{balance}",
         "not_enough_funds": "لا توجد أموال كافية لإطلاق رمز"
