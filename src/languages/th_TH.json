@@ -3566,29 +3566,6 @@
         "title": "ขออภัย เกิดข้อผิดพลาดในการอัปโหลดรูปภาพของคุณ.",
         "subtitle": "กรุณาลองอีกครั้ง."
       },
-      "allocation_breakdown": {
-        "my_share": "ส่วนของฉัน",
-        "airdropping": "ในกระบวนการ Airdrop",
-        "start_price": "ราคาเริ่มต้น",
-        "sections": {
-          "my_share": {
-            "title": "ส่วนแบ่งของผู้สร้าง",
-            "description": "ส่วนตัวของคุณในโครงการ"
-          },
-          "airdropping": {
-            "title": "ส่วนประกอบขับเคลื่อน",
-            "description": "แจกจ่ายให้เพื่อนและผู้สนับสนุน"
-          },
-          "liquidity_pool": {
-            "title": "ส่วนแบ่งของพูลสภาพคล่อง",
-            "description": "สร้างการซื้อขายที่ราบรื่นและสภาพคล่อง"
-          },
-          "rainbow_share": {
-            "title": "เหนือสายรุ้ง",
-            "description": "การแจกจ่ายชุมชนในอนาคต"
-          }
-        }
-      },
       "network_field": {
         "balance": "ยอดคงเหลือ: %{balance}",
         "not_enough_funds": "เงินไม่เพียงพอที่จะเปิดตัวโทเค็น"
