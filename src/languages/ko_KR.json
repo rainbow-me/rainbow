@@ -3566,29 +3566,6 @@
         "title": "죄송합니다, 이미지 업로드 중 오류가 발생했습니다.",
         "subtitle": "다시 시도하세요."
       },
-      "allocation_breakdown": {
-        "my_share": "내 기부",
-        "airdropping": "에어드롭 중",
-        "start_price": "시작 가격",
-        "sections": {
-          "my_share": {
-            "title": "크리에이터 기부",
-            "description": "프로젝트에 대한 개인적 지분"
-          },
-          "airdropping": {
-            "title": "에어드롭 기부",
-            "description": "친구와 지지자에게 배포됨"
-          },
-          "liquidity_pool": {
-            "title": "유동성 풀 기부",
-            "description": "원활한 거래와 유동성 보장"
-          },
-          "rainbow_share": {
-            "title": "레인보우의 그 너머",
-            "description": "미래의 커뮤니티 배포"
-          }
-        }
-      },
       "network_field": {
         "balance": "잔액: %{balance}",
         "not_enough_funds": "토큰 시작에 충분한 자금이 없습니다"
