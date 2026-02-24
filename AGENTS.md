@@ -16,13 +16,9 @@ React Native crypto wallet app (iOS & Android). Uses React Navigation, custom st
 - **Single test:** `yarn jest path/to/test`
 - **Cycle check:** `yarn check:cycles`
 
-## Build & Run
+## Setup & Codegen
 
-- **iOS:** `yarn ios` (runs on iPhone 16 Pro simulator)
-- **Android:** `yarn android`
-- **Metro:** `yarn start` or `yarn start:clean` (with cache reset)
-- **Full setup:** `yarn install && yarn setup && yarn install-pods-fast`
-- **Quick setup:** `yarn fast`
+- **Quick setup:** `yarn fast` (install + codegen + pods)
 - **GraphQL codegen:** `yarn graphql-codegen` (run after changing GraphQL schemas in `src/graphql/`)
 
 ## Architecture
@@ -51,14 +47,6 @@ Key non-obvious directories:
 - `src/framework/` -- app-agnostic infrastructure (http, safe math, UI primitives)
 - `src/__swaps__/` -- swap feature, aliased as `@/swaps` in tsconfig
 - `src/graphql/` -- separate yarn workspace for GraphQL codegen
-
-### Path aliases
-
-Defined in `tsconfig.json`. The main one is `@/*` mapping to `./src/*`. Check the file for the full set.
-
-### Platform-specific files
-
-Use `.ios.tsx` / `.android.tsx` suffixes for platform variants. Metro resolves these automatically.
 
 ## Code conventions
 
