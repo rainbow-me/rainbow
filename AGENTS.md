@@ -12,11 +12,6 @@ React Native crypto wallet app (iOS & Android). Uses React Navigation, custom st
 - **Single test:** `yarn jest path/to/test`
 - **Cycle check:** `yarn check:cycles`
 
-## Setup & Codegen
-
-- **Quick setup:** `yarn fast` (install + codegen + pods)
-- **GraphQL codegen:** `yarn graphql-codegen` (run after changing GraphQL schemas in `src/graphql/`)
-
 ## Architecture
 
 ### State management
