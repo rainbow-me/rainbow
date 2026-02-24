@@ -3566,29 +3566,6 @@
         "title": "Désolé, il y a eu une erreur lors du téléchargement de votre image.",
         "subtitle": "Veuillez réessayer."
       },
-      "allocation_breakdown": {
-        "my_share": "MA PART",
-        "airdropping": "AIRDROPPING",
-        "start_price": "PRIX DE DÉPART",
-        "sections": {
-          "my_share": {
-            "title": "Part du Créateur",
-            "description": "Votre part personnelle dans le projet"
-          },
-          "airdropping": {
-            "title": "Part d'Airdrop",
-            "description": "Distribué à des amis et supporters"
-          },
-          "liquidity_pool": {
-            "title": "Part de la Piscine de Liquidité",
-            "description": "Assure un trading fluide et la liquidité"
-          },
-          "rainbow_share": {
-            "title": "Au-delà de l'Arc-en-Ciel",
-            "description": "Futures Distributions Communautaires"
-          }
-        }
-      },
       "network_field": {
         "balance": "Solde : %{balance}",
         "not_enough_funds": "Fonds insuffisants pour lancer un jeton"
