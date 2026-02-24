@@ -61,7 +61,7 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
   const resolvedMarkets = markets.filter(market => market.closed);
   const [showAllMarkets, setShowAllMarkets] = useState(activeMarkets.length <= INITIAL_MARKETS_TO_SHOW);
   const showMarketImages = usePolymarketEventStore(state => state.getData()?.showMarketImages ?? false);
-  const visibleMarkets = showAllMarkets ? activeMarkets : activeMarkets.slice(0, INITIAL_MARKETS_TO_SHOW);
+  const visibleActiveMarkets = showAllMarkets ? activeMarkets : activeMarkets.slice(0, INITIAL_MARKETS_TO_SHOW);
   const eventColor = getColorValueForThemeWorklet(event.color, isDarkMode);
   const screenBackgroundColor = isDarkMode
     ? getSolidColorEquivalent({ background: eventColor, foreground: '#000000', opacity: 0.92 })
@@ -73,13 +73,14 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
   const shouldShowAllResolvedList = allResolved;
   const shouldShowExpandCollapseControl = !allResolved && activeMarkets.length > INITIAL_MARKETS_TO_SHOW;
   const shouldShowResolvedCountBadge = hasResolvedMarkets && !showAllMarkets;
+  const shouldShowActiveMarketsSection = visibleActiveMarkets.length > 0;
 
   return (
     <>
       <Box>
-        {hasActiveMarkets && (
+        {shouldShowActiveMarketsSection && (
           <Box gap={8}>
-            {visibleMarkets.map(market => (
+            {visibleActiveMarkets.map(market => (
               <MarketRow
                 key={market.id}
                 accentColor={getColorValueForThemeWorklet(market.color, isDarkMode)}
