@@ -1,8 +1,4 @@
-# AGENTS.md
-
-This file provides guidance to AI coding agents when working with code in this repository.
-
-## What is Rainbow
+# Rainbow
 
 React Native crypto wallet app (iOS & Android). Uses React Navigation, custom store creators for state/data, and ethers/viem for blockchain interactions.
 
