@@ -10200,6 +10200,7 @@ __metadata:
     timers-browserify: "npm:1.4.2"
     ts-loader: "npm:9.5.1"
     ts-migrate: "npm:0.1.26"
+    tsx: "npm:4.20.6"
     tty-browserify: "npm:0.0.0"
     typescript: "npm:5.5.4"
     typescript-coverage-report: "npm:0.6.1"
@@ -28239,7 +28240,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:^4.20.3":
+"tsx@npm:4.20.6, tsx@npm:^4.20.3":
   version: 4.20.6
   resolution: "tsx@npm:4.20.6"
   dependencies:

@@ -1,8 +1,8 @@
-import emoji from 'emoji-datasource';
 import { Dimensions } from 'react-native';
 import { Categories } from '../Categories';
 import { EMOJIS_CONTAINER_HORIZONTAL_MARGIN, EMOJIS_TOP_OFFSET } from '../constants';
 import { type EmojiEntry } from '../types';
+import { emojisByCategory } from '@/features/emoji/models/catalog';
 
 const { width } = Dimensions.get('screen');
 
@@ -36,12 +36,15 @@ export default function getFormattedAllEmojiList(keys: string[], columnsCount: n
   let offset = 0;
 
   keys.forEach(category => {
+    const categoryId = Categories[category].index;
+    const categoryEmojis = emojisByCategory[categoryId] ?? [];
+
     const emojiSection: AllEmojiSectionEntry = [
       { header: true, title: Categories[category].getTitle() },
       {
-        data: sortEmoji(emojiByCategory(Categories[category].name)).map(emoji => ({
-          emoji,
-          key: emoji.unified,
+        data: categoryEmojis.map((char, index) => ({
+          emoji: { categoryId, char } satisfies EmojiEntry,
+          key: `${categoryId}-${char}`,
         })),
         emoji: true,
       },
@@ -61,11 +64,3 @@ export default function getFormattedAllEmojiList(keys: string[], columnsCount: n
 
   return allEmojiList;
 }
-
-function emojiByCategory(category: string) {
-  return filteredEmojis.filter(e => e.category === category);
-}
-
-const filteredEmojis: EmojiEntry[] = emoji.filter(e => !e['obsoleted_by']);
-
-const sortEmoji = (emojiList: EmojiEntry[]) => emojiList.sort((a, b) => a.sort_order - b.sort_order);
