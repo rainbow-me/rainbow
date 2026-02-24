@@ -3566,29 +3566,6 @@
         "title": "क्षमा करें, आपकी छवि अपलोड करने में एक त्रुटि हुई।",
         "subtitle": "कृपया पुनः प्रयास करें।"
       },
-      "allocation_breakdown": {
-        "my_share": "मेरा हिस्सा",
-        "airdropping": "एयरड्रॉप हो रहा है",
-        "start_price": "शुरुआती मूल्य",
-        "sections": {
-          "my_share": {
-            "title": "निर्माता का हिस्सा",
-            "description": "प्रोजेक्ट में आपका व्यक्तिगत स्टेक"
-          },
-          "airdropping": {
-            "title": "एयरड्रॉप का हिस्सा",
-            "description": "मित्रों और समर्थकों को वितरित"
-          },
-          "liquidity_pool": {
-            "title": "तरलता पूल का हिस्सा",
-            "description": "सामान्य ट्रेडिंग और तरलता सुनिश्चित करता है"
-          },
-          "rainbow_share": {
-            "title": "ओवर द रेनबो",
-            "description": "भविष्य के सामुदायिक वितरण"
-          }
-        }
-      },
       "network_field": {
         "balance": "शेष राशि: %{balance}",
         "not_enough_funds": "टोकन लॉन्च करने के लिए पर्याप्त धनराशि नहीं"
