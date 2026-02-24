@@ -1,0 +1,97 @@
+# This flow covers delegation (EIP-7702) transaction paths:
+# [x] Delegation swap tx (delegation=true) cannot be sped up or cancelled
+# [x] Context menu button is NOT visible for delegation pending txs
+# [x] Delegate transaction type shows "Delegating" status in activity list
+# [x] Delegate transaction detail shows "Smart Account" in masthead
+# [x] Revoke delegation transaction type shows "Revoking" status in activity list
+# [x] Revoke delegation transaction detail shows "Smart Account" in masthead
+
+appId: ${APP_ID}
+tags:
+  - wallet
+  - parallel
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- runFlow: ../../utils/ImportWalletWithKey.yaml
+
+# Load tab helpers
+- runScript:
+    file: ../../utils/coordinates.js
+
+# Send ETH to test wallet
+- openLink: rainbow://e2e/fund-wallet?amount=20
+
+# Connect to Anvil (test network)
+- openLink: rainbow://e2e/connect-anvil
+
+# --- Delegation swap tx: no speed up / cancel ---
+
+# Inject a synthetic pending swap tx with delegation=true
+- openLink: rainbow://e2e/inject-pending-tx?type=swap&delegation=true&nonce=999
+
+# Navigate to Activity tab
+- tapOn:
+    point: ${output.tabCoordinates.activityTab}
+
+# Tap the pending delegation swap tx row
+- retry:
+    maxRetries: 5
+    commands:
+      - assertVisible: 'Swapping'
+- tapOn: 'Swapping'
+
+# Assert context menu button is NOT visible (no speed-up/cancel offered)
+- assertNotVisible: 'Speed Up'
+- assertNotVisible: 'Cancel'
+
+# Go back to activity list
+- back
+
+# --- Delegate transaction type display ---
+
+# Inject a synthetic pending delegate tx
+- openLink: rainbow://e2e/inject-pending-tx?type=delegate&nonce=998
+
+# Verify delegate tx appears with correct status
+- retry:
+    maxRetries: 5
+    commands:
+      - assertVisible: 'Delegating'
+- assertVisible: 'Wallet Delegation'
+
+# Open delegate tx details
+- tapOn: 'Delegating'
+
+# Verify "Smart Account" label in transaction details masthead
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible: 'Smart Account'
+
+# Go back to activity list
+- back
+
+# --- Revoke delegation transaction type display ---
+
+# Inject a synthetic pending revoke delegation tx
+- openLink: rainbow://e2e/inject-pending-tx?type=revoke_delegation&nonce=997
+
+# Verify revoke delegation tx appears with correct status
+- retry:
+    maxRetries: 5
+    commands:
+      - assertVisible: 'Revoking'
+
+# Open revoke delegation tx details
+- tapOn: 'Revoking'
+
+# Verify "Smart Account" label in transaction details masthead
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible: 'Smart Account'
