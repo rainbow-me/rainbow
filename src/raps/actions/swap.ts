@@ -246,7 +246,8 @@ export const executeSwap = async ({
 function buildSwapTransaction(
   parameters: RapSwapActionParameters<'swap'>,
   gasParams: TransactionGasParams | TransactionLegacyGasParams,
-  nonce?: number
+  nonce?: number,
+  gasLimit?: string
 ): Omit<NewTransaction, 'hash'> {
   const chainsName = useBackendNetworksStore.getState().getChainsName();
 
@@ -293,6 +294,7 @@ function buildSwapTransaction(
         value: parameters.quote.buyAmountMinusFees.toString(),
       },
     ],
+    gasLimit,
     nonce,
     network: chainsName[parameters.chainId],
     status: TransactionStatus.pending,
@@ -396,7 +398,7 @@ export const swap = async ({
   if (!swap || !swap?.hash) throw new RainbowError('swap: error executeSwap');
 
   const transaction: NewTransaction = {
-    ...buildSwapTransaction(parameters, gasParamsToUse, swap.nonce),
+    ...buildSwapTransaction(parameters, gasParamsToUse, swap.nonce, gasLimit),
     hash: swap.hash,
   };
 
