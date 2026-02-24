@@ -3807,6 +3807,10 @@
         "confirming_order": "Sipariş Onaylanıyor...",
         "deposit_funds": "Fon Yatırma",
         "average_price": "Ortalama Fiyat",
+        "no_liquidity_title": "Likidite Yok",
+        "no_liquidity_description": "Bu sonuç için satıcı yok.",
+        "insufficient_liquidity_title": "Yeterli Likidite Yok",
+        "insufficient_liquidity_description": "Bu emir için daha küçük bir miktar deneyin.",
         "errors": {
           "not_enough_liquidity": "Tam sipariş vermek için yeterli likidite yok.",
           "please_lower_amount": "Lütfen miktarı azaltın ve tekrar deneyin.",
@@ -3830,7 +3834,11 @@
         "profit_loss": "Kâr / Zarar",
         "receive": "Al",
         "spread": "Spread",
-        "cash_out": "Nakit Çıkışı"
+        "cash_out": "Nakit Çıkışı",
+        "no_liquidity_title": "Likidite Yok",
+        "no_liquidity_description": "Bu sonuç için alıcı yok.",
+        "insufficient_liquidity_title": "Yeterli Likidite Yok",
+        "insufficient_liquidity_description": "Nakit çıkış yapmak için daha küçük bir miktar deneyin."
       },
       "search": {
         "placeholder": "Tahmin Pazarlarını Ara",
@@ -3903,7 +3911,8 @@
         "hide_lost_bets": "Kaybedilen Bahisleri Gizle",
         "show_lost_bets": "Kaybedilen Bahisleri Göster",
         "lost_bets_dont_clear": "Kaybedilen bahisler otomatik olarak kaldırılmaz. Aşağıda temizleyebilirsiniz."
-      }
+      },
+      "in_review": "İncelemede"
     },
     "rnbw_rewards": {
       "introduction": {

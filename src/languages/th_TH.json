@@ -3807,6 +3807,10 @@
         "confirming_order": "กำลังยืนยันคำสั่ง...",
         "deposit_funds": "ฝากเงิน",
         "average_price": "ราคาเฉลี่ย",
+        "no_liquidity_title": "ไม่มีสภาพคล่อง",
+        "no_liquidity_description": "ไม่มีผู้ขายสำหรับผลลัพธ์นี้",
+        "insufficient_liquidity_title": "สภาพคล่องไม่เพียงพอ",
+        "insufficient_liquidity_description": "ลองใช้จำนวนที่น้อยลงสำหรับคำสั่งซื้อนี้",
         "errors": {
           "not_enough_liquidity": "ไม่มีสภาพคล่องเพียงพอในการสั่งซื้อตามจำนวนเต็ม.",
           "please_lower_amount": "กรุณาลดจำนวนเงินและลองอีกครั้ง.",
@@ -3830,7 +3834,11 @@
         "profit_loss": "กำไร / ขาดทุน",
         "receive": "รับ",
         "spread": "สเปรด",
-        "cash_out": "ขึ้นเงินออก"
+        "cash_out": "ขึ้นเงินออก",
+        "no_liquidity_title": "ไม่มีสภาพคล่อง",
+        "no_liquidity_description": "ไม่มีผู้ซื้อสำหรับผลลัพธ์นี้",
+        "insufficient_liquidity_title": "สภาพคล่องไม่เพียงพอ",
+        "insufficient_liquidity_description": "ลองใช้จำนวนที่น้อยลงเพื่อถอนเงินออก"
       },
       "search": {
         "placeholder": "ค้นหาตลาดการพยากรณ์",
@@ -3903,7 +3911,8 @@
         "hide_lost_bets": "ซ่อนการเดิมพันที่แพ้",
         "show_lost_bets": "แสดงการเดิมพันที่แพ้",
         "lost_bets_dont_clear": "การเดิมพันที่แพ้ไม่ได้ถูกลบโดยอัตโนมัติ. คุณสามารถลบได้ด้านล่าง."
-      }
+      },
+      "in_review": "อยู่ระหว่างการตรวจสอบ"
     },
     "rnbw_rewards": {
       "introduction": {
