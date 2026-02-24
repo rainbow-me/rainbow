@@ -3,7 +3,7 @@ export { default as Bold } from './Bold';
 export { default as Br } from './Br';
 export { default as DollarFigure } from './DollarFigure';
 export { default as EmDash } from './EmDash';
-export { default as Emoji } from './Emoji';
+export { default as Emoji } from '@/features/emoji/components/Emoji';
 export { default as EnDash } from './EnDash';
 export { default as ErrorText } from './ErrorText';
 export { default as GradientText } from './GradientText';

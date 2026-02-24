@@ -6,18 +6,15 @@ import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
 import { IS_IOS } from '@/env';
+import { resolveCurrencyFlagEmoji } from '@/features/emoji/utils/currencyFlagEmoji';
 import useAccountSettings from '@/hooks/useAccountSettings';
-import { ETH_ADDRESS, WBTC_ADDRESS, emojis, supportedNativeCurrencies } from '@/references';
+import { ETH_ADDRESS, WBTC_ADDRESS, supportedNativeCurrencies } from '@/references';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import * as i18n from '@/languages';
-
-const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [name, emoji]);
-
-const emoji = new Map(emojiData as any);
 
 const currencyListItems = Object.values(supportedNativeCurrencies).map(({ currency, ...item }) => ({
   ...item,
@@ -50,7 +47,7 @@ const CurrencySection = () => {
             key={currency}
             leftComponent={
               emojiName ? (
-                <MenuItem.TextIcon icon={(emoji.get('flag_' + emojiName) as string) || ''} isEmoji />
+                <MenuItem.TextIcon icon={resolveCurrencyFlagEmoji(emojiName)} isEmoji />
               ) : (
                 <View style={{ marginLeft: 7 }}>
                   <RainbowCoinIcon
