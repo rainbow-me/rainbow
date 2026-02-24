@@ -57,12 +57,13 @@ tags:
 # Inject a synthetic pending delegate tx
 - openLink: rainbow://e2e/inject-pending-tx?type=delegate&nonce=998
 
-# Verify delegate tx appears with correct status
+# Verify delegate tx appears in activity list (both texts in same retry
+# to avoid false-positive from the toast, which only shows "Delegating")
 - retry:
     maxRetries: 5
     commands:
       - assertVisible: 'Delegating'
-- assertVisible: 'Wallet Delegation'
+      - assertVisible: 'Wallet Delegation'
 
 # Open delegate tx details
 - tapOn: 'Delegating'
@@ -81,11 +82,13 @@ tags:
 # Inject a synthetic pending revoke delegation tx
 - openLink: rainbow://e2e/inject-pending-tx?type=revoke_delegation&nonce=997
 
-# Verify revoke delegation tx appears with correct status
+# Verify revoke delegation tx appears in activity list (both texts in same
+# retry to avoid false-positive from the toast, which only shows "Revoking")
 - retry:
     maxRetries: 5
     commands:
       - assertVisible: 'Revoking'
+      - assertVisible: 'Wallet Delegation'
 
 # Open revoke delegation tx details
 - tapOn: 'Revoking'
