@@ -1,4 +1,4 @@
-import { GelatoRelay, type SponsoredCallRequest, TaskState } from '@gelatonetwork/relay-sdk';
+import { createGelatoEvmRelayerClient } from '@gelatocloud/gasless';
 import { ChainId } from '@rainbow-me/swaps';
 import { type Address, erc20Abi, encodeFunctionData, parseUnits, zeroAddress } from 'viem';
 import { GELATO_API_KEY } from 'react-native-dotenv';
@@ -6,14 +6,12 @@ import { getPolymarketClobClient, usePolymarketClients } from '@/features/polyma
 import { getProvider } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { mulWorklet } from '@/framework/core/safeMath';
-import { delay } from '@/utils/delay';
-import { time } from '@/utils/time';
 import { POLYGON_USDC_ADDRESS, RAINBOW_POLYMARKET_FEE_ADDRESS, USD_FEE_PER_TOKEN } from '../constants';
 import { analytics } from '@/analytics';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { ChainId as BackendChainId } from '@/state/backendNetworks/types';
+import { time } from '@/utils/time';
 
-const POLLING_INTERVAL = time.seconds(1);
 const ZERO_BN = 0n;
 
 const safeAbi = [
@@ -131,21 +129,26 @@ export async function collectTradeFee(tokenAmount: string): Promise<CollectTrade
       ],
     });
 
-    const gelatoRelay = new GelatoRelay();
-    const request: SponsoredCallRequest = {
-      chainId: BigInt(ChainId.polygon),
-      target: safeAddress,
+    const gelatoRelayer = createGelatoEvmRelayerClient({
+      apiKey: GELATO_API_KEY,
+      pollingInterval: time.ms(500),
+      timeout: time.seconds(30),
+    });
+
+    taskId = await gelatoRelayer.sendTransaction({
+      chainId: ChainId.polygon,
+      to: safeAddress,
       data: execData,
+    });
+
+    const receipt = await gelatoRelayer.waitForReceipt({ id: taskId });
+    const result: CollectTradeFeeResult = {
+      success: true,
+      taskId,
+      transactionHash: receipt.transactionHash,
+      gasUsed: receipt.gasUsed.toString(),
+      effectiveGasPrice: receipt.effectiveGasPrice.toString(),
     };
-
-    const response = await gelatoRelay.sponsoredCall(request, GELATO_API_KEY);
-    taskId = response.taskId;
-
-    const result = await pollTaskStatus(gelatoRelay, taskId);
-
-    if (!result.success) {
-      throw new RainbowError(`[collectTradeFee] Failed to collect trade fee: ${result.errorMessage}`);
-    }
 
     const gasCostUsd = getGasCostUsd(result);
 
@@ -177,39 +180,6 @@ async function getSafeNonce(safeAddress: Address): Promise<bigint> {
   const data = encodeFunctionData({ abi: safeAbi, functionName: 'nonce' });
   const result = await provider.call({ to: safeAddress, data });
   return BigInt(result);
-}
-
-async function pollTaskStatus(relay: GelatoRelay, taskId: string): Promise<CollectTradeFeeResult> {
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const status = await relay.getTaskStatus(taskId);
-    const taskState = status?.taskState;
-    if (!taskState) {
-      await delay(POLLING_INTERVAL);
-      continue;
-    }
-
-    if (taskState === TaskState.ExecSuccess) {
-      return {
-        success: true,
-        taskId,
-        transactionHash: status?.transactionHash,
-        gasUsed: status?.gasUsed,
-        effectiveGasPrice: status?.effectiveGasPrice,
-      };
-    }
-
-    if (taskState === TaskState.Cancelled || taskState === TaskState.ExecReverted) {
-      return {
-        success: false,
-        taskId,
-        errorMessage: status?.lastCheckMessage ?? `Gelato transaction failed with state: ${taskState}`,
-        transactionHash: status?.transactionHash,
-      };
-    }
-
-    await delay(POLLING_INTERVAL);
-  }
 }
 
 function getGasCostUsd(result: CollectTradeFeeResult): number | undefined {
