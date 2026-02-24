@@ -4,7 +4,7 @@ This file provides guidance to AI coding agents when working with code in this r
 
 ## What is Rainbow
 
-React Native crypto wallet app (iOS & Android). Uses React Navigation, custom Zustand-based stores for state/data, and ethers/viem for blockchain interactions.
+React Native crypto wallet app (iOS & Android). Uses React Navigation, custom store creators for state/data, and ethers/viem for blockchain interactions.
 
 ## Verification
 
