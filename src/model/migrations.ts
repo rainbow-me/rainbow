@@ -1,8 +1,8 @@
 import { type UniqueId } from '@/__swaps__/types/assets';
-import { type UnlockableAppIconKey, unlockableAppIcons } from '@/features/app-icon/appIcons';
+import { type UnlockableAppIconKey, unlockableAppIcons } from '@/features/app-icon/models/appIcons';
 import type { EthereumAddress } from '@/entities/wallet';
 import type { RainbowToken } from '@/entities/tokens';
-import { unlockableAppIconStorage } from '@/features/app-icon/unlockableAppIconCheck';
+import { unlockableAppIconStorage } from '@/features/app-icon/utils/unlockableAppIconCheck';
 import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
 import { resolveNameOrAddress } from '@/handlers/web3';

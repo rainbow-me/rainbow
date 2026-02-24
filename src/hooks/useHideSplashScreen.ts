@@ -5,7 +5,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 import { getAppIcon } from '@/handlers/localstorage/globalSettings';
 import { RainbowError, logger } from '@/logger';
-import { type AppIconKey } from '@/features/app-icon/appIcons';
+import { type AppIconKey } from '@/features/app-icon/models/appIcons';
 import { SystemBars } from 'react-native-edge-to-edge';
 const { RainbowSplashScreen } = NativeModules;
 

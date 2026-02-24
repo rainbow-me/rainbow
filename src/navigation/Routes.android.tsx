@@ -85,7 +85,7 @@ import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoShe
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import AppIconUnlockSheet from '@/features/app-icon/AppIconUnlockSheet';
+import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
