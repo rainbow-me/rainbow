@@ -12,12 +12,10 @@ tags:
 - runFlow: ../../utils/ImportWalletWithKey.yaml
 
 # Send ETH to test wallet
-- tapOn:
-    id: fund-test-wallet-button
+- openLink: rainbow://e2e/fund-wallet?amount=20
 
 # Connect to Anvil (test network)
-- tapOn:
-    id: dev-button-anvil
+- openLink: rainbow://e2e/connect-anvil
 
 # Open swap screen
 - tapOn:

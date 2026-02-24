@@ -1,14 +1,39 @@
+import { JsonRpcProvider } from '@ethersproject/providers';
+import { parseEther } from '@ethersproject/units';
+import { Wallet } from '@ethersproject/wallet';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
-import { logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useEffect } from 'react';
 import { Linking } from 'react-native';
 import URL from 'url-parse';
 import { savePIN } from '@/handlers/authentication';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { type TransactionType, TransactionStatus } from '@/entities/transactions';
+import { ChainId } from '@/state/backendNetworks/types';
+import { getAccountAddress } from '@/state/wallets/walletsStore';
+import { IS_ANDROID } from '@/env';
 
 /**
- * Handles E2E test commands. See e2e/README.md:31 for usage.
+ * Handles E2E test commands via rainbow://e2e/<action> deeplinks.
+ *
+ * Actions:
+ *
+ *   Import a wallet
+ *   - import?privateKey=<key>&name=<name>
+ *
+ *   Toggle Anvil connection
+ *   - connect-anvil
+ *
+ *   Send ETH to test wallet
+ *   - fund-wallet?amount=<eth>
+ *
+ *   Inject a synthetic pending tx
+ *   - inject-pending-tx?type=<type>&delegation=true&nonce=<n>
+ *
+ * See e2e/README.md for usage.
  */
 export function TestDeeplinkHandler() {
   useEffect(() => {
@@ -32,6 +57,64 @@ export function TestDeeplinkHandler() {
             screen: Routes.WALLET_SCREEN,
           });
           break;
+
+        case 'connect-anvil': {
+          try {
+            const store = useConnectedToAnvilStore.getState();
+            store.setConnectedToAnvil(!store.connectedToAnvil);
+            logger.debug('toggled anvil connection');
+          } catch (e) {
+            useConnectedToAnvilStore.getState().setConnectedToAnvil(false);
+            logger.error(new RainbowError('error toggling anvil connection'), {
+              message: e instanceof Error ? e.message : String(e),
+            });
+          }
+          Navigation.handleAction(Routes.WALLET_SCREEN);
+          break;
+        }
+
+        case 'fund-wallet': {
+          const RPC_URL = IS_ANDROID ? 'http://10.0.2.2:8545' : 'http://127.0.0.1:8545';
+          try {
+            const provider = new JsonRpcProvider(RPC_URL);
+            const wallet = new Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', provider);
+            const testWalletAddress = '0x4d14289265eb7c166cF111A76B6D742e3b85dF85';
+            await wallet.sendTransaction({
+              to: testWalletAddress,
+              value: parseEther(String(query.amount)),
+            });
+          } catch (e) {
+            logger.error(new RainbowError('error funding test wallet'), {
+              message: e instanceof Error ? e.message : String(e),
+            });
+          }
+          break;
+        }
+
+        case 'inject-pending-tx': {
+          const txType = query.type as TransactionType;
+          const delegation = query.delegation === 'true';
+          const nonce = parseInt(query.nonce as string, 10);
+          const accountAddress = getAccountAddress();
+
+          addNewTransaction({
+            address: accountAddress,
+            chainId: ChainId.mainnet,
+            transaction: {
+              chainId: ChainId.mainnet,
+              from: accountAddress,
+              to: accountAddress,
+              hash: `0xdeadbeef${Date.now().toString(16)}`,
+              nonce,
+              status: TransactionStatus.pending,
+              type: txType,
+              network: 'mainnet',
+              ...(delegation && { delegation: true }),
+            },
+          });
+          break;
+        }
+
         default:
           logger.debug(`[TestDeeplinkHandler]: unknown path`, { url });
           break;
