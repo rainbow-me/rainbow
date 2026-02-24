@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { type ReactNode, memo, useMemo } from 'react';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -11,7 +11,7 @@ import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 
 type ResolvedMarketRowProps = {
   accentColor: string;
-  image?: string | undefined;
+  icon?: string | ReactNode;
   isWinningOutcome: boolean;
   title: string;
   volume?: string;
@@ -19,7 +19,7 @@ type ResolvedMarketRowProps = {
 
 export const ResolvedMarketRow = memo(function ResolvedMarketRow({
   accentColor,
-  image,
+  icon,
   isWinningOutcome,
   title,
   volume,
@@ -52,7 +52,11 @@ export const ResolvedMarketRow = memo(function ResolvedMarketRow({
         end={{ x: 1, y: 0 }}
       />
       <Box height="full" flexDirection="row" alignItems="center" gap={12} paddingRight={{ custom: 15 }}>
-        {image && <ImgixImage enableFasterImage resizeMode="cover" size={40} source={{ uri: image }} style={styles.image} />}
+        {typeof icon === 'string' ? (
+          <ImgixImage enableFasterImage resizeMode="cover" size={40} source={{ uri: icon }} style={styles.image} />
+        ) : (
+          icon
+        )}
         <Box gap={12} style={styles.flex}>
           <Box flexDirection="row" alignItems="center" gap={8}>
             <Text size="17pt" weight="bold" color={isWinningOutcome ? 'label' : 'labelTertiary'} numberOfLines={1}>

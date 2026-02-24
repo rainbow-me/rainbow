@@ -3566,29 +3566,6 @@
         "title": "画像のアップロード中にエラーが発生しました。申し訳ありません。",
         "subtitle": "もう一度やり直してください。"
       },
-      "allocation_breakdown": {
-        "my_share": "私のシェア",
-        "airdropping": "エアドロップ中",
-        "start_price": "開始価格",
-        "sections": {
-          "my_share": {
-            "title": "クリエイターシェア",
-            "description": "プロジェクトでのあなたの個人的なステーク"
-          },
-          "airdropping": {
-            "title": "エアドロップシェア",
-            "description": "友人やサポーターに配布"
-          },
-          "liquidity_pool": {
-            "title": "流動性プールシェア",
-            "description": "円滑な取引と流動性を確保"
-          },
-          "rainbow_share": {
-            "title": "オーバーザレインボー",
-            "description": "将来のコミュニティ配布"
-          }
-        }
-      },
       "network_field": {
         "balance": "残高: %{balance}",
         "not_enough_funds": "トークンを起動するのに十分な資金がありません"

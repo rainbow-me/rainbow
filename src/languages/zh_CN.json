@@ -3566,29 +3566,6 @@
         "title": "抱歉，上传图片时出错。",
         "subtitle": "请再试一次。"
       },
-      "allocation_breakdown": {
-        "my_share": "我的份额",
-        "airdropping": "空投中",
-        "start_price": "起始价",
-        "sections": {
-          "my_share": {
-            "title": "创作者份额",
-            "description": "您在项目中的个人股份"
-          },
-          "airdropping": {
-            "title": "空投份额",
-            "description": "分发给朋友和支持者"
-          },
-          "liquidity_pool": {
-            "title": "流动性池份额",
-            "description": "确保交易顺畅和流动性"
-          },
-          "rainbow_share": {
-            "title": "彩虹之外",
-            "description": "未来社区分发"
-          }
-        }
-      },
       "network_field": {
         "balance": "余额: %{balance}",
         "not_enough_funds": "资金不足，无法启动代币"

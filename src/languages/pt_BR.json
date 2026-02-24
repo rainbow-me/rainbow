@@ -3566,29 +3566,6 @@
         "title": "Desculpe, houve um erro ao carregar sua imagem.",
         "subtitle": "Por favor, tente novamente."
       },
-      "allocation_breakdown": {
-        "my_share": "MINHA PARTE",
-        "airdropping": "REALIZANDO AIRDROP",
-        "start_price": "PREÇO INICIAL",
-        "sections": {
-          "my_share": {
-            "title": "Parte do Criador",
-            "description": "Sua participação pessoal no projeto"
-          },
-          "airdropping": {
-            "title": "Parte do Airdrop",
-            "description": "Distribuído para amigos e apoiadores"
-          },
-          "liquidity_pool": {
-            "title": "Parte do Pool de Liquidez",
-            "description": "Garante negociação suave e liquidez"
-          },
-          "rainbow_share": {
-            "title": "Sobre o Rainbow",
-            "description": "Distribuições Futuras para a Comunidade"
-          }
-        }
-      },
       "network_field": {
         "balance": "Saldo: %{balance}",
         "not_enough_funds": "Fundos insuficientes para lançar um token"

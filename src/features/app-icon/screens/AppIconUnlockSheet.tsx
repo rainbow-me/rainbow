@@ -3,7 +3,7 @@ import { useNavigation } from '@/navigation';
 import React, { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
 import { AccentColorProvider, Box, Inset, Stack, Text, useBackgroundColor } from '@/design-system';
-import { unlockableAppIcons } from './appIcons';
+import { unlockableAppIcons } from '../models/appIcons';
 import { ImgixImage } from '@/components/images';
 import { type Source } from 'react-native-fast-image';
 import { type RouteProp, useRoute } from '@react-navigation/native';
