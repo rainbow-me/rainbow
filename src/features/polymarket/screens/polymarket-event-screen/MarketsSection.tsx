@@ -61,19 +61,26 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
   const resolvedMarkets = markets.filter(market => market.closed);
   const [showAllMarkets, setShowAllMarkets] = useState(activeMarkets.length <= INITIAL_MARKETS_TO_SHOW);
   const showMarketImages = usePolymarketEventStore(state => state.getData()?.showMarketImages ?? false);
-  const allResolved = activeMarkets.length === 0;
-  const visibleMarkets = showAllMarkets ? activeMarkets : activeMarkets.slice(0, INITIAL_MARKETS_TO_SHOW);
+  const visibleActiveMarkets = showAllMarkets ? activeMarkets : activeMarkets.slice(0, INITIAL_MARKETS_TO_SHOW);
   const eventColor = getColorValueForThemeWorklet(event.color, isDarkMode);
   const screenBackgroundColor = isDarkMode
     ? getSolidColorEquivalent({ background: eventColor, foreground: '#000000', opacity: 0.92 })
     : POLYMARKET_BACKGROUND_LIGHT;
+  const hasActiveMarkets = activeMarkets.length > 0;
+  const hasResolvedMarkets = resolvedMarkets.length > 0;
+  const allResolved = !hasActiveMarkets;
+  const shouldShowResolvedSection = hasResolvedMarkets && showAllMarkets && !allResolved;
+  const shouldShowAllResolvedList = allResolved;
+  const shouldShowExpandCollapseControl = !allResolved && activeMarkets.length > INITIAL_MARKETS_TO_SHOW;
+  const shouldShowResolvedCountBadge = hasResolvedMarkets && !showAllMarkets;
+  const shouldShowActiveMarketsSection = visibleActiveMarkets.length > 0;
 
   return (
     <>
       <Box>
-        {activeMarkets.length > 0 && (
+        {shouldShowActiveMarketsSection && (
           <Box gap={8}>
-            {visibleMarkets.map(market => (
+            {visibleActiveMarkets.map(market => (
               <MarketRow
                 key={market.id}
                 accentColor={getColorValueForThemeWorklet(market.color, isDarkMode)}
@@ -92,13 +99,13 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
             ))}
           </Box>
         )}
-        {resolvedMarkets.length > 0 && showAllMarkets && (
+        {shouldShowResolvedSection && (
           <Box paddingTop={'20px'}>
             <ResolvedMarketsSection markets={resolvedMarkets} showMarketImages={showMarketImages} />
           </Box>
         )}
-        {allResolved && <ResolvedMarketsList markets={resolvedMarkets} showMarketImages={showMarketImages} />}
-        {!allResolved && activeMarkets.length > INITIAL_MARKETS_TO_SHOW && (
+        {shouldShowAllResolvedList && <ResolvedMarketsList markets={resolvedMarkets} showMarketImages={showMarketImages} />}
+        {shouldShowExpandCollapseControl && (
           <>
             <Box position="absolute" bottom={{ custom: 0 }} width="full">
               <EasingGradient
@@ -130,7 +137,7 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
                   <Text size="17pt" weight="bold" color="label">
                     {showAllMarkets ? i18n.t(i18n.l.predictions.event.show_less) : i18n.t(i18n.l.predictions.event.show_more)}
                   </Text>
-                  {resolvedMarkets.length > 0 && !showAllMarkets && (
+                  {shouldShowResolvedCountBadge && (
                     <Box
                       backgroundColor={opacity('#F5F8FF', 0.06)}
                       borderWidth={THICKER_BORDER_WIDTH}
