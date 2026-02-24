@@ -141,6 +141,13 @@ export async function collectTradeFee(tokenAmount: string): Promise<CollectTrade
       data: execData,
     });
 
+    /**
+     * Use polling is required because the Websocket constructor used in the package does not correctly attach the auth headers for RN.
+     * @gelatocloud/gasless builds WS in non-browser mode as:
+     * new WebSocket(url, { headers: { Authorization: ... } })
+     * In React Native, headers must be passed as the 3rd constructor arg:
+     * new WebSocket(url, protocols, { headers })
+     */
     const receipt = await gelatoRelayer.waitForReceipt({ id: taskId }, { usePolling: true });
     const result: CollectTradeFeeResult = {
       success: true,
