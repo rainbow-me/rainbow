@@ -9794,7 +9794,6 @@ __metadata:
     react-native-safe-area-context: "npm:5.4.0"
     react-native-screen-corner-radius: "npm:0.2.3"
     react-native-screens: "npm:4.10.0"
-    react-native-section-list-get-item-layout: "npm:2.2.3"
     react-native-share: "npm:8.2.1"
     react-native-sound: "npm:0.11.2"
     react-native-storage: "npm:1.0.1"
@@ -24059,13 +24058,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/09d1f55431b85e556ef7b5efd776ac5e85303e47d9138f910cb8c25ff3804effc43185f84e8842bcae2219e8fee12366b3725f955f638c109387efb82e0260f3
-  languageName: node
-  linkType: hard
-
-"react-native-section-list-get-item-layout@npm:2.2.3":
-  version: 2.2.3
-  resolution: "react-native-section-list-get-item-layout@npm:2.2.3"
-  checksum: 10c0/e5163d2af6316ffd3c608f46c1eb6692a89a98ef29f3989bfb8a1cdcc983318b8a0c5428ac0c67009ea6733dc80906dbb9022eba7b7ec5084c0c164c735db34d
   languageName: node
   linkType: hard
 
