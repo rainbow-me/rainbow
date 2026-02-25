@@ -3807,6 +3807,10 @@
         "confirming_order": "Mengonfirmasi Pesanan...",
         "deposit_funds": "Deposit Dana",
         "average_price": "Harga Rata-rata",
+        "no_liquidity_title": "Tidak Ada Likuiditas",
+        "no_liquidity_description": "Tidak ada penjual untuk hasil ini.",
+        "insufficient_liquidity_title": "Likuiditas Tidak Cukup",
+        "insufficient_liquidity_description": "Coba jumlah yang lebih kecil untuk pesanan ini.",
         "errors": {
           "not_enough_liquidity": "Likuiditas tidak cukup untuk melakukan pemesanan penuh.",
           "please_lower_amount": "Silakan kurangi jumlahnya dan coba lagi.",
@@ -3830,7 +3834,11 @@
         "profit_loss": "Keuntungan / Kerugian",
         "receive": "Terima",
         "spread": "Penyebaran",
-        "cash_out": "Cairkan"
+        "cash_out": "Cairkan",
+        "no_liquidity_title": "Tidak Ada Likuiditas",
+        "no_liquidity_description": "Tidak ada pembeli untuk hasil ini.",
+        "insufficient_liquidity_title": "Likuiditas Tidak Cukup",
+        "insufficient_liquidity_description": "Coba jumlah yang lebih kecil untuk mencairkan."
       },
       "search": {
         "placeholder": "Cari pasar prediksi",
@@ -3903,7 +3911,8 @@
         "hide_lost_bets": "Sembunyikan Taruhan yang Kalah",
         "show_lost_bets": "Tampilkan Taruhan yang Kalah",
         "lost_bets_dont_clear": "Taruhan yang kalah tidak dihapus secara otomatis. Anda dapat menghapusnya di bawah ini."
-      }
+      },
+      "in_review": "Dalam Peninjauan"
     },
     "rnbw_rewards": {
       "introduction": {

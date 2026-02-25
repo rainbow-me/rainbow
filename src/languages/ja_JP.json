@@ -3807,6 +3807,10 @@
         "confirming_order": "注文確認中...",
         "deposit_funds": "資金の預け入れ",
         "average_price": "平均価格",
+        "no_liquidity_title": "流動性なし",
+        "no_liquidity_description": "この結果の売り手がいません。",
+        "insufficient_liquidity_title": "流動性が不足しています",
+        "insufficient_liquidity_description": "この注文は、より少ない数量でお試しください。",
         "errors": {
           "not_enough_liquidity": "十分な流動性がないため、注文を完全に実行できません。",
           "please_lower_amount": "金額を下げてもう一度お試しください。",
@@ -3830,7 +3834,11 @@
         "profit_loss": "利益 / 損失",
         "receive": "受け取る",
         "spread": "スプレッド",
-        "cash_out": "キャッシュアウト"
+        "cash_out": "キャッシュアウト",
+        "no_liquidity_title": "流動性なし",
+        "no_liquidity_description": "この結果の買い手がいません。",
+        "insufficient_liquidity_title": "流動性が不足しています",
+        "insufficient_liquidity_description": "換金する数量を減らしてお試しください。"
       },
       "search": {
         "placeholder": "予測市場を検索",
@@ -3903,7 +3911,8 @@
         "hide_lost_bets": "失った賭けを隠す",
         "show_lost_bets": "失った賭けを表示する",
         "lost_bets_dont_clear": "負けた賭けは自動的にクリアされません。下でそれらをクリアできます。"
-      }
+      },
+      "in_review": "審査中"
     },
     "rnbw_rewards": {
       "introduction": {

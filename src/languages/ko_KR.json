@@ -3807,6 +3807,10 @@
         "confirming_order": "주문 확인 중...",
         "deposit_funds": "자금 입금",
         "average_price": "평균 가격",
+        "no_liquidity_title": "유동성 없음",
+        "no_liquidity_description": "이 결과에 대한 판매자가 없습니다.",
+        "insufficient_liquidity_title": "유동성이 부족함",
+        "insufficient_liquidity_description": "이 주문은 더 적은 금액으로 시도해 보세요.",
         "errors": {
           "not_enough_liquidity": "전체 주문을 하기에는 유동성이 부족합니다.",
           "please_lower_amount": "금액을 낮추고 다시 시도하세요.",
@@ -3830,7 +3834,11 @@
         "profit_loss": "이익 / 손실",
         "receive": "받기",
         "spread": "스프레드",
-        "cash_out": "현금화"
+        "cash_out": "현금화",
+        "no_liquidity_title": "유동성 없음",
+        "no_liquidity_description": "이 결과에 대한 구매자가 없습니다.",
+        "insufficient_liquidity_title": "유동성이 부족함",
+        "insufficient_liquidity_description": "현금화할 금액을 더 적게 해서 시도해 보세요."
       },
       "search": {
         "placeholder": "예측 시장 검색하기",
@@ -3903,7 +3911,8 @@
         "hide_lost_bets": "패배한 배팅 숨기기",
         "show_lost_bets": "패배한 배팅 표시하기",
         "lost_bets_dont_clear": "패배한 배팅은 자동으로 제거되지 않습니다. 아래에서 삭제할 수 있습니다."
-      }
+      },
+      "in_review": "검토 중"
     },
     "rnbw_rewards": {
       "introduction": {

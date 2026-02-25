@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import { Box, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
-import { memo, useMemo } from 'react';
+import { type ReactNode, memo, useMemo } from 'react';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LinearGradient } from 'expo-linear-gradient';
 import ImgixImage from '@/components/images/ImgixImage';
@@ -21,7 +21,7 @@ import { type UmaResolutionStatus } from '@/features/polymarket/types/polymarket
 type MarketRowProps = {
   accentColor: string;
   priceChange: number | undefined;
-  image?: string | undefined;
+  icon?: string | ReactNode;
   title: string;
   volume?: string;
   umaResolutionStatus?: UmaResolutionStatus;
@@ -38,7 +38,7 @@ const ROW_BORDER_RADIUS = 24;
 export const MarketRow = memo(function MarketRow({
   accentColor,
   priceChange,
-  image,
+  icon,
   title,
   volume,
   umaResolutionStatus,
@@ -89,7 +89,11 @@ export const MarketRow = memo(function MarketRow({
           end={{ x: 1, y: 0 }}
         />
         <Box flexDirection="row" alignItems="center" height="full" gap={12} paddingRight={'10px'}>
-          {image && <ImgixImage enableFasterImage resizeMode="cover" size={40} source={{ uri: image }} style={styles.image} />}
+          {typeof icon === 'string' ? (
+            <ImgixImage enableFasterImage resizeMode="cover" size={40} source={{ uri: icon }} style={styles.image} />
+          ) : (
+            icon
+          )}
           <Box gap={12} style={styles.flex}>
             <Box flexDirection="row" alignItems="center" gap={8}>
               <Text size="17pt" weight="bold" color="label" numberOfLines={1} style={styles.flexShrink}>
