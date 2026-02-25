@@ -1,4 +1,3 @@
-import { type RevokeReason } from '@rainbow-me/delegation';
 import { type createStackNavigator } from '@react-navigation/stack';
 import { type Route } from '@/navigation/routesNames';
 import type Routes from '@/navigation/routesNames';
@@ -44,6 +43,7 @@ import { type ScrollView } from 'react-native';
 import { type HlTrade, type PerpMarket, type PerpsPosition, type TriggerOrderSource, type TriggerOrderType } from '@/features/perps/types';
 import { type PolymarketPosition } from '@/features/polymarket/types';
 import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { type RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
 
 export type PortalSheetProps = {
   children: React.FC;
