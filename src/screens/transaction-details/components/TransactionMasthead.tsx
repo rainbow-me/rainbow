@@ -81,6 +81,7 @@ function CurrencyTile({
   fallback,
   chainId,
   onAddressCopied,
+  testID,
 }: {
   asset?: ParsedAddressAsset;
   showAsset?: boolean;
@@ -92,6 +93,7 @@ function CurrencyTile({
   address?: string;
   chainId?: ChainId;
   onAddressCopied: () => void;
+  testID?: string;
 }) {
   const accountAddress = useAccountAddress();
   const theme = useTheme();
@@ -172,7 +174,7 @@ function CurrencyTile({
   };
 
   return (
-    <Container>
+    <Container testID={testID}>
       <Gradient color={colorToUse} />
 
       <Rows alignHorizontal="center" alignVertical="center" space="10px">
@@ -394,7 +396,14 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
   const toAddress = (transaction.type === 'mint' ? transaction?.from : transaction?.to) || undefined;
   const fromAddress = (transaction.type === 'mint' ? transaction?.to : transaction?.from) || undefined;
 
-  const getRightMasteadData = (): { title?: string; subtitle?: string; image?: string | number; chainId?: ChainId; address?: string } => {
+  const getRightMasteadData = (): {
+    title?: string;
+    subtitle?: string;
+    image?: string | number;
+    chainId?: ChainId;
+    address?: string;
+    testID?: string;
+  } => {
     if (transaction.type === 'swap') {
       return {
         title: inputAsset?.inAssetValueDisplay,
@@ -423,6 +432,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
         image: isRainbowDelegation ? rainbowIcon : smartWalletIcon,
         chainId: transaction.chainId,
         address: delegationContract,
+        testID: 'transaction-masthead-delegate',
       };
     }
 
@@ -477,6 +487,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
             chainId={rightMasteadData?.chainId}
             fallback={transaction?.asset?.symbol}
             onAddressCopied={() => {}}
+            testID={rightMasteadData?.testID}
           />
         </Columns>
 

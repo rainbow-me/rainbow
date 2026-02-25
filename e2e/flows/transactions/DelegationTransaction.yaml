@@ -81,12 +81,13 @@ tags:
 - tapOn:
     id: transaction-row-delegate-pending
 
-# Verify "Smart Account" label in transaction details masthead.
-# The details sheet is a SlackSheet modal with AnimatedText components —
-# wait for animations to settle before checking the accessibility tree.
+# Verify delegate masthead tile is visible in transaction details.
+# Text inside AnimatedText isn't in the iOS accessibility tree, so we use
+# testID="transaction-masthead-delegate" set on the CurrencyTile container.
 - waitForAnimationToEnd
 - extendedWaitUntil:
-    visible: 'Smart Account'
+    visible:
+      id: transaction-masthead-delegate
     timeout: 30000
 
 # Go back to activity list
@@ -109,10 +110,11 @@ tags:
 - tapOn:
     id: transaction-row-revoke_delegation-pending
 
-# Verify "Smart Account" label in transaction details masthead.
-# The details sheet is a SlackSheet modal with AnimatedText components —
-# wait for animations to settle before checking the accessibility tree.
+# Verify delegate masthead tile is visible in transaction details.
+# Text inside AnimatedText isn't in the iOS accessibility tree, so we use
+# testID="transaction-masthead-delegate" set on the CurrencyTile container.
 - waitForAnimationToEnd
 - extendedWaitUntil:
-    visible: 'Smart Account'
+    visible:
+      id: transaction-masthead-delegate
     timeout: 30000

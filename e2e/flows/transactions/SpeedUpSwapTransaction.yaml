@@ -55,12 +55,15 @@ tags:
 - tapOn:
     id: token-to-buy-dai-1
 
-# Wait for quote to load — button label changes from "Fetching" to "Review".
+# Wait for quote to load. AnimatedText label changes ("Fetching…" → "Review") are
+# NOT visible in the iOS accessibility tree, so we use a hidden marker View
+# (testID="swap-quote-ready") that SwapBottomPanel renders when the quote is ready.
 # Must wait before tapping because: (1) tapping while fetching does nothing useful,
 # (2) if the first tap opens review but assertVisible lags, a retry tap would call
 # executeSwap() (configProgress is already SHOW_REVIEW), breaking the flow.
 - extendedWaitUntil:
-    visible: 'Review'
+    visible:
+      id: swap-quote-ready
     timeout: 30000
 - tapOn:
     id: swap-bottom-action-button
