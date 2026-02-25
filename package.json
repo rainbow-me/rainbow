@@ -92,7 +92,6 @@
     "@ethersproject/random": "5.8.0",
     "@ethersproject/sha2": "5.8.0",
     "@ethersproject/shims": "5.8.0",
-    "@ethersproject/solidity": "5.8.0",
     "@ethersproject/strings": "5.8.0",
     "@ethersproject/transactions": "5.8.0",
     "@ethersproject/units": "5.8.0",
