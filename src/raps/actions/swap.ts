@@ -322,13 +322,24 @@ export const prepareSwap = async ({
 }> => {
   const tx = await prepareFillQuote(quote as Quote, {}, wallet, false, chainId as number, REFERRER);
   const defaultGasLimit = parameters.quote?.defaultGasLimit?.toString() || getDefaultGasLimitForTrade(parameters.quote, parameters.chainId);
-  return {
-    call: {
+  // Persist prepared transaction so speed-up/cancel replays the executed payload, not raw quote calldata.
+  const modifiedParamaters = {
+    ...parameters,
+    quote: {
+      ...parameters.quote,
       to: requireAddress(tx.to, 'swap prepared tx.to'),
       value: toHex(tx.value ?? 0),
       data: requireHex(tx.data, 'swap prepared tx.data'),
     },
-    transaction: buildSwapTransaction(parameters, parameters.gasParams, parameters.nonce!, defaultGasLimit),
+  };
+
+  return {
+    call: {
+      to: modifiedParamaters.quote.to,
+      value: modifiedParamaters.quote.value,
+      data: modifiedParamaters.quote.data,
+    },
+    transaction: buildSwapTransaction(modifiedParamaters, parameters.gasParams, parameters.nonce!, defaultGasLimit),
   };
 };
 

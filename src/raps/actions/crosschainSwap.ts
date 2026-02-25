@@ -219,13 +219,23 @@ export const prepareCrosschainSwap = async ({
   const tx = await prepareFillCrosschainQuote(crosschainQuote, REFERRER);
   const defaultGasLimit =
     getCrosschainSwapDefaultGasLimit(crosschainQuote)?.toString() || getDefaultGasLimitForTrade(crosschainQuote, parameters.chainId);
-  return {
-    call: {
+  // Persist prepared transaction so speed-up/cancel replays the executed payload, not raw quote calldata.
+  const modifiedParamaters = {
+    ...parameters,
+    quote: {
+      ...parameters.quote,
       to: requireAddress(tx.to, 'crosschain prepared tx.to'),
       value: toHex(tx.value ?? 0),
       data: requireHex(tx.data, 'crosschain prepared tx.data'),
     },
-    transaction: buildCrosschainSwapTransaction(parameters, parameters.gasParams, parameters.nonce!, defaultGasLimit),
+  };
+  return {
+    call: {
+      to: modifiedParamaters.quote.to,
+      value: modifiedParamaters.quote.value,
+      data: modifiedParamaters.quote.data,
+    },
+    transaction: buildCrosschainSwapTransaction(modifiedParamaters, parameters.gasParams, parameters.nonce!, defaultGasLimit),
   };
 };
 
