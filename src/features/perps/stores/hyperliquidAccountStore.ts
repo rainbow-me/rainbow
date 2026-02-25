@@ -91,20 +91,21 @@ async function cancelOrder({ symbol, orderId }: { symbol: string; orderId: numbe
 }
 
 async function closePosition({
-  symbol,
+  position,
   price,
   size,
 }: {
-  symbol: string;
+  position: PerpsPosition;
   price: string;
   size: string;
 }): Promise<OrderStatusResponse | undefined> {
-  const market = getMarket(symbol);
+  const market = getMarket(position.symbol);
   const result = await getHyperliquidExchangeClient().closePosition({
     assetId: market.id,
     price,
     sizeDecimals: market.decimals,
     size,
+    position,
   });
   await refetchHyperliquidStores();
   return result;

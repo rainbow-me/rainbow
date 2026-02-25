@@ -8,6 +8,7 @@ import { TriggerOrderType, type HlTrade, type UserFill, type HistoricalOrder, Tr
 import { convertSide } from '../utils';
 import * as i18n from '@/languages';
 import { subWorklet } from '@/framework/core/safeMath';
+import { decodeLeverageFromCloid } from '@/features/perps/utils/hyperliquidCloid';
 
 type HlTradesParams = {
   address: Address | string | null;
@@ -90,6 +91,7 @@ function convertFillAndOrderToTrade({ fill, order }: { fill: UserFill; order: Hi
   const triggerOrderType = isTakeProfit ? TriggerOrderType.TAKE_PROFIT : isStopLoss ? TriggerOrderType.STOP_LOSS : undefined;
   const isLong = fill.dir.includes('Long');
   const entryPrice = getEntryPriceFromFill(fill);
+  const leverage = decodeLeverageFromCloid(fill.cloid || order.cloid);
 
   const trade: Omit<HlTrade, 'description' | 'executionType'> = {
     id: fill.tid,
@@ -114,6 +116,7 @@ function convertFillAndOrderToTrade({ fill, order }: { fill: UserFill; order: Hi
     triggerOrderPrice: order.triggerPx,
     netPnl: subWorklet(fill.closedPnl, fill.fee),
     isLong,
+    leverage: leverage,
   };
 
   const executionType = getTradeExecutionType(trade);
