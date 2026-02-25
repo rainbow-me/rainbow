@@ -157,6 +157,75 @@ CI uses Xcode 16.4 (iOS 18.x SDK) with an iOS 18.5 simulator — this combinatio
 
 The fix is adding `snapshotKeyHonorModalViews: false` under `platform.ios` in `e2e/config.yaml`. It's safe for CI too since that filtering was never needed for these tests.
 
+### Running multiple flows in parallel with subagents
+
+When you need to run multiple Maestro flows — whether the user lists them explicitly or you determine multiple flows need validation (e.g. after code changes that affect several flows) — eagerly parallelize by spinning up a separate simulator per flow and launching background Task agents concurrently. Do not run flows sequentially when they can be parallelized. This avoids Maestro's single-device lock and dramatically reduces total wait time.
+
+**Step 1: Create one simulator per flow**
+
+Each simulator needs a unique name. Use the flow name as a suffix:
+
+```bash
+# Example: 3 flows → 3 simulators
+xcrun simctl create "Rainbow E2E Cancel"     "iPhone 16 Pro" com.apple.CoreSimulator.SimRuntime.iOS-18-5
+xcrun simctl create "Rainbow E2E SpeedUp"    "iPhone 16 Pro" com.apple.CoreSimulator.SimRuntime.iOS-18-5
+xcrun simctl create "Rainbow E2E Delegation" "iPhone 16 Pro" com.apple.CoreSimulator.SimRuntime.iOS-18-5
+```
+
+Boot all of them:
+
+```bash
+xcrun simctl boot <UDID_1> && xcrun simctl boot <UDID_2> && xcrun simctl boot <UDID_3>
+```
+
+**Step 2: Install the app on each simulator**
+
+If already built for one "Rainbow E2E" simulator, copy the .app binary to the others:
+
+```bash
+# Find the built app
+APP_PATH=$(find ~/Library/Developer/CoreSimulator/Devices/<PRIMARY_UDID>/data/Containers/Bundle/Application -name "Rainbow.app" -type d 2>/dev/null | head -1)
+
+# Install on each new simulator
+xcrun simctl install <UDID_2> "$APP_PATH"
+xcrun simctl install <UDID_3> "$APP_PATH"
+```
+
+Or build once with `--udid` targeting any one of them and install on the rest.
+
+**Step 3: Launch background Task agents**
+
+Use one Task tool call per flow, all in a single message so they run concurrently. Each agent gets its own simulator UDID:
+
+```
+Task(subagent_type="general-purpose", run_in_background=true, prompt="""
+Run this Maestro E2E flow on simulator UDID <UDID_1>:
+
+export JDK_JAVA_OPTIONS="--enable-native-access=ALL-UNNAMED"
+source .env
+maestro --udid <UDID_1> test \
+  --config e2e/config.yaml \
+  -e DEV_PKEY="$DEV_PKEY" \
+  -e APP_ID="me.rainbow" \
+  e2e/flows/transactions/CancelSwapTransaction.yaml
+
+Report: pass/fail, which step failed, what was on screen at failure.
+Read screenshots from ~/.maestro/tests/ if the test fails.
+""")
+```
+
+Repeat for each flow with its own UDID in the same message.
+
+**Constraints:**
+- **Anvil is a shared singleton** — all simulators connect to the same local Anvil instance (one process, one blockchain state). `sequential`-tagged flows (`CancelSwapTransaction`, `SpeedUpSwapTransaction`) pause/resume automine and manipulate the tx pool, so they **must run one at a time** — never in parallel with each other or with any other Anvil-dependent flow. Run all `sequential` flows on the same simulator, back to back.
+- `parallel`-tagged flows that use Anvil (e.g. `SwapTransaction`, `DelegationTransaction`) don't manipulate mining, so they can overlap — give each its own simulator to avoid Maestro's device lock. Note: `fund-wallet` sends from a shared faucet account, so concurrent calls can hit nonce conflicts. If this happens, stagger the fund-wallet steps or run flows that fund from Anvil sequentially through that step before parallelizing the rest.
+- Flows that don't use Anvil at all (onboarding, settings, screens) are fully independent and can always run in parallel.
+- Clean up simulators when done (only if the user asks):
+
+```bash
+xcrun simctl shutdown <UDID> && xcrun simctl delete <UDID>
+```
+
 ### Notes
 
 - Transaction flows (`e2e/flows/transactions/`) auto-start Anvil via `scripts/anvil.sh`
@@ -218,5 +287,6 @@ Implemented in `src/components/TestDeeplinkHandler.tsx`. Used by flows for fast 
 | `connect-anvil`     | `rainbow://e2e/connect-anvil`                                         | Toggle Anvil test network connection              |
 | `fund-wallet`       | `rainbow://e2e/fund-wallet?amount=20`                                 | Send ETH from Anvil faucet account to test wallet |
 | `inject-pending-tx` | `rainbow://e2e/inject-pending-tx?type=swap&delegation=true&nonce=999` | Inject synthetic pending transaction              |
+| `clear-toasts`      | `rainbow://e2e/clear-toasts`                                          | Dismiss all visible toasts immediately            |
 
 Transaction types for `inject-pending-tx`: `send`, `swap`, `delegate`, `revoke_delegation`, `wrap`, `unwrap`.
