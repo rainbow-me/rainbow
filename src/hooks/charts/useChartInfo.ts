@@ -1,7 +1,7 @@
 import { metadataClient } from '@/graphql';
 import { useQuery } from '@tanstack/react-query';
 import { createQueryKey } from '@/react-query';
-import { SupportedCurrencyKey } from '@/references';
+import { type SupportedCurrencyKey } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { time } from '@/utils/time';
 

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyWrap from './TokenFamilyWrap';
-import { ThemeContextProps } from '@/theme';
+import { type ThemeContextProps } from '@/theme';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 
 type Props = {

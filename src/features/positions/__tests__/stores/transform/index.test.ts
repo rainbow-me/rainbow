@@ -5,7 +5,7 @@ import {
   FIXTURE_PARAMS,
   FIXTURE_GRAND_TOTAL,
 } from '../../../__fixtures__/ListPositions';
-import { PositionName, DetailType, type ListPositionsResponse, PortfolioItem } from '../../../types/generated/positions/positions';
+import { PositionName, DetailType, type ListPositionsResponse, type PortfolioItem } from '../../../types/generated/positions/positions';
 import {
   positionsWithFilteredItems,
   positionsWithoutFilteredItems,

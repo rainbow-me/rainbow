@@ -18,7 +18,7 @@ import useDimensions from '@/hooks/useDimensions';
 import useShakeAnimation from '@/hooks/useShakeAnimation';
 import { useBlockBackButton } from '@/hooks/useBlockBackButton';
 import { ImgixImage } from '@/components/images';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 import haptics from '@/utils/haptics';
 

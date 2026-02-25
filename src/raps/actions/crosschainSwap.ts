@@ -1,21 +1,17 @@
-import { Signer } from '@ethersproject/abstract-signer';
-import { CrosschainQuote, fillCrosschainQuote, prepareFillCrosschainQuote, SwapType } from '@rainbow-me/swaps';
-import type { Hash } from 'viem';
+import { type Signer } from '@ethersproject/abstract-signer';
 import type { BatchCall } from '@rainbow-me/delegation';
-
+import type { Hash } from 'viem';
+import { type CrosschainQuote, fillCrosschainQuote, prepareFillCrosschainQuote, SwapType } from '@rainbow-me/swaps';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { add } from '@/helpers/utilities';
 import { estimateApprove } from './unlock';
-
-import { REFERRER, gasUnits, ReferrerType } from '@/references';
-import { ChainId } from '@/state/backendNetworks/types';
-import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities/transactions';
+import { REFERRER, gasUnits, type ReferrerType } from '@/references';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type NewTransaction, TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, ensureError, logger } from '@/logger';
-
-import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { ActionProps, PrepareActionProps, RapActionResult, RapSwapActionParameters } from '../references';
-
+import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
+import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapSwapActionParameters } from '../references';
 import {
   CHAIN_IDS_WITH_TRACE_SUPPORT,
   SWAP_GAS_PADDING,
@@ -23,9 +19,9 @@ import {
   getDefaultGasLimitForTrade,
   overrideWithFastSpeedIfNeeded,
 } from '../utils';
-import { TokenColors } from '@/graphql/__generated__/metadata';
-import { AddysNetworkDetails, ParsedAsset } from '@/resources/assets/types';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { type TokenColors } from '@/graphql/__generated__/metadata';
+import { type AddysNetworkDetails, type ParsedAsset } from '@/resources/assets/types';
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

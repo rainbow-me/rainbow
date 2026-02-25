@@ -1,5 +1,5 @@
 import {
-  SharedValue,
+  type SharedValue,
   interpolateColor,
   useAnimatedStyle,
   useDerivedValue,
@@ -11,11 +11,11 @@ import {
 import { useColorMode, useForegroundColor } from '@/design-system';
 
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, pulsingConfig } from '@/__swaps__/screens/Swap/constants';
-import { InputMethods, InputValues } from '@/__swaps__/types/swap';
+import { type InputMethods, type InputValues } from '@/__swaps__/types/swap';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { equalWorklet } from '@/safe-math/SafeMath';
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { equalWorklet } from '@/framework/core/safeMath';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
 export function useSwapTextStyles({

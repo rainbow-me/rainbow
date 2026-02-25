@@ -1,7 +1,7 @@
-import React, { LegacyRef, useMemo } from 'react';
-import { requireNativeComponent, View, ViewStyle } from 'react-native';
-import { ButtonPressAnimationProps, TransformOrigin } from './types';
-import styled from '@/styled-thing';
+import React, { type LegacyRef, useMemo } from 'react';
+import { requireNativeComponent, View, type ViewStyle } from 'react-native';
+import { type ButtonPressAnimationProps, type TransformOrigin } from './types';
+import styled from '@/framework/ui/styled-thing';
 import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 
 interface SpecificRawNativeButtonProps extends ButtonPressAnimationProps {

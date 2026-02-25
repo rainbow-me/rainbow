@@ -1,6 +1,6 @@
 import React from 'react';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { Line, LineProps, Svg } from 'react-native-svg';
+import { Line, type LineProps, Svg } from 'react-native-svg';
 import { useChartData } from '../../helpers/useChartData';
 import { FIX_CLIPPED_PATH_MAGIC_NUMBER } from './ChartPath';
 

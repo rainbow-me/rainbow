@@ -6,7 +6,7 @@ import {
   convertAmountToPercentageDisplay,
   convertAmountToPercentageDisplayWithThreshold,
 } from '@/helpers/utilities';
-import { PositionAsset } from '@/features/positions/types';
+import { type PositionAsset } from '@/features/positions/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { opacity } from '@/framework/ui/utils/opacity';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

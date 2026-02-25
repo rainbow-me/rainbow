@@ -3,7 +3,7 @@ import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import * as i18n from '@/languages';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { MenuItem } from '@/components/DropdownMenu';
+import { type MenuItem } from '@/components/DropdownMenu';
 
 const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;

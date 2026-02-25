@@ -1,4 +1,4 @@
-import { fonts } from '@/styles';
+import { type fonts } from '@/styles';
 
 export type TextSize = number | keyof typeof fonts.size;
 export type TextLineHeight = number | keyof typeof fonts.lineHeight;

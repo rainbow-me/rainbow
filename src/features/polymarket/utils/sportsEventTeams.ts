@@ -1,5 +1,5 @@
-import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { PolymarketTeamInfo } from '@/features/polymarket/types';
+import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import * as i18n from '@/languages';
 
 const MAX_TEAM_NAME_LENGTH = 14;

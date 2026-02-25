@@ -1,10 +1,10 @@
-import { equalWorklet, trimTrailingZeros } from '@/safe-math/SafeMath';
+import { equalWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { sanitizeAmount } from '@/worklets/strings';
 import { INITIAL_SLIDER_PROGRESS } from '../constants';
-import { AmountState, AmountStoreType } from '../types';
+import { type AmountState, type AmountStoreType } from '../types';
 import { amountFromSliderProgress } from '../utils/sliderWorklets';
 import { computeMaxSwappableAmount } from './createDepositStore';
 

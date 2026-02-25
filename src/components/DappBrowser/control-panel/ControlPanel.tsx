@@ -21,7 +21,7 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import { TextColor } from '@/design-system/color/palettes';
+import { type TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { greaterThan } from '@/helpers/utilities';
@@ -30,14 +30,14 @@ import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNam
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
-import Routes from '@/navigation/routesNames';
-import { RootStackParamList } from '@/navigation/types';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
 import store from '@/redux/store';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
+import { type FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
 import { getWalletWithAccount, setSelectedWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
@@ -47,11 +47,18 @@ import watchingAlert from '@/utils/watchingAlert';
 import { address } from '@/utils/abbreviations';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import chroma from 'chroma-js';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
-import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  type SharedValue,
+  runOnJS,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { toHex } from 'viem';
 import { TOP_INSET } from '../Dimensions';
 import Navigation from '@/navigation/Navigation';

@@ -1,9 +1,15 @@
 import { useCallback, useRef } from 'react';
-import { GestureResponderEvent, NativeSyntheticEvent } from 'react-native';
+import { type GestureResponderEvent, type NativeSyntheticEvent } from 'react-native';
 import { useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import { clamp } from '@/__swaps__/utils/swaps';
 import { EXTRA_WEBVIEW_HEIGHT, GROW_WEBVIEW_THRESHOLD, SHRINK_WEBVIEW_THRESHOLD, WEBVIEW_HEIGHT } from '../Dimensions';
-import { ActiveTabCloseGestures, BrowserContextType, GestureManagerState, TabViewGestureStates, WebViewScrollEvent } from '../types';
+import {
+  type ActiveTabCloseGestures,
+  type BrowserContextType,
+  type GestureManagerState,
+  TabViewGestureStates,
+  type WebViewScrollEvent,
+} from '../types';
 
 export function useGestureManager({
   activeTabId,

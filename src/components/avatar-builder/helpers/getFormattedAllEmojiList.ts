@@ -2,7 +2,7 @@ import emoji from 'emoji-datasource';
 import { Dimensions } from 'react-native';
 import { Categories } from '../Categories';
 import { EMOJIS_CONTAINER_HORIZONTAL_MARGIN, EMOJIS_TOP_OFFSET } from '../constants';
-import { EmojiEntry } from '../types';
+import { type EmojiEntry } from '../types';
 
 const { width } = Dimensions.get('screen');
 

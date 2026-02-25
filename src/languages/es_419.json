@@ -3566,29 +3566,6 @@
         "title": "Lo sentimos, hubo un error al cargar su imagen.",
         "subtitle": "Por favor inténtelo de nuevo."
       },
-      "allocation_breakdown": {
-        "my_share": "MI PARTE",
-        "airdropping": "AIRDROPPING",
-        "start_price": "PRECIO INICIAL",
-        "sections": {
-          "my_share": {
-            "title": "Cuota del Creador",
-            "description": "Tu participación personal en el proyecto"
-          },
-          "airdropping": {
-            "title": "Cuota de Airdrop",
-            "description": "Distribuido a amigos y seguidores"
-          },
-          "liquidity_pool": {
-            "title": "Cuota de Pool de Liquidez",
-            "description": "Asegura el comercio fluido y la liquidez"
-          },
-          "rainbow_share": {
-            "title": "Sobre el Arcoíris",
-            "description": "Distribuciones futuras para la comunidad"
-          }
-        }
-      },
       "network_field": {
         "balance": "Balance: %{balance}",
         "not_enough_funds": "Fondos insuficientes para lanzar un token"
@@ -3830,6 +3807,10 @@
         "confirming_order": "Confirmando orden...",
         "deposit_funds": "Depositar fondos",
         "average_price": "Precio promedio",
+        "no_liquidity_title": "Sin liquidez",
+        "no_liquidity_description": "No hay vendedores para este resultado.",
+        "insufficient_liquidity_title": "No hay suficiente liquidez",
+        "insufficient_liquidity_description": "Prueba con un monto menor para esta orden.",
         "errors": {
           "not_enough_liquidity": "No hay suficiente liquidez para colocar la orden completa.",
           "please_lower_amount": "Por favor, reduzca la cantidad e intente de nuevo.",
@@ -3853,7 +3834,11 @@
         "profit_loss": "Ganancia / Pérdida",
         "receive": "Recibir",
         "spread": "Spread",
-        "cash_out": "Retirar"
+        "cash_out": "Retirar",
+        "no_liquidity_title": "Sin liquidez",
+        "no_liquidity_description": "No hay compradores para este resultado.",
+        "insufficient_liquidity_title": "No hay suficiente liquidez",
+        "insufficient_liquidity_description": "Prueba con un monto menor para retirar."
       },
       "search": {
         "placeholder": "Buscar mercados de predicción",
@@ -3926,7 +3911,8 @@
         "hide_lost_bets": "Ocultar Apuestas Perdidas",
         "show_lost_bets": "Mostrar Apuestas Perdidas",
         "lost_bets_dont_clear": "Las apuestas perdidas no se eliminan automáticamente. Puede limpiar a continuación."
-      }
+      },
+      "in_review": "En revisión"
     },
     "rnbw_rewards": {
       "introduction": {

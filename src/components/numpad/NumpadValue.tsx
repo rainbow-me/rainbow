@@ -1,11 +1,11 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import { Text } from '../text';
 import useDimensions from '@/hooks/useDimensions';
-import styled from '@/styled-thing';
-import { ThemeContextProps } from '@/theme';
+import styled from '@/framework/ui/styled-thing';
+import { type ThemeContextProps } from '@/theme';
 
 const FontSizeMultiple = 0.24;
 const HeightMultiple = 0.288;

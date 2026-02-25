@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entities/transactions';
+import { type RainbowTransaction, type MinedTransaction, TransactionStatus } from '@/entities/transactions';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
 import { buildTransactionTitle, isValidTransactionStatus } from '@/parsers/transactions';
@@ -8,7 +8,7 @@ import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { SupportedCurrencyKey } from '@/references';
+import { type SupportedCurrencyKey } from '@/references';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { useMinedTransactionsStore } from '@/state/minedTransactions/minedTransactions';

@@ -1,31 +1,31 @@
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
 import { Bleed, Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
+import WalletTypes, { type EthereumWalletType } from '@/helpers/walletTypes';
 import useDimensions from '@/hooks/useDimensions';
 import useWalletManualBackup from '@/hooks/useWalletManualBackup';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { createdWithBiometricError, identifyWalletType, loadPrivateKey, loadSeedPhraseAndMigrateIfNeeded } from '@/model/wallet';
 import { useTheme } from '@/theme';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import { type RouteProp, useRoute } from '@react-navigation/native';
+import React, { type ReactNode, useCallback, useEffect, useState } from 'react';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { CopyFloatingEmojis } from '../floating-emojis';
 import SecretDisplayCard from './SecretDisplayCard';
 
 import { SecretDisplayError } from '@/components/secret-display/SecretDisplayError';
-import { SecretDisplayStates, SecretDisplayStatesType } from '@/components/secret-display/states';
+import { SecretDisplayStates, type SecretDisplayStatesType } from '@/components/secret-display/states';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { useNavigation } from '@/navigation';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
-import { RootStackParamList } from '@/navigation/types';
+import { type RootStackParamList } from '@/navigation/types';
 import { backupsStore } from '@/state/backups/backups';
 import { useSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
 import { InteractionManager } from 'react-native';
-import { Source } from 'react-native-fast-image';
+import { type Source } from 'react-native-fast-image';
 import { ImgixImage } from '../images';
 import { SheetActionButton } from '../sheet';
 

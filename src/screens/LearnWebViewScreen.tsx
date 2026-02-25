@@ -1,4 +1,4 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Share, View } from 'react-native';
 import { WebView } from 'react-native-webview';
@@ -15,8 +15,8 @@ import { IS_ANDROID } from '@/env';
 import { analytics } from '@/analytics';
 import * as i18n from '@/languages';
 import { buildRainbowLearnUrl, LearnUTMCampaign } from '@/utils/buildRainbowUrl';
-import { RootStackParamList } from '@/navigation/types';
-import Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import type Routes from '@/navigation/routesNames';
 
 const HEADER_HEIGHT = 60;
 

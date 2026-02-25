@@ -1,21 +1,30 @@
 import { getAddress, type Address } from 'viem';
-import { ChainId as SwapsChainId, CrosschainQuote, Quote, QuoteParams, Source, SwapType, TokenAsset, ETH_ADDRESS } from '@rainbow-me/swaps';
+import {
+  type ChainId as SwapsChainId,
+  type Quote,
+  type QuoteParams,
+  Source,
+  SwapType,
+  type TokenAsset,
+  ETH_ADDRESS,
+} from '@rainbow-me/swaps';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
-import { equalWorklet, greaterThanWorklet } from '@/safe-math/SafeMath';
+import { equalWorklet, greaterThanWorklet } from '@/framework/core/safeMath';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { InferStoreState } from '@/state/internal/types';
+import { type InferStoreState } from '@/state/internal/types';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { time } from '@/utils/time';
 import {
-  AmountStoreType,
-  DepositConfig,
+  type AmountStoreType,
+  type DepositConfig,
+  type DepositQuoteResult,
   DepositQuoteStatus,
-  DepositQuoteStoreParams,
-  DepositQuoteStoreType,
-  DepositStoreType,
+  type DepositQuoteStoreParams,
+  type DepositQuoteStoreType,
+  type DepositStoreType,
 } from '../types';
 import { fetchAndValidateCrosschainQuote } from '../utils/crosschainQuote';
 import { isValidSwapsChainId } from '../utils/quotes';
@@ -31,7 +40,7 @@ export function createDepositQuoteStore(
   useDepositStore: DepositStoreType
 ): DepositQuoteStoreType {
   const recipientStore = config.to.recipient;
-  return createQueryStore({
+  return createQueryStore<DepositQuoteResult, DepositQuoteStoreParams>({
     fetcher: createQuoteFetcher(config),
     params: {
       accountAddress: $ => $(useWalletsStore).accountAddress,
@@ -45,14 +54,6 @@ export function createDepositQuoteStore(
 }
 
 // ============ Quote Fetcher ================================================== //
-
-type DepositQuoteResult =
-  | Quote
-  | CrosschainQuote
-  | DepositQuoteStatus.Error
-  | DepositQuoteStatus.InsufficientBalance
-  | DepositQuoteStatus.InsufficientGas
-  | null;
 
 function createQuoteFetcher(config: DepositConfig) {
   return async function fetchQuote(

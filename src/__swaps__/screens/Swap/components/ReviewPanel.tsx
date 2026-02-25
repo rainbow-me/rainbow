@@ -24,7 +24,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
-import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
+import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {

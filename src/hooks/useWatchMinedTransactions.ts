@@ -3,7 +3,7 @@ import { RainbowError, logger } from '@/logger';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { getPlatformClient } from '@/resources/platform/client';
-import { GetAssetsResponse, UserAsset } from '@/state/assets/types';
+import { type GetAssetsResponse, type UserAsset } from '@/state/assets/types';
 import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
@@ -11,12 +11,12 @@ import { useClaimablesStore } from '@/state/claimables/claimables';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
-import { useMinedTransactionsStore, MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
+import { useMinedTransactionsStore, type MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { filterZeroBalanceAssets, setUserAssets } from '@/state/assets/utils';
 import { staleBalancesStore } from '@/state/staleBalances';
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
 
 const ASSET_DETECTION_TIMEOUT = time.seconds(30);
 

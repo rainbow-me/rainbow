@@ -1,9 +1,10 @@
-import { ResponseByTheme } from '@/__swaps__/utils/swaps';
-import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
-import { League } from '@/features/polymarket/leagues';
-import { PolymarketTeamInfo } from '@/features/polymarket/types/team-info';
+import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { type POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
+import { type League } from '@/features/polymarket/leagues';
+import { type PolymarketTeamInfo } from '@/features/polymarket/types/team-info';
 
 export type SportsMarketType = (typeof POLYMARKET_SPORTS_MARKET_TYPE)[keyof typeof POLYMARKET_SPORTS_MARKET_TYPE];
+export type UmaResolutionStatus = 'pending' | 'proposed' | 'disputed' | 'resolved';
 
 type ImageOptimized = {
   id: string;
@@ -132,7 +133,7 @@ export type RawPolymarketMarket = {
   enableOrderBook: boolean;
   orderPriceMinTickSize: number;
   orderMinSize: number;
-  umaResolutionStatus?: string;
+  umaResolutionStatus?: UmaResolutionStatus;
   curationOrder: number;
   volumeNum: number;
   liquidityNum: number;

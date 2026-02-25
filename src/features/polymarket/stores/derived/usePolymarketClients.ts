@@ -1,8 +1,8 @@
 import { ClobClient, Chain } from '@polymarket/clob-client';
 import { RelayClient } from '@polymarket/builder-relayer-client';
 import { ChainId } from '@rainbow-me/swaps';
-import { Wallet } from 'ethers';
-import { Address } from 'viem';
+import { type Wallet } from 'ethers';
+import { type Address } from 'viem';
 import { BUILDER_CONFIG, POLYMARKET_CLOB_PROXY_URL, POLYMARKET_RELAYER_PROXY_URL } from '@/features/polymarket/constants';
 import { deriveSafeWalletAddress } from '@/features/polymarket/utils/deriveSafeWalletAddress';
 import { getProvider } from '@/handlers/web3';

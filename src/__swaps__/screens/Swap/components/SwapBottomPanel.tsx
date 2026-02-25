@@ -27,7 +27,6 @@ import { getIsHardwareWallet, useAccountAddress } from '@/state/wallets/walletsS
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
-import { IS_TEST } from '@/env';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import * as i18n from '@/languages';
 import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
@@ -83,18 +82,6 @@ export function SwapBottomPanel() {
   const opacity = useDerivedValue(() => confirmButtonProps.value.opacity);
   const type = useDerivedValue(() => confirmButtonProps.value.type);
 
-  // Test mode overrides for disabled and opacity
-  const testModeDisabled = useSharedValue(false);
-  const testModeOpacity = useSharedValue(1);
-
-  const finalDisabled = useDerivedValue(() => {
-    return IS_TEST ? testModeDisabled.value : disabled.value;
-  });
-
-  const finalOpacity = useDerivedValue(() => {
-    return IS_TEST ? testModeOpacity.value : opacity.value;
-  });
-
   const { navigate } = useNavigation();
   const handleHwConnectionAndSwap = useCallback(() => {
     try {
@@ -130,12 +117,6 @@ export function SwapBottomPanel() {
           gestureHandlerStyles,
           AnimatedSwapStyles.keyboardStyle,
           AnimatedSwapStyles.swapActionWrapperStyle,
-          IS_TEST && {
-            height: 200,
-            opacity: 1,
-            pointerEvents: 'auto',
-            overflow: 'visible',
-          },
         ]}
         testID="swap-bottom-panel-wrapper"
       >
@@ -147,14 +128,7 @@ export function SwapBottomPanel() {
           flexDirection="row"
           height={{ custom: 48 }}
           justifyContent="center"
-          style={[
-            { alignSelf: 'center' },
-            IS_TEST && {
-              opacity: 1,
-              pointerEvents: 'auto',
-              overflow: 'visible',
-            },
-          ]}
+          style={[{ alignSelf: 'center' }]}
           width="full"
           zIndex={20}
         >
@@ -179,7 +153,7 @@ export function SwapBottomPanel() {
               subtitle={showRewards ? i18n.t(i18n.l.swap.actions.earning_rewards) : undefined}
               rightIcon={showRewards ? '􀅴' : undefined}
               longPressDuration={HOLD_TO_SWAP_DURATION_MS}
-              disabled={finalDisabled}
+              disabled={disabled}
               onPressWorklet={() => {
                 'worklet';
                 if (type.value !== 'hold') {
@@ -216,7 +190,7 @@ export function SwapBottomPanel() {
                   );
                 }
               }}
-              opacity={finalOpacity}
+              opacity={opacity}
               onPressRightIconJS={showRewards ? handleRewardsInfoPress : undefined}
               scaleTo={0.9}
             />

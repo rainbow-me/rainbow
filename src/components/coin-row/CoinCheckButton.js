@@ -6,7 +6,7 @@ import CoinIconIndicator from '../coin-icon/CoinIconIndicator';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { borders, padding, position, shadow } from '@/styles';
 import { opacity } from '@/framework/ui/utils/opacity';
 

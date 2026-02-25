@@ -1,5 +1,5 @@
-import { unlockableAppIconStorage } from '@/features/app-icon/unlockableAppIconCheck';
-import { Migration, MigrationName } from '@/migrations/types';
+import { unlockableAppIconStorage } from '@/features/app-icon/utils/unlockableAppIconCheck';
+import { type Migration, MigrationName } from '@/migrations/types';
 import { createMMKV } from 'react-native-mmkv';
 
 const mmkv = createMMKV();

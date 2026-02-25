@@ -1,9 +1,9 @@
-import { FeaturedResultsVariables, useFeaturedResults } from '@/resources/featuredResults/getFeaturedResults';
+import { type FeaturedResultsVariables, useFeaturedResults } from '@/resources/featuredResults/getFeaturedResults';
 import { getFeaturedResultById } from '@/resources/featuredResults/_selectors/getFeaturedResultById';
 import { useTrackFeaturedResult } from '@/resources/featuredResults/trackFeaturedResult';
 import { TrackFeaturedResultType } from '@/graphql/__generated__/arc';
 import { useCallback, useEffect } from 'react';
-import { FeaturedResultStackProps } from './FeaturedResultStack';
+import { type FeaturedResultStackProps } from './FeaturedResultStack';
 import { logger } from '@/logger';
 
 type FeaturedResultCardProps = FeaturedResultStackProps &

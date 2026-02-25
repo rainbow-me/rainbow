@@ -14,9 +14,9 @@ import { Stripe as StripeLogo } from '@/components/icons/svg/Stripe';
 
 import { FiatProviderName } from '@/entities/f2c';
 import { convertAPINetworkToInternalChainIds } from '@/screens/AddCash/utils';
-import { ProviderConfig, CalloutType, PaymentMethod } from '@/screens/AddCash/types';
+import { type ProviderConfig, CalloutType, PaymentMethod } from '@/screens/AddCash/types';
 import * as i18n from '@/languages';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 
 type PaymentMethodConfig = {
   name: string;

@@ -3,7 +3,7 @@ import { Inset } from '../../../components/Inset/Inset';
 
 import { Heading, Stack } from '../../system';
 import { sprinkles } from '../../system/sprinkles.css';
-import { Docs, DocsExample } from '../../types';
+import { type Docs, type DocsExample } from '../../types';
 import { CodePreview } from '../CodePreview';
 
 export const DocsAccordion = ({ meta, description, examples }: Docs) => {
@@ -58,7 +58,7 @@ export const DocsAccordion = ({ meta, description, examples }: Docs) => {
   );
 };
 
-////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////
 
 const ExamplePreview = ({
   name,

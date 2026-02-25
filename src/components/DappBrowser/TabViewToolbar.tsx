@@ -1,11 +1,11 @@
 import React from 'react';
 import { BlurView } from 'react-native-blur-view';
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
-import { HapticType } from 'react-native-turbo-haptics';
-import { Bleed, Box, BoxProps, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { TextColor } from '@/design-system/color/palettes';
-import { TextWeight } from '@/design-system/components/Text/Text';
-import { TextSize } from '@/design-system/typography/typeHierarchy';
+import { type HapticType } from 'react-native-turbo-haptics';
+import { Bleed, Box, type BoxProps, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { type TextColor } from '@/design-system/color/palettes';
+import { type TextWeight } from '@/design-system/components/Text/Text';
+import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
@@ -17,7 +17,7 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from './BrowserContext';
 import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { BrowserButtonShadows } from './DappBrowserShadows';
-import { BrowserWorkletsContextType } from './types';
+import { type BrowserWorkletsContextType } from './types';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const TabViewToolbar = () => {

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Keyboard } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
+import { type RouteProp } from '@react-navigation/native';
 
 import { useTheme } from '@/theme/ThemeContext';
 import colors from '@/theme/currentColors';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { fonts } from '@/styles';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import deviceUtils from '@/utils/deviceUtils';
@@ -23,13 +23,18 @@ import { getSheetHeight as getSendConfirmationSheetHeight } from '@/screens/Send
 
 import { onWillPop } from '@/navigation/Navigation';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/HardwareWalletTxNavigator';
-import { StackNavigationOptions } from '@react-navigation/stack';
-import { ExplainSheetRouteParams, ExplainSheetType, PartialNavigatorConfigOptions, RootStackParamList } from '@/navigation/types';
-import { BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
+import { type StackNavigationOptions } from '@react-navigation/stack';
+import {
+  type ExplainSheetRouteParams,
+  type ExplainSheetType,
+  type PartialNavigatorConfigOptions,
+  type RootStackParamList,
+} from '@/navigation/types';
+import { type BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
 import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
-import Routes from './routesNames';
+import type Routes from './routesNames';
 import { getWalletErrorSheetHeight } from '@/components/wallet-error/WalletErrorSheet';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;

@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { ScrollView, ScrollViewProps, StyleProp, StyleSheet, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
-import Animated, { AnimatedStyle, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import { ScrollView, type ScrollViewProps, type StyleProp, StyleSheet, TouchableWithoutFeedback, View, type ViewStyle } from 'react-native';
+import Animated, { type AnimatedStyle, type SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import {
@@ -15,7 +15,7 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import { TextColor } from '@/design-system/color/palettes';
+import { type TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';

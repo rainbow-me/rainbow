@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Spinner from '@/components/Spinner';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { IS_IOS } from '@/env';
 import { useTheme } from '@/theme';
 import { ActivityIndicator } from 'react-native';

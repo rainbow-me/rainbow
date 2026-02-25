@@ -1,13 +1,14 @@
-import React, { memo, MutableRefObject, useEffect, useRef, useState } from 'react';
+import React, { memo, type MutableRefObject, useEffect, useRef, useState } from 'react';
 import { Freeze } from 'react-freeze';
 import { StyleSheet } from 'react-native';
-import Animated, { AnimatedStyle, DerivedValue, FadeIn, SharedValue, useAnimatedProps } from 'react-native-reanimated';
+import Animated, { type AnimatedStyle, type DerivedValue, FadeIn, type SharedValue, useAnimatedProps } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
-import WebView, { WebViewProps } from 'react-native-webview';
+import { type WebViewProps } from 'react-native-webview';
+import type WebView from 'react-native-webview';
 import { globalColors, useColorMode } from '@/design-system';
 import { IS_DEV, IS_IOS } from '@/env';
-import { BrowserState, useBrowserStore } from '@/state/browser/browserStore';
-import { BrowserHistoryStore } from '@/state/browserHistory';
+import { type BrowserState, useBrowserStore } from '@/state/browser/browserStore';
+import { type BrowserHistoryStore } from '@/state/browserHistory';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { AnimatedFasterImage } from '../AnimatedComponents/AnimatedFasterImage';
 import { useBrowserContext } from './BrowserContext';
@@ -29,7 +30,7 @@ import { useAnimatedTab } from './hooks/useAnimatedTab';
 import { useTabScreenshotProvider } from './hooks/useTabScreenshotProvider';
 import { useWebViewHandlers } from './hooks/useWebViewHandlers';
 import { SCRIPTS_TO_INJECT, freezeWebsite, unfreezeWebsite } from './scripts';
-import { BrowserTabProps, ScreenshotType } from './types';
+import { type BrowserTabProps, type ScreenshotType } from './types';
 
 export const BrowserTab = memo(function BrowserTab({ addRecent, setLogo, setTitle, tabId }: BrowserTabProps) {
   const viewShotRef = useRef<ViewShot | null>(null);

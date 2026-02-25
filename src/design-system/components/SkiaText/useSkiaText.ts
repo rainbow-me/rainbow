@@ -1,25 +1,25 @@
 import { useDerivedValue } from 'react-native-reanimated';
 import {
-  SkColor,
-  SkPaint,
-  SkParagraph,
-  SkTextFontFeatures,
-  SkTextFontStyle,
-  SkTextShadow,
-  SkTextStyle,
+  type SkColor,
+  type SkPaint,
+  type SkParagraph,
+  type SkTextFontFeatures,
+  type SkTextFontStyle,
+  type SkTextShadow,
+  type SkTextStyle,
   Skia,
 } from '@shopify/react-native-skia';
 import { useCallback } from 'react';
-import { TextAlign } from '@/components/text/types';
+import { type TextAlign } from '@/components/text/types';
 import { useColorMode } from '@/design-system/color/ColorMode';
-import { TextColor } from '@/design-system/color/palettes';
+import { type TextColor } from '@/design-system/color/palettes';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
-import { SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
-import { TextWeight } from '@/design-system/components/Text/Text';
-import { TextSize, typeHierarchy } from '@/design-system/typography/typeHierarchy';
+import { type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
+import { type TextWeight } from '@/design-system/components/Text/Text';
+import { type TextSize, typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_IOS } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { SharedOrDerivedValue } from '@/types/reanimated';
+import { type SharedOrDerivedValue } from '@/types/reanimated';
 import { getSkiaFontWeight, useSkiaFontManager } from './skiaFontManager';
 
 export type TextSegment = {

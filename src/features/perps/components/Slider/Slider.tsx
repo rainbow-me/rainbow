@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, type ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -10,7 +10,7 @@ import Animated, {
   useSharedValue,
   withDecay,
   withSpring,
-  SharedValue,
+  type SharedValue,
   clamp,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';

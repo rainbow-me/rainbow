@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
 import * as DropdownMenuPrimitive from 'zeego/dropdown-menu';
 import styled from 'styled-components';
-import { IconConfig, MenuActionConfig, MenuConfig as _MenuConfig } from 'react-native-ios-context-menu';
-import { ImageSystemSymbolConfiguration } from 'react-native-ios-context-menu/lib/typescript/types/ImageItemConfig';
-import { ImageSourcePropType, ImageURISource, View } from 'react-native';
+import { type IconConfig, type MenuActionConfig, type MenuConfig as _MenuConfig } from 'react-native-ios-context-menu';
+import { type ImageSystemSymbolConfiguration } from 'react-native-ios-context-menu/lib/typescript/types/ImageItemConfig';
+import { type ImageSourcePropType, type ImageURISource, View } from 'react-native';
 import type { SFSymbols5_0 } from 'sf-symbols-typescript';
 import type { DropdownMenuContentProps } from '@radix-ui/react-dropdown-menu';
 import ButtonPressAnimation from './animations/ButtonPressAnimation';

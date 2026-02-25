@@ -1,4 +1,4 @@
-import remoteConfig, { FirebaseRemoteConfigTypes } from '@react-native-firebase/remote-config';
+import remoteConfig, { type FirebaseRemoteConfigTypes } from '@react-native-firebase/remote-config';
 import { useEffect } from 'react';
 import { dequal } from 'dequal';
 import { IS_DEV, IS_TEST_FLIGHT } from '@/env';

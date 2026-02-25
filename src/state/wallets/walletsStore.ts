@@ -10,15 +10,15 @@ import { PreferenceActionType, setPreference } from '@/model/preferences';
 import Routes from '@/navigation/routesNames';
 import Navigation from '@/navigation/Navigation';
 import {
-  AllRainbowWallets,
+  type AllRainbowWallets,
   checkWalletsDamagedState,
   cleanUpWalletKeys,
   generateAccount,
   getAllWallets,
   getSelectedWallet as getSelectedWalletFromKeychain,
   loadAddress,
-  RainbowAccount,
-  RainbowWallet,
+  type RainbowAccount,
+  type RainbowWallet,
   resetSelectedWallet as resetSelectedWalletInKeychain,
   saveAddress,
   saveAllWallets,
@@ -35,7 +35,7 @@ import { shallowEqual } from '@/worklets/comparisons';
 import { captureMessage } from '@sentry/react-native';
 import { dequal } from 'dequal';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 interface AccountProfileInfo {

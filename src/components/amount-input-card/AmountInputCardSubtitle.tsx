@@ -7,9 +7,9 @@ import { USD_DECIMALS } from '@/features/perps/constants';
 import { useOrderAmountValidation } from '@/features/perps/stores/derived/useOrderAmountValidation';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import * as i18n from '@/languages';
-import { equalWorklet, truncateToDecimals } from '@/safe-math/SafeMath';
-import { ReadOnlySharedValue, useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
+import { equalWorklet, truncateToDecimals } from '@/framework/core/safeMath';
+import { type ReadOnlySharedValue, useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { type OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
 
 const translations = {
   availableSuffix: i18n.t(i18n.l.perps.inputs.available),

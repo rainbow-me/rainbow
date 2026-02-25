@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
-import { Bleed, Box, BoxProps, globalColors, Separator, Stack, Text, useColorMode } from '@/design-system';
-import { PerpsPosition } from '@/features/perps/types';
+import { Bleed, Box, type BoxProps, globalColors, Separator, Stack, Text, useColorMode } from '@/design-system';
+import { type PerpsPosition } from '@/features/perps/types';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
@@ -10,7 +10,7 @@ import { abs } from '@/helpers/utilities';
 import { useStableValue } from '@/hooks/useStableValue';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
-import { TokenData } from '@/state/liveTokens/liveTokensStore';
+import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';

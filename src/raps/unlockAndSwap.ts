@@ -1,6 +1,6 @@
 import { getTargetAddress, isAllowedTargetContract } from '@rainbow-me/swaps';
 import { createNewAction, createNewRap } from './common';
-import { RapAction, RapSwapActionParameters } from './references';
+import type { RapAction, RapSwapActionParameters } from './references';
 import { needsTokenApproval } from './actions/unlock';
 
 export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParameters<'swap'>) => {

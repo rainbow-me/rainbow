@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
-import { SharedValue } from 'react-native-reanimated';
-import { AnimatedText, AnimatedTextProps } from '@/design-system';
+import { type SharedValue } from 'react-native-reanimated';
+import { AnimatedText, type AnimatedTextProps } from '@/design-system';
 import { useChartData } from '../../helpers/useChartData';
 
 type ChartLabelProps = Omit<AnimatedTextProps, 'children' | 'selector'> & {

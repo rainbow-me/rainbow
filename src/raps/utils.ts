@@ -1,9 +1,9 @@
-import { Block, Provider } from '@ethersproject/abstract-provider';
-import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { CrosschainQuote, Quote, getQuoteExecutionDetails, getTargetAddress } from '@rainbow-me/swaps';
+import { type Block, type Provider } from '@ethersproject/abstract-provider';
+import { Contract, type PopulatedTransaction } from '@ethersproject/contracts';
+import { type StaticJsonRpcProvider } from '@ethersproject/providers';
+import { type CrosschainQuote, type Quote, getQuoteExecutionDetails, getTargetAddress } from '@rainbow-me/swaps';
 import { mainnet } from 'viem/chains';
-import { Chain, erc20Abi } from 'viem';
+import { type Chain, erc20Abi } from 'viem';
 import type {
   GasFeeParamsBySpeed,
   LegacyGasFeeParamsBySpeed,
@@ -16,7 +16,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { gasUnits } from '@/references';
 import { toHexNoLeadingZeros } from '@/handlers/web3';
 import { BigNumber } from '@ethersproject/bignumber';
-import { SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
+import { type SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import type { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { simulateTransactions } from '@/resources/transactions/transactionSimulation';

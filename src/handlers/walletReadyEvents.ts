@@ -1,13 +1,13 @@
 import { runLocalCampaignChecks } from '@/components/remote-promo-sheet/localCampaignChecks';
 import type { EthereumAddress } from '@/entities/wallet';
 import { IS_TEST } from '@/env';
-import { UnlockableAppIconKey, unlockableAppIcons } from '@/features/app-icon/appIcons';
-import { unlockableAppIconCheck } from '@/features/app-icon/unlockableAppIconCheck';
+import { type UnlockableAppIconKey, unlockableAppIcons } from '@/features/app-icon/models/appIcons';
+import { unlockableAppIconCheck } from '@/features/app-icon/utils/unlockableAppIconCheck';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { logger } from '@/logger';
-import { RainbowAccount } from '@/model/wallet';
+import { type RainbowAccount } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { checkKeychainIntegrity, getSelectedWallet, getWallets } from '@/state/wallets/walletsStore';

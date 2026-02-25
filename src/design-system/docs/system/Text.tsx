@@ -1,9 +1,9 @@
 import classnames from 'classnames';
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 
 import { sprinkles } from './sprinkles.css';
-import { FontWeight, ForegroundColor } from './tokens.css';
-import { letterSpacings, sizes, TextSizes } from './typography.css';
+import { type FontWeight, type ForegroundColor } from './tokens.css';
+import { letterSpacings, sizes, type TextSizes } from './typography.css';
 
 export const Text = ({
   children,

@@ -1,14 +1,14 @@
-import { Draggable, DraggableGrid, DraggableGridProps, UniqueIdentifier } from '@/components/drag-and-drop';
+import { Draggable, DraggableGrid, type DraggableGridProps, type UniqueIdentifier } from '@/components/drag-and-drop';
 import { Box, HitSlop, Inline, Stack, Text, TextIcon } from '@/design-system';
 import React, { useCallback, useMemo } from 'react';
 import { BlurView } from 'react-native-blur-view';
-import { AddressItem, AddressMenuAction, AddressMenuActionData, PANEL_INSET_HORIZONTAL } from '../ChangeWalletSheet';
+import { type AddressItem, AddressMenuAction, type AddressMenuActionData, PANEL_INSET_HORIZONTAL } from '../ChangeWalletSheet';
 import { AddressAvatar } from './AddressAvatar';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { SelectedAddressBadge } from './SelectedAddressBadge';
 import { JiggleAnimation } from '@/components/animations/JiggleAnimation';
-import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
+import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
 import ConditionalWrap from 'conditional-wrap';
 import { address } from '@/utils/abbreviations';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';

@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useRef } from 'react';
-import Animated, {
+import type Animated from 'react-native-reanimated';
+import {
   runOnJS,
   runOnUI,
   useAnimatedReaction,
@@ -9,7 +10,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import ViewShot from 'react-native-view-shot';
+import type ViewShot from 'react-native-view-shot';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import Routes from '@/navigation/routesNames';
 import { useBrowserStore } from '@/state/browser/browserStore';
@@ -17,7 +18,13 @@ import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { EXTRA_WEBVIEW_HEIGHT } from './Dimensions';
 import { RAINBOW_HOME } from './constants';
 import { useGestureManager } from './hooks/useGestureManager';
-import { ActiveTabRef, AnimatedScreenshotData, AnimatedTabUrls, BrowserContextType, BrowserTabBarContextType } from './types';
+import {
+  type ActiveTabRef,
+  type AnimatedScreenshotData,
+  type AnimatedTabUrls,
+  type BrowserContextType,
+  type BrowserTabBarContextType,
+} from './types';
 import { normalizeUrlWorklet } from './utils';
 import { calculateTabViewBorderRadius } from './utils/layoutUtils';
 

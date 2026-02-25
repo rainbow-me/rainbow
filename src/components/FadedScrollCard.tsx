@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import Animated, {
   Easing,
-  SharedValue,
+  type SharedValue,
   interpolate,
   interpolateColor,
   measure,

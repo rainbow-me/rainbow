@@ -1,5 +1,5 @@
-import { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
-import { MinimalNotification } from '@/notifications/types';
+import { type FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+import { type MinimalNotification } from '@/notifications/types';
 
 const deferredNotification: {
   current: FirebaseMessagingTypes.RemoteMessage | null;

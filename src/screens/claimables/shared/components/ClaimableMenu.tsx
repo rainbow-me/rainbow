@@ -1,7 +1,7 @@
 import { Bleed, Box, Text, useColorMode } from '@/design-system';
 import React from 'react';
 import { View } from 'react-native';
-import { DropdownMenu, MenuConfig } from '@/components/DropdownMenu';
+import { DropdownMenu, type MenuConfig } from '@/components/DropdownMenu';
 
 export function ClaimableMenu({
   disabled,

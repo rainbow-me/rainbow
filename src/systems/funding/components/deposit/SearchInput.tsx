@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
-import { TextInput } from 'react-native';
-import { SharedValue, useAnimatedRef, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import { type TextInput } from 'react-native';
+import { type SharedValue, useAnimatedRef, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { SearchInput as BaseSearchInput } from '@/components/token-search/SearchInput';
 import { getTokenSearchButtonWrapperStyle } from '@/components/token-search/styles';
 import { useColorMode } from '@/design-system';

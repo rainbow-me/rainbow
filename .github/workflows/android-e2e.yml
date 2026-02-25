@@ -36,6 +36,11 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
+      - name: Setup Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version-file: '.node-version'
+
       - name: Install secret tools
         run: sudo apt install libsecret-tools
 
@@ -269,6 +274,13 @@ jobs:
           GITHUB_PR_NUMBER: ${{ env.PR_NUMBER }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_COMMIT: ${{ github.sha }}
+
+      - name: Upload Device Farm Logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: device-farm-logs-${{ env.PR_NUMBER || github.ref_name }}
+          path: ${{ env.ARTIFACTS_FOLDER }}/logs
 
       - name: Upload Current Perf JSON
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

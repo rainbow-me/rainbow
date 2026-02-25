@@ -3566,29 +3566,6 @@
         "title": "Извините, произошла ошибка при загрузке вашего изображения.",
         "subtitle": "Попробуйте снова."
       },
-      "allocation_breakdown": {
-        "my_share": "МОЙ ДОЛЯ",
-        "airdropping": "РАСПРОСТРАНЕНИЕ AIRDROP",
-        "start_price": "СТАРТОВАЯ ЦЕНА",
-        "sections": {
-          "my_share": {
-            "title": "Доля создателя",
-            "description": "Ваша личная доля в проекте"
-          },
-          "airdropping": {
-            "title": "Доля аирдропа",
-            "description": "Распределено среди друзей и сторонников"
-          },
-          "liquidity_pool": {
-            "title": "Доля ликвидного пула",
-            "description": "Обеспечивает плавную торговлю и ликвидность"
-          },
-          "rainbow_share": {
-            "title": "Сверх радуги",
-            "description": "Будущие распределения для сообщества"
-          }
-        }
-      },
       "network_field": {
         "balance": "Баланс: %{balance}",
         "not_enough_funds": "Недостаточно средств для запуска токена"
@@ -3830,6 +3807,10 @@
         "confirming_order": "Подтверждение заказа...",
         "deposit_funds": "Пополнить средства",
         "average_price": "Средняя цена",
+        "no_liquidity_title": "Нет ликвидности",
+        "no_liquidity_description": "По этому исходу нет продавцов.",
+        "insufficient_liquidity_title": "Недостаточно ликвидности",
+        "insufficient_liquidity_description": "Попробуйте указать меньшую сумму для этого ордера.",
         "errors": {
           "not_enough_liquidity": "Недостаточно ликвидности для размещения полного заказа.",
           "please_lower_amount": "Пожалуйста, уменьшите сумму и попробуйте снова.",
@@ -3853,7 +3834,11 @@
         "profit_loss": "Прибыль / Убыток",
         "receive": "Получить",
         "spread": "Спред",
-        "cash_out": "Вывод средств"
+        "cash_out": "Вывод средств",
+        "no_liquidity_title": "Нет ликвидности",
+        "no_liquidity_description": "По этому исходу нет покупателей.",
+        "insufficient_liquidity_title": "Недостаточно ликвидности",
+        "insufficient_liquidity_description": "Попробуйте вывести меньшую сумму."
       },
       "search": {
         "placeholder": "Искать рынки предсказаний",
@@ -3926,7 +3911,8 @@
         "hide_lost_bets": "Скрыть проигранные ставки",
         "show_lost_bets": "Показать проигранные ставки",
         "lost_bets_dont_clear": "Проигранные ставки не удаляются автоматически. Вы можете очистить их ниже."
-      }
+      },
+      "in_review": "На проверке"
     },
     "rnbw_rewards": {
       "introduction": {

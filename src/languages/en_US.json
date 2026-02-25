@@ -3630,30 +3630,6 @@
         "title": "Sorry, there was an error uploading your image.",
         "subtitle": "Please try again."
       },
-      "allocation_breakdown": {
-        "my_share": "MY SHARE",
-        "airdropping": "AIRDROPPING",
-        "start_price": "START PRICE",
-
-        "sections": {
-          "my_share": {
-            "title": "Creator Share",
-            "description": "Your personal stake in the project"
-          },
-          "airdropping": {
-            "title": "Airdrop Share",
-            "description": "Distributed to friends and supporters"
-          },
-          "liquidity_pool": {
-            "title": "Liquidity Pool Share",
-            "description": "Ensures smooth trading and liquidity"
-          },
-          "rainbow_share": {
-            "title": "Over the Rainbow",
-            "description": "Future Community Distributions"
-          }
-        }
-      },
       "network_field": {
         "balance": "Balance: %{balance}",
         "not_enough_funds": "Not enough funds to launch a token"
@@ -3874,6 +3850,10 @@
         "confirming_order": "Confirming Order...",
         "deposit_funds": "Deposit Funds",
         "average_price": "Average Price",
+        "no_liquidity_title": "No Liquidity",
+        "no_liquidity_description": "There are no sellers for this outcome.",
+        "insufficient_liquidity_title": "Not Enough Liquidity",
+        "insufficient_liquidity_description": "Try a smaller amount for this order.",
         "errors": {
           "not_enough_liquidity": "Not enough liquidity to place full order.",
           "please_lower_amount": "Please lower the amount and try again.",
@@ -3897,7 +3877,11 @@
         "profit_loss": "Profit / Loss",
         "receive": "Receive",
         "spread": "Spread",
-        "cash_out": "Cash Out"
+        "cash_out": "Cash Out",
+        "no_liquidity_title": "No Liquidity",
+        "no_liquidity_description": "There are no buyers for this outcome.",
+        "insufficient_liquidity_title": "Not Enough Liquidity",
+        "insufficient_liquidity_description": "Try a smaller amount to cash out."
       },
       "search": {
         "placeholder": "Search for prediction markets",
@@ -3970,7 +3954,8 @@
         "hide_lost_bets": "Hide Lost Bets",
         "show_lost_bets": "Show Lost Bets",
         "lost_bets_dont_clear": "Lost bets aren't removed automatically. You can clear them below."
-      }
+      },
+      "in_review": "In Review"
     },
     "rnbw_rewards": {
       "introduction": {

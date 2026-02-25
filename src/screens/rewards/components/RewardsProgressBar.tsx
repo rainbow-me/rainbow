@@ -2,7 +2,7 @@ import React from 'react';
 import { Box } from '@/design-system';
 import { useTheme } from '@/theme';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { LayoutChangeEvent } from 'react-native';
+import { type LayoutChangeEvent } from 'react-native';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 type Props = {

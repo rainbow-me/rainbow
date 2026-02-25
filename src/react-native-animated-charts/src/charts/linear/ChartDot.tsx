@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import { type StyleProp, View, type ViewStyle } from 'react-native';
 import Animated, {
   runOnUI,
   useAnimatedReaction,
@@ -9,9 +9,9 @@ import Animated, {
   withRepeat,
   withSequence,
   withSpring,
-  WithSpringConfig,
+  type WithSpringConfig,
   withTiming,
-  WithTimingConfig,
+  type WithTimingConfig,
 } from 'react-native-reanimated';
 import { useChartData } from '../../helpers/useChartData';
 import { FIX_CLIPPED_PATH_FOR_CARD_MAGIC_NUMBER, FIX_CLIPPED_PATH_MAGIC_NUMBER, timingAnimationDefaultConfig } from './ChartPath';

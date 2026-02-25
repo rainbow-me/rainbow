@@ -27,7 +27,7 @@ const TOKEN_GATE_CHECKER_ADDRESS: Record<TokenGateCheckerNetwork, EthereumAddres
   [Network.avalanche]: '0x2a0332E28913A06Fa924d40A3E2160f763010417',
 };
 
-/***
+/** *
  * Check if wallets own NFTs of type ERC-721
  * We only need the NFT address to check for ownership
  */
@@ -57,7 +57,7 @@ export interface TokenInfo {
   id: number;
 }
 
-/***
+/** *
  * Check if wallets own NFTs of type ERC-1155
  * In this case we need to also check the id of the NFTs
  */

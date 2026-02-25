@@ -1,5 +1,5 @@
-import React, { PropsWithChildren, ReactNode, useEffect, useState } from 'react';
-import { StyleProp, ViewStyle, View } from 'react-native';
+import React, { type PropsWithChildren, type ReactNode, useEffect, useState } from 'react';
+import { type StyleProp, type ViewStyle, View } from 'react-native';
 
 const absolutePortal = {
   nodes: [] as ReactNode[],

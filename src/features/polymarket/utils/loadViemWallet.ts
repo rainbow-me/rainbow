@@ -4,11 +4,11 @@ import { getHdPath, isHardwareWalletKey, loadPrivateKey, WalletLibraryType } fro
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
-import { createWalletClient, Hex, http } from 'viem';
+import { createWalletClient, type Hex, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import * as kc from '@/keychain';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
-import { Provider } from '@ethersproject/providers';
+import { type Provider } from '@ethersproject/providers';
 
 export async function loadViemWallet(address: Hex, provider: Provider) {
   const selectedWallet = getWalletWithAccount(address);

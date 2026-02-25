@@ -1,8 +1,8 @@
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import RainbowContextWrapper from '../../helpers/RainbowContext';
 import { Box, DesignSystemProvider, Separator, Inline, Inset, Stack, Text } from '../';
-import { ColorMode } from '../color/palettes';
+import { type ColorMode } from '../color/palettes';
 import backgroundPlayground from '../components/BackgroundProvider/BackgroundProvider.playground';
 import bleedPlayground from '../components/Bleed/Bleed.playground';
 import boxPlayground from '../components/Box/Box.playground';
@@ -18,7 +18,7 @@ import separatorPlayground from '../components/Separator/Separator.playground';
 import stackPlayground from '../components/Stack/Stack.playground';
 import textPlayground from '../components/Text/Text.playground';
 import textLinkPlayground from '../components/TextLink/TextLink.playground';
-import { Docs, Example, Meta } from '../docs/types';
+import { type Docs, type Example, type Meta } from '../docs/types';
 import { getSourceFromExample } from '../docs/utils/getSourceFromExample';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 

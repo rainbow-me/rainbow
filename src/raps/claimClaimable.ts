@@ -1,5 +1,5 @@
 import { createNewAction, createNewRap } from './common';
-import { RapAction, RapSwapActionParameters } from './references';
+import { type RapAction, type RapSwapActionParameters } from './references';
 import { logger, RainbowError } from '@/logger';
 import { needsTokenApproval } from './actions/unlock';
 import { isCrosschainQuote } from '@/__swaps__/utils/quotes';

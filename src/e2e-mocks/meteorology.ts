@@ -1,4 +1,4 @@
-import { MeteorologyResponse } from '@/entities/gas';
+import { type MeteorologyResponse } from '@/entities/gas';
 
 // Mocked meteorology data for e2e testing.
 // Gas fees are set high enough for our anvil setup which uses --block-base-fee-per-gas 100000000 (0.1 gwei).

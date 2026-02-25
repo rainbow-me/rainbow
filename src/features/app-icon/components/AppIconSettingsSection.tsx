@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Source } from 'react-native-fast-image';
+import { type Source } from 'react-native-fast-image';
 import Menu from '@/screens/SettingsSheet/components/Menu';
 import MenuContainer from '@/screens/SettingsSheet/components/MenuContainer';
 import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
@@ -9,8 +9,15 @@ import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import { logger } from '@/logger';
 import { analytics } from '@/analytics';
-import { AppIcon, AppIconKey, UnlockableAppIcon, UnlockableAppIconKey, freeAppIcons, unlockableAppIcons } from './appIcons';
-import { unlockableAppIconStorage } from './unlockableAppIconCheck';
+import {
+  type AppIcon,
+  type AppIconKey,
+  type UnlockableAppIcon,
+  type UnlockableAppIconKey,
+  freeAppIcons,
+  unlockableAppIcons,
+} from '../models/appIcons';
+import { unlockableAppIconStorage } from '../utils/unlockableAppIconCheck';
 
 const AppIconSettingsSection = () => {
   const { appIcon, settingsChangeAppIcon } = useAccountSettings();

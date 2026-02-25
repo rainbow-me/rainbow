@@ -1,10 +1,10 @@
 // @refresh
-import React, { ReactNode, createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { InteractionManager, NativeModules, StyleProp, TextInput, TextStyle } from 'react-native';
+import React, { type ReactNode, createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { InteractionManager, NativeModules, type StyleProp, type TextInput, type TextStyle } from 'react-native';
 import {
-  AnimatedRef,
-  DerivedValue,
-  SharedValue,
+  type AnimatedRef,
+  type DerivedValue,
+  type SharedValue,
   runOnJS,
   runOnUI,
   useAnimatedReaction,
@@ -15,7 +15,7 @@ import {
   withSpring,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { divWorklet, equalWorklet, lessThanOrEqualToWorklet, mulWorklet, sumWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, equalWorklet, lessThanOrEqualToWorklet, mulWorklet, sumWorklet } from '@/framework/core/safeMath';
 import {
   INITIAL_SLIDER_POSITION,
   SLIDER_COLLAPSED_HEIGHT,
@@ -29,26 +29,26 @@ import { NavigationSteps, useSwapNavigation } from '@/__swaps__/screens/Swap/hoo
 import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings';
 import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset, ParsedUserAsset } from '@/__swaps__/types/assets';
+import { type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset, type ParsedUserAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
-import { SwapAssetType, InputKeys } from '@/__swaps__/types/swap';
+import { SwapAssetType, type InputKeys } from '@/__swaps__/types/swap';
 import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend, trimTrailingZeros } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities/gas';
 import { getProvider } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
+import { type useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { walletExecuteRap } from '@/raps/execute';
-import { RapSwapActionParameters } from '@/raps/references';
+import { type RapSwapActionParameters } from '@/raps/references';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { getNextNonce } from '@/state/nonces';
-import { CrosschainQuote, Quote, QuoteError, SwapType } from '@rainbow-me/swaps';
+import { type CrosschainQuote, type Quote, type QuoteError, SwapType } from '@rainbow-me/swaps';
 import { IS_IOS } from '@/env';
 import { ATOMIC_SWAPS, getExperimentalFlag } from '@/config';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';

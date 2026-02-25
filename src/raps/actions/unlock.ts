@@ -1,23 +1,20 @@
-import { Signer } from '@ethersproject/abstract-signer';
+import { type Signer } from '@ethersproject/abstract-signer';
 import { MaxUint256 } from '@ethersproject/constants';
-import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
+import { Contract, type PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
-import { erc20Abi, erc721Abi, type Hash, type Address } from 'viem';
-import { type BatchCall, supportsDelegation } from '@rainbow-me/delegation';
-
+import { supportsDelegation, type BatchCall } from '@rainbow-me/delegation';
 import { getProvider, toHex } from '@/handlers/web3';
-import { ChainId } from '@/state/backendNetworks/types';
-import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { NewTransaction, TransactionStatus } from '@/entities/transactions';
+import { type Address, erc20Abi, erc721Abi } from 'viem';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
+import { type NewTransaction, TransactionStatus } from '@/entities/transactions';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, ensureError, logger } from '@/logger';
-
 import { ETH_ADDRESS, gasUnits } from '@/references';
-import { ActionProps, PrepareActionProps, RapActionResult, RapUnlockActionParameters } from '../references';
-
+import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapUnlockActionParameters } from '../references';
 import { overrideWithFastSpeedIfNeeded } from './../utils';
-import { TokenColors } from '@/graphql/__generated__/metadata';
-import { ParsedAsset } from '@/resources/assets/types';
+import { type TokenColors } from '@/graphql/__generated__/metadata';
+import { type ParsedAsset } from '@/resources/assets/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { DELEGATION, getExperimentalFlag } from '@/config/experimental';
@@ -367,7 +364,7 @@ export const unlock = async ({
       gasParamsToUse,
       approval.nonce
     ),
-    hash: approval.hash as Hash,
+    hash: approval.hash,
   };
 
   addNewTransaction({

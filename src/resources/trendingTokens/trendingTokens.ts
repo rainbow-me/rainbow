@@ -1,24 +1,24 @@
-import { QueryConfigWithSelect, createQueryKey } from '@/react-query';
+import { type QueryConfigWithSelect, createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { arcClient } from '@/graphql';
 import qs from 'qs';
 
-import { TrendingCategory, TrendingSort, TrendingTimeframe } from '@/state/trendingTokens/trendingTokens';
-import { Address } from 'viem';
+import { type TrendingCategory, type TrendingSort, type TrendingTimeframe } from '@/state/trendingTokens/trendingTokens';
+import { type Address } from 'viem';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import store from '@/redux/store';
 import {
-  SortDirection,
+  type SortDirection,
   TrendingSort as ArcTrendingSort,
-  Colors,
-  Market,
-  Bridging,
-  TrendingData,
+  type Colors,
+  type Market,
+  type Bridging,
+  type TrendingData,
   Timeframe,
 } from '@/graphql/__generated__/arc';
-import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
-import { ChainId } from '@/state/backendNetworks/types';
-import { RainbowFetchClient } from '@/rainbow-fetch';
+import { type AddressOrEth, type UniqueId } from '@/__swaps__/types/assets';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
 import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';

@@ -1,5 +1,5 @@
 import { createNewAction, createNewRap } from './common';
-import { RapAction, RapSwapActionParameters, RapUnlockActionParameters } from './references';
+import type { RapAction, RapSwapActionParameters, RapUnlockActionParameters } from './references';
 import { needsTokenApproval } from './actions/unlock';
 import { getQuoteAllowanceTargetAddress } from './validation';
 

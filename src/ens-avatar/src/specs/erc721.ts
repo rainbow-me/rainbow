@@ -1,7 +1,7 @@
 import { Buffer } from 'buffer';
 import { Contract } from '@ethersproject/contracts';
-import { BaseProvider } from '@ethersproject/providers';
-import { AvatarRequestOpts } from '..';
+import { type BaseProvider } from '@ethersproject/providers';
+import { type AvatarRequestOpts } from '..';
 import { resolveURI } from '../utils';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { fetchSimpleHashNFT } from '@/resources/nfts/simplehash';

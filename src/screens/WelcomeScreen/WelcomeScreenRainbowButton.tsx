@@ -1,11 +1,11 @@
-import { ButtonPressAnimationProps } from '@/components/animations/ButtonPressAnimation/types';
-import { StyleProp, ViewStyle } from 'react-native';
+import { type ButtonPressAnimationProps } from '@/components/animations/ButtonPressAnimation/types';
+import { type StyleProp, type ViewStyle } from 'react-native';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import React from 'react';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import Reanimated from 'react-native-reanimated';
 import { Emoji, Text } from '@/components/text';
-import { ThemeContextProps } from '@/theme';
+import { type ThemeContextProps } from '@/theme';
 import { RowWithMargins } from '@/components/layout';
 import { shadow } from '@/styles';
 

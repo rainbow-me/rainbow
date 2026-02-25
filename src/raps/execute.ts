@@ -1,7 +1,7 @@
-import { Signer } from '@ethersproject/abstract-signer';
+import { type Signer } from '@ethersproject/abstract-signer';
 import { ErrorCode as EthersErrorCode } from '@ethersproject/logger';
 import { Wallet } from '@ethersproject/wallet';
-import { type BatchCall, executeBatchedTransaction, supportsDelegation, UnsupportedReason } from '@rainbow-me/delegation';
+import { type BatchCall, executeBatchedTransaction, supportsDelegation, type UnsupportedReason } from '@rainbow-me/delegation';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ensureError, RainbowError, logger } from '@/logger';
 import { claim, swap, unlock } from './actions';
@@ -9,7 +9,7 @@ import { crosschainSwap, prepareCrosschainSwap } from './actions/crosschainSwap'
 import { claimBridge } from './actions/claimBridge';
 import { prepareUnlock } from './actions/unlock';
 import { prepareSwap } from './actions/swap';
-import {
+import type {
   ActionProps,
   PrepareActionProps,
   Rap,

@@ -1929,7 +1929,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-view-shot (4.0.2):
+  - react-native-view-shot (4.0.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3334,10 +3334,10 @@ SPEC CHECKSUMS:
   react-native-screen-corner-radius: ebd0d3258fcc894571b41d25ee3db7569d375153
   react-native-skia: 3467bce4be38029a4af437022b88a45e68f4210e
   react-native-text-input-mask: b83b8b571cba4bf18fb9b7a0bb8319a14201db9e
-  react-native-udp: 33844c2b4a0430271e46cd069a6152cc4c482095
+  react-native-udp: afd81d997ff141501da6ac680667fd8319545da1
   react-native-version-number: 3d74b5224ca4e1032b1593937d86d3f3c94bf95c
   react-native-video: 6fa10431df5753a4f40ff054898a3634f7123c5e
-  react-native-view-shot: 2e5535ddb51e7b54fbe710e65733bb8bedfedabb
+  react-native-view-shot: 44e13d0424a6b0375eae31d89e161fc1153512e5
   react-native-webview: 1b5778b306d4ed09d13829a6e7a6550e3c1a644a
   react-native-widgetkit: 9138fc58146c4f39771516ea9ef0e2d6fb20a9cd
   React-NativeModulesApple: 1ecb83880dd11baf2228f8dd89d8419c387e03ad

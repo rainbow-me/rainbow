@@ -4,13 +4,13 @@ import { useNavigation } from '../../navigation/Navigation';
 import { analytics } from '@/analytics';
 import { Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
 import Routes from '@/navigation/routesNames';
-import { GenericCard, Gradient } from './GenericCard';
+import { GenericCard, type Gradient } from './GenericCard';
 import { ORB_SIZE } from './reusables/IconOrb';
 import { useRoute } from '@react-navigation/native';
 import ledgerLogo from '@/assets/ledgerLogo.png';
 import { ImgixImage } from '../images';
 import ledgerNano from '@/assets/ledger-nano.png';
-import { Source } from 'react-native-fast-image';
+import { type Source } from 'react-native-fast-image';
 import { LEDGER_NANO_HEIGHT, LEDGER_NANO_WIDTH } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 
 const TRANSLATIONS = i18n.l.cards.ledger;

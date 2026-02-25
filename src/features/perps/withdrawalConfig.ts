@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { createWithdrawalConfig } from '@/systems/funding/config';
-import { WithdrawalExecutionResult, WithdrawalExecutorParams } from '@/systems/funding/types';
+import { type WithdrawalExecutionResult, type WithdrawalExecutorParams } from '@/systems/funding/types';
 import { time } from '@/utils/time';
 import { USD_DECIMALS } from './constants';
 import { getHyperliquidExchangeClient } from './services';

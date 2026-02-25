@@ -1,7 +1,7 @@
-import { Dispatch } from 'redux';
+import { type Dispatch } from 'redux';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
 import { omitFlatten } from '@/helpers/utilities';
-import { AppGetState } from '@/redux/store';
+import { type AppGetState } from '@/redux/store';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 

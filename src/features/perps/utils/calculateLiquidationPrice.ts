@@ -1,4 +1,4 @@
-import { PerpMarket, PerpPositionSide } from '@/features/perps/types';
+import { type PerpMarket, PerpPositionSide } from '@/features/perps/types';
 import { getApplicableMaxLeverage } from '@/features/perps/utils/getApplicableMaxLeverage';
 import {
   divWorklet,
@@ -8,7 +8,7 @@ import {
   greaterThanWorklet,
   lessThanOrEqualToWorklet,
   equalWorklet,
-} from '@/safe-math/SafeMath';
+} from '@/framework/core/safeMath';
 
 // Implemented from reference implementation: https://github.com/hyperliquid-dex/ts-examples/blob/main/examples/LiquidationPx.tsx
 

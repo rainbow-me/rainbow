@@ -1,11 +1,11 @@
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { RainbowError } from '@/logger';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
-import { OrderSide } from '@/features/perps/types';
-import { FrontendOpenOrdersResponse } from '@nktkas/hyperliquid/api/info';
+import { type OrderSide } from '@/features/perps/types';
+import { type FrontendOpenOrdersResponse } from '@nktkas/hyperliquid/api/info';
 import { convertSide } from '@/features/perps/utils';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { hyperliquidDexActions } from '@/features/perps/stores/hyperliquidDexStore';

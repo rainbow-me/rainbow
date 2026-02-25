@@ -1,4 +1,4 @@
-import { HyperliquidTokenMetadata, MarketSortOrder, PerpMarketWithMetadata } from '@/features/perps/types';
+import { type HyperliquidTokenMetadata, MarketSortOrder, type PerpMarketWithMetadata } from '@/features/perps/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';

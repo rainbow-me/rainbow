@@ -1,15 +1,15 @@
-import { Signer } from '@ethersproject/abstract-signer';
+import { type Signer } from '@ethersproject/abstract-signer';
 import { type Address } from 'viem';
-import { DerivedValue, SharedValue } from 'react-native-reanimated';
-import { CrosschainQuote, Quote, Source } from '@rainbow-me/swaps';
-import { AddressOrEth, ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
-import { GasSpeed } from '@/__swaps__/types/gas';
-import { ChainId } from '@/state/backendNetworks/types';
-import { BaseRainbowStore, DerivedStore, RainbowStore } from '@/state/internal/types';
-import { QueryStore, StoreState } from '@/state/internal/queryStore/types';
-import { StoreActions } from '@/state/internal/utils/createStoreActions';
-import { NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
+import { type DerivedValue, type SharedValue } from 'react-native-reanimated';
+import { type CrosschainQuote, type Quote, type Source } from '@rainbow-me/swaps';
+import { type AddressOrEth, type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { type GasSpeed } from '@/__swaps__/types/gas';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type BaseRainbowStore, type DerivedStore, type RainbowStore } from '@/state/internal/types';
+import { type QueryStore, type StoreState } from '@/state/internal/queryStore/types';
+import { type StoreActions } from '@/state/internal/utils/createStoreActions';
+import { type NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
 
 // ============ Shared Types =================================================== //
 
@@ -222,10 +222,15 @@ export type DepositQuoteStoreParams = {
   recipient: Address | null;
 };
 
-export type DepositQuoteStoreType = QueryStore<
-  Quote | CrosschainQuote | DepositQuoteStatus.InsufficientBalance | DepositQuoteStatus.InsufficientGas,
-  DepositQuoteStoreParams
->;
+export type DepositQuoteResult =
+  | Quote
+  | CrosschainQuote
+  | DepositQuoteStatus.Error
+  | DepositQuoteStatus.InsufficientBalance
+  | DepositQuoteStatus.InsufficientGas
+  | null;
+
+export type DepositQuoteStoreType = QueryStore<DepositQuoteResult, DepositQuoteStoreParams>;
 
 // ============ Gas Store Types ================================================ //
 

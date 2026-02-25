@@ -2,21 +2,35 @@ import { useCallback } from 'react';
 import { runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
+import { type NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
 import { handleSignificantDecimalsWorklet } from '@/helpers/utilities';
 import { useStableValue } from '@/hooks/useStableValue';
-import { divWorklet, equalWorklet, greaterThanOrEqualToWorklet, mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/safe-math/SafeMath';
+import {
+  divWorklet,
+  equalWorklet,
+  greaterThanOrEqualToWorklet,
+  mulWorklet,
+  toFixedWorklet,
+  trimTrailingZeros,
+} from '@/framework/core/safeMath';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { addCommasToNumber, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { time } from '@/utils/time';
 import { sanitizeAmount } from '@/worklets/strings';
 import { INITIAL_SLIDER_PROGRESS } from '../constants';
-import { AmountStoreType, DepositGasStoresType, DepositStoreType, InputMethod, InteractionSource, MinifiedAsset } from '../types';
+import {
+  type AmountStoreType,
+  type DepositGasStoresType,
+  type DepositStoreType,
+  type InputMethod,
+  type InteractionSource,
+  type MinifiedAsset,
+} from '../types';
 import { amountFromSliderProgress, sliderProgressFromAmount } from '../utils/sliderWorklets';
 
 // ============ Controller Hook =============================================== //

@@ -1,11 +1,11 @@
 import * as React from 'react';
 
-import { Example } from '../../docs/types';
+import { type Example } from '../../docs/types';
 import source from '../../docs/utils/source.macro';
 import { Placeholder } from '../../playground/Placeholder';
 import { Box } from '../Box/Box';
 import { Row, Rows } from './Rows';
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 export const basicUsage: Example = {
   name: 'Basic usage',

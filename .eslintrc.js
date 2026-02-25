@@ -111,7 +111,7 @@ const allowedBarrelFiles = [
   'src/state/staleBalances/index.ts',
   'src/state/walletConnectRequests/index.ts',
   'src/storage/index.ts',
-  'src/styled-thing/index.tsx',
+  'src/framework/ui/styled-thing/index.tsx',
   'src/theme/index.ts',
   'src/walletConnect/index.tsx',
 ];
@@ -151,6 +151,16 @@ module.exports = {
     },
   ],
   rules: {
+    'no-duplicate-imports': 'off',
+    'import/no-duplicates': 'error',
+    '@typescript-eslint/consistent-type-imports': [
+      'error',
+      {
+        prefer: 'type-imports',
+        fixStyle: 'inline-type-imports',
+        disallowTypeAnnotations: false,
+      },
+    ],
     'no-restricted-imports': [
       'warn',
       {

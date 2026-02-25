@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { AccentColorProvider } from '../../color/AccentColorContext';
 import { ColorModeProvider } from '../../color/ColorMode';
-import { Example } from '../../docs/types';
+import { type Example } from '../../docs/types';
 import source from '../../docs/utils/source.macro';
 import { BackgroundDemo } from '../../playground/BackgroundDemo';
 import { Columns } from '../Columns/Columns';

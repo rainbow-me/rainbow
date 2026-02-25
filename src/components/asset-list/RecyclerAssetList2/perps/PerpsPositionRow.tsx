@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { Bleed, Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
-import { PerpsPosition } from '@/features/perps/types';
+import { type PerpsPosition } from '@/features/perps/types';
 import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';

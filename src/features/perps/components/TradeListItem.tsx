@@ -1,8 +1,8 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { HlTrade, TradeExecutionType } from '@/features/perps/types';
+import { type HlTrade, TradeExecutionType } from '@/features/perps/types';
 import { Box, Text, TextIcon } from '@/design-system';
-import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { format } from 'date-fns';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';

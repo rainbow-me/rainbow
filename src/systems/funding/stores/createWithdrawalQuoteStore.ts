@@ -1,7 +1,7 @@
 import { getAddress } from 'viem';
-import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteParams, Source } from '@rainbow-me/swaps';
+import { type CrosschainQuote, ETH_ADDRESS, type Quote, type QuoteParams, Source } from '@rainbow-me/swaps';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
-import { equalWorklet, greaterThanWorklet } from '@/safe-math/SafeMath';
+import { equalWorklet, greaterThanWorklet } from '@/framework/core/safeMath';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
@@ -10,15 +10,15 @@ import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { time } from '@/utils/time';
 
 import {
-  AmountStoreType,
-  BalanceQueryStore,
-  RouteConfig,
-  WithdrawalConfig,
+  type AmountStoreType,
+  type BalanceQueryStore,
+  type RouteConfig,
+  type WithdrawalConfig,
   WithdrawalQuoteStatus,
-  WithdrawalQuoteStoreParams,
-  WithdrawalQuoteStoreType,
-  WithdrawalStoreType,
-  WithdrawalTokenStoreType,
+  type WithdrawalQuoteStoreParams,
+  type WithdrawalQuoteStoreType,
+  type WithdrawalStoreType,
+  type WithdrawalTokenStoreType,
 } from '../types';
 import { fetchAndValidateCrosschainQuote } from '../utils/crosschainQuote';
 import { fetchAndValidateSameChainQuote } from '../utils/sameChainQuote';
@@ -50,7 +50,7 @@ export function createWithdrawalQuoteStore<TBalanceStore extends BalanceQuerySto
     { fastMode: true }
   );
 
-  return createQueryStore({
+  return createQueryStore<QuoteResult, WithdrawalQuoteStoreParams>({
     fetcher: createQuoteFetcher(route),
     params: {
       amount: $ => $(useAmountStore, state => state.amount),

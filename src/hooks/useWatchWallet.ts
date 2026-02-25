@@ -1,7 +1,7 @@
 import useDeleteWallet from '@/hooks/useDeleteWallet';
 import useImportingWallet from '@/hooks/useImportingWallet';
 import { logger, RainbowError } from '@/logger';
-import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
+import { cleanUpWalletKeys, type RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
 import { setSelectedWallet, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import doesWalletsContainAddress from '@/utils/doesWalletsContainAddress';

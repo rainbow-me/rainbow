@@ -2,7 +2,7 @@ import React, { memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ImgixImage } from '@/components/images';
 import { Text, useColorMode } from '@/design-system';
-import { ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 
 type TeamLogoProps = {
   team: {

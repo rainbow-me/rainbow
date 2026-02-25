@@ -1,8 +1,8 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '@/navigation/types';
-import Routes from '@/navigation/routesNames';
+import { type RouteProp, useRoute } from '@react-navigation/native';
+import { type RootStackParamList } from '@/navigation/types';
+import type Routes from '@/navigation/routesNames';
 import { Box, globalColors, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
@@ -14,7 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { getSolidColorEquivalent } from '@/worklets/colors';
-import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/safe-math/SafeMath';
+import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import { marketSellTotalPosition } from '@/features/polymarket/utils/orders';
 import { trackPolymarketOrder } from '@/features/polymarket/utils/polymarketOrderTracker';
 import Navigation from '@/navigation/Navigation';
@@ -27,6 +27,7 @@ import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePo
 import { createSellExecutionStore } from '@/features/polymarket/screens/polymarket-sell-position-sheet/stores/createSellExecutionStore';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
+import { PolymarketNoLiquidityCard } from '@/features/polymarket/components/PolymarketNoLiquidityCard';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 
 export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionSheet() {
@@ -62,7 +63,15 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
     : ([opacity(accentColor, 0), opacity(accentColor, 0.06)] as const);
 
   const executionStore = useMemo(() => createSellExecutionStore(tokenId, sellAmountTokens), [tokenId, sellAmountTokens]);
-  const { worstPrice, bestPrice, expectedPayoutUsd, averagePrice, fee, spread } = executionStore(state => state);
+  const { worstPrice, bestPrice, expectedPayoutUsd, averagePrice, fee, spread, hasNoLiquidityAtMarketPrice, hasInsufficientLiquidity } =
+    executionStore(state => state);
+  const hasBlockedLiquidity = hasNoLiquidityAtMarketPrice || hasInsufficientLiquidity;
+  const noLiquidityTitle = hasNoLiquidityAtMarketPrice
+    ? i18n.t(i18n.l.predictions.cash_out.no_liquidity_title)
+    : i18n.t(i18n.l.predictions.cash_out.insufficient_liquidity_title);
+  const noLiquidityDescription = hasNoLiquidityAtMarketPrice
+    ? i18n.t(i18n.l.predictions.cash_out.no_liquidity_description)
+    : i18n.t(i18n.l.predictions.cash_out.insufficient_liquidity_description);
   const formattedBestPrice = `${trimTrailingZeros(toFixedWorklet(mulWorklet(bestPrice, 100), 1))}¢`;
   const formattedAveragePrice = `${trimTrailingZeros(toFixedWorklet(mulWorklet(averagePrice, 100), 1))}¢`;
 
@@ -75,6 +84,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
 
   const handleCashOutPosition = useCallback(async () => {
     try {
+      if (hasBlockedLiquidity) return;
       if (checkIfReadOnlyWallet(usePolymarketClients.getState().address)) return;
       setIsProcessing(true);
       setProcessingLabel(i18n.t(i18n.l.predictions.manage_position.confirming_order));
@@ -110,7 +120,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
     } finally {
       setIsProcessing(false);
     }
-  }, [position, worstPrice, bestPrice]);
+  }, [position, worstPrice, bestPrice, hasBlockedLiquidity]);
 
   return (
     <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }}>
@@ -196,18 +206,20 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
               </Box>
             </Box>
           </Box>
+          {hasBlockedLiquidity && <PolymarketNoLiquidityCard title={noLiquidityTitle} description={noLiquidityDescription} />}
           <HoldToActivateButton
             backgroundColor={buttonBackgroundColor}
             borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
             borderWidth={2}
-            disabledBackgroundColor={'gray'}
+            disabledBackgroundColor={opacity(buttonBackgroundColor, 0.02)}
+            disabled={hasBlockedLiquidity}
             label={i18n.t(i18n.l.predictions.cash_out.cash_out)}
             processingLabel={processingLabel}
             isProcessing={isProcessing}
             onLongPress={handleCashOutPosition}
             showBiometryIcon={false}
             height={48}
-            color={'white'}
+            color={hasBlockedLiquidity ? 'labelQuaternary' : 'white'}
             progressColor={'white'}
           />
         </Box>

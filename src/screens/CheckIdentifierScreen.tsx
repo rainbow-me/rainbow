@@ -4,8 +4,8 @@ import { logger, RainbowError } from '@/logger';
 import * as i18n from '@/languages';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '@/navigation/types';
+import { type RouteProp, useRoute } from '@react-navigation/native';
+import { type RootStackParamList } from '@/navigation/types';
 import * as kc from '@/keychain';
 import { Alert } from '@/components/alerts';
 import { BackgroundProvider, Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
@@ -14,10 +14,10 @@ import { getHeightForStep } from '@/navigation/config';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { ImgixImage } from '@/components/images';
 import RestoreYourWallet from '@/assets/RestoreYourWallet.png';
-import { Source } from 'react-native-fast-image';
+import { type Source } from 'react-native-fast-image';
 import { useNavigation } from '@/navigation';
 import { openInBrowser } from '@/utils/openInBrowser';
-import Routes from '@/navigation/routesNames';
+import type Routes from '@/navigation/routesNames';
 
 const imageSize = 40;
 

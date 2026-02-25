@@ -1,8 +1,8 @@
 import React, { memo, useEffect } from 'react';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import Animated, {
   FadeIn,
-  SharedValue,
+  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,

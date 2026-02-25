@@ -11,7 +11,7 @@ import { CoinDividerOpenButton } from '../coin-divider';
 import { CollectiblesSendRow, SendCoinRow } from '../coin-row';
 import { Centered } from '../layout';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 
 const dividerMargin = 5;
 const dividerHeight = DividerSize + dividerMargin * 4;

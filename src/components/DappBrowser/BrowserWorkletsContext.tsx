@@ -6,7 +6,7 @@ import { deepEqual } from '@/worklets/comparisons';
 import { generateUniqueId } from '@/worklets/strings';
 import { useBrowserContext, useBrowserTabBarContext } from './BrowserContext';
 import { RAINBOW_HOME } from './constants';
-import { BrowserWorkletsContextType, ScreenshotType, TabOperation, TabViewGestureStates } from './types';
+import { type BrowserWorkletsContextType, type ScreenshotType, type TabOperation, TabViewGestureStates } from './types';
 import { normalizeUrlWorklet } from './utils';
 
 export const BrowserWorkletsContext = createContext<BrowserWorkletsContextType | undefined>(undefined);

@@ -5,7 +5,7 @@ import type { ENSRegistrationState } from '@/entities/ensRegistration';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useNavigation } from '@/navigation';
 import { removeExpiredRegistrations } from '@/redux/ensRegistration';
-import { AppState } from '@/redux/store';
+import { type AppState } from '@/redux/store';
 import Routes from '@/navigation/routesNames';
 import { getENSNFTAvatarUrl } from '@/utils/ens';
 import { useLegacyNFTs } from '@/resources/nfts';

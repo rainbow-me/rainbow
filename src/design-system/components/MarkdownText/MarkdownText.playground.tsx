@@ -1,5 +1,5 @@
 import React from 'react';
-import { Docs } from '../../docs/types';
+import { type Docs } from '../../docs/types';
 import source from '../../docs/utils/source.macro';
 import { Guide } from '../../playground/Guide';
 import { MarkdownText } from './MarkdownText';

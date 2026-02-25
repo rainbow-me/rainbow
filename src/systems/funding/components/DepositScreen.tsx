@@ -1,7 +1,7 @@
-import React, { memo, ReactNode, useCallback, useMemo } from 'react';
+import React, { memo, type ReactNode, useCallback, useMemo } from 'react';
 import Animated, {
   runOnUI,
-  SharedValue,
+  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -19,21 +19,21 @@ import { Box, useColorMode, useForegroundColor } from '@/design-system';
 import { NumberPad } from '@/features/perps/components/NumberPad/NumberPad';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { SliderWithLabels } from '@/features/perps/components/Slider';
-import { SLIDER_MAX, SliderColors } from '@/features/perps/components/Slider/Slider';
+import { SLIDER_MAX, type SliderColors } from '@/features/perps/components/Slider/Slider';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
-import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { clamp, getColorValueForThemeWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { sanitizeAmount } from '@/worklets/strings';
 import { FOOTER_HEIGHT, INITIAL_SLIDER_PROGRESS, NavigationSteps, SLIDER_WIDTH, SLIDER_WITH_LABELS_HEIGHT } from '../constants';
 import { DepositProvider, useDepositContext } from '../contexts/DepositContext';
 import { computeMaxSwappableAmount } from '../stores/createDepositStore';
-import { DepositConfig, DepositQuoteStatus, FundingScreenTheme, getAccentColor } from '../types';
+import { type DepositConfig, DepositQuoteStatus, type FundingScreenTheme, getAccentColor } from '../types';
 import { amountFromSliderProgress } from '../utils/sliderWorklets';
 import { DepositAmountInput } from './deposit/DepositAmountInput';
 import { DepositFooter } from './deposit/DepositFooter';

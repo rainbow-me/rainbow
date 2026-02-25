@@ -1,6 +1,13 @@
-import React, { memo, RefObject, useCallback, useRef } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import Animated, { AnimatedStyle, SharedValue, runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import React, { memo, type RefObject, useCallback, useRef } from 'react';
+import { type ScrollView, StyleSheet, View } from 'react-native';
+import Animated, {
+  type AnimatedStyle,
+  type SharedValue,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
@@ -12,7 +19,7 @@ import { getSolidColorEquivalent } from '@/worklets/colors';
 import { GREEN_CANDLE_COLOR, RED_CANDLE_COLOR } from '../candlestick/constants';
 import { CANDLE_RESOLUTIONS, LINE_CHART_TIME_PERIODS } from '../constants';
 import { chartsActions, useChartsStore, useChartType } from '../stores/chartsStore';
-import { CandleResolution, ChartType, LineChartTimePeriod } from '../types';
+import { type CandleResolution, ChartType, type LineChartTimePeriod } from '../types';
 import { BASE_HORIZONTAL_INSET, PILL, TimeframeSelectorCore } from './TimeframeSelectorCore';
 
 // ============ Constants ====================================================== //

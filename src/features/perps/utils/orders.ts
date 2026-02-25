@@ -1,8 +1,8 @@
 import { DEFAULT_SLIPPAGE_BIPS, SPOT_ASSET_ID_OFFSET } from '@/features/perps/constants';
-import { OrderParams, PerpPositionSide, TriggerOrderType, TIF } from '@/features/perps/types';
+import { type OrderParams, PerpPositionSide, type TriggerOrderType, type TIF } from '@/features/perps/types';
 import { formatOrderPrice } from '@/features/perps/utils/formatOrderPrice';
 import { divide, multiply } from '@/helpers/utilities';
-import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 
 export function getMarketType(assetId: number): 'perp' | 'spot' {
   return assetId < SPOT_ASSET_ID_OFFSET ? 'perp' : 'spot';

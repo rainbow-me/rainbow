@@ -1,4 +1,4 @@
-import { BalanceQueryStore, DepositConfig, WithdrawalConfig } from './types';
+import { type BalanceQueryStore, type DepositConfig, type WithdrawalConfig } from './types';
 
 // ============ Config Helpers ================================================= //
 

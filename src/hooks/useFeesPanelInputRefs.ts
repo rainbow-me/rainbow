@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react';
-import { TextInput } from 'react-native';
+import { type TextInput } from 'react-native';
 import useMagicAutofocus from '@/hooks/useMagicAutofocus';
 
 export default function useFeesPanelInputRefs() {

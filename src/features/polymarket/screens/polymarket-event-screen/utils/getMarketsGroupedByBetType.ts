@@ -1,5 +1,5 @@
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
-import { PolymarketEvent, PolymarketMarket, SportsMarketType } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketEvent, type PolymarketMarket, type SportsMarketType } from '@/features/polymarket/types/polymarket-event';
 import { BET_TYPE, getBetType, isThreeWayMoneyline } from '@/features/polymarket/utils/marketClassification';
 
 export { BET_TYPE, type BetType } from '@/features/polymarket/utils/marketClassification';

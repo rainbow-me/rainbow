@@ -1,12 +1,12 @@
 import { multiply } from '@/helpers/utilities';
 import * as hl from '@nktkas/hyperliquid';
-import { CancelSuccessResponse } from '@nktkas/hyperliquid';
-import { Address, Hex } from 'viem';
+import { type CancelSuccessResponse } from '@nktkas/hyperliquid';
+import { type Address, type Hex } from 'viem';
 import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS, RAINBOW_REFERRAL_CODE } from '../constants';
-import { PerpPositionSide, TriggerOrder, TriggerOrderType } from '../types';
-import { HyperliquidAccountClient } from './hyperliquid-account-client';
-import { Wallet } from '@ethersproject/wallet';
-import { isPositive, toFixedWorklet } from '@/safe-math/SafeMath';
+import { PerpPositionSide, type TriggerOrder, type TriggerOrderType } from '../types';
+import { type HyperliquidAccountClient } from './hyperliquid-account-client';
+import { type Wallet } from '@ethersproject/wallet';
+import { isPositive, toFixedWorklet } from '@/framework/core/safeMath';
 import { formatOrderPrice } from '@/features/perps/utils/formatOrderPrice';
 import {
   buildMarketOrder,

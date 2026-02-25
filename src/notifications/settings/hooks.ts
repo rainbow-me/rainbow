@@ -1,8 +1,8 @@
 import {
-  GlobalNotificationTopics,
-  GroupSettings,
-  WalletNotificationRelationshipType,
-  WalletNotificationSettings,
+  type GlobalNotificationTopics,
+  type GroupSettings,
+  type WalletNotificationRelationshipType,
+  type WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {

@@ -17,7 +17,7 @@ import {
   sumWorklet,
   toFixedWorklet,
   toScaledIntegerWorklet,
-} from '../SafeMath';
+} from './safeMath';
 
 const RESULTS = {
   sum: '1247244.585',

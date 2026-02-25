@@ -11,9 +11,9 @@ import { Panel } from '@/components/SmoothPager/ListPanel';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
-import { PerpMarket, PerpPositionSide, PerpsPosition, TriggerOrderType, TriggerOrderSource } from '@/features/perps/types';
+import { type PerpMarket, PerpPositionSide, type PerpsPosition, TriggerOrderType, TriggerOrderSource } from '@/features/perps/types';
 import { useNavigation, useRoute } from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
+import type Routes from '@/navigation/routesNames';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
@@ -25,7 +25,7 @@ import {
   greaterThanOrEqualToWorklet,
   mulWorklet,
   subWorklet,
-} from '@/safe-math/SafeMath';
+} from '@/framework/core/safeMath';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';

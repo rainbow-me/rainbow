@@ -1,8 +1,8 @@
-import { Signer } from '@ethersproject/abstract-signer';
-import { Transaction } from '@ethersproject/transactions';
-import type { Hash } from 'viem';
+import { type Signer } from '@ethersproject/abstract-signer';
+import { type Transaction } from '@ethersproject/transactions';
+import type { BatchCall } from '@rainbow-me/delegation';
 import {
-  Quote,
+  type Quote,
   SwapType,
   fillQuote,
   prepareFillQuote,
@@ -13,18 +13,15 @@ import {
   unwrapNativeAsset,
   wrapNativeAsset,
 } from '@rainbow-me/swaps';
-import type { BatchCall } from '@rainbow-me/delegation';
-
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
-import { ChainId } from '@/state/backendNetworks/types';
-import { NewTransaction, TransactionStatus, TransactionDirection } from '@/entities/transactions';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type NewTransaction, TransactionStatus, TransactionDirection } from '@/entities/transactions';
 import { add } from '@/helpers/utilities';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, ensureError, logger } from '@/logger';
-
 import { gasUnits, REFERRER } from '@/references';
-import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { ActionProps, PrepareActionProps, RapActionResult, RapSwapActionParameters } from '../references';
+import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/__swaps__/types/gas';
+import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapSwapActionParameters } from '../references';
 import {
   CHAIN_IDS_WITH_TRACE_SUPPORT,
   SWAP_GAS_PADDING,
@@ -34,12 +31,11 @@ import {
   overrideWithFastSpeedIfNeeded,
   populateSwap,
 } from '../utils';
-
 import { estimateApprove, populateApprove } from './unlock';
-import { TokenColors } from '@/graphql/__generated__/metadata';
+import { type TokenColors } from '@/graphql/__generated__/metadata';
 import { swapMetadataStorage } from '../common';
-import { AddysNetworkDetails, ParsedAsset } from '@/resources/assets/types';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { type AddysNetworkDetails, type ParsedAsset } from '@/resources/assets/types';
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -401,7 +397,7 @@ export const swap = async ({
 
   const transaction: NewTransaction = {
     ...buildSwapTransaction(parameters, gasParamsToUse, swap.nonce),
-    hash: swap.hash as Hash,
+    hash: swap.hash,
   };
 
   if (parameters.meta && swap.hash) {

@@ -1,8 +1,8 @@
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { createStoreFactoryUtils } from '@/state/internal/utils/factoryUtils';
 import { createNftsStore } from './createNftsStore';
 import { nftsStoreManager } from './nftsStoreManager';
-import { QueryEnabledNftsState, NftsRouter, NftsStoreType, NftsState } from './types';
+import { type QueryEnabledNftsState, type NftsRouter, type NftsStoreType, type NftsState } from './types';
 import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 
 const { persist, portableSubscribe, rebindSubscriptions } = createStoreFactoryUtils<NftsStoreType, Partial<NftsState>>(getOrCreateStore);

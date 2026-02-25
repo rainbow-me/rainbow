@@ -1,7 +1,7 @@
 import { MIN_ORDER_SIZE_USD } from '@/features/perps/constants';
-import { PerpMarket } from '@/features/perps/types';
+import { type PerpMarket } from '@/features/perps/types';
 import { calculateMaxMarginForLeverage } from '@/features/perps/utils/calculateMaxMarginForLeverage';
-import { greaterThanWorklet } from '@/safe-math/SafeMath';
+import { greaterThanWorklet } from '@/framework/core/safeMath';
 
 function getMaxAmount({
   availableBalance,

@@ -1,11 +1,19 @@
 import React, { memo, useCallback } from 'react';
-import { runOnJS, runOnUI, SharedValue, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import {
+  runOnJS,
+  runOnUI,
+  type SharedValue,
+  useAnimatedReaction,
+  useDerivedValue,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useDebouncedCallback } from 'use-debounce';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Inline, Text, useColorMode } from '@/design-system';
-import { Slider, SliderProps } from '@/features/perps/components/Slider';
-import { SLIDER_MAX, SliderGestureState } from '@/features/perps/components/Slider/Slider';
+import { Slider, type SliderProps } from '@/features/perps/components/Slider';
+import { SLIDER_MAX, type SliderGestureState } from '@/features/perps/components/Slider/Slider';
 import { INPUT_CARD_HEIGHT, SLIDER_WIDTH } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';

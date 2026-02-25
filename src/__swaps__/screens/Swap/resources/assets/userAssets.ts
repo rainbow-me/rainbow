@@ -1,6 +1,6 @@
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { createQueryKey } from '@/react-query';
-import { SupportedCurrencyKey } from '@/references';
+import { type SupportedCurrencyKey } from '@/references';
 
 // ///////////////////////////////////////////////
 // Query Types

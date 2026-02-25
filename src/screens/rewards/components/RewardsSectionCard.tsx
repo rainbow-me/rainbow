@@ -1,6 +1,6 @@
-import React, { PropsWithChildren } from 'react';
+import React, { type PropsWithChildren } from 'react';
 import { View } from 'react-native';
-import { Box, Space, globalColors, useBackgroundColor } from '@/design-system';
+import { Box, type Space, globalColors, useBackgroundColor } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useTheme } from '@/theme';
 

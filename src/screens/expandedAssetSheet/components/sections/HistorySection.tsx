@@ -5,13 +5,13 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { Tabs } from '../shared/Tabs/Tabs';
-import { TokenInteraction, TokenInteractionDirection, TokenInteractionType } from '@/graphql/__generated__/metadata';
+import { type TokenInteraction, TokenInteractionDirection, TokenInteractionType } from '@/graphql/__generated__/metadata';
 import { useTabContext } from '../shared/Tabs/TabContext';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import Animated, {
   clamp,
-  SharedValue,
+  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   withSpring,
@@ -22,10 +22,10 @@ import Animated, {
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { format } from 'date-fns';
 import { convertRawAmountToBalanceWorklet, convertRawAmountToNativeDisplay } from '@/helpers/utilities';
-import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { openInBrowser } from '@/utils/openInBrowser';
 import * as i18n from '@/languages';
-import { minWorklet, mulWorklet, subWorklet, sumWorklet } from '@/safe-math/SafeMath';
+import { minWorklet, mulWorklet, subWorklet, sumWorklet } from '@/framework/core/safeMath';
 import { useTokenInteractions } from '@/resources/metadata/tokenInteractions';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';

@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo, useState } from 'react';
-import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
@@ -10,7 +10,7 @@ import { Box, globalColors, MarkdownText, Text, useColorMode } from '@/design-sy
 import * as i18n from '@/languages';
 import { useUntrustedUrlOpener } from '@/navigation';
 import { useRoute } from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
+import type Routes from '@/navigation/routesNames';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { getSolidColorEquivalent } from '@/worklets/colors';

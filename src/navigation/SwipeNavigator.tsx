@@ -25,21 +25,21 @@ import {
 import { DappBrowser } from '@/components/DappBrowser/DappBrowser';
 import WalletScreen from '@/screens/WalletScreen/WalletScreen';
 import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
+import { createMaterialTopTabNavigator, type MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
 import {
-  MaterialTopTabBarProps,
-  MaterialTopTabDescriptorMap,
-  MaterialTopTabNavigationOptions,
+  type MaterialTopTabBarProps,
+  type MaterialTopTabDescriptorMap,
+  type MaterialTopTabNavigationOptions,
 } from '@react-navigation/material-top-tabs/lib/typescript/src/types';
-import { NavigationHelpers, ParamListBase, RouteProp } from '@react-navigation/native';
-import React, { MutableRefObject, memo, useCallback, useMemo, useRef, useState } from 'react';
+import { type NavigationHelpers, type ParamListBase, type RouteProp } from '@react-navigation/native';
+import React, { type MutableRefObject, memo, useCallback, useMemo, useRef, useState } from 'react';
 import { InteractionManager, StyleSheet, View } from 'react-native';
 import Animated, {
-  DerivedValue,
+  type DerivedValue,
   Easing,
   interpolate,
   runOnJS,
-  SharedValue,
+  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -56,7 +56,7 @@ import DiscoverScreen from '@/screens/DiscoverScreen';
 import { PointsScreen } from '@/screens/points/PointsScreen';
 import { discoverScrollToTopFnRef, discoverOpenSearchFnRef } from '@/components/Discover/DiscoverScreenContext';
 import { MainListProvider, useMainList } from './MainListContext';
-import Routes, { Route } from './routesNames';
+import Routes, { type Route } from './routesNames';
 import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
 import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
 import { initialWindowMetrics } from 'react-native-safe-area-context';

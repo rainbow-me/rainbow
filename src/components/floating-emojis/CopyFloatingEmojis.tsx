@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react';
+import React, { type FC, type ReactNode } from 'react';
 import { HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import FloatingEmojis from './FloatingEmojis';

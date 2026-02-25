@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import RadialGradient, { RadialGradientProps } from 'react-native-radial-gradient';
+import RadialGradient, { type RadialGradientProps } from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
 
 const AnimatedRadialGradient = Animated.createAnimatedComponent(RadialGradient);

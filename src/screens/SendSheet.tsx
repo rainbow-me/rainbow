@@ -4,9 +4,9 @@ import { NoResultsType } from '@/components/list/NoResults';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { AssetType } from '@/entities/assetTypes';
-import { NewTransaction, TransactionStatus } from '@/entities/transactions';
-import { ParsedAddressAsset } from '@/entities/tokens';
-import { UniqueAsset } from '@/entities/uniqueAssets';
+import { type NewTransaction, TransactionStatus } from '@/entities/transactions';
+import { type ParsedAddressAsset } from '@/entities/tokens';
+import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { isNativeAsset } from '@/handlers/assets';
 import { debouncedFetchSuggestions } from '@/handlers/ens';
@@ -17,7 +17,7 @@ import {
   estimateGasLimit,
   getProvider,
   isL2Chain,
-  NewTransactionNonNullable,
+  type NewTransactionNonNullable,
   resolveNameOrAddress,
 } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -44,9 +44,9 @@ import { loadWallet, sendTransaction } from '@/model/wallet';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { RootStackParamList } from '@/navigation/types';
+import { type RootStackParamList } from '@/navigation/types';
 import { parseGasParamsForTransaction } from '@/parsers';
-import { Contact } from '@/redux/contacts';
+import { type Contact } from '@/redux/contacts';
 import { rainbowTokenList } from '@/references';
 import { interactionsCountQueryKey } from '@/resources/addys/interactions';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -58,22 +58,22 @@ import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getWallets, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { borders } from '@/styles';
-import { ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme';
 import deviceUtils from '@/utils/deviceUtils';
 import ethereumUtils from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { time } from '@/utils/time';
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import * as i18n from '@/languages';
 import { isEmpty, isEqual, isString } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, TextInput, View } from 'react-native';
+import { InteractionManager, Keyboard, type TextInput, View } from 'react-native';
 import { useDebounce } from 'use-debounce';
 import { type Address } from 'viem';
 import { GasSpeedButton } from '../components/gas';

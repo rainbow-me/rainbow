@@ -1,10 +1,16 @@
 import { getNumberFormatter } from '@/helpers/intl';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
-import { equalWorklet } from '@/safe-math/SafeMath';
+import { equalWorklet } from '@/framework/core/safeMath';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
-import { InferStoreState } from '@/state/internal/types';
+import { type InferStoreState } from '@/state/internal/types';
 import { shallowEqual } from '@/worklets/comparisons';
-import { AmountStoreType, DepositAmountToReceiveStore, DepositQuoteStatus, DepositQuoteStoreType, FormattedQuoteResult } from '../../types';
+import {
+  type AmountStoreType,
+  type DepositAmountToReceiveStore,
+  DepositQuoteStatus,
+  type DepositQuoteStoreType,
+  type FormattedQuoteResult,
+} from '../../types';
 
 // ============ Types ========================================================== //
 
@@ -74,6 +80,10 @@ function determineQuoteResult(state: InferStoreState<DepositQuoteStoreType>): Qu
     const isError = state.getStatus('isError');
     if (isError) return { kind: 'error' };
     return { kind: 'pending' };
+  }
+
+  if (quote === DepositQuoteStatus.Error) {
+    return { kind: 'error' };
   }
 
   if (quote === DepositQuoteStatus.InsufficientBalance) {

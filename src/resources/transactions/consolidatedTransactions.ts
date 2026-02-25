@@ -1,14 +1,14 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { InfiniteQueryConfig, QueryConfig, QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
-import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { RainbowTransaction } from '@/entities/transactions';
+import { type InfiniteQueryConfig, type QueryConfig, type QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
+import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { type RainbowTransaction } from '@/entities/transactions';
 import { RainbowError, logger } from '@/logger';
 import { parseTransaction } from '@/parsers/transactions';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { IS_TEST } from '@/env';
 import { anvilChain, e2eAnvilConfirmedTransactions } from './transaction';
 import { getPlatformClient } from '@/resources/platform/client';
-import { ListTransactionsResponse, Transaction } from '@/features/positions/types/generated/transaction/transaction';
+import { type ListTransactionsResponse, type Transaction } from '@/features/positions/types/generated/transaction/transaction';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
 const CONSOLIDATED_TRANSACTIONS_LIMIT = 30;

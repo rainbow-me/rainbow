@@ -3,7 +3,7 @@ import { BorderlessButton } from 'react-native-gesture-handler';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 
 const ButtonIcon = styled(Icon)({

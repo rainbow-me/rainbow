@@ -5,7 +5,7 @@ import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token'
 import { Column } from '../layout';
 import useDimensions from '@/hooks/useDimensions';
 import useImageMetadata from '@/hooks/useImageMetadata';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding, position } from '@/styles';
 import { IS_ANDROID } from '@/env';
 

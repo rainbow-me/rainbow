@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { Bleed, Box, Text, useColorMode } from '@/design-system';
-import { PolymarketPosition } from '@/features/polymarket/types';
+import { type PolymarketPosition } from '@/features/polymarket/types';
 import ImgixImage from '@/components/images/ImgixImage';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Navigation } from '@/navigation';
@@ -19,7 +19,7 @@ import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
-import { mulWorklet, subWorklet } from '@/safe-math/SafeMath';
+import { mulWorklet, subWorklet } from '@/framework/core/safeMath';
 
 export const PolymarketPositionRow = memo(function PolymarketPositionRow({ position }: { position: PolymarketPosition }) {
   const { isDarkMode } = useColorMode();

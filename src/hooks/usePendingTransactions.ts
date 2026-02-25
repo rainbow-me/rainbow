@@ -3,7 +3,7 @@ import ethereumUtils from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { RainbowTransaction } from '@/entities/transactions';
+import { type RainbowTransaction } from '@/entities/transactions';
 
 const EMPTY_PENDING_TRANSACTIONS: RainbowTransaction[] = [];
 

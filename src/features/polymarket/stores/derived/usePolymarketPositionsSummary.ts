@@ -1,8 +1,8 @@
-import { TextColor } from '@/design-system/color/palettes';
+import { type TextColor } from '@/design-system/color/palettes';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
 import { abs, add, divide, greaterThan, isEqual, multiply, subtract } from '@/helpers/utilities';
-import { toFixedWorklet, truncateToDecimals } from '@/safe-math/SafeMath';
+import { toFixedWorklet, truncateToDecimals } from '@/framework/core/safeMath';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { shallowEqual } from '@/worklets/comparisons';

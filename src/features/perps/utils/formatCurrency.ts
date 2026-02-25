@@ -7,7 +7,7 @@ import {
   greaterThanOrEqualToWorklet,
   divWorklet,
   toStringWorklet,
-} from '@/safe-math/SafeMath';
+} from '@/framework/core/safeMath';
 
 // There are many other formatCurrency functions, but this is simplified for hyperliquid which is all USD
 export function formatCurrency(

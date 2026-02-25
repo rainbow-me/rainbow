@@ -1,11 +1,11 @@
-import { RecyclerListView, RecyclerListViewProps } from 'recyclerlistview';
-import { RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
+import { type RecyclerListView, type RecyclerListViewProps } from 'recyclerlistview';
+import { type RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
-import { Claimable } from '@/resources/addys/claimables/types';
-import { RainbowPosition } from '@/features/positions/types';
-import { PerpsPosition as PerpsPosition } from '@/features/perps/types';
-import { PolymarketPosition } from '@/features/polymarket/types';
+import { type NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
+import { type Claimable } from '@/resources/addys/claimables/types';
+import { type RainbowPosition } from '@/features/positions/types';
+import { type PerpsPosition as PerpsPosition } from '@/features/perps/types';
+import { type PolymarketPosition } from '@/features/polymarket/types';
 export enum CellType {
   ASSETS_HEADER_SPACE_AFTER = 'ASSETS_HEADER_SPACE_AFTER',
   COIN = 'COIN',
