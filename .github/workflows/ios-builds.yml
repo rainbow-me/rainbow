@@ -22,6 +22,11 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
+      - name: Setup Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version-file: '.node-version'
+
       - name: Set Xcode version
         run: sudo xcode-select --switch /Applications/Xcode_16.4.app
 
@@ -108,6 +113,11 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+
+      - name: Setup Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version-file: '.node-version'
 
       - name: Set Xcode version
         run: sudo xcode-select --switch /Applications/Xcode_16.4.app
