@@ -1,0 +1,170 @@
+# Swap replace lifecycle: pending metadata, speed-up nonce consistency, confirm/replaced
+#
+# Full lifecycle: pending -> speedup -> confirmed + replaced
+#
+# Assertions:
+#   - Pending tx has valid nonce (>= on-chain nonce) and non-zero gasLimit
+#   - Speed-up creates replacement with same nonce, same calldata, higher gas
+#   - Replacement tx gasLimit is preserved (not zero)
+#   - After mining: replacement confirmed, original replaced (not in block)
+#
+# Regression coverage: cae2d2cb6, 7013a8ebf, gasLimit + nonce consistency
+#
+# Requires exclusive Anvil mining control — do not run in parallel.
+
+appId: ${APP_ID}
+tags:
+  - wallet
+  - sequential
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- runFlow: ../../utils/ImportWalletWithKey.yaml
+
+# Load helpers
+- runScript:
+    file: ../../helpers/anvil.js
+- runScript:
+    file: ./assertTransactionStatus.js
+- runScript:
+    file: ../../utils/coordinates.js
+
+# Send ETH to test wallet
+- openLink: rainbow://e2e/fund-wallet?amount=20
+
+# Connect to Anvil (test network)
+- openLink: rainbow://e2e/connect-anvil
+
+# Wait for ETH coin row to appear
+- retry:
+    maxRetries: 10
+    commands:
+      - assertVisible:
+          id: balance-coin-row-Ethereum
+
+# Capture on-chain nonce before swap
+- evalScript: ${output.preSwapNonce = output.anvil.eth_getTransactionCount('0x4d14289265eb7c166cF111A76B6D742e3b85dF85', 'latest')}
+
+# Open swap screen
+- tapOn:
+    id: swap-button
+- assertVisible:
+    id: swap-screen
+
+# Select DAI as output token
+- tapOn: 'Find a token to buy'
+- inputText: 'DAI'
+- hideKeyboard
+- tapOn:
+    id: token-to-buy-dai-1
+
+# Wait for quote to load
+- extendedWaitUntil:
+    visible: 'Review'
+    timeout: 30000
+- tapOn:
+    id: swap-bottom-action-button
+- assertVisible:
+    id: review-panel
+
+# Pause automine so the swap tx stays pending
+- evalScript: ${output.anvil.evm_setAutomine(false)}
+
+# Execute swap (long press)
+- longPressOn:
+    id: swap-bottom-action-button
+- runFlow: ../../utils/MaybeInputPin.yaml
+
+# --- PENDING: assert metadata ---
+- retry:
+    maxRetries: 5
+    commands:
+      - evalScript: '${output.originalTx = output.assertTransactionStatus(output.anvil, { state: "pending", validateMetadata: true })}'
+
+# Verify nonce >= pre-swap on-chain nonce
+- evalScript: >
+    ${(() => {
+      if (BigInt(output.originalTx.nonce) < BigInt(output.preSwapNonce)) {
+        throw new Error('Pending tx nonce ' + output.originalTx.nonce + ' < on-chain nonce ' + output.preSwapNonce);
+      }
+    })()}
+
+# Capture pool for speed-up comparison
+- evalScript: ${output.initialPendingTxPoolContent = output.anvil.txpool_content()}
+
+# Navigate to Activity tab
+- tapOn:
+    point: ${output.tabCoordinates.activityTab}
+
+# Tap the pending swap row
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible:
+          id: transaction-row-swap-pending
+- tapOn:
+    id: transaction-row-swap-pending
+
+# Open context menu -> Speed Up
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible:
+          id: transaction-details-context-menu-button
+- tapOn:
+    id: transaction-details-context-menu-button
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible: 'Speed Up'
+- tapOn: 'Speed Up'
+
+# Wait for SpeedUpAndCancelSheet
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible:
+          id: speed-up-and-cancel-sheet
+
+# Confirm speed up
+- tapOn:
+    id: speed-up-cancel-sheet-confirm-button
+
+# --- SPEEDUP: assert replacement tx ---
+- retry:
+    maxRetries: 3
+    commands:
+      - evalScript: '${output.replacementTx = output.assertTransactionStatus(output.anvil, { state: "speedup", initialTxPoolContent: output.initialPendingTxPoolContent })}'
+
+# Verify nonce consistency
+- evalScript: >
+    ${(() => {
+      if (output.replacementTx.nonce !== output.originalTx.nonce) {
+        throw new Error('Nonce mismatch: replacement=' + output.replacementTx.nonce + ' original=' + output.originalTx.nonce);
+      }
+    })()}
+
+# Verify gasLimit preserved on replacement
+- evalScript: >
+    ${(() => {
+      if (!output.replacementTx.gas || BigInt(output.replacementTx.gas) === 0n) {
+        throw new Error('Replacement tx gasLimit is zero or missing');
+      }
+    })()}
+
+# --- CONFIRMED + REPLACED ---
+- evalScript: ${output.anvil.evm_setAutomine(true)}
+- evalScript: ${output.anvil.evm_mine()}
+
+# Replacement tx confirmed
+- retry:
+    maxRetries: 3
+    commands:
+      - evalScript: '${output.assertTransactionStatus(output.anvil, { state: "confirmed", txHash: output.replacementTx.hash })}'
+
+# Original tx replaced (not in block)
+- evalScript: '${output.assertTransactionStatus(output.anvil, { state: "replaced", txHash: output.originalTx.hash })}'

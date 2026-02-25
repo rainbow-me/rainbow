@@ -42,10 +42,30 @@ function normalizePendingTx(tx) {
     hash: asLower(tx.hash),
     input: asLower(tx.input),
     value: asLower(tx.value),
+    gas: asLower(tx.gas),
     gasPrice: asLower(tx.gasPrice),
     maxFeePerGas: asLower(tx.maxFeePerGas),
     maxPriorityFeePerGas: asLower(tx.maxPriorityFeePerGas),
   };
+}
+
+function assertPendingTxMetadata(tx, anvil) {
+  if (!tx.nonce || tx.nonce === '0x') {
+    throw new Error('Pending tx nonce is undefined or empty');
+  }
+
+  if (!tx.gas || tx.gas === '0x0' || tx.gas === '0x' || BigInt(tx.gas) === 0n) {
+    throw new Error('Pending tx gasLimit (gas) is zero or undefined, got: ' + tx.gas);
+  }
+
+  if (anvil) {
+    var onChainNonce = anvil.eth_getTransactionCount(tx.from, 'latest');
+    if (BigInt(tx.nonce) < BigInt(onChainNonce)) {
+      throw new Error('Pending tx nonce (' + tx.nonce + ') is less than on-chain nonce (' + onChainNonce + ')');
+    }
+  }
+
+  return tx;
 }
 
 function pickPendingSwapLikeTxFromPool(txPoolContent, fromAddress) {
@@ -186,7 +206,11 @@ output.assertTransactionStatus = function (anvil, config) {
 
   if (state === 'pending') {
     const txPoolContent = (config && config.txPoolContent) || anvil.txpool_content();
-    return pickPendingSwapLikeTxFromPool(txPoolContent, fromAddress);
+    const tx = pickPendingSwapLikeTxFromPool(txPoolContent, fromAddress);
+    if (config && config.validateMetadata) {
+      assertPendingTxMetadata(tx, anvil);
+    }
+    return tx;
   }
 
   if (state === 'speedup') {
@@ -215,6 +239,31 @@ output.assertTransactionStatus = function (anvil, config) {
       throw new Error('txHash is required for failed state assertion');
     }
     return assertFailedState(anvil, config.txHash);
+  }
+
+  if (state === 'replaced') {
+    if (!(config && config.txHash)) {
+      throw new Error('txHash is required for replaced state assertion');
+    }
+    var block = anvil.eth_getBlockByNumber('latest', true);
+    var normalizedHash = asLower(config.txHash);
+    var transactions = (block && block.transactions) || [];
+    var found = transactions.find(function (tx) {
+      return asLower(tx.hash) === normalizedHash;
+    });
+    if (found) {
+      throw new Error('Expected original tx hash to NOT be in latest block (it should be replaced)');
+    }
+    return { hash: config.txHash, replaced: true };
+  }
+
+  if (state === 'empty') {
+    var poolContent = anvil.txpool_content();
+    var allPending = flattenPendingTransactions(poolContent);
+    if (allPending.length > 0) {
+      throw new Error('Expected txpool to be empty but found ' + allPending.length + ' pending tx(s)');
+    }
+    return { empty: true };
   }
 
   throw new Error(`Unknown tx state: ${state}`);

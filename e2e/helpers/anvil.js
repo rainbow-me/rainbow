@@ -45,6 +45,9 @@ output.anvil = {
   eth_getTransactionReceipt: function (txHash) {
     return rpc('eth_getTransactionReceipt', [txHash]);
   },
+  eth_getTransactionCount: function (address, blockTag) {
+    return rpc('eth_getTransactionCount', [address, blockTag || 'latest']);
+  },
   txpool_content: function () {
     return rpc('txpool_content', []);
   },

@@ -107,13 +107,17 @@ export function TestDeeplinkHandler() {
             transaction: {
               chainId: ChainId.mainnet,
               from: accountAddress,
-              to: accountAddress,
+              to: (query.to as string) || accountAddress,
               hash: `0xdeadbeef${Date.now().toString(16)}`,
               nonce,
               status: TransactionStatus.pending,
               type: txType,
               network: 'mainnet',
               ...(delegation && { delegation: true }),
+              ...(query.gasLimit && { gasLimit: query.gasLimit as string }),
+              ...(query.data && { data: query.data as string }),
+              ...(query.value && { value: query.value as string }),
+              ...(query.swap && { swap: JSON.parse(query.swap as string) }),
             },
           });
           break;
