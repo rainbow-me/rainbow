@@ -12,6 +12,54 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import type { RevokeStatus, ChainRevokeStatus } from './types';
 
 type LoadedWallet = Exclude<Awaited<ReturnType<typeof loadWallet>>, null>;
+type ChainWithId = { chainId: number };
+
+type PartitionGasChainsArgs = {
+  chains: ChainWithId[];
+  address: string | undefined;
+  getNativeAssetBalance: (chainId: ChainId) => string | number | null | undefined;
+  getChainBalance: (chainId: ChainId, address: string) => Promise<bigint>;
+};
+
+export async function partitionChainsByGasAvailability({
+  chains,
+  address,
+  getNativeAssetBalance,
+  getChainBalance,
+}: PartitionGasChainsArgs): Promise<{ insufficientGasChainIds: number[]; actionableChains: ChainWithId[] }> {
+  const insufficientGasChainIds: number[] = [];
+  const actionableChains: ChainWithId[] = [];
+
+  for (const d of chains) {
+    const chainId = d.chainId as ChainId;
+    const nativeAssetBalance = getNativeAssetBalance(chainId);
+
+    if (nativeAssetBalance != null && Number(nativeAssetBalance) <= 0) {
+      insufficientGasChainIds.push(d.chainId);
+      continue;
+    }
+    if (nativeAssetBalance != null && Number(nativeAssetBalance) > 0) {
+      actionableChains.push(d);
+      continue;
+    }
+
+    if (!address) {
+      actionableChains.push(d);
+      continue;
+    }
+
+    try {
+      const onchainBalance = await getChainBalance(chainId, address);
+      if (onchainBalance <= 0n) insufficientGasChainIds.push(d.chainId);
+      else actionableChains.push(d);
+    } catch {
+      // If balance fetch fails, keep chain actionable and let execution return the real failure reason.
+      actionableChains.push(d);
+    }
+  }
+
+  return { insufficientGasChainIds, actionableChains };
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
@@ -77,20 +125,25 @@ function useChainsStatus(delegationsToRevoke: { chainId: number }[]) {
 }
 
 /** Partitions chains by native gas balance via userAssetsStore (src/state/assets/userAssets). */
-function useActionableChains() {
-  return useCallback((chains: { chainId: number }[]) => {
-    const insufficientGasChainIds: number[] = [];
-    const actionableChains: { chainId: number }[] = [];
-    for (const d of chains) {
-      const nativeAsset = userAssetsStore.getState().getNativeAssetForChain(d.chainId as ChainId);
-      if (nativeAsset && Number(nativeAsset.balance?.amount ?? 0) <= 0) {
-        insufficientGasChainIds.push(d.chainId);
-      } else {
-        actionableChains.push(d);
-      }
-    }
-    return { insufficientGasChainIds, actionableChains };
-  }, []);
+function useActionableChains(address: string | undefined) {
+  return useCallback(
+    async (chains: { chainId: number }[]) => {
+      return await partitionChainsByGasAvailability({
+        chains,
+        address,
+        getNativeAssetBalance: chainId => {
+          const nativeAsset = userAssetsStore.getState().getNativeAssetForChain(chainId);
+          return nativeAsset?.balance?.amount;
+        },
+        getChainBalance: async (chainId, chainAddress) => {
+          const provider = getProvider({ chainId });
+          const onchainBalance = await provider.getBalance(chainAddress);
+          return onchainBalance.toBigInt();
+        },
+      });
+    },
+    [address]
+  );
 }
 
 /** Fires revocations in parallel via executeRevokeDelegation (@rainbow-me/delegation). Uses getMeteorologyCachedData for EIP-1559 fees and getNextNonce (src/state/nonces) per chain. */
@@ -170,13 +223,13 @@ type UseRevokeDelegationResult = {
 
 export function useRevokeDelegation({ address, delegationsToRevoke, onSuccess }: UseRevokeDelegationParams): UseRevokeDelegationResult {
   const { revokeStatus, chainStatuses, setChainStatus, mergeChainStatuses } = useChainsStatus(delegationsToRevoke);
-  const getActionableChains = useActionableChains();
+  const getActionableChains = useActionableChains(address);
 
   const revokeChains = useCallback(
     async (chains: { chainId: number }[]) => {
       if (!address || chains.length === 0) return;
 
-      const { insufficientGasChainIds, actionableChains } = getActionableChains(chains);
+      const { insufficientGasChainIds, actionableChains } = await getActionableChains(chains);
       if (actionableChains.length === 0) {
         setChainStatus('insufficientGas', insufficientGasChainIds);
         return;
