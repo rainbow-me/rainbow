@@ -11,6 +11,7 @@ import URL from 'url-parse';
 import { savePIN } from '@/handlers/authentication';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { addNewTransaction } from '@/state/pendingTransactions';
+import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { type TransactionType, TransactionStatus } from '@/entities/transactions';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
@@ -32,6 +33,9 @@ import { IS_ANDROID } from '@/env';
  *
  *   Inject a synthetic pending tx
  *   - inject-pending-tx?type=<type>&delegation=true&nonce=<n>
+ *
+ *   Dismiss all visible toasts immediately
+ *   - clear-toasts
  *
  * See e2e/README.md for usage.
  */
@@ -112,6 +116,11 @@ export function TestDeeplinkHandler() {
               ...(delegation && { delegation: true }),
             },
           });
+          break;
+        }
+
+        case 'clear-toasts': {
+          useRainbowToastsStore.getState().removeAllToasts();
           break;
         }
 
