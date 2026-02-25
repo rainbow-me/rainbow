@@ -46,6 +46,7 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
   const swap = createNewAction('swap', {
     chainId,
     sellAmount,
+    nonce: swapParameters.nonce,
     permit: false,
     requiresApprove,
     quote,
