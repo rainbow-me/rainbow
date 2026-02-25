@@ -9558,7 +9558,6 @@ __metadata:
     "@ethersproject/providers": "npm:5.8.0"
     "@ethersproject/sha2": "npm:5.8.0"
     "@ethersproject/shims": "npm:5.8.0"
-    "@ethersproject/solidity": "npm:5.8.0"
     "@ethersproject/strings": "npm:5.8.0"
     "@ethersproject/transactions": "npm:5.8.0"
     "@ethersproject/units": "npm:5.8.0"
