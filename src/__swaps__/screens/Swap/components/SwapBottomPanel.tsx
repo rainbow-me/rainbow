@@ -31,8 +31,8 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import * as i18n from '@/languages';
 import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
-import { ChainId } from '@/state/backendNetworks/types';
-import { Address } from 'viem';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type Address } from 'viem';
 import { useWillExecuteDelegation } from '@/hooks/useWillExecuteDelegation';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;

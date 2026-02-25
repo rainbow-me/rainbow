@@ -1,4 +1,4 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text as NativeText, Alert } from 'react-native';
 import { Box, Separator, Stack, Text } from '@/design-system';
@@ -9,7 +9,7 @@ import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { fonts } from '@/design-system/typography/typography';
 import { useTheme } from '@/theme';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -20,7 +20,7 @@ import * as ethereumUtils from '@/utils/ethereumUtils';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import {
   DelegationStatus,
-  DelegationWithChainId,
+  type DelegationWithChainId,
   disableDelegation,
   enableDelegation,
   useDelegationDisabled,

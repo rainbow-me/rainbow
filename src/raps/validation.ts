@@ -1,4 +1,4 @@
-import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
+import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 import { getAddress, isHex, type Address, type Hex } from 'viem';
 import { RainbowError } from '@/logger';
 
