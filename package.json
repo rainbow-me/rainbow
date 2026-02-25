@@ -89,7 +89,6 @@
     "@ethersproject/logger": "5.8.0",
     "@ethersproject/properties": "5.8.0",
     "@ethersproject/providers": "5.8.0",
-    "@ethersproject/random": "5.8.0",
     "@ethersproject/sha2": "5.8.0",
     "@ethersproject/shims": "5.8.0",
     "@ethersproject/solidity": "5.8.0",
