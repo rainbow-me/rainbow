@@ -1,5 +1,5 @@
 import { type ButtonPressAnimationProps } from '@/components/animations/ButtonPressAnimation/types';
-import { type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import React from 'react';
 import styled from '@/framework/ui/styled-thing';
@@ -8,6 +8,9 @@ import { Emoji, Text } from '@/components/text';
 import { type ThemeContextProps } from '@/theme';
 import { RowWithMargins } from '@/components/layout';
 import { shadow } from '@/styles';
+import { IS_ANDROID } from '@/env';
+
+const IS_ANDROID_9_OR_OLDER = IS_ANDROID && Number(Platform.Version) <= 28;
 
 const ButtonContainer = styled(Reanimated.View)({
   borderRadius: ({ height }: { height: number }) => height / 2,
@@ -44,7 +47,7 @@ const DarkShadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: {
   width: 236,
 }));
 const Shadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: { theme: ThemeContextProps }) => ({
-  ...shadow.buildAsObject(0, 5, 15, colors.shadow, isDarkMode ? 0 : 0.4),
+  ...shadow.buildAsObject(0, IS_ANDROID_9_OR_OLDER ? 3 : 5, IS_ANDROID_9_OR_OLDER ? 10 : 15, colors.shadow, isDarkMode ? 0 : 0.4),
   borderRadius: 30,
   height: 60,
   position: 'absolute',
@@ -55,7 +58,8 @@ const Shadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: { the
         top: -3,
       }
     : {
-        elevation: 30,
+        elevation: IS_ANDROID_9_OR_OLDER ? 18 : 30,
+        zIndex: 0,
       }),
 }));
 
@@ -83,7 +87,7 @@ export const WelcomeScreenRainbowButton = ({
     <ButtonPressAnimation onPress={onPress} radiusAndroid={height / 2} scaleTo={0.9} {...props}>
       {ios && <DarkShadow style={darkShadowStyle} />}
       <Shadow style={shadowStyle} />
-      <ButtonContainer height={height} style={style}>
+      <ButtonContainer height={height} style={[style, IS_ANDROID_9_OR_OLDER && styles.legacyButtonContainer]}>
         <ButtonContent>
           <ButtonEmoji name={emoji} />
           <ButtonLabel textColor={textColor}>{text}</ButtonLabel>
@@ -92,3 +96,10 @@ export const WelcomeScreenRainbowButton = ({
     </ButtonPressAnimation>
   );
 };
+
+const styles = StyleSheet.create({
+  legacyButtonContainer: {
+    elevation: 19,
+    zIndex: 1,
+  },
+});
