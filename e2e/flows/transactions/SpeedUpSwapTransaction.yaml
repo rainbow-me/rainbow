@@ -55,14 +55,17 @@ tags:
 - tapOn:
     id: token-to-buy-dai-1
 
-# Go to review (retry handles panel close animation after DAI selection)
-- retry:
-    maxRetries: 5
-    commands:
-      - tapOn:
-          id: swap-bottom-action-button
-      - assertVisible:
-          id: review-panel
+# Wait for quote to load — button label changes from "Fetching" to "Review".
+# Must wait before tapping because: (1) tapping while fetching does nothing useful,
+# (2) if the first tap opens review but assertVisible lags, a retry tap would call
+# executeSwap() (configProgress is already SHOW_REVIEW), breaking the flow.
+- extendedWaitUntil:
+    visible: 'Review'
+    timeout: 30000
+- tapOn:
+    id: swap-bottom-action-button
+- assertVisible:
+    id: review-panel
 
 # Pause automine so the swap tx stays pending
 - evalScript: ${output.anvil.evm_setAutomine(false)}
@@ -92,7 +95,16 @@ tags:
 - tapOn:
     id: transaction-row-swap-pending
 
-# Assert context menu button IS visible (speed up / cancel offered)
+# Tap context menu button on transaction details to open the speed up / cancel menu
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible:
+          id: transaction-details-context-menu-button
+- tapOn:
+    id: transaction-details-context-menu-button
+
+# Assert Speed Up option is visible in the opened context menu and tap it
 - retry:
     maxRetries: 3
     commands:

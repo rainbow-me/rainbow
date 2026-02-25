@@ -57,9 +57,9 @@ tags:
 - tapOn:
     id: transaction-row-swap-pending
 
-# Assert context menu button is NOT visible (no speed-up/cancel offered)
-- assertNotVisible: 'Speed Up'
-- assertNotVisible: 'Cancel'
+# Assert context menu button is NOT rendered (no speed-up/cancel offered for delegation txs)
+- assertNotVisible:
+    id: transaction-details-context-menu-button
 
 # Go back to activity list
 - back
@@ -81,10 +81,13 @@ tags:
 - tapOn:
     id: transaction-row-delegate-pending
 
-# Verify "Smart Account" label in transaction details masthead
+# Verify "Smart Account" label in transaction details masthead.
+# The details sheet is a SlackSheet modal with AnimatedText components —
+# wait for animations to settle before checking the accessibility tree.
+- waitForAnimationToEnd
 - extendedWaitUntil:
     visible: 'Smart Account'
-    timeout: 15000
+    timeout: 30000
 
 # Go back to activity list
 - back
@@ -106,7 +109,10 @@ tags:
 - tapOn:
     id: transaction-row-revoke_delegation-pending
 
-# Verify "Smart Account" label in transaction details masthead
+# Verify "Smart Account" label in transaction details masthead.
+# The details sheet is a SlackSheet modal with AnimatedText components —
+# wait for animations to settle before checking the accessibility tree.
+- waitForAnimationToEnd
 - extendedWaitUntil:
     visible: 'Smart Account'
-    timeout: 15000
+    timeout: 30000
