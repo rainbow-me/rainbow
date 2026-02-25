@@ -97,7 +97,7 @@
     "@ethersproject/transactions": "5.8.0",
     "@ethersproject/units": "5.8.0",
     "@ethersproject/wallet": "5.8.0",
-    "@gelatonetwork/relay-sdk": "5.6.0",
+    "@gelatocloud/gasless": "0.0.12",
     "@gorhom/bottom-sheet": "5.2.8",
     "@json-rpc-tools/utils": "1.7.6",
     "@lavamoat/preinstall-always-fail": "2.0.0",
