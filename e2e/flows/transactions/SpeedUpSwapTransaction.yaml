@@ -32,6 +32,16 @@ tags:
 # Connect to Anvil (test network)
 - openLink: rainbow://e2e/connect-anvil
 
+# Wait for ETH coin row to appear in the wallet asset list so userAssetsStore is
+# populated before the swap screen opens. Without this, getHighestValueNativeAsset()
+# returns null and selecting an output token opens the input token list instead of
+# closing panels.
+- retry:
+    maxRetries: 10
+    commands:
+      - assertVisible:
+          id: balance-coin-row-Ethereum
+
 # Open swap screen
 - tapOn:
     id: swap-button
@@ -44,15 +54,15 @@ tags:
 - hideKeyboard
 - tapOn:
     id: token-to-buy-dai-1
-- assertVisible: 'DAI.*'
 
-# Close settings and go to review
-- tapOn:
-    id: swap-bottom-action-button
-- tapOn:
-    id: swap-bottom-action-button
-- assertVisible:
-    id: review-panel
+# Go to review (retry handles panel close animation after DAI selection)
+- retry:
+    maxRetries: 5
+    commands:
+      - tapOn:
+          id: swap-bottom-action-button
+      - assertVisible:
+          id: review-panel
 
 # Pause automine so the swap tx stays pending
 - evalScript: ${output.anvil.evm_setAutomine(false)}
@@ -70,12 +80,17 @@ tags:
 - tapOn:
     point: ${output.tabCoordinates.activityTab}
 
-# Tap the pending swap transaction row
+# Tap the pending swap transaction row.
+# Row text ("Swapping") is hidden from XCUITest accessibility tree because
+# FastTransactionCoinRow wraps rows in ButtonPressAnimation (isAccessibilityElement=true).
+# Use testID "transaction-row-swap-pending" set on the ButtonPressAnimation instead.
 - retry:
     maxRetries: 3
     commands:
-      - assertVisible: 'Swapping'
-- tapOn: 'Swapping'
+      - assertVisible:
+          id: transaction-row-swap-pending
+- tapOn:
+    id: transaction-row-swap-pending
 
 # Assert context menu button IS visible (speed up / cancel offered)
 - retry:
