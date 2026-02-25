@@ -1,24 +1,23 @@
-import React, { memo, useCallback, useState } from 'react';
-import * as i18n from '@/languages';
-import { Box, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { Box, globalColors, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { type RouteProp, useRoute } from '@react-navigation/native';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { type HlTrade, TradeExecutionType } from '@/features/perps/types';
+import { type HlTrade } from '@/features/perps/types';
 import { TradeDetailsGraphic } from '@/features/perps/screens/perps-trade-details-sheet/TradeDetailsGraphic';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { THICKER_BORDER_WIDTH } from '@/styles/constants';
-import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
-import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { Image } from 'react-native';
-import rainbowPlainImage from '@/assets/rainbows/plain.png';
-import rainbowOgImage from '@/assets/appIconOg.png';
-import { format } from 'date-fns';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
+import { PnlShareGraphic, type PnlShareImageHandle } from '@/features/perps/screens/perps-trade-details-sheet/PnlShareGraphic';
+import { TradeDetailsSection } from '@/features/perps/screens/perps-trade-details-sheet/TradeDetailsSection';
+import { ActivityIndicator, Share } from 'react-native';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { analytics } from '@/analytics';
+import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { calculateTradePnlPercentage } from '@/features/perps/utils/calculateTradePnlPercentage';
+import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 
 export const PerpsTradeDetailsSheet = memo(function PerpsTradeDetailsSheet() {
   const {
@@ -37,178 +36,72 @@ export const PerpsTradeDetailsSheet = memo(function PerpsTradeDetailsSheet() {
 
 function PerpsTradeDetailsSheetContent({ trade }: { trade: HlTrade }) {
   const { isDarkMode } = useColorMode();
+  const pnlShareImageRef = useRef<PnlShareImageHandle>(null);
+  const [isSharing, setIsSharing] = useState(false);
+  const market = useHyperliquidMarketsStore(state => state.getMarket(trade.symbol));
+  const assumedLeverage = market?.maxLeverage ?? 1;
+  const entryPrice = trade.entryPrice ?? trade.price;
+  const pnlPercentage = useMemo(
+    () =>
+      calculateTradePnlPercentage({
+        entryPrice,
+        markPrice: trade.price,
+        isLong: trade.isLong,
+        leverage: assumedLeverage,
+      }),
+    [assumedLeverage, entryPrice, trade.isLong, trade.price]
+  );
+
+  const handleShare = useCallback(async () => {
+    analytics.track(analytics.event.perpsTradeDetailsSharePressed, {
+      market: trade.symbol,
+      direction: trade.isLong ? 'long' : 'short',
+      pnlPercentage,
+      pnl: trade.pnl,
+      netPnl: trade.netPnl,
+    });
+
+    setIsSharing(true);
+    try {
+      const image = await pnlShareImageRef.current?.capture();
+      if (!image) {
+        return;
+      }
+      await Share.share({
+        title: 'pnl',
+        url: image,
+      });
+    } catch (e) {
+      logger.error(new RainbowError('[PerpsTradeDetailsSheet]: Error sharing trade', e));
+    } finally {
+      setIsSharing(false);
+    }
+  }, [pnlPercentage, trade.isLong, trade.netPnl, trade.pnl, trade.symbol]);
 
   return (
     <Box paddingBottom={'20px'} alignItems="center">
       <TradeDetailsGraphic trade={trade} />
-      <Box position="absolute" top={{ custom: 32 }} left={{ custom: 32 }}>
-        {isDarkMode && (
-          <Box
-            backgroundColor={opacity('#677483', 0.11)}
-            borderWidth={THICKER_BORDER_WIDTH}
-            borderColor={{ custom: opacity('#9CA4AD', 0.05) }}
-            borderRadius={12}
-            width={40}
-            height={40}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Image source={rainbowPlainImage} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
-          </Box>
-        )}
-        {!isDarkMode && <Image source={rainbowOgImage} style={{ width: 40, height: 40, resizeMode: 'contain' }} />}
+      <Box position="absolute" top={{ custom: 32 }}>
+        <PnlShareGraphic trade={trade} pnlShareImageRef={pnlShareImageRef} />
       </Box>
-      <Box width="full" paddingHorizontal="24px" paddingTop={'8px'}>
+      <Box width="full" paddingHorizontal="24px" paddingTop={'8px'} gap={24}>
+        <HyperliquidButton onPress={handleShare} paddingVertical={'12px'} borderRadius={24} justifyContent={'center'} alignItems={'center'}>
+          <InnerShadow color={opacity(globalColors.white100, 0.28)} blur={5} dx={0} dy={1} />
+          {!isSharing ? (
+            <Box flexDirection="row" alignItems="center" gap={8}>
+              <TextIcon size="17pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
+                {'􀈂'}
+              </TextIcon>
+              <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
+                {i18n.t(i18n.l.button.share)}
+              </Text>
+            </Box>
+          ) : (
+            <ActivityIndicator color={'black'} />
+          )}
+        </HyperliquidButton>
         <TradeDetailsSection trade={trade} />
       </Box>
     </Box>
   );
 }
-
-const TradeDetailsSection = memo(function TradeDetailsSection({ trade }: { trade: HlTrade }) {
-  const isOpen = trade.executionType === TradeExecutionType.LONG_OPENED || trade.executionType === TradeExecutionType.SHORT_OPENED;
-
-  return (
-    <Box width="full" gap={4}>
-      <TradeDetailsRow
-        icon="􀯠"
-        highlighted
-        title={i18n.t(i18n.l.perps.trade_details_sheet.market)}
-        rightComponent={
-          <Box flexDirection="row" alignItems="center" gap={6}>
-            <HyperliquidTokenIcon symbol={trade.symbol} size={18} />
-            <Text size="17pt" weight="semibold" color="label">
-              {extractBaseSymbol(trade.symbol)}
-            </Text>
-          </Box>
-        }
-      />
-      {isOpen ? (
-        <TradeDetailsRow
-          icon="􀋉"
-          title={i18n.t(i18n.l.perps.trade_details_sheet.entry_price)}
-          rightComponent={
-            <Text size="17pt" weight="semibold" color="label">
-              {formatPerpAssetPrice(trade.price)}
-            </Text>
-          }
-        />
-      ) : (
-        trade.entryPrice && (
-          <TradeDetailsRow
-            icon="􀋉"
-            title={i18n.t(i18n.l.perps.trade_details_sheet.entry_price)}
-            rightComponent={
-              <Text size="17pt" weight="semibold" color="label">
-                {formatPerpAssetPrice(trade.entryPrice)}
-              </Text>
-            }
-          />
-        )
-      )}
-      {!isOpen && (
-        <TradeDetailsRow
-          icon="􁙌"
-          highlighted
-          title={i18n.t(i18n.l.perps.trade_details_sheet.close_price)}
-          rightComponent={
-            <Text size="17pt" weight="semibold" color="label">
-              {formatPerpAssetPrice(trade.price)}
-            </Text>
-          }
-        />
-      )}
-      {!isOpen && <PnlTradeDetailsRow trade={trade} />}
-      <TradeDetailsRow
-        icon="􀐫"
-        highlighted
-        title={i18n.t(i18n.l.perps.trade_details_sheet.date)}
-        rightComponent={
-          <Text size="17pt" weight="semibold" color="label">
-            {format(trade.executedAt, 'MMM d, h:mm aaa')}
-          </Text>
-        }
-      />
-    </Box>
-  );
-});
-
-const PnlTradeDetailsRow = memo(function NetProfitTradeDetailsRow({ trade }: { trade: HlTrade }) {
-  const [hidden, setHidden] = useState(false);
-  const isLoss = Number(trade.netPnl) < 0;
-
-  const toggleHidden = useCallback(() => {
-    setHidden(hidden => !hidden);
-  }, []);
-
-  return (
-    <ButtonPressAnimation onPress={toggleHidden} scaleTo={0.975}>
-      <TradeDetailsRow
-        icon={isLoss ? '􁘳' : '􀑁'}
-        title={isLoss ? i18n.t(i18n.l.perps.trade_details_sheet.loss) : i18n.t(i18n.l.perps.trade_details_sheet.profit)}
-        rightComponent={
-          <Box flexDirection="row" alignItems="center" gap={12}>
-            {hidden ? (
-              <Text size="13pt" weight="semibold" color="label" style={{ opacity: 0.3 }}>
-                {'􀸓􀸓􀸓􀸓􀸓'}
-              </Text>
-            ) : (
-              <Text size="17pt" weight="semibold" color="label">
-                {formatCurrency(trade.netPnl)}
-              </Text>
-            )}
-            <TextIcon size="icon 15px" weight="bold" color="labelTertiary">
-              {hidden ? '􀋯' : '􀋭'}
-            </TextIcon>
-          </Box>
-        }
-      />
-    </ButtonPressAnimation>
-  );
-});
-
-const ROW_FILL_COLOR = opacity('#09111F', 0.025);
-const ROW_BORDER_COLOR = opacity('#09111F', 0.01);
-const ROW_FILL_COLOR_DARK = opacity('#677483', 0.03);
-const ROW_BORDER_COLOR_DARK = opacity('#9CA4AD', 0.02);
-
-const TradeDetailsRow = memo(function TradeDetailsRow({
-  icon,
-  title,
-  rightComponent,
-  highlighted,
-}: {
-  icon: string;
-  title: string;
-  rightComponent: React.ReactNode;
-  highlighted?: boolean;
-}) {
-  const { isDarkMode } = useColorMode();
-  const rowFillColor = isDarkMode ? ROW_FILL_COLOR_DARK : ROW_FILL_COLOR;
-  const rowBorderColor = isDarkMode ? ROW_BORDER_COLOR_DARK : ROW_BORDER_COLOR;
-
-  return (
-    <Box
-      width="full"
-      height={36}
-      backgroundColor={highlighted ? rowFillColor : 'transparent'}
-      borderColor={{ custom: highlighted ? rowBorderColor : 'transparent' }}
-      borderWidth={THICKER_BORDER_WIDTH}
-      borderRadius={14}
-      flexDirection="row"
-      justifyContent="space-between"
-      alignItems="center"
-      paddingHorizontal="10px"
-    >
-      <Box flexDirection="row" alignItems="center" gap={12}>
-        <TextIcon size="icon 15px" weight="bold" color="labelTertiary">
-          {icon}
-        </TextIcon>
-        <Text size="17pt" weight="medium" color="labelSecondary">
-          {title}
-        </Text>
-      </Box>
-      {rightComponent}
-    </Box>
-  );
-});
