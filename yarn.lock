@@ -9772,7 +9772,6 @@ __metadata:
     rock: "npm:0.9.2"
     sonner-native: "npm:0.16.0"
     stream-browserify: "npm:1.0.0"
-    string.fromcodepoint: "npm:0.2.1"
     string_decoder: "npm:0.10.31"
     styled-components: "npm:5.2.1"
     timers-browserify: "npm:1.4.2"
@@ -26302,13 +26301,6 @@ __metadata:
     emoji-regex: "npm:^9.2.2"
     strip-ansi: "npm:^7.0.1"
   checksum: 10c0/ab9c4264443d35b8b923cbdd513a089a60de339216d3b0ed3be3ba57d6880e1a192b70ae17225f764d7adbf5994e9bb8df253a944736c15a0240eff553c678ca
-  languageName: node
-  linkType: hard
-
-"string.fromcodepoint@npm:0.2.1":
-  version: 0.2.1
-  resolution: "string.fromcodepoint@npm:0.2.1"
-  checksum: 10c0/2e26c7370daea0725f2cc3b0a2e4b84613c44b68130ad2afa1364b51fd48ebdfe6390086807d7b5e95d58e8a872aca46a53bbc182c549cd74c0ee9b46de32b02
   languageName: node
   linkType: hard
 
