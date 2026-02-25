@@ -82,6 +82,10 @@ function determineQuoteResult(state: InferStoreState<DepositQuoteStoreType>): Qu
     return { kind: 'pending' };
   }
 
+  if (quote === DepositQuoteStatus.Error) {
+    return { kind: 'error' };
+  }
+
   if (quote === DepositQuoteStatus.InsufficientBalance) {
     return state.getStatus('isSuccess') ? { kind: 'insufficientBalance' } : { kind: 'pending' };
   }
