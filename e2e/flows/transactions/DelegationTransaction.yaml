@@ -1,10 +1,17 @@
 # This flow covers delegation (EIP-7702) transaction paths:
 # [x] Delegation swap tx (delegation=true) cannot be sped up or cancelled
 # [x] Context menu button is NOT visible for delegation pending txs
-# [x] Delegate transaction type shows "Delegating" status in activity list
+# [x] Delegate transaction type shows the delegate tx row in activity list
 # [x] Delegate transaction detail shows "Smart Account" in masthead
-# [x] Revoke delegation transaction type shows "Revoking" status in activity list
+# [x] Revoke delegation transaction type shows the revoke row in activity list
 # [x] Revoke delegation transaction detail shows "Smart Account" in masthead
+#
+# Note: Transaction row text ("Swapping", "Delegating", "Revoking", "Wallet
+# Delegation") is hidden from the XCUITest accessibility tree because
+# FastTransactionCoinRow wraps each row in a ButtonPressAnimation which sets
+# isAccessibilityElement=true on its native Button, collapsing child text
+# nodes. Rows are identified by testID (transaction-row-<type>-<status>) set
+# on the ButtonPressAnimation.
 
 appId: ${APP_ID}
 tags:
@@ -31,19 +38,24 @@ tags:
 
 # --- Delegation swap tx: no speed up / cancel ---
 
-# Inject a synthetic pending swap tx with delegation=true
+# Inject a synthetic pending swap tx with delegation=true, then clear the toast immediately
+# (In test mode toasts last 15s — clearing prevents the toast from intercepting subsequent taps)
 - openLink: rainbow://e2e/inject-pending-tx?type=swap&delegation=true&nonce=999
+- openLink: rainbow://e2e/clear-toasts
 
-# Navigate to Activity tab
+# Navigate to Activity tab (wait for animations to settle after deeplinks)
+- waitForAnimationToEnd
 - tapOn:
     point: ${output.tabCoordinates.activityTab}
 
-# Tap the pending delegation swap tx row
-- retry:
-    maxRetries: 5
-    commands:
-      - assertVisible: 'Swapping'
-- tapOn: 'Swapping'
+# Wait for the pending delegation swap tx row to appear, then tap it.
+# Row is identified by testID "transaction-row-swap-pending" on the ButtonPressAnimation.
+- extendedWaitUntil:
+    visible:
+      id: transaction-row-swap-pending
+    timeout: 30000
+- tapOn:
+    id: transaction-row-swap-pending
 
 # Assert context menu button is NOT visible (no speed-up/cancel offered)
 - assertNotVisible: 'Speed Up'
@@ -54,47 +66,47 @@ tags:
 
 # --- Delegate transaction type display ---
 
-# Inject a synthetic pending delegate tx
+# Inject a synthetic pending delegate tx, then clear the toast immediately
 - openLink: rainbow://e2e/inject-pending-tx?type=delegate&nonce=998
+- openLink: rainbow://e2e/clear-toasts
 
-# Verify delegate tx appears in activity list (both texts in same retry
-# to avoid false-positive from the toast, which only shows "Delegating")
-- retry:
-    maxRetries: 5
-    commands:
-      - assertVisible: 'Delegating'
-      - assertVisible: 'Wallet Delegation'
+# Wait for delegate tx row to appear in activity list
+- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: transaction-row-delegate-pending
+    timeout: 30000
 
 # Open delegate tx details
-- tapOn: 'Delegating'
+- tapOn:
+    id: transaction-row-delegate-pending
 
 # Verify "Smart Account" label in transaction details masthead
-- retry:
-    maxRetries: 3
-    commands:
-      - assertVisible: 'Smart Account'
+- extendedWaitUntil:
+    visible: 'Smart Account'
+    timeout: 15000
 
 # Go back to activity list
 - back
 
 # --- Revoke delegation transaction type display ---
 
-# Inject a synthetic pending revoke delegation tx
+# Inject a synthetic pending revoke delegation tx, then clear the toast immediately
 - openLink: rainbow://e2e/inject-pending-tx?type=revoke_delegation&nonce=997
+- openLink: rainbow://e2e/clear-toasts
 
-# Verify revoke delegation tx appears in activity list (both texts in same
-# retry to avoid false-positive from the toast, which only shows "Revoking")
-- retry:
-    maxRetries: 5
-    commands:
-      - assertVisible: 'Revoking'
-      - assertVisible: 'Wallet Delegation'
+# Wait for revoke delegation tx row to appear in activity list
+- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: transaction-row-revoke_delegation-pending
+    timeout: 30000
 
 # Open revoke delegation tx details
-- tapOn: 'Revoking'
+- tapOn:
+    id: transaction-row-revoke_delegation-pending
 
 # Verify "Smart Account" label in transaction details masthead
-- retry:
-    maxRetries: 3
-    commands:
-      - assertVisible: 'Smart Account'
+- extendedWaitUntil:
+    visible: 'Smart Account'
+    timeout: 15000
