@@ -246,8 +246,8 @@ export const executeSwap = async ({
 function buildSwapTransaction(
   parameters: RapSwapActionParameters<'swap'>,
   gasParams: TransactionGasParams | TransactionLegacyGasParams,
-  nonce?: number,
-  gasLimit?: string
+  nonce: number,
+  gasLimit: string
 ): Omit<NewTransaction, 'hash'> {
   const chainsName = useBackendNetworksStore.getState().getChainsName();
 
@@ -321,13 +321,14 @@ export const prepareSwap = async ({
   transaction: Omit<NewTransaction, 'hash'>;
 }> => {
   const tx = await prepareFillQuote(quote as Quote, {}, wallet, false, chainId as number, REFERRER);
+  const defaultGasLimit = parameters.quote?.defaultGasLimit?.toString() || getDefaultGasLimitForTrade(parameters.quote, parameters.chainId);
   return {
     call: {
       to: requireAddress(tx.to, 'swap prepared tx.to'),
       value: toHex(tx.value ?? 0),
       data: requireHex(tx.data, 'swap prepared tx.data'),
     },
-    transaction: buildSwapTransaction(parameters, parameters.gasParams),
+    transaction: buildSwapTransaction(parameters, parameters.gasParams, parameters.nonce!, defaultGasLimit),
   };
 };
 
@@ -398,7 +399,7 @@ export const swap = async ({
   if (!swap || !swap?.hash) throw new RainbowError('swap: error executeSwap');
 
   const transaction: NewTransaction = {
-    ...buildSwapTransaction(parameters, gasParamsToUse, swap.nonce, gasLimit),
+    ...buildSwapTransaction(parameters, gasParamsToUse, swap.nonce!, gasLimit),
     hash: swap.hash,
   };
 

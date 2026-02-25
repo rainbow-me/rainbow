@@ -151,8 +151,8 @@ function isBridging(assetToSell: ParsedAsset, assetToBuy: ParsedAsset): boolean 
 function buildCrosschainSwapTransaction(
   parameters: RapSwapActionParameters<'crosschainSwap'>,
   gasParams: TransactionGasParams | TransactionLegacyGasParams,
-  nonce?: number,
-  gasLimit?: string
+  nonce: number,
+  gasLimit: string
 ): Omit<NewTransaction, 'hash'> {
   const chainsName = useBackendNetworksStore.getState().getChainsName();
 
@@ -215,14 +215,17 @@ export const prepareCrosschainSwap = async ({
   call: BatchCall;
   transaction: Omit<NewTransaction, 'hash'>;
 }> => {
-  const tx = await prepareFillCrosschainQuote(quote as CrosschainQuote, REFERRER);
+  const crosschainQuote = quote as CrosschainQuote;
+  const tx = await prepareFillCrosschainQuote(crosschainQuote, REFERRER);
+  const defaultGasLimit =
+    getCrosschainSwapDefaultGasLimit(crosschainQuote)?.toString() || getDefaultGasLimitForTrade(crosschainQuote, parameters.chainId);
   return {
     call: {
       to: requireAddress(tx.to, 'crosschain prepared tx.to'),
       value: toHex(tx.value ?? 0),
       data: requireHex(tx.data, 'crosschain prepared tx.data'),
     },
-    transaction: buildCrosschainSwapTransaction(parameters, parameters.gasParams),
+    transaction: buildCrosschainSwapTransaction(parameters, parameters.gasParams, parameters.nonce!, defaultGasLimit),
   };
 };
 
@@ -291,7 +294,7 @@ export const crosschainSwap = async ({
   if (!swap) throw new RainbowError('[raps/crosschainSwap]: error executeCrosschainSwap');
 
   const transaction: NewTransaction = {
-    ...buildCrosschainSwapTransaction(parameters, gasParamsToUse, swap.nonce, gasLimit),
+    ...buildCrosschainSwapTransaction(parameters, gasParamsToUse, swap.nonce!, gasLimit),
     hash: swap.hash as Hash,
   };
 
