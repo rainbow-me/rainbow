@@ -259,7 +259,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
         if (pendingTransaction) {
           const transaction: NewTransaction = {
             ...pendingTransaction,
-            nonce: pendingTransaction.nonce ?? nonce,
+            nonce: pendingTransaction.nonce!,
             hash: result.hash,
             batch: true,
             delegation: result.type === 'eip7702',
