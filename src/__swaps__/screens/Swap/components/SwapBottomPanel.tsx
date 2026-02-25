@@ -115,7 +115,10 @@ export function SwapBottomPanel() {
         style={[
           styles.swapActionsWrapper,
           gestureHandlerStyles,
-          AnimatedSwapStyles.keyboardStyle,
+          // In test mode, skip keyboardStyle so IS_TEST opacity/pointerEvents overrides
+          // take effect. keyboardStyle animates opacity to 0 when token lists open,
+          // which hides swap-bottom-action-button from Maestro's accessibility tree.
+          !IS_TEST && AnimatedSwapStyles.keyboardStyle,
           AnimatedSwapStyles.swapActionWrapperStyle,
         ]}
         testID="swap-bottom-panel-wrapper"
