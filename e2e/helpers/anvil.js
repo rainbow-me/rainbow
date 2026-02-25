@@ -38,6 +38,17 @@ function rpc(method, params) {
 
 // eslint-disable-next-line no-undef
 output.anvil = {
+  // Generic ETH methods
+  eth_getBlockByNumber: function (tag, includeTransactions) {
+    return rpc('eth_getBlockByNumber', [tag, includeTransactions === true]);
+  },
+  eth_getTransactionReceipt: function (txHash) {
+    return rpc('eth_getTransactionReceipt', [txHash]);
+  },
+  txpool_content: function () {
+    return rpc('txpool_content', []);
+  },
+
   // EVM methods
   evm_setAutomine: function (enabled) {
     return rpc('evm_setAutomine', [enabled]);

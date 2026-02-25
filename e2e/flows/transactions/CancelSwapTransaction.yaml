@@ -22,6 +22,8 @@ tags:
 - runScript:
     file: ../../helpers/anvil.js
 - runScript:
+    file: ./assertTransactionStatus.js
+- runScript:
     file: ../../utils/coordinates.js
 
 # Send ETH to test wallet
@@ -59,6 +61,10 @@ tags:
 - longPressOn:
     id: swap-bottom-action-button
 - runFlow: ../../utils/MaybeInputPin.yaml
+- retry:
+    maxRetries: 3
+    commands:
+      - evalScript: ${output.initialPendingTxPoolContent = output.anvil.txpool_content()}
 
 # Navigate to Activity tab
 - tapOn:
@@ -66,7 +72,7 @@ tags:
 
 # Tap the pending swap transaction row
 - retry:
-    maxRetries: 5
+    maxRetries: 3
     commands:
       - assertVisible: 'Swapping'
 - tapOn: 'Swapping'
@@ -80,7 +86,7 @@ tags:
 
 # Assert SpeedUpAndCancelSheet loads
 - retry:
-    maxRetries: 5
+    maxRetries: 3
     commands:
       - assertVisible:
           id: speed-up-and-cancel-sheet
@@ -92,7 +98,15 @@ tags:
 # Tap attempt cancellation
 - tapOn:
     id: speed-up-cancel-sheet-cancel-button
+- retry:
+    maxRetries: 3
+    commands:
+      - evalScript: '${output.replacementPendingSwapTx = output.assertTransactionStatus(output.anvil, { state: "canceled", initialTxPoolContent: output.initialPendingTxPoolContent })}'
 
 # Re-enable automine and mine a block to flush pending txs
 - evalScript: ${output.anvil.evm_setAutomine(true)}
 - evalScript: ${output.anvil.evm_mine()}
+- retry:
+    maxRetries: 3
+    commands:
+      - evalScript: '${output.assertTransactionStatus(output.anvil, { state: "confirmed", txHash: output.replacementPendingSwapTx.hash })}'
