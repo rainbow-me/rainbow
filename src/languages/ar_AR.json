@@ -564,20 +564,20 @@
       "sync_codepush": "مز synchrony CodePush",
       "simulate_device_transfer": "محاكاة نقل الجهاز",
       "headers": {
-        "normie_settings": "Normie Settings",
-        "rainbow_developer_settings": "Rainbow Developer Settings",
-        "feature_flags": "Feature Flags",
-        "delegation_settings": "Delegation Settings"
+        "normie_settings": "إعدادات المستخدم العادي",
+        "rainbow_developer_settings": "إعدادات مطوّر Rainbow",
+        "feature_flags": "أعلام الميزات",
+        "delegation_settings": "إعدادات التفويض"
       },
       "delegation_settings": {
-        "clear_store": "Clear Delegation Store",
-        "simulate_disable_smart_wallet": "Simulate Disable Smart Wallet",
-        "simulate_disable_single_network": "Simulate Disable Single Network",
-        "simulate_disable_third_party": "Simulate Disable Third Party",
-        "simulate_alert_vulnerability": "Simulate Alert Vulnerability",
-        "simulate_alert_bug": "Simulate Alert Bug",
-        "simulate_alert_unrecognized": "Simulate Alert Unrecognized",
-        "simulate_alert_unspecified": "Simulate Alert Unspecified"
+        "clear_store": "مسح مخزن التفويض",
+        "simulate_disable_smart_wallet": "محاكاة تعطيل المحفظة الذكية",
+        "simulate_disable_single_network": "محاكاة تعطيل شبكة واحدة",
+        "simulate_disable_third_party": "محاكاة تعطيل الطرف الثالث",
+        "simulate_alert_vulnerability": "محاكاة تنبيه الثغرة الأمنية",
+        "simulate_alert_bug": "محاكاة تنبيه خطأ",
+        "simulate_alert_unrecognized": "محاكاة تنبيه غير معرّف",
+        "simulate_alert_unspecified": "محاكاة تنبيه غير محدد"
       }
     },
     "discover": {
@@ -901,7 +901,7 @@
         "minimum_received": "الحد الأدنى المستلم",
         "preferred_network": "الشبكة المفضلة",
         "rainbow_fee": "تضمين رسوم الرينبو",
-        "smart_wallet_activation_fee": "Est. Smart Wallet Fee",
+        "smart_wallet_activation_fee": "الرسوم التقديرية للمحفظة الذكية",
         "settings": "الإعدادات"
       },
       "token_index": {
@@ -1058,8 +1058,8 @@
         "title": "رسوم شبكة %{networkName}"
       },
       "smart_wallet_activation": {
-        "text": "This transaction includes a one-time Smart Wallet activation on %{networkName}. This upgrades your wallet to support batched transactions and other smart account features.\n\nThe activation fee is included in the network fee for this swap.",
-        "title": "Smart Wallet activation"
+        "text": "تتضمن هذه المعاملة تفعيلًا لمرة واحدة للمحفظة الذكية على %{networkName}. يؤدي ذلك إلى ترقية محفظتك لدعم المعاملات المجمّعة وميزات أخرى للحسابات الذكية.\n\nيتم تضمين رسوم التفعيل ضمن رسوم الشبكة لعملية المبادلة هذه.",
+        "title": "تفعيل المحفظة الذكية"
       },
       "max_base_fee": {
         "text": "هذا هو الحد الأقصى لرسوم الأساس التي أنت مستعد لدفعها لهذه المعاملة.\n\nيمنع تحديد الحد الأقصى المرتفع للرسوم الأساسية عالق معاملتك في حالة ارتفاع الرسوم.",
@@ -2727,9 +2727,9 @@
           "failed": "فشل الإلغاء"
         },
         "delegate": {
-          "pending": "Delegating",
+          "pending": "جارٍ التفويض",
           "confirmed": "تم الموافقة",
-          "failed": "Delegation Failed"
+          "failed": "فشل التفويض"
         },
         "revoke_delegation": {
           "pending": "إلغاء",
@@ -2775,8 +2775,8 @@
       "savings": "التوفير",
       "signed": "موقع",
       "contract_interaction": "تفاعل العقد",
-      "delegate_description": "Wallet Delegation",
-      "revoke_delegation_description": "Wallet Delegation",
+      "delegate_description": "تفويض المحفظة",
+      "revoke_delegation_description": "تفويض المحفظة",
       "deposited_with_token": "تم الإيداع %{name}",
       "withdrew_with_token": "تم السحب %{name}"
     },
@@ -2789,7 +2789,7 @@
       "network_fee": "رسوم الشبكة",
       "hash_copied": "􀁣 تم نسخ هاش الحوالة",
       "address_copied": "􀁣 تم نسخ العنوان",
-      "smart_account": "Smart Account",
+      "smart_account": "حساب ذكي",
       "try_again": "􀅉 حاول مرة أخرى",
       "context_menu": {
         "copy_address": "نسخ العنوان",
@@ -3042,49 +3042,49 @@
         "view_secret_phrase": "عرض العبارة السرية",
         "view_private_key": "عرض المفتاح الخاص",
         "copy_wallet_address": "نسخ العنوان",
-        "edit_smart_wallet": "Edit Smart Wallet"
+        "edit_smart_wallet": "تعديل المحفظة الذكية"
       },
       "delegations": {
-        "active": "Active",
-        "not_active": "Not active",
-        "smart_wallet": "Smart Wallet",
-        "smart_wallet_description": "Smart wallets enable a faster, cheaper, and more reliable wallet experience.",
-        "activated_networks": "Activated Networks",
-        "other_smart_accounts": "Other Smart Accounts",
-        "delegated_to": "Delegated to %{name}",
-        "delegated_to_another_wallet": "Delegated to another wallet",
-        "enable_smart_wallet": "Enable Smart Wallet",
-        "disable_smart_wallet": "Disable Smart Wallet",
-        "enabled_description": "You'll miss out on faster transactions and lower network costs",
-        "disabled_description": "Updates will take effect on your next swap",
-        "will_delegate_callout": "Includes smart wallet activation",
+        "active": "نشط",
+        "not_active": "غير نشط",
+        "smart_wallet": "محفظة ذكية",
+        "smart_wallet_description": "توفّر المحافظ الذكية تجربة محفظة أسرع وأرخص وأكثر موثوقية.",
+        "activated_networks": "الشبكات المُفعّلة",
+        "other_smart_accounts": "حسابات ذكية أخرى",
+        "delegated_to": "مفوَّضة إلى %{name}",
+        "delegated_to_another_wallet": "مفوَّضة إلى محفظة أخرى",
+        "enable_smart_wallet": "تمكين المحفظة الذكية",
+        "disable_smart_wallet": "تعطيل المحفظة الذكية",
+        "enabled_description": "ستفوتك المعاملات الأسرع وتكاليف الشبكة الأقل",
+        "disabled_description": "ستسري التحديثات في عملية المبادلة التالية",
+        "will_delegate_callout": "يتضمن تفعيل المحفظة الذكية",
         "revoke_panel": {
-          "disable_smart_wallet_title": "Disable Smart Wallet",
-          "disable_smart_wallet_subtitle": "This will revoke all active delegations and disable Smart Wallet features.",
-          "disable_smart_wallet_button": "Hold to Disable",
-          "disable_single_network_title": "Disable on %{network}",
-          "disable_single_network_subtitle": "This will remove the Smart Wallet delegation for this network.",
-          "disable_single_network_button": "Hold to Disable",
-          "disable_third_party_title": "Disable Account",
-          "disable_third_party_subtitle": "Your wallet is delegated to a different Smart Wallet. Disable to use Rainbow.",
-          "disable_third_party_button": "Hold to Disable",
-          "alert_vulnerability_title": "Smart Wallet Security",
-          "alert_vulnerability_subtitle": "A vulnerability was detected in your Smart Wallet contract. Revoke it as a precaution to protect your assets.",
-          "alert_vulnerability_button": "Hold to Revoke",
-          "alert_bug_title": "Smart Wallet Issue",
-          "alert_bug_subtitle": "An issue was detected with your Smart Wallet contract. Revoke it to improve your wallet experience.",
-          "alert_bug_button": "Hold to Revoke",
-          "alert_unrecognized_title": "Risky Delegation",
-          "alert_unrecognized_subtitle": "An unrecognized and risky delegation contract was detected. Revoke it to secure your wallet.",
-          "alert_unrecognized_button": "Hold to Revoke",
-          "alert_unspecified_title": "Delegation Issue",
-          "alert_unspecified_subtitle": "Your wallet is currently delegated to a risky smart contract. Revoke it to secure your wallet.",
-          "alert_unspecified_button": "Hold to Revoke",
-          "revoking": "Revoking...",
+          "disable_smart_wallet_title": "تعطيل المحفظة الذكية",
+          "disable_smart_wallet_subtitle": "سيؤدي هذا إلى إلغاء جميع التفويضات النشطة وتعطيل ميزات المحفظة الذكية.",
+          "disable_smart_wallet_button": "اضغط مطولًا للتعطيل",
+          "disable_single_network_title": "تعطيل على %{network}",
+          "disable_single_network_subtitle": "سيؤدي هذا إلى إزالة تفويض المحفظة الذكية لهذه الشبكة.",
+          "disable_single_network_button": "اضغط مطولًا للتعطيل",
+          "disable_third_party_title": "تعطيل الحساب",
+          "disable_third_party_subtitle": "محفظتك مُفوَّضة إلى محفظة ذكية مختلفة. عطّلها لاستخدام Rainbow.",
+          "disable_third_party_button": "اضغط مطولًا للتعطيل",
+          "alert_vulnerability_title": "أمان المحفظة الذكية",
+          "alert_vulnerability_subtitle": "تم اكتشاف ثغرة أمنية في عقد المحفظة الذكية لديك. قم بإلغائه كإجراء احترازي لحماية أصولك.",
+          "alert_vulnerability_button": "اضغط مطولًا للإلغاء",
+          "alert_bug_title": "مشكلة في المحفظة الذكية",
+          "alert_bug_subtitle": "تم اكتشاف مشكلة في عقد المحفظة الذكية لديك. قم بإلغائه لتحسين تجربة محفظتك.",
+          "alert_bug_button": "اضغط مطولًا للإلغاء",
+          "alert_unrecognized_title": "تفويض محفوف بالمخاطر",
+          "alert_unrecognized_subtitle": "تم اكتشاف عقد تفويض غير معرّف ومحفوف بالمخاطر. قم بإلغائه لتأمين محفظتك.",
+          "alert_unrecognized_button": "اضغط مطولًا للإلغاء",
+          "alert_unspecified_title": "مشكلة في التفويض",
+          "alert_unspecified_subtitle": "محفظتك مفوَّضة حاليًا إلى عقد ذكي محفوف بالمخاطر. قم بإلغائه لتأمين محفظتك.",
+          "alert_unspecified_button": "اضغط مطولًا للإلغاء",
+          "revoking": "جارٍ الإلغاء...",
           "done": "تم",
           "next": "التالي",
           "try_again": "حاول مرة أخرى",
-          "gas_fee": "to revoke on %{chainName}"
+          "gas_fee": "للإلغاء على %{chainName}"
         }
       },
       "balance_title": "رصيد",
@@ -3094,10 +3094,10 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "مشاهدة",
         "ledger": "ليدجر",
-        "delegated": "Delegated",
-        "alt_delegation": "Alt Delegation",
-        "not_delegated": "Not Delegated",
-        "disabled": "Disabled",
+        "delegated": "مفوَّضة",
+        "alt_delegation": "تفويض بديل",
+        "not_delegated": "غير مفوَّضة",
+        "disabled": "معطل",
         "wallets": "المحافظ",
         "all_wallets": "كل المحافظ",
         "total_balance": "الرصيد الإجمالي",
