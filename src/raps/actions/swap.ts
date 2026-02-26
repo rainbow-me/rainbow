@@ -39,7 +39,7 @@ import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { requireAddress, requireHex } from '../validation';
+import { getQuoteAllowanceTargetAddress, requireAddress, requireHex } from '../validation';
 
 const WRAP_GAS_PADDING = 1.002;
 
@@ -50,20 +50,17 @@ export const estimateUnlockAndSwap = async ({
 }: Pick<RapSwapActionParameters<'swap'>, 'quote' | 'chainId' | 'requiresApprove'>) => {
   const { from: accountAddress, sellTokenAddress, allowanceNeeded } = quote;
   const requiresApprove = requiresApproveInput ?? allowanceNeeded;
-  const targetAddress = getTargetAddress(quote);
-  if (requiresApprove && !targetAddress) {
-    throw new Error('Target address not found');
-  }
+  const allowanceTargetAddress = requiresApprove ? getQuoteAllowanceTargetAddress(quote) : null;
 
   let gasLimits: (string | number)[] = [];
 
-  if (requiresApprove) {
+  if (requiresApprove && allowanceTargetAddress) {
     // Try simulation-based estimation first
     const provider = getProvider({ chainId });
     const approveTransaction = await populateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,
-      spender: targetAddress,
+      spender: allowanceTargetAddress,
       chainId,
       amount: quote.sellAmount.toString(),
     });
@@ -108,7 +105,7 @@ export const estimateUnlockAndSwap = async ({
     const unlockGasLimit = await estimateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,
-      spender: targetAddress,
+      spender: allowanceTargetAddress,
       chainId,
     });
     gasLimits = gasLimits.concat(unlockGasLimit);

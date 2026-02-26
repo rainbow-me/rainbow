@@ -1,34 +1,30 @@
-import { getTargetAddress, isAllowedTargetContract } from '@rainbow-me/swaps';
+import { isAllowedTargetContract } from '@rainbow-me/swaps';
 import { createNewAction, createNewRap } from './common';
 import type { RapAction, RapSwapActionParameters } from './references';
 import { needsTokenApproval } from './actions/unlock';
+import { getQuoteAllowanceTargetAddress } from './validation';
 
 export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParameters<'swap'>) => {
   let actions: RapAction<'swap' | 'unlock'>[] = [];
 
   const { sellAmount, quote, chainId, assetToSell, assetToBuy } = swapParameters;
   const { allowanceNeeded, from: accountAddress, sellTokenAddress } = quote;
-  const targetAddress = getTargetAddress(quote);
+  const allowanceTargetAddress = allowanceNeeded ? getQuoteAllowanceTargetAddress(quote) : null;
   let requiresApprove = false;
 
-  if (allowanceNeeded) {
-    if (!targetAddress) {
-      throw new Error('Target address not found');
-    }
-    const isAllowedTarget = isAllowedTargetContract(targetAddress, chainId);
+  if (allowanceTargetAddress) {
+    const isAllowedTarget = isAllowedTargetContract(allowanceTargetAddress, chainId);
     if (!isAllowedTarget) {
       throw new Error('Target address not allowed');
     }
 
-    requiresApprove =
-      allowanceNeeded &&
-      (await needsTokenApproval({
-        owner: accountAddress,
-        tokenAddress: sellTokenAddress,
-        spender: targetAddress,
-        amount: sellAmount,
-        chainId,
-      }));
+    requiresApprove = await needsTokenApproval({
+      owner: accountAddress,
+      tokenAddress: sellTokenAddress,
+      spender: allowanceTargetAddress,
+      amount: sellAmount,
+      chainId,
+    });
 
     if (requiresApprove) {
       const unlock = createNewAction('unlock', {
@@ -36,7 +32,7 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
         amount: sellAmount,
         assetToUnlock: assetToSell,
         chainId,
-        contractAddress: targetAddress,
+        contractAddress: allowanceTargetAddress,
       });
       actions = actions.concat(unlock);
     }
