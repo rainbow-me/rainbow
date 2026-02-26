@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Box, globalColors } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import { fonts } from '@/design-system/typography/typography';
 import { captureRef } from 'react-native-view-shot';
 import greenArrowsBackground from '../../assets/pnl-share/green-arrows-background.png';
 import redArrowsBackground from '../../assets/pnl-share/red-arrows-background.png';
@@ -50,14 +52,15 @@ const CAPTURE_TEMPLATE_HEIGHT = CAPTURE_TEMPLATE_WIDTH / ASPECT_RATIO;
 const CAPTURE_SCALE = 1 / PixelRatio.get();
 const CAPTURE_WIDTH = CAPTURE_TEMPLATE_WIDTH * CAPTURE_SCALE;
 const CAPTURE_HEIGHT = CAPTURE_TEMPLATE_HEIGHT * CAPTURE_SCALE;
-const SF_FONT_FAMILY = 'SF Pro Rounded';
 const PROFIT_COLOR = PERPS_COLORS.longGreen;
 const SHARE_CARD_SIDE_PEEK = 24;
 const SHARE_CARD_WIDTH = PANEL_WIDTH - SHARE_CARD_SIDE_PEEK * 2;
 const SHARE_CARD_GAP = 8;
 const SHARE_CARD_SNAP_INTERVAL = SHARE_CARD_WIDTH + SHARE_CARD_GAP;
 const SHARE_CAROUSEL_WIDTH = SHARE_CARD_WIDTH + SHARE_CARD_SIDE_PEEK * 2;
-const INITIAL_CHARACTER_INDEX = 0;
+const ANDROID_TEXT_FIX = IS_ANDROID ? ({ includeFontPadding: false, textAlignVertical: 'center' } as const) : {};
+const SF_BOLD = { ...fonts.SFProRounded.bold, ...ANDROID_TEXT_FIX };
+const SF_BLACK = { ...fonts.SFProRounded.black, ...ANDROID_TEXT_FIX };
 
 const PROFIT_CHARACTER_IMAGES = [
   profitCharacter1,
@@ -85,6 +88,7 @@ type PnlShareImageProps = {
   characterImage: ImageSourcePropType;
   includeDisplay?: boolean;
   includeCapture?: boolean;
+  fileName?: string;
 };
 
 type PnlShareContentProps = Omit<PnlShareImageProps, 'width' | 'includeDisplay' | 'includeCapture'> & {
@@ -165,21 +169,18 @@ function PnlShareContent({
         },
         assetFallbackText: {
           fontSize: s(15),
-          fontWeight: '700',
           color: 'white',
-          fontFamily: SF_FONT_FAMILY,
+          ...SF_BOLD,
         },
         assetSymbolText: {
           fontSize: s(15),
-          fontWeight: '900',
           color: 'white',
-          fontFamily: SF_FONT_FAMILY,
+          ...SF_BLACK,
         },
         pnlText: {
           fontSize: s(34),
-          fontWeight: '900',
           letterSpacing: s(0.38),
-          fontFamily: SF_FONT_FAMILY,
+          ...SF_BLACK,
         },
         pricesContainer: {
           flexDirection: 'row',
@@ -191,21 +192,18 @@ function PnlShareContent({
         },
         priceLabelText: {
           fontSize: s(13),
-          fontWeight: '700',
           color: opacity('#F5F8FF', 0.56),
-          fontFamily: SF_FONT_FAMILY,
+          ...SF_BOLD,
         },
         priceValueText: {
           fontSize: s(15),
-          fontWeight: '900',
+          ...SF_BLACK,
           color: 'white',
-          fontFamily: SF_FONT_FAMILY,
         },
         leverageText: {
           fontSize: s(15),
-          fontWeight: '900',
+          ...SF_BLACK,
           color: 'white',
-          fontFamily: SF_FONT_FAMILY,
         },
       }),
     [characterAspectRatio, s]
@@ -297,7 +295,7 @@ function PnlShareContent({
 export const PnlShareImage = memo(
   forwardRef<PnlShareImageHandle, PnlShareImageProps>(function PnlShareImage(props, ref) {
     const viewRef = useRef<View>(null);
-    const { width, includeDisplay = true, includeCapture = true, ...contentProps } = props;
+    const { width, includeDisplay = true, includeCapture = true, fileName, ...contentProps } = props;
     const height = width / ASPECT_RATIO;
     const displayScale = width / DESIGN_REFERENCE_WIDTH;
     const captureScale = CAPTURE_WIDTH / DESIGN_REFERENCE_WIDTH;
@@ -336,10 +334,11 @@ export const PnlShareImage = memo(
             useRenderInContext: true,
             format: 'png',
             quality: 1,
+            ...(fileName ? { fileName } : {}),
           });
         },
       }),
-      [includeCapture]
+      [fileName, includeCapture]
     );
 
     return (
@@ -392,7 +391,7 @@ export const PnlShareGraphic = memo(function PnlShareGraphic({
   }, [entryPrice, leverage, trade.isLong, trade.price]);
   const isPositivePnl = pnlPercentage >= 0;
   const characterImages = getCharacterImages(isPositivePnl);
-  const [activeCharacterIndex, setActiveCharacterIndex] = useState(INITIAL_CHARACTER_INDEX);
+  const [activeCharacterIndex, setActiveCharacterIndex] = useState(0);
   const activeCharacterImage = characterImages[activeCharacterIndex];
   const formattedEntryPrice = useMemo(() => formatPerpAssetPrice(entryPrice), [entryPrice]);
   const formattedMarkPrice = useMemo(() => formatPerpAssetPrice(trade.price), [trade.price]);
@@ -469,6 +468,7 @@ export const PnlShareGraphic = memo(function PnlShareGraphic({
         isLong={trade.isLong}
         characterImage={activeCharacterImage}
         includeDisplay={false}
+        fileName={`rainbow-pnl-${assetSymbol}-${pnlPercentage}-${trade.tradeId}`}
       />
     </>
   );

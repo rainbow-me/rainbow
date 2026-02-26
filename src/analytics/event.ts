@@ -1329,6 +1329,9 @@ export type EventProperties = {
     pnlPercentage: number;
     pnl: string;
     netPnl: string;
+    shared: boolean;
+    success: boolean;
+    message: string;
   };
 
   // predictions
