@@ -562,7 +562,23 @@
       "reset_experimental_config": "重置实验配置",
       "status": "状态",
       "sync_codepush": "同步 CodePush",
-      "simulate_device_transfer": "模拟设备传输"
+      "simulate_device_transfer": "模拟设备传输",
+      "headers": {
+        "normie_settings": "Normie Settings",
+        "rainbow_developer_settings": "Rainbow Developer Settings",
+        "feature_flags": "Feature Flags",
+        "delegation_settings": "Delegation Settings"
+      },
+      "delegation_settings": {
+        "clear_store": "Clear Delegation Store",
+        "simulate_disable_smart_wallet": "Simulate Disable Smart Wallet",
+        "simulate_disable_single_network": "Simulate Disable Single Network",
+        "simulate_disable_third_party": "Simulate Disable Third Party",
+        "simulate_alert_vulnerability": "Simulate Alert Vulnerability",
+        "simulate_alert_bug": "Simulate Alert Bug",
+        "simulate_alert_unrecognized": "Simulate Alert Unrecognized",
+        "simulate_alert_unspecified": "Simulate Alert Unspecified"
+      }
     },
     "discover": {
       "pulse": {
@@ -885,6 +901,7 @@
         "minimum_received": "最低接收金额",
         "preferred_network": "首选网络",
         "rainbow_fee": "包括彩虹费",
+        "smart_wallet_activation_fee": "Est. Smart Wallet Fee",
         "settings": "设置"
       },
       "token_index": {
@@ -1039,6 +1056,10 @@
       "gas": {
         "text": "这是 %{networkName} 区块链用来安全验证你的交易的\"燃气费\"。\n\n这个费用视你的交易复杂度和网络繁忙程度而定！",
         "title": "%{networkName} 网络费"
+      },
+      "smart_wallet_activation": {
+        "text": "This transaction includes a one-time Smart Wallet activation on %{networkName}. This upgrades your wallet to support batched transactions and other smart account features.\n\nThe activation fee is included in the network fee for this swap.",
+        "title": "Smart Wallet activation"
       },
       "max_base_fee": {
         "text": "这是你愿意为这笔交易支付的最高基础费用。\n\n设置更高的最大基础费用可以在费用上升时防止你的交易被卡住。",
@@ -2705,6 +2726,16 @@
           "confirmed": "已撤销",
           "failed": "撤销失败"
         },
+        "delegate": {
+          "pending": "Delegating",
+          "confirmed": "已批准",
+          "failed": "Delegation Failed"
+        },
+        "revoke_delegation": {
+          "pending": "撤销中",
+          "confirmed": "已撤销",
+          "failed": "撤销失败"
+        },
         "sale": {
           "pending": "出售",
           "confirmed": "已出售",
@@ -2744,6 +2775,8 @@
       "savings": "储蓄",
       "signed": "已签署",
       "contract_interaction": "合同互动",
+      "delegate_description": "Wallet Delegation",
+      "revoke_delegation_description": "Wallet Delegation",
       "deposited_with_token": "存款 %{name}",
       "withdrew_with_token": "取款 %{name}"
     },
@@ -2756,6 +2789,7 @@
       "network_fee": "网络费用",
       "hash_copied": "􀁣 已复制交易哈希",
       "address_copied": "􀁣 已复制地址",
+      "smart_account": "Smart Account",
       "try_again": "􀅉 重试",
       "context_menu": {
         "copy_address": "复制地址",
@@ -3007,7 +3041,51 @@
         "cloud_backup_link": "了解更多…",
         "view_secret_phrase": "查看秘密短语",
         "view_private_key": "查看私钥",
-        "copy_wallet_address": "复制钱包地址"
+        "copy_wallet_address": "复制地址",
+        "edit_smart_wallet": "Edit Smart Wallet"
+      },
+      "delegations": {
+        "active": "Active",
+        "not_active": "Not active",
+        "smart_wallet": "Smart Wallet",
+        "smart_wallet_description": "Smart wallets enable a faster, cheaper, and more reliable wallet experience.",
+        "activated_networks": "Activated Networks",
+        "other_smart_accounts": "Other Smart Accounts",
+        "delegated_to": "Delegated to %{name}",
+        "delegated_to_another_wallet": "Delegated to another wallet",
+        "enable_smart_wallet": "Enable Smart Wallet",
+        "disable_smart_wallet": "Disable Smart Wallet",
+        "enabled_description": "You'll miss out on faster transactions and lower network costs",
+        "disabled_description": "Updates will take effect on your next swap",
+        "will_delegate_callout": "Includes smart wallet activation",
+        "revoke_panel": {
+          "disable_smart_wallet_title": "Disable Smart Wallet",
+          "disable_smart_wallet_subtitle": "This will revoke all active delegations and disable Smart Wallet features.",
+          "disable_smart_wallet_button": "Hold to Disable",
+          "disable_single_network_title": "Disable on %{network}",
+          "disable_single_network_subtitle": "This will remove the Smart Wallet delegation for this network.",
+          "disable_single_network_button": "Hold to Disable",
+          "disable_third_party_title": "Disable Account",
+          "disable_third_party_subtitle": "Your wallet is delegated to a different Smart Wallet. Disable to use Rainbow.",
+          "disable_third_party_button": "Hold to Disable",
+          "alert_vulnerability_title": "Smart Wallet Security",
+          "alert_vulnerability_subtitle": "A vulnerability was detected in your Smart Wallet contract. Revoke it as a precaution to protect your assets.",
+          "alert_vulnerability_button": "Hold to Revoke",
+          "alert_bug_title": "Smart Wallet Issue",
+          "alert_bug_subtitle": "An issue was detected with your Smart Wallet contract. Revoke it to improve your wallet experience.",
+          "alert_bug_button": "Hold to Revoke",
+          "alert_unrecognized_title": "Risky Delegation",
+          "alert_unrecognized_subtitle": "An unrecognized and risky delegation contract was detected. Revoke it to secure your wallet.",
+          "alert_unrecognized_button": "Hold to Revoke",
+          "alert_unspecified_title": "Delegation Issue",
+          "alert_unspecified_subtitle": "Your wallet is currently delegated to a risky smart contract. Revoke it to secure your wallet.",
+          "alert_unspecified_button": "Hold to Revoke",
+          "revoking": "Revoking...",
+          "done": "完成",
+          "next": "下一步",
+          "try_again": "再试一次",
+          "gas_fee": "to revoke on %{chainName}"
+        }
       },
       "balance_title": "余额",
       "buy": "购买",
@@ -3016,6 +3094,10 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "正在关注",
         "ledger": "分类账",
+        "delegated": "Delegated",
+        "alt_delegation": "Alt Delegation",
+        "not_delegated": "Not Delegated",
+        "disabled": "Disabled",
         "wallets": "钱包",
         "all_wallets": "所有钱包",
         "total_balance": "总余额",
