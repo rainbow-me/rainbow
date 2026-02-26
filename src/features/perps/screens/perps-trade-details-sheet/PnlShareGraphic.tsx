@@ -1,6 +1,17 @@
-import { forwardRef, memo, useImperativeHandle, useMemo, useRef } from 'react';
-import { Image, ImageBackground, PixelRatio, StyleSheet, View, Text } from 'react-native';
-import { Box, globalColors, useForegroundColor } from '@/design-system';
+import { forwardRef, memo, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import {
+  Image,
+  ImageBackground,
+  PixelRatio,
+  StyleSheet,
+  View,
+  Text,
+  type ImageSourcePropType,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+} from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { Box, globalColors } from '@/design-system';
 import { captureRef } from 'react-native-view-shot';
 import greenArrowsBackground from '../../assets/pnl-share/green-arrows-background.png';
 import redArrowsBackground from '../../assets/pnl-share/red-arrows-background.png';
@@ -18,7 +29,6 @@ import lossCharacter5 from '../../assets/pnl-share/loss-character-5.png';
 import lossCharacter6 from '../../assets/pnl-share/loss-character-6.png';
 import * as i18n from '@/languages';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { getDeterministicIndex } from '@/framework/core/utils/getDeterministicIndex';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { PERPS_COLORS } from '@/features/perps/constants';
 import { PANEL_WIDTH } from '@/components/PanelSheet/PanelSheet';
@@ -42,6 +52,12 @@ const CAPTURE_WIDTH = CAPTURE_TEMPLATE_WIDTH * CAPTURE_SCALE;
 const CAPTURE_HEIGHT = CAPTURE_TEMPLATE_HEIGHT * CAPTURE_SCALE;
 const SF_FONT_FAMILY = 'SF Pro Rounded';
 const PROFIT_COLOR = PERPS_COLORS.longGreen;
+const SHARE_CARD_SIDE_PEEK = 24;
+const SHARE_CARD_WIDTH = PANEL_WIDTH - SHARE_CARD_SIDE_PEEK * 2;
+const SHARE_CARD_GAP = 8;
+const SHARE_CARD_SNAP_INTERVAL = SHARE_CARD_WIDTH + SHARE_CARD_GAP;
+const SHARE_CAROUSEL_WIDTH = SHARE_CARD_WIDTH + SHARE_CARD_SIDE_PEEK * 2;
+const INITIAL_CHARACTER_INDEX = 0;
 
 const PROFIT_CHARACTER_IMAGES = [
   profitCharacter1,
@@ -53,10 +69,8 @@ const PROFIT_CHARACTER_IMAGES = [
 ];
 const LOSS_CHARACTER_IMAGES = [lossCharacter1, lossCharacter2, lossCharacter3, lossCharacter4, lossCharacter5, lossCharacter6];
 
-function pickCharacterImage(pnlPercentage: number, isPositivePnl: boolean) {
-  const images = isPositivePnl ? PROFIT_CHARACTER_IMAGES : LOSS_CHARACTER_IMAGES;
-  const index = getDeterministicIndex({ seed: `${pnlPercentage}`, length: images.length });
-  return images[index] ?? images[0];
+function getCharacterImages(isPositivePnl: boolean) {
+  return isPositivePnl ? PROFIT_CHARACTER_IMAGES : LOSS_CHARACTER_IMAGES;
 }
 
 type PnlShareImageProps = {
@@ -68,9 +82,12 @@ type PnlShareImageProps = {
   markPrice: string;
   isLong: boolean;
   width: number;
+  characterImage: ImageSourcePropType;
+  includeDisplay?: boolean;
+  includeCapture?: boolean;
 };
 
-type PnlShareContentProps = Omit<PnlShareImageProps, 'width'> & {
+type PnlShareContentProps = Omit<PnlShareImageProps, 'width' | 'includeDisplay' | 'includeCapture'> & {
   scale: number;
 };
 
@@ -90,16 +107,13 @@ function PnlShareContent({
   entryPrice,
   markPrice,
   isLong,
+  characterImage,
   scale,
 }: PnlShareContentProps) {
-  const red = useForegroundColor('red');
   const isPositivePnl = pnlPercentage >= 0;
-  const longGreen = '#1F9E39';
-  const shortRed = '#D53F35';
-  const pnlColor = isPositivePnl ? PROFIT_COLOR : red;
+  const pnlColor = isPositivePnl ? PROFIT_COLOR : PERPS_COLORS.shortRed;
   const leverageText = `${leverage}x ${i18n.t(isLong ? i18n.l.perps.position_side.long : i18n.l.perps.position_side.short).toUpperCase()}`;
   const backgroundImage = isPositivePnl ? greenArrowsBackground : redArrowsBackground;
-  const characterImage = pickCharacterImage(pnlPercentage, isPositivePnl);
   const characterAspectRatio = useMemo(() => {
     const resolvedSource = Image.resolveAssetSource(characterImage);
     return resolvedSource.width / resolvedSource.height;
@@ -135,12 +149,6 @@ function PnlShareContent({
         appIcon: {
           height: s(16),
           width: s(16),
-        },
-        rainbowText: {
-          fontSize: s(15),
-          fontWeight: '900',
-          color: 'white',
-          fontFamily: SF_FONT_FAMILY,
         },
         assetImage: {
           height: s(24),
@@ -243,7 +251,7 @@ function PnlShareContent({
                   <Text style={scaledStyles.assetSymbolText}>{assetSymbol}</Text>
                 </Box>
                 <Box
-                  backgroundColor={isLong ? longGreen : shortRed}
+                  backgroundColor={isLong ? PERPS_COLORS.longGreen : PERPS_COLORS.shortRed}
                   borderWidth={s(2.33)}
                   borderColor={{ custom: opacity(globalColors.white100, 0.12) }}
                   borderRadius={s(12)}
@@ -289,7 +297,7 @@ function PnlShareContent({
 export const PnlShareImage = memo(
   forwardRef<PnlShareImageHandle, PnlShareImageProps>(function PnlShareImage(props, ref) {
     const viewRef = useRef<View>(null);
-    const { width, ...contentProps } = props;
+    const { width, includeDisplay = true, includeCapture = true, ...contentProps } = props;
     const height = width / ASPECT_RATIO;
     const displayScale = width / DESIGN_REFERENCE_WIDTH;
     const captureScale = CAPTURE_WIDTH / DESIGN_REFERENCE_WIDTH;
@@ -316,6 +324,9 @@ export const PnlShareImage = memo(
       ref,
       () => ({
         capture: async () => {
+          if (!includeCapture) {
+            throw new Error('PnlShareImage capture is disabled for this instance');
+          }
           const captureTarget = viewRef.current;
           if (!captureTarget) {
             throw new Error('PnlShareImage capture target is not mounted');
@@ -328,28 +339,30 @@ export const PnlShareImage = memo(
           });
         },
       }),
-      []
+      [includeCapture]
     );
 
     return (
       <>
-        {/* Scaled display instance */}
-        <Box style={containerStyles.displayContainer}>
-          <PnlShareContent
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...contentProps}
-            scale={displayScale}
-          />
-        </Box>
+        {includeDisplay && (
+          <Box style={containerStyles.displayContainer}>
+            <PnlShareContent
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              {...contentProps}
+              scale={displayScale}
+            />
+          </Box>
+        )}
 
-        {/* Offscreen full sized capture instance */}
-        <View ref={viewRef} style={containerStyles.captureContainer} collapsable={false}>
-          <PnlShareContent
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...contentProps}
-            scale={captureScale}
-          />
-        </View>
+        {includeCapture && (
+          <View ref={viewRef} style={containerStyles.captureContainer} collapsable={false}>
+            <PnlShareContent
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              {...contentProps}
+              scale={captureScale}
+            />
+          </View>
+        )}
       </>
     );
   })
@@ -377,18 +390,93 @@ export const PnlShareGraphic = memo(function PnlShareGraphic({
       leverage,
     });
   }, [entryPrice, leverage, trade.isLong, trade.price]);
+  const isPositivePnl = pnlPercentage >= 0;
+  const characterImages = getCharacterImages(isPositivePnl);
+  const [activeCharacterIndex, setActiveCharacterIndex] = useState(INITIAL_CHARACTER_INDEX);
+  const activeCharacterImage = characterImages[activeCharacterIndex];
+  const formattedEntryPrice = useMemo(() => formatPerpAssetPrice(entryPrice), [entryPrice]);
+  const formattedMarkPrice = useMemo(() => formatPerpAssetPrice(trade.price), [trade.price]);
+  const assetSymbol = useMemo(() => extractBaseSymbol(trade.symbol), [trade.symbol]);
+
+  const updateActiveIndex = useCallback(
+    (offsetX: number) => {
+      const rawIndex = Math.round(offsetX / SHARE_CARD_SNAP_INTERVAL);
+      const nextIndex = Math.max(0, Math.min(characterImages.length - 1, rawIndex));
+      setActiveCharacterIndex(prev => (prev === nextIndex ? prev : nextIndex));
+    },
+    [characterImages.length]
+  );
+
+  const handleScrollEndDrag = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const targetOffsetX = event.nativeEvent.targetContentOffset?.x;
+      if (targetOffsetX != null) {
+        updateActiveIndex(targetOffsetX);
+      }
+    },
+    [updateActiveIndex]
+  );
+
+  const handleMomentumScrollEnd = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      updateActiveIndex(event.nativeEvent.contentOffset.x);
+    },
+    [updateActiveIndex]
+  );
 
   return (
-    <PnlShareImage
-      ref={pnlShareImageRef}
-      width={PANEL_WIDTH - 24 * 2}
-      pnlPercentage={pnlPercentage}
-      assetSymbol={extractBaseSymbol(trade.symbol)}
-      assetImageUrl={assetImageUrl}
-      leverage={leverage}
-      entryPrice={formatPerpAssetPrice(entryPrice)}
-      markPrice={formatPerpAssetPrice(trade.price)}
-      isLong={trade.isLong}
-    />
+    <>
+      <Box style={{ width: SHARE_CAROUSEL_WIDTH }}>
+        <ScrollView
+          horizontal
+          bounces={false}
+          alwaysBounceVertical={false}
+          decelerationRate="fast"
+          disableIntervalMomentum
+          showsHorizontalScrollIndicator={false}
+          snapToInterval={SHARE_CARD_SNAP_INTERVAL}
+          contentContainerStyle={styles.scrollViewContainer}
+          onScrollEndDrag={handleScrollEndDrag}
+          onMomentumScrollEnd={handleMomentumScrollEnd}
+        >
+          {characterImages.map((characterImage, index) => (
+            <PnlShareImage
+              key={index}
+              width={SHARE_CARD_WIDTH}
+              pnlPercentage={pnlPercentage}
+              assetSymbol={assetSymbol}
+              assetImageUrl={assetImageUrl}
+              leverage={leverage}
+              entryPrice={formattedEntryPrice}
+              markPrice={formattedMarkPrice}
+              isLong={trade.isLong}
+              characterImage={characterImage}
+              includeCapture={false}
+            />
+          ))}
+        </ScrollView>
+      </Box>
+
+      <PnlShareImage
+        ref={pnlShareImageRef}
+        width={SHARE_CARD_WIDTH}
+        pnlPercentage={pnlPercentage}
+        assetSymbol={assetSymbol}
+        assetImageUrl={assetImageUrl}
+        leverage={leverage}
+        entryPrice={formattedEntryPrice}
+        markPrice={formattedMarkPrice}
+        isLong={trade.isLong}
+        characterImage={activeCharacterImage}
+        includeDisplay={false}
+      />
+    </>
   );
+});
+
+const styles = StyleSheet.create({
+  scrollViewContainer: {
+    paddingHorizontal: SHARE_CARD_SIDE_PEEK,
+    gap: SHARE_CARD_GAP,
+  },
 });
