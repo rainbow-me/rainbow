@@ -116,6 +116,7 @@ const calcGasParamRetryValue = (prevWeiValue: BigNumberish) => {
   return Number(newWeiValue);
 };
 
+// eslint-disable-next-line import/no-default-export
 export default function SpeedUpAndCancelSheet() {
   const { navigate, goBack } = useNavigation();
   const { chainId } = useAccountSettings();
@@ -448,7 +449,14 @@ export default function SpeedUpAndCancelSheet() {
   return (
     <SheetKeyboardAnimation as={AnimatedContainer} isKeyboardVisible={false} translateY={offset}>
       <ExtendedSheetBackground />
-      <SlackSheet backgroundColor={colors.transparent} borderRadius={0} height={sheetHeight} hideHandle scrollEnabled={false}>
+      <SlackSheet
+        backgroundColor={colors.transparent}
+        borderRadius={0}
+        height={sheetHeight}
+        hideHandle
+        scrollEnabled={false}
+        testID="speed-up-and-cancel-sheet"
+      >
         <Column>
           <AnimatedSheet
             backgroundColor={colors.white}
@@ -460,7 +468,15 @@ export default function SpeedUpAndCancelSheet() {
             <SheetHandleFixedToTop showBlur={false} />
             <Centered direction="column">
               {!ready ? (
-                <Column align="center" backgroundColor={colors.white} height={300} justify="center" marginBottom={12} marginTop={30}>
+                <Column
+                  align="center"
+                  backgroundColor={colors.white}
+                  height={300}
+                  justify="center"
+                  marginBottom={12}
+                  marginTop={30}
+                  testID="speed-up-cancel-sheet-loading"
+                >
                   <LoadingSpinner />
                 </Column>
               ) : (
@@ -490,6 +506,7 @@ export default function SpeedUpAndCancelSheet() {
                           label={`􀎽 ${i18n.t(i18n.l.button.attempt_cancellation)}`}
                           onPress={handleCancellationWrapperFn}
                           size="big"
+                          testID="speed-up-cancel-sheet-cancel-button"
                           weight="bold"
                         />
                       </SheetActionButtonRow>
@@ -499,6 +516,7 @@ export default function SpeedUpAndCancelSheet() {
                           label={i18n.t(i18n.l.button.close)}
                           onPress={goBack}
                           size="big"
+                          testID="speed-up-cancel-sheet-close-button"
                           textColor={opacity(colors.blueGreyDark, 0.8)}
                           weight="bold"
                         />
@@ -521,6 +539,7 @@ export default function SpeedUpAndCancelSheet() {
                         label={`􀎽 ${i18n.t(i18n.l.button.confirm)}`}
                         onPress={handleSpeedUpWrapperFn}
                         size="big"
+                        testID="speed-up-cancel-sheet-confirm-button"
                         weight="bold"
                       />
                     </SheetActionButtonRow>

@@ -1,0 +1,120 @@
+# This flow covers delegation (EIP-7702) transaction paths:
+# [x] Delegation swap tx (delegation=true) cannot be sped up or cancelled
+# [x] Context menu button is NOT visible for delegation pending txs
+# [x] Delegate transaction type shows the delegate tx row in activity list
+# [x] Delegate transaction detail shows "Smart Account" in masthead
+# [x] Revoke delegation transaction type shows the revoke row in activity list
+# [x] Revoke delegation transaction detail shows "Smart Account" in masthead
+#
+# Note: Transaction row text ("Swapping", "Delegating", "Revoking", "Wallet
+# Delegation") is hidden from the XCUITest accessibility tree because
+# FastTransactionCoinRow wraps each row in a ButtonPressAnimation which sets
+# isAccessibilityElement=true on its native Button, collapsing child text
+# nodes. Rows are identified by testID (transaction-row-<type>-<status>) set
+# on the ButtonPressAnimation.
+
+appId: ${APP_ID}
+tags:
+  - wallet
+  - parallel
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- runFlow: ../../utils/ImportWalletWithKey.yaml
+
+# Load tab helpers
+- runScript:
+    file: ../../utils/coordinates.js
+
+# Send ETH to test wallet
+- openLink: rainbow://e2e/fund-wallet?amount=20
+
+# Connect to Anvil (test network)
+- openLink: rainbow://e2e/connect-anvil
+
+# --- Delegation swap tx: no speed up / cancel ---
+
+# Inject a synthetic pending swap tx with delegation=true, then clear the toast immediately
+# (In test mode toasts last 15s — clearing prevents the toast from intercepting subsequent taps)
+- openLink: rainbow://e2e/inject-pending-tx?type=swap&delegation=true&nonce=999
+- openLink: rainbow://e2e/clear-toasts
+
+# Navigate to Activity tab (wait for animations to settle after deeplinks)
+- waitForAnimationToEnd
+- tapOn:
+    point: ${output.tabCoordinates.activityTab}
+
+# Wait for the pending delegation swap tx row to appear, then tap it.
+# Row is identified by testID "transaction-row-swap-pending" on the ButtonPressAnimation.
+- extendedWaitUntil:
+    visible:
+      id: transaction-row-swap-pending
+    timeout: 30000
+- tapOn:
+    id: transaction-row-swap-pending
+
+# Assert context menu button is NOT rendered (no speed-up/cancel offered for delegation txs)
+- assertNotVisible:
+    id: transaction-details-context-menu-button
+
+# Go back to activity list
+- back
+
+# --- Delegate transaction type display ---
+
+# Inject a synthetic pending delegate tx, then clear the toast immediately
+- openLink: rainbow://e2e/inject-pending-tx?type=delegate&nonce=998
+- openLink: rainbow://e2e/clear-toasts
+
+# Wait for delegate tx row to appear in activity list
+- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: transaction-row-delegate-pending
+    timeout: 30000
+
+# Open delegate tx details
+- tapOn:
+    id: transaction-row-delegate-pending
+
+# Verify delegate masthead tile is visible in transaction details.
+# Text inside AnimatedText isn't in the iOS accessibility tree, so we use
+# testID="transaction-masthead-delegate" set on the CurrencyTile container.
+- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: transaction-masthead-delegate
+    timeout: 30000
+
+# Go back to activity list
+- back
+
+# --- Revoke delegation transaction type display ---
+
+# Inject a synthetic pending revoke delegation tx, then clear the toast immediately
+- openLink: rainbow://e2e/inject-pending-tx?type=revoke_delegation&nonce=997
+- openLink: rainbow://e2e/clear-toasts
+
+# Wait for revoke delegation tx row to appear in activity list
+- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: transaction-row-revoke_delegation-pending
+    timeout: 30000
+
+# Open revoke delegation tx details
+- tapOn:
+    id: transaction-row-revoke_delegation-pending
+
+# Verify delegate masthead tile is visible in transaction details.
+# Text inside AnimatedText isn't in the iOS accessibility tree, so we use
+# testID="transaction-masthead-delegate" set on the CurrencyTile container.
+- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: transaction-masthead-delegate
+    timeout: 30000

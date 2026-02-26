@@ -3,12 +3,13 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import { Box, Separator, Text, globalColors, useColorMode } from '@/design-system';
 import { ATOMIC_SWAPS, RNBW_REWARDS, getExperimentalFlag, useExperimentalFlag } from '@/config';
 import { getRemoteConfig, useRemoteConfig } from '@/model/remoteConfig';
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   runOnJS,
+  useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -34,6 +35,7 @@ import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/st
 import { type ChainId } from '@/state/backendNetworks/types';
 import { type Address } from 'viem';
 import { useWillExecuteDelegation } from '@/hooks/useWillExecuteDelegation';
+import { IS_TEST } from '@/env';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;
 
@@ -82,6 +84,21 @@ export function SwapBottomPanel() {
   const opacity = useDerivedValue(() => confirmButtonProps.value.opacity);
   const type = useDerivedValue(() => confirmButtonProps.value.type);
 
+  // Track quote readiness for E2E: the original `disabled` reflects whether the
+  // quote is still fetching (true = fetching, false = ready). Bridge this to React
+  // state so we can render a marker View with a testID that Maestro can detect.
+  // (AnimatedText label changes like "Fetching…" → "Review" aren't visible in the
+  // iOS accessibility tree, so text-based assertions don't work.)
+  const [quoteReady, setQuoteReady] = useState(false);
+  useAnimatedReaction(
+    () => disabled.value,
+    (isDisabled, prev) => {
+      if (isDisabled !== prev) {
+        runOnJS(setQuoteReady)(!isDisabled);
+      }
+    }
+  );
+
   const { navigate } = useNavigation();
   const handleHwConnectionAndSwap = useCallback(() => {
     try {
@@ -115,7 +132,10 @@ export function SwapBottomPanel() {
         style={[
           styles.swapActionsWrapper,
           gestureHandlerStyles,
-          AnimatedSwapStyles.keyboardStyle,
+          // In test mode, skip keyboardStyle so IS_TEST opacity/pointerEvents overrides
+          // take effect. keyboardStyle animates opacity to 0 when token lists open,
+          // which hides swap-bottom-action-button from Maestro's accessibility tree.
+          !IS_TEST && AnimatedSwapStyles.keyboardStyle,
           AnimatedSwapStyles.swapActionWrapperStyle,
         ]}
         testID="swap-bottom-panel-wrapper"
@@ -195,6 +215,7 @@ export function SwapBottomPanel() {
               scaleTo={0.9}
             />
             <DelegationCallout />
+            {IS_TEST && quoteReady && <Box testID="swap-quote-ready" position="absolute" style={{ width: 1, height: 1 }} />}
           </Box>
         </Box>
       </Animated.View>

@@ -1,0 +1,143 @@
+# This flow covers:
+# [x] Swap ETH to ERC20 with paused automine
+# [x] Cancel a pending swap transaction (Type 2 / EIP-1559)
+# [x] Verify SpeedUpAndCancelSheet loads and cancel works
+#
+# Requires exclusive Anvil mining control — do not run in parallel.
+
+appId: ${APP_ID}
+tags:
+  - wallet
+  - sequential
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- runFlow: ../../utils/ImportWalletWithKey.yaml
+
+# Load Anvil + tab helpers
+- runScript:
+    file: ../../helpers/anvil.js
+- runScript:
+    file: ./assertTransactionStatus.js
+- runScript:
+    file: ../../utils/coordinates.js
+
+# Send ETH to test wallet
+- openLink: rainbow://e2e/fund-wallet?amount=20
+
+# Connect to Anvil (test network)
+- openLink: rainbow://e2e/connect-anvil
+
+# Wait for ETH coin row to appear in the wallet asset list so userAssetsStore is
+# populated before the swap screen opens. Without this, getHighestValueNativeAsset()
+# returns null and selecting an output token opens the input token list instead of
+# closing panels. (Uses the testID from balance-coin-row-Ethereum, same pattern as
+# SendNft.yaml.)
+- retry:
+    maxRetries: 10
+    commands:
+      - assertVisible:
+          id: balance-coin-row-Ethereum
+
+# Open swap screen
+- tapOn:
+    id: swap-button
+- assertVisible:
+    id: swap-screen
+
+# Select DAI as output token
+- tapOn: 'Find a token to buy'
+- inputText: 'DAI'
+- hideKeyboard
+- tapOn:
+    id: token-to-buy-dai-1
+
+# Wait for quote to load. AnimatedText label changes ("Fetching…" → "Review") are
+# NOT visible in the iOS accessibility tree, so we use a hidden marker View
+# (testID="swap-quote-ready") that SwapBottomPanel renders when the quote is ready.
+# Must wait before tapping because: (1) tapping while fetching does nothing useful,
+# (2) if the first tap opens review but assertVisible lags, a retry tap would call
+# executeSwap() (configProgress is already SHOW_REVIEW), breaking the flow.
+- extendedWaitUntil:
+    visible:
+      id: swap-quote-ready
+    timeout: 30000
+- tapOn:
+    id: swap-bottom-action-button
+- assertVisible:
+    id: review-panel
+
+# Pause automine so the swap tx stays pending
+- evalScript: ${output.anvil.evm_setAutomine(false)}
+
+# Execute swap (long press)
+- longPressOn:
+    id: swap-bottom-action-button
+- runFlow: ../../utils/MaybeInputPin.yaml
+- retry:
+    maxRetries: 3
+    commands:
+      - evalScript: ${output.initialPendingTxPoolContent = output.anvil.txpool_content()}
+
+# Navigate to Activity tab
+- tapOn:
+    point: ${output.tabCoordinates.activityTab}
+
+# Tap the pending swap transaction row.
+# Row text ("Swapping") is hidden from XCUITest accessibility tree because
+# FastTransactionCoinRow wraps rows in ButtonPressAnimation (isAccessibilityElement=true).
+# Use testID "transaction-row-swap-pending" set on the ButtonPressAnimation instead.
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible:
+          id: transaction-row-swap-pending
+- tapOn:
+    id: transaction-row-swap-pending
+
+# Tap context menu button on transaction details to open the speed up / cancel menu
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible:
+          id: transaction-details-context-menu-button
+- tapOn:
+    id: transaction-details-context-menu-button
+
+# Assert Cancel option is visible in the opened context menu and tap it
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible: 'Cancel'
+- tapOn: 'Cancel'
+
+# Assert SpeedUpAndCancelSheet loads
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible:
+          id: speed-up-and-cancel-sheet
+
+# Cancel button (attempt cancellation) should be visible
+- assertVisible:
+    id: speed-up-cancel-sheet-cancel-button
+
+# Tap attempt cancellation
+- tapOn:
+    id: speed-up-cancel-sheet-cancel-button
+- retry:
+    maxRetries: 3
+    commands:
+      - evalScript: '${output.replacementPendingSwapTx = output.assertTransactionStatus(output.anvil, { state: "canceled", initialTxPoolContent: output.initialPendingTxPoolContent })}'
+
+# Re-enable automine and mine a block to flush pending txs
+- evalScript: ${output.anvil.evm_setAutomine(true)}
+- evalScript: ${output.anvil.evm_mine()}
+- retry:
+    maxRetries: 3
+    commands:
+      - evalScript: '${output.assertTransactionStatus(output.anvil, { state: "confirmed", txHash: output.replacementPendingSwapTx.hash })}'

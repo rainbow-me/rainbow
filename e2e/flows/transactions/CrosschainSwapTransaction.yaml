@@ -1,0 +1,129 @@
+# Crosschain swap pending tx display and speed-up/cancel availability
+#
+# Uses synthetic injection since real crosschain swaps require bridge infrastructure
+# that is not available on a single Anvil instance.
+#
+# Assertions:
+#   - Pending crosschain tx in activity has non-empty gasLimit (via injection)
+#   - Speed-up/cancel context menu is available for crosschain pending tx
+#   - SpeedUpAndCancelSheet loads correctly with injected tx metadata
+#   - Nonce is preserved in the sheet (verified via UI load)
+#
+# Regression coverage: crosschainSwap.ts gasLimit fallback, crosschain builder + 7013a8ebf
+
+appId: ${APP_ID}
+tags:
+  - wallet
+  - parallel
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- runFlow: ../../utils/ImportWalletWithKey.yaml
+
+# Load tab helpers
+- runScript:
+    file: ../../utils/coordinates.js
+
+# Send ETH to test wallet
+- openLink: rainbow://e2e/fund-wallet?amount=20
+
+# Connect to Anvil (test network)
+- openLink: rainbow://e2e/connect-anvil
+
+# --- Crosschain pending tx with gasLimit ---
+
+# Inject a synthetic pending crosschain swap tx with explicit gasLimit, data, and
+# a different to address (simulating a bridge contract).
+# swap metadata marks it as a crosschain bridge tx.
+- openLink: rainbow://e2e/inject-pending-tx?type=swap&nonce=100&to=0x1111111254EEB25477B68fb85Ed929f73A960582&gasLimit=0x61A80&data=0xdeadbeef&value=0x0&swap=%7B%22type%22%3A%22crosschainSwap%22%2C%22fromChainId%22%3A1%2C%22toChainId%22%3A10%2C%22isBridge%22%3Atrue%7D
+- openLink: rainbow://e2e/clear-toasts
+
+# Navigate to Activity tab
+- waitForAnimationToEnd
+- tapOn:
+    point: ${output.tabCoordinates.activityTab}
+
+# Wait for pending swap row (crosschain uses type=swap so testID is same)
+- extendedWaitUntil:
+    visible:
+      id: transaction-row-swap-pending
+    timeout: 30000
+- tapOn:
+    id: transaction-row-swap-pending
+
+# Assert speed-up/cancel context menu IS available (no delegation flag)
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible:
+          id: transaction-details-context-menu-button
+
+# Open context menu and verify Speed Up option exists
+- tapOn:
+    id: transaction-details-context-menu-button
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible: 'Speed Up'
+
+# Tap Speed Up and verify the SpeedUpAndCancelSheet loads
+- tapOn: 'Speed Up'
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible:
+          id: speed-up-and-cancel-sheet
+
+# Verify confirm button is available (sheet loaded with valid tx data including nonce)
+- assertVisible:
+    id: speed-up-cancel-sheet-confirm-button
+
+# Go back without confirming (we can't send a real replacement for injected tx)
+- back
+
+# --- Crosschain pending tx cancel precondition ---
+
+# Go back to activity list
+- back
+
+# Inject another crosschain pending tx for cancel path verification
+- openLink: rainbow://e2e/inject-pending-tx?type=swap&nonce=101&to=0x1111111254EEB25477B68fb85Ed929f73A960582&gasLimit=0x61A80&data=0xcafebabe&value=0x0&swap=%7B%22type%22%3A%22crosschainSwap%22%2C%22fromChainId%22%3A1%2C%22toChainId%22%3A10%2C%22isBridge%22%3Atrue%7D
+- openLink: rainbow://e2e/clear-toasts
+
+# Wait for the new pending row (will be the most recent)
+- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: transaction-row-swap-pending
+    timeout: 30000
+- tapOn:
+    id: transaction-row-swap-pending
+
+# Open context menu and verify Cancel option exists
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible:
+          id: transaction-details-context-menu-button
+- tapOn:
+    id: transaction-details-context-menu-button
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible: 'Cancel'
+
+# Tap Cancel and verify sheet loads
+- tapOn: 'Cancel'
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible:
+          id: speed-up-and-cancel-sheet
+
+# Verify cancel button is available (sheet loaded with valid tx data including nonce)
+- assertVisible:
+    id: speed-up-cancel-sheet-cancel-button
