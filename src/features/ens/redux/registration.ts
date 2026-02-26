@@ -7,7 +7,7 @@ import type {
   Records,
   RegistrationParameters,
   TransactionRegistrationParameters,
-} from '../types/ensRegistration';
+} from '../types/registration';
 import { getLocalENSRegistrations, saveLocalENSRegistrations } from '@/handlers/localstorage/accountLocal';
 import { type ENS_RECORDS, type REGISTRATION_MODES } from '../utils/helpers';
 import { omitFlatten } from '@/helpers/utilities';

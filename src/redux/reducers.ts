@@ -4,7 +4,7 @@ import charts from './charts';
 import contacts from './contacts';
 
 import editOptions from './editOptions';
-import ensRegistration from '@/features/ens/redux/ensRegistration';
+import ensRegistration from '@/features/ens/redux/registration';
 import gas from './gas';
 import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';

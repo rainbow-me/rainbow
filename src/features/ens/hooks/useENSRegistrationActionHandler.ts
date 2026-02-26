@@ -10,7 +10,7 @@ import usePendingTransactions from '@/hooks/usePendingTransactions';
 
 import { refreshWalletInfo, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { type PendingTransaction } from '@/entities/transactions';
-import { type Records, type RegistrationParameters } from '../types/ensRegistration';
+import { type Records, type RegistrationParameters } from '../types/registration';
 import { fetchResolver } from '../utils/handlers';
 import { saveNameFromLabelhash } from '../utils/localStorage';
 import { uploadImage } from '@/handlers/pinata';

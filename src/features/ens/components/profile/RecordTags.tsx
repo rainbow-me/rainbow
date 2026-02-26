@@ -7,7 +7,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Icon } from '@/components/icons';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { Bleed, Box, Inline, Inset, selectTextSizes, Text, useForegroundColor } from '@/design-system';
-import type { Records } from '../../types/ensRegistration';
+import type { Records } from '../../types/registration';
 import { deprecatedTextRecordFields, ENS_RECORDS } from '../../utils/helpers';
 import useENSRecordDisplayProperties from '../../hooks/useENSRecordDisplayProperties';
 import { useTheme } from '@/theme';

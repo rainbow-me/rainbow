@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import { useMemo } from 'react';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
-import { type ENSRegistrationState } from '../types/ensRegistration';
+import { type ENSRegistrationState } from '../types/registration';
 import { type RainbowTransaction } from '@/entities/transactions';
 import { type AppState } from '@/redux/store';
 import ethereumUtils from '@/utils/ethereumUtils';

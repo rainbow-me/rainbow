@@ -18,7 +18,7 @@ import useENSRecords from '../../hooks/useENSRecords';
 import useOpenENSNFTHandler from '../../hooks/useOpenENSNFTHandler';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
-import { useENSAddress } from '../../resources/ensAddressQuery';
+import { useENSAddress } from '../../resources/addressQuery';
 import { type RootStackParamList } from '@/navigation/types';
 import type Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';

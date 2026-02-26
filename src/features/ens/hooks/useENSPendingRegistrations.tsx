@@ -1,13 +1,13 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useENSRegistration from './useENSRegistration';
-import type { ENSRegistrationState } from '../types/ensRegistration';
+import type { ENSRegistrationState } from '../types/registration';
 import { REGISTRATION_MODES } from '../utils/helpers';
 import { useNavigation } from '@/navigation';
-import { removeExpiredRegistrations } from '../redux/ensRegistration';
+import { removeExpiredRegistrations } from '../redux/registration';
 import { type AppState } from '@/redux/store';
 import Routes from '@/navigation/routesNames';
-import { getENSNFTAvatarUrl } from '../utils/ens';
+import { getENSNFTAvatarUrl } from '../utils/records';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 

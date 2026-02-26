@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
 import useENSModifiedRegistration from './useENSModifiedRegistration';
 import useENSRegistration from './useENSRegistration';
-import type { Records } from '../types/ensRegistration';
+import type { Records } from '../types/registration';
 import { deprecatedTextRecordFields, ENS_RECORDS, REGISTRATION_MODES, type TextRecordField, textRecordFields } from '../utils/helpers';
 
 const disabledAtom = atom({

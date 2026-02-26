@@ -1,5 +1,5 @@
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { isENSNFTRecord, parseENSNFTRecord } from '../utils/ens';
+import { isENSNFTRecord, parseENSNFTRecord } from '../utils/records';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
 /** @description Retrieves the unique token corresponding to an ENS NFT record. */

@@ -14,7 +14,7 @@ import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
-import { useENSAddress } from '@/features/ens/resources/ensAddressQuery';
+import { useENSAddress } from '@/features/ens/resources/addressQuery';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { type RootStackParamList } from '@/navigation/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';

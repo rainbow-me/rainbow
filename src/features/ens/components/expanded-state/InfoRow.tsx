@@ -10,7 +10,7 @@ import useOpenENSNFTHandler from '../../hooks/useOpenENSNFTHandler';
 import { Bleed, Box, Inline, Inset, Text, useForegroundColor } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import Routes from '@/navigation/routesNames';
-import { useENSAddress } from '../../resources/ensAddressQuery';
+import { useENSAddress } from '../../resources/addressQuery';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress } from '@/state/wallets/walletsStore';

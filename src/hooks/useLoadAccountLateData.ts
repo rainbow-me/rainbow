@@ -1,5 +1,5 @@
 import { logger } from '@/logger';
-import { ensRegistrationsLoadState } from '@/features/ens/redux/ensRegistration';
+import { ensRegistrationsLoadState } from '@/features/ens/redux/registration';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAccountAddress, getIsReadOnlyWallet } from '@/state/wallets/walletsStore';

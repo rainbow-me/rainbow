@@ -20,7 +20,7 @@ import { type TokenColors } from '@/graphql/__generated__/metadata';
 import { type GasTrend } from '@/__swaps__/utils/meteorology';
 import { type RequestSource } from '@/utils/requestNavigationHandlers';
 import { type Checkbox } from '@/screens/SendConfirmationSheet';
-import { type ENSProfile } from '@/features/ens/types/ens';
+import { type ENSProfile } from '@/features/ens/types/profile';
 import { type SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { type BackupFile, type CloudBackups } from '@/model/backup';
 import type walletBackupStepTypes from '@/helpers/walletBackupStepTypes';

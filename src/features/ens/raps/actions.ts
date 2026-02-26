@@ -1,5 +1,5 @@
 import { analytics } from '@/analytics';
-import { type ENSRegistrationRecords } from '../types/ensRegistration';
+import { type ENSRegistrationRecords } from '../types/registration';
 import { type NewTransaction, TransactionStatus } from '@/entities/transactions';
 import { type TransactionGasParamAmounts } from '@/entities/gas';
 import { IS_TEST } from '@/env';
@@ -10,7 +10,7 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { parseGasParamAmounts } from '@/parsers';
 import { type ENSActionParameters, type ENSRap, ENSRapActionType, type RapENSAction, type RapENSActionParameters } from './common';
-import { saveCommitRegistrationParameters, updateTransactionRegistrationParameters } from '../redux/ensRegistration';
+import { saveCommitRegistrationParameters, updateTransactionRegistrationParameters } from '../redux/registration';
 import store from '@/redux/store';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { addNewTransaction } from '@/state/pendingTransactions';

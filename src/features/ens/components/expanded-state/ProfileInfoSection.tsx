@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@/design-system';
-import type { Records } from '../../types/ensRegistration';
+import type { Records } from '../../types/registration';
 import { deprecatedTextRecordFields, ENS_RECORDS } from '../../utils/helpers';
 import useENSRecordDisplayProperties from '../../hooks/useENSRecordDisplayProperties';
 

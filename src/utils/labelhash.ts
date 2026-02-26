@@ -1,6 +1,6 @@
 import { keccak256 } from '@ethersproject/keccak256';
 import { toUtf8Bytes } from '@ethersproject/strings';
-import { normalizeENS } from '@/features/ens/utils/ens';
+import { normalizeENS } from '@/features/ens/utils/records';
 
 export function encodeLabelhash(hash: string) {
   if (!hash.startsWith('0x')) {

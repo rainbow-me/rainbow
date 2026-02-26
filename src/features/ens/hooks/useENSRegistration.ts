@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import type { Records } from '../types/ensRegistration';
+import type { Records } from '../types/registration';
 import { type REGISTRATION_MODES } from '../utils/helpers';
-import * as ensRedux from '../redux/ensRegistration';
+import * as ensRedux from '../redux/registration';
 import { type AppState } from '@/redux/store';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 

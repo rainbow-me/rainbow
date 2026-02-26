@@ -1,7 +1,7 @@
 import { logger } from '@/logger';
 import type { EthereumAddress } from '@/entities/wallet';
 import type { LegacyGasFeeParamsBySpeed, LegacySelectedGasFee, SelectedGasFee, GasFeeParamsBySpeed } from '@/entities/gas';
-import type { Records } from '../types/ensRegistration';
+import type { Records } from '../types/registration';
 import { type REGISTRATION_MODES } from '../utils/helpers';
 
 export enum ENSRapActionType {

@@ -15,7 +15,7 @@ import {
   handleSignificantDecimals,
   multiply,
 } from '@/helpers/utilities';
-import type { ENSRegistrationRecords } from '../types/ensRegistration';
+import type { ENSRegistrationRecords } from '../types/registration';
 import type { EthereumAddress } from '@/entities/wallet';
 import { getProvider, toHex } from '@/handlers/web3';
 import { gweiToWei } from '@/parsers';

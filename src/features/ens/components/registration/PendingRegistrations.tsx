@@ -6,7 +6,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { Box, Column, Columns, Inset, Separator, Stack, Text } from '@/design-system';
-import type { RegistrationParameters } from '../../types/ensRegistration';
+import type { RegistrationParameters } from '../../types/registration';
 import useENSPendingRegistrations from '../../hooks/useENSPendingRegistrations';
 import { colors } from '@/styles';
 

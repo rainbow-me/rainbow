@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import usePrevious from '@/hooks/usePrevious';
 import useENSRegistration from './useENSRegistration';
 import useInterval from '@/hooks/useInterval';
-import type { RegistrationParameters } from '../types/ensRegistration';
+import type { RegistrationParameters } from '../types/registration';
 import { getProvider } from '@/handlers/web3';
 import {
   ENS_SECONDS_PADDING,
@@ -14,7 +14,7 @@ import {
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
 } from '../utils/helpers';
-import { updateTransactionRegistrationParameters } from '../redux/ensRegistration';
+import { updateTransactionRegistrationParameters } from '../redux/registration';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 

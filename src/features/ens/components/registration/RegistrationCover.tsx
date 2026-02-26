@@ -15,7 +15,7 @@ import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
 import useSelectImageMenu from '@/hooks/useSelectImageMenu';
 import { ImgixImage } from '@/components/images';
 import magicMemo from '@/utils/magicMemo';
-import { stringifyENSNFTRecord } from '../../utils/ens';
+import { stringifyENSNFTRecord } from '../../utils/records';
 import { ENS_RECORDS } from '../../utils/helpers';
 import { type ImagePickerAsset } from 'expo-image-picker';
 

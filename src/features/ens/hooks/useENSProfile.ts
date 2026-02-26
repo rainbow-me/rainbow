@@ -8,7 +8,7 @@ import { ensResolverQueryKey, fetchENSResolver } from './useENSResolver';
 import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { getENSProfile, saveENSProfile } from '../utils/localStorage';
 import { queryClient, type QueryConfigDeprecated, type UseQueryData } from '@/react-query';
-import { fetchENSAddress } from '../resources/ensAddressQuery';
+import { fetchENSAddress } from '../resources/addressQuery';
 
 const queryKey = (name: string, { supportedRecordsOnly }: { supportedRecordsOnly?: boolean } = {}) => [
   'ens-profile',

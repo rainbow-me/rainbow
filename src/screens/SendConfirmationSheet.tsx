@@ -59,7 +59,7 @@ import { Centered, Column, Row } from '../components/layout';
 import { SendButton } from '../components/send';
 import { SheetHandleFixedToTopHeight, SheetTitle, SlackSheet } from '../components/sheet';
 import { Text as OldText } from '../components/text';
-import { type ENSProfile } from '@/features/ens/types/ens';
+import { type ENSProfile } from '@/features/ens/types/profile';
 import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { address } from '../utils/abbreviations';
 import { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';

@@ -1,7 +1,7 @@
 import { AddressZero } from '@ethersproject/constants';
 import { isEmpty } from 'lodash';
 import { createNewENSAction, createNewENSRap, type ENSActionParameters, type RapENSAction, ENSRapActionType } from './common';
-import type { Records } from '../types/ensRegistration';
+import type { Records } from '../types/registration';
 import {
   formatRecordsForTransaction,
   getRapActionTypeForTxType,

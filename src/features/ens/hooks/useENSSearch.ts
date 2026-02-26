@@ -13,7 +13,7 @@ import {
 } from '../utils/helpers';
 import { timeUnits } from '@/references';
 import ethereumUtils from '@/utils/ethereumUtils';
-import { validateENS } from '../utils/ens';
+import { validateENS } from '../utils/records';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';

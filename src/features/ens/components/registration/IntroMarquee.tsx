@@ -9,7 +9,7 @@ import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import { queryClient } from '@/react-query';
 import Routes from '@/navigation/routesNames';
-import { useEnsMarquee } from '../../resources/ensMarqueeQuery';
+import { useEnsMarquee } from '../../resources/marqueeQuery';
 import { type EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
 import ensIntroMarqueeNames from '../../references/ens-intro-marquee-names.json';
 
