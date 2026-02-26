@@ -11,7 +11,8 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { PnlShareGraphic, type PnlShareImageHandle } from '@/features/perps/screens/perps-trade-details-sheet/PnlShareGraphic';
 import { TradeDetailsSection } from '@/features/perps/screens/perps-trade-details-sheet/TradeDetailsSection';
-import { ActivityIndicator, Share } from 'react-native';
+import { ActivityIndicator } from 'react-native';
+import RNShare from 'react-native-share';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { analytics } from '@/analytics';
@@ -53,25 +54,32 @@ function PerpsTradeDetailsSheetContent({ trade }: { trade: HlTrade }) {
   );
 
   const handleShare = useCallback(async () => {
-    analytics.track(analytics.event.perpsTradeDetailsSharePressed, {
-      market: trade.symbol,
-      direction: trade.isLong ? 'long' : 'short',
-      pnlPercentage,
-      pnl: trade.pnl,
-      netPnl: trade.netPnl,
-    });
-
     setIsSharing(true);
     try {
       const image = await pnlShareImageRef.current?.capture();
       if (!image) {
         return;
       }
-      await Share.share({
-        title: 'pnl',
-        url: image,
+      const imageUrl = image.startsWith('file://') ? image : `file://${image}`;
+
+      const result = await RNShare.open({
+        failOnCancel: false,
+        type: 'image/png',
+        url: imageUrl,
+      });
+
+      analytics.track(analytics.event.perpsTradeDetailsSharePressed, {
+        market: trade.symbol,
+        direction: trade.isLong ? 'long' : 'short',
+        pnlPercentage,
+        pnl: trade.pnl,
+        netPnl: trade.netPnl,
+        shared: !result.dismissedAction,
+        success: result.success,
+        message: result.message,
       });
     } catch (e) {
+      console.error(e);
       logger.error(new RainbowError('[PerpsTradeDetailsSheet]: Error sharing trade', e));
     } finally {
       setIsSharing(false);
@@ -97,7 +105,7 @@ function PerpsTradeDetailsSheetContent({ trade }: { trade: HlTrade }) {
               </Text>
             </Box>
           ) : (
-            <ActivityIndicator color={'black'} />
+            <ActivityIndicator color={isDarkMode ? 'black' : 'white'} />
           )}
         </HyperliquidButton>
         <TradeDetailsSection trade={trade} />

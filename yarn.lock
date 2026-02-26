@@ -9795,7 +9795,7 @@ __metadata:
     react-native-screen-corner-radius: "npm:0.2.3"
     react-native-screens: "npm:4.10.0"
     react-native-section-list-get-item-layout: "npm:2.2.3"
-    react-native-share: "npm:8.2.1"
+    react-native-share: "npm:12.2.5"
     react-native-sound: "npm:0.11.2"
     react-native-storage: "npm:1.0.1"
     react-native-svg: "npm:15.11.2"
@@ -24069,10 +24069,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-share@npm:8.2.1":
-  version: 8.2.1
-  resolution: "react-native-share@npm:8.2.1"
-  checksum: 10c0/7727e8eae8fa05fe96f2edfe226fca02a7a4d8005fee0e4e53003ef191210cc8982db1e5a0e4997329c2fb098f17d4877876992320e52bad83d188af70785b28
+"react-native-share@npm:12.2.5":
+  version: 12.2.5
+  resolution: "react-native-share@npm:12.2.5"
+  checksum: 10c0/d0e7f2fa405346b2eab37b3776c9d6c79f673930f0854ac45dfdf3aed0923b8a512fbe8653960399f5d9bf965aa98fe374c27c36e9fd1f93825e572ea3bf83df
   languageName: node
   linkType: hard
 
