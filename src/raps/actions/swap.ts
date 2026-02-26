@@ -1,10 +1,8 @@
 import { type Signer } from '@ethersproject/abstract-signer';
-import { type Transaction } from '@ethersproject/transactions';
 import type { BatchCall } from '@rainbow-me/delegation';
 import {
   type Quote,
   SwapType,
-  fillQuote,
   prepareFillQuote,
   getQuoteExecutionDetails,
   getTargetAddress,
@@ -42,6 +40,31 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { getQuoteAllowanceTargetAddress, requireAddress, requireHex } from '../validation';
 
 const WRAP_GAS_PADDING = 1.002;
+
+type SwapReplayCall = {
+  to: string;
+  data: string;
+  value: string;
+};
+
+type SwapExecutionResult = {
+  hash: string;
+  nonce: number;
+  replayCall: SwapReplayCall | null;
+};
+
+function getReplayCallFromTransaction(transaction: {
+  to?: string | null;
+  data?: string;
+  value?: { toString: () => string } | string;
+}): SwapReplayCall | null {
+  if (!transaction.to || !transaction.data || transaction.value === undefined) return null;
+  return {
+    to: transaction.to,
+    data: transaction.data,
+    value: transaction.value.toString(),
+  };
+}
 
 export const estimateUnlockAndSwap = async ({
   quote,
@@ -216,7 +239,7 @@ export const executeSwap = async ({
   quote: Quote;
   wallet: Signer;
   permit: boolean;
-}): Promise<Transaction | null> => {
+}): Promise<SwapExecutionResult | null> => {
   if (!wallet || !quote) {
     return null;
   }
@@ -229,13 +252,43 @@ export const executeSwap = async ({
 
   // Wrap Eth
   if (quote.swapType === SwapType.wrap) {
-    return wrapNativeAsset(quote.buyAmount, wallet, getWrappedAssetAddress(quote), transactionParams);
+    const transaction = await wrapNativeAsset(quote.buyAmount, wallet, getWrappedAssetAddress(quote), transactionParams);
+    if (!transaction?.hash || transaction.nonce === undefined) return null;
+
+    return {
+      hash: transaction.hash,
+      nonce: transaction.nonce,
+      replayCall: getReplayCallFromTransaction(transaction),
+    };
     // Unwrap Weth
   } else if (quote.swapType === SwapType.unwrap) {
-    return unwrapNativeAsset(quote.sellAmount, wallet, getWrappedAssetAddress(quote), transactionParams);
+    const transaction = await unwrapNativeAsset(quote.sellAmount, wallet, getWrappedAssetAddress(quote), transactionParams);
+    if (!transaction?.hash || transaction.nonce === undefined) return null;
+
+    return {
+      hash: transaction.hash,
+      nonce: transaction.nonce,
+      replayCall: getReplayCallFromTransaction(transaction),
+    };
     // Swap
   } else if (quote.swapType === SwapType.normal) {
-    return fillQuote(quote, transactionParams, wallet, permit, chainId as number, REFERRER);
+    const preparedCall = await prepareFillQuote(quote, transactionParams, wallet, permit, chainId as number, REFERRER);
+    const transaction = await wallet.sendTransaction({
+      data: preparedCall.data,
+      to: preparedCall.to,
+      value: preparedCall.value,
+      ...transactionParams,
+    });
+
+    return {
+      hash: transaction.hash,
+      nonce: transaction.nonce,
+      replayCall: {
+        to: preparedCall.to,
+        data: preparedCall.data,
+        value: preparedCall.value.toString(),
+      },
+    };
   }
   return null;
 };
@@ -318,13 +371,21 @@ export const prepareSwap = async ({
   transaction: Omit<NewTransaction, 'hash'>;
 }> => {
   const tx = await prepareFillQuote(quote as Quote, {}, wallet, false, chainId as number, REFERRER);
+  const preparedCall = {
+    to: requireAddress(tx.to, 'swap prepared tx.to'),
+    value: toHex(tx.value ?? 0),
+    data: requireHex(tx.data, 'swap prepared tx.data'),
+  };
+  const transaction = {
+    ...buildSwapTransaction(parameters, parameters.gasParams, parameters.nonce),
+    to: preparedCall.to,
+    value: preparedCall.value,
+    data: preparedCall.data,
+  };
+
   return {
-    call: {
-      to: requireAddress(tx.to, 'swap prepared tx.to'),
-      value: toHex(tx.value ?? 0),
-      data: requireHex(tx.data, 'swap prepared tx.data'),
-    },
-    transaction: buildSwapTransaction(parameters, parameters.gasParams),
+    call: preparedCall,
+    transaction,
   };
 };
 
@@ -365,7 +426,7 @@ export const swap = async ({
     throw e;
   }
 
-  let swap;
+  let execution: SwapExecutionResult | null = null;
   try {
     const nonce = typeof baseNonce === 'number' ? baseNonce + index : undefined;
     const swapParams = {
@@ -377,7 +438,7 @@ export const swap = async ({
       quote,
       wallet,
     };
-    swap = await executeFn(executeSwap, {
+    execution = await executeFn(executeSwap, {
       screen: Screens.SWAPS,
       operation: TimeToSignOperation.BroadcastTransaction,
       metadata: {
@@ -392,15 +453,17 @@ export const swap = async ({
     throw e;
   }
 
-  if (!swap || !swap?.hash) throw new RainbowError('swap: error executeSwap');
+  if (!execution) throw new RainbowError('swap: error executeSwap');
 
+  const replayFields = execution.replayCall ?? {};
   const transaction: NewTransaction = {
-    ...buildSwapTransaction(parameters, gasParamsToUse, swap.nonce, gasLimit),
-    hash: swap.hash,
+    ...buildSwapTransaction(parameters, gasParamsToUse, execution.nonce, gasLimit),
+    ...replayFields,
+    hash: execution.hash,
   };
 
-  if (parameters.meta && swap.hash) {
-    swapMetadataStorage.set(swap.hash.toLowerCase(), JSON.stringify({ type: 'swap', data: parameters.meta }));
+  if (parameters.meta && execution.hash) {
+    swapMetadataStorage.set(execution.hash.toLowerCase(), JSON.stringify({ type: 'swap', data: parameters.meta }));
   }
 
   addNewTransaction({
@@ -410,7 +473,7 @@ export const swap = async ({
   });
 
   return {
-    nonce: swap.nonce,
-    hash: swap.hash,
+    nonce: execution.nonce,
+    hash: execution.hash,
   };
 };

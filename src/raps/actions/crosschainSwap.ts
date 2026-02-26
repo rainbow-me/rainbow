@@ -216,13 +216,21 @@ export const prepareCrosschainSwap = async ({
   transaction: Omit<NewTransaction, 'hash'>;
 }> => {
   const tx = await prepareFillCrosschainQuote(quote as CrosschainQuote, REFERRER);
+  const preparedCall = {
+    to: requireAddress(tx.to, 'crosschain prepared tx.to'),
+    value: toHex(tx.value ?? 0),
+    data: requireHex(tx.data, 'crosschain prepared tx.data'),
+  };
+  const transaction = {
+    ...buildCrosschainSwapTransaction(parameters, parameters.gasParams, parameters.nonce),
+    to: preparedCall.to,
+    value: preparedCall.value,
+    data: preparedCall.data,
+  };
+
   return {
-    call: {
-      to: requireAddress(tx.to, 'crosschain prepared tx.to'),
-      value: toHex(tx.value ?? 0),
-      data: requireHex(tx.data, 'crosschain prepared tx.data'),
-    },
-    transaction: buildCrosschainSwapTransaction(parameters, parameters.gasParams),
+    call: preparedCall,
+    transaction,
   };
 };
 

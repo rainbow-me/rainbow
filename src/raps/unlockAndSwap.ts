@@ -44,6 +44,7 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
     sellAmount,
     permit: false,
     requiresApprove,
+    nonce: swapParameters.nonce,
     quote,
     meta: swapParameters.meta,
     assetToSell,

@@ -213,6 +213,11 @@ export const walletExecuteRap = async <T extends RapTypes>(
         reason: 'unsupported-signer',
       });
     } else if (canExecuteAtomic) {
+      const atomicNonce = nonce;
+      if (atomicNonce === undefined) {
+        return { nonce: undefined, hash: null, errorMessage: 'Atomic execution requires nonce' };
+      }
+
       try {
         const calls: BatchCall[] = [];
         let pendingTransaction: Omit<NewTransaction, 'hash'> | null = null;
@@ -255,7 +260,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
             maxPriorityFeePerGas: BigInt(gasParams.maxPriorityFeePerGas),
             gasLimit: null,
           },
-          nonce,
+          nonce: atomicNonce,
         });
 
         if (!result.hash) {
@@ -263,6 +268,11 @@ export const walletExecuteRap = async <T extends RapTypes>(
         }
 
         if (pendingTransaction) {
+          const transactionNonce = pendingTransaction.nonce ?? atomicNonce;
+          if (transactionNonce === undefined) {
+            return { nonce: undefined, hash: null, errorMessage: 'Atomic execution missing pending transaction nonce' };
+          }
+
           const gasLimit = await getBroadcastGasLimit(result.hash, provider);
           const transaction: NewTransaction = {
             ...pendingTransaction,
@@ -270,6 +280,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
             batch: true,
             delegation: result.type === 'eip7702',
             gasLimit: pendingTransaction.gasLimit ?? gasLimit,
+            nonce: transactionNonce,
           };
           addNewTransaction({
             address: quote.from,
@@ -279,7 +290,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
         }
 
         logger.debug(`[${rapName}] executed atomically`, { hash: result.hash });
-        return { nonce, hash: result.hash, errorMessage: null };
+        return { nonce: atomicNonce, hash: result.hash, errorMessage: null };
       } catch (e) {
         const error = ensureError(e);
         const fallbackToSequential = !isUserRejectionError(error);

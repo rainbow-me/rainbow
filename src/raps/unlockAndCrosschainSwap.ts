@@ -35,6 +35,7 @@ export const createUnlockAndCrosschainSwapRap = async (swapParameters: RapSwapAc
   const swap = createNewAction('crosschainSwap', {
     chainId,
     requiresApprove,
+    nonce: swapParameters.nonce,
     quote,
     meta: swapParameters.meta,
     assetToSell,
