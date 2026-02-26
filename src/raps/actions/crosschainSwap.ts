@@ -1,7 +1,6 @@
 import { type Signer } from '@ethersproject/abstract-signer';
 import type { BatchCall } from '@rainbow-me/delegation';
-import type { Hash } from 'viem';
-import { type CrosschainQuote, fillCrosschainQuote, prepareFillCrosschainQuote, SwapType } from '@rainbow-me/swaps';
+import { type CrosschainQuote, prepareFillCrosschainQuote, SwapType } from '@rainbow-me/swaps';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { add } from '@/helpers/utilities';
 import { estimateApprove } from './unlock';
@@ -26,6 +25,7 @@ import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/per
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getQuoteAllowanceTargetAddress, requireAddress, requireHex } from '../validation';
+import type { ReplayCall } from '../replay';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
@@ -133,15 +133,32 @@ export const executeCrosschainSwap = async ({
   quote: CrosschainQuote;
   wallet: Signer;
   referrer?: ReferrerType;
-}) => {
+}): Promise<{ hash: string; nonce: number; replayCall: ReplayCall } | null> => {
   if (!wallet || !quote || quote.swapType !== SwapType.crossChain) return null;
 
+  const preparedCall = await prepareFillCrosschainQuote(quote, referrer);
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
     nonce: nonce !== undefined ? toHex(String(nonce)) : undefined,
     ...gasParams,
   };
-  return fillCrosschainQuote(quote, transactionParams, wallet, referrer);
+
+  const transaction = await wallet.sendTransaction({
+    data: preparedCall.data,
+    to: preparedCall.to,
+    value: preparedCall.value,
+    ...transactionParams,
+  });
+
+  return {
+    hash: transaction.hash,
+    nonce: transaction.nonce,
+    replayCall: {
+      to: preparedCall.to,
+      data: preparedCall.data,
+      value: preparedCall.value.toString(),
+    },
+  };
 };
 
 function isBridging(assetToSell: ParsedAsset, assetToBuy: ParsedAsset): boolean {
@@ -300,7 +317,8 @@ export const crosschainSwap = async ({
 
   const transaction: NewTransaction = {
     ...buildCrosschainSwapTransaction(parameters, gasParamsToUse, swap.nonce, gasLimit),
-    hash: swap.hash as Hash,
+    ...swap.replayCall,
+    hash: swap.hash,
   };
 
   addNewTransaction({

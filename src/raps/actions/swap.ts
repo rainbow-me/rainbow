@@ -38,37 +38,15 @@ import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/per
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getQuoteAllowanceTargetAddress, requireAddress, requireHex } from '../validation';
+import { extractReplayCall, type ReplayCall } from '../replay';
 
 const WRAP_GAS_PADDING = 1.002;
-
-type SwapReplayCall = {
-  to: string;
-  data: string;
-  value: string;
-};
 
 type SwapExecutionResult = {
   hash: string;
   nonce: number;
-  replayCall: SwapReplayCall | null;
+  replayCall: ReplayCall | null;
 };
-
-/**
- * Returns replay calldata from the broadcast transaction
- * so speed-up and cancel replay the exact call.
- */
-function extractReplayCall(transaction: {
-  to?: string | null;
-  data?: string;
-  value?: { toString: () => string } | string;
-}): SwapReplayCall | null {
-  if (!transaction.to || !transaction.data || transaction.value === undefined) return null;
-  return {
-    to: transaction.to,
-    data: transaction.data,
-    value: transaction.value.toString(),
-  };
-}
 
 export const estimateUnlockAndSwap = async ({
   quote,
