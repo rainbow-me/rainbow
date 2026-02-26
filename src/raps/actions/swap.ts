@@ -53,7 +53,11 @@ type SwapExecutionResult = {
   replayCall: SwapReplayCall | null;
 };
 
-function getReplayCallFromTransaction(transaction: {
+/**
+ * Returns replay calldata from the broadcast transaction
+ * so speed-up and cancel replay the exact call.
+ */
+function extractReplayCall(transaction: {
   to?: string | null;
   data?: string;
   value?: { toString: () => string } | string;
@@ -258,7 +262,7 @@ export const executeSwap = async ({
     return {
       hash: transaction.hash,
       nonce: transaction.nonce,
-      replayCall: getReplayCallFromTransaction(transaction),
+      replayCall: extractReplayCall(transaction),
     };
     // Unwrap Weth
   } else if (quote.swapType === SwapType.unwrap) {
@@ -268,7 +272,7 @@ export const executeSwap = async ({
     return {
       hash: transaction.hash,
       nonce: transaction.nonce,
-      replayCall: getReplayCallFromTransaction(transaction),
+      replayCall: extractReplayCall(transaction),
     };
     // Swap
   } else if (quote.swapType === SwapType.normal) {
