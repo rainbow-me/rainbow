@@ -142,10 +142,10 @@ export default function SpeedUpAndCancelSheet() {
   const [currentProvider, setCurrentProvider] = useState<StaticJsonRpcProvider>(getProvider({ chainId: ChainId.mainnet }));
   const [data, setData] = useState<BytesLike>();
   const [gasLimit, setGasLimit] = useState<BigNumberish>();
-  const [nonce, setNonce] = useState<BigNumberish>();
   const [to, setTo] = useState<string | undefined>(tx?.to ?? undefined);
   const [value, setValue] = useState<string>();
   const isL2 = isL2Chain({ chainId: tx?.chainId });
+  const hasTransactionNonce = tx?.nonce !== undefined && tx?.nonce !== null;
 
   const getNewTransactionGasParams = useCallback(() => {
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
@@ -174,6 +174,9 @@ export default function SpeedUpAndCancelSheet() {
   }, [dispatch, tx?.ensCommitRegistrationName]);
 
   const handleCancellation = useCallback(async () => {
+    const nonce = tx?.nonce;
+    if (nonce === undefined || nonce === null) return;
+
     try {
       const newGasParams = getNewTransactionGasParams();
       const cancelTxPayload = {
@@ -189,7 +192,7 @@ export default function SpeedUpAndCancelSheet() {
       if (tx?.ensCommitRegistrationName) {
         cancelCommitTransactionHash();
       }
-      const updatedTx = { ...tx, nonce: tx.nonce ?? 0 };
+      const updatedTx = { ...tx, nonce };
       // Update the hash on the copy of the original tx
       if (res?.result?.hash) {
         updatedTx.hash = res.result.hash;
@@ -218,11 +221,12 @@ export default function SpeedUpAndCancelSheet() {
     getNewTransactionGasParams,
     goBack,
     isHardwareWallet,
-    nonce,
     tx,
   ]);
 
   const handleCancellationWrapperFn = useCallback(async () => {
+    if (!hasTransactionNonce) return;
+
     if (isHardwareWallet) {
       navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
         submit: handleCancellation,
@@ -230,7 +234,7 @@ export default function SpeedUpAndCancelSheet() {
     } else {
       handleCancellation();
     }
-  }, [handleCancellation, isHardwareWallet, navigate]);
+  }, [handleCancellation, hasTransactionNonce, isHardwareWallet, navigate]);
 
   const saveCommitTransactionHash = useCallback(
     (hash: string) => {
@@ -245,6 +249,9 @@ export default function SpeedUpAndCancelSheet() {
   );
 
   const handleSpeedUp = useCallback(async () => {
+    const nonce = tx?.nonce;
+    if (nonce === undefined || nonce === null) return;
+
     try {
       const newGasParams = getNewTransactionGasParams();
       const fasterTxPayload = {
@@ -264,7 +271,7 @@ export default function SpeedUpAndCancelSheet() {
       if (tx?.ensCommitRegistrationName && res?.result?.hash) {
         saveCommitTransactionHash(res.result.hash);
       }
-      const updatedTx = { ...tx, nonce: tx.nonce ?? 0 };
+      const updatedTx = { ...tx, nonce };
       // Update the hash on the copy of the original tx
       if (res?.result?.hash) {
         updatedTx.hash = res.result.hash;
@@ -295,7 +302,6 @@ export default function SpeedUpAndCancelSheet() {
     getNewTransactionGasParams,
     goBack,
     isHardwareWallet,
-    nonce,
     saveCommitTransactionHash,
     to,
     tx,
@@ -303,12 +309,14 @@ export default function SpeedUpAndCancelSheet() {
   ]);
 
   const handleSpeedUpWrapperFn = useCallback(async () => {
+    if (!hasTransactionNonce) return;
+
     if (isHardwareWallet) {
       navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: handleSpeedUp });
     } else {
       handleSpeedUp();
     }
-  }, [handleSpeedUp, isHardwareWallet, navigate]);
+  }, [handleSpeedUp, hasTransactionNonce, isHardwareWallet, navigate]);
 
   // Set the network
   useEffect(() => {
@@ -359,7 +367,6 @@ export default function SpeedUpAndCancelSheet() {
           }
 
           setReady(true);
-          setNonce(tx.nonce ?? 0);
           setData(tx?.data);
           if (!isL2) {
             setTxType(GasFeeTypes.eip1559);
@@ -482,6 +489,7 @@ export default function SpeedUpAndCancelSheet() {
                       <SheetActionButtonRow ignorePaddingBottom ignorePaddingTop={ios}>
                         <SheetActionButton
                           color={colors.red}
+                          disabled={!hasTransactionNonce}
                           label={`􀎽 ${i18n.t(i18n.l.button.attempt_cancellation)}`}
                           onPress={handleCancellationWrapperFn}
                           size="big"
@@ -512,6 +520,7 @@ export default function SpeedUpAndCancelSheet() {
                       />
                       <SheetActionButton
                         color={accentColor || colors.appleBlue}
+                        disabled={!hasTransactionNonce}
                         label={`􀎽 ${i18n.t(i18n.l.button.confirm)}`}
                         onPress={handleSpeedUpWrapperFn}
                         size="big"
