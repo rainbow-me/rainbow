@@ -30,7 +30,7 @@ import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 import { getFCMToken } from '@/notifications/tokens';
 import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
 import { resetCache as resetDelegationCache, getDelegations, DelegationStatus } from '@rainbow-me/delegation';
-import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
+import { RevokeReason } from '@/screens/delegation/types';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { nonceActions } from '@/state/nonces';
@@ -224,15 +224,26 @@ const DevSection = () => {
       const toRevoke = (() => {
         switch (revokeReason) {
           case RevokeReason.DISABLE_SMART_WALLET:
-            return rainbowDelegations.length > 0 ? mapToRevokes(rainbowDelegations) : [{ chainId: ChainId.mainnet }];
+            return mapToRevokes(rainbowDelegations);
           case RevokeReason.DISABLE_SINGLE_NETWORK: {
-            const baseDelegation = rainbowDelegations.find(d => d.chainId === ChainId.base);
-            return baseDelegation ? mapToRevokes([baseDelegation]) : [{ chainId: ChainId.base }];
+            // Prefers Base for commonality; falls back to any other existing delegation
+            const preferred = rainbowDelegations.find(d => d.chainId === ChainId.base);
+            const delegation = preferred ?? rainbowDelegations[0];
+            return delegation ? mapToRevokes([delegation]) : [];
           }
           case RevokeReason.DISABLE_THIRD_PARTY:
-            return thirdPartyDelegations.length > 0 ? mapToRevokes(thirdPartyDelegations) : [{ chainId: ChainId.mainnet }];
+            return mapToRevokes(thirdPartyDelegations);
+          // Vulnerability/bug are Rainbow-contract-specific issues
+          case RevokeReason.ALERT_VULNERABILITY:
+          case RevokeReason.ALERT_BUG:
+            return mapToRevokes(rainbowDelegations);
+          // Unrecognized — third-party contract with unknown reason
+          case RevokeReason.ALERT_UNRECOGNIZED:
+            return mapToRevokes(thirdPartyDelegations);
+          // Unspecified — unknown origin, revoke everything defensively
+          case RevokeReason.ALERT_UNSPECIFIED:
           default:
-            return [{ chainId: ChainId.mainnet }];
+            return mapToRevokes(delegations);
         }
       })();
 

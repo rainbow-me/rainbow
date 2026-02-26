@@ -1,4 +1,4 @@
-import { type NotifyOnChangeProps, useQuery } from '@tanstack/react-query';
+import { type NotifyOnChangeProps, useQueries, useQuery } from '@tanstack/react-query';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { abs, lessThan, subtract, isZero } from '@/helpers/utilities';
@@ -82,6 +82,39 @@ export function useMeteorology<Selected = MeteorologyResult>(
     cacheTime: 36_000, // 36 seconds
     refetchInterval: 12_000, // 12 seconds
     staleTime: staleTime ?? 12_000, // 12 seconds
+  });
+}
+
+/** Multi-chain meteorology queries sharing the same cache as useMeteorology */
+export function useMeteorologyMultichain<Selected = MeteorologyResult>(
+  { chainIds }: { chainIds: ChainId[] },
+  {
+    enabled = true,
+    staleTime,
+    cacheTime,
+    refetchInterval,
+    select,
+  }: {
+    enabled?: boolean;
+    staleTime?: number;
+    cacheTime?: number;
+    refetchInterval?: number;
+    select?: (data: MeteorologyResult) => Selected;
+  } = {}
+) {
+  const defaultSelect = useCallback((data: MeteorologyResult) => selectGasSuggestions(data).fast as unknown as Selected, []);
+  const selectedQueryData = select ?? defaultSelect;
+
+  return useQueries({
+    queries: chainIds.map(chainId => ({
+      queryKey: meteorologyQueryKey({ chainId }),
+      queryFn: meteorologyQueryFunction,
+      enabled: enabled && !!chainId,
+      select: selectedQueryData,
+      staleTime: staleTime ?? 12_000, // 12 seconds
+      cacheTime: cacheTime ?? 36_000, // 36 seconds
+      refetchInterval: refetchInterval ?? 12_000, // 12 seconds
+    })),
   });
 }
 
@@ -251,6 +284,26 @@ export function useMeteorologySuggestion<Selected = GasSuggestion>({
         [select, speed]
       ),
       enabled: enabled && speed !== 'custom',
+    }
+  );
+}
+
+export function useMeteorologySuggestionMultichain<Selected = GasSuggestion>({
+  chainIds,
+  speed,
+  enabled,
+  select = s => s as Selected,
+}: {
+  chainIds: ChainId[];
+  speed: Exclude<GasSpeed, 'custom'>;
+  enabled?: boolean;
+  select?: (d: GasSuggestion | undefined) => Selected;
+}) {
+  return useMeteorologyMultichain(
+    { chainIds: chainIds },
+    {
+      select: useCallback((d: MeteorologyResult) => select(selectGasSuggestions(d)[speed]), [select, speed]),
+      enabled,
     }
   );
 }

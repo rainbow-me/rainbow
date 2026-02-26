@@ -3,7 +3,7 @@ import { shouldRevokeDelegation } from '@rainbow-me/delegation';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
+import { RevokeReason } from '@/screens/delegation/types';
 import { DELEGATION, getExperimentalFlag } from '@/config';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { EthereumWalletType } from '@/helpers/walletTypes';
