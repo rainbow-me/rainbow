@@ -7,8 +7,8 @@ import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../components/backup/BackupSheet';
 import ChangeWalletSheet from '../screens/change-wallet/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
-import ENSAdditionalRecordsSheet from '../screens/ENSAdditionalRecordsSheet';
-import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
+import ENSAdditionalRecordsSheet from '@/features/ens/screens/ENSAdditionalRecordsSheet';
+import ENSConfirmRegisterSheet from '@/features/ens/screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import { ExpandedAssetSheet as ExpandedAssetSheetV2 } from '@/screens/expandedAssetSheet/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
@@ -17,7 +17,7 @@ import ModalScreen from '../screens/ModalScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
 import { RestoreSheet } from '../screens/RestoreSheet';
-import SelectENSSheet from '../screens/SelectENSSheet';
+import SelectENSSheet from '@/features/ens/screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
@@ -30,7 +30,7 @@ import NoNeedWCSheet from '../screens/NoNeedWCSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
 import { WelcomeScreen } from '../screens/WelcomeScreen/WelcomeScreen';
-import RegisterENSNavigator from './RegisterENSNavigator';
+import RegisterENSNavigator from '@/features/ens/navigation/RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
   airdropsSheetConfig,

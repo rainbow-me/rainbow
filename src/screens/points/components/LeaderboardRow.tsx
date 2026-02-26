@@ -14,7 +14,7 @@ import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme';
 import ethereumUtils from '@/utils/ethereumUtils';
-import { isENSNFTRecord } from '@/utils/ens';
+import { isENSNFTRecord } from '@/features/ens/utils/ens';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { address as formatAddress } from '@/utils/abbreviations';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
