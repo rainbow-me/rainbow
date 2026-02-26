@@ -176,12 +176,18 @@ export const walletExecuteRap = async <T extends RapTypes>(
     if (!address) {
       delegationUnsupportedReason = 'NO_ADDRESS';
     } else {
-      const support = await supportsDelegation({
-        address,
-        chainId: parameters.chainId,
-      });
-      delegationSupported = support.supported;
-      delegationUnsupportedReason = support.reason;
+      try {
+        const support = await supportsDelegation({
+          address,
+          chainId: parameters.chainId,
+        });
+        delegationSupported = support.supported;
+        delegationUnsupportedReason = support.reason;
+      } catch (e) {
+        logger.warn(`[${rapName}] supportsDelegation check failed`, {
+          message: ensureError(e).message,
+        });
+      }
     }
   }
 
@@ -257,11 +263,13 @@ export const walletExecuteRap = async <T extends RapTypes>(
         }
 
         if (pendingTransaction) {
+          const gasLimit = await getBroadcastGasLimit(result.hash, provider);
           const transaction: NewTransaction = {
             ...pendingTransaction,
             hash: result.hash,
             batch: true,
             delegation: result.type === 'eip7702',
+            gasLimit: pendingTransaction.gasLimit ?? gasLimit,
           };
           addNewTransaction({
             address: quote.from,
@@ -375,4 +383,15 @@ function isAtomicPrepareAction(action: RapAction<RapActionTypes>): action is Rap
 
 function isAtomicRapType(type: RapTypes): type is 'swap' | 'crosschainSwap' {
   return type === 'swap' || type === 'crosschainSwap';
+}
+
+async function getBroadcastGasLimit(hash: string, provider: Signer['provider']): Promise<string | undefined> {
+  if (!provider) return undefined;
+
+  try {
+    const transaction = await provider.getTransaction(hash);
+    return transaction?.gasLimit?.toString();
+  } catch {
+    return undefined;
+  }
 }

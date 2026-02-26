@@ -186,7 +186,8 @@ export const prepareUnlock = async ({ parameters }: PrepareActionProps<'unlock'>
 function buildUnlockTransaction(
   parameters: RapUnlockActionParameters & { data: string; value?: string },
   gasParams: TransactionGasParams | TransactionLegacyGasParams,
-  nonce?: number
+  nonce?: number,
+  gasLimit?: string
 ): Omit<NewTransaction, 'hash'> {
   const chainsName = useBackendNetworksStore.getState().getChainsName();
   const { assetToUnlock, chainId, data, value } = parameters;
@@ -202,6 +203,7 @@ function buildUnlockTransaction(
     changes: [],
     from: parameters.fromAddress,
     to: assetToUnlock.address,
+    gasLimit,
     network: chainsName[chainId],
     chainId,
     nonce,
@@ -288,7 +290,7 @@ export const executeApprove = async ({
     // EIP-1559 like networks
     maxFeePerGas: gasParams.maxFeePerGas,
     maxPriorityFeePerGas: gasParams.maxPriorityFeePerGas,
-    nonce: nonce ? toHex(nonce) : undefined,
+    nonce: nonce !== undefined ? toHex(nonce) : undefined,
   });
 };
 
@@ -329,7 +331,7 @@ export const unlock = async ({
     gasFeeParamsBySpeed,
   });
 
-  const nonce = baseNonce ? baseNonce + index : undefined;
+  const nonce = typeof baseNonce === 'number' ? baseNonce + index : undefined;
 
   const { approvalAmount, isUnlimited } = await getApprovalAmount({
     address: parameters.fromAddress,
@@ -362,7 +364,8 @@ export const unlock = async ({
     ...buildUnlockTransaction(
       { ...parameters, data: approval.data, value: isUnlimited ? 'UNLIMITED' : approvalAmount },
       gasParamsToUse,
-      approval.nonce
+      approval.nonce,
+      gasLimit
     ),
     hash: approval.hash,
   };

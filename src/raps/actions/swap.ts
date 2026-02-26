@@ -223,7 +223,7 @@ export const executeSwap = async ({
 
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
-    nonce: nonce ? toHex(`${nonce}`) : undefined,
+    nonce: nonce !== undefined ? toHex(`${nonce}`) : undefined,
     ...gasParams,
   };
 
@@ -243,7 +243,8 @@ export const executeSwap = async ({
 function buildSwapTransaction(
   parameters: RapSwapActionParameters<'swap'>,
   gasParams: TransactionGasParams | TransactionLegacyGasParams,
-  nonce?: number
+  nonce?: number,
+  gasLimit?: string
 ): Omit<NewTransaction, 'hash'> {
   const chainsName = useBackendNetworksStore.getState().getChainsName();
 
@@ -277,6 +278,7 @@ function buildSwapTransaction(
     from: parameters.quote.from,
     to: requireAddress(getTargetAddress(parameters.quote), 'swap target address'),
     value: parameters.quote.value?.toString(),
+    gasLimit,
     asset: assetToBuy,
     changes: [
       {
@@ -365,7 +367,7 @@ export const swap = async ({
 
   let swap;
   try {
-    const nonce = baseNonce ? baseNonce + index : undefined;
+    const nonce = typeof baseNonce === 'number' ? baseNonce + index : undefined;
     const swapParams = {
       gasParams: gasParamsToUse,
       chainId,
@@ -393,7 +395,7 @@ export const swap = async ({
   if (!swap || !swap?.hash) throw new RainbowError('swap: error executeSwap');
 
   const transaction: NewTransaction = {
-    ...buildSwapTransaction(parameters, gasParamsToUse, swap.nonce),
+    ...buildSwapTransaction(parameters, gasParamsToUse, swap.nonce, gasLimit),
     hash: swap.hash,
   };
 

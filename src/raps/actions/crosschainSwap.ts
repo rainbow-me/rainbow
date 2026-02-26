@@ -138,7 +138,7 @@ export const executeCrosschainSwap = async ({
 
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
-    nonce: nonce ? toHex(String(nonce)) : undefined,
+    nonce: nonce !== undefined ? toHex(String(nonce)) : undefined,
     ...gasParams,
   };
   return fillCrosschainQuote(quote, transactionParams, wallet, referrer);
@@ -151,7 +151,8 @@ function isBridging(assetToSell: ParsedAsset, assetToBuy: ParsedAsset): boolean 
 function buildCrosschainSwapTransaction(
   parameters: RapSwapActionParameters<'crosschainSwap'>,
   gasParams: TransactionGasParams | TransactionLegacyGasParams,
-  nonce?: number
+  nonce?: number,
+  gasLimit?: string
 ): Omit<NewTransaction, 'hash'> {
   const chainsName = useBackendNetworksStore.getState().getChainsName();
 
@@ -185,6 +186,7 @@ function buildCrosschainSwapTransaction(
     from: parameters.quote.from,
     to: requireAddress(parameters.quote.to, 'crosschain quote.to'),
     value: parameters.quote.value?.toString(),
+    gasLimit,
     asset: assetToBuy,
     changes: [
       {
@@ -258,7 +260,7 @@ export const crosschainSwap = async ({
     throw e;
   }
 
-  const nonce = baseNonce ? baseNonce + index : undefined;
+  const nonce = typeof baseNonce === 'number' ? baseNonce + index : undefined;
 
   const swapParams = {
     chainId,
@@ -289,7 +291,7 @@ export const crosschainSwap = async ({
   if (!swap) throw new RainbowError('[raps/crosschainSwap]: error executeCrosschainSwap');
 
   const transaction: NewTransaction = {
-    ...buildCrosschainSwapTransaction(parameters, gasParamsToUse, swap.nonce),
+    ...buildCrosschainSwapTransaction(parameters, gasParamsToUse, swap.nonce, gasLimit),
     hash: swap.hash as Hash,
   };
 
