@@ -19,7 +19,7 @@ import { type ChainId } from '@/state/backendNetworks/types';
 import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
 import * as i18n from '@/languages';
 import useGas from '@/hooks/useGas';
-import { type GasFee, type LegacyGasFee } from '@/entities/gas';
+import { type GasFee, type LegacyGasFee, type LegacySelectedGasFee, type SelectedGasFee } from '@/entities/gas';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -125,6 +125,18 @@ const getSheetContent = (reason: RevokeReason, chainName?: string): SheetContent
   }
 };
 
+function getRevokeTransactionGasOptions(selectedGasFee: SelectedGasFee | LegacySelectedGasFee | undefined) {
+  const gasFeeParams = selectedGasFee?.gasFeeParams;
+  if (!gasFeeParams || !('maxBaseFee' in gasFeeParams)) return null;
+
+  const maxPriorityFeePerGas = BigInt(gasFeeParams.maxPriorityFeePerGas.amount);
+  return {
+    gasLimit: null,
+    maxFeePerGas: BigInt(gasFeeParams.maxBaseFee.amount) + maxPriorityFeePerGas,
+    maxPriorityFeePerGas,
+  };
+}
+
 export const RevokeDelegationPanel = () => {
   const { goBack } = useNavigation();
   const { params: { address, delegationsToRevoke = [], onSuccess, revokeReason = RevokeReason.ALERT_UNSPECIFIED } = {} } =
@@ -141,7 +153,7 @@ export const RevokeDelegationPanel = () => {
   const chainName = chainId ? backendNetworksActions.getChainsLabel()[chainId] || `Chain ${chainId}` : '';
 
   // Gas management
-  const { startPollingGasFees, stopPollingGasFees, selectedGasFee } = useGas();
+  const { startPollingGasFees, stopPollingGasFees, selectedGasFee, isGasReady, chainId: gasChainId } = useGas();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   useEffect(() => {
@@ -178,6 +190,14 @@ export const RevokeDelegationPanel = () => {
 
     try {
       const provider = getProvider({ chainId: currentDelegation.chainId });
+      if (!isGasReady || gasChainId !== currentDelegation.chainId) {
+        throw new Error('Revoke gas params not ready');
+      }
+
+      const transactionGasOptions = getRevokeTransactionGasOptions(selectedGasFee);
+      if (!transactionGasOptions) {
+        throw new Error('Revoke requires EIP-1559 gas params');
+      }
 
       const wallet = await loadWallet({
         address,
@@ -188,22 +208,13 @@ export const RevokeDelegationPanel = () => {
         throw new Error('Failed to load wallet');
       }
 
-      // Get current gas prices from provider
-      const feeData = await provider.getFeeData();
-      const maxFeePerGas = feeData.maxFeePerGas?.toBigInt() ?? 0n;
-      const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas?.toBigInt() ?? 0n;
-
       const nonce = await getNextNonce({ address, chainId: currentDelegation.chainId });
 
       const result = await executeRevokeDelegation({
         signer: wallet as Wallet,
         provider,
         chainId: currentDelegation.chainId,
-        transactionOptions: {
-          maxFeePerGas,
-          maxPriorityFeePerGas,
-          gasLimit: null,
-        },
+        transactionOptions: transactionGasOptions,
         nonce,
       });
 
@@ -233,7 +244,7 @@ export const RevokeDelegationPanel = () => {
       haptics.notificationError();
       setRevokeStatus('recoverableError');
     }
-  }, [address, currentDelegation, isLastDelegation, goBack, onSuccess]);
+  }, [address, currentDelegation, gasChainId, isGasReady, isLastDelegation, goBack, onSuccess, selectedGasFee]);
 
   const buttonLabel = (() => {
     switch (revokeStatus) {
@@ -261,7 +272,7 @@ export const RevokeDelegationPanel = () => {
     }
   }, [revokeStatus, handleRevoke, isLastDelegation, goBack]);
 
-  const isReady = revokeStatus === 'ready';
+  const isReady = revokeStatus === 'ready' && isGasReady;
   const isProcessing = revokeStatus === 'revoking';
   const isError = revokeStatus === 'recoverableError';
   const isSuccess = revokeStatus === 'success';
@@ -340,7 +351,7 @@ export const RevokeDelegationPanel = () => {
           <HoldToActivateButton
             backgroundColor={useDefaultButtonGradient ? 'transparent' : buttonBackgroundColor}
             disabledBackgroundColor={opacity(buttonBackgroundColor, 0.2)}
-            disabled={isProcessing}
+            disabled={isProcessing || !isGasReady}
             isProcessing={isProcessing}
             label={buttonLabel}
             onLongPress={handleButtonPress}
