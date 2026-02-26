@@ -10,7 +10,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { metadataPOSTClient } from '@/graphql';
 import { type ReservoirCollection } from '@/graphql/__generated__/arcDev';
 import { type Transaction } from '@/graphql/__generated__/metadataPOST';
-import { fetchReverseRecord } from '@/handlers/ens';
+import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { maybeSignUri } from '@/handlers/imgix';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
@@ -23,7 +23,7 @@ import {
   multiply,
 } from '@/helpers/utilities';
 import useDimensions from '@/hooks/useDimensions';
-import useENSAvatar from '@/hooks/useENSAvatar';
+import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import useGas from '@/hooks/useGas';
 import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';

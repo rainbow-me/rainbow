@@ -1,0 +1,102 @@
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
+import React, { type RefObject, useCallback, useContext, useEffect, useImperativeHandle, useState } from 'react';
+import { type ScrollViewProps, type ViewStyle, Animated as RNAnimated } from 'react-native';
+import { useSharedValue } from 'react-native-reanimated';
+
+import { type ScrollViewDefaultProps } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
+import type BaseScrollView from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
+import { ProfileSheetConfigContext } from '@/screens/ProfileSheet';
+import ProfileSheetHeader from './profile/ProfileSheetHeader';
+import ImagePreviewOverlay from '@/components/images/ImagePreviewOverlay';
+import { StickyHeaderContext } from '@/components/asset-list/RecyclerAssetList2/core/StickyHeaders';
+import { useMemoOne } from 'use-memo-one';
+import { useRecyclerAssetListPosition } from '@/components/asset-list/RecyclerAssetList2/core/Contexts';
+
+const extraPadding = { paddingBottom: 144 };
+const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
+  React.forwardRef<
+    BaseScrollView,
+    ScrollViewDefaultProps & {
+      children: React.ReactNode;
+      contentContainerStyle: ViewStyle;
+    }
+  >(function ExternalScrollView(
+    props: ScrollViewDefaultProps & {
+      children: React.ReactNode;
+      contentContainerStyle: ViewStyle;
+    },
+    ref
+  ) {
+    const isInsideBottomSheet = !!useContext(BottomSheetContext);
+    const { enableZoomableImages } = useContext(ProfileSheetConfigContext);
+
+    const { scrollViewRef } = useContext(StickyHeaderContext)!;
+
+    const [scrollEnabled, setScrollEnabled] = useState(ios);
+    useEffect(() => {
+      // For Android, delay scroll until sheet has been mounted (to avoid
+      // ImagePreviewOverlay mounting issues).
+      if (android) {
+        setTimeout(() => setScrollEnabled(true), 500);
+      }
+    });
+
+    const yPosition = useSharedValue(0);
+    const y = useRecyclerAssetListPosition()!;
+
+    const event = useMemoOne(
+      () =>
+        RNAnimated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  y,
+                },
+              },
+            },
+          ],
+          { listener: props.onScroll, useNativeDriver: true }
+        ),
+      [props.onScroll, y]
+    );
+
+    const scrollWorklet = useCallback(
+      (event: { contentOffset: { y: number } }) => {
+        'worklet';
+        yPosition.value = event.contentOffset.y;
+      },
+      [yPosition]
+    );
+
+    useImperativeHandle(ref, () => scrollViewRef.current!);
+
+    const ScrollView = isInsideBottomSheet ? BottomSheetScrollView : RNAnimated.ScrollView;
+
+    return (
+      <ScrollView
+        {...(props as ScrollViewProps)}
+        bounces={false}
+        contentContainerStyle={[extraPadding, props.contentContainerStyle]}
+        ref={scrollViewRef as RefObject<any>}
+        scrollEnabled={scrollEnabled}
+        {...(isInsideBottomSheet
+          ? {
+              onScrollWorklet: scrollWorklet,
+            }
+          : {
+              onScroll: event,
+            })}
+      >
+        <ImagePreviewOverlay enableZoom={ios && enableZoomableImages} yPosition={yPosition}>
+          {type === 'ens-profile' && <ProfileSheetHeader />}
+          {props.children}
+        </ImagePreviewOverlay>
+      </ScrollView>
+    );
+  });
+
+const ExternalENSProfileScrollViewWithRef = ExternalENSProfileScrollViewWithRefFactory('ens-profile');
+const ExternalSelectNFTScrollViewWithRef = ExternalENSProfileScrollViewWithRefFactory('select-nft');
+export { ExternalSelectNFTScrollViewWithRef, ExternalENSProfileScrollViewWithRef };

@@ -9,7 +9,7 @@ import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { isNativeAsset } from '@/handlers/assets';
-import { debouncedFetchSuggestions } from '@/handlers/ens';
+import { debouncedFetchSuggestions } from '@/features/ens/utils/handlers';
 import {
   assetIsUniqueAsset,
   buildTransaction,
@@ -21,17 +21,17 @@ import {
   resolveNameOrAddress,
 } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { REGISTRATION_STEPS } from '@/helpers/ens';
+import { REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import { convertAmountAndPriceToNativeDisplay, convertAmountFromNativeValue, formatInputDecimals, lessThan } from '@/helpers/utilities';
 import { checkIsValidAddressOrDomain, checkIsValidAddressOrDomainFormat, isENSAddressFormat } from '@/helpers/validators';
-import { prefetchENSAvatar } from '@/hooks/useENSAvatar';
-import { prefetchENSCover } from '@/hooks/useENSCover';
+import { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
+import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useContacts from '@/hooks/useContacts';
-import useENSProfile from '@/hooks/useENSProfile';
-import useENSRegistrationActionHandler from '@/hooks/useENSRegistrationActionHandler';
+import useENSProfile from '@/features/ens/hooks/useENSProfile';
+import useENSRegistrationActionHandler from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import useGas from '@/hooks/useGas';
 import useMaxInputBalance from '@/hooks/useMaxInputBalance';
 import usePrevious from '@/hooks/usePrevious';

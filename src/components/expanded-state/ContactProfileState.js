@@ -8,7 +8,7 @@ import ProfileModal from './profile/ProfileModal';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import useContacts from '@/hooks/useContacts';
-import useENSAvatar from '@/hooks/useENSAvatar';
+import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 

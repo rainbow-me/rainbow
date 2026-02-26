@@ -13,7 +13,7 @@ import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
-import useENSAvatar from '@/hooks/useENSAvatar';
+import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import useManageCloudBackups from '@/hooks/useManageCloudBackups';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';

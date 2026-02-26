@@ -8,7 +8,7 @@ import { STALE_TIME } from '@/state/nfts/createNftsStore';
 import { type NftsState } from '@/state/nfts/types';
 import { parseUniqueId } from '@/resources/nfts/utils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
-import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
+import { ENS_NFT_CONTRACT_ADDRESS } from '@/features/ens/references';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { fetchNFTData, type NFTData, nftsQueryKey } from '@/resources/nfts';
 import { isENSAddressFormat } from '@/helpers/validators';

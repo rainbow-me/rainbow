@@ -1,7 +1,7 @@
 import { type createStackNavigator } from '@react-navigation/stack';
 import { type Route } from '@/navigation/routesNames';
 import type Routes from '@/navigation/routesNames';
-import { type REGISTRATION_MODES } from '@/helpers/ens';
+import { type REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
@@ -19,7 +19,7 @@ import { type TokenColors } from '@/graphql/__generated__/metadata';
 import { type GasTrend } from '@/__swaps__/utils/meteorology';
 import { type RequestSource } from '@/utils/requestNavigationHandlers';
 import { type Checkbox } from '@/screens/SendConfirmationSheet';
-import { type ENSProfile } from '@/entities/ens';
+import { type ENSProfile } from '@/features/ens/types/profile';
 import { type SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { type BackupFile, type CloudBackups } from '@/model/backup';
 import type walletBackupStepTypes from '@/helpers/walletBackupStepTypes';

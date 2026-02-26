@@ -2,7 +2,7 @@ import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
 import WalletTypes from '@/helpers/walletTypes';
-import { fetchENSAvatarWithRetry } from '@/hooks/useENSAvatar';
+import { fetchENSAvatarWithRetry } from '@/features/ens/hooks/useENSAvatar';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { parseTimestampFromBackupFile } from '@/model/backup';
 import * as kc from '@/keychain';
