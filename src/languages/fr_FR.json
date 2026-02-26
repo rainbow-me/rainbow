@@ -564,20 +564,20 @@
       "sync_codepush": "Synchroniser CodePush",
       "simulate_device_transfer": "Simuler le transfert d'appareil",
       "headers": {
-        "normie_settings": "Normie Settings",
-        "rainbow_developer_settings": "Rainbow Developer Settings",
-        "feature_flags": "Feature Flags",
-        "delegation_settings": "Delegation Settings"
+        "normie_settings": "Réglages Normie",
+        "rainbow_developer_settings": "Paramètres du développeur Rainbow",
+        "feature_flags": "Indicateurs de fonctionnalités",
+        "delegation_settings": "Paramètres de délégation"
       },
       "delegation_settings": {
-        "clear_store": "Clear Delegation Store",
-        "simulate_disable_smart_wallet": "Simulate Disable Smart Wallet",
-        "simulate_disable_single_network": "Simulate Disable Single Network",
-        "simulate_disable_third_party": "Simulate Disable Third Party",
-        "simulate_alert_vulnerability": "Simulate Alert Vulnerability",
-        "simulate_alert_bug": "Simulate Alert Bug",
-        "simulate_alert_unrecognized": "Simulate Alert Unrecognized",
-        "simulate_alert_unspecified": "Simulate Alert Unspecified"
+        "clear_store": "Effacer le stockage de délégation",
+        "simulate_disable_smart_wallet": "Simuler la désactivation du Smart Wallet",
+        "simulate_disable_single_network": "Simuler la désactivation du réseau unique",
+        "simulate_disable_third_party": "Simuler la désactivation du tiers",
+        "simulate_alert_vulnerability": "Simuler l’alerte de vulnérabilité",
+        "simulate_alert_bug": "Simuler l'alerte de bug",
+        "simulate_alert_unrecognized": "Simuler l'alerte non reconnue",
+        "simulate_alert_unspecified": "Simuler l'alerte non spécifiée"
       }
     },
     "discover": {
@@ -901,7 +901,7 @@
         "minimum_received": "Montant minimum reçu",
         "preferred_network": "Réseau Préféré",
         "rainbow_fee": "Frais Rainbow inclus",
-        "smart_wallet_activation_fee": "Est. Smart Wallet Fee",
+        "smart_wallet_activation_fee": "Frais estimés du Smart Wallet",
         "settings": "Paramètres"
       },
       "token_index": {
@@ -1058,8 +1058,8 @@
         "title": "Frais de réseau %{networkName}"
       },
       "smart_wallet_activation": {
-        "text": "This transaction includes a one-time Smart Wallet activation on %{networkName}. This upgrades your wallet to support batched transactions and other smart account features.\n\nThe activation fee is included in the network fee for this swap.",
-        "title": "Smart Wallet activation"
+        "text": "Cette transaction inclut une activation unique du Smart Wallet sur %{networkName}. Cela met à niveau votre portefeuille pour prendre en charge les transactions groupées et d'autres fonctionnalités de compte intelligent.\n\nLes frais d'activation sont inclus dans les frais de réseau pour ce swap.",
+        "title": "Activation du Smart Wallet"
       },
       "max_base_fee": {
         "text": "Il s'agit du maximum de frais de base que vous êtes prêt à payer pour cette transaction.\n\nFixer des frais de base maximaux plus élevés empêche votre transaction de se bloquer si les frais augmentent.",
@@ -2727,9 +2727,9 @@
           "failed": "Échec de révocation"
         },
         "delegate": {
-          "pending": "Delegating",
+          "pending": "Délégation en cours",
           "confirmed": "Approuvé",
-          "failed": "Delegation Failed"
+          "failed": "Échec de la délégation"
         },
         "revoke_delegation": {
           "pending": "Révocation en cours",
@@ -2775,8 +2775,8 @@
       "savings": "Économies",
       "signed": "Signé",
       "contract_interaction": "Interaction de contrat",
-      "delegate_description": "Wallet Delegation",
-      "revoke_delegation_description": "Wallet Delegation",
+      "delegate_description": "Délégation du portefeuille",
+      "revoke_delegation_description": "Délégation du portefeuille",
       "deposited_with_token": "Déposé %{name}",
       "withdrew_with_token": "Retiré %{name}"
     },
@@ -2789,7 +2789,7 @@
       "network_fee": "Frais de réseau",
       "hash_copied": "􀁣 Hash de transaction copié",
       "address_copied": "􀁣 Adresse copiée",
-      "smart_account": "Smart Account",
+      "smart_account": "Compte intelligent",
       "try_again": "􀅉 Essayez de nouveau",
       "context_menu": {
         "copy_address": "Copier l'adresse",
@@ -3042,49 +3042,49 @@
         "view_secret_phrase": "Afficher la phrase secrète",
         "view_private_key": "Afficher la clé privée",
         "copy_wallet_address": "Copier l'adresse",
-        "edit_smart_wallet": "Edit Smart Wallet"
+        "edit_smart_wallet": "Modifier le Smart Wallet"
       },
       "delegations": {
-        "active": "Active",
-        "not_active": "Not active",
+        "active": "Actif",
+        "not_active": "Inactif",
         "smart_wallet": "Smart Wallet",
-        "smart_wallet_description": "Smart wallets enable a faster, cheaper, and more reliable wallet experience.",
-        "activated_networks": "Activated Networks",
-        "other_smart_accounts": "Other Smart Accounts",
-        "delegated_to": "Delegated to %{name}",
-        "delegated_to_another_wallet": "Delegated to another wallet",
-        "enable_smart_wallet": "Enable Smart Wallet",
-        "disable_smart_wallet": "Disable Smart Wallet",
-        "enabled_description": "You'll miss out on faster transactions and lower network costs",
-        "disabled_description": "Updates will take effect on your next swap",
-        "will_delegate_callout": "Includes smart wallet activation",
+        "smart_wallet_description": "Les Smart Wallets permettent une expérience de portefeuille plus rapide, moins chère et plus fiable.",
+        "activated_networks": "Réseaux activés",
+        "other_smart_accounts": "Autres comptes intelligents",
+        "delegated_to": "Délégué à %{name}",
+        "delegated_to_another_wallet": "Délégué à un autre portefeuille",
+        "enable_smart_wallet": "Activer le Smart Wallet",
+        "disable_smart_wallet": "Désactiver le Smart Wallet",
+        "enabled_description": "Vous manquerez des transactions plus rapides et des coûts de réseau plus bas",
+        "disabled_description": "Les mises à jour prendront effet lors de votre prochain swap",
+        "will_delegate_callout": "Inclut l'activation du Smart Wallet",
         "revoke_panel": {
-          "disable_smart_wallet_title": "Disable Smart Wallet",
-          "disable_smart_wallet_subtitle": "This will revoke all active delegations and disable Smart Wallet features.",
-          "disable_smart_wallet_button": "Hold to Disable",
-          "disable_single_network_title": "Disable on %{network}",
-          "disable_single_network_subtitle": "This will remove the Smart Wallet delegation for this network.",
-          "disable_single_network_button": "Hold to Disable",
-          "disable_third_party_title": "Disable Account",
-          "disable_third_party_subtitle": "Your wallet is delegated to a different Smart Wallet. Disable to use Rainbow.",
-          "disable_third_party_button": "Hold to Disable",
-          "alert_vulnerability_title": "Smart Wallet Security",
-          "alert_vulnerability_subtitle": "A vulnerability was detected in your Smart Wallet contract. Revoke it as a precaution to protect your assets.",
-          "alert_vulnerability_button": "Hold to Revoke",
-          "alert_bug_title": "Smart Wallet Issue",
-          "alert_bug_subtitle": "An issue was detected with your Smart Wallet contract. Revoke it to improve your wallet experience.",
-          "alert_bug_button": "Hold to Revoke",
-          "alert_unrecognized_title": "Risky Delegation",
-          "alert_unrecognized_subtitle": "An unrecognized and risky delegation contract was detected. Revoke it to secure your wallet.",
-          "alert_unrecognized_button": "Hold to Revoke",
-          "alert_unspecified_title": "Delegation Issue",
-          "alert_unspecified_subtitle": "Your wallet is currently delegated to a risky smart contract. Revoke it to secure your wallet.",
-          "alert_unspecified_button": "Hold to Revoke",
-          "revoking": "Revoking...",
+          "disable_smart_wallet_title": "Désactiver le Smart Wallet",
+          "disable_smart_wallet_subtitle": "Cela révoquera toutes les délégations actives et désactivera les fonctionnalités du Smart Wallet.",
+          "disable_smart_wallet_button": "Maintenir pour désactiver",
+          "disable_single_network_title": "Désactiver sur %{network}",
+          "disable_single_network_subtitle": "Cela supprimera la délégation Smart Wallet pour ce réseau.",
+          "disable_single_network_button": "Maintenir pour désactiver",
+          "disable_third_party_title": "Désactiver le compte",
+          "disable_third_party_subtitle": "Votre portefeuille est délégué à un Smart Wallet différent. Désactivez pour utiliser Rainbow.",
+          "disable_third_party_button": "Maintenir pour désactiver",
+          "alert_vulnerability_title": "Sécurité du Smart Wallet",
+          "alert_vulnerability_subtitle": "Une vulnérabilité a été détectée dans votre contrat Smart Wallet. Révoquez-le par précaution pour protéger vos actifs.",
+          "alert_vulnerability_button": "Maintenir pour révoquer",
+          "alert_bug_title": "Problème de Smart Wallet",
+          "alert_bug_subtitle": "Un problème a été détecté avec votre contrat Smart Wallet. Révoquez-le pour améliorer votre expérience de portefeuille.",
+          "alert_bug_button": "Maintenir pour révoquer",
+          "alert_unrecognized_title": "Délégation risquée",
+          "alert_unrecognized_subtitle": "Un contrat de délégation non reconnu et risqué a été détecté. Révoquez-le pour sécuriser votre portefeuille.",
+          "alert_unrecognized_button": "Maintenir pour révoquer",
+          "alert_unspecified_title": "Problème de délégation",
+          "alert_unspecified_subtitle": "Votre portefeuille est actuellement délégué à un contrat intelligent risqué. Révoquez-le pour sécuriser votre portefeuille.",
+          "alert_unspecified_button": "Maintenir pour révoquer",
+          "revoking": "Révocation en cours...",
           "done": "Terminé",
           "next": "Suivant",
           "try_again": "Réessayer",
-          "gas_fee": "to revoke on %{chainName}"
+          "gas_fee": "pour révoquer sur %{chainName}"
         }
       },
       "balance_title": "Solde",
@@ -3094,10 +3094,10 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Regarder",
         "ledger": "Ledger",
-        "delegated": "Delegated",
-        "alt_delegation": "Alt Delegation",
-        "not_delegated": "Not Delegated",
-        "disabled": "Disabled",
+        "delegated": "Délégué",
+        "alt_delegation": "Délégation alt.",
+        "not_delegated": "Non délégué",
+        "disabled": "Désactivé",
         "wallets": "Portefeuilles",
         "all_wallets": "Tous les portefeuilles",
         "total_balance": "Solde total",
