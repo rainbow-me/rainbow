@@ -464,9 +464,6 @@ export type WithdrawalInfoCardConfig = {
   title: WithdrawalInfoCardTitle;
 } | null;
 
-/** @deprecated Use `RefreshConfig` instead */
-export type WithdrawalRefreshConfig = RefreshConfig;
-
 // ============ Withdrawal Execution Types ===================================== //
 
 /**

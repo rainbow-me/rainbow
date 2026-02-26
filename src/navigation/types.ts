@@ -43,6 +43,7 @@ import { type ScrollView } from 'react-native';
 import { type HlTrade, type PerpMarket, type PerpsPosition, type TriggerOrderSource, type TriggerOrderType } from '@/features/perps/types';
 import { type PolymarketPosition } from '@/features/polymarket/types';
 import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { type RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
 
 export type PortalSheetProps = {
   children: React.FC;
@@ -97,6 +98,7 @@ export type ExplainSheetType =
   | 'obtainL2Assets'
   | 'routeSwaps'
   | 'slippage'
+  | 'smart_wallet_activation'
   | 'token_allocation';
 
 interface ExplainSheetNativeAssetInfo {
@@ -209,6 +211,10 @@ export interface ExplainSheetParameterMap extends CurrentBaseFeeTypes {
   };
   routeSwaps: Record<string, never>;
   slippage: Record<string, never>;
+  smart_wallet_activation: {
+    chainId: ChainId;
+    nativeAsset?: ExplainSheetNativeAssetInfo;
+  };
   token_allocation: { sections: ExplainSheetTokenAllocationSection[] };
 }
 
@@ -603,6 +609,12 @@ type RouteParams = {
     walletId: string;
   };
 
+  [Routes.VIEW_WALLET_DELEGATIONS]: {
+    walletId: string;
+    address: Address;
+    title: string;
+  };
+
   [Routes.RESTORE_SHEET]: {
     fromSettings?: boolean;
   };
@@ -703,6 +715,16 @@ type RouteParams = {
   };
   [Routes.RNBW_REWARDS_ESTIMATE_SHEET]: {
     estimatedAmount: string;
+  };
+  [Routes.REVOKE_DELEGATION_PANEL]: {
+    address: Address;
+    delegationsToRevoke: Array<{
+      chainId: number;
+      // Optional in simulated/debug revoke flows
+      contractAddress?: Address;
+    }>;
+    onSuccess?: () => void;
+    revokeReason?: RevokeReason;
   };
 };
 

@@ -1,5 +1,4 @@
 import { type Block, type Provider } from '@ethersproject/abstract-provider';
-import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, type PopulatedTransaction } from '@ethersproject/contracts';
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { type CrosschainQuote, type Quote, getQuoteExecutionDetails, getTargetAddress } from '@rainbow-me/swaps';
@@ -18,6 +17,9 @@ import { gasUnits } from '@/references';
 import { toHexNoLeadingZeros } from '@/handlers/web3';
 import { BigNumber } from '@ethersproject/bignumber';
 import { type SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
+import type { Transaction } from '@/graphql/__generated__/metadataPOST';
+import { ensureError, logger, RainbowError } from '@/logger';
+import { simulateTransactions } from '@/resources/transactions/transactionSimulation';
 
 export const CHAIN_IDS_WITH_TRACE_SUPPORT: ChainId[] = [mainnet.id];
 export const SWAP_GAS_PADDING = 1.1;
@@ -61,11 +63,12 @@ const getStateDiff = async (provider: Provider, quote: Quote | CrosschainQuote):
   const fromAddr = quote.from;
   const toAddr = quote.swapType === 'normal' ? getTargetAddress(quote) : (quote as CrosschainQuote).allowanceTarget;
   const tokenContract = new Contract(tokenAddress, erc20Abi, provider);
+  const approvalAmount = quote.sellAmount;
 
   const { number: blockNumber } = await (provider.getBlock as () => Promise<Block>)();
 
   // Get data
-  const { data } = await tokenContract.populateTransaction.approve(toAddr, MaxUint256.toHexString());
+  const { data } = await tokenContract.populateTransaction.approve(toAddr, approvalAmount);
 
   // trace_call default params
   const callParams = [
@@ -87,7 +90,7 @@ const getStateDiff = async (provider: Provider, quote: Quote | CrosschainQuote):
       const formattedStateDiff = {
         [tokenAddress]: {
           stateDiff: {
-            [slotAddress]: MaxUint256.toHexString(),
+            [slotAddress]: BigNumber.from(approvalAmount).toHexString(),
           },
         },
       };
@@ -222,3 +225,72 @@ export const populateSwap = async ({
     }
   }
 };
+
+/**
+ * Estimates pre-sign gas for non-atomic, non-delegated RAP steps.
+ */
+export async function estimateTransactionsGasLimit({
+  chainId,
+  steps,
+}: {
+  chainId: ChainId;
+  steps: {
+    transaction: Transaction | null;
+    label: string;
+    fallbackEstimate?: () => Promise<string | undefined>;
+  }[];
+}): Promise<string | undefined> {
+  // Filter to only steps with valid transactions
+  const activeSteps = steps.filter((step): step is (typeof steps)[number] & { transaction: Transaction } => step.transaction !== null);
+
+  if (activeSteps.length === 0) {
+    return undefined;
+  }
+
+  const transactions = activeSteps.map(step => step.transaction);
+
+  try {
+    const results = await simulateTransactions({
+      chainId,
+      transactions,
+    });
+
+    if (results.length !== activeSteps.length) {
+      logger.warn('[estimateTransactionsGasLimit]: Simulation result count mismatch', {
+        expected: activeSteps.length,
+        received: results.length,
+      });
+      return undefined;
+    }
+
+    const gasEstimates = await Promise.all(
+      results.map(async (res, index) => {
+        const step = activeSteps[index];
+        let gasEstimate = res?.gas?.estimate;
+
+        if (!gasEstimate) {
+          logger.warn(`[estimateTransactionsGasLimit]: Simulation failed for ${step.label}`, {
+            message: res?.error?.message,
+          });
+
+          if (step.fallbackEstimate) {
+            gasEstimate = await step.fallbackEstimate();
+          }
+        }
+
+        if (!gasEstimate) {
+          throw new Error(`Failed to estimate gas for ${step.label}`);
+        }
+
+        return gasEstimate;
+      })
+    );
+
+    return gasEstimates.reduce((acc, limit) => add(acc, limit), '0');
+  } catch (e) {
+    logger.error(new RainbowError('[estimateTransactionsGasLimit]: Failed to estimate'), {
+      message: ensureError(e).message,
+    });
+    return undefined;
+  }
+}

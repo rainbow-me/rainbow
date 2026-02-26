@@ -95,6 +95,8 @@ export interface RainbowConfig
   perps_enabled: boolean;
   polymarket_enabled: boolean;
   rnbw_rewards_enabled: boolean;
+  delegation_enabled: boolean;
+  atomic_swaps_enabled: boolean;
 }
 
 const Bips = {
@@ -228,6 +230,8 @@ export const DEFAULT_CONFIG = {
   polymarket_enabled: false,
   dev_section_enabled: IS_DEV,
   rnbw_rewards_enabled: false,
+  delegation_enabled: false,
+  atomic_swaps_enabled: false,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
