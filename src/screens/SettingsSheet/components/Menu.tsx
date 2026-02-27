@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Separator, Stack, Text } from '@/design-system';
+import { Box, Separator, Stack, Text, type BoxProps } from '@/design-system';
 
 type DescriptionContent = string | React.ReactNode;
 type DescriptionPosition = 'leading' | 'trailing';
@@ -7,12 +7,22 @@ type DescriptionPosition = 'leading' | 'trailing';
 interface MenuProps {
   children: React.ReactNode;
   header?: string;
+  background?: BoxProps['background'];
+  borderRadius?: BoxProps['borderRadius'];
   description?: DescriptionContent;
   descriptionPosition?: DescriptionPosition;
   testId?: string;
 }
 
-const Menu = ({ children, description, descriptionPosition = 'trailing', header, testId }: MenuProps) => {
+const Menu = ({
+  background = 'card (Deprecated)',
+  borderRadius = 18,
+  children,
+  description,
+  descriptionPosition = 'trailing',
+  header,
+  testId,
+}: MenuProps) => {
   return (
     <Stack space="8px">
       {header ? (
@@ -24,7 +34,7 @@ const Menu = ({ children, description, descriptionPosition = 'trailing', header,
       ) : null}
       {description && descriptionPosition === 'leading' ? <Description content={description} position="leading" /> : null}
       <Box>
-        <Box background="card (Deprecated)" borderRadius={18} shadow="12px" width="full">
+        <Box background={background} borderRadius={borderRadius} shadow="12px" width="full">
           <Stack separator={<Separator color="divider60 (Deprecated)" />}>{children}</Stack>
         </Box>
         {description && descriptionPosition !== 'leading' ? <Description content={description} position="trailing" /> : null}

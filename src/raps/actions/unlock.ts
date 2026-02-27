@@ -13,12 +13,11 @@ import { RainbowError, ensureError, logger } from '@/logger';
 import { ETH_ADDRESS, gasUnits } from '@/references';
 import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapUnlockActionParameters } from '../references';
 import { overrideWithFastSpeedIfNeeded } from './../utils';
-import { type TokenColors } from '@/graphql/__generated__/metadata';
-import { type ParsedAsset } from '@/resources/assets/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { DELEGATION, getExperimentalFlag } from '@/config/experimental';
 import { requireAddress, requireHex } from '../validation';
+import { toTransactionAsset } from '../transactionAsset';
 
 /**
  * Determines the approval amount based on delegation support.
@@ -183,33 +182,42 @@ export const prepareUnlock = async ({ parameters }: PrepareActionProps<'unlock'>
   };
 };
 
+type UnlockTransactionParams = Omit<RapUnlockActionParameters, 'assetToUnlock'> & {
+  assetToUnlock: RapUnlockActionParameters['assetToUnlock'] & { address: Address };
+  data: string;
+  value?: string;
+  approvalAmount?: 'UNLIMITED' | string;
+};
+
 function buildUnlockTransaction(
-  parameters: RapUnlockActionParameters & { data: string; value?: string },
+  parameters: UnlockTransactionParams,
   gasParams: TransactionGasParams | TransactionLegacyGasParams,
-  nonce?: number
+  nonce: number,
+  gasLimit?: string
 ): Omit<NewTransaction, 'hash'> {
-  const chainsName = useBackendNetworksStore.getState().getChainsName();
   const { assetToUnlock, chainId, data, value } = parameters;
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
+  const asset = toTransactionAsset({
+    asset: assetToUnlock,
+    chainName: chainsName[assetToUnlock.chainId],
+  });
 
   return {
-    asset: {
-      ...assetToUnlock,
-      network: chainsName[assetToUnlock.chainId],
-      colors: assetToUnlock.colors as TokenColors,
-    } as ParsedAsset,
+    asset,
     data,
     value,
     changes: [],
     from: parameters.fromAddress,
     to: assetToUnlock.address,
+    gasLimit,
     network: chainsName[chainId],
     chainId,
     nonce,
     status: TransactionStatus.pending,
     type: 'approve',
-    approvalAmount: parameters.amount,
+    approvalAmount: parameters.approvalAmount ?? parameters.amount,
     ...gasParams,
-  } as Omit<NewTransaction, 'hash'>;
+  };
 }
 
 export const estimateERC721Approval = async ({
@@ -288,7 +296,7 @@ export const executeApprove = async ({
     // EIP-1559 like networks
     maxFeePerGas: gasParams.maxFeePerGas,
     maxPriorityFeePerGas: gasParams.maxPriorityFeePerGas,
-    nonce: nonce ? toHex(nonce) : undefined,
+    nonce: nonce !== undefined ? toHex(nonce) : undefined,
   });
 };
 
@@ -329,7 +337,7 @@ export const unlock = async ({
     gasFeeParamsBySpeed,
   });
 
-  const nonce = baseNonce ? baseNonce + index : undefined;
+  const nonce = typeof baseNonce === 'number' ? baseNonce + index : undefined;
 
   const { approvalAmount, isUnlimited } = await getApprovalAmount({
     address: parameters.fromAddress,
@@ -360,9 +368,16 @@ export const unlock = async ({
 
   const transaction: NewTransaction = {
     ...buildUnlockTransaction(
-      { ...parameters, data: approval.data, value: isUnlimited ? 'UNLIMITED' : approvalAmount },
+      {
+        ...parameters,
+        assetToUnlock: { ...parameters.assetToUnlock, address: assetAddress },
+        data: approval.data,
+        value: approval.value?.toString() || '0',
+        approvalAmount: isUnlimited ? 'UNLIMITED' : approvalAmount,
+      },
       gasParamsToUse,
-      approval.nonce
+      approval.nonce,
+      gasLimit
     ),
     hash: approval.hash,
   };
