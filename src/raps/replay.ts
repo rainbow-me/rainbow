@@ -1,23 +1,32 @@
-export type ReplayCall = {
+import { BigNumber, type BigNumberish } from '@ethersproject/bignumber';
+import { hexlify, type BytesLike } from '@ethersproject/bytes';
+
+export type ReplayableCall = {
   to: string;
   data: string;
   value: string;
 };
 
-/**
- * Returns replay calldata from the broadcast transaction
- * so speed-up and cancel can replay the exact swap call.
- */
-export function extractReplayCall(transaction: {
+export type ReplayableTransaction = {
   to?: string | null;
-  data?: string;
-  value?: { toString: () => string } | string;
-}): ReplayCall | null {
-  if (!transaction.to || !transaction.data || transaction.value === undefined) return null;
+  data?: BytesLike;
+  value?: BigNumberish;
+};
+
+/**
+ * Returns speed-up/cancel calldata from a transaction payload.
+ * When provided, fallback fields fill missing primary fields.
+ */
+export function extractReplayableCall(transaction: ReplayableTransaction, fallback?: ReplayableTransaction | null): ReplayableCall | null {
+  const to = transaction.to ?? fallback?.to;
+  const data = transaction.data ?? fallback?.data;
+  const value = transaction.value ?? fallback?.value;
+
+  if (!to || data == null || value == null) return null;
 
   return {
-    to: transaction.to,
-    data: transaction.data,
-    value: transaction.value.toString(),
+    to,
+    data: typeof data === 'string' ? data : hexlify(data),
+    value: BigNumber.from(value).toString(),
   };
 }

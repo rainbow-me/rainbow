@@ -17,6 +17,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { DELEGATION, getExperimentalFlag } from '@/config/experimental';
 import { requireAddress, requireHex } from '../validation';
+import { toTransactionAsset } from '../transactionAsset';
 
 /**
  * Determines the approval amount based on delegation support.
@@ -181,7 +182,8 @@ export const prepareUnlock = async ({ parameters }: PrepareActionProps<'unlock'>
   };
 };
 
-type UnlockTransactionParams = RapUnlockActionParameters & {
+type UnlockTransactionParams = Omit<RapUnlockActionParameters, 'assetToUnlock'> & {
+  assetToUnlock: RapUnlockActionParameters['assetToUnlock'] & { address: Address };
   data: string;
   value?: string;
   approvalAmount?: 'UNLIMITED' | string;
@@ -190,18 +192,18 @@ type UnlockTransactionParams = RapUnlockActionParameters & {
 function buildUnlockTransaction(
   parameters: UnlockTransactionParams,
   gasParams: TransactionGasParams | TransactionLegacyGasParams,
-  nonce?: number,
+  nonce: number,
   gasLimit?: string
 ): Omit<NewTransaction, 'hash'> {
-  const chainsName = useBackendNetworksStore.getState().getChainsName();
   const { assetToUnlock, chainId, data, value } = parameters;
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
+  const asset = toTransactionAsset({
+    asset: assetToUnlock,
+    chainName: chainsName[assetToUnlock.chainId],
+  });
 
   return {
-    asset: {
-      ...assetToUnlock,
-      network: chainsName[assetToUnlock.chainId],
-      colors: assetToUnlock.colors,
-    },
+    asset,
     data,
     value,
     changes: [],
@@ -215,7 +217,7 @@ function buildUnlockTransaction(
     type: 'approve',
     approvalAmount: parameters.approvalAmount ?? parameters.amount,
     ...gasParams,
-  } as Omit<NewTransaction, 'hash'>;
+  };
 }
 
 export const estimateERC721Approval = async ({
@@ -368,6 +370,7 @@ export const unlock = async ({
     ...buildUnlockTransaction(
       {
         ...parameters,
+        assetToUnlock: { ...parameters.assetToUnlock, address: assetAddress },
         data: approval.data,
         value: approval.value?.toString() || '0',
         approvalAmount: isUnlimited ? 'UNLIMITED' : approvalAmount,

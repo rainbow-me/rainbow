@@ -36,6 +36,8 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { DELEGATION, getExperimentalFlag } from '@/config/experimental';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { isRecordLike } from '@/types/guards';
+import { extractReplayableCall } from './replay';
+import { requireAddress } from './validation';
 
 type AtomicPrepareActionType = Extract<RapActionTypes, 'unlock' | 'swap' | 'crosschainSwap'>;
 type PrepareActionResult = { call: BatchCall | null } | { call: BatchCall; transaction: Omit<NewTransaction, 'hash'> };
@@ -207,6 +209,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
     if (!quote) {
       return { nonce: undefined, hash: null, errorMessage: 'Quote is required for atomic execution' };
     }
+    const fromAddress = requireAddress(quote.from, 'atomic quote.from');
 
     if (!(wallet instanceof Wallet)) {
       logger.debug(`[${rapName}] atomic execution skipped, falling back to sequential`, {
@@ -230,7 +233,6 @@ export const walletExecuteRap = async <T extends RapTypes>(
           const prepareResult = await runAtomicPrepareAction(action.type, {
             parameters: action.parameters,
             wallet,
-            chainId,
             quote,
           });
 
@@ -273,19 +275,21 @@ export const walletExecuteRap = async <T extends RapTypes>(
             return { nonce: undefined, hash: null, errorMessage: 'Atomic execution missing pending transaction nonce' };
           }
 
-          const gasLimit = await getBroadcastGasLimit(result.hash, provider);
-          const transaction: NewTransaction = {
-            ...pendingTransaction,
-            hash: result.hash,
-            batch: true,
-            delegation: result.type === 'eip7702',
-            gasLimit: pendingTransaction.gasLimit ?? gasLimit,
-            nonce: transactionNonce,
-          };
+          const atomicTransaction = result.transaction;
+          const replayableCall = extractReplayableCall(atomicTransaction, pendingTransaction);
+
           addNewTransaction({
-            address: quote.from,
+            address: fromAddress,
             chainId,
-            transaction,
+            transaction: {
+              ...pendingTransaction,
+              ...replayableCall,
+              hash: result.hash,
+              batch: true,
+              delegation: result.type === 'eip7702',
+              gasLimit: pendingTransaction.gasLimit ?? atomicTransaction.gas?.toString(),
+              nonce: transactionNonce,
+            },
           });
         }
 
@@ -394,15 +398,4 @@ function isAtomicPrepareAction(action: RapAction<RapActionTypes>): action is Rap
 
 function isAtomicRapType(type: RapTypes): type is 'swap' | 'crosschainSwap' {
   return type === 'swap' || type === 'crosschainSwap';
-}
-
-async function getBroadcastGasLimit(hash: string, provider: Signer['provider']): Promise<string | undefined> {
-  if (!provider) return undefined;
-
-  try {
-    const transaction = await provider.getTransaction(hash);
-    return transaction?.gasLimit?.toString();
-  } catch {
-    return undefined;
-  }
 }

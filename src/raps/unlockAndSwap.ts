@@ -1,16 +1,17 @@
 import { isAllowedTargetContract } from '@rainbow-me/swaps';
 import { createNewAction, createNewRap } from './common';
 import type { RapAction, RapSwapActionParameters } from './references';
-import { needsTokenApproval } from './actions/unlock';
-import { getQuoteAllowanceTargetAddress } from './validation';
+import { resolveApprovalRequirement } from './approval';
 
 export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParameters<'swap'>) => {
   let actions: RapAction<'swap' | 'unlock'>[] = [];
 
   const { sellAmount, quote, chainId, assetToSell, assetToBuy } = swapParameters;
-  const { allowanceNeeded, from: accountAddress, sellTokenAddress } = quote;
-  const allowanceTargetAddress = allowanceNeeded ? getQuoteAllowanceTargetAddress(quote) : null;
-  let requiresApprove = false;
+  const { allowanceTargetAddress, requiresApprove } = await resolveApprovalRequirement({
+    quote,
+    chainId,
+    sellAmount,
+  });
 
   if (allowanceTargetAddress) {
     const isAllowedTarget = isAllowedTargetContract(allowanceTargetAddress, chainId);
@@ -18,17 +19,9 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
       throw new Error('Target address not allowed');
     }
 
-    requiresApprove = await needsTokenApproval({
-      owner: accountAddress,
-      tokenAddress: sellTokenAddress,
-      spender: allowanceTargetAddress,
-      amount: sellAmount,
-      chainId,
-    });
-
     if (requiresApprove) {
       const unlock = createNewAction('unlock', {
-        fromAddress: accountAddress,
+        fromAddress: quote.from,
         amount: sellAmount,
         assetToUnlock: assetToSell,
         chainId,

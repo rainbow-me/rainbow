@@ -18,14 +18,13 @@ import {
   getDefaultGasLimitForTrade,
   overrideWithFastSpeedIfNeeded,
 } from '../utils';
-import { type TokenColors } from '@/graphql/__generated__/metadata';
-import { type AddysNetworkDetails, type ParsedAsset } from '@/resources/assets/types';
-import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { type ParsedAsset } from '@/resources/assets/types';
 import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { getQuoteAllowanceTargetAddress, requireAddress, requireHex } from '../validation';
-import type { ReplayCall } from '../replay';
+import { getQuoteAllowanceTargetAddress, requireAddress, requireHex, requireNonce } from '../validation';
+import type { ReplayableCall } from '../replay';
+import { toTransactionAsset } from '../transactionAsset';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
@@ -133,7 +132,7 @@ export const executeCrosschainSwap = async ({
   quote: CrosschainQuote;
   wallet: Signer;
   referrer?: ReferrerType;
-}): Promise<{ hash: string; nonce: number; replayCall: ReplayCall } | null> => {
+}): Promise<{ hash: string; nonce: number; replayableCall: ReplayableCall } | null> => {
   if (!wallet || !quote || quote.swapType !== SwapType.crossChain) return null;
 
   const preparedCall = await prepareFillCrosschainQuote(quote, referrer);
@@ -153,7 +152,7 @@ export const executeCrosschainSwap = async ({
   return {
     hash: transaction.hash,
     nonce: transaction.nonce,
-    replayCall: {
+    replayableCall: {
       to: preparedCall.to,
       data: preparedCall.data,
       value: preparedCall.value.toString(),
@@ -168,34 +167,19 @@ function isBridging(assetToSell: ParsedAsset, assetToBuy: ParsedAsset): boolean 
 function buildCrosschainSwapTransaction(
   parameters: RapSwapActionParameters<'crosschainSwap'>,
   gasParams: TransactionGasParams | TransactionLegacyGasParams,
-  nonce?: number,
+  nonce: number,
   gasLimit?: string
 ): Omit<NewTransaction, 'hash'> {
   const chainsName = useBackendNetworksStore.getState().getChainsName();
 
-  const nativePriceForAssetToBuy = (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice
-    ? { value: (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice }
-    : parameters.assetToBuy.price;
-
-  const nativePriceForAssetToSell = (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice
-    ? { value: (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice }
-    : parameters.assetToSell.price;
-
-  const assetToBuy = {
-    ...parameters.assetToBuy,
-    network: chainsName[parameters.assetToBuy.chainId],
-    networks: parameters.assetToBuy.networks as Record<string, AddysNetworkDetails>,
-    colors: parameters.assetToBuy.colors as TokenColors,
-    price: nativePriceForAssetToBuy,
-  } satisfies ParsedAsset;
-
-  const updatedAssetToSell = {
-    ...parameters.assetToSell,
-    network: chainsName[parameters.assetToSell.chainId],
-    networks: parameters.assetToSell.networks as Record<string, AddysNetworkDetails>,
-    colors: parameters.assetToSell.colors as TokenColors,
-    price: nativePriceForAssetToSell,
-  } satisfies ParsedAsset;
+  const assetToBuy = toTransactionAsset({
+    asset: parameters.assetToBuy,
+    chainName: chainsName[parameters.assetToBuy.chainId],
+  });
+  const updatedAssetToSell = toTransactionAsset({
+    asset: parameters.assetToSell,
+    chainName: chainsName[parameters.assetToSell.chainId],
+  });
 
   return {
     chainId: parameters.chainId,
@@ -222,7 +206,7 @@ function buildCrosschainSwapTransaction(
     status: TransactionStatus.pending,
     type: isBridging(updatedAssetToSell, assetToBuy) ? 'bridge' : 'swap',
     ...gasParams,
-  } as Omit<NewTransaction, 'hash'>;
+  };
 }
 
 export const prepareCrosschainSwap = async ({
@@ -232,14 +216,16 @@ export const prepareCrosschainSwap = async ({
   call: BatchCall;
   transaction: Omit<NewTransaction, 'hash'>;
 }> => {
-  const tx = await prepareFillCrosschainQuote(quote as CrosschainQuote, REFERRER);
+  const nonce = requireNonce(parameters.nonce, 'crosschainSwap parameters.nonce');
+  const tx = await prepareFillCrosschainQuote(quote, REFERRER);
+
   const preparedCall = {
     to: requireAddress(tx.to, 'crosschain prepared tx.to'),
     value: toHex(tx.value ?? 0),
     data: requireHex(tx.data, 'crosschain prepared tx.data'),
   };
   const transaction = {
-    ...buildCrosschainSwapTransaction(parameters, parameters.gasParams, parameters.nonce),
+    ...buildCrosschainSwapTransaction(parameters, parameters.gasParams, nonce),
     to: preparedCall.to,
     value: preparedCall.value,
     data: preparedCall.data,
@@ -315,16 +301,14 @@ export const crosschainSwap = async ({
 
   if (!swap) throw new RainbowError('[raps/crosschainSwap]: error executeCrosschainSwap');
 
-  const transaction: NewTransaction = {
-    ...buildCrosschainSwapTransaction(parameters, gasParamsToUse, swap.nonce, gasLimit),
-    ...swap.replayCall,
-    hash: swap.hash,
-  };
-
   addNewTransaction({
     address: parameters.quote.from,
     chainId,
-    transaction,
+    transaction: {
+      ...buildCrosschainSwapTransaction(parameters, gasParamsToUse, swap.nonce, gasLimit),
+      ...swap.replayableCall,
+      hash: swap.hash,
+    },
   });
 
   return {

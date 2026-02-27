@@ -30,22 +30,20 @@ import {
   populateSwap,
 } from '../utils';
 import { estimateApprove, populateApprove } from './unlock';
-import { type TokenColors } from '@/graphql/__generated__/metadata';
 import { swapMetadataStorage } from '../common';
-import { type AddysNetworkDetails, type ParsedAsset } from '@/resources/assets/types';
-import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { getQuoteAllowanceTargetAddress, requireAddress, requireHex } from '../validation';
-import { extractReplayCall, type ReplayCall } from '../replay';
+import { getQuoteAllowanceTargetAddress, requireAddress, requireHex, requireNonce } from '../validation';
+import { extractReplayableCall, type ReplayableCall } from '../replay';
+import { toTransactionAsset } from '../transactionAsset';
 
 const WRAP_GAS_PADDING = 1.002;
 
 type SwapExecutionResult = {
   hash: string;
   nonce: number;
-  replayCall: ReplayCall | null;
+  replayableCall: ReplayableCall | null;
 };
 
 export const estimateUnlockAndSwap = async ({
@@ -206,7 +204,6 @@ export const estimateSwapGasLimit = async ({
 };
 
 export const executeSwap = async ({
-  chainId,
   gasLimit,
   nonce,
   quote,
@@ -214,7 +211,6 @@ export const executeSwap = async ({
   wallet,
   permit = false,
 }: {
-  chainId: ChainId;
   gasLimit: string;
   gasParams: TransactionGasParams | TransactionLegacyGasParams;
   nonce?: number;
@@ -240,7 +236,7 @@ export const executeSwap = async ({
     return {
       hash: transaction.hash,
       nonce: transaction.nonce,
-      replayCall: extractReplayCall(transaction),
+      replayableCall: extractReplayableCall(transaction),
     };
     // Unwrap Weth
   } else if (quote.swapType === SwapType.unwrap) {
@@ -250,11 +246,11 @@ export const executeSwap = async ({
     return {
       hash: transaction.hash,
       nonce: transaction.nonce,
-      replayCall: extractReplayCall(transaction),
+      replayableCall: extractReplayableCall(transaction),
     };
     // Swap
   } else if (quote.swapType === SwapType.normal) {
-    const preparedCall = await prepareFillQuote(quote, transactionParams, wallet, permit, chainId as number, REFERRER);
+    const preparedCall = await prepareFillQuote(quote, transactionParams, wallet, permit, quote.chainId, REFERRER);
     const transaction = await wallet.sendTransaction({
       data: preparedCall.data,
       to: preparedCall.to,
@@ -265,7 +261,7 @@ export const executeSwap = async ({
     return {
       hash: transaction.hash,
       nonce: transaction.nonce,
-      replayCall: {
+      replayableCall: {
         to: preparedCall.to,
         data: preparedCall.data,
         value: preparedCall.value.toString(),
@@ -278,34 +274,18 @@ export const executeSwap = async ({
 function buildSwapTransaction(
   parameters: RapSwapActionParameters<'swap'>,
   gasParams: TransactionGasParams | TransactionLegacyGasParams,
-  nonce?: number,
+  nonce: number,
   gasLimit?: string
 ): Omit<NewTransaction, 'hash'> {
   const chainsName = useBackendNetworksStore.getState().getChainsName();
-
-  const nativePriceForAssetToBuy = (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice
-    ? { value: (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice }
-    : parameters.assetToBuy.price;
-
-  const nativePriceForAssetToSell = (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice
-    ? { value: (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice }
-    : parameters.assetToSell.price;
-
-  const assetToBuy = {
-    ...parameters.assetToBuy,
-    network: chainsName[parameters.assetToBuy.chainId],
-    networks: parameters.assetToBuy.networks as Record<string, AddysNetworkDetails>,
-    colors: parameters.assetToBuy.colors as TokenColors,
-    price: nativePriceForAssetToBuy,
-  } satisfies ParsedAsset;
-
-  const updatedAssetToSell = {
-    ...parameters.assetToSell,
-    network: chainsName[parameters.assetToSell.chainId],
-    networks: parameters.assetToSell.networks as Record<string, AddysNetworkDetails>,
-    colors: parameters.assetToSell.colors as TokenColors,
-    price: nativePriceForAssetToSell,
-  } satisfies ParsedAsset;
+  const assetToBuy = toTransactionAsset({
+    asset: parameters.assetToBuy,
+    chainName: chainsName[parameters.assetToBuy.chainId],
+  });
+  const updatedAssetToSell = toTransactionAsset({
+    asset: parameters.assetToSell,
+    chainName: chainsName[parameters.assetToSell.chainId],
+  });
 
   return {
     chainId: parameters.chainId,
@@ -340,26 +320,27 @@ function buildSwapTransaction(
         parameters.assetToSell.mainnetAddress === parameters.assetToBuy.mainnetAddress,
     },
     ...gasParams,
-  } as Omit<NewTransaction, 'hash'>;
+  };
 }
 
 export const prepareSwap = async ({
   parameters,
   quote,
   wallet,
-  chainId,
 }: PrepareActionProps<'swap'>): Promise<{
   call: BatchCall;
   transaction: Omit<NewTransaction, 'hash'>;
 }> => {
-  const tx = await prepareFillQuote(quote as Quote, {}, wallet, false, chainId as number, REFERRER);
+  const nonce = requireNonce(parameters.nonce, 'swap parameters.nonce');
+  const tx = await prepareFillQuote(quote, {}, wallet, false, quote.chainId, REFERRER);
+
   const preparedCall = {
     to: requireAddress(tx.to, 'swap prepared tx.to'),
     value: toHex(tx.value ?? 0),
     data: requireHex(tx.data, 'swap prepared tx.data'),
   };
   const transaction = {
-    ...buildSwapTransaction(parameters, parameters.gasParams, parameters.nonce),
+    ...buildSwapTransaction(parameters, parameters.gasParams, nonce),
     to: preparedCall.to,
     value: preparedCall.value,
     data: preparedCall.data,
@@ -380,11 +361,10 @@ export const swap = async ({
   gasParams,
   gasFeeParamsBySpeed,
 }: ActionProps<'swap'>): Promise<RapActionResult> => {
+  const { quote, chainId } = parameters;
   let gasParamsToUse = gasParams;
 
-  const { quote, chainId } = parameters;
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
-
   if (currentRap.actions.length - 1 > index) {
     gasParamsToUse = overrideWithFastSpeedIfNeeded({
       gasParams,
@@ -413,7 +393,6 @@ export const swap = async ({
     const nonce = typeof baseNonce === 'number' ? baseNonce + index : undefined;
     const swapParams = {
       gasParams: gasParamsToUse,
-      chainId,
       gasLimit,
       nonce,
       permit: false,
@@ -437,10 +416,10 @@ export const swap = async ({
 
   if (!execution) throw new RainbowError('swap: error executeSwap');
 
-  const replayFields = execution.replayCall ?? {};
+  const replayableFields = execution.replayableCall ?? {};
   const transaction: NewTransaction = {
     ...buildSwapTransaction(parameters, gasParamsToUse, execution.nonce, gasLimit),
-    ...replayFields,
+    ...replayableFields,
     hash: execution.hash,
   };
 
