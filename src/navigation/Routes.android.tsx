@@ -23,7 +23,7 @@ import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
-import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
+import { NotificationPermissionScreen } from '@/features/notifications/screens/NotificationPermissionScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
@@ -174,6 +174,19 @@ function BSNavigator() {
   return (
     <BSStack.Navigator>
       <BSStack.Screen component={MainOuterNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
+      <BSStack.Screen
+        component={NotificationPermissionScreen}
+        name={Routes.NOTIFICATION_PERMISSION_SCREEN}
+        options={{
+          ...bottomSheetPreset,
+          backdropOpacity: 1,
+          backdropPressBehavior: 'none',
+          enableContentPanningGesture: false,
+          enableHandlePanningGesture: false,
+          enablePanDownToClose: false,
+          height: '100%',
+        }}
+      />
       <BSStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
       <BSStack.Screen component={ExpandedAssetSheet} name={Routes.EXPANDED_ASSET_SHEET} />
       <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
@@ -219,7 +232,6 @@ function BSNavigator() {
         </>
       )}
       <BSStack.Screen component={RemotePromoSheet} name={Routes.REMOTE_PROMO_SHEET} options={bottomSheetPreset} />
-      <BSStack.Screen component={NotificationsPromoSheet} name={Routes.NOTIFICATIONS_PROMO_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen component={ExplainSheet} name={Routes.EXPLAIN_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen component={ExternalLinkWarningSheet} name={Routes.EXTERNAL_LINK_WARNING_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen component={ModalScreen} {...closeKeyboardOnClose} name={Routes.MODAL_SCREEN} />

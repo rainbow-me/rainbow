@@ -27,6 +27,7 @@ import { IS_ANDROID, IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { useWallets, useAccountAddress } from '@/state/wallets/walletsStore';
+import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const accountAddress = useAccountAddress();
@@ -281,22 +282,15 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       return;
     }
 
-    const handleImportSuccess = (input: string, isWalletEthZero: boolean, backupProvider: string | undefined, previousWalletCount = 0) => {
+    const handleImportSuccess = async (input: string, isWalletEthZero: boolean, backupProvider: string | undefined) => {
       setImporting(false);
       setBusy(false);
       walletLoadingStore.setState({ loadingState: null });
 
-      const shouldReplace = previousWalletCount === 0;
-      const navigate = shouldReplace ? Navigation.replace : Navigation.handleAction;
-
-      // Navigate to wallet screen and dismiss the entire modal stack
       try {
-        navigate(Routes.SWIPE_LAYOUT, {
-          screen: Routes.WALLET_SCREEN,
-        });
-
         // Dismiss the ADD_WALLET_NAVIGATOR modal stack
         dangerouslyGetParent?.()?.goBack();
+        await navigateAfterOnboarding();
       } catch (error) {
         logger.error(new RainbowError('[useImportingWallet]: Error navigating to wallet screen'), { error });
         try {
@@ -337,8 +331,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           loadingState: WalletLoadingStates.IMPORTING_WALLET,
         });
 
-        const previousWalletCount = keys(wallets).length;
-
         const success = await initializeWallet({
           seedPhrase: input,
           color,
@@ -350,7 +342,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
         if (success) {
           // Navigate to wallet screen
-          handleImportSuccess(input, isWalletEthZero, backupProvider, previousWalletCount);
+          await handleImportSuccess(input, isWalletEthZero, backupProvider);
         } else {
           // Import failed
           logger.error(new RainbowError('[useImportingWallet]: Import failed'));

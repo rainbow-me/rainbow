@@ -69,7 +69,6 @@ const allowedBarrelFiles = [
   'src/features/perps/services/index.ts',
   'src/features/positions/stores/transform/index.ts',
   'src/features/positions/types/index.ts',
-  'src/featuresToUnlock/index.ts',
   'src/helpers/index.ts',
   'src/keychain/index.ts',
   'src/languages/index.ts',

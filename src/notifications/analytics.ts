@@ -1,7 +1,7 @@
 import { analytics } from '@/analytics';
 import { type MinimalNotification } from '@/notifications/types';
 import { getPermissionStatus } from '@/notifications/permissions';
-import messaging from '@react-native-firebase/messaging';
+import { RESULTS } from 'react-native-permissions';
 import {
   WalletNotificationRelationship,
   WALLET_GROUPS_STORAGE_KEY,
@@ -35,9 +35,9 @@ export const resolveAndTrackPushNotificationPermissionStatus = async () => {
   const permissionStatus = await getPermissionStatus();
   let statusToReport: PushNotificationPermissionStatus = 'never asked';
 
-  if (permissionStatus === messaging.AuthorizationStatus.AUTHORIZED || permissionStatus === messaging.AuthorizationStatus.PROVISIONAL) {
+  if (permissionStatus === RESULTS.GRANTED || permissionStatus === RESULTS.LIMITED) {
     statusToReport = 'enabled';
-  } else if (permissionStatus === messaging.AuthorizationStatus.DENIED) {
+  } else if (permissionStatus === RESULTS.BLOCKED || permissionStatus === RESULTS.UNAVAILABLE) {
     statusToReport = 'disabled';
   }
 

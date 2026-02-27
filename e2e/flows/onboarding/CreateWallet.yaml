@@ -13,6 +13,7 @@ tags:
     id: welcome-screen
 - tapOn: '.*Get a new wallet'
 - runFlow: ../../utils/MaybeSetupPin.yaml
+- runFlow: ../../utils/HandleOptionalNotificationPermission.yaml
 
 # Check wallet screen exists and has expected elements
 - assertVisible:

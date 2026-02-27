@@ -8,5 +8,6 @@ appId: ${APP_ID}
     id: welcome-screen
 - tapOn: '.*Get a new wallet'
 - runFlow: ../utils/MaybeSetupPin.yaml
+- runFlow: ../utils/HandleOptionalNotificationPermission.yaml
 - assertVisible:
     id: 'eth-card'

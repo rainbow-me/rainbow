@@ -1,13 +1,18 @@
-import messaging from '@react-native-firebase/messaging';
-import { type PermissionStatus, requestNotifications, RESULTS } from 'react-native-permissions';
+import { type PermissionStatus, requestNotifications, RESULTS, checkNotifications } from 'react-native-permissions';
 import { subscribeExistingNotificationsSettings } from '@/notifications/settings/initialization';
 import { Alert } from '@/components/alerts';
 import * as i18n from '@/languages';
 import { saveFCMToken } from '@/notifications/tokens';
 import { trackPushNotificationPermissionStatus } from '@/notifications/analytics';
 import { logger, RainbowError } from '@/logger';
+import { notificationSettingsStorage } from '@/notifications/settings/storage';
 
-export const getPermissionStatus = () => messaging().hasPermission();
+const HAS_SHOWN_PERMISSION_SCREEN_KEY = 'hasShownNotificationPermissionScreen';
+
+export const getPermissionStatus = async (): Promise<PermissionStatus> => {
+  const { status } = await checkNotifications();
+  return status;
+};
 
 export const isNotificationPermissionGranted = (status: PermissionStatus): boolean =>
   status === RESULTS.GRANTED || status === RESULTS.LIMITED;
@@ -33,7 +38,8 @@ export const checkPushNotificationPermissions = async () => {
       });
     }
 
-    if (permissionStatus !== messaging.AuthorizationStatus.AUTHORIZED && permissionStatus !== messaging.AuthorizationStatus.PROVISIONAL) {
+    const enabled = permissionStatus ? isNotificationPermissionGranted(permissionStatus) : false;
+    if (!enabled) {
       Alert({
         buttons: [
           {
@@ -68,4 +74,20 @@ export const checkPushNotificationPermissions = async () => {
       resolve(true);
     }
   });
+};
+
+export const setHasShownNotificationPermissionScreen = () => {
+  notificationSettingsStorage.set(HAS_SHOWN_PERMISSION_SCREEN_KEY, true);
+};
+
+export const shouldShowNotificationPermissionScreen = async (): Promise<boolean> => {
+  try {
+    if (notificationSettingsStorage.getBoolean(HAS_SHOWN_PERMISSION_SCREEN_KEY)) {
+      return false;
+    }
+    const status = await getPermissionStatus();
+    return !isNotificationPermissionGranted(status);
+  } catch {
+    return false;
+  }
 };

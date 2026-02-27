@@ -2144,7 +2144,7 @@
         "secondary_button": "Not Now",
         "info_row_1": {
           "title": "For all your wallet activity",
-          "description": "Get notified about activity in your wallets or wallets you’re watching."
+          "description": "Get notified about activity in your wallet."
         },
         "info_row_2": {
           "title": "Lightning fast",
@@ -2152,7 +2152,7 @@
         },
         "info_row_3": {
           "title": "Customizable",
-          "description": "Sends, receives, sales, mints, swaps, and more. Choose what you want."
+          "description": "Sends, receives, sales, mints, swaps, and more."
         },
         "header": "Notifications",
         "subheader": "INTRODUCING"
