@@ -61,6 +61,7 @@
     "update-token-list": "sh ./scripts/update-token-list.sh",
     "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t",
     "codegen-translations": "node ./scripts/codegen-translations.js",
+    "generate:emojis": "tsx ./scripts/emojis.ts && prettier --write src/references/emojisByCategory.json",
     "prepare": "husky install",
     "bundle-inpage": "yarn webpack --config src/browser/webpack.config.js && cp InjectedJSBundle.js android/app/src/main/res/raw/injected_js_bundle.js",
     "// Fetch backend networks": "",
@@ -171,7 +172,6 @@
     "deprecated-react-native-prop-types": "2.2.0",
     "dns.js": "1.0.1",
     "domain-browser": "1.2.0",
-    "emoji-datasource": "4.1.0",
     "emoji-regex": "10.0.0",
     "eth-url-parser": "1.0.4",
     "ethereumjs-util": "6.2.1",
@@ -358,6 +358,7 @@
     "chai": "4.2.0",
     "depcheck": "1.4.7",
     "dotenv": "8.2.0",
+    "emoji-datasource": "4.1.0",
     "eslint": "8.22.0",
     "eslint-config-rainbow": "4.3.0",
     "eslint-plugin-yml": "1.18.0",
@@ -375,6 +376,7 @@
     "schedule": "0.5.0",
     "ts-loader": "9.5.1",
     "ts-migrate": "0.1.26",
+    "tsx": "4.20.6",
     "typescript": "5.5.4",
     "typescript-coverage-report": "0.6.1",
     "webpack": "5.94.0",
@@ -483,7 +485,8 @@
       "ethereumjs-util>ethereum-cryptography>keccak": false,
       "react-native-mmkv": false,
       "react-native-nitro-modules": false,
-      "@polymarket/builder-relayer-client>tsx>esbuild": true
+      "@polymarket/builder-relayer-client>tsx>esbuild": true,
+      "tsx>esbuild": true
     }
   },
   "lint-staged": {
