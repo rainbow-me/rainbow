@@ -1,6 +1,8 @@
 import { BigNumber, type BigNumberish } from '@ethersproject/bignumber';
 import { hexlify, type BytesLike } from '@ethersproject/bytes';
 
+// ============ Types ========================================================== //
+
 export type ReplayableCall = {
   to: string;
   data: string;
@@ -23,6 +25,8 @@ type ReplayableExecutionTransaction = ReplayableTransaction & {
   hash?: string | null;
   nonce?: number | null;
 };
+
+// ============ Replay Builders ================================================ //
 
 /**
  * Returns speed-up/cancel calldata from a transaction payload.
