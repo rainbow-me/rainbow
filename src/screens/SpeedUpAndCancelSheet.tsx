@@ -190,14 +190,15 @@ export default function SpeedUpAndCancelSheet() {
         transaction: cancelTxPayload,
       });
 
+      if (!res?.result?.hash) {
+        throw new Error('Failed to send cancel transaction');
+      }
+
       if (tx?.ensCommitRegistrationName) {
         cancelCommitTransactionHash();
       }
       const updatedTx = { ...tx, nonce: tx.nonce };
-      // Update the hash on the copy of the original tx
-      if (res?.result?.hash) {
-        updatedTx.hash = res.result.hash;
-      }
+      updatedTx.hash = res.result.hash;
       updatedTx.status = TransactionStatus.pending;
       updatedTx.type = 'cancel';
       updateTransaction({
@@ -267,17 +268,17 @@ export default function SpeedUpAndCancelSheet() {
         transaction: fasterTxPayload,
       });
 
-      if (tx?.ensCommitRegistrationName && res?.result?.hash) {
+      if (!res?.result?.hash) {
+        throw new Error('Failed to send speed up transaction');
+      }
+
+      if (tx?.ensCommitRegistrationName) {
         saveCommitTransactionHash(res.result.hash);
       }
       const updatedTx = { ...tx, nonce: tx.nonce };
-      // Update the hash on the copy of the original tx
-      if (res?.result?.hash) {
-        updatedTx.hash = res.result.hash;
-      }
+      updatedTx.hash = res.result.hash;
       updatedTx.status = TransactionStatus.pending;
       updatedTx.type = 'speed_up';
-
       updateTransaction({
         address: accountAddress,
         transaction: updatedTx,
