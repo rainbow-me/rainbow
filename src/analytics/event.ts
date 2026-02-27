@@ -77,8 +77,6 @@ export const event = {
   appStateChange: 'State change',
   analyticsTrackingDisabled: 'analytics_tracking.disabled',
   analyticsTrackingEnabled: 'analytics_tracking.enabled',
-  promoSheetShown: 'promo_sheet.shown',
-  promoSheetDismissed: 'promo_sheet.dismissed',
   swapSubmitted: 'Submitted Swap',
   cardPressed: 'card.pressed',
   learnArticleOpened: 'learn_article.opened',
@@ -436,14 +434,6 @@ export type EventProperties = {
     usdValue: number;
     inputCurrencySymbol: string;
     outputCurrencySymbol: string;
-  };
-  [event.promoSheetShown]: {
-    campaign: string;
-    time_viewed: number;
-  };
-  [event.promoSheetDismissed]: {
-    campaign: string;
-    time_viewed: number;
   };
   [event.notificationPermissionRequested]: undefined;
   [event.notificationPermissionGranted]: undefined;

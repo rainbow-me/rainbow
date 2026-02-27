@@ -51,7 +51,6 @@ const allowedBarrelFiles = [
   'src/components/expanded-state/chart/index.ts',
   'src/components/expanded-state/index.ts',
   'src/components/images/index.ts',
-  'src/components/remote-promo-sheet/check-fns/index.ts',
   'src/components/sheet/sheet-action-buttons/index.ts',
   'src/components/unique-token/index.ts',
   'src/components/video/index.ts',

@@ -2,7 +2,6 @@ import { type createStackNavigator } from '@react-navigation/stack';
 import { type Route } from '@/navigation/routesNames';
 import type Routes from '@/navigation/routesNames';
 import { type REGISTRATION_MODES } from '@/helpers/ens';
-import { type CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
@@ -447,7 +446,6 @@ type RouteParams = {
     speeds: string[];
     type: 'custom_gas';
   };
-  [Routes.REMOTE_PROMO_SHEET]: CampaignCheckResult;
   [Routes.CHECK_IDENTIFIER_SCREEN]: {
     step: (typeof walletBackupStepTypes)[keyof typeof walletBackupStepTypes];
     onSuccess: () => Promise<void>;

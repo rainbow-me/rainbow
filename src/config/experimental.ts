@@ -19,7 +19,6 @@ export const DEFI_POSITIONS = 'Defi Positions';
 export const NFT_OFFERS = 'NFT Offers';
 export const MINTS = 'Mints';
 export const POINTS = 'Points';
-export const REMOTE_PROMO_SHEETS = 'RemotePromoSheets';
 export const REMOTE_CARDS = 'RemoteCards';
 export const POINTS_NOTIFICATIONS_TOGGLE = 'PointsNotificationsToggle';
 export const DAPP_BROWSER = 'Dapp Browser';
@@ -72,7 +71,6 @@ const config = {
   [NFT_OFFERS]: { settings: true, value: true },
   [MINTS]: { settings: true, value: false },
   [POINTS]: { settings: true, value: false },
-  [REMOTE_PROMO_SHEETS]: { settings: true, value: false },
   [REMOTE_CARDS]: { settings: true, value: false },
   [POINTS_NOTIFICATIONS_TOGGLE]: { settings: true, value: false },
   [DAPP_BROWSER]: { settings: true, value: !!IS_TEST },
