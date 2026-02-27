@@ -25,7 +25,6 @@ import { type RootStackParamList } from '@/navigation/types';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
 import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
 import { WalletList } from '@/screens/change-wallet/components/WalletList';
-import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import {
@@ -221,7 +220,6 @@ export default function ChangeWalletSheet() {
         if (!fromDeletion) {
           goBack();
         }
-        remotePromoSheetsStore.setState({ isShown: false });
       } catch (e) {
         logger.error(new RainbowError('[ChangeWalletSheet]: Error while switching account', e), {
           error: e,
