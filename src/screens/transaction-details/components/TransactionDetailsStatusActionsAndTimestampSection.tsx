@@ -30,15 +30,16 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
   const { icon, color, gradient } = getIconColorAndGradientForTransactionStatus(colors, status);
 
   const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
-  const canBeResubmitted = isOutgoing && !minedAt && !transaction.delegation;
-  const canBeCancelled = canBeResubmitted && !(type === 'cancel' && status === TransactionStatus.pending);
+  const isPendingOutgoing = isOutgoing && !minedAt;
+  const canSpeedUp = isPendingOutgoing && !transaction.delegation;
+  const canCancel = isPendingOutgoing && !(type === 'cancel' && status === TransactionStatus.pending);
 
   const menuConfig = useMemo(
     () =>
       ({
         menuTitle: '',
         menuItems: [
-          ...(canBeResubmitted
+          ...(canSpeedUp
             ? [
                 {
                   actionKey: 'speedUp',
@@ -50,7 +51,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
                 },
               ]
             : []),
-          ...(canBeCancelled
+          ...(canCancel
             ? [
                 {
                   actionKey: 'cancel',
@@ -65,7 +66,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
             : []),
         ],
       }) satisfies MenuConfig,
-    [canBeCancelled, canBeResubmitted]
+    [canCancel, canSpeedUp]
   );
 
   const onMenuItemPress = useCallback(
@@ -94,7 +95,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
   return (
     <Stack>
       <Box alignItems="flex-end" height="40px">
-        {(canBeResubmitted || canBeCancelled) && (
+        {(canSpeedUp || canCancel) && (
           <ContextMenuButton testID="transaction-details-context-menu-button" menuConfig={menuConfig} onPressMenuItem={onMenuItemPress}>
             <ButtonPressAnimation>
               <Box style={styles.overflowHidden} height={{ custom: SIZE }} width={{ custom: SIZE }} borderRadius={SIZE / 2}>

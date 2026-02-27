@@ -23,7 +23,6 @@ import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
 import { IS_TEST } from '@/env';
 import { TrendingTokens } from '@/components/Discover/TrendingTokens';
 import { FeaturedResultStack } from '@/components/FeaturedResult/FeaturedResultStack';
-import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import { isTestnetChain } from '@/handlers/web3';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -99,7 +98,6 @@ export default function DiscoverHome() {
           </Box>
           <DiscoverSeparator />
           {trendingTokensEnabled && <TrendingTokens />}
-          <RemoteCardCarousel />
           {mintsEnabled && (
             <Stack space="20px">
               <FeaturedMintCard />

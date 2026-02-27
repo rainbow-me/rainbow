@@ -37,3 +37,15 @@ export function requireHex(value: string | undefined, fieldName: string): Hex {
 export function getQuoteAllowanceTargetAddress(quote: Quote | CrosschainQuote): Address {
   return requireAddress(quote.allowanceTarget, 'quote.allowanceTarget');
 }
+
+/**
+ * Requres a valid nonce.
+ * Throws `RainbowError` with field context when missing or invalid.
+ */
+export function requireNonce(value: number | undefined, fieldName: string): number {
+  if (typeof value === 'number') {
+    return value;
+  }
+
+  throw new RainbowError(`[raps/validation]: Missing ${fieldName}`);
+}

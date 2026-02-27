@@ -168,9 +168,6 @@ export const event = {
   mintsMintedNFT: 'Minted NFT',
   mintsErrorMintingNFT: 'Error Minting NFT',
 
-  remoteCardPrimaryButtonPressed: 'remote_card.primary_button_pressed',
-  remoteCardDismissed: 'remote_card.dismissed',
-
   appIconUnlockSheetViewed: 'app_icon_unlock_sheet.viewed',
   appIconUnlockSheetCTAPressed: 'app_icon_unlock_sheet.cta_pressed',
 
@@ -710,15 +707,6 @@ export type EventProperties = {
   };
   [event.mintsPressedViewAllMintsButton]: undefined;
   [event.mintsChangedFilter]: { filter: string };
-
-  [event.remoteCardPrimaryButtonPressed]: {
-    cardKey: string;
-    action: string;
-    props: string;
-  };
-  [event.remoteCardDismissed]: {
-    cardKey: string;
-  };
 
   [event.appIconUnlockSheetViewed]: {
     appIcon: UnlockableAppIconKey;

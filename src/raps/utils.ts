@@ -1,7 +1,7 @@
 import { type Block, type Provider } from '@ethersproject/abstract-provider';
 import { Contract, type PopulatedTransaction } from '@ethersproject/contracts';
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
-import { type CrosschainQuote, type Quote, getQuoteExecutionDetails, getTargetAddress } from '@rainbow-me/swaps';
+import { type CrosschainQuote, type Quote, getQuoteExecutionDetails } from '@rainbow-me/swaps';
 import { mainnet } from 'viem/chains';
 import { type Chain, erc20Abi } from 'viem';
 import type {
@@ -20,6 +20,7 @@ import { type SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/us
 import type { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { simulateTransactions } from '@/resources/transactions/transactionSimulation';
+import { getQuoteAllowanceTargetAddress } from './validation';
 
 export const CHAIN_IDS_WITH_TRACE_SUPPORT: ChainId[] = [mainnet.id];
 export const SWAP_GAS_PADDING = 1.1;
@@ -61,7 +62,7 @@ export const overrideWithFastSpeedIfNeeded = ({
 const getStateDiff = async (provider: Provider, quote: Quote | CrosschainQuote): Promise<unknown> => {
   const tokenAddress = quote.sellTokenAddress;
   const fromAddr = quote.from;
-  const toAddr = quote.swapType === 'normal' ? getTargetAddress(quote) : (quote as CrosschainQuote).allowanceTarget;
+  const toAddr = getQuoteAllowanceTargetAddress(quote);
   const tokenContract = new Contract(tokenAddress, erc20Abi, provider);
   const approvalAmount = quote.sellAmount;
 
@@ -175,7 +176,7 @@ export const estimateSwapGasLimitWithFakeApproval = async (
           from: quote.from,
           gas: toHexNoLeadingZeros(String(gas)),
           gasPrice: toHexNoLeadingZeros(`100000000000`),
-          to: quote.swapType === 'normal' ? getTargetAddress(quote) : (quote as CrosschainQuote).allowanceTarget,
+          to: getQuoteAllowanceTargetAddress(quote),
           value: '0x0', // 100 gwei
         },
         'latest',

@@ -169,11 +169,19 @@ export interface ActionProps<T extends RapActionTypes> {
   gasFeeParamsBySpeed: SwapsGasFeeParamsBySpeed | GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
 }
 
+type PrepareActionQuoteMap = {
+  swap: Quote;
+  crosschainSwap: CrosschainQuote;
+  unlock: Quote | CrosschainQuote;
+  claim: Quote | CrosschainQuote;
+  claimBridge: Quote | CrosschainQuote;
+  claimClaimable: Quote | CrosschainQuote;
+};
+
 export interface PrepareActionProps<T extends RapActionTypes> {
   parameters: RapActionParameterMap[T];
   wallet: Signer;
-  chainId: ChainId;
-  quote: Quote | CrosschainQuote;
+  quote: PrepareActionQuoteMap[T];
 }
 
 export interface WalletExecuteRapProps {

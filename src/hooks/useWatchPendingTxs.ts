@@ -156,6 +156,7 @@ function shouldPreferLocalTransaction(originalType: RainbowTransaction['type']):
   switch (originalType) {
     case 'bridge':
     case 'cancel':
+    case 'speed_up':
     case 'swap':
       return true;
     default:

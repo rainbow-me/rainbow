@@ -71,7 +71,6 @@ export interface RainbowConfig
   blast_swaps_enabled: boolean;
   mints_enabled: boolean;
   rpc_proxy_enabled: boolean;
-  remote_cards_enabled: boolean;
   remote_promo_enabled: boolean;
   dapp_browser: boolean;
   idfa_check_enabled: boolean;
@@ -202,7 +201,6 @@ export const DEFAULT_CONFIG = {
   blast_swaps_enabled: true,
   mints_enabled: true,
   rpc_proxy_enabled: true,
-  remote_cards_enabled: true,
   remote_promo_enabled: false,
   dapp_browser: true,
   idfa_check_enabled: false,
