@@ -5,9 +5,9 @@ import React, { createContext, type PropsWithChildren, useCallback, useEffect, u
 import { createMMKV } from 'react-native-mmkv';
 import { useSharedValue } from 'react-native-reanimated';
 import DevButton from '../components/dev-buttons/DevButton';
-import Emoji from '../components/text/Emoji';
 import { showConnectToAnvilButton, showReloadButton, showSwitchModeButton } from '../config/debug';
 import { type defaultConfig, defaultConfigValues } from '@/config/experimental';
+import Emoji from '@/features/emoji/components/Emoji';
 import { useTheme } from '../theme/ThemeContext';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { logger, RainbowError } from '@/logger';
