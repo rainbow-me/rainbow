@@ -13,6 +13,17 @@ export type ReplayableTransaction = {
   value?: BigNumberish;
 };
 
+export type ReplayableExecution = {
+  hash: string;
+  nonce: number;
+  replayableCall: ReplayableCall | null;
+};
+
+type ReplayableExecutionTransaction = ReplayableTransaction & {
+  hash?: string | null;
+  nonce?: number | null;
+};
+
 /**
  * Returns speed-up/cancel calldata from a transaction payload.
  * When provided, fallback fields fill missing primary fields.
@@ -28,5 +39,21 @@ export function extractReplayableCall(transaction: ReplayableTransaction, fallba
     to,
     data: typeof data === 'string' ? data : hexlify(data),
     value: BigNumber.from(value).toString(),
+  };
+}
+
+/**
+ * Extracts replay metadata from a broadcast result when nonce/hash are present.
+ */
+export function extractReplayableExecution(
+  transaction: ReplayableExecutionTransaction | null | undefined,
+  fallback?: ReplayableTransaction | null
+): ReplayableExecution | null {
+  if (!transaction?.hash || transaction.nonce == null) return null;
+
+  return {
+    hash: transaction.hash,
+    nonce: transaction.nonce,
+    replayableCall: extractReplayableCall(transaction, fallback),
   };
 }

@@ -23,7 +23,7 @@ import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/per
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getQuoteAllowanceTargetAddress, requireAddress, requireHex, requireNonce } from '../validation';
-import type { ReplayableCall } from '../replay';
+import { extractReplayableExecution, type ReplayableExecution } from '../replay';
 import { toTransactionAsset } from '../transactionAsset';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
@@ -132,7 +132,7 @@ export const executeCrosschainSwap = async ({
   quote: CrosschainQuote;
   wallet: Signer;
   referrer?: ReferrerType;
-}): Promise<{ hash: string; nonce: number; replayableCall: ReplayableCall } | null> => {
+}): Promise<ReplayableExecution | null> => {
   if (!wallet || !quote || quote.swapType !== SwapType.crossChain) return null;
 
   const preparedCall = await prepareFillCrosschainQuote(quote, referrer);
@@ -142,22 +142,15 @@ export const executeCrosschainSwap = async ({
     ...gasParams,
   };
 
-  const transaction = await wallet.sendTransaction({
-    data: preparedCall.data,
-    to: preparedCall.to,
-    value: preparedCall.value,
-    ...transactionParams,
-  });
-
-  return {
-    hash: transaction.hash,
-    nonce: transaction.nonce,
-    replayableCall: {
-      to: preparedCall.to,
+  return extractReplayableExecution(
+    await wallet.sendTransaction({
       data: preparedCall.data,
-      value: preparedCall.value.toString(),
-    },
-  };
+      to: preparedCall.to,
+      value: preparedCall.value,
+      ...transactionParams,
+    }),
+    preparedCall
+  );
 };
 
 function isBridging(assetToSell: ParsedAsset, assetToBuy: ParsedAsset): boolean {

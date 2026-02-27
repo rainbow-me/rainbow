@@ -270,11 +270,6 @@ export const walletExecuteRap = async <T extends RapTypes>(
         }
 
         if (pendingTransaction) {
-          const transactionNonce = pendingTransaction.nonce ?? atomicNonce;
-          if (transactionNonce === undefined) {
-            return { nonce: undefined, hash: null, errorMessage: 'Atomic execution missing pending transaction nonce' };
-          }
-
           const atomicTransaction = result.transaction;
           const replayableCall = extractReplayableCall(atomicTransaction, pendingTransaction);
 
@@ -288,7 +283,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
               batch: true,
               delegation: result.type === 'eip7702',
               gasLimit: pendingTransaction.gasLimit ?? atomicTransaction.gas?.toString(),
-              nonce: transactionNonce,
+              nonce: pendingTransaction.nonce ?? atomicNonce,
             },
           });
         }

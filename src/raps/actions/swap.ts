@@ -35,16 +35,12 @@ import { Screens, TimeToSignOperation, executeFn } from '@/state/performance/per
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getQuoteAllowanceTargetAddress, requireAddress, requireHex, requireNonce } from '../validation';
-import { extractReplayableCall, type ReplayableCall } from '../replay';
+import { extractReplayableExecution, type ReplayableExecution } from '../replay';
 import { toTransactionAsset } from '../transactionAsset';
 
 const WRAP_GAS_PADDING = 1.002;
 
-type SwapExecutionResult = {
-  hash: string;
-  nonce: number;
-  replayableCall: ReplayableCall | null;
-};
+type SwapExecutionResult = ReplayableExecution;
 
 export const estimateUnlockAndSwap = async ({
   quote,
@@ -218,9 +214,7 @@ export const executeSwap = async ({
   wallet: Signer;
   permit: boolean;
 }): Promise<SwapExecutionResult | null> => {
-  if (!wallet || !quote) {
-    return null;
-  }
+  if (!wallet || !quote) return null;
 
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
@@ -228,47 +222,28 @@ export const executeSwap = async ({
     ...gasParams,
   };
 
-  // Wrap Eth
-  if (quote.swapType === SwapType.wrap) {
-    const transaction = await wrapNativeAsset(quote.buyAmount, wallet, getWrappedAssetAddress(quote), transactionParams);
-    if (!transaction?.hash || transaction.nonce === undefined) return null;
-
-    return {
-      hash: transaction.hash,
-      nonce: transaction.nonce,
-      replayableCall: extractReplayableCall(transaction),
-    };
-    // Unwrap Weth
-  } else if (quote.swapType === SwapType.unwrap) {
-    const transaction = await unwrapNativeAsset(quote.sellAmount, wallet, getWrappedAssetAddress(quote), transactionParams);
-    if (!transaction?.hash || transaction.nonce === undefined) return null;
-
-    return {
-      hash: transaction.hash,
-      nonce: transaction.nonce,
-      replayableCall: extractReplayableCall(transaction),
-    };
-    // Swap
-  } else if (quote.swapType === SwapType.normal) {
-    const preparedCall = await prepareFillQuote(quote, transactionParams, wallet, permit, quote.chainId, REFERRER);
-    const transaction = await wallet.sendTransaction({
-      data: preparedCall.data,
-      to: preparedCall.to,
-      value: preparedCall.value,
-      ...transactionParams,
-    });
-
-    return {
-      hash: transaction.hash,
-      nonce: transaction.nonce,
-      replayableCall: {
-        to: preparedCall.to,
+  switch (quote.swapType) {
+    case SwapType.wrap: {
+      const transaction = await wrapNativeAsset(quote.buyAmount, wallet, getWrappedAssetAddress(quote), transactionParams);
+      return extractReplayableExecution(transaction);
+    }
+    case SwapType.unwrap: {
+      const transaction = await unwrapNativeAsset(quote.sellAmount, wallet, getWrappedAssetAddress(quote), transactionParams);
+      return extractReplayableExecution(transaction);
+    }
+    case SwapType.normal: {
+      const preparedCall = await prepareFillQuote(quote, transactionParams, wallet, permit, quote.chainId, REFERRER);
+      const transaction = await wallet.sendTransaction({
         data: preparedCall.data,
-        value: preparedCall.value.toString(),
-      },
-    };
+        to: preparedCall.to,
+        value: preparedCall.value,
+        ...transactionParams,
+      });
+      return extractReplayableExecution(transaction, preparedCall);
+    }
+    default:
+      return null;
   }
-  return null;
 };
 
 function buildSwapTransaction(
@@ -278,6 +253,7 @@ function buildSwapTransaction(
   gasLimit?: string
 ): Omit<NewTransaction, 'hash'> {
   const chainsName = useBackendNetworksStore.getState().getChainsName();
+
   const assetToBuy = toTransactionAsset({
     asset: parameters.assetToBuy,
     chainName: chainsName[parameters.assetToBuy.chainId],
