@@ -1,7 +1,7 @@
 import { type TokenGateCheckerNetwork, type TokenInfo, checkIfWalletsOwnNft, checkIfWalletsOwnNft1155 } from './tokenGatedUtils';
 import type { EthereumAddress } from '@/entities/wallet';
 import { RainbowError, logger } from '@/logger';
-import { type UnlockableAppIconKey, unlockableAppIcons } from './appIcons';
+import { type UnlockableAppIconKey, unlockableAppIcons } from '../models/appIcons';
 import { createMMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
 

@@ -3566,29 +3566,6 @@
         "title": "Désolé, il y a eu une erreur lors du téléchargement de votre image.",
         "subtitle": "Veuillez réessayer."
       },
-      "allocation_breakdown": {
-        "my_share": "MA PART",
-        "airdropping": "AIRDROPPING",
-        "start_price": "PRIX DE DÉPART",
-        "sections": {
-          "my_share": {
-            "title": "Part du Créateur",
-            "description": "Votre part personnelle dans le projet"
-          },
-          "airdropping": {
-            "title": "Part d'Airdrop",
-            "description": "Distribué à des amis et supporters"
-          },
-          "liquidity_pool": {
-            "title": "Part de la Piscine de Liquidité",
-            "description": "Assure un trading fluide et la liquidité"
-          },
-          "rainbow_share": {
-            "title": "Au-delà de l'Arc-en-Ciel",
-            "description": "Futures Distributions Communautaires"
-          }
-        }
-      },
       "network_field": {
         "balance": "Solde : %{balance}",
         "not_enough_funds": "Fonds insuffisants pour lancer un jeton"
@@ -3830,6 +3807,10 @@
         "confirming_order": "Confirmation de commande...",
         "deposit_funds": "Déposer des fonds",
         "average_price": "Prix moyen",
+        "no_liquidity_title": "Aucune liquidité",
+        "no_liquidity_description": "Il n’y a aucun vendeur pour ce résultat.",
+        "insufficient_liquidity_title": "Liquidité insuffisante",
+        "insufficient_liquidity_description": "Essayez un montant plus faible pour cet ordre.",
         "errors": {
           "not_enough_liquidity": "Pas assez de liquidité pour passer la commande complète.",
           "please_lower_amount": "Veuillez réduire le montant et réessayer.",
@@ -3853,7 +3834,11 @@
         "profit_loss": "Profit / Perte",
         "receive": "Recevoir",
         "spread": "Écart",
-        "cash_out": "Encaisser"
+        "cash_out": "Encaisser",
+        "no_liquidity_title": "Aucune liquidité",
+        "no_liquidity_description": "Il n’y a aucun acheteur pour ce résultat.",
+        "insufficient_liquidity_title": "Liquidité insuffisante",
+        "insufficient_liquidity_description": "Essayez un montant plus faible pour encaisser."
       },
       "search": {
         "placeholder": "Rechercher des marchés de prédiction",
@@ -3926,7 +3911,8 @@
         "hide_lost_bets": "Masquer les paris perdus",
         "show_lost_bets": "Afficher les paris perdus",
         "lost_bets_dont_clear": "Les paris perdus ne sont pas supprimés automatiquement. Vous pouvez les effacer ci-dessous."
-      }
+      },
+      "in_review": "En cours d’examen"
     },
     "rnbw_rewards": {
       "introduction": {

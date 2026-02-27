@@ -3566,29 +3566,6 @@
         "title": "抱歉，上传图片时出错。",
         "subtitle": "请再试一次。"
       },
-      "allocation_breakdown": {
-        "my_share": "我的份额",
-        "airdropping": "空投中",
-        "start_price": "起始价",
-        "sections": {
-          "my_share": {
-            "title": "创作者份额",
-            "description": "您在项目中的个人股份"
-          },
-          "airdropping": {
-            "title": "空投份额",
-            "description": "分发给朋友和支持者"
-          },
-          "liquidity_pool": {
-            "title": "流动性池份额",
-            "description": "确保交易顺畅和流动性"
-          },
-          "rainbow_share": {
-            "title": "彩虹之外",
-            "description": "未来社区分发"
-          }
-        }
-      },
       "network_field": {
         "balance": "余额: %{balance}",
         "not_enough_funds": "资金不足，无法启动代币"
@@ -3830,6 +3807,10 @@
         "confirming_order": "订单确认中...",
         "deposit_funds": "存款资金",
         "average_price": "平均价格",
+        "no_liquidity_title": "无流动性",
+        "no_liquidity_description": "此结果没有卖家。",
+        "insufficient_liquidity_title": "流动性不足",
+        "insufficient_liquidity_description": "请尝试用更小的金额下单。",
         "errors": {
           "not_enough_liquidity": "没有足够的流动性来完成整个订单。",
           "please_lower_amount": "请减少金额后再试。",
@@ -3853,7 +3834,11 @@
         "profit_loss": "利润/损失",
         "receive": "接收",
         "spread": "差价",
-        "cash_out": "兑现"
+        "cash_out": "兑现",
+        "no_liquidity_title": "无流动性",
+        "no_liquidity_description": "此结果没有买家。",
+        "insufficient_liquidity_title": "流动性不足",
+        "insufficient_liquidity_description": "请尝试用更小的金额兑现。"
       },
       "search": {
         "placeholder": "搜索预测市场",
@@ -3926,7 +3911,8 @@
         "hide_lost_bets": "隐藏输掉的赌注",
         "show_lost_bets": "显示输掉的赌注",
         "lost_bets_dont_clear": "输掉的赌注不会自动清除。您可以在下面清除它们。"
-      }
+      },
+      "in_review": "审核中"
     },
     "rnbw_rewards": {
       "introduction": {

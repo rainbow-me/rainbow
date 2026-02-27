@@ -50,6 +50,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { getNextNonce } from '@/state/nonces';
 import { type CrosschainQuote, type Quote, type QuoteError, SwapType } from '@rainbow-me/swaps';
 import { IS_IOS } from '@/env';
+import { ATOMIC_SWAPS, getExperimentalFlag } from '@/config';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
@@ -309,6 +310,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         metadata: { degenMode, chainId },
       })({ address: parameters.quote.from, chainId });
 
+      // Flag if atomic swaps are enabled and supported by the wallet
+      // Upon execution, we do the same for delegation specifically
+      const atomicSwapsEnabled = getRemoteConfig().atomic_swaps_enabled || getExperimentalFlag(ATOMIC_SWAPS);
+
       const { errorMessage } = await executeFn(walletExecuteRap, {
         screen: Screens.SWAPS,
         operation: TimeToSignOperation.SignTransaction,
@@ -319,6 +324,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         chainId,
         gasParams,
         gasFeeParamsBySpeed,
+        atomic: atomicSwapsEnabled && !isHardwareWallet,
       });
 
       isSwapping.value = false;

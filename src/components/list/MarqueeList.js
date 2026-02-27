@@ -166,7 +166,7 @@ const SwipeableList = ({ components, height, speed, testID }) => {
   );
 };
 
-const MarqueeList = ({ height, items = [], renderItem, speed, testID }) => {
+const MarqueeList = ({ height, items = /** @type {any[]} */ ([]), renderItem, speed, testID }) => {
   return (
     <>
       <SwipeableList

@@ -562,7 +562,23 @@
       "reset_experimental_config": "Reset Experimental Config",
       "status": "Status",
       "sync_codepush": "Sync CodePush",
-      "simulate_device_transfer": "Simulate Device Transfer"
+      "simulate_device_transfer": "Simulate Device Transfer",
+      "headers": {
+        "normie_settings": "Normie Settings",
+        "rainbow_developer_settings": "Rainbow Developer Settings",
+        "feature_flags": "Feature Flags",
+        "delegation_settings": "Delegation Settings"
+      },
+      "delegation_settings": {
+        "clear_store": "Clear Delegation Store",
+        "simulate_disable_smart_wallet": "Simulate Disable Smart Wallet",
+        "simulate_disable_single_network": "Simulate Disable Single Network",
+        "simulate_disable_third_party": "Simulate Disable Third Party",
+        "simulate_alert_vulnerability": "Simulate Alert Vulnerability",
+        "simulate_alert_bug": "Simulate Alert Bug",
+        "simulate_alert_unrecognized": "Simulate Alert Unrecognized",
+        "simulate_alert_unspecified": "Simulate Alert Unspecified"
+      }
     },
     "discover": {
       "pulse": {
@@ -885,6 +901,7 @@
         "minimum_received": "Minimum Received",
         "preferred_network": "Preferred Network",
         "rainbow_fee": "Included Rainbow Fee",
+        "smart_wallet_activation_fee": "Est. Smart Wallet Fee",
         "settings": "Settings"
       },
       "token_index": {
@@ -1039,6 +1056,10 @@
       "gas": {
         "text": "This is the \"gas fee\" used by the %{networkName} blockchain to securely validate your transaction.\n\nThis fee varies depending on the complexity of your transaction and how busy the network is!",
         "title": "%{networkName} network fee"
+      },
+      "smart_wallet_activation": {
+        "text": "This transaction includes a one-time Smart Wallet activation on %{networkName}. This upgrades your wallet to support batched transactions and other smart account features.\n\nThe activation fee is included in the network fee for this swap.",
+        "title": "Smart Wallet activation"
       },
       "max_base_fee": {
         "text": "This is the maximum base fee you’re willing to pay for this transaction.\n\nSetting a higher max base fee prevents your transaction from getting stuck if fees rise.",
@@ -2687,6 +2708,16 @@
           "confirmed": "Revoked",
           "failed": "Revoke Failed"
         },
+        "delegate": {
+          "pending": "Delegating",
+          "confirmed": "Approved",
+          "failed": "Delegation Failed"
+        },
+        "revoke_delegation": {
+          "pending": "Revoking",
+          "confirmed": "Revoked",
+          "failed": "Revoke Failed"
+        },
         "sale": {
           "pending": "Selling",
           "confirmed": "Sold",
@@ -2726,6 +2757,8 @@
       "savings": "Savings",
       "signed": "Signed",
       "contract_interaction": "Contract Interaction",
+      "delegate_description": "Wallet Delegation",
+      "revoke_delegation_description": "Wallet Delegation",
       "deposited_with_token": "Deposited %{name}",
       "withdrew_with_token": "Withdrew %{name}"
     },
@@ -2738,6 +2771,7 @@
       "network_fee": "Network Fee",
       "hash_copied": "\uDBC0\uDC63 Transaction hash copied",
       "address_copied": "\uDBC0\uDC63 Address copied",
+      "smart_account": "Smart Account",
       "try_again": "\uDBC0\uDD49 Try again",
       "context_menu": {
         "copy_address": "Copy Address",
@@ -2989,7 +3023,51 @@
         "cloud_backup_link": "Learn more…",
         "view_secret_phrase": "View Secret Phrase",
         "view_private_key": "View Private Key",
-        "copy_wallet_address": "Copy wallet address"
+        "copy_wallet_address": "Copy Address",
+        "edit_smart_wallet": "Edit Smart Wallet"
+      },
+      "delegations": {
+        "active": "Active",
+        "not_active": "Not active",
+        "smart_wallet": "Smart Wallet",
+        "smart_wallet_description": "Smart wallets enable a faster, cheaper, and more reliable wallet experience.",
+        "activated_networks": "Activated Networks",
+        "other_smart_accounts": "Other Smart Accounts",
+        "delegated_to": "Delegated to %{name}",
+        "delegated_to_another_wallet": "Delegated to another wallet",
+        "enable_smart_wallet": "Enable Smart Wallet",
+        "disable_smart_wallet": "Disable Smart Wallet",
+        "enabled_description": "You'll miss out on faster transactions and lower network costs",
+        "disabled_description": "Updates will take effect on your next swap",
+        "will_delegate_callout": "Includes smart wallet activation",
+        "revoke_panel": {
+          "disable_smart_wallet_title": "Disable Smart Wallet",
+          "disable_smart_wallet_subtitle": "This will revoke all active delegations and disable Smart Wallet features.",
+          "disable_smart_wallet_button": "Hold to Disable",
+          "disable_single_network_title": "Disable on %{network}",
+          "disable_single_network_subtitle": "This will remove the Smart Wallet delegation for this network.",
+          "disable_single_network_button": "Hold to Disable",
+          "disable_third_party_title": "Disable Account",
+          "disable_third_party_subtitle": "Your wallet is delegated to a different Smart Wallet. Disable to use Rainbow.",
+          "disable_third_party_button": "Hold to Disable",
+          "alert_vulnerability_title": "Smart Wallet Security",
+          "alert_vulnerability_subtitle": "A vulnerability was detected in your Smart Wallet contract. Revoke it as a precaution to protect your assets.",
+          "alert_vulnerability_button": "Hold to Revoke",
+          "alert_bug_title": "Smart Wallet Issue",
+          "alert_bug_subtitle": "An issue was detected with your Smart Wallet contract. Revoke it to improve your wallet experience.",
+          "alert_bug_button": "Hold to Revoke",
+          "alert_unrecognized_title": "Risky Delegation",
+          "alert_unrecognized_subtitle": "An unrecognized and risky delegation contract was detected. Revoke it to secure your wallet.",
+          "alert_unrecognized_button": "Hold to Revoke",
+          "alert_unspecified_title": "Delegation Issue",
+          "alert_unspecified_subtitle": "Your wallet is currently delegated to a risky smart contract. Revoke it to secure your wallet.",
+          "alert_unspecified_button": "Hold to Revoke",
+          "revoking": "Revoking...",
+          "done": "Done",
+          "next": "Next",
+          "try_again": "Try Again",
+          "gas_fee": "to revoke on %{chainName}"
+        }
       },
       "balance_title": "Balance",
       "buy": "Buy",
@@ -2998,6 +3076,10 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Watching",
         "ledger": "Ledger",
+        "delegated": "Delegated",
+        "alt_delegation": "Alt Delegation",
+        "not_delegated": "Not Delegated",
+        "disabled": "Disabled",
         "wallets": "Wallets",
         "all_wallets": "All Wallets",
         "total_balance": "Total Balance",
@@ -3547,30 +3629,6 @@
       "image_upload_error": {
         "title": "Sorry, there was an error uploading your image.",
         "subtitle": "Please try again."
-      },
-      "allocation_breakdown": {
-        "my_share": "MY SHARE",
-        "airdropping": "AIRDROPPING",
-        "start_price": "START PRICE",
-
-        "sections": {
-          "my_share": {
-            "title": "Creator Share",
-            "description": "Your personal stake in the project"
-          },
-          "airdropping": {
-            "title": "Airdrop Share",
-            "description": "Distributed to friends and supporters"
-          },
-          "liquidity_pool": {
-            "title": "Liquidity Pool Share",
-            "description": "Ensures smooth trading and liquidity"
-          },
-          "rainbow_share": {
-            "title": "Over the Rainbow",
-            "description": "Future Community Distributions"
-          }
-        }
       },
       "network_field": {
         "balance": "Balance: %{balance}",

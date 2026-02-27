@@ -16,8 +16,8 @@ import {
   type UnlockableAppIconKey,
   freeAppIcons,
   unlockableAppIcons,
-} from './appIcons';
-import { unlockableAppIconStorage } from './unlockableAppIconCheck';
+} from '../models/appIcons';
+import { unlockableAppIconStorage } from '../utils/unlockableAppIconCheck';
 
 const AppIconSettingsSection = () => {
   const { appIcon, settingsChangeAppIcon } = useAccountSettings();

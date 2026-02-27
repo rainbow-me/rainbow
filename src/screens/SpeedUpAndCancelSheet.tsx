@@ -436,6 +436,11 @@ export default function SpeedUpAndCancelSheet() {
     return defaultSpeeds;
   }, [isL2]);
 
+  if (tx.delegation) {
+    goBack();
+    return null;
+  }
+
   return (
     <SheetKeyboardAnimation as={AnimatedContainer} isKeyboardVisible={false} translateY={offset}>
       <ExtendedSheetBackground />

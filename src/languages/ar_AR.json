@@ -3566,29 +3566,6 @@
         "title": "عذرًا، حدث خطأ أثناء تحميل صورتك.",
         "subtitle": "يرجى المحاولة مرة أخرى."
       },
-      "allocation_breakdown": {
-        "my_share": "مشاركتي",
-        "airdropping": "الإسقاط",
-        "start_price": "سعر البدء",
-        "sections": {
-          "my_share": {
-            "title": "حصة المنشئ",
-            "description": "نصيبك الشخصي في المشروع"
-          },
-          "airdropping": {
-            "title": "حصة الإسقاط",
-            "description": "تم توزيعها على الأصدقاء والداعمين"
-          },
-          "liquidity_pool": {
-            "title": "حصة مجموعة السيولة",
-            "description": "ضمان تداول سلس وسيولة"
-          },
-          "rainbow_share": {
-            "title": "فوق قوس قزح",
-            "description": "توزيعات المجتمع المستقبلية"
-          }
-        }
-      },
       "network_field": {
         "balance": "الرصيد: %{balance}",
         "not_enough_funds": "لا توجد أموال كافية لإطلاق رمز"
@@ -3830,6 +3807,10 @@
         "confirming_order": "جارٍ تأكيد الطلب...",
         "deposit_funds": "إيداع الأموال",
         "average_price": "السعر المتوسط",
+        "no_liquidity_title": "لا توجد سيولة",
+        "no_liquidity_description": "لا يوجد بائعون لهذه النتيجة.",
+        "insufficient_liquidity_title": "السيولة غير كافية",
+        "insufficient_liquidity_description": "جرّب مبلغًا أصغر لهذا الطلب.",
         "errors": {
           "not_enough_liquidity": "لا يوجد سيولة كافية لتنفيذ الطلب بالكامل.",
           "please_lower_amount": "يرجى تقليل الكمية والمحاولة مرة أخرى.",
@@ -3853,7 +3834,11 @@
         "profit_loss": "الربح / الخسارة",
         "receive": "استلم",
         "spread": "الانتشار",
-        "cash_out": "سحب النقد"
+        "cash_out": "سحب النقد",
+        "no_liquidity_title": "لا توجد سيولة",
+        "no_liquidity_description": "لا يوجد مشترون لهذه النتيجة.",
+        "insufficient_liquidity_title": "السيولة غير كافية",
+        "insufficient_liquidity_description": "جرّب مبلغًا أصغر للسحب النقدي."
       },
       "search": {
         "placeholder": "ابحث عن أسواق التنبؤ",
@@ -3926,7 +3911,8 @@
         "hide_lost_bets": "إخفاء الرهانات الخاسرة",
         "show_lost_bets": "عرض الرهانات الخاسرة",
         "lost_bets_dont_clear": "لا تتم إزالة الرهانات الخاسرة تلقائيًا. يمكنك مسحها أدناه."
-      }
+      },
+      "in_review": "قيد المراجعة"
     },
     "rnbw_rewards": {
       "introduction": {
