@@ -34,7 +34,6 @@ const allowedBarrelFiles = [
   'src/components/buttons/hold-to-authorize/index.ts',
   'src/components/buttons/rainbow-button/index.ts',
   'src/components/cards/NFTOffersCard/index.tsx',
-  'src/components/cards/remote-cards/index.ts',
   'src/components/coin-icon/index.ts',
   'src/components/CurrencyInput/index.ts',
   'src/components/drag-and-drop/components/index.ts',
