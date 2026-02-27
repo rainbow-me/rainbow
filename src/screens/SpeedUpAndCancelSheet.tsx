@@ -403,6 +403,8 @@ export default function SpeedUpAndCancelSheet() {
                 },
               ]
             );
+          } else {
+            setReady(true);
           }
         }
       }
@@ -443,7 +445,8 @@ export default function SpeedUpAndCancelSheet() {
     return defaultSpeeds;
   }, [isL2]);
 
-  if (tx.delegation) {
+  const isDelegationSpeedUp = type === SPEED_UP && tx.delegation;
+  if (isDelegationSpeedUp) {
     goBack();
     return null;
   }
