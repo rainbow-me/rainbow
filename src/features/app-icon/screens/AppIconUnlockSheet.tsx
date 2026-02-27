@@ -13,7 +13,6 @@ import { delay } from '@/utils/delay';
 import Routes from '@/navigation/routesNames';
 import { SheetActionButton } from '@/components/sheet';
 import { analytics } from '@/analytics';
-import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
 import { type RootStackParamList } from '@/navigation/types';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -39,9 +38,6 @@ export default function AppIconUnlockSheet() {
 
   useEffect(() => {
     analytics.track(analytics.event.appIconUnlockSheetViewed, { appIcon: appIconKey });
-    return () => {
-      remotePromoSheetsStore.setState({ isShown: false });
-    };
   }, [appIconKey]);
 
   return (

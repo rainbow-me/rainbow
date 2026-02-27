@@ -14,7 +14,6 @@ import { fixHiddenUSDC } from './migrations/fixHiddenUSDC';
 import { migrateFavoritesV2, migrateFavoritesV3 } from './migrations/migrateFavorites';
 import { migratePersistedQueriesToMMKV } from './migrations/migratePersistedQueriesToMMKV';
 import { migratePinnedAndHiddenTokenUniqueIds } from './migrations/migratePinnedAndHiddenTokenUniqueIds';
-import { migrateRemotePromoSheetsToZustand } from './migrations/migrateRemotePromoSheetsToZustand';
 import { migrateUnlockableAppIconStorage } from './migrations/migrateUnlockableAppIconStorage';
 import { purgeWcConnectionsWithoutAccounts } from './migrations/purgeWcConnectionsWithoutAccounts';
 
@@ -42,7 +41,6 @@ const migrations: Migration[] = [
   migratePinnedAndHiddenTokenUniqueIds(),
   migrateUnlockableAppIconStorage(),
   migratePersistedQueriesToMMKV(),
-  migrateRemotePromoSheetsToZustand(),
   migrateFavoritesV2(),
   migrateFavoritesV3(),
   migrateNotificationSettingsToV3(),

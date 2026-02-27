@@ -53,7 +53,6 @@ import {
   profileConfig,
   profilePreviewConfig,
   qrScannerConfig,
-  promoSheetConfig,
   notificationPermissionSheetConfig,
   registerENSNavigatorConfig,
   restoreSheetConfig,
@@ -104,7 +103,6 @@ import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
-import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import CheckIdentifierScreen from '@/screens/CheckIdentifierScreen';
@@ -217,7 +215,6 @@ function NativeStackNavigator() {
       />
       <Stack.Screen component={SendConfirmationSheet} name={Routes.SEND_CONFIRMATION_SHEET} {...sendConfirmationSheetConfig} />
       <NativeStack.Screen component={ExplainSheet} name={Routes.EXPLAIN_SHEET} {...explainSheetConfig} />
-      <NativeStack.Screen component={RemotePromoSheet} name={Routes.REMOTE_PROMO_SHEET} {...promoSheetConfig} />
       <NativeStack.Screen
         component={ExternalLinkWarningSheet}
         name={Routes.EXTERNAL_LINK_WARNING_SHEET}
