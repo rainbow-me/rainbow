@@ -13,8 +13,6 @@ import { RainbowError, ensureError, logger } from '@/logger';
 import { ETH_ADDRESS, gasUnits } from '@/references';
 import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapUnlockActionParameters } from '../references';
 import { overrideWithFastSpeedIfNeeded } from './../utils';
-import { type TokenColors } from '@/graphql/__generated__/metadata';
-import { type ParsedAsset } from '@/resources/assets/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { DELEGATION, getExperimentalFlag } from '@/config/experimental';
@@ -183,8 +181,14 @@ export const prepareUnlock = async ({ parameters }: PrepareActionProps<'unlock'>
   };
 };
 
+type UnlockTransactionParams = RapUnlockActionParameters & {
+  data: string;
+  value?: string;
+  approvalAmount?: 'UNLIMITED' | string;
+};
+
 function buildUnlockTransaction(
-  parameters: RapUnlockActionParameters & { data: string; value?: string },
+  parameters: UnlockTransactionParams,
   gasParams: TransactionGasParams | TransactionLegacyGasParams,
   nonce?: number,
   gasLimit?: string
@@ -196,8 +200,8 @@ function buildUnlockTransaction(
     asset: {
       ...assetToUnlock,
       network: chainsName[assetToUnlock.chainId],
-      colors: assetToUnlock.colors as TokenColors,
-    } as ParsedAsset,
+      colors: assetToUnlock.colors,
+    },
     data,
     value,
     changes: [],
@@ -209,7 +213,7 @@ function buildUnlockTransaction(
     nonce,
     status: TransactionStatus.pending,
     type: 'approve',
-    approvalAmount: parameters.amount,
+    approvalAmount: parameters.approvalAmount ?? parameters.amount,
     ...gasParams,
   } as Omit<NewTransaction, 'hash'>;
 }
@@ -362,7 +366,12 @@ export const unlock = async ({
 
   const transaction: NewTransaction = {
     ...buildUnlockTransaction(
-      { ...parameters, data: approval.data, value: isUnlimited ? 'UNLIMITED' : approvalAmount },
+      {
+        ...parameters,
+        data: approval.data,
+        value: approval.value?.toString() || '0',
+        approvalAmount: isUnlimited ? 'UNLIMITED' : approvalAmount,
+      },
       gasParamsToUse,
       approval.nonce,
       gasLimit
