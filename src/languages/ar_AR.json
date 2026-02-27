@@ -562,7 +562,23 @@
       "reset_experimental_config": "إعادة تعيين التكوين التجريبي",
       "status": "الحالة",
       "sync_codepush": "مز synchrony CodePush",
-      "simulate_device_transfer": "محاكاة نقل الجهاز"
+      "simulate_device_transfer": "محاكاة نقل الجهاز",
+      "headers": {
+        "normie_settings": "إعدادات المستخدم العادي",
+        "rainbow_developer_settings": "إعدادات مطوّر Rainbow",
+        "feature_flags": "أعلام الميزات",
+        "delegation_settings": "إعدادات التفويض"
+      },
+      "delegation_settings": {
+        "clear_store": "مسح مخزن التفويض",
+        "simulate_disable_smart_wallet": "محاكاة تعطيل المحفظة الذكية",
+        "simulate_disable_single_network": "محاكاة تعطيل شبكة واحدة",
+        "simulate_disable_third_party": "محاكاة تعطيل الطرف الثالث",
+        "simulate_alert_vulnerability": "محاكاة تنبيه الثغرة الأمنية",
+        "simulate_alert_bug": "محاكاة تنبيه خطأ",
+        "simulate_alert_unrecognized": "محاكاة تنبيه غير معرّف",
+        "simulate_alert_unspecified": "محاكاة تنبيه غير محدد"
+      }
     },
     "discover": {
       "pulse": {
@@ -885,6 +901,7 @@
         "minimum_received": "الحد الأدنى المستلم",
         "preferred_network": "الشبكة المفضلة",
         "rainbow_fee": "تضمين رسوم الرينبو",
+        "smart_wallet_activation_fee": "الرسوم التقديرية للمحفظة الذكية",
         "settings": "الإعدادات"
       },
       "token_index": {
@@ -1039,6 +1056,10 @@
       "gas": {
         "text": "هذه هي \"رسوم الغاز\" التي يستخدمها بلوكشين %{networkName} للتحقق من صحة معاملتك بشكل آمن.\n\nتختلف هذه الرسوم حسب تعقيد معاملتك وحسب كثافة الشبكة!",
         "title": "رسوم شبكة %{networkName}"
+      },
+      "smart_wallet_activation": {
+        "text": "تتضمن هذه المعاملة تفعيلًا لمرة واحدة للمحفظة الذكية على %{networkName}. يؤدي ذلك إلى ترقية محفظتك لدعم المعاملات المجمّعة وميزات أخرى للحسابات الذكية.\n\nيتم تضمين رسوم التفعيل ضمن رسوم الشبكة لعملية المبادلة هذه.",
+        "title": "تفعيل المحفظة الذكية"
       },
       "max_base_fee": {
         "text": "هذا هو الحد الأقصى لرسوم الأساس التي أنت مستعد لدفعها لهذه المعاملة.\n\nيمنع تحديد الحد الأقصى المرتفع للرسوم الأساسية عالق معاملتك في حالة ارتفاع الرسوم.",
@@ -2705,6 +2726,16 @@
           "confirmed": "تم الإلغاء",
           "failed": "فشل الإلغاء"
         },
+        "delegate": {
+          "pending": "جارٍ التفويض",
+          "confirmed": "تم الموافقة",
+          "failed": "فشل التفويض"
+        },
+        "revoke_delegation": {
+          "pending": "إلغاء",
+          "confirmed": "تم الإلغاء",
+          "failed": "فشل الإلغاء"
+        },
         "sale": {
           "pending": "بيع",
           "confirmed": "تم البيع",
@@ -2744,6 +2775,8 @@
       "savings": "التوفير",
       "signed": "موقع",
       "contract_interaction": "تفاعل العقد",
+      "delegate_description": "تفويض المحفظة",
+      "revoke_delegation_description": "تفويض المحفظة",
       "deposited_with_token": "تم الإيداع %{name}",
       "withdrew_with_token": "تم السحب %{name}"
     },
@@ -2756,6 +2789,7 @@
       "network_fee": "رسوم الشبكة",
       "hash_copied": "􀁣 تم نسخ هاش الحوالة",
       "address_copied": "􀁣 تم نسخ العنوان",
+      "smart_account": "حساب ذكي",
       "try_again": "􀅉 حاول مرة أخرى",
       "context_menu": {
         "copy_address": "نسخ العنوان",
@@ -3007,7 +3041,51 @@
         "cloud_backup_link": "تعلم المزيد...",
         "view_secret_phrase": "عرض العبارة السرية",
         "view_private_key": "عرض المفتاح الخاص",
-        "copy_wallet_address": "نسخ عنوان المحفظة"
+        "copy_wallet_address": "نسخ العنوان",
+        "edit_smart_wallet": "تعديل المحفظة الذكية"
+      },
+      "delegations": {
+        "active": "نشط",
+        "not_active": "غير نشط",
+        "smart_wallet": "محفظة ذكية",
+        "smart_wallet_description": "توفّر المحافظ الذكية تجربة محفظة أسرع وأرخص وأكثر موثوقية.",
+        "activated_networks": "الشبكات المُفعّلة",
+        "other_smart_accounts": "حسابات ذكية أخرى",
+        "delegated_to": "مفوَّضة إلى %{name}",
+        "delegated_to_another_wallet": "مفوَّضة إلى محفظة أخرى",
+        "enable_smart_wallet": "تمكين المحفظة الذكية",
+        "disable_smart_wallet": "تعطيل المحفظة الذكية",
+        "enabled_description": "ستفوتك المعاملات الأسرع وتكاليف الشبكة الأقل",
+        "disabled_description": "ستسري التحديثات في عملية المبادلة التالية",
+        "will_delegate_callout": "يتضمن تفعيل المحفظة الذكية",
+        "revoke_panel": {
+          "disable_smart_wallet_title": "تعطيل المحفظة الذكية",
+          "disable_smart_wallet_subtitle": "سيؤدي هذا إلى إلغاء جميع التفويضات النشطة وتعطيل ميزات المحفظة الذكية.",
+          "disable_smart_wallet_button": "اضغط مطولًا للتعطيل",
+          "disable_single_network_title": "تعطيل على %{network}",
+          "disable_single_network_subtitle": "سيؤدي هذا إلى إزالة تفويض المحفظة الذكية لهذه الشبكة.",
+          "disable_single_network_button": "اضغط مطولًا للتعطيل",
+          "disable_third_party_title": "تعطيل الحساب",
+          "disable_third_party_subtitle": "محفظتك مُفوَّضة إلى محفظة ذكية مختلفة. عطّلها لاستخدام Rainbow.",
+          "disable_third_party_button": "اضغط مطولًا للتعطيل",
+          "alert_vulnerability_title": "أمان المحفظة الذكية",
+          "alert_vulnerability_subtitle": "تم اكتشاف ثغرة أمنية في عقد المحفظة الذكية لديك. قم بإلغائه كإجراء احترازي لحماية أصولك.",
+          "alert_vulnerability_button": "اضغط مطولًا للإلغاء",
+          "alert_bug_title": "مشكلة في المحفظة الذكية",
+          "alert_bug_subtitle": "تم اكتشاف مشكلة في عقد المحفظة الذكية لديك. قم بإلغائه لتحسين تجربة محفظتك.",
+          "alert_bug_button": "اضغط مطولًا للإلغاء",
+          "alert_unrecognized_title": "تفويض محفوف بالمخاطر",
+          "alert_unrecognized_subtitle": "تم اكتشاف عقد تفويض غير معرّف ومحفوف بالمخاطر. قم بإلغائه لتأمين محفظتك.",
+          "alert_unrecognized_button": "اضغط مطولًا للإلغاء",
+          "alert_unspecified_title": "مشكلة في التفويض",
+          "alert_unspecified_subtitle": "محفظتك مفوَّضة حاليًا إلى عقد ذكي محفوف بالمخاطر. قم بإلغائه لتأمين محفظتك.",
+          "alert_unspecified_button": "اضغط مطولًا للإلغاء",
+          "revoking": "جارٍ الإلغاء...",
+          "done": "تم",
+          "next": "التالي",
+          "try_again": "حاول مرة أخرى",
+          "gas_fee": "للإلغاء على %{chainName}"
+        }
       },
       "balance_title": "رصيد",
       "buy": "شراء",
@@ -3016,6 +3094,10 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "مشاهدة",
         "ledger": "ليدجر",
+        "delegated": "مفوَّضة",
+        "alt_delegation": "تفويض بديل",
+        "not_delegated": "غير مفوَّضة",
+        "disabled": "معطل",
         "wallets": "المحافظ",
         "all_wallets": "كل المحافظ",
         "total_balance": "الرصيد الإجمالي",

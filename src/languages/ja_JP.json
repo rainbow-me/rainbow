@@ -562,7 +562,23 @@
       "reset_experimental_config": "実験的なコンフィグをリセット",
       "status": "ステータス",
       "sync_codepush": "CodePushを同期",
-      "simulate_device_transfer": "デバイス転送をシミュレートする"
+      "simulate_device_transfer": "デバイス転送をシミュレートする",
+      "headers": {
+        "normie_settings": "一般ユーザー設定",
+        "rainbow_developer_settings": "Rainbow 開発者設定",
+        "feature_flags": "機能フラグ",
+        "delegation_settings": "委任設定"
+      },
+      "delegation_settings": {
+        "clear_store": "委任ストアをクリア",
+        "simulate_disable_smart_wallet": "スマートウォレットの無効化をシミュレート",
+        "simulate_disable_single_network": "単一ネットワークの無効化をシミュレート",
+        "simulate_disable_third_party": "サードパーティの無効化をシミュレート",
+        "simulate_alert_vulnerability": "脆弱性アラートをシミュレート",
+        "simulate_alert_bug": "アラート（バグ）をシミュレート",
+        "simulate_alert_unrecognized": "アラート（未認識）をシミュレート",
+        "simulate_alert_unspecified": "アラート（未指定）をシミュレート"
+      }
     },
     "discover": {
       "pulse": {
@@ -885,6 +901,7 @@
         "minimum_received": "受け取る最小額",
         "preferred_network": "優先ネットワーク",
         "rainbow_fee": "Rainbow手数料込み",
+        "smart_wallet_activation_fee": "推定スマートウォレット手数料",
         "settings": "設定"
       },
       "token_index": {
@@ -1039,6 +1056,10 @@
       "gas": {
         "text": "これは、あなたの取引を安全に検証するために %{networkName} ブロックチェーンで使用される「ガス手数料」です。\n\nこの手数料は、あなたの取引の複雑さとネットワークの混雑具合により変動します！",
         "title": "%{networkName} ネットワーク手数料"
+      },
+      "smart_wallet_activation": {
+        "text": "このトランザクションには、%{networkName}でのスマートウォレットの一度限りの有効化が含まれています。これにより、バッチトランザクションやその他のスマートアカウント機能に対応するようウォレットがアップグレードされます。\n\n有効化手数料は、このスワップのネットワーク手数料に含まれています。",
+        "title": "スマートウォレットの有効化"
       },
       "max_base_fee": {
         "text": "これは、このトランザクションのために支払いたい最大のベース手数料です。\n\nより高い最大ベース手数料を設定すると、手数料が上昇した場合にトランザクションが詰まるのを防ぎます。",
@@ -2705,6 +2726,16 @@
           "confirmed": "取り消し済み",
           "failed": "取り消し失敗"
         },
+        "delegate": {
+          "pending": "委任中",
+          "confirmed": "承認済み",
+          "failed": "委任に失敗"
+        },
+        "revoke_delegation": {
+          "pending": "取り消し中",
+          "confirmed": "取り消し済み",
+          "failed": "取り消し失敗"
+        },
         "sale": {
           "pending": "販売",
           "confirmed": "売却済み",
@@ -2744,6 +2775,8 @@
       "savings": "貯蓄",
       "signed": "署名済み",
       "contract_interaction": "契約相互作用",
+      "delegate_description": "ウォレットの委任",
+      "revoke_delegation_description": "ウォレットの委任",
       "deposited_with_token": "%{name}を預けました",
       "withdrew_with_token": "%{name}を引き出しました"
     },
@@ -2756,6 +2789,7 @@
       "network_fee": "ネットワーク手数料",
       "hash_copied": "􀁣 トランザクションハッシュがコピーされました",
       "address_copied": "􀁣 アドレスがコピーされました",
+      "smart_account": "スマートアカウント",
       "try_again": "􀅉 もう一度試してください",
       "context_menu": {
         "copy_address": "アドレスをコピー",
@@ -3007,7 +3041,51 @@
         "cloud_backup_link": "詳しくはこちら",
         "view_secret_phrase": "シークレットフレーズを表示",
         "view_private_key": "秘密鍵を表示",
-        "copy_wallet_address": "ウォレットアドレスをコピー"
+        "copy_wallet_address": "アドレスをコピー",
+        "edit_smart_wallet": "スマートウォレットを編集する"
+      },
+      "delegations": {
+        "active": "有効",
+        "not_active": "有効ではありません",
+        "smart_wallet": "スマートウォレット",
+        "smart_wallet_description": "スマートウォレットにより、より速く、より安く、より信頼性の高いウォレット体験が可能になります。",
+        "activated_networks": "有効化済みネットワーク",
+        "other_smart_accounts": "その他のスマートアカウント",
+        "delegated_to": "%{name}に委任済み",
+        "delegated_to_another_wallet": "別のウォレットに委任済み",
+        "enable_smart_wallet": "スマートウォレットを有効化",
+        "disable_smart_wallet": "スマートウォレットを無効化",
+        "enabled_description": "より速いトランザクションや、より低いネットワークコストを利用できなくなります",
+        "disabled_description": "更新は次回のスワップで反映されます",
+        "will_delegate_callout": "スマートウォレットの有効化が含まれます",
+        "revoke_panel": {
+          "disable_smart_wallet_title": "スマートウォレットを無効化",
+          "disable_smart_wallet_subtitle": "これにより、有効な委任がすべて取り消され、スマートウォレット機能が無効になります。",
+          "disable_smart_wallet_button": "無効化するまで保持",
+          "disable_single_network_title": "%{network}で無効化",
+          "disable_single_network_subtitle": "このネットワークのスマートウォレット委任が削除されます。",
+          "disable_single_network_button": "無効化するまで保持",
+          "disable_third_party_title": "アカウントを無効化",
+          "disable_third_party_subtitle": "あなたのウォレットは別のスマートウォレットに委任されています。Rainbowを使用するには無効化してください。",
+          "disable_third_party_button": "無効化するまで保持",
+          "alert_vulnerability_title": "スマートウォレットのセキュリティ",
+          "alert_vulnerability_subtitle": "あなたのスマートウォレットコントラクトで脆弱性が検出されました。資産を保護するための予防策として取り消してください。",
+          "alert_vulnerability_button": "取り消すまでホールド",
+          "alert_bug_title": "スマートウォレットの問題",
+          "alert_bug_subtitle": "あなたのスマートウォレットコントラクトで問題が検出されました。ウォレット体験を向上させるため、取り消してください。",
+          "alert_bug_button": "取り消すまでホールド",
+          "alert_unrecognized_title": "リスクの高い委任",
+          "alert_unrecognized_subtitle": "未認識でリスクの高い委任コントラクトが検出されました。ウォレットを安全にするため、取り消してください。",
+          "alert_unrecognized_button": "取り消すまでホールド",
+          "alert_unspecified_title": "委任の問題",
+          "alert_unspecified_subtitle": "あなたのウォレットは現在、リスクの高いスマートコントラクトに委任されています。ウォレットを安全にするため、取り消してください。",
+          "alert_unspecified_button": "取り消すまでホールド",
+          "revoking": "取り消し中...",
+          "done": "完了",
+          "next": "次へ",
+          "try_again": "再試行",
+          "gas_fee": "%{chainName}で取り消すため"
+        }
       },
       "balance_title": "残高",
       "buy": "購入",
@@ -3016,6 +3094,10 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "ウォッチ中",
         "ledger": "Ledger",
+        "delegated": "委任済み",
+        "alt_delegation": "代替の委任",
+        "not_delegated": "委任されていません",
+        "disabled": "無効",
         "wallets": "財布",
         "all_wallets": "すべてのウォレット",
         "total_balance": "合計残高",

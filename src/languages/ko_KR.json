@@ -562,7 +562,23 @@
       "reset_experimental_config": "실험 설정 재설정",
       "status": "상태",
       "sync_codepush": "CodePush 동기화",
-      "simulate_device_transfer": "디바이스 전송 시뮬레이션"
+      "simulate_device_transfer": "디바이스 전송 시뮬레이션",
+      "headers": {
+        "normie_settings": "일반 설정",
+        "rainbow_developer_settings": "Rainbow 개발자 설정",
+        "feature_flags": "기능 플래그",
+        "delegation_settings": "위임 설정"
+      },
+      "delegation_settings": {
+        "clear_store": "위임 저장소 지우기",
+        "simulate_disable_smart_wallet": "스마트 월렛 비활성화 시뮬레이션",
+        "simulate_disable_single_network": "단일 네트워크 비활성화 시뮬레이션",
+        "simulate_disable_third_party": "타사 비활성화 시뮬레이션",
+        "simulate_alert_vulnerability": "취약성 알림 시뮬레이션",
+        "simulate_alert_bug": "알림 버그 시뮬레이션",
+        "simulate_alert_unrecognized": "알림 인식되지 않음 시뮬레이션",
+        "simulate_alert_unspecified": "알림 미지정 시뮬레이션"
+      }
     },
     "discover": {
       "pulse": {
@@ -885,6 +901,7 @@
         "minimum_received": "최소 수령량",
         "preferred_network": "선호 네트워크",
         "rainbow_fee": "포함된 레인보우 비용",
+        "smart_wallet_activation_fee": "스마트 지갑 수수료 예상",
         "settings": "설정"
       },
       "token_index": {
@@ -1039,6 +1056,10 @@
       "gas": {
         "text": "이것은 %{networkName} 블록체인이 귀하의 거래를 안전하게 확인하는데 사용하는 \"가스 비용\"입니다.\n\n이 비용은 거래의 복잡성과 네트워크가 얼마나 바쁜지에 따라 달라집니다!",
         "title": "%{networkName} 네트워크 수수료"
+      },
+      "smart_wallet_activation": {
+        "text": "이 거래에는 %{networkName}에서의 1회성 스마트 지갑 활성화가 포함됩니다. 이를 통해 지갑이 배치 거래 및 기타 스마트 계정 기능을 지원하도록 업그레이드됩니다.\n\n활성화 수수료는 이 스왑의 네트워크 수수료에 포함되어 있습니다.",
+        "title": "스마트 지갑 활성화"
       },
       "max_base_fee": {
         "text": "이것은 이 거래에 대해 지불할 의향이 있는 최대 기본 수수료입니다.\n\n더 높은 최대 기본 수수료를 설정하면 수수료가 상승해도 거래가 멈추지 않습니다.",
@@ -2705,6 +2726,16 @@
           "confirmed": "철회 완료",
           "failed": "철회 실패"
         },
+        "delegate": {
+          "pending": "위임 중",
+          "confirmed": "승인된",
+          "failed": "위임 실패"
+        },
+        "revoke_delegation": {
+          "pending": "철회 중",
+          "confirmed": "철회 완료",
+          "failed": "철회 실패"
+        },
         "sale": {
           "pending": "판매",
           "confirmed": "판매한",
@@ -2744,6 +2775,8 @@
       "savings": "저축",
       "signed": "서명됨",
       "contract_interaction": "계약 상호작용",
+      "delegate_description": "지갑 위임",
+      "revoke_delegation_description": "지갑 위임",
       "deposited_with_token": "입금 %{name}",
       "withdrew_with_token": "출금 %{name}"
     },
@@ -2756,6 +2789,7 @@
       "network_fee": "네트워크 수수료",
       "hash_copied": "􀁣 거래 해시 복사됨",
       "address_copied": "􀁣 주소 복사됨",
+      "smart_account": "스마트 계정",
       "try_again": "􀅉 다시 시도",
       "context_menu": {
         "copy_address": "주소 복사",
@@ -3007,7 +3041,51 @@
         "cloud_backup_link": "더 알아보기…",
         "view_secret_phrase": "비밀 구문 보기",
         "view_private_key": "개인 키 보기",
-        "copy_wallet_address": "지갑 주소 복사"
+        "copy_wallet_address": "주소 복사",
+        "edit_smart_wallet": "스마트 지갑 편집"
+      },
+      "delegations": {
+        "active": "활성화",
+        "not_active": "활성화되지 않음",
+        "smart_wallet": "스마트 지갑",
+        "smart_wallet_description": "스마트 지갑은 더 빠르고, 더 저렴하며, 더 안정적인 지갑 경험을 제공합니다.",
+        "activated_networks": "활성화된 네트워크",
+        "other_smart_accounts": "다른 스마트 계정",
+        "delegated_to": "%{name}에 위임됨",
+        "delegated_to_another_wallet": "다른 지갑에 위임됨",
+        "enable_smart_wallet": "스마트 지갑 활성화",
+        "disable_smart_wallet": "스마트 지갑 비활성화",
+        "enabled_description": "더 빠른 거래와 더 낮은 네트워크 비용을 놓치게 됩니다",
+        "disabled_description": "업데이트는 다음 스왑에서 적용됩니다",
+        "will_delegate_callout": "스마트 지갑 활성화 포함",
+        "revoke_panel": {
+          "disable_smart_wallet_title": "스마트 지갑 비활성화",
+          "disable_smart_wallet_subtitle": "이 작업은 모든 활성 위임을 철회하고 스마트 지갑 기능을 비활성화합니다.",
+          "disable_smart_wallet_button": "길게 눌러 비활성화",
+          "disable_single_network_title": "%{network}에서 비활성화",
+          "disable_single_network_subtitle": "이 작업은 이 네트워크에 대한 스마트 지갑 위임을 제거합니다.",
+          "disable_single_network_button": "길게 눌러 비활성화",
+          "disable_third_party_title": "계정 비활성화",
+          "disable_third_party_subtitle": "지갑이 다른 스마트 지갑에 위임되어 있습니다. Rainbow를 사용하려면 비활성화하세요.",
+          "disable_third_party_button": "길게 눌러 비활성화",
+          "alert_vulnerability_title": "스마트 지갑 보안",
+          "alert_vulnerability_subtitle": "스마트 지갑 컨트랙트에서 취약점이 감지되었습니다. 자산을 보호하기 위해 예방 차원에서 철회하세요.",
+          "alert_vulnerability_button": "길게 눌러 철회",
+          "alert_bug_title": "스마트 지갑 문제",
+          "alert_bug_subtitle": "스마트 지갑 컨트랙트에 문제가 감지되었습니다. 지갑 사용 경험을 개선하려면 철회하세요.",
+          "alert_bug_button": "길게 눌러 철회",
+          "alert_unrecognized_title": "위험한 위임",
+          "alert_unrecognized_subtitle": "인식되지 않고 위험한 위임 컨트랙트가 감지되었습니다. 지갑을 안전하게 하려면 철회하세요.",
+          "alert_unrecognized_button": "길게 눌러 철회",
+          "alert_unspecified_title": "위임 문제",
+          "alert_unspecified_subtitle": "지갑이 현재 위험한 스마트 컨트랙트에 위임되어 있습니다. 지갑을 안전하게 하려면 철회하세요.",
+          "alert_unspecified_button": "길게 눌러 철회",
+          "revoking": "철회 중...",
+          "done": "완료",
+          "next": "다음",
+          "try_again": "다시 시도하기",
+          "gas_fee": "%{chainName}에서 철회하기 위해"
+        }
       },
       "balance_title": "균형",
       "buy": "구매",
@@ -3016,6 +3094,10 @@
         "balance_eth": "%{balanceEth} 이더리움",
         "watching": "시청 중",
         "ledger": "렛저",
+        "delegated": "위임됨",
+        "alt_delegation": "대체 위임",
+        "not_delegated": "위임되지 않음",
+        "disabled": "비활성화됨",
         "wallets": "지갑들",
         "all_wallets": "모든 지갑",
         "total_balance": "총 잔액",

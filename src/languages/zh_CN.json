@@ -562,7 +562,23 @@
       "reset_experimental_config": "重置实验配置",
       "status": "状态",
       "sync_codepush": "同步 CodePush",
-      "simulate_device_transfer": "模拟设备传输"
+      "simulate_device_transfer": "模拟设备传输",
+      "headers": {
+        "normie_settings": "普通用户设置",
+        "rainbow_developer_settings": "Rainbow 开发者设置",
+        "feature_flags": "功能标志",
+        "delegation_settings": "委托设置"
+      },
+      "delegation_settings": {
+        "clear_store": "清除委托存储",
+        "simulate_disable_smart_wallet": "模拟禁用智能钱包",
+        "simulate_disable_single_network": "模拟禁用单网络",
+        "simulate_disable_third_party": "模拟禁用第三方",
+        "simulate_alert_vulnerability": "模拟警报漏洞",
+        "simulate_alert_bug": "模拟警报漏洞",
+        "simulate_alert_unrecognized": "模拟警报未识别",
+        "simulate_alert_unspecified": "模拟警报未指定"
+      }
     },
     "discover": {
       "pulse": {
@@ -885,6 +901,7 @@
         "minimum_received": "最低接收金额",
         "preferred_network": "首选网络",
         "rainbow_fee": "包括彩虹费",
+        "smart_wallet_activation_fee": "预估智能钱包费用",
         "settings": "设置"
       },
       "token_index": {
@@ -1039,6 +1056,10 @@
       "gas": {
         "text": "这是 %{networkName} 区块链用来安全验证你的交易的\"燃气费\"。\n\n这个费用视你的交易复杂度和网络繁忙程度而定！",
         "title": "%{networkName} 网络费"
+      },
+      "smart_wallet_activation": {
+        "text": "此交易包含在 %{networkName} 上一次性的智能钱包激活。这会升级你的钱包，以支持批量交易和其他智能账户功能。\n\n激活费用已包含在本次兑换的网络费用中。",
+        "title": "智能钱包激活"
       },
       "max_base_fee": {
         "text": "这是你愿意为这笔交易支付的最高基础费用。\n\n设置更高的最大基础费用可以在费用上升时防止你的交易被卡住。",
@@ -2705,6 +2726,16 @@
           "confirmed": "已撤销",
           "failed": "撤销失败"
         },
+        "delegate": {
+          "pending": "委托中",
+          "confirmed": "已批准",
+          "failed": "委托失败"
+        },
+        "revoke_delegation": {
+          "pending": "撤销中",
+          "confirmed": "已撤销",
+          "failed": "撤销失败"
+        },
         "sale": {
           "pending": "出售",
           "confirmed": "已出售",
@@ -2744,6 +2775,8 @@
       "savings": "储蓄",
       "signed": "已签署",
       "contract_interaction": "合同互动",
+      "delegate_description": "钱包委托",
+      "revoke_delegation_description": "钱包委托",
       "deposited_with_token": "存款 %{name}",
       "withdrew_with_token": "取款 %{name}"
     },
@@ -2756,6 +2789,7 @@
       "network_fee": "网络费用",
       "hash_copied": "􀁣 已复制交易哈希",
       "address_copied": "􀁣 已复制地址",
+      "smart_account": "智能账户",
       "try_again": "􀅉 重试",
       "context_menu": {
         "copy_address": "复制地址",
@@ -3007,7 +3041,51 @@
         "cloud_backup_link": "了解更多…",
         "view_secret_phrase": "查看秘密短语",
         "view_private_key": "查看私钥",
-        "copy_wallet_address": "复制钱包地址"
+        "copy_wallet_address": "复制地址",
+        "edit_smart_wallet": "编辑智能钱包"
+      },
+      "delegations": {
+        "active": "已激活",
+        "not_active": "未激活",
+        "smart_wallet": "智能钱包",
+        "smart_wallet_description": "智能钱包可带来更快、更便宜且更可靠的钱包体验。",
+        "activated_networks": "已激活的网络",
+        "other_smart_accounts": "其他智能账户",
+        "delegated_to": "委托给 %{name}",
+        "delegated_to_another_wallet": "委托给另一个钱包",
+        "enable_smart_wallet": "启用智能钱包",
+        "disable_smart_wallet": "禁用智能钱包",
+        "enabled_description": "你将错过更快的交易和更低的网络成本",
+        "disabled_description": "更新将在你的下一次兑换时生效",
+        "will_delegate_callout": "包含智能钱包激活",
+        "revoke_panel": {
+          "disable_smart_wallet_title": "禁用智能钱包",
+          "disable_smart_wallet_subtitle": "这将撤销所有活跃的委托并禁用智能钱包功能。",
+          "disable_smart_wallet_button": "长按禁用",
+          "disable_single_network_title": "在 %{network} 上禁用",
+          "disable_single_network_subtitle": "这将移除此网络的智能钱包委托。",
+          "disable_single_network_button": "长按禁用",
+          "disable_third_party_title": "禁用账户",
+          "disable_third_party_subtitle": "你的钱包已委托给另一个智能钱包。禁用后即可使用 Rainbow。",
+          "disable_third_party_button": "长按禁用",
+          "alert_vulnerability_title": "智能钱包安全",
+          "alert_vulnerability_subtitle": "在你的智能钱包合约中检测到一个漏洞。作为预防措施，请撤销它以保护你的资产。",
+          "alert_vulnerability_button": "长按撤销",
+          "alert_bug_title": "智能钱包问题",
+          "alert_bug_subtitle": "在你的智能钱包合约中检测到一个问题。撤销它以改善你的钱包体验。",
+          "alert_bug_button": "长按撤销",
+          "alert_unrecognized_title": "高风险委托",
+          "alert_unrecognized_subtitle": "检测到一个未识别且高风险的委托合约。撤销它以保障你的钱包安全。",
+          "alert_unrecognized_button": "长按撤销",
+          "alert_unspecified_title": "委托问题",
+          "alert_unspecified_subtitle": "你的钱包当前委托给了一个高风险的智能合约。撤销它以保障你的钱包安全。",
+          "alert_unspecified_button": "长按撤销",
+          "revoking": "撤销中...",
+          "done": "完成",
+          "next": "下一步",
+          "try_again": "再试一次",
+          "gas_fee": "用于在 %{chainName} 上撤销"
+        }
       },
       "balance_title": "余额",
       "buy": "购买",
@@ -3016,6 +3094,10 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "正在关注",
         "ledger": "分类账",
+        "delegated": "已委托",
+        "alt_delegation": "替代委托",
+        "not_delegated": "未委托",
+        "disabled": "已禁用",
         "wallets": "钱包",
         "all_wallets": "所有钱包",
         "total_balance": "总余额",
