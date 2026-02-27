@@ -86,8 +86,8 @@ const ListLoadingSkeleton = memo(function ListLoadingSkeleton() {
 
 function getItemLayout(data: unknown, index: number) {
   return {
-    length: ITEM_HEIGHT,
-    offset: Math.floor(index / 2) * ROW_HEIGHT,
+    length: ROW_HEIGHT,
+    offset: index * ROW_HEIGHT,
     index,
   };
 }
