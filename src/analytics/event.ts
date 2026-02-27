@@ -185,9 +185,6 @@ export const event = {
   pointsPointsScreenPressedCopyReferralCodeButton: 'Pressed copy referral code button on points screen',
   pointsPointsScreenPressedShareReferralLinkButton: 'Pressed share referral link button on points screen',
 
-  remoteCardPrimaryButtonPressed: 'remote_card.primary_button_pressed',
-  remoteCardDismissed: 'remote_card.dismissed',
-
   appIconUnlockSheetViewed: 'app_icon_unlock_sheet.viewed',
   appIconUnlockSheetCTAPressed: 'app_icon_unlock_sheet.cta_pressed',
 
@@ -759,15 +756,6 @@ export type EventProperties = {
   [event.pointsReferralCodeDeeplinkOpened]: undefined;
   [event.pointsPointsScreenPressedCopyReferralCodeButton]: undefined;
   [event.pointsPointsScreenPressedShareReferralLinkButton]: undefined;
-
-  [event.remoteCardPrimaryButtonPressed]: {
-    cardKey: string;
-    action: string;
-    props: string;
-  };
-  [event.remoteCardDismissed]: {
-    cardKey: string;
-  };
 
   [event.appIconUnlockSheetViewed]: {
     appIcon: UnlockableAppIconKey;

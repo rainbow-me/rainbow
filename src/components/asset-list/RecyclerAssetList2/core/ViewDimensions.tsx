@@ -104,8 +104,6 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.POLYMARKET_FEATURE_CARD]: { height: POLYMARKET_FEATURE_CARD_HEIGHT },
   [CellType.RNBW_FEATURE_CARD]: { height: RNBW_FEATURE_CARD_HEIGHT },
   [CellType.TOKENS_HEADER]: { height: AssetListHeaderHeight },
-  [CellType.REMOTE_CARD_CAROUSEL]: { height: 112 },
-  [CellType.EMPTY_REMOTE_CARD_CAROUSEL]: { height: 0 },
   [CellType.SPACER]: { height: 0 }, // Height is set from data
 };
 

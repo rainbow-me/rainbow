@@ -9,9 +9,8 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useClaimablesStore } from '@/state/claimables/claimables';
-import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, RNBW_REWARDS, useExperimentalConfig } from '@/config/experimentalHooks';
+import { CLAIMABLES, DEFI_POSITIONS, RNBW_REWARDS, useExperimentalConfig } from '@/config/experimentalHooks';
 import { analytics } from '@/analytics';
-import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { IS_TEST } from '@/env';
@@ -53,19 +52,15 @@ export default function useWalletSectionsData({
   const selectedWallet = useSelectedWallet();
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
-  const remoteConfig = useRemoteConfig('claimables', 'remote_cards_enabled', 'perps_enabled', 'polymarket_enabled', 'rnbw_rewards_enabled');
+  const remoteConfig = useRemoteConfig('claimables', 'perps_enabled', 'polymarket_enabled', 'rnbw_rewards_enabled');
   const experimentalConfig = useExperimentalConfig();
   const isWalletEthZero = useIsWalletEthZero();
 
-  const remoteCardsEnabled = (remoteConfig.remote_cards_enabled || experimentalConfig[REMOTE_CARDS]) && !isReadOnlyWallet;
   const positionsEnabled = experimentalConfig[DEFI_POSITIONS] && !IS_TEST;
   const claimablesEnabled = (remoteConfig.claimables || experimentalConfig[CLAIMABLES]) && !IS_TEST;
   const perpsEnabled = remoteConfig.perps_enabled && !IS_TEST;
   const polymarketEnabled = remoteConfig.polymarket_enabled && !IS_TEST;
   const rnbwRewardsEnabled = (remoteConfig.rnbw_rewards_enabled || experimentalConfig[RNBW_REWARDS]) && !IS_TEST;
-
-  const cardIds = remoteCardsStore(state => state.getCardIdsForScreen('WALLET_SCREEN'));
-  const remoteCards = useMemo(() => (remoteCardsEnabled ? cardIds : []), [cardIds, remoteCardsEnabled]);
 
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
@@ -153,7 +148,6 @@ export default function useWalletSectionsData({
       claimables,
       perpsData,
       polymarketData,
-      remoteCards,
       rnbwRewardsEnabled,
       hasMoreCollections,
       isShowcaseDataMigrated,
@@ -196,7 +190,6 @@ export default function useWalletSectionsData({
     claimables,
     perpsData,
     polymarketData,
-    remoteCards,
     rnbwRewardsEnabled,
     hasMoreCollections,
     isShowcaseDataMigrated,
