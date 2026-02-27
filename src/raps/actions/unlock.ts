@@ -329,7 +329,7 @@ export const unlock = async ({
     gasFeeParamsBySpeed,
   });
 
-  const nonce = baseNonce ? baseNonce + index : undefined;
+  const nonce = baseNonce != null ? baseNonce + index : undefined;
 
   const { approvalAmount, isUnlimited } = await getApprovalAmount({
     address: parameters.fromAddress,

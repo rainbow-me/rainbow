@@ -226,7 +226,7 @@ export const executeSwap = async ({
 
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
-    nonce: nonce ? toHex(`${nonce}`) : undefined,
+    nonce: nonce != null ? toHex(String(nonce)) : undefined,
     ...gasParams,
   };
 
@@ -382,7 +382,7 @@ export const swap = async ({
 
   let swap;
   try {
-    const nonce = baseNonce ? baseNonce + index : undefined;
+    const nonce = baseNonce != null ? baseNonce + index : undefined;
     const swapParams = {
       gasParams: gasParamsToUse,
       chainId,
