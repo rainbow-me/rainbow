@@ -9,7 +9,6 @@ import {
 import { useSharedValue } from 'react-native-reanimated';
 import { DataProvider, LayoutProvider, ProgressiveListView } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import 'string.fromcodepoint';
 import { type ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 import deviceUtils from '@/utils/deviceUtils';
 import { Categories } from './Categories';
