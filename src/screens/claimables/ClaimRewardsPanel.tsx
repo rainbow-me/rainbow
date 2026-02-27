@@ -37,8 +37,8 @@ import { useMutation } from '@tanstack/react-query';
 import React, { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { RewardsActionButton } from '../components/RewardsActionButton';
-import { EthRewardsCoinIcon } from '../content/PointsContent';
+import { RewardsActionButton } from './RewardsActionButton';
+import { EthRewardsCoinIcon } from './EthRewardsCoinIcon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType | 'error' | 'bridge-error';

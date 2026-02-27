@@ -2,7 +2,6 @@ import { NOTIFICATIONS_API_KEY } from 'react-native-dotenv';
 import { logger, RainbowError } from '@/logger';
 import {
   type GlobalNotificationTopics,
-  type GlobalNotificationTopicType,
   type NotificationSubscriptionWalletsType,
   type WalletNotificationSettings,
 } from '@/notifications/settings/types';
@@ -24,7 +23,7 @@ const updateNotificationSubscription = async ({
   wallets,
 }: {
   firebaseToken: string;
-  marketingTopics: GlobalNotificationTopicType[];
+  marketingTopics: string[];
   wallets: NotificationSubscriptionWalletsType[];
 }): Promise<NotificationsSubscriptionResponse> => {
   try {
@@ -72,7 +71,7 @@ const updateNotificationSubscriptionWithRetry = async ({
   wallets,
 }: {
   firebaseToken: string;
-  marketingTopics: GlobalNotificationTopicType[];
+  marketingTopics: string[];
   wallets: NotificationSubscriptionWalletsType[];
 }): Promise<boolean> => {
   const subscriptionResponse = await updateNotificationSubscription({ firebaseToken, marketingTopics, wallets });
