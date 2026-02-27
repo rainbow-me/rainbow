@@ -1,6 +1,6 @@
 import { makeMutable, type SharedValue } from 'react-native-reanimated';
 import { type Route } from '@/navigation/Navigation';
-import Routes, { POINTS_ROUTES } from '@/navigation/routesNames';
+import Routes from '@/navigation/routesNames';
 import { VIRTUAL_NAVIGATORS } from '@/navigation/virtualNavigators';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
@@ -20,10 +20,7 @@ const SWIPE_ROUTES = [
   Routes.DAPP_BROWSER_SCREEN,
   Routes.KING_OF_THE_HILL,
   Routes.PROFILE_SCREEN,
-  Routes.POINTS_SCREEN,
   Routes.RNBW_REWARDS_SCREEN,
-  POINTS_ROUTES['CLAIM_CONTENT'],
-  POINTS_ROUTES['REFERRAL_CONTENT'],
 ] as const;
 
 type SwipeRoute = (typeof SWIPE_ROUTES)[number];

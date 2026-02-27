@@ -70,11 +70,8 @@ export interface RainbowConfig
   base_swaps_enabled: boolean;
   blast_swaps_enabled: boolean;
   mints_enabled: boolean;
-  points_enabled: boolean;
-  points_fully_enabled: boolean;
   rpc_proxy_enabled: boolean;
   remote_promo_enabled: boolean;
-  points_notifications_toggle: boolean;
   dapp_browser: boolean;
   idfa_check_enabled: boolean;
   rewards_enabled: boolean;
@@ -203,11 +200,8 @@ export const DEFAULT_CONFIG = {
   base_swaps_enabled: true,
   blast_swaps_enabled: true,
   mints_enabled: true,
-  points_enabled: true,
-  points_fully_enabled: true,
   rpc_proxy_enabled: true,
   remote_promo_enabled: false,
-  points_notifications_toggle: true,
   dapp_browser: true,
   idfa_check_enabled: false,
   rewards_enabled: true,

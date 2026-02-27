@@ -466,11 +466,6 @@ type RouteParams = {
     type: WalletconnectResultType;
     cb?: () => void;
   };
-  [Routes.CONSOLE_SHEET]: {
-    referralCode?: string;
-    deeplinked?: boolean;
-    viewWeeklyEarnings?: boolean;
-  };
   [Routes.PIN_AUTHENTICATION_SCREEN]: {
     onCancel: () => void;
     onSuccess: (pin: string | undefined) => void;
