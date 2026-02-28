@@ -3444,6 +3444,7 @@
             "no_changes": "No Changes Detected",
             "need_more_native": "You’ll need more %{symbol} on %{network} to pay for this transaction. Get some %{symbol} below to continue with this request.",
             "unavailable_personal_sign": "Simulation for personal signs is not yet supported",
+            "unavailable_typed_data": "Simulation for typed data signing is not yet supported",
             "unavailable_zora_network": "Simulation on Zora is not yet supported",
             "failed_to_simulate": "The simulation failed, which suggests your transaction is likely to fail. This may be an issue with the app you’re using.",
             "tx_api_error": "We are unable to determine whether or not your transaction will succeed or fail. Proceed with caution.",

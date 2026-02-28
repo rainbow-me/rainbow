@@ -3462,6 +3462,7 @@
             "no_changes": "未检测到任何更改",
             "need_more_native": "你需要更多的 %{symbol} 在 %{network} 上支付这笔交易。获得下面的 %{symbol} 继续进行这个请求。",
             "unavailable_personal_sign": "尚不支持个人签名的模拟",
+            "unavailable_typed_data": "尚不支持类型数据签名的模拟",
             "unavailable_zora_network": "尚不支持Zora的模拟",
             "failed_to_simulate": "模拟失败，您的交易可能会失败。这可能与您正在使用的应用有关。",
             "tx_api_error": "我们无法确定您的交易是否会成功或失败。请谨慎进行。",
