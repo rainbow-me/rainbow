@@ -1,9 +1,9 @@
 import { logger } from '@/logger';
-import { ensRegistrationsLoadState } from '@/redux/ensRegistration';
+import { ensRegistrationsLoadState } from '@/features/ens/redux/registration';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAccountAddress, getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { prefetchAccountENSDomains } from './useAccountENSDomains';
+import { prefetchAccountENSDomains } from '@/features/ens/hooks/useAccountENSDomains';
 
 export default function useLoadAccountLateData() {
   const accountAddress = useAccountAddress();

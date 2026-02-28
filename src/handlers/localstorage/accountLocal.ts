@@ -1,5 +1,5 @@
 import { getAccountLocal, saveAccountLocal } from './common';
-import type { ENSRegistrations } from '@/entities/ensRegistration';
+import type { ENSRegistrations } from '@/features/ens/types/registration';
 
 const assetsVersion = '0.3.0';
 

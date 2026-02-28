@@ -17,7 +17,7 @@ import {
 import { type FavoritedSite } from '@/state/browser/favoriteDappsStore';
 import { type RequestSource } from '@/utils/requestNavigationHandlers';
 import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
-import { type ENSRapActionType } from '../raps/common';
+import { type ENSRapActionType } from '@/features/ens/raps/common';
 import { type AnyPerformanceLog, type Screen } from '../state/performance/operations';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
 import { type SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';

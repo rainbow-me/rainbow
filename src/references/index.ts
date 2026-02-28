@@ -4,7 +4,6 @@ export { default as balanceCheckerContractAbi } from './balances-checker-abi.jso
 export { default as chainAssets } from './chain-assets.json';
 export { signatureRegistryABI, SIGNATURE_REGISTRY_ADDRESS } from './signatureRegistry';
 export { default as emojis } from './emojis.json';
-export { default as ensIntroMarqueeNames } from './ens-intro-marquee-names.json';
 export { default as erc20ABI } from './erc20-abi.json';
 export { default as tokenGateCheckerAbi } from './token-gate-checker-abi.json';
 export { default as optimismGasOracleAbi } from './optimism-gas-oracle-abi.json';
@@ -16,23 +15,9 @@ export { default as smartContractMethods } from './smartcontract-methods.json';
 export { rainbowTokenList } from './rainbow-token-list';
 export { gasUnits } from './gasUnits';
 
-export {
-  ENSRegistryWithFallbackABI,
-  ENSETHRegistrarControllerABI,
-  ENSReverseRegistrarABI,
-  ENSBaseRegistrarImplementationABI,
-  ENSPublicResolverABI,
-  ensRegistryAddress,
-  ensETHRegistrarControllerAddress,
-  ensBaseRegistrarImplementationAddress,
-  ensReverseRegistrarAddress,
-  ensPublicResolverAddress,
-} from './ens';
-
 export const OVM_GAS_PRICE_ORACLE = '0x420000000000000000000000000000000000000F';
 
 // NFTs Contracts
-export const ENS_NFT_CONTRACT_ADDRESS = '0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85';
 export const POAP_NFT_ADDRESS = '0x22c1f6050e56d2876009903609a2cc3fef83b415';
 export const CRYPTO_KITTIES_NFT_ADDRESS = '0x06012c8cf97bead5deae237070f9587f8e7a266d';
 export const CRYPTO_PUNKS_NFT_ADDRESS = '0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb';
