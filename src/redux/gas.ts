@@ -1,7 +1,7 @@
 import { Mutex } from 'async-mutex';
-import BigNumber from 'bignumber.js';
+import type BigNumber from 'bignumber.js';
 import { isEmpty } from 'lodash';
-import { AppDispatch, AppGetState } from './store';
+import { type AppDispatch, type AppGetState } from './store';
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 import type {

@@ -1,5 +1,5 @@
 import c from 'chroma-js';
-import { SharedValue } from 'react-native-reanimated';
+import { type SharedValue } from 'react-native-reanimated';
 import { getAddress, type Address } from 'viem';
 
 import {
@@ -11,16 +11,16 @@ import {
   STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
 } from '@/__swaps__/screens/Swap/constants';
 import { globalColors } from '@/design-system';
-import { ForegroundColor, palettes } from '@/design-system/color/palettes';
-import { TokenColors } from '@/graphql/__generated__/metadata';
+import { type ForegroundColor, palettes } from '@/design-system/color/palettes';
+import { type TokenColors } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
-import { DEFAULT_SLIPPAGE_BIPS_CHAINID, RainbowConfig } from '@/model/remoteConfig';
+import { DEFAULT_SLIPPAGE_BIPS_CHAINID, type RainbowConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
 import { supportedNativeCurrencies } from '@/references';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
-import { BigNumberish } from '@ethersproject/bignumber';
-import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteError, QuoteParams } from '@rainbow-me/swaps';
+import { type BigNumberish } from '@ethersproject/bignumber';
+import { type CrosschainQuote, ETH_ADDRESS, type Quote, type QuoteError, type QuoteParams } from '@rainbow-me/swaps';
 import { swapsStore } from '../../state/swaps/swapsStore';
 import {
   divWorklet,
@@ -33,9 +33,9 @@ import {
   powWorklet,
   roundWorklet,
   toFixedWorklet,
-} from '@/safe-math/SafeMath';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
-import { InputKeys } from '../types/swap';
+} from '@/framework/core/safeMath';
+import { type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset } from '../types/assets';
+import { type InputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { ChainId } from '@/state/backendNetworks/types';

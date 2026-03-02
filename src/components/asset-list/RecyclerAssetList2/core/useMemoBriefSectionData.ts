@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useDeepCompareMemo } from 'use-deep-compare';
-import { AssetListType } from '..';
-import { CellType, CellTypes, CoinExtraData, LegacyNFTFamilyExtraData, NFTFamilyExtraData } from './ViewTypes';
+import { type AssetListType } from '..';
+import { CellType, type CellTypes, type CoinExtraData, type LegacyNFTFamilyExtraData, type NFTFamilyExtraData } from './ViewTypes';
 import useCoinListEdited from '@/hooks/useCoinListEdited';
 import useExternalWalletSectionsData from '@/hooks/useExternalWalletSectionsData';
 import useWalletSectionsData from '@/hooks/useWalletSectionsData';

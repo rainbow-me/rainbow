@@ -4,7 +4,7 @@ import { Button } from '../buttons';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text as UnstyledText } from '../text';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { IS_ANDROID } from '@/env';
 
 const BackArrow = styled(Icon).attrs(({ theme: { colors } }) => ({

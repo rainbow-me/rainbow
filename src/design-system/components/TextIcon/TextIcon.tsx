@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleProp, TextStyle } from 'react-native';
-import { TextColor } from '../../color/palettes';
-import { CustomColor } from '../../color/useForegroundColor';
+import { type StyleProp, type TextStyle } from 'react-native';
+import { type TextColor } from '../../color/palettes';
+import { type CustomColor } from '../../color/useForegroundColor';
 import { Bleed } from '../Bleed/Bleed';
 import { Box } from '../Box/Box';
-import { Text, TextSize, TextWeight } from '../Text/Text';
+import { Text, type TextSize, type TextWeight } from '../Text/Text';
 
 export type TextIconProps = {
   align?: 'center' | 'left' | 'right';

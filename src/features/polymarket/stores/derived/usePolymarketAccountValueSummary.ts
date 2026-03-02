@@ -3,7 +3,7 @@ import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { usePolymarketPositionsSummary } from '@/features/polymarket/stores/derived/usePolymarketPositionsSummary';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { add, isZero } from '@/helpers/utilities';
-import { truncateToDecimals } from '@/safe-math/SafeMath';
+import { truncateToDecimals } from '@/framework/core/safeMath';
 import { USD_DECIMALS } from '@/features/perps/constants';
 
 export type PolymarketAccountValueSummary = {

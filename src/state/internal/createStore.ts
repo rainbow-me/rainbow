@@ -1,5 +1,5 @@
-import { PersistOptions, persist } from 'zustand/middleware';
-import create, { Mutate, StoreApi } from 'zustand/vanilla';
+import { type PersistOptions, persist } from 'zustand/middleware';
+import create, { type Mutate, type StoreApi } from 'zustand/vanilla';
 import { persistStorage } from './persistStorage';
 
 type Initializer<TState> = Parameters<typeof persist<TState>>[0];

@@ -1,5 +1,5 @@
-import React, { ComponentProps, ReactNode } from 'react';
-import { Box, BoxProps, useColorMode } from '@/design-system';
+import React, { type ComponentProps, type ReactNode } from 'react';
+import { Box, type BoxProps, useColorMode } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, View } from 'react-native';

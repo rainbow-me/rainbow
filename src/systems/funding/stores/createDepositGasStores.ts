@@ -1,6 +1,6 @@
 import { formatUnits } from 'viem';
-import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
+import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/entities/gas';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
 import { gweiToWei, weiToGwei } from '@/parsers';
@@ -10,25 +10,27 @@ import { gasUnits } from '@/references/gasUnits';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { InferStoreState } from '@/state/internal/types';
-import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { type InferStoreState } from '@/state/internal/types';
+import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { GasSpeed } from '@/__swaps__/types/gas';
+import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
+import { isLegacyMeteorologyFeeData } from '@/resources/meteorology/classification';
 import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
-import { createExternalTokenStore, FormattedExternalAsset } from './createExternalTokenStore';
+import { createExternalTokenStore, type FormattedExternalAsset } from './createExternalTokenStore';
 import { computeMaxSwappableAmount } from './createDepositStore';
-import { isCrosschainQuote, isValidQuote } from '../utils/quotes';
+import { isValidQuote } from '../utils/quotes';
 import {
-  DepositConfig,
-  DepositGasLimitParams,
-  DepositGasSuggestions,
-  DepositGasStoresType,
-  DepositMeteorologyActions,
-  DepositMeteorologyParams,
-  DepositQuoteStoreType,
-  DepositStoreType,
+  type DepositConfig,
+  type DepositGasLimitParams,
+  type DepositGasSuggestions,
+  type DepositGasStoresType,
+  type DepositMeteorologyActions,
+  type DepositMeteorologyParams,
+  type DepositQuoteStoreType,
+  type DepositStoreType,
 } from '../types';
 
 // ============ Types ========================================================= //
@@ -161,18 +163,14 @@ function createGasLimitFetcher(
 
     if (isCrosschainQuote(quote)) {
       return estimateUnlockAndCrosschainSwap({
-        assetToSell: asset,
         chainId,
         quote,
-        sellAmount: quote.sellAmount.toString(),
       });
     }
 
     return estimateUnlockAndSwap({
-      assetToSell: asset,
       chainId,
       quote,
-      sellAmount: quote.sellAmount.toString(),
     });
   };
 }
@@ -194,7 +192,7 @@ function selectGasSettings(meteorologyData: DepositGasSuggestions | undefined, s
 
 function selectGasSuggestions(meteorologyData: MeteorologyData | null): DepositGasSuggestions | null {
   if (!meteorologyData) return null;
-  if ('legacy' in meteorologyData.data) {
+  if (isLegacyMeteorologyFeeData(meteorologyData)) {
     const { fastGasPrice, proposeGasPrice, safeGasPrice } = meteorologyData.data.legacy;
     return {
       [GasSpeed.CUSTOM]: undefined,
@@ -202,16 +200,15 @@ function selectGasSuggestions(meteorologyData: MeteorologyData | null): DepositG
       [GasSpeed.NORMAL]: { gasPrice: gweiToWei(safeGasPrice), isEIP1559: false },
       [GasSpeed.URGENT]: { gasPrice: gweiToWei(fastGasPrice), isEIP1559: false },
     };
-  } else if ('data' in meteorologyData) {
-    const { baseFeeSuggestion, maxPriorityFeeSuggestions } = meteorologyData.data;
-    return {
-      [GasSpeed.CUSTOM]: undefined,
-      [GasSpeed.FAST]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.fast },
-      [GasSpeed.NORMAL]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.normal },
-      [GasSpeed.URGENT]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.urgent },
-    };
   }
-  return null;
+
+  const { baseFeeSuggestion, maxPriorityFeeSuggestions } = meteorologyData.data;
+  return {
+    [GasSpeed.CUSTOM]: undefined,
+    [GasSpeed.FAST]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.fast },
+    [GasSpeed.NORMAL]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.normal },
+    [GasSpeed.URGENT]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.urgent },
+  };
 }
 
 // ============ Gas Fee Calculation =========================================== //

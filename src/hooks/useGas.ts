@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../redux/store';
+import { type AppState } from '../redux/store';
 import usePrevious from './usePrevious';
 import type {
   CurrentBlockParams,

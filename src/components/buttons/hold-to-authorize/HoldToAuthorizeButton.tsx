@@ -1,7 +1,7 @@
 import * as i18n from '@/languages';
 import React from 'react';
 import HoldToAuthorizeButtonContent from './HoldToAuthorizeButtonContent';
-import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
+import { type HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
 import { BiometryTypes } from '@/helpers';
 import useBiometryType from '@/hooks/useBiometryType';
 import useDimensions from '@/hooks/useDimensions';

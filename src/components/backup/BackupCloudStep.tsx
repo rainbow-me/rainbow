@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { Source } from 'react-native-fast-image';
+import { type RouteProp, useRoute } from '@react-navigation/native';
+import { type Source } from 'react-native-fast-image';
 
 import * as i18n from '@/languages';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
@@ -12,18 +12,18 @@ import { analytics } from '@/analytics';
 import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid } from '@/handlers/cloudBackup';
 import useDimensions from '@/hooks/useDimensions';
 import useMagicAutofocus from '@/hooks/useMagicAutofocus';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 import { Box, Inset, Stack } from '@/design-system';
 import { ImgixImage } from '../images';
 import { RainbowButton } from '../buttons';
 import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { usePasswordValidation } from './usePasswordValidation';
-import { TextInput } from 'react-native';
+import { type TextInput } from 'react-native';
 import { useTheme } from '@/theme';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { RootStackParamList } from '@/navigation/types';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 type NativeEvent = {

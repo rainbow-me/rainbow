@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchImage } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
-import { queryClient, QueryConfigDeprecated, UseQueryData } from '@/react-query';
+import { queryClient, type QueryConfigDeprecated, type UseQueryData } from '@/react-query';
 
 export const ensAvatarQueryKey = (name: string) => ['ens-avatar', name];
 

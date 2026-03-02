@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { Box, Inline, Stack, Text, AnimatedText, useForegroundColor } from '@/design-system';
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import Animated, {
-  SharedValue,
+  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -13,7 +13,7 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import { colors } from '@/styles';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
-import { MarketStats, TimeFrames, useTokenMarketStats } from '@/resources/metadata/tokenStats';
+import { type MarketStats, type TimeFrames, useTokenMarketStats } from '@/resources/metadata/tokenStats';
 import { getNumberFormatter } from '@/helpers/intl';
 
 const TIMEFRAME_SWITCH_CONFIG = TIMING_CONFIGS.buttonPressConfig;

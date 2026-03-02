@@ -1,7 +1,7 @@
 import React, { useLayoutEffect } from 'react';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Emoji } from '../text';
-import { TextSize } from '../text/types';
+import { type TextSize } from '../text/types';
 
 interface GravityEmojiProps {
   distance: number;

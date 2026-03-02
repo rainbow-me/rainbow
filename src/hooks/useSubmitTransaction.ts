@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
-import { RequestSource } from '@/utils/requestNavigationHandlers';
+import { type RequestSource } from '@/utils/requestNavigationHandlers';
 import { logger, RainbowError } from '@/logger';
 import { startTimeToSignTracking } from '@/state/performance/performance';
 import { SCREEN_FOR_REQUEST_SOURCE } from '@/components/Transactions/constants';

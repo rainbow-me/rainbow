@@ -1,5 +1,5 @@
-import { StoreApi } from 'zustand';
-import { BaseRainbowStore, DerivedStore, PersistedRainbowStore, WithGetSnapshot } from '../types';
+import { type StoreApi } from 'zustand';
+import { type BaseRainbowStore, type DerivedStore, type PersistedRainbowStore, type WithGetSnapshot } from '../types';
 
 export function getStoreName(store: BaseRainbowStore<unknown>): string {
   const name = isPersistedStore(store) ? store.persist.getOptions().name : store.name;

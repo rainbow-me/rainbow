@@ -1,6 +1,6 @@
-import { createContext, ReactNode, RefObject, useContext, useMemo, useRef } from 'react';
-import { ScrollView } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { createContext, type ReactNode, type RefObject, useContext, useMemo, useRef } from 'react';
+import { type ScrollView } from 'react-native';
+import type Animated from 'react-native-reanimated';
 
 type PolymarketContextType = {
   accountScrollRef: RefObject<Animated.ScrollView | null>;

@@ -5,7 +5,7 @@ import { getSwapToastNetworkLabel, getToastTitle } from '@/components/rainbow-to
 import type { RainbowToast } from '@/components/rainbow-toast/types';
 import Spinner from '@/components/Spinner';
 import { Text } from '@/design-system';
-import { RainbowTransaction, TransactionStatus } from '@/entities/transactions';
+import { type RainbowTransaction, TransactionStatus } from '@/entities/transactions';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { activityValues, useTransactionLaunchToken } from '@/helpers/transactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';

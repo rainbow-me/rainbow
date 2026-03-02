@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
 import { upperFirst } from 'lodash';
-import React, { PropsWithChildren, useCallback, useMemo } from 'react';
+import React, { type PropsWithChildren, useCallback, useMemo } from 'react';
 import URL from 'url-parse';
 import useClipboard from './useClipboard';
 import useENSRegistration from './useENSRegistration';

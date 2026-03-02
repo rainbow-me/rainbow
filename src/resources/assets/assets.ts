@@ -2,11 +2,11 @@ import * as i18n from '@/languages';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import { AddysAddressAsset, AddysAsset, ParsedAsset } from './types';
+import { type AddysAddressAsset, type AddysAsset, type ParsedAsset } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { Asset, NetworkMapping } from '@/features/positions/types/generated/transaction/transaction';
+import { type Asset, type NetworkMapping } from '@/features/positions/types/generated/transaction/transaction';
 
 function parseNetworks(networks: NetworkMapping[] | undefined) {
   if (!networks) return {};

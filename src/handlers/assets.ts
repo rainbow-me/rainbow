@@ -2,10 +2,10 @@ import { Contract } from '@ethersproject/contracts';
 
 import { erc20ABI } from '@/references';
 import { convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
-import { AddressOrEth } from '@/__swaps__/types/assets';
+import { type AddressOrEth } from '@/__swaps__/types/assets';
 
 export function isNativeAsset(address: AddressOrEth | string, chainId: ChainId) {
   const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];

@@ -1,6 +1,6 @@
 import c from 'chroma-js';
 import React, { useCallback, useEffect } from 'react';
-import { useRoute, RouteProp } from '@react-navigation/native';
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { get } from 'lodash';
 
 import { useNavigation } from '@/navigation/Navigation';
@@ -13,8 +13,8 @@ import Routes from '@/navigation/routesNames';
 import { Language } from '@/languages';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
-import { RootStackParamList } from '@/navigation/types';
-import { Colors } from '@/styles';
+import { type RootStackParamList } from '@/navigation/types';
+import { type Colors } from '@/styles';
 import { getHighContrastColor } from '@/__swaps__/utils/swaps';
 import { openInBrowser } from '@/utils/openInBrowser';
 

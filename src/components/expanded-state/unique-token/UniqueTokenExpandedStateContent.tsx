@@ -8,10 +8,10 @@ import { SimpleVideo } from '../../video';
 import { ZoomableWrapper } from './ZoomableWrapper';
 import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
 import useAnimationType from '@/hooks/useAnimationType';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { DerivedValue, SharedValue } from 'react-native-reanimated';
+import { type DerivedValue, type SharedValue } from 'react-native-reanimated';
 import { IS_IOS } from '@/env';
 
 const ModelView = styled(SimpleModelView)(position.sizeAsObject('100%'));

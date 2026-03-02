@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import TokenFamilyHeader, { TokenFamilyHeaderAnimationDuration } from './TokenFamilyHeader';
 import { times } from '@/helpers/utilities';
 import useTimeout from '@/hooks/useTimeout';
-import { ThemeContextProps } from '@/theme';
+import { type ThemeContextProps } from '@/theme';
 
 type Props = {
   childrenAmount: number;

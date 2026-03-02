@@ -2,11 +2,11 @@ import { RainbowError, logger } from '@/logger';
 import { greaterThan, convertHexToString } from './utilities';
 import { isNil } from 'lodash';
 import { estimateGasWithPadding, toHex } from '@/handlers/web3';
-import { StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
+import { type StaticJsonRpcProvider, type TransactionRequest } from '@ethersproject/providers';
 import type { SelectedGasFee } from '@/entities/gas';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { getNextNonce } from '@/state/nonces';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { hexToNumber } from 'viem';
 
 export const getGasLimitForSuggestedGas = async (params: any, provider: StaticJsonRpcProvider) => {

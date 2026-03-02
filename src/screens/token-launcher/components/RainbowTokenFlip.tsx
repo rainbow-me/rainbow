@@ -8,21 +8,21 @@ import {
   ImageShader,
   Paint,
   Shadow,
-  SkImage,
-  SkPath,
-  SkPoint,
-  SkRect,
+  type SkImage,
+  type SkPath,
+  type SkPoint,
+  type SkRect,
   Skia,
   SweepGradient,
   point,
 } from '@shopify/react-native-skia';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, ViewStyle } from 'react-native';
+import { StyleSheet, type ViewStyle } from 'react-native';
 import Animated, {
   Easing,
   makeMutable,
   runOnUI,
-  SharedValue,
+  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,

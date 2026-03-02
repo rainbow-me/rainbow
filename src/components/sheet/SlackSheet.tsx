@@ -2,15 +2,24 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import React, { forwardRef, Fragment, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
-import { ColorValue, FlexStyle, Insets, Pressable, StyleSheet, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
-import Animated, { SharedValue, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+import {
+  type ColorValue,
+  type FlexStyle,
+  type Insets,
+  Pressable,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+  type ViewStyle,
+} from 'react-native';
+import Animated, { type SharedValue, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, { SheetHandleFixedToTopHeight } from './SheetHandleFixedToTop';
 import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ScrollView } from 'react-native-gesture-handler';

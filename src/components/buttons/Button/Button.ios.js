@@ -4,7 +4,7 @@ import { useTheme } from '../../../theme/ThemeContext';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 import { opacity } from '@/framework/ui/utils/opacity';
 

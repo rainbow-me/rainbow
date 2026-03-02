@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { RainbowTransaction } from '@/entities/transactions';
+import { type RainbowTransaction } from '@/entities/transactions';
 import { RainbowError, logger } from '@/logger';
-import { MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
+import { type MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
 import { time } from '@/utils/time';
 
 interface UseTransactionWatcherProps<T extends RainbowTransaction | MinedTransactionWithPolling> {

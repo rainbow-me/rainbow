@@ -7,7 +7,7 @@ import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import { createVirtualNavigator } from '@/navigation/createVirtualNavigator';
 import Routes from '@/navigation/routesNames';
-import { PolymarketRoute } from '@/navigation/types';
+import { type PolymarketRoute } from '@/navigation/types';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { PolymarketAccountScreen } from '@/features/polymarket/screens/polymarket-account-screen/PolymarketAccountScreen';
 import { PolymarketSearchScreen } from '@/features/polymarket/screens/polymarket-search-screen/PolymarketSearchScreen';

@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { AnimatedText, TextProps, useForegroundColor } from '@/design-system';
+import { AnimatedText, type TextProps, useForegroundColor } from '@/design-system';
 import { useTheme } from '@/theme';
-import { useLiveTokensStore, addSubscribedToken, removeSubscribedToken, TokenData } from '@/state/liveTokens/liveTokensStore';
-import { useSharedValue, SharedValue, useAnimatedStyle, useAnimatedReaction, withTiming, withDelay } from 'react-native-reanimated';
+import { useLiveTokensStore, addSubscribedToken, removeSubscribedToken, type TokenData } from '@/state/liveTokens/liveTokensStore';
+import { useSharedValue, type SharedValue, useAnimatedStyle, useAnimatedReaction, withTiming, withDelay } from 'react-native-reanimated';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useRoute } from '@/navigation/Navigation';
 import { toUnixTime } from '@/worklets/dates';

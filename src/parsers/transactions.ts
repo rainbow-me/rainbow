@@ -1,14 +1,14 @@
-import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import {
-  RainbowTransaction,
+  type RainbowTransaction,
   TransactionDirection,
   PaginatedTransactionsApiResponse,
-  TransactionChanges,
+  type TransactionChanges,
   TransactionStatus,
-  TransactionType,
+  type TransactionType,
   TransactionTypeMap,
-  TransactionWithChangesType,
-  TransactionWithoutChangesType,
+  type TransactionWithChangesType,
+  type TransactionWithoutChangesType,
 } from '@/entities/transactions';
 
 import {
@@ -18,13 +18,13 @@ import {
   toFixedDecimals,
 } from '@/helpers/utilities';
 
-import { NewTransaction, RainbowTransactionFee } from '@/entities/transactions/transaction';
+import { type NewTransaction, type RainbowTransactionFee } from '@/entities/transactions/transaction';
 import { parseGoldskyAddressAsset, parseGoldskyAsset } from '@/resources/assets/assets';
-import { ParsedAsset } from '@/resources/assets/types';
+import { type ParsedAsset } from '@/resources/assets/types';
 
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { Meta, Transaction } from '@/features/positions/types/generated/transaction/transaction';
+import { type Meta, type Transaction } from '@/features/positions/types/generated/transaction/transaction';
 
 const TransactionOutTypes = [
   'burn',
@@ -83,10 +83,12 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
       .filter(Boolean) || [];
 
   const type = isValidTransactionType(meta?.type) ? meta.type : 'contract_interaction';
+  const fallbackMetaAsset =
+    type === 'approve' && meta?.asset ? parseGoldskyAsset({ asset: meta.asset, address: txn.addressTo ?? '' }) : undefined;
 
   const asset: RainbowTransaction['asset'] = meta?.asset?.assetCode
     ? parseGoldskyAsset({ asset: meta.asset, address: meta.asset.assetCode })
-    : getAssetFromChanges(changes, type);
+    : getAssetFromChanges(changes, type) ?? fallbackMetaAsset;
 
   const direction = txn.direction || getDirection(type);
 

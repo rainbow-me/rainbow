@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import Animated, { FadeIn } from 'react-native-reanimated';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 
 import * as i18n from '@/languages';
 import { Box } from '@/design-system';

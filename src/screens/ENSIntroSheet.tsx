@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import { InteractionManager, View } from 'react-native';
@@ -20,8 +20,8 @@ import useENSRegistration from '@/hooks/useENSRegistration';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { IS_ANDROID, IS_TEST } from '@/env';
-import { ContextMenu } from '@/components/context-menu';
-import { RootStackParamList } from '@/navigation/types';
+import ContextMenu from '@/components/context-menu/ContextMenu.android';
+import { type RootStackParamList } from '@/navigation/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 enum AnotherENSEnum {

@@ -1,8 +1,8 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { type Dispatch, type SetStateAction, useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { checkIdentifierOnLaunch } from '@/model/backup';
 import { loadAddress } from '@/model/wallet';
-import { InitialRoute } from '@/navigation/initialRoute';
+import { type InitialRoute } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import { saveFCMToken } from '@/notifications/tokens';
 import { PerformanceReports, PerformanceTracking } from '@/performance/tracking';

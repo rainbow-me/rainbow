@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { MINTS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 import { arcClient } from '@/graphql';
-import { GetMintableCollectionsQuery } from '@/graphql/__generated__/arc';
+import { type GetMintableCollectionsQuery } from '@/graphql/__generated__/arc';
 import { createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { atom, useRecoilState } from 'recoil';

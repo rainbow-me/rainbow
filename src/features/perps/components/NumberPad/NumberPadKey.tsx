@@ -1,5 +1,5 @@
 import Animated, {
-  SharedValue,
+  type SharedValue,
   useSharedValue,
   useDerivedValue,
   useAnimatedReaction,

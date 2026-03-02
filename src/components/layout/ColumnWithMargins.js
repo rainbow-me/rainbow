@@ -1,5 +1,5 @@
 import LayoutWithMargins from './LayoutWithMargins';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 
 const ColumnWithMargins = styled(LayoutWithMargins).attrs(({ direction = 'column', margin = 20 }) => ({
   direction,

@@ -1,5 +1,5 @@
 import { CandleResolution } from '../../types';
-import { Bar } from '../types';
+import { type Bar } from '../types';
 
 type BarsResponse = {
   /** Close prices */

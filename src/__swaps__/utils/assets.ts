@@ -1,20 +1,20 @@
-import { SupportedCurrencyKey } from '@/references';
+import { type SupportedCurrencyKey } from '@/references';
 import {
-  AddressOrEth,
-  AssetApiResponse,
-  AssetMetadata,
-  AssetType,
-  ParsedAsset,
-  ParsedSearchAsset,
-  ParsedUserAsset,
-  UniqueId,
-  ZerionAsset,
-  ZerionAssetPrice,
+  type AddressOrEth,
+  type AssetApiResponse,
+  type AssetMetadata,
+  type AssetType,
+  type ParsedAsset,
+  type ParsedSearchAsset,
+  type ParsedUserAsset,
+  type UniqueId,
+  type ZerionAsset,
+  type ZerionAssetPrice,
 } from '@/__swaps__/types/assets';
 import { ChainId, ChainName } from '@/state/backendNetworks/types';
 
 import * as i18n from '@/languages';
-import { SearchAsset } from '@/__swaps__/types/search';
+import { type SearchAsset } from '@/__swaps__/types/search';
 
 import { isNativeAsset } from '@/handlers/assets';
 import {

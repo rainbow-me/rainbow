@@ -2,15 +2,15 @@ import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 import { getShowcase, showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
 import { getHidden, hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
 import { queryClient } from '@/react-query';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { STALE_TIME } from '@/state/nfts/createNftsStore';
-import { NftsState } from '@/state/nfts/types';
+import { type NftsState } from '@/state/nfts/types';
 import { parseUniqueId } from '@/resources/nfts/utils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { fetchNFTData, NFTData, nftsQueryKey } from '@/resources/nfts';
+import { fetchNFTData, type NFTData, nftsQueryKey } from '@/resources/nfts';
 import { isENSAddressFormat } from '@/helpers/validators';
 
 export function isDataComplete(tokens: string[]) {

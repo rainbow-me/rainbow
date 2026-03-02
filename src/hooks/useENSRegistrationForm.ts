@@ -4,7 +4,7 @@ import { atom, useRecoilState } from 'recoil';
 import useENSModifiedRegistration from './useENSModifiedRegistration';
 import useENSRegistration from './useENSRegistration';
 import type { Records } from '@/entities/ensRegistration';
-import { deprecatedTextRecordFields, ENS_RECORDS, REGISTRATION_MODES, TextRecordField, textRecordFields } from '@/helpers/ens';
+import { deprecatedTextRecordFields, ENS_RECORDS, REGISTRATION_MODES, type TextRecordField, textRecordFields } from '@/helpers/ens';
 
 const disabledAtom = atom({
   default: false,

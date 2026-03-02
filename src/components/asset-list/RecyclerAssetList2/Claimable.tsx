@@ -3,7 +3,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import Routes from '@/navigation/routesNames';
-import { Claimable as ClaimableType } from '@/resources/addys/claimables/types';
+import { type Claimable as ClaimableType } from '@/resources/addys/claimables/types';
 import { getClaimableName, isRainbowEthRewards } from '@/resources/addys/claimables/utils';
 import { ChainId } from '@/state/backendNetworks/types';
 import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';

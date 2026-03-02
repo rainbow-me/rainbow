@@ -1,8 +1,8 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, {
-  ForwardRefRenderFunction,
-  MutableRefObject,
-  ReactElement,
+  type ForwardRefRenderFunction,
+  type MutableRefObject,
+  type ReactElement,
   forwardRef,
   memo,
   useCallback,
@@ -10,7 +10,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { InteractionManager, Keyboard, SectionList, SectionListData, StyleSheet } from 'react-native';
+import { InteractionManager, Keyboard, SectionList, type SectionListData, StyleSheet } from 'react-native';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import FastCurrencySelectionRow from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';

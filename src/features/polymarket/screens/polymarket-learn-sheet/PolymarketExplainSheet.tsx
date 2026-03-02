@@ -6,11 +6,11 @@ import step1Image from '@/assets/polymarketExplainer/step1.png';
 import step2Image from '@/assets/polymarketExplainer/step2.png';
 import step3Image from '@/assets/polymarketExplainer/step3.png';
 import FastImage from 'react-native-fast-image';
-import { ExplainerSheet, ExplainerSheetStep } from '@/components/explainer-sheet/ExplainerSheet';
+import { ExplainerSheet, type ExplainerSheetStep } from '@/components/explainer-sheet/ExplainerSheet';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useFocusEffect, RouteProp, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '@/navigation/types';
-import Routes from '@/navigation/routesNames';
+import { useFocusEffect, type RouteProp, useRoute } from '@react-navigation/native';
+import { type RootStackParamList } from '@/navigation/types';
+import type Routes from '@/navigation/routesNames';
 
 const PANEL_INNER_WIDTH = 332;
 

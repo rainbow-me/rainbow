@@ -1,7 +1,7 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { LegendList } from '@legendapp/list';
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { RefreshControl, ScrollView, ScrollViewProps, StyleSheet, View } from 'react-native';
+import { RefreshControl, ScrollView, type ScrollViewProps, StyleSheet, View } from 'react-native';
 import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { PANEL_COLOR_DARK, PANEL_COLOR_LIGHT, Panel } from '@/components/SmoothPager/ListPanel';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -11,12 +11,12 @@ import { SheetHandleFixedToTop } from '@/components/sheet';
 import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import {
   Box,
-  BoxProps,
+  type BoxProps,
   IconContainer,
   Separator,
   Stack,
   Text,
-  TextProps,
+  type TextProps,
   TextShadow,
   globalColors,
   useColorMode,
@@ -27,8 +27,8 @@ import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { RainbowClaimable } from '@/resources/addys/claimables/types';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type RainbowClaimable } from '@/resources/addys/claimables/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { FULL_PAGE_SIZE, INITIAL_PAGE_SIZE, useAirdropsStore } from '@/state/claimables/airdropsStore';
 import { opacity } from '@/framework/ui/utils/opacity';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';

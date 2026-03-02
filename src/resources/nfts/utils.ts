@@ -1,15 +1,15 @@
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { AssetType } from '@/entities/assetTypes';
+import { type AssetType } from '@/entities/assetTypes';
 import { gretch } from 'gretchen';
-import { paths } from '@reservoir0x/reservoir-sdk';
+import { type paths } from '@reservoir0x/reservoir-sdk';
 import { RainbowError, logger } from '@/logger';
 import { handleSignificantDecimals } from '@/helpers/utilities';
 import { IS_PROD } from '@/env';
 import { RESERVOIR_API_KEY_DEV, RESERVOIR_API_KEY_PROD } from 'react-native-dotenv';
 import { handleNFTImages } from '@/utils/handleNFTImages';
-import { GetNftsByCollectionQuery } from '@/graphql/__generated__/arc';
-import { ChainId, Network } from '@/state/backendNetworks/types';
-import { Address, isAddress } from 'viem';
+import { type GetNftsByCollectionQuery } from '@/graphql/__generated__/arc';
+import { type ChainId, Network } from '@/state/backendNetworks/types';
+import { type Address, isAddress } from 'viem';
 
 const SUPPORTED_NETWORKS = [Network.mainnet, Network.polygon, Network.bsc, Network.arbitrum, Network.optimism, Network.base, Network.zora];
 

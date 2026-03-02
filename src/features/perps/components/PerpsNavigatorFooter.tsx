@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData } from 'react-native';
+import { Alert, type NativeSyntheticEvent, StyleSheet, type TextInput, type TextInputChangeEventData } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
 import { Border, Box, Text, TextShadow, useColorMode } from '@/design-system';
@@ -20,7 +20,7 @@ import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStor
 import { PerpPositionSide } from '@/features/perps/types';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { logger, RainbowError } from '@/logger';
-import { PerpsRoute } from '@/navigation/types';
+import { type PerpsRoute } from '@/navigation/types';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';

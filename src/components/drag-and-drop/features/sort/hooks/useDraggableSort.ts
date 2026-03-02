@@ -1,4 +1,4 @@
-import { LayoutRectangle } from 'react-native';
+import { type LayoutRectangle } from 'react-native';
 import { runOnJS, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import { useDndContext } from '../../../DndContext';
 import type { UniqueIdentifier } from '../../../types';

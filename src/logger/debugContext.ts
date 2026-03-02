@@ -16,4 +16,5 @@ export const DebugContext = {
   f2c: 'f2c',
   keychain: 'keychain',
   deeplinks: 'deeplinks',
+  delegation: 'delegation',
 } as const;

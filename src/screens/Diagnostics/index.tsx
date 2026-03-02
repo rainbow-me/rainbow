@@ -1,4 +1,4 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { loadAllKeys } from '@/model/keychain';
 import { useNavigation } from '@/navigation';
@@ -10,7 +10,7 @@ import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { getDeviceId } from '@/analytics/utils';
-import { UserCredentials } from 'react-native-keychain';
+import { type UserCredentials } from 'react-native-keychain';
 import { DiagnosticsContent } from '@/screens/Diagnostics/DiagnosticsContent';
 import { BackgroundProvider, Box } from '@/design-system';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
@@ -19,7 +19,7 @@ import { createAndShareStateDumpFile } from './helpers/createAndShareStateDumpFi
 import haptics from '@/utils/haptics';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { RootStackParamList } from '@/navigation/types';
+import { type RootStackParamList } from '@/navigation/types';
 
 const encryptor = new AesEncryptor();
 

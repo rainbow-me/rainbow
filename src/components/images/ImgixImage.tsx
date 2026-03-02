@@ -1,13 +1,17 @@
-import { FasterImageView, ImageOptions } from '@candlefinance/faster-image';
+import { FasterImageView, type ImageOptions } from '@candlefinance/faster-image';
 import * as React from 'react';
 import { PixelRatio, StyleSheet } from 'react-native';
-import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
+import FastImage, { type FastImageProps, type Source } from 'react-native-fast-image';
 import { maybeSignSource } from '../../handlers/imgix';
 import { IS_IOS } from '@/env';
 
 export type ImgixImageProps = FastImageProps & {
-  readonly Component?: React.ElementType;
-  readonly size?: number;
+  Component?: React.ElementType;
+  ref?: React.Ref<any>;
+  size?: number;
+  fm?: string;
+  enableFasterImage?: boolean;
+  fasterImageConfig?: Omit<ImageOptions, 'borderRadius' | 'url'>;
 };
 
 export const DEFAULT_FASTER_IMAGE_CONFIG: Partial<ImageOptions> = {
@@ -85,6 +89,7 @@ const ImgixImage = (props: MergedImgixImageProps) => {
     },
     [maxRetries, onError, retryCount, retryOnError]
   );
+
 
   const Component = maybeComponent || (shouldUseFasterImage ? FasterImageView : FastImage);
 

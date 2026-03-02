@@ -1,5 +1,5 @@
-import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { PolymarketTeamInfo } from '@/features/polymarket/types/team-info';
+import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketTeamInfo } from '@/features/polymarket/types/team-info';
 
 export type RawPolymarketPosition = {
   proxyWallet: string;

@@ -1,5 +1,5 @@
 import LayoutWithDividers from './LayoutWithDividers';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 
 const ColumnWithDividers = styled(LayoutWithDividers).attrs({
   direction: 'column',

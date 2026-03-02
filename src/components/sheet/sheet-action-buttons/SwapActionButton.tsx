@@ -8,11 +8,11 @@ import ethereumUtils from '@/utils/ethereumUtils';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
-import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { type AddressOrEth, type AssetType, type ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import {} from '@/__swaps__/utils/swaps';
 import { Inline, Text, TextIcon } from '@/design-system';
-import { NavigateToSwapsParams, navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { type NavigateToSwapsParams, navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;

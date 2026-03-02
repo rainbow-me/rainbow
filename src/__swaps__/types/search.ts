@@ -1,6 +1,6 @@
-import { Address } from 'viem';
-import { ChainId } from '@/state/backendNetworks/types';
-import { AddressOrEth, AssetType, ParsedAsset, UniqueId } from '@/__swaps__/types/assets';
+import { type Address } from 'viem';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type AddressOrEth, type AssetType, type ParsedAsset, type UniqueId } from '@/__swaps__/types/assets';
 
 export type TokenSearchAssetKey = keyof ParsedAsset;
 

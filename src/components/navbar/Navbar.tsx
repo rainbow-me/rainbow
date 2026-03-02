@@ -6,7 +6,7 @@ import { NavbarSvgIcon } from './NavbarSvgIcon';
 import { NavbarItem } from './NavbarItem';
 import { NavbarTextIcon } from './NavbarTextIcon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { SharedValue, useAnimatedStyle, interpolate } from 'react-native-reanimated';
+import Animated, { type SharedValue, useAnimatedStyle, interpolate } from 'react-native-reanimated';
 
 type NavbarProps = {
   hasStatusBarInset?: boolean;

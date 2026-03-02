@@ -11,7 +11,7 @@
  */
 
 import { useMutation } from '@tanstack/react-query';
-import { MutationConfig, MutationFunctionResult } from '@/react-query/types';
+import { type MutationConfig, type MutationFunctionResult } from '@/react-query/types';
 
 // ///////////////////////////////////////////////
 // Mutation Types

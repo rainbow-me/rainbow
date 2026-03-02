@@ -4,14 +4,14 @@ import { Image, PixelRatio } from 'react-native';
 
 import { Bleed, Box, Inline, Text } from '@/design-system';
 
-import { TransactionAssetType, TransactionSimulationAsset } from '@/graphql/__generated__/metadataPOST';
-import { Network } from '@/state/backendNetworks/types';
+import { TransactionAssetType, type TransactionSimulationAsset } from '@/graphql/__generated__/metadataPOST';
+import { type Network } from '@/state/backendNetworks/types';
 import { convertAmountToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
 
 import { maybeSignUri } from '@/handlers/imgix';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { EventInfo, EventType } from '@/components/Transactions/types';
+import { type EventInfo, type EventType } from '@/components/Transactions/types';
 import { infoForEventType, CARD_ROW_HEIGHT } from '@/components/Transactions/constants';
 import { EventIcon } from '@/components/Transactions/TransactionIcons';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

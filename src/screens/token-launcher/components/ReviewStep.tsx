@@ -2,7 +2,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContactAvatar } from '@/components/contacts';
 import { isValidURLWorklet } from '@/components/DappBrowser/utils';
 import { Box, Text, TextShadow } from '@/design-system';
-import { TextSize } from '@/design-system/components/Text/Text';
+import { type TextSize } from '@/design-system/components/Text/Text';
 import { abbreviateNumber, convertAmountToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import { isENSAddressFormat } from '@/helpers/validators';
 import * as i18n from '@/languages';

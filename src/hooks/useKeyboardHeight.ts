@@ -1,13 +1,13 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import { useCallback, useEffect, useRef } from 'react';
-import { EmitterSubscription, Keyboard, KeyboardEventListener } from 'react-native';
+import { type EmitterSubscription, Keyboard, type KeyboardEventListener } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import KeyboardTypes from '@/helpers/keyboardTypes';
-import { Route } from '@/navigation/routesNames';
-import { RootStackParamList } from '@/navigation/types';
+import { type Route } from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
 import { setKeyboardHeight } from '@/redux/keyboardHeight';
-import { AppState } from '@/redux/store';
+import { type AppState } from '@/redux/store';
 import { IS_ANDROID } from '@/env';
 import { isRouteActive } from '@/state/navigation/navigationStore';
 

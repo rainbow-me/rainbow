@@ -1,12 +1,12 @@
 import { memo, useCallback, useMemo, useRef } from 'react';
-import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import Animated, { SharedValue, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, { type SharedValue, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { Border, globalColors, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { CATEGORIES, Category } from '@/features/polymarket/constants';
+import { CATEGORIES, type Category } from '@/features/polymarket/constants';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';

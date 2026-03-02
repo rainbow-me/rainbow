@@ -16,7 +16,7 @@ import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { IS_TEST } from '@/env';
-import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
+import { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { useTimeoutEffect } from '@/hooks/useTimeout';

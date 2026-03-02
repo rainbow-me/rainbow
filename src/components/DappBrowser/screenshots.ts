@@ -3,7 +3,7 @@ import { createMMKV } from 'react-native-mmkv';
 import { RainbowError, logger } from '@/logger';
 import { time } from '@/utils/time';
 import { RAINBOW_HOME } from './constants';
-import { ScreenshotType, TabData, TabId } from './types';
+import { type ScreenshotType, type TabData, type TabId } from './types';
 
 // ============ Storage ======================================================== //
 

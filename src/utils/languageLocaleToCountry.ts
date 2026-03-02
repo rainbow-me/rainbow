@@ -1,4 +1,4 @@
-import { Language } from '@/languages';
+import { type Language } from '@/languages';
 
 /**
  * Converts a language locale to a country code.

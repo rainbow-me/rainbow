@@ -2,7 +2,7 @@ import ImgixClient from 'imgix-core-js';
 import LRUCache from 'mnemonist/lru-cache';
 import { PixelRatio } from 'react-native';
 import { IMGIX_DOMAIN as domain, IMGIX_TOKEN as secureURLToken } from 'react-native-dotenv';
-import { Source } from 'react-native-fast-image';
+import { type Source } from 'react-native-fast-image';
 import parse from 'url-parse';
 import { isCloudinaryStorageIconLink, signCloudinaryIconUrl } from '@/handlers/cloudinary';
 import { logger, RainbowError } from '@/logger';

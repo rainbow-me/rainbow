@@ -3,8 +3,8 @@ import { Box, Text, TextShadow } from '@/design-system';
 import { FasterImageView } from '@candlefinance/faster-image';
 import React, { useMemo } from 'react';
 import * as i18n from '@/languages';
-import { TextColor } from '@/design-system/color/palettes';
-import { ClaimStatus } from '../../shared/types';
+import { type TextColor } from '@/design-system/color/palettes';
+import { type ClaimStatus } from '../../shared/types';
 
 export function ClaimPanelHeader({
   title,

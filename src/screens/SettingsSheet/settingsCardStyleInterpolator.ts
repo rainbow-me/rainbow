@@ -1,4 +1,4 @@
-import { StackCardInterpolationProps } from '@react-navigation/stack';
+import { type StackCardInterpolationProps } from '@react-navigation/stack';
 import { Animated } from 'react-native';
 
 export function settingsCardStyleInterpolator({ current, next, inverted, layouts: { screen } }: StackCardInterpolationProps) {

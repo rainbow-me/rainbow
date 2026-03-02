@@ -7,7 +7,7 @@ import { Centered, Column } from '../layout';
 import { Text as TextElement } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Inline } from '@/design-system';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import magicMemo from '@/utils/magicMemo';

@@ -1,5 +1,5 @@
-import { StoreApi } from 'zustand';
-import { InferStoreState } from '../types';
+import { type StoreApi } from 'zustand';
+import { type InferStoreState } from '../types';
 
 type UnknownFunction = (...args: never[]) => unknown;
 

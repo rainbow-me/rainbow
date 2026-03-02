@@ -4,9 +4,9 @@ import { View } from 'react-native';
 import { Centered } from '../layout';
 import { SheetActionButton } from '../sheet';
 import Text from '../text/Text';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { RainbowError, logger } from '@/logger';
-import { Colors } from '@/styles';
+import { type Colors } from '@/styles';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 const Spacer = styled(View)({

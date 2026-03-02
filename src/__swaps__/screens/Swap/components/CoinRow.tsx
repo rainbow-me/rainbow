@@ -1,8 +1,8 @@
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
-import { AddressOrEth, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
+import { type AddressOrEth, type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
-import { CoinRowItem } from '@/__swaps__/types/search';
+import { type CoinRowItem } from '@/__swaps__/types/search';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ContextMenuButton } from '@/components/context-menu';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
@@ -16,8 +16,8 @@ import ethereumUtils from '@/utils/ethereumUtils';
 import haptics from '@/utils/haptics';
 import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
-import { GestureResponderEvent } from 'react-native';
-import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
+import { type GestureResponderEvent } from 'react-native';
+import { type OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;

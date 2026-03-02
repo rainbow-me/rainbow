@@ -1,11 +1,11 @@
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { QueryConfigWithSelect, createQueryKey } from '@/react-query';
+import { type QueryConfigWithSelect, createQueryKey } from '@/react-query';
 import { useQuery, type QueryFunctionContext } from '@tanstack/react-query';
 import { logger, RainbowError } from '@/logger';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getAddysHttpClient } from './client';
 import useAccountSettings from '@/hooks/useAccountSettings';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { time } from '@/utils/time';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 

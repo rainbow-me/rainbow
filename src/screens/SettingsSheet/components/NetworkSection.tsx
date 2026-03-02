@@ -8,7 +8,7 @@ import { analytics } from '@/analytics';
 import { Separator, Stack } from '@/design-system';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import { settingsUpdateNetwork } from '@/redux/settings';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { isL2Chain } from '@/handlers/web3';
 

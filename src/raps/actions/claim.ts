@@ -1,5 +1,5 @@
 import { metadataPOSTClient } from '@/graphql';
-import { ActionProps } from '../references';
+import { type ActionProps } from '../references';
 
 const CLAIM_MOCK_DATA = {
   claimUserRewards: {

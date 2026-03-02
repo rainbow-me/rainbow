@@ -1,7 +1,7 @@
-import React, { ComponentProps, ReactElement } from 'react';
+import React, { type ComponentProps, type ReactElement } from 'react';
 import Animated, { useAnimatedRef, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useDndContext } from '../DndContext';
-import { UseDraggableSortOptions } from '../features';
+import { type UseDraggableSortOptions } from '../features';
 import { swapByItemCenterPoint } from '../utils';
 import { useChildrenIds } from '../hooks';
 import { useDraggableScroll } from '../features/sort/hooks/useDraggableScroll';

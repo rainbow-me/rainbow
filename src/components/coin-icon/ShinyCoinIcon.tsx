@@ -7,13 +7,13 @@ import {
   Shadow,
   rrect,
   rect,
-  SkImage,
+  type SkImage,
   useAnimatedImageValue,
   useImage,
 } from '@shopify/react-native-skia';
-import { SharedValue } from 'react-native-reanimated';
+import { type SharedValue } from 'react-native-reanimated';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 type ShinyCoinIconProps = {

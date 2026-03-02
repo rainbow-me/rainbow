@@ -1,9 +1,9 @@
-import { FasterImageProps } from '@candlefinance/faster-image';
+import { type FasterImageProps } from '@candlefinance/faster-image';
 import React from 'react';
-import { ImageStyle, StyleProp } from 'react-native';
-import { AnimatedStyle, useAnimatedProps } from 'react-native-reanimated';
+import { type ImageStyle, type StyleProp } from 'react-native';
+import { type AnimatedStyle, useAnimatedProps } from 'react-native-reanimated';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
-import { SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
+import { type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
 import { IS_ANDROID } from '@/env';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
 import { AnimatedFasterImage } from './AnimatedFasterImage';

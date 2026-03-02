@@ -1,9 +1,9 @@
 import {
   Easing,
-  SharedValue,
-  WithDecayConfig,
-  WithSpringConfig,
-  WithTimingConfig,
+  type SharedValue,
+  type WithDecayConfig,
+  type WithSpringConfig,
+  type WithTimingConfig,
   makeMutable,
   withDecay,
   withSpring,

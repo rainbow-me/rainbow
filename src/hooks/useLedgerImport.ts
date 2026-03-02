@@ -2,10 +2,10 @@ import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { useCallback, useEffect, useRef } from 'react';
 import { DebugContext } from '@/logger/debugContext';
 import { logger, RainbowError } from '@/logger';
-import { Subscription } from '@ledgerhq/hw-transport';
+import { type Subscription } from '@ledgerhq/hw-transport';
 import { checkAndRequestAndroidBluetooth, showBluetoothPermissionsAlert, showBluetoothPoweredOffAlert } from '@/utils/bluetoothPermissions';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { ledgerErrorHandler, LEDGER_ERROR_CODES } from '@/utils/ledger';
+import { ledgerErrorHandler, type LEDGER_ERROR_CODES } from '@/utils/ledger';
 
 /**
  * React hook used for checking connecting to a ledger device for the first time

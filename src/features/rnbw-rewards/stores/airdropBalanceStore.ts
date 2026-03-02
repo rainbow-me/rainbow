@@ -1,10 +1,10 @@
-import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { getPlatformClient } from '@/resources/platform/client';
-import { PlatformResponse } from '@/resources/platform/types';
+import { type PlatformResponse } from '@/resources/platform/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { convertAmountToNativeDisplayWorklet, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 
 type AirdropBalanceStore = {

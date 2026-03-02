@@ -1,7 +1,7 @@
 import chroma from 'chroma-js';
-import { LinearGradientProps } from 'expo-linear-gradient';
+import { type LinearGradientProps } from 'expo-linear-gradient';
 import { useMemo } from 'react';
-import { Easing, EasingFunction } from 'react-native-reanimated';
+import { Easing, type EasingFunction } from 'react-native-reanimated';
 
 type PositionObject = { x: number; y: number };
 type Position = 'bottom' | 'left' | 'right' | 'top' | PositionObject;

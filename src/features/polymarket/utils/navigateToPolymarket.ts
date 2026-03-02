@@ -1,7 +1,7 @@
 import { device } from '@/storage';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { RootStackParamList } from '@/navigation/types';
+import { type RootStackParamList } from '@/navigation/types';
 
 export function navigateToPolymarket(params?: RootStackParamList[typeof Routes.POLYMARKET_NAVIGATOR]) {
   const hasSeenExplainSheet = device.get(['hasSeenPolymarketExplainSheet']);

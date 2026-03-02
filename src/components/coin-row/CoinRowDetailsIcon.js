@@ -2,7 +2,7 @@ import React from 'react';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 import { opacity } from '@/framework/ui/utils/opacity';
 

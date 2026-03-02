@@ -1,4 +1,4 @@
-import { ExtendedAnimatedAssetWithColors } from './assets';
+import { type ExtendedAnimatedAssetWithColors } from './assets';
 
 export type InputKeys = 'inputAmount' | 'inputNativeValue' | 'outputAmount' | 'outputNativeValue';
 export type InputMethods = InputKeys | 'slider';

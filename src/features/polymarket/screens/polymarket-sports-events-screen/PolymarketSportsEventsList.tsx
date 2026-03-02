@@ -1,5 +1,5 @@
-import { memo, useCallback, useMemo, RefObject } from 'react';
-import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View, ViewToken } from 'react-native';
+import { memo, useCallback, useMemo, type RefObject } from 'react';
+import { type NativeScrollEvent, type NativeSyntheticEvent, StyleSheet, View, type ViewToken } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { format } from 'date-fns';
@@ -12,7 +12,7 @@ import {
   HEIGHT as ITEM_HEIGHT,
   LoadingSkeleton,
 } from '@/features/polymarket/components/polymarket-sport-event-list-item/PolymarketSportEventListItem';
-import { PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { getSportsEventsDayBoundaries } from '@/features/polymarket/utils/getSportsEventsDateRange';
 import { getLeague, getLeagueId, getLeagueSlugId, LEAGUE_LIST_ORDER } from '@/features/polymarket/leagues';

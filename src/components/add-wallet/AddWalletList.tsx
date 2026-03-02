@@ -1,5 +1,5 @@
 import React from 'react';
-import { AddWalletItem, AddWalletRow } from './AddWalletRow';
+import { type AddWalletItem, AddWalletRow } from './AddWalletRow';
 import { Separator, Stack } from '@/design-system';
 
 type AddWalletListProps = {

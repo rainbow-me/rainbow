@@ -8,7 +8,7 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { PolymarketTabSelector } from './PolymarketTabSelector';
 import { PolymarketSearchButton } from '@/features/polymarket/screens/polymarket-navigator/PolymarketSearchButton';
 import { usePolymarketNavigationStore } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
-import { PolymarketRoute } from '@/navigation/types';
+import { type PolymarketRoute } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import Animated from 'react-native-reanimated';
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';

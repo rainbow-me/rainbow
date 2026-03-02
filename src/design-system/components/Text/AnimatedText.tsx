@@ -1,11 +1,11 @@
-import React, { ComponentRef, useMemo } from 'react';
-import { StyleProp, TextStyle } from 'react-native';
+import React, { type ComponentRef, useMemo } from 'react';
+import { type StyleProp, type TextStyle } from 'react-native';
 import AnimateableText from 'react-native-animateable-text';
-import { DerivedValue, SharedValue, useAnimatedProps } from 'react-native-reanimated';
-import { TextColor } from '../../color/palettes';
-import { CustomColor } from '../../color/useForegroundColor';
+import { type DerivedValue, type SharedValue, useAnimatedProps } from 'react-native-reanimated';
+import { type TextColor } from '../../color/palettes';
+import { type CustomColor } from '../../color/useForegroundColor';
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
-import { TextSize, TextWeight } from './Text';
+import { type TextSize, type TextWeight } from './Text';
 import { useTextStyle } from './useTextStyle';
 
 export type SharedOrDerivedValueText =

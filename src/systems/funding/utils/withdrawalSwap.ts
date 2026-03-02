@@ -1,8 +1,8 @@
 import type { Address } from 'viem';
-import { AddressOrEth } from '@/__swaps__/types/assets';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type AddressOrEth } from '@/__swaps__/types/assets';
+import { type ChainId } from '@/state/backendNetworks/types';
 
-import { RouteConfig, WithdrawalTokenData } from '../types';
+import { type RouteConfig, type WithdrawalTokenData } from '../types';
 
 // ============ Types ========================================================== //
 

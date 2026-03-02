@@ -5,8 +5,8 @@ import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
-import { BigNumberish } from '@ethersproject/bignumber';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type BigNumberish } from '@ethersproject/bignumber';
+import { type ChainId } from '@/state/backendNetworks/types';
 
 const showAlert = () => {
   Alert.alert(

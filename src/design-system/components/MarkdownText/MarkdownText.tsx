@@ -1,11 +1,11 @@
-import React, { Children, createContext, Fragment, memo, ReactNode, useContext, useMemo } from 'react';
+import React, { Children, createContext, Fragment, memo, type ReactNode, useContext, useMemo } from 'react';
 import { Text as NativeText, Platform, StyleSheet, View } from 'react-native';
-import MarkdownDisplay, { ASTNode, RenderRules } from 'react-native-markdown-display';
-import { negateSpace, Space } from '../../layout/space';
+import MarkdownDisplay, { type ASTNode, type RenderRules } from 'react-native-markdown-display';
+import { negateSpace, type Space } from '../../layout/space';
 import { renderStringWithEmoji } from '../../typography/renderStringWithEmoji';
 import { fonts } from '../../typography/typography';
 import { Box } from '../Box/Box';
-import { Text, TextProps } from '../Text/Text';
+import { Text, type TextProps } from '../Text/Text';
 import { TextLink } from '../TextLink/TextLink';
 
 const styles = StyleSheet.create({

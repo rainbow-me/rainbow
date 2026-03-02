@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { GestureResponderEvent, Image, StyleSheet, View } from 'react-native';
+import { type GestureResponderEvent, Image, StyleSheet, View } from 'react-native';
 import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native-skia';
 import { BlurView } from 'react-native-blur-view';
 import { Box, globalColors, Inline, Text, TextIcon, useColorMode } from '@/design-system';

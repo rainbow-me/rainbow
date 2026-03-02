@@ -1,9 +1,9 @@
-import React, { Fragment, PropsWithChildren } from 'react';
+import React, { Fragment, type PropsWithChildren } from 'react';
 import { SheetActionButton } from '@/components/sheet';
 import { IS_ANDROID } from '@/env';
 import { Column } from '@/components/layout';
 import { DiagnosticsItemRow } from '@/screens/Diagnostics/DiagnosticsItemRow';
-import { UserCredentials } from 'react-native-keychain';
+import { type UserCredentials } from 'react-native-keychain';
 import { useTheme } from '@/theme';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';

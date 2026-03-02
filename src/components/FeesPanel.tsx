@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
+import { type RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard, KeyboardAvoidingView } from 'react-native';
 import { Alert } from '@/components/alerts';
@@ -18,7 +18,7 @@ import gasUtils from '@/utils/gas';
 import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { isL2Chain } from '@/handlers/web3';
-import { CurrentBaseFeeTypeKey, ExplainSheetRouteParams, gasTrendToTrendType, RootStackParamList } from '@/navigation/types';
+import { type CurrentBaseFeeTypeKey, type ExplainSheetRouteParams, gasTrendToTrendType, type RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import { useChainSupportsPriorityFee } from '@/__swaps__/utils/meteorology';
 import { opacity } from '@/framework/ui/utils/opacity';

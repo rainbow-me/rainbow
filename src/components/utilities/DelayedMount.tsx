@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import { DelayedMountOptions, useDelayedMount } from '@/hooks/useDelayedMount';
+import { type ReactNode } from 'react';
+import { type DelayedMountOptions, useDelayedMount } from '@/hooks/useDelayedMount';
 
 // ============ DelayedMount =================================================== //
 

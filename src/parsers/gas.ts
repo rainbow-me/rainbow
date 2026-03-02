@@ -2,24 +2,24 @@ import BigNumber from 'bignumber.js';
 import zipObject from 'lodash/zipObject';
 import gasUtils from '@/utils/gas';
 import {
-  BlocksToConfirmation,
-  GasFeeParam,
-  GasFeeParams,
-  GasFeeParamsBySpeed,
-  GasFeesBySpeed,
-  GasPricesAPIData,
-  LegacyGasFeeParams,
-  LegacyGasFeeParamsBySpeed,
-  LegacyGasFeesBySpeed,
-  LegacySelectedGasFee,
-  LegacyTransactionGasParamAmounts,
-  MaxPriorityFeeSuggestions,
-  MeteorologyResponse,
-  Numberish,
-  SelectedGasFee,
-  TransactionGasParamAmounts,
+  type BlocksToConfirmation,
+  type GasFeeParam,
+  type GasFeeParams,
+  type GasFeeParamsBySpeed,
+  type GasFeesBySpeed,
+  type GasPricesAPIData,
+  type LegacyGasFeeParams,
+  type LegacyGasFeeParamsBySpeed,
+  type LegacyGasFeesBySpeed,
+  type LegacySelectedGasFee,
+  type LegacyTransactionGasParamAmounts,
+  type MaxPriorityFeeSuggestions,
+  type MeteorologyResponse,
+  type Numberish,
+  type SelectedGasFee,
+  type TransactionGasParamAmounts,
 } from '@/entities/gas';
-import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { type NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { toHex } from '@/handlers/web3';
 import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
 import { ethUnits, timeUnits } from '@/references';

@@ -1,22 +1,26 @@
-import { Draggable, DraggableGrid, DraggableGridProps, UniqueIdentifier } from '@/components/drag-and-drop';
+import { Draggable, DraggableGrid, type DraggableGridProps, type UniqueIdentifier } from '@/components/drag-and-drop';
 import { Box, HitSlop, Inline, Stack, Text, TextIcon } from '@/design-system';
 import React, { useCallback, useMemo } from 'react';
 import { BlurView } from 'react-native-blur-view';
-import { AddressItem, AddressMenuAction, AddressMenuActionData, PANEL_INSET_HORIZONTAL } from '../ChangeWalletSheet';
+import { type AddressItem, AddressMenuAction, type AddressMenuActionData, PANEL_INSET_HORIZONTAL } from '../ChangeWalletSheet';
 import { AddressAvatar } from './AddressAvatar';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { SelectedAddressBadge } from './SelectedAddressBadge';
 import { JiggleAnimation } from '@/components/animations/JiggleAnimation';
-import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
+import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
 import ConditionalWrap from 'conditional-wrap';
 import { address } from '@/utils/abbreviations';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
-import { IS_IOS } from '@/env';
+import { IS_DEV, IS_IOS, IS_TEST_FLIGHT } from '@/env';
+import { DELEGATION, getExperimentalFlag } from '@/config';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import { useTheme } from '@/theme';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { StyleSheet } from 'react-native';
+import { DelegationStatus, useDelegations, useDelegationDisabled } from '@rainbow-me/delegation';
+import type { Address } from 'viem';
 
 const UNPIN_BADGE_SIZE = 28;
 const PINS_PER_ROW = 3;
@@ -31,8 +35,22 @@ type PinnedWalletsGridProps = {
   editMode: boolean;
 };
 
+function DelegationBadge({ accountAddress }: { accountAddress: string }) {
+  const delegations = useDelegations(accountAddress as Address);
+  const isDisabled = useDelegationDisabled(accountAddress as Address);
+  const isDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED) ?? false;
+  const isThirdPartyDelegated = delegations?.some(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED) ?? false;
+
+  return (
+    <Text color={isDisabled ? 'red' : isDelegated ? 'green' : isThirdPartyDelegated ? 'labelTertiary' : 'labelQuaternary'} size="icon 10px">
+      􀋦
+    </Text>
+  );
+}
+
 export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, onPressMenuItem }: PinnedWalletsGridProps) {
   const { colors, isDarkMode } = useTheme();
+  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
 
   const removePinnedAddress = usePinnedWalletsStore(state => state.removePinnedAddress);
   const setPinnedAddresses = usePinnedWalletsStore(state => state.setPinnedAddresses);
@@ -193,16 +211,22 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                     </Box>
                   </JiggleAnimation>
                   <Inline wrap={false} space="4px" alignHorizontal="center" alignVertical="center">
-                    {account.isLedger && (
+                    {account.isLedger ? (
                       <Text color="labelTertiary" size="icon 10px">
                         􀤃
                       </Text>
-                    )}
-                    {account.isReadOnly && (
+                    ) : null}
+
+                    {account.isReadOnly ? (
                       <Text color="labelTertiary" size="icon 10px">
                         􀋮
                       </Text>
-                    )}
+                    ) : null}
+
+                    {(IS_DEV || IS_TEST_FLIGHT) && delegationEnabled && !account.isReadOnly ? (
+                      <DelegationBadge accountAddress={account.address} />
+                    ) : null}
+
                     <Text numberOfLines={1} ellipsizeMode="middle" color="label" size="13pt" weight="bold">
                       {walletName}
                     </Text>

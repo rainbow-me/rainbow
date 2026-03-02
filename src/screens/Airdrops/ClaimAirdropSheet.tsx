@@ -33,8 +33,8 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { RootStackParamList } from '@/navigation/types';
-import { RainbowClaimable } from '@/resources/addys/claimables/types';
+import { type RootStackParamList } from '@/navigation/types';
+import { type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { darkModeThemeColors } from '@/styles/colors';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
@@ -45,16 +45,23 @@ import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { getCirclePath } from '@/worklets/skia';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import { Blur, Canvas, Circle, Fill, Group, Image, Paint, Shadow, point, useImage } from '@shopify/react-native-skia';
 import c from 'chroma-js';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
-import { Address } from 'viem';
+import Animated, {
+  type SharedValue,
+  runOnJS,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import { type Address } from 'viem';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { AirdropGasInfo, ClaimStatus, useClaimAirdrop } from './useClaimAirdrop';
-import { GasInfo } from './utils';
+import { type AirdropGasInfo, ClaimStatus, useClaimAirdrop } from './useClaimAirdrop';
+import { type GasInfo } from './utils';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const COIN_ICON_SIZE = 96;

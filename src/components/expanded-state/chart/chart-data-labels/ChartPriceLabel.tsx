@@ -1,5 +1,5 @@
 import React from 'react';
-import { DerivedValue, SharedValue, useDerivedValue } from 'react-native-reanimated';
+import { type DerivedValue, type SharedValue, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { formatCandlestickPrice } from '@/features/charts/candlestick/utils';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';

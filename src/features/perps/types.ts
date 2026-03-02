@@ -1,7 +1,7 @@
-import * as hl from '@nktkas/hyperliquid';
-import { OrderParameters } from '@nktkas/hyperliquid/api/exchange';
-import { PerpDexsResponse } from '@nktkas/hyperliquid/api/info';
-import { Hex } from 'viem';
+import type * as hl from '@nktkas/hyperliquid';
+import { type OrderParameters } from '@nktkas/hyperliquid/api/exchange';
+import { type PerpDexsResponse } from '@nktkas/hyperliquid/api/info';
+import { type Hex } from 'viem';
 
 // Derived types from @nktkas/hyperliquid
 export type UserFill = hl.UserFillsResponse[number];

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import { View, StyleSheet, type ViewStyle } from 'react-native';
 import { AnimatedText, Box, ColorModeProvider, Text, TextShadow } from '@/design-system';
-import { ExplainerSheet, ExplainerSheetStep, PANEL_INNER_WIDTH } from '@/components/explainer-sheet/ExplainerSheet';
+import { ExplainerSheet, type ExplainerSheetStep, PANEL_INNER_WIDTH } from '@/components/explainer-sheet/ExplainerSheet';
 import FastImage from 'react-native-fast-image';
 import magicOrbImage from '@/assets/perpsExplainer/magicOrb.png';
 import leverageImage from '@/assets/perpsExplainer/leverage.png';

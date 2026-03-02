@@ -1,21 +1,23 @@
-import React, { MutableRefObject, useCallback, useRef } from 'react';
-import { runOnUI, SharedValue, withTiming } from 'react-native-reanimated';
-import WebView, { WebViewMessageEvent } from 'react-native-webview';
-import { ShouldStartLoadRequest, WebViewEvent, WebViewNavigation } from 'react-native-webview/lib/WebViewTypes';
-import { Messenger, appMessenger } from '@/browserMessaging/AppMessenger';
+import { type MutableRefObject, useCallback, useRef } from 'react';
+import type React from 'react';
+import { runOnUI, type SharedValue, withTiming } from 'react-native-reanimated';
+import { type WebViewMessageEvent } from 'react-native-webview';
+import type WebView from 'react-native-webview';
+import { type ShouldStartLoadRequest, WebViewEvent, type WebViewNavigation } from 'react-native-webview/lib/WebViewTypes';
+import { type Messenger, appMessenger } from '@/browserMessaging/AppMessenger';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { IS_IOS } from '@/env';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { BrowserHistoryStore } from '@/state/browserHistory';
-import { BrowserState, useBrowserStore } from '@/state/browser/browserStore';
+import { type BrowserHistoryStore } from '@/state/browserHistory';
+import { type BrowserState, useBrowserStore } from '@/state/browser/browserStore';
 import { getDappHostname } from '@/utils/connectedApps';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { generateUniqueId } from '@/worklets/strings';
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import { handleProviderRequestApp } from '../handleProviderRequest';
-import { TabId } from '../types';
+import { type TabId } from '../types';
 import { isValidAppStoreUrl } from '../utils';
 
 interface UseWebViewHandlersParams {

@@ -1,6 +1,6 @@
 import { dequal } from 'dequal';
-import { StoreApi } from 'zustand';
-import { BaseRainbowStore } from '@/state/internal/types';
+import { type StoreApi } from 'zustand';
+import { type BaseRainbowStore } from '@/state/internal/types';
 import { hasGetSnapshot } from '@/state/internal/utils/storeUtils';
 
 const ENABLE_LOGS = false;

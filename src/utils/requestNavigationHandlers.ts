@@ -15,25 +15,25 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { removeWalletConnectRequest } from '@/state/walletConnectRequests';
 import { handleSessionRequestResponse } from '@/walletConnect';
 import {
-  RequestData,
-  WalletconnectApprovalSheetRouteParams,
-  WalletconnectRequestData,
-  WalletconnectResultType,
+  type RequestData,
+  type WalletconnectApprovalSheetRouteParams,
+  type WalletconnectRequestData,
+  type WalletconnectResultType,
 } from '@/walletConnect/types';
 import {
-  AppMetadata,
-  EthereumAction,
+  type AppMetadata,
+  type EthereumAction,
   isEthereumAction,
   isHandshakeAction,
-  PersonalSignAction,
-  RequestMessage,
-  useMobileWalletProtocolHost,
+  type PersonalSignAction,
+  type RequestMessage,
+  type useMobileWalletProtocolHost,
 } from '@coinbase/mobile-wallet-protocol-host';
 import { BigNumber } from '@ethersproject/bignumber';
 import { toUtf8String } from '@ethersproject/strings';
 import { noop } from 'lodash';
 import { InteractionManager } from 'react-native';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { getAccountAddress, getIsReadOnlyWallet, getWalletWithAccount } from '@/state/wallets/walletsStore';
 import { SEND_TRANSACTION } from './signingMethods';
 import watchingAlert from './watchingAlert';

@@ -5,7 +5,7 @@ import {
   significantDecimalsWorklet,
   toFixedWorklet,
   trimTrailingZeros,
-} from '@/safe-math/SafeMath';
+} from '@/framework/core/safeMath';
 import { MAX_SIG_FIGS, MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/features/perps/constants';
 
 function isInteger(rawBigInt: bigint, decimalPlaces: number): boolean {

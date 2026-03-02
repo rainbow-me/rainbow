@@ -1,12 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
-import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import { IS_IOS } from '@/env';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme';
 import { Categories } from './Categories';
-import { AllEmojiHeaderEntry } from './helpers/getFormattedAllEmojiList';
+import { type AllEmojiHeaderEntry } from './helpers/getFormattedAllEmojiList';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 const categoryKeys = Object.keys(Categories);

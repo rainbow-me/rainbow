@@ -3,7 +3,7 @@ import useLatestCallback from '@/hooks/useLatestCallback';
 import useOnAvatarPress from '@/hooks/useOnAvatarPress';
 import ShadowStack from '@/react-native-shadow-stack';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import React, { useMemo } from 'react';
 import { useTheme } from '../../theme/ThemeContext';

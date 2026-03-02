@@ -1,13 +1,13 @@
 import { RainbowError, logger } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { CrosschainQuote, Quote, QuoteError, Source } from '@rainbow-me/swaps';
+import { type CrosschainQuote, type Quote, type QuoteError, type Source } from '@rainbow-me/swaps';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { INITIAL_SLIDER_POSITION } from '@/__swaps__/screens/Swap/constants';
-import { ExtendedAnimatedAssetWithColors, UniqueId } from '@/__swaps__/types/assets';
-import { RecentSwap } from '@/__swaps__/types/swap';
+import { type ExtendedAnimatedAssetWithColors, type UniqueId } from '@/__swaps__/types/assets';
+import { type RecentSwap } from '@/__swaps__/types/swap';
 import { clamp, getDefaultSlippage } from '@/__swaps__/utils/swaps';
-import { EstimateRewardResult } from '@/features/rnbw-rewards/utils/estimateReward';
+import { type EstimateRewardResult } from '@/features/rnbw-rewards/utils/estimateReward';
 import { time } from '@/utils/time';
 
 export interface SwapsState {

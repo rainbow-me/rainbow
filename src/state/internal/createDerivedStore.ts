@@ -1,22 +1,22 @@
 import { debounce, identity } from 'lodash';
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
-import { StoreApi } from 'zustand/vanilla';
+import { type StoreApi } from 'zustand/vanilla';
 import { IS_DEV } from '@/env';
 import { pluralize } from '@/worklets/strings';
-import { PathFinder, createPathFinder, getOrCreateProxy } from './derivedStore/deriveProxy';
+import { type PathFinder, createPathFinder, getOrCreateProxy } from './derivedStore/deriveProxy';
 import {
-  BaseRainbowStore,
-  DebounceOptions,
-  DeriveOptions,
-  DerivedStore,
-  EqualityFn,
-  InferStoreState,
-  Listener,
-  Selector,
-  SubscribeArgs,
-  UnsubscribeFn,
-  WithFlushUpdates,
-  WithGetSnapshot,
+  type BaseRainbowStore,
+  type DebounceOptions,
+  type DeriveOptions,
+  type DerivedStore,
+  type EqualityFn,
+  type InferStoreState,
+  type Listener,
+  type Selector,
+  type SubscribeArgs,
+  type UnsubscribeFn,
+  type WithFlushUpdates,
+  type WithGetSnapshot,
 } from './types';
 
 // ============ Store Creator ================================================== //

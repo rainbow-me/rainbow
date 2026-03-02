@@ -1,8 +1,8 @@
 import { Interface } from '@ethersproject/abi';
-import { SafeTransaction, OperationType, RelayerTransaction, RelayerTransactionState } from '@polymarket/builder-relayer-client';
+import { type SafeTransaction, OperationType, type RelayerTransaction, RelayerTransactionState } from '@polymarket/builder-relayer-client';
 import { POLYGON_USDC_ADDRESS, POLYMARKET_CTF_ADDRESS, POLYMARKET_NEG_RISK_ADAPTER_ADDRESS } from '../constants';
 import { getPolymarketRelayClient } from '../stores/derived/usePolymarketClients';
-import { PolymarketPosition } from '../types';
+import { type PolymarketPosition } from '../types';
 import { zeroHash } from 'viem';
 import { ensureError, RainbowError } from '@/logger';
 import { analytics } from '@/analytics';

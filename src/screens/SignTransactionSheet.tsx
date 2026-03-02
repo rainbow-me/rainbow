@@ -4,8 +4,8 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { GasSpeedButton } from '@/components/gas';
 import { SheetActionButton } from '@/components/sheet';
 import { Bleed, Box, Columns, Inline, Inset, Stack, Text, globalColors, useBackgroundColor, useForegroundColor } from '@/design-system';
-import { NewTransaction, TransactionStatus } from '@/entities/transactions';
-import { ParsedAddressAsset } from '@/entities/tokens';
+import { type NewTransaction, TransactionStatus } from '@/entities/transactions';
+import { type ParsedAddressAsset } from '@/entities/tokens';
 import { IS_IOS } from '@/env';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
 import { getProvider } from '@/handlers/web3';
@@ -14,7 +14,7 @@ import useGas from '@/hooks/useGas';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { useNavigation } from '@/navigation';
-import { ChainId, Network } from '@/state/backendNetworks/types';
+import { type ChainId, type Network } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme';
 import deviceUtils from '@/utils/deviceUtils';
 import ethereumUtils from '@/utils/ethereumUtils';
@@ -26,8 +26,8 @@ import {
   isMessageDisplayType,
   isPersonalSign,
 } from '@/utils/signingMethods';
-import { Transaction } from '@ethersproject/transactions';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type Transaction } from '@ethersproject/transactions';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, InteractionManager, PixelRatio, ScrollView } from 'react-native';
@@ -57,20 +57,20 @@ import { useHasEnoughBalance } from '@/hooks/useHasEnoughBalance';
 import { useNonceForDisplay } from '@/hooks/useNonceForDisplay';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useTransactionSetup } from '@/hooks/useTransactionSetup';
-import Routes from '@/navigation/routesNames';
-import { RootStackParamList } from '@/navigation/types';
+import type Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
 import { useSimulation } from '@/resources/transactions/transactionSimulation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { TimeToSignOperation, executeFn } from '@/state/performance/performance';
 import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
-import { RequestData } from '@/walletConnect/types';
+import { type RequestData } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { switchWallet } from '@/state/wallets/switchWallet';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 type SignTransactionSheetParams = {

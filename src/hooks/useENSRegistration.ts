@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { Records } from '@/entities/ensRegistration';
-import { REGISTRATION_MODES } from '@/helpers/ens';
+import { type REGISTRATION_MODES } from '@/helpers/ens';
 import * as ensRedux from '@/redux/ensRegistration';
-import { AppState } from '@/redux/store';
+import { type AppState } from '@/redux/store';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 export default function useENSRegistration() {

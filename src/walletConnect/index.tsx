@@ -27,22 +27,23 @@ import { getWallets, getWalletWithAccount } from '@/state/wallets/walletsStore';
 import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import {
-  AuthRequestAuthenticateSignature,
+  type AuthRequestAuthenticateSignature,
   AuthRequestResponseErrorReason,
   RPCMethod,
-  RPCPayload,
-  WalletconnectApprovalSheetRouteParams,
-  WalletconnectRequestData,
-  WalletconnectResultType,
+  type RPCPayload,
+  type WalletconnectApprovalSheetRouteParams,
+  type WalletconnectRequestData,
+  type WalletconnectResultType,
 } from '@/walletConnect/types';
 import { getAddress, isAddress } from '@ethersproject/address';
 import { isHexString } from '@ethersproject/bytes';
 import { toUtf8String } from '@ethersproject/strings';
 import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
 import messaging from '@react-native-firebase/messaging';
-import { IWalletKit, WalletKit, WalletKitTypes } from '@reown/walletkit';
-import WalletConnectCore, { Core } from '@walletconnect/core';
-import { SessionTypes, SignClientTypes } from '@walletconnect/types';
+import { type IWalletKit, WalletKit, type WalletKitTypes } from '@reown/walletkit';
+import type WalletConnectCore from '@walletconnect/core';
+import { Core } from '@walletconnect/core';
+import { type SessionTypes, type SignClientTypes } from '@walletconnect/types';
 import { buildApprovedNamespaces, getSdkError, parseUri } from '@walletconnect/utils';
 import { gretch } from 'gretchen';
 import { uniq } from 'lodash';

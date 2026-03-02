@@ -7,9 +7,9 @@ import ChevronUpIcon from '../../icons/ChevronUpIcon';
 import PlayIcon from '../../icons/PlayIcon';
 import { Button, ButtonLink, CodeBlock, Inline, Stack } from '../../system';
 import { sprinkles } from '../../system/sprinkles.css';
-import { Example } from '../../types';
+import { type Example } from '../../types';
 import { getSourceFromExample } from '../../utils/getSourceFromExample.web';
-import { Source } from '../../utils/source.macro';
+import { type Source } from '../../utils/source.macro';
 
 export const CodePreview = ({
   disableActions = false,

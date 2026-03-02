@@ -1,15 +1,16 @@
 import isEqual from 'react-fast-compare';
-import { Chain } from 'viem/chains';
+import { type Chain } from 'viem/chains';
 import { IS_TEST } from '@/env';
 import buildTimeNetworks from '@/references/networks.json';
-import { fetchBackendNetworks, BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
+import { fetchBackendNetworks, type BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
 import { filterSupportedNetworks, transformBackendNetworksToChains } from '@/state/backendNetworks/utils';
-import { BackendNetwork, BackendNetworkServices, chainAnvil, chainAnvilOptimism, ChainId } from '@/state/backendNetworks/types';
+import { type BackendNetwork, type BackendNetworkServices, chainAnvil, chainAnvilOptimism, ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { colors as globalColors } from '@/styles';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { time } from '@/utils/time';
+import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
 const INITIAL_BACKEND_NETWORKS = buildTimeNetworks.networks as BackendNetwork[];
 const DEFAULT_PRIVATE_MEMPOOL_TIMEOUT = time.minutes(2);
@@ -376,6 +377,8 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     version: 1,
   }
 );
+
+export const backendNetworksActions = createStoreActions(useBackendNetworksStore);
 
 /** -----------------------------------------------------------------------------------
  *  Backend networks helper functions.

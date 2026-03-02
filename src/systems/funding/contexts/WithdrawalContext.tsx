@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext } from 'react';
+import React, { createContext, type ReactNode, useContext } from 'react';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
@@ -6,7 +6,7 @@ import { createAmountStore } from '../stores/createAmountStore';
 import { createWithdrawalQuoteStore } from '../stores/createWithdrawalQuoteStore';
 import { createWithdrawalStore } from '../stores/createWithdrawalStore';
 import { createTokenNetworksStore } from '../stores/createWithdrawalTokenStore';
-import { BalanceQueryStore, FundingScreenTheme, WithdrawalConfig, WithdrawalContextType } from '../types';
+import { type BalanceQueryStore, type FundingScreenTheme, type WithdrawalConfig, type WithdrawalContextType } from '../types';
 
 // ============ Types ========================================================== //
 

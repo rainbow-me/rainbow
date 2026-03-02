@@ -7,7 +7,7 @@ import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Text } from '../text';
 import { delay } from '@/utils/delay';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { margin, padding, position } from '@/styles';
 import { Box } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';

@@ -4,7 +4,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { createMMKV } from 'react-native-mmkv';
 import { getSelectedWallet } from '@/state/wallets/walletsStore';
-import { Campaign, CampaignCheckType, CampaignKey, GenericCampaignCheckResponse } from './localCampaignChecks';
+import { type Campaign, CampaignCheckType, CampaignKey, GenericCampaignCheckResponse } from './localCampaignChecks';
 
 const mmkv = createMMKV();
 

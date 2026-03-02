@@ -1,13 +1,13 @@
 import { uniqueId } from 'lodash';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, LayoutChangeEvent, Pressable, PressableProps, StyleSheet, View } from 'react-native';
+import { InteractionManager, type LayoutChangeEvent, Pressable, type PressableProps, StyleSheet, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
-import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { type SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { atom, atomFamily, RecoilRoot, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { ZoomableWrapper } from '../expanded-state/unique-token/ZoomableWrapper';
 import { SheetHandleFixedToTopHeight } from '../sheet';
 import AvatarCoverPhotoMaskSvg from '../svg/AvatarCoverPhotoMaskSvg';
-import { BackgroundProvider, Box, BoxProps, Cover, useColorMode } from '@/design-system';
+import { BackgroundProvider, Box, type BoxProps, Cover, useColorMode } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
 import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
 import { ImgixImage } from '@/components/images';

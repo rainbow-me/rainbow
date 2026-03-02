@@ -1,25 +1,25 @@
-import { AnimatedText, TextProps, useTextStyle } from '@/design-system';
+import { AnimatedText, type TextProps, useTextStyle } from '@/design-system';
 import React, { useMemo, useCallback, useState } from 'react';
-import { StyleProp, TextStyle, StyleSheet, ViewStyle, View } from 'react-native';
+import { type StyleProp, type TextStyle, StyleSheet, type ViewStyle, View } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  ExitAnimationsValues,
+  type ExitAnimationsValues,
   runOnUI,
-  LayoutAnimationsValues,
+  type LayoutAnimationsValues,
   useAnimatedRef,
   measure,
   interpolate,
-  WithTimingConfig,
-  SharedValue,
+  type WithTimingConfig,
+  type SharedValue,
   useAnimatedReaction,
   runOnJS,
-  DerivedValue,
+  type DerivedValue,
   LayoutAnimationConfig,
   useDerivedValue,
-  BaseAnimationBuilder,
-  EntryExitAnimationFunction,
+  type BaseAnimationBuilder,
+  type EntryExitAnimationFunction,
 } from 'react-native-reanimated';
 import { EasingGradient } from '../easing-gradient/EasingGradient';
 import MaskedView from '@react-native-masked-view/masked-view';

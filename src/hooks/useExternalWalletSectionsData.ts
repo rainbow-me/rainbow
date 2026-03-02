@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { AssetListType } from '../components/asset-list/RecyclerAssetList2';
+import { type AssetListType } from '../components/asset-list/RecyclerAssetList2';
 import { legacyBuildBriefUniqueTokenList } from '@/helpers/assets';
 import { useLegacyNFTs } from '@/resources/nfts';
 import useShowcaseTokens from '@/hooks/useShowcaseTokens';

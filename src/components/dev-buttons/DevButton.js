@@ -6,7 +6,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withDecay, withSpring } fro
 import RNRestart from 'react-native-restart';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 
 const Button = styled(ButtonPressAnimation)(({ size, color }) => ({
   alignItems: 'center',

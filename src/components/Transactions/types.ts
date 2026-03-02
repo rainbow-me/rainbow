@@ -1,4 +1,4 @@
-import { TextColor } from '@/design-system/color/palettes';
+import { type TextColor } from '@/design-system/color/palettes';
 
 export type EventType = 'send' | 'receive' | 'approve' | 'revoke' | 'failed' | 'insufficientBalance' | 'MALICIOUS' | 'WARNING';
 

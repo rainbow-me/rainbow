@@ -4,7 +4,7 @@ import Icon from '../icons/Icon';
 import { Row } from '../layout';
 import Text from '../text/Text';
 import HeaderButton from './HeaderButton';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { fonts, fontWithWidth } from '@/styles';
 
 const Container = styled(Row).attrs({ align: 'center' })({

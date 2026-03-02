@@ -7,16 +7,16 @@ import {
   ColorModeProvider,
   Columns,
   Heading,
-  HeadingProps,
+  type HeadingProps,
   Inline,
   Inset,
   MarkdownText,
-  MarkdownTextProps,
+  type MarkdownTextProps,
   Separator,
-  Space,
+  type Space,
   Stack,
   Text,
-  TextProps,
+  type TextProps,
 } from '@/design-system';
 import { AssetType } from '@/entities/assetTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
@@ -35,7 +35,7 @@ import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme';
 import magicMemo from '@/utils/magicMemo';
@@ -47,7 +47,7 @@ import { openInBrowser } from '@/utils/openInBrowser';
 import { useFocusEffect } from '@react-navigation/native';
 import c from 'chroma-js';
 import * as i18n from '@/languages';
-import React, { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
+import React, { type ReactNode, useCallback, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Share, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';

@@ -1,13 +1,13 @@
-import { ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import {
-  PolymarketEvent,
-  PolymarketMarket,
-  PolymarketOptimizedEvent,
-  RawPolymarketEvent,
-  RawPolymarketMarket,
-  RawPolymarketOptimizedEvent,
+  type PolymarketEvent,
+  type PolymarketMarket,
+  type PolymarketOptimizedEvent,
+  type RawPolymarketEvent,
+  type RawPolymarketMarket,
+  type RawPolymarketOptimizedEvent,
 } from '@/features/polymarket/types/polymarket-event';
-import { PolymarketPosition, PolymarketTeamInfo, RawPolymarketPosition } from '@/features/polymarket/types';
+import { type PolymarketPosition, type PolymarketTeamInfo, type RawPolymarketPosition } from '@/features/polymarket/types';
 import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
 import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';
 import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';

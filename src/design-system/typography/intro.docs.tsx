@@ -1,6 +1,6 @@
 import React from 'react';
 import * as Docs from '../docs/components';
-import { Docs as DocsType } from '../docs/types';
+import { type Docs as DocsType } from '../docs/types';
 
 const docs: DocsType = {
   meta: {

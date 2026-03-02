@@ -1,6 +1,6 @@
 import React from 'react';
-import { SharedValue } from 'react-native-reanimated';
-import { Path } from 'react-native-redash';
+import { type SharedValue } from 'react-native-reanimated';
+import { type Path } from 'react-native-redash';
 
 export const CurveType = {
   basis: 'basis',

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchOwner } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
-import { queryClient, QueryConfigDeprecated, UseQueryData } from '@/react-query';
+import { queryClient, type QueryConfigDeprecated, type UseQueryData } from '@/react-query';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 export const ensOwnerQueryKey = (name: string) => ['ens-owner', name];

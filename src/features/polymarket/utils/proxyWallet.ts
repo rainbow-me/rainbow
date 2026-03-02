@@ -1,5 +1,5 @@
-import { Signer } from '@ethersproject/abstract-signer';
-import { OperationType, RelayClient, RelayerTransactionState, SafeTransaction } from '@polymarket/builder-relayer-client';
+import { type Signer } from '@ethersproject/abstract-signer';
+import { OperationType, RelayClient, RelayerTransactionState, type SafeTransaction } from '@polymarket/builder-relayer-client';
 import { ChainId } from '@rainbow-me/swaps';
 import { ethers, Wallet } from 'ethers';
 import {

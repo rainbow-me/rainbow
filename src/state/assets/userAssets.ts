@@ -1,10 +1,10 @@
 import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
-import { Address } from 'viem';
-import { EqualityFn, Selector } from '../internal/types';
+import { type Address } from 'viem';
+import { type EqualityFn, type Selector } from '../internal/types';
 import { createStoreFactoryUtils } from '../internal/utils/factoryUtils';
 import { createUserAssetsStore } from './createUserAssetsStore';
-import { UserAssetsStateToPersist } from './persistence';
-import { QueryEnabledUserAssetsState, UserAssetsRouter, UserAssetsStoreType } from './types';
+import { type UserAssetsStateToPersist } from './persistence';
+import { type QueryEnabledUserAssetsState, type UserAssetsRouter, type UserAssetsStoreType } from './types';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 import { setupPositionsAssetsSync, cleanupPositionsAssetsSync } from './positionsSync';
 

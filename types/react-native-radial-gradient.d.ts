@@ -1,6 +1,6 @@
 declare module 'react-native-radial-gradient' {
   import { Component } from 'react';
-  import { StyleProp, ViewStyle } from 'react-native';
+  import { type StyleProp, type ViewStyle } from 'react-native';
 
   interface RadialGradientProps {
     center?: number[];

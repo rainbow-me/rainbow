@@ -1,6 +1,6 @@
-import { RainbowTransaction, NewTransaction } from '@/entities/transactions';
+import { type RainbowTransaction, type NewTransaction } from '@/entities/transactions';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { nonceActions } from '@/state/nonces';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';

@@ -3,7 +3,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Inline, Inset, Text } from '@/design-system';
 import haptics from '@/utils/haptics';
 import { MintsFilter, getMintsFilterLabel, useMintsFilter } from '@/resources/mints';
-import { DropdownMenu, MenuConfig } from '@/components/DropdownMenu';
+import { DropdownMenu, type MenuConfig } from '@/components/DropdownMenu';
 
 export function Menu() {
   const { filter, setFilter } = useMintsFilter();

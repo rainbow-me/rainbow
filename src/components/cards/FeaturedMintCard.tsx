@@ -20,7 +20,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import * as i18n from '@/languages';
 import { useMints } from '@/resources/mints';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';

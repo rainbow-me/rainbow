@@ -1,10 +1,10 @@
 import React from 'react';
-import { Inline, TextIcon, TextProps } from '@/design-system';
+import { Inline, TextIcon, type TextProps } from '@/design-system';
 import { useDerivedValue } from 'react-native-reanimated';
 import { GasFeeText } from './GasFeeText';
-import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { useEstimatedGasFee } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 
 type EstimatedGasFeeProps = { chainId: ChainId; gasSettings?: GasSettings; gasLimit: string | undefined; isFetching?: boolean } & Partial<
   Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'>

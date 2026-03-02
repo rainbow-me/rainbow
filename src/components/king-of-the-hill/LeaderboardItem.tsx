@@ -3,7 +3,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { RainbowImage } from '@/components/RainbowImage';
 import { Inline, Text, useColorMode } from '@/design-system';
-import { Token } from '@/graphql/__generated__/metadata';
+import { type Token } from '@/graphql/__generated__/metadata';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';

@@ -3,7 +3,7 @@ import { Linking } from 'react-native';
 import branch from 'react-native-branch';
 import { useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
 import handleDeeplink from '@/handlers/deeplinks';
-import { InitialRoute } from '@/navigation/initialRoute';
+import { type InitialRoute } from '@/navigation/initialRoute';
 import { logger, RainbowError } from '@/logger';
 import { branchListener } from '@/utils/branch';
 import { useWalletsStore } from '../state/wallets/walletsStore';

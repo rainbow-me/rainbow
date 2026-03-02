@@ -1,10 +1,10 @@
 import type { Address } from 'viem';
-import { ParsedAsset } from '@/__swaps__/types/assets';
-import { HlBuilderSettings, MarketSortOrder } from '@/features/perps/types';
+import { type ParsedAsset } from '@/__swaps__/types/assets';
+import { type HlBuilderSettings, MarketSortOrder } from '@/features/perps/types';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { SearchAsset } from '@/__swaps__/types/search';
+import { type SearchAsset } from '@/__swaps__/types/search';
 import { ChainId } from '@/state/backendNetworks/types';
 import { LinearTransition } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';

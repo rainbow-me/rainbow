@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle } from 'react';
-import { SharedValue, runOnUI } from 'react-native-reanimated';
+import { type SharedValue, runOnUI } from 'react-native-reanimated';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 // TODO: Not currently used. If need custom number pad input for `CurrencyInput`, we can use this.
 

@@ -13,7 +13,7 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { checkKeychainIntegrity, clearWalletState, updateWallets, useWallets } from '@/state/wallets/walletsStore';
+import { clearWalletState, updateWallets, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { isAuthenticated } from '@/utils/authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -29,6 +29,9 @@ import { addDefaultNotificationGroupSettings } from '@/notifications/settings/in
 import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 import { getFCMToken } from '@/notifications/tokens';
 import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
+import { resetCache as resetDelegationCache, getDelegations, DelegationStatus } from '@rainbow-me/delegation';
+import { RevokeReason } from '@/screens/delegation/RevokeDelegationPanel';
+import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { nonceActions } from '@/state/nonces';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
@@ -41,6 +44,7 @@ const DevSection = () => {
   const { config, setConfig } = useContext(RainbowContext) as any;
   const wallets = useWallets();
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
+  const accountAddress = useWalletsStore(state => state.accountAddress);
 
   const [loadingStates, setLoadingStates] = useState({
     clearLocalStorage: false,
@@ -198,9 +202,52 @@ const DevSection = () => {
       screen: Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET,
     });
 
+  const triggerRevokeSheet = useCallback(
+    async (revokeReason: RevokeReason) => {
+      const delegations = await getDelegations({ address: accountAddress });
+      const rainbowDelegations = delegations.filter(d => d.delegationStatus === DelegationStatus.RAINBOW_DELEGATED);
+      const thirdPartyDelegations = delegations.filter(d => d.delegationStatus === DelegationStatus.THIRD_PARTY_DELEGATED);
+
+      const mapToRevokes = (delegationList: typeof delegations) =>
+        delegationList.map(delegation => {
+          const contractAddress = delegation.revokeAddress || delegation.currentContract;
+          return contractAddress
+            ? {
+                chainId: delegation.chainId,
+                contractAddress,
+              }
+            : {
+                chainId: delegation.chainId,
+              };
+        });
+
+      const toRevoke = (() => {
+        switch (revokeReason) {
+          case RevokeReason.DISABLE_SMART_WALLET:
+            return rainbowDelegations.length > 0 ? mapToRevokes(rainbowDelegations) : [{ chainId: ChainId.mainnet }];
+          case RevokeReason.DISABLE_SINGLE_NETWORK: {
+            const baseDelegation = rainbowDelegations.find(d => d.chainId === ChainId.base);
+            return baseDelegation ? mapToRevokes([baseDelegation]) : [{ chainId: ChainId.base }];
+          }
+          case RevokeReason.DISABLE_THIRD_PARTY:
+            return thirdPartyDelegations.length > 0 ? mapToRevokes(thirdPartyDelegations) : [{ chainId: ChainId.mainnet }];
+          default:
+            return [{ chainId: ChainId.mainnet }];
+        }
+      })();
+
+      navigate(Routes.REVOKE_DELEGATION_PANEL, {
+        address: accountAddress,
+        revokeReason,
+        delegationsToRevoke: toRevoke,
+      });
+    },
+    [accountAddress, navigate]
+  );
+
   return (
     <MenuContainer testID="developer-settings-sheet">
-      <Menu header={IS_DEV || IS_TEST_FLIGHT ? 'Normie Settings' : ''}>
+      <Menu header={IS_DEV || IS_TEST_FLIGHT ? i18n.t(i18n.l.developer_settings.headers.normie_settings) : ''}>
         {/* <MenuItem
           disabled
           leftComponent={<MenuItem.TextIcon icon="🕹️" isEmoji />}
@@ -243,7 +290,7 @@ const DevSection = () => {
       </Menu>
       {(IS_DEV || IS_TEST_FLIGHT) && (
         <>
-          <Menu header="Rainbow Developer Settings">
+          <Menu header={i18n.t(i18n.l.developer_settings.headers.rainbow_developer_settings)}>
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🔄" isEmoji />}
               onPress={() => Restart.Restart()}
@@ -410,7 +457,37 @@ const DevSection = () => {
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.simulate_device_transfer)} />}
             />
           </Menu>
-          <Menu header="Feature Flags">
+          <Menu header={i18n.t(i18n.l.developer_settings.headers.delegation_settings)}>
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
+              onPress={() => resetDelegationCache()}
+              size={52}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.delegation_settings.clear_store)} />}
+            />
+            {Object.values(RevokeReason).map(reason => {
+              const label = {
+                [RevokeReason.DISABLE_SMART_WALLET]: i18n.t(i18n.l.developer_settings.delegation_settings.simulate_disable_smart_wallet),
+                [RevokeReason.DISABLE_SINGLE_NETWORK]: i18n.t(
+                  i18n.l.developer_settings.delegation_settings.simulate_disable_single_network
+                ),
+                [RevokeReason.DISABLE_THIRD_PARTY]: i18n.t(i18n.l.developer_settings.delegation_settings.simulate_disable_third_party),
+                [RevokeReason.ALERT_VULNERABILITY]: i18n.t(i18n.l.developer_settings.delegation_settings.simulate_alert_vulnerability),
+                [RevokeReason.ALERT_BUG]: i18n.t(i18n.l.developer_settings.delegation_settings.simulate_alert_bug),
+                [RevokeReason.ALERT_UNRECOGNIZED]: i18n.t(i18n.l.developer_settings.delegation_settings.simulate_alert_unrecognized),
+                [RevokeReason.ALERT_UNSPECIFIED]: i18n.t(i18n.l.developer_settings.delegation_settings.simulate_alert_unspecified),
+              }[reason];
+              return (
+                <MenuItem
+                  key={reason}
+                  leftComponent={<MenuItem.TextIcon icon={(reason as string).startsWith('alert_') ? '⚠️' : '🔧'} isEmoji />}
+                  onPress={() => triggerRevokeSheet(reason)}
+                  size={52}
+                  titleComponent={<MenuItem.Title text={label} />}
+                />
+              );
+            })}
+          </Menu>
+          <Menu header={i18n.t(i18n.l.developer_settings.headers.feature_flags)}>
             {Object.keys(config)
               .sort()
               .filter(key => (defaultConfig as any)[key]?.settings)

@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { LayoutChangeEvent } from 'react-native';
+import { type LayoutChangeEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SlackSheet } from '@/components/sheet';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import { IS_ANDROID } from '@/env';
 import { BackgroundProvider, Box } from '@/design-system';
 import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-details/components/TransactionDetailsValueAndFeeSection';
@@ -13,9 +13,9 @@ import * as i18n from '@/languages';
 import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
 import { useTransactionDetailsToasts } from '@/screens/transaction-details/hooks/useTransactionDetailsToasts';
 import useDimensions from '@/hooks/useDimensions';
-import { RootStackParamList } from '@/navigation/types';
+import { type RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
+import type Routes from '@/navigation/routesNames';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 
 export const TransactionDetails = () => {

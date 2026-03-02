@@ -1,5 +1,5 @@
 import { DEFAULT_PERP_DEX_IDS } from '@/features/perps/constants';
-import { HyperliquidDex } from '@/features/perps/types';
+import { type HyperliquidDex } from '@/features/perps/types';
 import { logger, ensureError, RainbowError } from '@/logger';
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
 import { createQueryStore } from '@/state/internal/createQueryStore';

@@ -1,5 +1,5 @@
 import Text from './Text';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 
 const H1 = styled(Text).attrs(({ letterSpacing = 'rounded', weight = 'heavy', color, theme: { colors } }) => ({
   color: color || colors.dark,

@@ -1,20 +1,20 @@
 import {
   createNavigatorFactory,
-  DefaultNavigatorOptions,
-  EventArg,
+  type DefaultNavigatorOptions,
+  type EventArg,
   NavigationHelpersContext,
   StackActions,
-  StackNavigationState,
-  StackRouterOptions,
+  type StackNavigationState,
+  type StackRouterOptions,
   useNavigationBuilder,
-  ParamListBase,
-  RouteProp,
+  type ParamListBase,
+  type RouteProp,
 } from '@react-navigation/native';
 import React from 'react';
 import { router } from './router';
 import type { BottomSheetNavigationConfig, BottomSheetNavigationEventMap, BottomSheetNavigationOptions } from './types';
 import BottomSheetNavigatorView from './views/BottomSheetNavigatorView';
-import { RootStackParamList } from '@/navigation/types';
+import { type RootStackParamList } from '@/navigation/types';
 
 type Props = DefaultNavigatorOptions<
   RootStackParamList,

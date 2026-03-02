@@ -1,4 +1,4 @@
-import { Address } from 'viem';
+import { type Address } from 'viem';
 
 import { staleBalancesStore } from '.';
 import { DAI_ADDRESS } from '@/references';

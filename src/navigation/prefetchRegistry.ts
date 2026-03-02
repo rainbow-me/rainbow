@@ -2,8 +2,8 @@ import { polymarketChartsActions } from '@/features/charts/polymarket/stores/pol
 import { prefetchCandlestickData } from '@/features/charts/stores/candlestickStore';
 import { prefetchPolymarketEvent } from '@/features/polymarket/stores/polymarketEventStore';
 import { usePolymarketOrderBookStore } from '@/features/polymarket/stores/polymarketOrderBookStore';
-import Routes, { Route } from '@/navigation/routesNames';
-import { RootStackParamList } from '@/navigation/types';
+import Routes, { type Route } from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
 import { deepFreeze } from '@/utils/deepFreeze';
 
 type PrefetchRegistry = Readonly<{

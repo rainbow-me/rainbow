@@ -1,13 +1,13 @@
 import { useContext } from 'react';
-import { SharedValue } from 'react-native-reanimated';
+import { type SharedValue } from 'react-native-reanimated';
 import { AccentColorContext } from './AccentColorContext';
 import { ColorModeContext } from './ColorMode';
 import {
-  BackgroundColorValue,
-  ColorMode,
-  ContextualColorValue,
-  ForegroundColor,
-  TextColor,
+  type BackgroundColorValue,
+  type ColorMode,
+  type ContextualColorValue,
+  type ForegroundColor,
+  type TextColor,
   foregroundColors,
   getDefaultAccentColorForColorMode,
   getValueForColorMode,

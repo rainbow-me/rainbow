@@ -1,18 +1,18 @@
-import React, { forwardRef, ReactNode, useMemo } from 'react';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import React, { forwardRef, type ReactNode, useMemo } from 'react';
+import { type StyleProp, View, type ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useForegroundColor, useForegroundColors } from '../../color/useForegroundColor';
 import { useColorMode } from '../../color/ColorMode';
-import { Shadow, shadows } from '../../layout/shadow';
-import { Height, heights, Width, widths } from '../../layout/size';
-import { NegativeSpace, negativeSpace, positionSpace, PositionSpace, Space, space } from '../../layout/space';
+import { type Shadow, shadows } from '../../layout/shadow';
+import { type Height, heights, type Width, widths } from '../../layout/size';
+import { type NegativeSpace, negativeSpace, positionSpace, type PositionSpace, type Space, space } from '../../layout/space';
 import { BackgroundProvider } from '../BackgroundProvider/BackgroundProvider';
-import { Border, BorderProps } from '../Border/Border';
+import { Border, type BorderProps } from '../Border/Border';
 import { ApplyShadow } from '../private/ApplyShadow/ApplyShadow';
 import type * as Polymorphic from './polymorphic';
 import { IS_TEST } from '@/env';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BackgroundColor } from '@/design-system/color/palettes';
+import { type BackgroundColor } from '@/design-system/color/palettes';
 
 const COMPONENTS_TO_OVERRIDE_IN_TEST_MODE = [LinearGradient];
 

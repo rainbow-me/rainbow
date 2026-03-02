@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
+import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
 
-import { PromoSheetOrder } from '@/graphql/__generated__/arc';
+import { type PromoSheetOrder } from '@/graphql/__generated__/arc';
 import { arcClient } from '@/graphql';
 
 // Set a default stale time of 10 seconds so we don't over-fetch

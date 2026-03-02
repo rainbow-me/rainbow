@@ -1,20 +1,20 @@
 import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { DerivedValue, SharedValue, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
+import Animated, { type DerivedValue, type SharedValue, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 import { easing, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { AnimatedText, Text, TextShadow, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { StoreState } from '@/state/internal/queryStore/types';
-import { BaseRainbowStore } from '@/state/internal/types';
+import { type StoreState } from '@/state/internal/queryStore/types';
+import { type BaseRainbowStore } from '@/state/internal/types';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
-import { ResponseByTheme, getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { type ResponseByTheme, getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { FormatTimestampOptions, formatTimestamp } from '@/worklets/dates';
-import { ActiveInteractionData } from '../classes/PolymarketChartManager';
+import { type FormatTimestampOptions, formatTimestamp } from '@/worklets/dates';
+import { type ActiveInteractionData } from '../classes/PolymarketChartManager';
 import { usePolymarketChartStore, usePolymarketMarketChartStore } from '../stores/polymarketChartStore';
-import { OutcomeSeries, PolymarketChartData, SeriesPaletteColors } from '../types';
+import { type OutcomeSeries, type PolymarketChartData, type SeriesPaletteColors } from '../types';
 
 // ============ Constants ====================================================== //
 

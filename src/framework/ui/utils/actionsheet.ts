@@ -1,5 +1,5 @@
 import { IS_IOS } from '@/env';
-import { ActionSheetIOS, ActionSheetIOSOptions } from 'react-native';
+import { ActionSheetIOS, type ActionSheetIOSOptions } from 'react-native';
 import ActionSheet from 'react-native-action-sheet';
 
 /**

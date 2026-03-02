@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Border, Box, Inline, Stack, Text, TextShadow, globalColors, useColorMode } from '@/design-system';
-import { TextSize } from '@/design-system/components/Text/Text';
+import { type TextSize } from '@/design-system/components/Text/Text';
 import { Skeleton } from './Skeleton';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 

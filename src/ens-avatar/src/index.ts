@@ -1,4 +1,4 @@
-import { BaseProvider } from '@ethersproject/providers';
+import { type BaseProvider } from '@ethersproject/providers';
 import ERC1155 from './specs/erc1155';
 import ERC721 from './specs/erc721';
 import URI from './specs/uri';

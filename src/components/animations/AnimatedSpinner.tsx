@@ -1,9 +1,9 @@
 import { Canvas, Image, Mask, Rect, useImage } from '@shopify/react-native-skia';
-import React, { ReactNode } from 'react';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import React, { type ReactNode } from 'react';
+import { type StyleProp, View, type ViewStyle } from 'react-native';
 import Animated, {
   Easing,
-  SharedValue,
+  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,

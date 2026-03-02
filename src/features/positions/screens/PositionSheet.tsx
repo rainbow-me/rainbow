@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { BackgroundProvider, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
 import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import startCase from 'lodash/startCase';
@@ -11,7 +11,7 @@ import * as i18n from '@/languages';
 import { capitalize } from 'lodash';
 import type { RainbowPosition, PositionAsset } from '@/features/positions/types';
 import { LpPositionListItem } from '../components/LpPositionListItem';
-import { RootStackParamList } from '@/navigation/types';
+import { type RootStackParamList } from '@/navigation/types';
 import { openInBrowser } from '@/utils/openInBrowser';
 import Routes from '@/navigation/routesNames';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';

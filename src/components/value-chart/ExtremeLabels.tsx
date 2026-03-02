@@ -1,10 +1,10 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { LayoutChangeEvent, StyleProp, View, ViewStyle } from 'react-native';
+import { type LayoutChangeEvent, type StyleProp, View, type ViewStyle } from 'react-native';
 import { useChartData } from '@/react-native-animated-charts/src';
 import { Text } from '@/design-system';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
-import { TextSize } from '@/design-system/typography/typeHierarchy';
+import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { opacity } from '@/framework/ui/utils/opacity';
 

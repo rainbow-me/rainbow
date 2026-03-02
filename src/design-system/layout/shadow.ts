@@ -1,5 +1,5 @@
-import { shadowColors, ShadowColor, ForegroundColor } from './../color/palettes';
-import { CustomColor } from '../color/useForegroundColor';
+import { shadowColors, type ShadowColor, type ForegroundColor } from './../color/palettes';
+import { type CustomColor } from '../color/useForegroundColor';
 
 type ShadowSize = '12px' | '18px' | '24px' | '30px';
 type ShadowColorMode = 'light' | 'dark';

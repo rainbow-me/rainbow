@@ -4,7 +4,7 @@ import { Page } from '../components/layout';
 import Navigation from '@/navigation/Navigation';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import { Navbar } from '@/components/navbar/Navbar';
 import ImageAvatar from '@/components/contacts/ImageAvatar';

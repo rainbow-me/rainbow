@@ -5,13 +5,13 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ETH_SYMBOL, USDC_ADDRESS } from '@/references';
 import { ClaimableMenu } from '../../shared/components/ClaimableMenu';
-import { TokenToReceive } from '../types';
+import { type TokenToReceive } from '../types';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
 import { searchVerifiedTokens, TokenLists } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-import { SearchAsset } from '@/__swaps__/types/search';
+import { type SearchAsset } from '@/__swaps__/types/search';
 import * as i18n from '@/languages';
 import { IS_ANDROID } from '@/env';
-import { MenuItem } from '@/components/DropdownMenu';
+import { type MenuItem } from '@/components/DropdownMenu';
 import { NetworkSelectorButton } from '@/components/buttons/NetworkSelectorButton';
 import { ChainId } from '@/state/backendNetworks/types';
 

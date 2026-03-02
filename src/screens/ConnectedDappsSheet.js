@@ -6,7 +6,7 @@ import { Row } from '@/components/layout';
 import { Sheet, SheetHandleFixedToTop, SheetTitle } from '@/components/sheet';
 import { WalletConnectV2ListItem, WALLET_CONNECT_LIST_ITEM_HEIGHT } from '@/components/walletconnect-list/WalletConnectV2ListItem';
 import { useNavigation } from '@/navigation';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { useWalletConnectV2Sessions } from '@/walletConnect/hooks/useWalletConnectV2Sessions';
 import { useFocusEffect } from '@react-navigation/native';
 import { Text, Box } from '@/design-system';

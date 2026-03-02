@@ -1,9 +1,17 @@
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { arcClient } from '@/graphql';
 import { logger, RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
-import { NftsState, NftParams, NftsQueryData, PaginationInfo, CollectionId, UniqueId, Collection } from './types';
+import {
+  type NftsState,
+  type NftParams,
+  type NftsQueryData,
+  type PaginationInfo,
+  type CollectionId,
+  type UniqueId,
+  type Collection,
+} from './types';
 import { parseUniqueAsset, parseUniqueId } from '@/resources/nfts/utils';
 import { useBackendNetworksStore } from '../backendNetworks/backendNetworks';
 import { IS_DEV } from '@/env';

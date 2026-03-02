@@ -3,12 +3,12 @@ import * as i18n from '@/languages';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 import { Box, Inline, Stack, Text } from '@/design-system';
-import { TextColor } from '@/design-system/color/palettes';
+import { type TextColor } from '@/design-system/color/palettes';
 
 import abbreviations from '@/utils/abbreviations';
 import ethereumUtils from '@/utils/ethereumUtils';
-import { TransactionSimulationMeta } from '@/graphql/__generated__/metadataPOST';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type TransactionSimulationMeta } from '@/graphql/__generated__/metadataPOST';
+import { type ChainId } from '@/state/backendNetworks/types';
 
 import { TransactionDetailsRow } from '@/components/Transactions/TransactionDetailsRow';
 import { FadedScrollCard } from '@/components/FadedScrollCard';

@@ -1,4 +1,4 @@
-import React, { Children, ReactNode, useMemo } from 'react';
+import React, { Children, type ReactNode, useMemo } from 'react';
 import type { UniqueIdentifier } from '../types';
 
 export const useChildrenIds = (children: ReactNode): UniqueIdentifier[] => {

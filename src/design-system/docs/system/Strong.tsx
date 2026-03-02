@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 
 import { sprinkles } from './sprinkles.css';
 

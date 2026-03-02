@@ -8,8 +8,16 @@ import {
   USD_CURRENCY,
   USD_DECIMALS,
 } from '@/features/perps/constants';
-import { runOnJS, runOnUI, SharedValue, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
-import { Slider, SliderChangeSource, SliderGestureState } from '@/features/perps/components/Slider';
+import {
+  runOnJS,
+  runOnUI,
+  type SharedValue,
+  useAnimatedReaction,
+  useDerivedValue,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
+import { Slider, type SliderChangeSource, type SliderGestureState } from '@/features/perps/components/Slider';
 import { addCommasToNumber, clamp, trimCurrencyZeros } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -21,7 +29,7 @@ import {
   greaterThanWorklet,
   mulWorklet,
   toFixedWorklet,
-} from '@/safe-math/SafeMath';
+} from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { useDebouncedCallback } from 'use-debounce';
 import { time } from '@/utils/time';
@@ -33,9 +41,9 @@ import { getAccountAddress } from '@/state/wallets/walletsStore';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { sanitizeAmount } from '@/worklets/strings';
 import { AmountInputCardSubtitle } from './AmountInputCardSubtitle';
-import { LayoutChangeEvent, StyleSheet } from 'react-native';
-import { OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
-import { ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { type LayoutChangeEvent, StyleSheet } from 'react-native';
+import { type OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
+import { type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useOnChange } from '@/hooks/useOnChange';
 
 type InteractionMode = 'slider' | 'keyboard';

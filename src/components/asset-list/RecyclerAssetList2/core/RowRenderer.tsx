@@ -4,23 +4,23 @@ import AssetListItemSkeleton from '../../AssetListItemSkeleton';
 import FastBalanceCoinRow from '../FastComponents/FastBalanceCoinRow';
 import WrappedNFT from '../WrappedNFT';
 import WrappedTokenFamilyHeader from '../WrappedTokenFamilyHeader';
-import { ExtendedState } from './RawRecyclerList';
+import { type ExtendedState } from './RawRecyclerList';
 import {
   CellType,
-  ClaimableExtraData,
-  ClaimablesHeaderExtraData,
-  CoinDividerExtraData,
-  CoinExtraData,
-  LegacyNFTExtraData,
-  LegacyNFTFamilyExtraData,
-  NFTExtraData,
-  NFTFamilyExtraData,
-  PositionExtraData,
-  PositionHeaderExtraData,
-  PerpsBalanceExtraData,
-  PerpsPositionExtraData,
-  PolymarketBalanceExtraData,
-  PolymarketPositionExtraData,
+  type ClaimableExtraData,
+  type ClaimablesHeaderExtraData,
+  type CoinDividerExtraData,
+  type CoinExtraData,
+  type LegacyNFTExtraData,
+  type LegacyNFTFamilyExtraData,
+  type NFTExtraData,
+  type NFTFamilyExtraData,
+  type PositionExtraData,
+  type PositionHeaderExtraData,
+  type PerpsBalanceExtraData,
+  type PerpsPositionExtraData,
+  type PolymarketBalanceExtraData,
+  type PolymarketPositionExtraData,
 } from './ViewTypes';
 import assertNever from '@/helpers/assertNever';
 import { ProfileRowWrapper } from '../profile-header/ProfileRowWrapper';
@@ -38,7 +38,6 @@ import { PolymarketFeatureCard } from '../cards/PolymarketFeatureCard';
 import { RnbwFeatureCard } from '../cards/RnbwFeatureCard';
 import WrappedPosition from '../WrappedPosition';
 import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
-import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import WrappedCollectiblesHeader from '../WrappedCollectiblesHeader';
 import NFTLoadingSkeleton from '../NFTLoadingSkeleton';
 import { NFTEmptyState } from '../NFTEmptyState';
@@ -76,7 +75,6 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.POSITIONS_SPACE_BEFORE:
     case CellType.CLAIMABLES_SPACE_AFTER:
     case CellType.CLAIMABLES_SPACE_BEFORE:
-    case CellType.EMPTY_REMOTE_CARD_CAROUSEL:
     case CellType.SPACER:
       return null;
     case CellType.COIN_DIVIDER:
@@ -129,12 +127,6 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     }
     case CellType.PROFILE_STICKY_HEADER:
       return <ProfileStickyHeader />;
-    case CellType.REMOTE_CARD_CAROUSEL:
-      return (
-        <CardRowWrapper>
-          <RemoteCardCarousel />
-        </CardRowWrapper>
-      );
     case CellType.COIN:
       return <FastBalanceCoinRow extendedState={extendedState} uniqueId={(data as CoinExtraData).uniqueId} />;
     case CellType.PROFILE_ACTION_BUTTONS_ROW:

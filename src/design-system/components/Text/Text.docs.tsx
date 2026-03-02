@@ -1,4 +1,4 @@
-import { Docs } from '../../docs/types';
+import { type Docs } from '../../docs/types';
 
 import * as examples from './Text.examples';
 import meta from './Text.meta';

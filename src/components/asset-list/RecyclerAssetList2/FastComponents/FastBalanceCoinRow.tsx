@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import CoinIconIndicator from '@/components/coin-icon/CoinIconIndicator';
 import { Icon } from '@/components/icons';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { ExtendedState } from '../core/RawRecyclerList';
+import { type ExtendedState } from '../core/RawRecyclerList';
 import { Text } from '@/design-system';
 import useAccountAsset from '@/hooks/useAccountAsset';
 import { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
@@ -15,7 +15,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { Navigation } from '@/navigation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { toSignificantDigits } from '@/helpers/utilities';
-import { getLiquidityCappedBalance, TokenData } from '@/state/liveTokens/liveTokensStore';
+import { getLiquidityCappedBalance, type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 interface CoinCheckButtonProps {

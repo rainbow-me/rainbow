@@ -1,5 +1,5 @@
 import useCountdown from '@bradgarropy/use-countdown';
-import React, { ReactNode, useState } from 'react';
+import React, { type ReactNode, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing, useAnimatedProps, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { Circle, Defs, G, RadialGradient, Stop, Svg } from 'react-native-svg';

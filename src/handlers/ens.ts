@@ -1,14 +1,14 @@
 import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
 import { getAddress } from '@ethersproject/address';
-import { Resolver } from '@ethersproject/providers';
-import { Duration, sub } from 'date-fns';
+import { type Resolver } from '@ethersproject/providers';
+import { type Duration, sub } from 'date-fns';
 import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from '@ethersproject/bignumber';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { fetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
 import { prefetchENSRecords } from '../hooks/useENSRecords';
-import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
+import { type ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import { getENSData, getNameFromLabelhash, saveENSData } from './localstorage/ens';
 import { estimateGasWithPadding, getProvider } from './web3';
 import { AssetType } from '@/entities/assetTypes';
@@ -28,7 +28,7 @@ import { MimeType, handleNFTImages } from '@/utils/handleNFTImages';
 import store from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
 import { ChainId, Network } from '@/state/backendNetworks/types';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { NftTokenType } from '@/graphql/__generated__/arc';
 
 const DUMMY_RECORDS = {

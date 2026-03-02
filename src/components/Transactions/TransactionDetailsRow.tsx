@@ -8,8 +8,8 @@ import { Box, Inline, Text } from '@/design-system';
 
 import { DetailIcon, DetailBadge, IconContainer } from '@/components/Transactions/TransactionIcons';
 import { SMALL_CARD_ROW_HEIGHT } from '@/components/Transactions/constants';
-import { DetailType, DetailInfo } from '@/components/Transactions/types';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type DetailType, type DetailInfo } from '@/components/Transactions/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 
 interface TransactionDetailsRowProps {
   chainId?: ChainId;

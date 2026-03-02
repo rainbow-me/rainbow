@@ -1,7 +1,7 @@
-import { RainbowTransaction } from '@/entities/transactions';
+import { type RainbowTransaction } from '@/entities/transactions';
 import { getBatchedProvider } from '@/handlers/web3';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { Network, ChainId } from '@/state/backendNetworks/types';
+import { type Network, type ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';

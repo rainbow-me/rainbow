@@ -1,4 +1,4 @@
-import { MinedTransaction } from '@/entities/transactions';
+import { type MinedTransaction } from '@/entities/transactions';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 export interface MinedTransactionWithPolling {

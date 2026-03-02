@@ -1,8 +1,8 @@
 import { memo, useCallback, useMemo } from 'react';
-import { LayoutChangeEvent, StyleSheet } from 'react-native';
+import { type LayoutChangeEvent, StyleSheet } from 'react-native';
 import { Canvas, RoundedRect, Shadow, rect, rrect } from '@shopify/react-native-skia';
 import Animated, { useSharedValue } from 'react-native-reanimated';
-import { SharedOrDerivedValue } from '@/types/reanimated';
+import { type SharedOrDerivedValue } from '@/types/reanimated';
 
 const ZERO_RECT = Object.freeze(rrect(rect(0, 0, 0, 0), 0, 0));
 

@@ -4,7 +4,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import GweiInputPill from '@/components/GweiInputPill';
 import { delay } from '@/helpers/utilities';
 import usePrevious from '@/hooks/usePrevious';
-import { TextInput } from 'react-native';
+import { type TextInput } from 'react-native';
 import { Box, Inline, Text } from '@/design-system';
 import { colors } from '@/styles';
 import { IS_ANDROID } from '@/env';

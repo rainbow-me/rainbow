@@ -5,8 +5,8 @@ import { Navbar } from '@/components/navbar/Navbar';
 import Routes from '@/navigation/routesNames';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { VirtualNavigationStore } from '@/navigation/createVirtualNavigator';
-import { PolymarketRoute } from '@/navigation/types';
+import { type VirtualNavigationStore } from '@/navigation/createVirtualNavigator';
+import { type PolymarketRoute } from '@/navigation/types';
 import * as i18n from '@/languages';
 import { usePolymarketNavigationStore } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
 

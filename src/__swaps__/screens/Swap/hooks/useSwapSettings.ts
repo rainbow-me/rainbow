@@ -1,7 +1,7 @@
 import { slippageStep } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { runOnJS, SharedValue, useSharedValue } from 'react-native-reanimated';
+import { runOnJS, type SharedValue, useSharedValue } from 'react-native-reanimated';
 
 export const useSwapSettings = ({ debouncedFetchQuote, slippage }: { debouncedFetchQuote: () => void; slippage: SharedValue<string> }) => {
   const degenMode = useSharedValue(swapsStore.getState().degenMode);

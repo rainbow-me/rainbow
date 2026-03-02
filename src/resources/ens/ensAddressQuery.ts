@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { createQueryKey, queryClient, QueryFunctionArgs } from '@/react-query';
+import { createQueryKey, queryClient, type QueryFunctionArgs } from '@/react-query';
 import { getProvider } from '@/handlers/web3';
 import { ChainId } from '@/state/backendNetworks/types';
 

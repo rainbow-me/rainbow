@@ -1,5 +1,5 @@
 import { pluralize } from '@/worklets/strings';
-import { BaseRainbowStore, Selector } from '../types';
+import { type BaseRainbowStore, type Selector } from '../types';
 import { getStoreName } from '../utils/storeUtils';
 
 // ============ Types ========================================================== //

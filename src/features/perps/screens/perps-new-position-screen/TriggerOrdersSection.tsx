@@ -8,7 +8,7 @@ import Animated from 'react-native-reanimated';
 import { LAYOUT_ANIMATION } from '@/features/perps/constants';
 import { estimatePnl } from '@/features/perps/utils/estimatePnl';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { mulWorklet } from '@/safe-math/SafeMath';
+import { mulWorklet } from '@/framework/core/safeMath';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 

@@ -1,4 +1,4 @@
-import { FlexStyle } from 'react-native';
+import { type FlexStyle } from 'react-native';
 
 export type Point<T = number> = {
   x: T;

@@ -3,7 +3,7 @@ import { fromWei, greaterThanOrEqualTo } from '@/helpers/utilities';
 import BigNumber from 'bignumber.js';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import type { SelectedGasFee } from '@/entities/gas';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 
 type BalanceCheckParams = {
   isMessageRequest: boolean;

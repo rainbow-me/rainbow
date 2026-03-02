@@ -5,23 +5,23 @@ import Animated, { Easing, useAnimatedStyle, withTiming } from 'react-native-rea
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
-import { ThemeContextProps, useTheme } from '@/theme';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type ThemeContextProps, useTheme } from '@/theme';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import {
   WalletNotificationRelationship,
   WalletNotificationTopic,
-  WalletNotificationTopicType,
+  type WalletNotificationTopicType,
   updateGroupSettings,
   useWalletGroupNotificationSettings,
-  WalletNotificationSettings,
+  type WalletNotificationSettings,
 } from '@/notifications/settings';
 import { toggleGroupNotifications, toggleTopicForWallet } from '@/notifications/settings/settings';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { DEFAULT_ENABLED_TOPIC_SETTINGS } from '@/notifications/settings/constants';
-import { RootStackParamList } from '@/navigation/types';
-import Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import type Routes from '@/navigation/routesNames';
 
 const makeTopicRowsData = (colors: ThemeContextProps['colors']) => [
   {

@@ -1,13 +1,20 @@
-import { AnimatedProp, Paragraph, SkPaint, SkParagraph, SkTextShadow, Transforms3d } from '@shopify/react-native-skia';
-import React, { ComponentType, ReactNode, useCallback, useMemo } from 'react';
+import {
+  type AnimatedProp,
+  Paragraph,
+  type SkPaint,
+  type SkParagraph,
+  type SkTextShadow,
+  type Transforms3d,
+} from '@shopify/react-native-skia';
+import React, { type ComponentType, type ReactNode, useCallback, useMemo } from 'react';
 import { isSharedValue, runOnUI, useDerivedValue } from 'react-native-reanimated';
-import { TextAlign } from '@/components/text/types';
-import { ColorMode, TextColor } from '@/design-system/color/palettes';
-import { CustomColor, getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { type TextAlign } from '@/components/text/types';
+import { type ColorMode, type TextColor } from '@/design-system/color/palettes';
+import { type CustomColor, getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
-import { TextWeight } from '@/design-system/components/Text/Text';
-import { TextSize } from '@/design-system/typography/typeHierarchy';
-import { SharedOrDerivedValueText } from '../Text/AnimatedText';
+import { type TextWeight } from '@/design-system/components/Text/Text';
+import { type TextSize } from '@/design-system/typography/typeHierarchy';
+import { type SharedOrDerivedValueText } from '../Text/AnimatedText';
 
 export type SkiaTextProps = {
   align?: TextAlign;

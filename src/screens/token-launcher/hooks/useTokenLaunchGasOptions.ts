@@ -1,6 +1,6 @@
 import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 
 const TOKEN_LAUNCH_GAS_LIMIT = '8000000';
 

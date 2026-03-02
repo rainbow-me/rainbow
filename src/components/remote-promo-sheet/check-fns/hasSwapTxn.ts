@@ -3,7 +3,7 @@ import type { RainbowTransaction } from '@/entities/transactions';
 import { queryClient } from '@/react-query/queryClient';
 import store from '@/redux/store';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
-import { PaginatedTransactions } from '@/resources/transactions/transaction';
+import { type PaginatedTransactions } from '@/resources/transactions/transaction';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
 

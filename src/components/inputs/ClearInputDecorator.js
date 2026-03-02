@@ -4,7 +4,7 @@ import magicMemo from '@/utils/magicMemo';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import { opacity } from '@/framework/ui/utils/opacity';
 

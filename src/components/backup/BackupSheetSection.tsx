@@ -5,7 +5,7 @@ import { Column, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
 import { analytics } from '@/analytics';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 import { Bleed, Separator } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';

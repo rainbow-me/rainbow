@@ -1,8 +1,8 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { useWindowDimensions } from 'react-native';
 import Animated, {
-  DerivedValue,
-  SharedValue,
+  type DerivedValue,
+  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -15,7 +15,7 @@ import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenT
 import { Box, useColorMode } from '@/design-system';
 import { IS_DEV } from '@/env';
 import { ChartIndicatorsToggle } from '@/features/charts/candlestick/components/PerpsIndicatorsToggle';
-import { CandlestickChart, PartialCandlestickConfig } from '@/features/charts/candlestick/components/CandlestickChart';
+import { CandlestickChart, type PartialCandlestickConfig } from '@/features/charts/candlestick/components/CandlestickChart';
 import { arePricesEqual } from '@/features/charts/candlestick/utils';
 import { TimeframeSelector } from '@/features/charts/components/TimeframeSelector';
 import { chartsActions, useChartsStore, useChartType } from '@/features/charts/stores/chartsStore';
@@ -24,11 +24,11 @@ import { ChartType, LineChartTimePeriod } from '@/features/charts/types';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { useCleanup } from '@/hooks/useCleanup';
 import Routes from '@/navigation/routesNames';
-import { AssetAccentColors, ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+import { type AssetAccentColors, type ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { TokenData } from '@/state/liveTokens/liveTokensStore';
+import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { LineChart } from './LineChart';
 

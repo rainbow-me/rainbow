@@ -4,7 +4,7 @@ import { Centered, FlexItem, Row } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 import ethereumUtils from '@/utils/ethereumUtils';
 import magicMemo from '@/utils/magicMemo';

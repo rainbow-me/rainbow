@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import NetInfo, { NetInfoState, NetInfoSubscription } from '@react-native-community/netinfo';
+import NetInfo, { type NetInfoState, type NetInfoSubscription } from '@react-native-community/netinfo';
 import { AppState } from 'react-native';
 import { analytics } from '@/analytics';
 

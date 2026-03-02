@@ -1,7 +1,7 @@
 import React, { createContext, useContext } from 'react';
-import { TextInput } from 'react-native';
-import { AnimatedRef, SharedValue, useAnimatedRef, useSharedValue } from 'react-native-reanimated';
-import { Dapp } from '@/resources/metadata/dapps';
+import { type TextInput } from 'react-native';
+import { type AnimatedRef, type SharedValue, useAnimatedRef, useSharedValue } from 'react-native-reanimated';
+import { type Dapp } from '@/resources/metadata/dapps';
 import { getDefaultKeyboardHeight } from '@/utils/keyboardHeight';
 
 interface SearchContextType {

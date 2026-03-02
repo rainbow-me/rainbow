@@ -5,7 +5,7 @@ import { AccentColorProvider, Bleed, Box, Cover, Inline, Inset, Text } from '@/d
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useTheme } from '@/theme';
 import { View } from 'react-native';
-import { MintableCollection } from '@/graphql/__generated__/arc';
+import { type MintableCollection } from '@/graphql/__generated__/arc';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 import { analytics } from '@/analytics';
 import * as i18n from '@/languages';

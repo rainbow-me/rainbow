@@ -4,11 +4,11 @@ import { Box } from '../components/Box/Box';
 import { Columns } from '../components/Columns/Columns';
 import { Stack } from '../components/Stack/Stack';
 import { Text } from '../components/Text/Text';
-import { Docs as DocsType } from '../docs/types';
+import { type Docs as DocsType } from '../docs/types';
 import source from '../docs/utils/source.macro';
 import { ColorModeProvider } from './ColorMode';
 
-import { BackgroundColor, backgroundColors, ColorMode, textColors } from './palettes';
+import { type BackgroundColor, backgroundColors, type ColorMode, textColors } from './palettes';
 
 const BackgroundColors = ({ mode }: { mode: ColorMode }) => (
   <Stack space="24px">

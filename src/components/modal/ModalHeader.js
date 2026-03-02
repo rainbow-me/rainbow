@@ -4,7 +4,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { Centered, Row } from '../layout';
 import { TruncatedText } from '../text';
 import ModalHeaderButton from './ModalHeaderButton';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { borders, position } from '@/styles';
 
 export const ModalHeaderHeight = 50;

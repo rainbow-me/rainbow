@@ -3,33 +3,32 @@ import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
 import useIsWalletEthZero from './useIsWalletEthZero';
-import { buildBriefWalletSectionsSelector, WalletSectionsState } from '@/helpers/buildWalletSections';
+import { buildBriefWalletSectionsSelector, type WalletSectionsState } from '@/helpers/buildWalletSections';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useClaimablesStore } from '@/state/claimables/claimables';
-import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, RNBW_REWARDS, useExperimentalConfig } from '@/config/experimentalHooks';
+import { CLAIMABLES, DEFI_POSITIONS, RNBW_REWARDS, useExperimentalConfig } from '@/config/experimentalHooks';
 import { analytics } from '@/analytics';
-import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
-import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
+import { type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { IS_TEST } from '@/env';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
 import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
 import { isDataComplete } from '@/state/nfts/utils';
-import { PerpsPositionsInfo, usePerpsPositionsInfo } from '@/features/perps/stores/derived/usePerpsPositionsInfo';
-import { PerpsWalletListData } from '@/features/perps/types';
+import { type PerpsPositionsInfo, usePerpsPositionsInfo } from '@/features/perps/stores/derived/usePerpsPositionsInfo';
+import { type PerpsWalletListData } from '@/features/perps/types';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
 import { usePolymarketFeatureCard } from '@/features/polymarket/hooks/usePolymarketFeatureCard';
 import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
 import { shallowEqual } from '@/worklets/comparisons';
-import { PolymarketPosition, PolymarketWalletListData } from '@/features/polymarket/types';
+import { type PolymarketPosition, type PolymarketWalletListData } from '@/features/polymarket/types';
 import { usePolymarketPositions } from '@/features/polymarket/stores/derived/usePolymarketPositions';
 import {
-  PolymarketAccountValueSummary,
+  type PolymarketAccountValueSummary,
   usePolymarketAccountValueSummary,
 } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
 
@@ -53,19 +52,15 @@ export default function useWalletSectionsData({
   const selectedWallet = useSelectedWallet();
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
-  const remoteConfig = useRemoteConfig('claimables', 'remote_cards_enabled', 'perps_enabled', 'polymarket_enabled', 'rnbw_rewards_enabled');
+  const remoteConfig = useRemoteConfig('claimables', 'perps_enabled', 'polymarket_enabled', 'rnbw_rewards_enabled');
   const experimentalConfig = useExperimentalConfig();
   const isWalletEthZero = useIsWalletEthZero();
 
-  const remoteCardsEnabled = (remoteConfig.remote_cards_enabled || experimentalConfig[REMOTE_CARDS]) && !isReadOnlyWallet;
   const positionsEnabled = experimentalConfig[DEFI_POSITIONS] && !IS_TEST;
   const claimablesEnabled = (remoteConfig.claimables || experimentalConfig[CLAIMABLES]) && !IS_TEST;
   const perpsEnabled = remoteConfig.perps_enabled && !IS_TEST;
   const polymarketEnabled = remoteConfig.polymarket_enabled && !IS_TEST;
   const rnbwRewardsEnabled = (remoteConfig.rnbw_rewards_enabled || experimentalConfig[RNBW_REWARDS]) && !IS_TEST;
-
-  const cardIds = remoteCardsStore(state => state.getCardIdsForScreen('WALLET_SCREEN'));
-  const remoteCards = useMemo(() => (remoteCardsEnabled ? cardIds : []), [cardIds, remoteCardsEnabled]);
 
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
@@ -153,7 +148,6 @@ export default function useWalletSectionsData({
       claimables,
       perpsData,
       polymarketData,
-      remoteCards,
       rnbwRewardsEnabled,
       hasMoreCollections,
       isShowcaseDataMigrated,
@@ -196,7 +190,6 @@ export default function useWalletSectionsData({
     claimables,
     perpsData,
     polymarketData,
-    remoteCards,
     rnbwRewardsEnabled,
     hasMoreCollections,
     isShowcaseDataMigrated,

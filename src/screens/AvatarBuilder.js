@@ -12,7 +12,7 @@ import { useNavigation } from '../navigation/Navigation';
 import deviceUtils from '@/utils/deviceUtils';
 import { AVATAR_CIRCLE_TOP_MARGIN } from '@/navigation/effects';
 import useDimensions from '@/hooks/useDimensions';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { useTheme } from '@/theme';
 
 const AvatarCircleHeight = 60;

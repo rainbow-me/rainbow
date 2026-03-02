@@ -7,8 +7,8 @@ import {
   SLIDER_WIDTH,
   snappySpringConfig,
 } from '@/__swaps__/screens/Swap/constants';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { InputKeys, InputMethods, InputValues, RequestNewQuoteParams } from '@/__swaps__/types/swap';
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { type InputKeys, type InputMethods, type InputValues, type RequestNewQuoteParams } from '@/__swaps__/types/swap';
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import { getInputValuesForSliderPositionWorklet } from '@/__swaps__/utils/flipAssets';
 import {
@@ -29,15 +29,23 @@ import {
 } from '@/helpers/utilities';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import { logger } from '@/logger';
-import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
-import { CrosschainQuote, Quote, QuoteError, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
+import { type CrosschainQuote, type Quote, type QuoteError, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
 import { useCallback } from 'react';
-import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import {
+  type SharedValue,
+  runOnJS,
+  runOnUI,
+  useAnimatedReaction,
+  useDerivedValue,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useDebouncedCallback } from 'use-debounce';
-import { SwapsParams } from '../navigateToSwaps';
+import { type SwapsParams } from '../navigateToSwaps';
 import { analyticsTrackQuoteFailed } from './analyticsTrackQuoteFailed';
 import { NavigationSteps } from './useSwapNavigation';
 

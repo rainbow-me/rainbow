@@ -8,7 +8,7 @@ import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { Easing, useDerivedValue, withRepeat, withTiming, useSharedValue, runOnUI } from 'react-native-reanimated';
 import FastImage from 'react-native-fast-image';
 import useDimensions from '@/hooks/useDimensions';
-import { TextSize } from '@/design-system/components/Text/Text';
+import { type TextSize } from '@/design-system/components/Text/Text';
 
 function Cone({ height, baseWidth, headWidth }: { height: number; baseWidth: number; headWidth: number }) {
   const path = Skia.Path.Make();

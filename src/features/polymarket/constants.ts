@@ -1,6 +1,6 @@
 import { BuilderConfig } from '@polymarket/builder-signing-sdk';
 import { PLATFORM_API_KEY } from 'react-native-dotenv';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
 export const RAINBOW_POLYMARKET_FEE_ADDRESS: Address = '0x757758506d6a4F8a433F8BECaFd52545f9Cb050a';

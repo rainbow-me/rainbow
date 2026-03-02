@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { createQueryKey, queryClient, QueryConfig, QueryFunctionResult } from '@/react-query';
+import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionResult } from '@/react-query';
 
 import { metadataClient } from '@/graphql';
 

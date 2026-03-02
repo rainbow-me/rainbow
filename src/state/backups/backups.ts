@@ -2,7 +2,7 @@ import { IS_ANDROID } from '@/env';
 import { fetchAllBackups, getGoogleAccountUserData, isCloudBackupAvailable, syncCloud } from '@/handlers/cloudBackup';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { RainbowError, logger } from '@/logger';
-import { BackupFile, CloudBackups } from '@/model/backup';
+import { type BackupFile, type CloudBackups } from '@/model/backup';
 import { getMostRecentCloudBackup, hasManuallyBackedUpWallet } from '@/screens/SettingsSheet/utils';
 import { Mutex } from 'async-mutex';
 import { createRainbowStore } from '../internal/createRainbowStore';

@@ -1,4 +1,4 @@
-import { Docs } from '../../docs/types';
+import { type Docs } from '../../docs/types';
 
 import * as examples from './Separator.examples';
 import meta from './Separator.meta';

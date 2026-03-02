@@ -2,7 +2,7 @@ import { isValidAddress } from 'ethereumjs-util';
 import * as i18n from '@/languages';
 import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, TextInput } from 'react-native';
+import { InteractionManager, Keyboard, type TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { fetchENSAvatar } from './useENSAvatar';
 import { initializeWallet } from '../state/wallets/initializeWallet';

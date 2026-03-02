@@ -1,7 +1,15 @@
 import React, { memo } from 'react';
-import { SharedValue, useAnimatedStyle, useDerivedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import {
+  type SharedValue,
+  useAnimatedStyle,
+  useDerivedValue,
+  withRepeat,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedText, TextProps, useForegroundColor } from '@/design-system';
+import { AnimatedText, type TextProps, useForegroundColor } from '@/design-system';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { pulsingConfig, sliderConfig } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/framework/ui/utils/opacity';

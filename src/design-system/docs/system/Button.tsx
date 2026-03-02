@@ -1,8 +1,8 @@
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 
 import { Inline } from './Inline';
 import { sprinkles } from './sprinkles.css';
-import { TextSizes } from './typography.css';
+import { type TextSizes } from './typography.css';
 
 type ButtonColor = 'action (Deprecated)';
 type ButtonSize = 'default' | 'small';

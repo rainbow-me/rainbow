@@ -1,8 +1,15 @@
 import React, { useCallback } from 'react';
-import { TextInput } from 'react-native';
+import { type TextInput } from 'react-native';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { AnimatedText, Box } from '@/design-system';
-import Animated, { AnimatedRef, SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  type AnimatedRef,
+  type SharedValue,
+  runOnJS,
+  useAnimatedStyle,
+  useDerivedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as i18n from '@/languages';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
-import { Box, Inset, Space, Stack } from '@/design-system';
+import { Box, Inset, type Space, Stack } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface MenuContainerProps {

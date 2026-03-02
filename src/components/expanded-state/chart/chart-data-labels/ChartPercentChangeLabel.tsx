@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import {
-  DerivedValue,
-  SharedValue,
+  type DerivedValue,
+  type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -12,7 +12,7 @@ import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { greaterThanWorklet, lessThanWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { greaterThanWorklet, lessThanWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useTheme } from '@/theme';
 

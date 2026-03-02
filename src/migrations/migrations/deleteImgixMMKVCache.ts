@@ -1,6 +1,6 @@
 import { createMMKV } from 'react-native-mmkv';
 
-import { Migration, MigrationName } from '@/migrations/types';
+import { type Migration, MigrationName } from '@/migrations/types';
 
 const IMGIX_STORAGE_ID = 'IMGIX_CACHE';
 

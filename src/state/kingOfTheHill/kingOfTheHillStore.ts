@@ -1,5 +1,5 @@
 import { metadataClient } from '@/graphql';
-import { KingOfTheHill, KingOfTheHillRankings } from '@/graphql/__generated__/metadata';
+import { type KingOfTheHill, type KingOfTheHillRankings } from '@/graphql/__generated__/metadata';
 import { RainbowError, logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { createQueryStore } from '@/state/internal/createQueryStore';

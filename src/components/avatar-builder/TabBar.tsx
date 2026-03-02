@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Categories } from './Categories';
-import { EmojiCategory } from './types';
+import { type EmojiCategory } from './types';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
 import { opacity } from '@/framework/ui/utils/opacity';

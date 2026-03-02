@@ -1,6 +1,6 @@
-import { IMessageSender } from '@rainbow-me/provider';
-import { RefObject } from 'react';
-import WebView from 'react-native-webview';
+import { type IMessageSender } from '@rainbow-me/provider';
+import { type RefObject } from 'react';
+import type WebView from 'react-native-webview';
 
 export type CallbackOptions = {
   /** The sender of the message. */

@@ -9,7 +9,7 @@ import TokenInfoHeading from './TokenInfoHeading';
 import TokenInfoValue from './TokenInfoValue';
 import { Column, Columns } from '@/design-system';
 import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { useTheme } from '@/theme';
 import { opacity } from '@/framework/ui/utils/opacity';
 

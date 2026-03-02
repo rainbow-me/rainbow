@@ -9,7 +9,7 @@ import {
   powWorklet,
   trimTrailingZeros,
   truncateToDecimals,
-} from '@/safe-math/SafeMath';
+} from '@/framework/core/safeMath';
 import { getNumberFormatter } from '@/helpers/intl';
 
 export type BigNumberish = number | string | BigNumber;

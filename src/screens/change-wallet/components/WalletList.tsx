@@ -4,27 +4,27 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import * as i18n from '@/languages';
 import EmptyAssetList from '@/components/asset-list/EmptyAssetList';
 import { AddressRow } from './AddressRow';
-import { EthereumAddress } from '@/entities/wallet';
-import styled from '@/styled-thing';
+import { type EthereumAddress } from '@/entities/wallet';
+import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 import {
-  AddressItem,
-  AddressMenuAction,
-  AddressMenuActionData,
+  type AddressItem,
+  type AddressMenuAction,
+  type AddressMenuActionData,
   FOOTER_HEIGHT,
   MAX_PANEL_HEIGHT,
   PANEL_HEADER_HEIGHT,
   PANEL_INSET_HORIZONTAL,
 } from '@/screens/change-wallet/ChangeWalletSheet';
 import { Box, Separator, Text } from '@/design-system';
-import { DndProvider, Draggable, DraggableScrollViewProps, UniqueIdentifier } from '@/components/drag-and-drop';
+import { DndProvider, Draggable, type DraggableScrollViewProps, type UniqueIdentifier } from '@/components/drag-and-drop';
 import { PinnedWalletsGrid } from '@/screens/change-wallet/components/PinnedWalletsGrid';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
-import { MenuItem } from '@/components/DropdownMenu';
+import { type MenuItem } from '@/components/DropdownMenu';
 import { DraggableScrollView } from '@/components/drag-and-drop/components/DraggableScrollView';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { PanGesture } from 'react-native-gesture-handler';
+import { type PanGesture } from 'react-native-gesture-handler';
 
 const DRAG_ACTIVATION_DELAY = 150;
 const FADE_TRANSITION_DURATION = 75;

@@ -1,7 +1,7 @@
 import { HYPERLIQUID_MAKER_FEE_BIPS, HYPERLIQUID_TAKER_FEE_BIPS, RAINBOW_FEE_BIPS } from '@/features/perps/constants';
 import { calculateTradingFee } from '@/features/perps/utils/calculateTradingFee';
 import { calculatePositionSize } from '@/features/perps/utils/orders';
-import { mulWorklet, subWorklet, sumWorklet } from '@/safe-math/SafeMath';
+import { mulWorklet, subWorklet, sumWorklet } from '@/framework/core/safeMath';
 
 /**
  * Estimates the PnL for a hypothetical position that has not yet been opened.

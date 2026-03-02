@@ -2,7 +2,7 @@ import { values } from 'lodash';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import walletTypes from '@/helpers/walletTypes';
 import { useMemo } from 'react';
-import { RainbowAccount } from '@/model/wallet';
+import { type RainbowAccount } from '@/model/wallet';
 
 export default function useUserAccounts() {
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();

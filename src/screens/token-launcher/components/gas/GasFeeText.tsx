@@ -1,6 +1,14 @@
 import React, { memo } from 'react';
-import { useForegroundColor, TextProps, AnimatedText } from '@/design-system';
-import { useAnimatedStyle, useDerivedValue, SharedValue, withTiming, withRepeat, withSequence, withSpring } from 'react-native-reanimated';
+import { useForegroundColor, type TextProps, AnimatedText } from '@/design-system';
+import {
+  useAnimatedStyle,
+  useDerivedValue,
+  type SharedValue,
+  withTiming,
+  withRepeat,
+  withSequence,
+  withSpring,
+} from 'react-native-reanimated';
 // this same function exists elsewhere
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useDelayedValue } from '@/hooks/reanimated/useDelayedValue';

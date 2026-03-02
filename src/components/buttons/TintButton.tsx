@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react';
-import { TextColor } from '../../design-system/color/palettes';
+import React, { type ReactNode } from 'react';
+import { type TextColor } from '../../design-system/color/palettes';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { AccentColorProvider, Box, Cover, Text, useForegroundColor } from '@/design-system';
 

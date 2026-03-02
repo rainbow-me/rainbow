@@ -1,4 +1,4 @@
-import { SkPath } from '@shopify/react-native-skia';
+import { type SkPath } from '@shopify/react-native-skia';
 
 /**
  * Available line smoothing algorithms for chart rendering.

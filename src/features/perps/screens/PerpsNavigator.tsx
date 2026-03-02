@@ -15,7 +15,7 @@ import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import { createVirtualNavigator } from '@/navigation/createVirtualNavigator';
 import Routes from '@/navigation/routesNames';
-import { PerpsRoute } from '@/navigation/types';
+import { type PerpsRoute } from '@/navigation/types';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 

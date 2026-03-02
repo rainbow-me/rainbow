@@ -1,10 +1,11 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import React, { RefObject, useCallback, useContext, useEffect, useImperativeHandle, useState } from 'react';
-import { ScrollViewProps, ViewStyle, Animated as RNAnimated } from 'react-native';
+import React, { type RefObject, useCallback, useContext, useEffect, useImperativeHandle, useState } from 'react';
+import { type ScrollViewProps, type ViewStyle, Animated as RNAnimated } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 
-import BaseScrollView, { ScrollViewDefaultProps } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
+import { type ScrollViewDefaultProps } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
+import type BaseScrollView from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 import { ProfileSheetConfigContext } from '../../../../screens/ProfileSheet';
 import ProfileSheetHeader from '../../../ens-profile/ProfileSheetHeader';
 import ImagePreviewOverlay from '../../../images/ImagePreviewOverlay';

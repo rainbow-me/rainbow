@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import * as i18n from '@/languages';
 import { View } from 'react-native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import {
   AccentColorProvider,
@@ -18,7 +18,7 @@ import {
 } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { getFormattedTimeQuantity, convertAmountToNativeDisplay, handleSignificantDecimals } from '@/helpers/utilities';
-import { NftOffer } from '@/graphql/__generated__/arc';
+import { type NftOffer } from '@/graphql/__generated__/arc';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { useNavigation } from '@/navigation';
 import { IS_ANDROID } from '@/env';
@@ -27,19 +27,19 @@ import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import useGas from '@/hooks/useGas';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities/transactions';
+import { type NewTransaction, TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { analytics } from '@/analytics';
 import { BigNumber } from '@ethersproject/bignumber';
 import { HoldToAuthorizeButton } from '@/components/buttons';
 import { GasSpeedButton } from '@/components/gas';
 import { loadPrivateKey } from '@/model/wallet';
-import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
+import { type Execute, getClient } from '@reservoir0x/reservoir-sdk';
 import { privateKeyToAccount } from 'viem/accounts';
 import { createWalletClient, http } from 'viem';
 
 import { RainbowError, logger } from '@/logger';
 import { useTheme } from '@/theme';
-import { Network, ChainId } from '@/state/backendNetworks/types';
+import { type Network, ChainId } from '@/state/backendNetworks/types';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { queryClient } from '@/react-query';
 import { nftOffersQueryKey } from '@/resources/reservoir/nftOffersQuery';
@@ -51,10 +51,10 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 import { getNextNonce } from '@/state/nonces';
 import { metadataPOSTClient } from '@/graphql';
 import { ethUnits } from '@/references';
-import { Transaction } from '@/graphql/__generated__/metadataPOST';
+import { type Transaction } from '@/graphql/__generated__/metadataPOST';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { openInBrowser } from '@/utils/openInBrowser';
-import { RootStackParamList } from '@/navigation/types';
+import { type RootStackParamList } from '@/navigation/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 

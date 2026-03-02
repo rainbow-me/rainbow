@@ -1,14 +1,14 @@
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
+import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
 import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { UserAssetsStateToPersist, deserializeUserAssetsState, serializeUserAssetsState } from './persistence';
-import { FetchedUserAssetsData, UserAssetsParams, UserAssetsState } from './types';
+import { type UserAssetsStateToPersist, deserializeUserAssetsState, serializeUserAssetsState } from './persistence';
+import { type FetchedUserAssetsData, type UserAssetsParams, type UserAssetsState } from './types';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 import {
   calculateHiddenAssetsBalance,
@@ -19,7 +19,7 @@ import {
   setUserAssets,
 } from './utils';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
-import { LiveTokensData } from '@/state/liveTokens/liveTokensStore';
+import { type LiveTokensData } from '@/state/liveTokens/liveTokensStore';
 import { toUnixTime } from '@/worklets/dates';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 

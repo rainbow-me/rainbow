@@ -1,7 +1,7 @@
 import { analytics } from '@/analytics';
 import { ensureError, logger } from '@/logger';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { OperationForScreen, PerformanceLog, Screen } from '@/state/performance/operations';
+import { type OperationForScreen, type PerformanceLog, type Screen } from '@/state/performance/operations';
 import { getSelectedWallet } from '@/state/wallets/walletsStore';
 import { runOnJS } from 'react-native-reanimated';
 

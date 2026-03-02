@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ButtonOverlay, ButtonOverlayProps } from './Button';
+import { ButtonOverlay, type ButtonOverlayProps } from './Button';
 
 type ButtonLinkProps = ButtonOverlayProps & {
   href: string;

@@ -1,13 +1,13 @@
 import ConditionalWrap from 'conditional-wrap';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ImagePickerAsset } from 'expo-image-picker';
+import { type ImagePickerAsset } from 'expo-image-picker';
 import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
 import AvatarCoverPhotoMaskSvg from '../../svg/AvatarCoverPhotoMaskSvg';
 import { AccentColorProvider, BackgroundProvider, Box, Cover, Text, useForegroundColor } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { UploadImageReturnData } from '@/handlers/pinata';
+import { type UploadImageReturnData } from '@/handlers/pinata';
 import useENSModifiedRegistration from '@/hooks/useENSModifiedRegistration';
 import useENSRegistration from '@/hooks/useENSRegistration';
 import useENSRegistrationForm from '@/hooks/useENSRegistrationForm';

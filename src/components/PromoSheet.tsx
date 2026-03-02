@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useReducer } from 'react';
-import { ImageSourcePropType, ImageBackground } from 'react-native';
-import { LinearGradient, LinearGradientProps } from 'expo-linear-gradient';
+import { type ImageSourcePropType, ImageBackground } from 'react-native';
+import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
-import { CampaignKey } from '@/components/remote-promo-sheet/localCampaignChecks';
+import { type CampaignKey } from '@/components/remote-promo-sheet/localCampaignChecks';
 import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Stack, Text, Bleed, Column, Columns, useForegroundColor } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';

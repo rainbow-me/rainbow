@@ -1,5 +1,5 @@
-import React, { ReactNode, useCallback, useMemo } from 'react';
-import { GasSpeed } from '@/__swaps__/types/gas';
+import React, { type ReactNode, useCallback, useMemo } from 'react';
+import { type GasSpeed } from '@/__swaps__/types/gas';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { Box } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -10,7 +10,7 @@ import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import { add, formatNumber } from '@/helpers/utilities';
 import { weiToGwei } from '@/parsers';
-import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { type GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import gasUtils from '@/utils/gas';
 
 const { SWAP_GAS_ICONS } = gasUtils;

@@ -1,10 +1,10 @@
 import { memo, useCallback, useEffect, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { Box, Text, TextIcon } from '@/design-system';
-import { RnbwRewardsScenes, RnbwRewardsScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
+import { RnbwRewardsScenes, type RnbwRewardsScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { ActionStatusScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/ActionStatusScene';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
-import { AsyncActionState, useRewardsFlowStore, rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
+import { type AsyncActionState, useRewardsFlowStore, rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import * as i18n from '@/languages';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';

@@ -2,11 +2,11 @@ import React from 'react';
 import { AnimatePresence, MotiView } from 'moti';
 
 import { Bleed, Box, Text, globalColors, useForegroundColor } from '@/design-system';
-import { TextColor } from '@/design-system/color/palettes';
+import { type TextColor } from '@/design-system/color/palettes';
 import { infoForEventType, motiTimingConfig } from '@/components/Transactions/constants';
 
 import { useTheme } from '@/theme';
-import { DetailInfo, EventInfo, EventType } from '@/components/Transactions/types';
+import { type DetailInfo, type EventInfo, type EventType } from '@/components/Transactions/types';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 export const EventIcon = ({ eventType }: { eventType: EventType }) => {

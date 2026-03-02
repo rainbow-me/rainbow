@@ -5,7 +5,7 @@ import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidA
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual } from '@/worklets/comparisons';
 import { PerpsIndicatorKey } from './PerpsIndicator';
-import { PerpsIndicatorData } from './PerpsIndicatorBuilder';
+import { type PerpsIndicatorData } from './PerpsIndicatorBuilder';
 
 enum OrderType {
   StopLimit = 'Stop Limit',

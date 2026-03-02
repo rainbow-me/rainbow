@@ -11,10 +11,10 @@ import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useCallback, useEffect } from 'react';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import { createMMKV } from 'react-native-mmkv';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
-import { RootStackParamList } from './types';
+import { type RootStackParamList } from './types';
 
 export const ledgerStorage = createMMKV({
   id: 'ledgerStorage',

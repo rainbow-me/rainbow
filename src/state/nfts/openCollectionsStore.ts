@@ -1,8 +1,8 @@
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { createStoreFactoryUtils } from '@/state/internal/utils/factoryUtils';
 import { createOpenCollectionsStore } from './createOpenCollectionsStore';
 import { openCollectionsStoreManager } from './openCollectionsStoreManager';
-import { OpenCollectionsRouter, OpenCollectionsStoreType, OpenCollectionsState } from './types';
+import { type OpenCollectionsRouter, type OpenCollectionsStoreType, type OpenCollectionsState } from './types';
 import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 
 const { persist, portableSubscribe, rebindSubscriptions } = createStoreFactoryUtils<

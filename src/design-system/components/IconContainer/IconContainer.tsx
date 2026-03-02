@@ -1,6 +1,6 @@
 import React from 'react';
 import { Bleed } from '../Bleed/Bleed';
-import { Box, BoxProps } from '../Box/Box';
+import { Box, type BoxProps } from '../Box/Box';
 
 export type IconContainerProps = {
   background?: BoxProps['background'];

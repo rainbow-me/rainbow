@@ -1,8 +1,8 @@
 import React from 'react';
-import { ViewProps } from 'react-native';
-import Animated, { AnimatedProps, AnimatedStyle, Easing, FadeIn, FadeOut } from 'react-native-reanimated';
+import { type ViewProps } from 'react-native';
+import Animated, { type AnimatedProps, type AnimatedStyle, Easing, FadeIn, FadeOut } from 'react-native-reanimated';
 import { useRoute } from '@/navigation/Navigation';
-import { Route } from '@/navigation/routesNames';
+import { type Route } from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 type MountWhenFocusedProps = {

@@ -1,21 +1,28 @@
-import React, { ComponentType, ReactElement, ReactNode, memo } from 'react';
+import React, { type ComponentType, type ReactElement, type ReactNode, memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { SharedValue, useDerivedValue, useAnimatedStyle, withSpring, withTiming, DerivedValue } from 'react-native-reanimated';
+import Animated, {
+  type SharedValue,
+  useDerivedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  type DerivedValue,
+} from 'react-native-reanimated';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedText, AnimatedTextProps, Box, BoxProps, Text, TextProps, TextShadow, useColorMode } from '@/design-system';
+import { AnimatedText, type AnimatedTextProps, Box, type BoxProps, Text, type TextProps, TextShadow, useColorMode } from '@/design-system';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { IS_IOS } from '@/env';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import { SupportedCurrencyKey, supportedNativeCurrencies } from '@/references';
+import { type SupportedCurrencyKey, supportedNativeCurrencies } from '@/references';
 import { addCommasToNumber } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getSolidColorEquivalent } from '@/worklets/colors';
-import { FormatTimestampOptions, formatTimestamp } from '@/worklets/dates';
-import { Bar } from '../types';
+import { type FormatTimestampOptions, formatTimestamp } from '@/worklets/dates';
+import { type Bar } from '../types';
 
 // ============ Types ========================================================== //
 

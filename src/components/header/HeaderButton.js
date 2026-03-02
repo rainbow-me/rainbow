@@ -1,5 +1,5 @@
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 
 const HeaderButton = styled(ButtonPressAnimation).attrs(({ scaleTo = 0.8, opacityTouchable = true }) => ({

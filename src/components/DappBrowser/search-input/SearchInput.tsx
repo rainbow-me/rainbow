@@ -1,13 +1,13 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { memo, useCallback, useMemo } from 'react';
-import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, View } from 'react-native';
+import { type NativeSyntheticEvent, StyleSheet, type TextInput, type TextInputChangeEventData, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import { AnimatedText, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import Animated, {
-  AnimatedRef,
-  AnimatedStyle,
-  DerivedValue,
-  SharedValue,
+  type AnimatedRef,
+  type AnimatedStyle,
+  type DerivedValue,
+  type SharedValue,
   runOnJS,
   runOnUI,
   useAnimatedProps,
@@ -25,7 +25,7 @@ import * as i18n from '@/languages';
 import { fontWithWidth } from '@/styles';
 import font from '@/styles/fonts';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
+import { type FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { opacity } from '@/framework/ui/utils/opacity';

@@ -1,6 +1,6 @@
-import { StyleProp, ViewStyle } from 'react-native';
+import { type StyleProp, type ViewStyle } from 'react-native';
 import type { DeviceDimensions } from '@/hooks/useDimensions';
-import { Colors } from '@/styles';
+import { type Colors } from '@/styles';
 
 export interface HoldToAuthorizeBaseProps {
   backgroundColor: string;

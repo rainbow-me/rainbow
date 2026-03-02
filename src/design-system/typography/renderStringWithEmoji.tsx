@@ -1,5 +1,5 @@
 import createEmojiRegex from 'emoji-regex';
-import React, { Fragment, ReactNode } from 'react';
+import React, { Fragment, type ReactNode } from 'react';
 import { Text as NativeText, StyleSheet } from 'react-native';
 
 const emojiRegex = createEmojiRegex();

@@ -1,4 +1,4 @@
-import { Playground } from '../../docs/types';
+import { type Playground } from '../../docs/types';
 import * as examples from './Cover.examples';
 import meta from './Cover.meta';
 

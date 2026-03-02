@@ -1,7 +1,7 @@
 import { Box, Separator, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { memo, useState } from 'react';
-import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { opacity } from '@/framework/ui/utils/opacity';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ResolvedMarketsList } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsList';

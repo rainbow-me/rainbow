@@ -1,7 +1,7 @@
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { SWAP_ICON_INTERSECT, SWAP_ICON_WIDTH, TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon';
-import { RainbowToast } from '@/components/rainbow-toast/types';
+import { type RainbowToast } from '@/components/rainbow-toast/types';
 import { RainbowImage } from '@/components/RainbowImage';
 import { TransactionStatus } from '@/entities/transactions';
 import { ChainId } from '@/state/backendNetworks/types';

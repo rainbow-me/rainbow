@@ -1,9 +1,9 @@
 import React, { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
-  DerivedValue,
+  type DerivedValue,
   runOnJS,
-  SharedValue,
+  type SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,

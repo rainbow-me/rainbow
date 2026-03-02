@@ -1,4 +1,4 @@
-import { PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 
 export function getOutcomeDescriptions({
   eventTitle,

@@ -6,10 +6,10 @@ import currentKingImage from '@/assets/kingOfTheHillExplainer/currentKing.png';
 import pointsMultiplierImage from '@/assets/kingOfTheHillExplainer/pointsMultiplier.png';
 import FastImage from 'react-native-fast-image';
 import { fonts } from '@/styles';
-import { ExplainerSheet, ExplainerSheetStep } from '@/components/explainer-sheet/ExplainerSheet';
+import { ExplainerSheet, type ExplainerSheetStep } from '@/components/explainer-sheet/ExplainerSheet';
 import { GradientText } from '@/components/text';
 import chroma from 'chroma-js';
-import { LinearGradientProps } from 'expo-linear-gradient';
+import { type LinearGradientProps } from 'expo-linear-gradient';
 
 const GRADIENT_COLORS = ['#8754C8', '#EE431D', '#FFF000', '#02ADDE'];
 const PANEL_INNER_WIDTH = 332;

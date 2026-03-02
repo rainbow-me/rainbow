@@ -5,7 +5,7 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Box, globalColors, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
 import { CATEGORIES } from '@/features/polymarket/constants';
 import * as i18n from '@/languages';
-import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketEvent, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { Navigation } from '@/navigation';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { format } from 'date-fns';

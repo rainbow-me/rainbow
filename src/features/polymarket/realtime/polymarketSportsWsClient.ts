@@ -1,5 +1,5 @@
 import { time } from '@/utils/time';
-import { PolymarketLiveGameUpdate, polymarketLiveGameActions } from '@/features/polymarket/stores/polymarketLiveGameStore';
+import { type PolymarketLiveGameUpdate, polymarketLiveGameActions } from '@/features/polymarket/stores/polymarketLiveGameStore';
 import { POLYMARKET_SPORTS_WS_URL } from '@/features/polymarket/constants';
 
 const MAX_RECONNECT_DELAY_MS = time.seconds(30);

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
 
 import { Button } from './Button';
 import * as modes from './colorModes.css';

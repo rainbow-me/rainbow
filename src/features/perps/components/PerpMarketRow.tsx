@@ -1,14 +1,14 @@
 import React, { useMemo } from 'react';
 import * as i18n from '@/languages';
 import { Box, Text } from '@/design-system';
-import { PerpMarket } from '@/features/perps/types';
+import { type PerpMarket } from '@/features/perps/types';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { formatNumber } from '@/helpers/strings';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { formatPriceChange, getHyperliquidTokenId } from '@/features/perps/utils';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { TokenData } from '@/state/liveTokens/liveTokensStore';
+import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 
 type PerpMarketRowProps = {

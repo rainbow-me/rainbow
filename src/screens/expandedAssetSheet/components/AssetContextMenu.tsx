@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect } from 'react';
 import * as i18n from '@/languages';
-import { DropdownMenu, MenuConfig, MenuItem } from '@/components/DropdownMenu';
+import { DropdownMenu, type MenuConfig, type MenuItem } from '@/components/DropdownMenu';
 import { SheetActionButton } from '@/components/sheet';
 import useCoinListEditOptions, { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import { useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';

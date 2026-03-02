@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Icon } from '../icons';
 import { borders, shadow } from '@/styles';
-import { ThemeContextProps, useTheme } from '@/theme';
+import { type ThemeContextProps, useTheme } from '@/theme';
 
 type CoinIconIndicatorProps = {
   theme?: ThemeContextProps;

@@ -2,7 +2,7 @@ import { SENTRY_ENVIRONMENT } from 'react-native-dotenv';
 import { analytics } from '@/analytics';
 import { IS_DEV, IS_TEST } from '@/env';
 import { APP_START_TIME } from '../start-time';
-import { event, EventProperties } from '@/analytics/event';
+import { event, type EventProperties } from '@/analytics/event';
 import { logger } from '@/logger';
 import { Timer } from '@/performance/timer';
 import { showPerformanceToast } from './PerformanceToast';

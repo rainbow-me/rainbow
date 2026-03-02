@@ -7,11 +7,11 @@ import {
   DEFAULT_HD_PATH,
   identifyWalletType,
   WalletLibraryType,
-  EthereumPrivateKey,
-  EthereumWalletSeed,
+  type EthereumPrivateKey,
+  type EthereumWalletSeed,
   getHdPath,
-  EthereumWalletFromSeed,
-  ReadOnlyWallet,
+  type EthereumWalletFromSeed,
+  type ReadOnlyWallet,
 } from '@/model/wallet';
 import { mnemonicToSeed } from 'bip39';
 import { IS_IOS } from '@/env';

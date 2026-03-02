@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
+import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
 import { MarketSortOrder } from '@/features/perps/types';
 import { hyperliquidMarketsActions, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { useMarketSortOrderLabels } from '@/features/perps/hooks/useMarketSortOrderLabels';

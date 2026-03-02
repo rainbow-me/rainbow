@@ -6,7 +6,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
 import { IS_TEST } from '@/env';

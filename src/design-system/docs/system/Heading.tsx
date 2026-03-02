@@ -1,9 +1,9 @@
 import classnames from 'classnames';
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 
 import { sprinkles } from './sprinkles.css';
-import { FontWeight, ForegroundColor } from './tokens.css';
-import { HeadingSizes, letterSpacings, sizes } from './typography.css';
+import { type FontWeight, type ForegroundColor } from './tokens.css';
+import { type HeadingSizes, letterSpacings, sizes } from './typography.css';
 
 type Levels = '1' | '2' | '3' | '4';
 

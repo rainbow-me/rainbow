@@ -1,4 +1,10 @@
-import { QueryFunctionContext, QueryKey, UseInfiniteQueryOptions, UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
+import {
+  type QueryFunctionContext,
+  type QueryKey,
+  type UseInfiniteQueryOptions,
+  type UseMutationOptions,
+  type UseQueryOptions,
+} from '@tanstack/react-query';
 
 // Used to obtain argument types for query functions.
 export type QueryFunctionArgs<T extends (...args: any) => any> = QueryFunctionContext<ReturnType<T>>;

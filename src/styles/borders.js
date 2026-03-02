@@ -1,7 +1,7 @@
 import { upperFirst } from 'lodash';
 import colors from './colors';
 import position from './position';
-import { css } from '@/styled-thing';
+import { css } from '@/framework/ui/styled-thing';
 
 const border = {};
 

@@ -1,6 +1,15 @@
-import { SkCanvas, SkColor, SkPaint, SkParagraph, SkPath, BlendMode, SkPathEffect, Skia } from '@shopify/react-native-skia';
-import { TextSegment } from '@/design-system/components/SkiaText/useSkiaText';
-import { DrawParams } from '@/features/charts/candlestick/classes/IndicatorBuilder';
+import {
+  type SkCanvas,
+  type SkColor,
+  type SkPaint,
+  type SkParagraph,
+  type SkPath,
+  BlendMode,
+  type SkPathEffect,
+  Skia,
+} from '@shopify/react-native-skia';
+import { type TextSegment } from '@/design-system/components/SkiaText/useSkiaText';
+import { type DrawParams } from '@/features/charts/candlestick/classes/IndicatorBuilder';
 import { formatCandlestickPrice } from '@/features/charts/candlestick/utils';
 
 // ============ Types ========================================================== //

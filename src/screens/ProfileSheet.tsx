@@ -1,4 +1,4 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import React, { createContext, useEffect, useMemo } from 'react';
 import { Dimensions } from 'react-native';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
@@ -16,7 +16,7 @@ import { addressHashedColorIndex } from '@/utils/profileUtils';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { RootStackParamList } from '@/navigation/types';
+import { type RootStackParamList } from '@/navigation/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

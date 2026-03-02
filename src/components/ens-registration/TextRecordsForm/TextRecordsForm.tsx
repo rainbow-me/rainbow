@@ -1,8 +1,8 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { debounce, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
-import { LayoutChangeEvent, TextInputProps, ViewProps } from 'react-native';
-import InlineField, { InlineFieldProps } from '../../inputs/InlineField';
+import { type LayoutChangeEvent, type TextInputProps, type ViewProps } from 'react-native';
+import InlineField, { type InlineFieldProps } from '../../inputs/InlineField';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
 import { Box, Column, Columns, Separator, Stack } from '@/design-system';
 import { ENS_RECORDS } from '@/helpers/ens';

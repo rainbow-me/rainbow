@@ -1,6 +1,6 @@
-import { Address, isAddress } from 'viem';
+import { type Address, isAddress } from 'viem';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { OpenCollectionsState, OpenCollectionsStoreType } from './types';
+import { type OpenCollectionsState, type OpenCollectionsStoreType } from './types';
 import { parseUniqueId } from '@/resources/nfts/utils';
 
 const MAX_OPEN_COLLECTIONS = 20;

@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { UniqueTokenCard } from '../../unique-token';
-import { Box, BoxProps } from '@/design-system';
+import { Box, type BoxProps } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

@@ -3,7 +3,7 @@ import { keyBy } from 'lodash';
 import { createMMKV } from 'react-native-mmkv';
 import { ETH_ADDRESS } from '../index';
 import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
-import { RainbowToken } from '@/entities/tokens';
+import { type RainbowToken } from '@/entities/tokens';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { logger, RainbowError } from '@/logger';
 import { Network, ChainId } from '@/state/backendNetworks/types';

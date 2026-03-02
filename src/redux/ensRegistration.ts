@@ -1,6 +1,6 @@
 import { subDays } from 'date-fns';
-import { Dispatch } from 'react';
-import { AppDispatch, AppGetState } from './store';
+import { type Dispatch } from 'react';
+import { type AppDispatch, type AppGetState } from './store';
 import type {
   ENSRegistrations,
   ENSRegistrationState,
@@ -9,7 +9,7 @@ import type {
   TransactionRegistrationParameters,
 } from '@/entities/ensRegistration';
 import { getLocalENSRegistrations, saveLocalENSRegistrations } from '@/handlers/localstorage/accountLocal';
-import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
+import { type ENS_RECORDS, type REGISTRATION_MODES } from '@/helpers/ens';
 import { omitFlatten } from '@/helpers/utilities';
 import { Network } from '@/state/backendNetworks/types';
 import { getAccountAddress } from '@/state/wallets/walletsStore';

@@ -1,7 +1,7 @@
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import { ChainId } from '@/state/backendNetworks/types';
-import { AddysAsset, AddysConsolidatedError, AddysResponseStatus } from '../types';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type AddysAsset, type AddysConsolidatedError, type AddysResponseStatus } from '../types';
 
 interface Colors {
   primary: string;

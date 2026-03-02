@@ -1,8 +1,8 @@
 import React, { memo, useMemo } from 'react';
 import { Bleed, Box, globalColors, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '@/navigation/types';
-import Routes from '@/navigation/routesNames';
+import { type RouteProp, useRoute } from '@react-navigation/native';
+import { type RootStackParamList } from '@/navigation/types';
+import type Routes from '@/navigation/routesNames';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { OpenPositionsSection } from '@/features/polymarket/screens/polymarket-event-screen/OpenPositionsSection';
 import SlackSheet from '@/components/sheet/SlackSheet';
@@ -13,7 +13,7 @@ import ImgixImage from '@/components/images/ImgixImage';
 import { MarketsSection } from '@/features/polymarket/screens/polymarket-event-screen/MarketsSection';
 import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
-import { PolymarketEvent, PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketEvent, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { PolymarketChart } from '@/features/charts/polymarket/components/PolymarketChart';
 import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -27,10 +27,10 @@ import { ResolvedEventHeader } from '@/features/polymarket/screens/polymarket-ev
 import { formatTimestamp, toUnixTime } from '@/worklets/dates';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { ActiveInteractionData } from '@/features/charts/polymarket/classes/PolymarketChartManager';
+import { type ActiveInteractionData } from '@/features/charts/polymarket/classes/PolymarketChartManager';
 import { useSharedValue } from 'react-native-reanimated';
 import { PolymarketChartHeader } from '@/features/charts/polymarket/components/PolymarketChartHeader';
-import { SeriesPaletteColors } from '@/features/charts/polymarket/types';
+import { type SeriesPaletteColors } from '@/features/charts/polymarket/types';
 import { getLeague } from '@/features/polymarket/leagues';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 

@@ -1,6 +1,6 @@
 import useDimensions from '@/hooks/useDimensions';
 import React from 'react';
-import { ColorValue, ScrollView } from 'react-native';
+import { type ColorValue, ScrollView } from 'react-native';
 import SlackSheet from './SlackSheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

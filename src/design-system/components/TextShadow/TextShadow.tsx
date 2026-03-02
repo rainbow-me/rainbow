@@ -1,12 +1,12 @@
-import React, { ReactElement, useMemo } from 'react';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import React, { type ReactElement, useMemo } from 'react';
+import { type StyleProp, View, type ViewStyle } from 'react-native';
 import ConditionalWrap from 'conditional-wrap';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { useColorMode } from '../../color/ColorMode';
 import { useForegroundColor } from '../../color/useForegroundColor';
-import { AnimatedText, AnimatedTextProps } from '../Text/AnimatedText';
-import { Text, TextProps } from '../Text/Text';
+import { AnimatedText, type AnimatedTextProps } from '../Text/AnimatedText';
+import { Text, type TextProps } from '../Text/Text';
 
 export interface TextShadowProps {
   blur?: number;

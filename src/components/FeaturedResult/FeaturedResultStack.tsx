@@ -5,7 +5,7 @@ import { languageLocaleToCountry } from '@/utils/languageLocaleToCountry';
 import { getFeaturedResultsById } from '@/resources/featuredResults/_selectors/getFeaturedResultIds';
 import { useSharedValue } from 'react-native-reanimated';
 import { FeaturedResultCard } from '@/components/FeaturedResult/FeaturedResultCard';
-import { FeaturedResult } from '@/graphql/__generated__/arc';
+import { type FeaturedResult } from '@/graphql/__generated__/arc';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 export type FeaturedResultStackProps = {

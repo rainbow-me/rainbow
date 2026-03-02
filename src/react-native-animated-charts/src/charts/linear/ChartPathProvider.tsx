@@ -4,7 +4,15 @@ import React, { useMemo } from 'react';
 import { Dimensions } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import { parse as parseSvg } from 'react-native-redash';
-import { CallbackType, ChartContext, CurveType, DataType, PathData, PathScales, Point } from '../../helpers/ChartContext';
+import {
+  type CallbackType,
+  ChartContext,
+  CurveType,
+  type DataType,
+  type PathData,
+  type PathScales,
+  type Point,
+} from '../../helpers/ChartContext';
 import { findYExtremes } from '../../helpers/extremesHelpers';
 // @ts-ignore this library is no longer maintained independently of the app, so this is fine
 import usePrevious from '@/hooks/usePrevious';

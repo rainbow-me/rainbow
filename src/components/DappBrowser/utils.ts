@@ -1,5 +1,5 @@
 import { Share } from 'react-native';
-import { WebViewNavigationEvent } from 'react-native-webview/lib/RNCWebViewNativeComponent';
+import { type WebViewNavigationEvent } from 'react-native-webview/lib/RNCWebViewNativeComponent';
 import { RainbowError, ensureError, logger } from '@/logger';
 import { HTTP, HTTPS, RAINBOW_HOME, APP_STORE_URL_PREFIXES } from './constants';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bleed, Box, Inset, Space } from '@/design-system';
+import { Bleed, Box, Inset, type Space } from '@/design-system';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 
 type NavbarItemProps = {

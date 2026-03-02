@@ -1,5 +1,5 @@
 import { pick } from 'lodash';
-import React, { ComponentProps, ComponentType, MemoExoticComponent } from 'react';
+import React, { type ComponentProps, type ComponentType, type MemoExoticComponent } from 'react';
 import isEqual from 'react-fast-compare';
 
 type DeepPartial<T> = {

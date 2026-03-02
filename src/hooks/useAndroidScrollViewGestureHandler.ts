@@ -1,7 +1,7 @@
-import { NavigationProp } from '@react-navigation/native';
+import { type NavigationProp } from '@react-navigation/native';
 import { useCallback, useRef } from 'react';
 import { useNavigation } from '@/navigation';
-import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 /**
  * This is a pretty hacky fix for getting a `Stack` that consists of bottom

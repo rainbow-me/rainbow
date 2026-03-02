@@ -1,12 +1,12 @@
-import React, { ReactNode, useMemo, useEffect, Ref } from 'react';
-import { Text as NativeText, StyleProp, TextStyle } from 'react-native';
+import React, { type ReactNode, useMemo, useEffect, type Ref } from 'react';
+import { Text as NativeText, type StyleProp, type TextStyle } from 'react-native';
 import { SILENCE_EMOJI_WARNINGS } from 'react-native-dotenv';
 import { IS_DEV, IS_IOS } from '@/env';
-import { TextColor } from '../../color/palettes';
-import { CustomColor } from '../../color/useForegroundColor';
+import { type TextColor } from '../../color/palettes';
+import { type CustomColor } from '../../color/useForegroundColor';
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
 import { nodeHasEmoji, nodeIsString, renderStringWithEmoji } from '../../typography/renderStringWithEmoji';
-import { textSizes, textWeights } from '../../typography/typography';
+import { type textSizes, type textWeights } from '../../typography/typography';
 import { useTextStyle } from './useTextStyle';
 
 export type TextSize = keyof typeof textSizes;

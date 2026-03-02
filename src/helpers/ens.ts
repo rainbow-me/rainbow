@@ -1,11 +1,11 @@
 import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
-import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
+import { BigNumber, type BigNumberish } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
-import { Signer } from '@ethersproject/abstract-signer';
+import { type Signer } from '@ethersproject/abstract-signer';
 import * as i18n from '@/languages';
 import { atom } from 'recoil';
-import { InlineFieldProps } from '../components/inputs/InlineField';
+import { type InlineFieldProps } from '../components/inputs/InlineField';
 import { add, addBuffer, convertAmountAndPriceToNativeDisplay, divide, fromWei, handleSignificantDecimals, multiply } from './utilities';
 import type { ENSRegistrationRecords } from '@/entities/ensRegistration';
 import type { EthereumAddress } from '@/entities/wallet';

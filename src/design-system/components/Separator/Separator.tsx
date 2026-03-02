@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import { View, ViewStyle } from 'react-native';
-import { SeparatorColor } from '../../color/palettes';
-import { CustomColor, useForegroundColor } from '../../color/useForegroundColor';
+import { View, type ViewStyle } from 'react-native';
+import { type SeparatorColor } from '../../color/palettes';
+import { type CustomColor, useForegroundColor } from '../../color/useForegroundColor';
 
 export interface SeparatorProps {
   color: SeparatorColor | CustomColor;

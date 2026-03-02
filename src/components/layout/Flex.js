@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { buildFlexStyles } from '@/styles';
 import { memoFn } from '@/utils/memoFn';
 

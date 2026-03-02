@@ -7,9 +7,9 @@ import { hexToNumber, isHex } from 'viem';
 import { isEmpty } from 'lodash';
 import { InteractionManager } from 'react-native';
 import type { GasFeeParamsBySpeed } from '@/entities/gas';
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import useGas from '@/hooks/useGas';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type StaticJsonRpcProvider } from '@ethersproject/providers';
+import type useGas from '@/hooks/useGas';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type CalculateGasLimitProps = {

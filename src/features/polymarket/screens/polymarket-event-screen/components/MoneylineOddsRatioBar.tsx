@@ -1,16 +1,15 @@
 import React, { memo, useMemo } from 'react';
 import * as i18n from '@/languages';
 import { Box, Text, TextShadow, useColorMode } from '@/design-system';
-import { PolymarketEvent, PolymarketMarketEvent, PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketEvent, type PolymarketMarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getMarketsGroupedByBetType } from '@/features/polymarket/screens/polymarket-event-screen/utils/getMarketsGroupedByBetType';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
-import { toPercentageWorklet } from '@/safe-math/SafeMath';
 import { isDrawMarket } from '@/features/polymarket/utils/sports';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
-import { PolymarketTeamInfo } from '@/features/polymarket/types';
+import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { formatNumber } from '@/helpers/strings';
 
 const BAR_HEIGHT = 8;
@@ -94,8 +93,10 @@ const MoneylineOddsRatioBarContent = memo(function MoneylineOddsRatioBarContent(
   outcomes: MoneylineOutcome[];
   eventVolume: number;
 }) {
-  const ratios = useMemo(() => calculateRatios(outcomes.map(outcome => Number(outcome.price))), [outcomes]);
+  const impliedOdds = useMemo(() => calculateImpliedOdds(outcomes), [outcomes]);
+  const ratios = useMemo(() => calculateRatios(impliedOdds), [impliedOdds]);
   const outcomesNoDraw = useMemo(() => outcomes.filter(outcome => !outcome.isDraw), [outcomes]);
+  const impliedOddsNoDraw = useMemo(() => impliedOdds.filter((_, index) => !outcomes[index].isDraw), [impliedOdds, outcomes]);
 
   return (
     <Box gap={16} paddingHorizontal="8px">
@@ -120,7 +121,7 @@ const MoneylineOddsRatioBarContent = memo(function MoneylineOddsRatioBarContent(
       <Box height={41} flexDirection="row" justifyContent="space-between" alignItems="center">
         <TextShadow key={`${outcomesNoDraw[0].id}-percent`} blur={20} shadowOpacity={0.4} color={outcomesNoDraw[0].color}>
           <Text size="34pt" weight="heavy" color={{ custom: outcomesNoDraw[0].color }}>
-            {`${toPercentageWorklet(outcomesNoDraw[0].price)}%`}
+            {`${impliedOddsNoDraw[0] ?? 0}%`}
           </Text>
         </TextShadow>
         <Text color="labelQuaternary" size="15pt" weight="bold">
@@ -128,7 +129,7 @@ const MoneylineOddsRatioBarContent = memo(function MoneylineOddsRatioBarContent(
         </Text>
         <TextShadow key={`${outcomesNoDraw[1].id}-percent`} blur={20} shadowOpacity={0.4} color={outcomesNoDraw[1].color}>
           <Text size="34pt" weight="heavy" color={{ custom: outcomesNoDraw[1].color }}>
-            {`${toPercentageWorklet(outcomesNoDraw[1].price)}%`}
+            {`${impliedOddsNoDraw[1] ?? 0}%`}
           </Text>
         </TextShadow>
       </Box>
@@ -138,7 +139,7 @@ const MoneylineOddsRatioBarContent = memo(function MoneylineOddsRatioBarContent(
 
 function useLiveMarketPrice(market: PolymarketMarket, outcomeIndex = 0) {
   return useLiveTokenValue({
-    tokenId: getPolymarketTokenId(market.clobTokenIds[outcomeIndex], 'sell'),
+    tokenId: getPolymarketTokenId(market.clobTokenIds[outcomeIndex], 'midpoint'),
     initialValue: formatPrice(market.outcomePrices[outcomeIndex], market.orderPriceMinTickSize),
     selector: token => formatPrice(token.price, market.orderPriceMinTickSize),
   });
@@ -178,4 +179,10 @@ function calculateRatios(values: number[]) {
   }
 
   return values.map(value => Math.max((value / total) * 100, 1));
+}
+
+function calculateImpliedOdds(outcomes: MoneylineOutcome[]): number[] {
+  const prices = outcomes.map(outcome => Number(outcome.price));
+  const total = prices.reduce((sum, price) => sum + price, 0);
+  return prices.map(price => Math.round((price / total) * 100));
 }

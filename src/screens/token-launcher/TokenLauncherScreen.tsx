@@ -11,7 +11,7 @@ import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, useAnimatedStyle
 import { StepBlurredImageBackground } from './components/StepBlurredImageBackground';
 import { TokenLauncherContextProvider } from './context/TokenLauncherContext';
 import { CreatingStep } from './components/CreatingStep';
-import { Dimensions, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { Dimensions, type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
 import { SuccessStep } from './components/SuccessStep';
 import { ScreenBlurredImageBackground } from './components/ScreenBlurredImageBackground';
 import { IS_ANDROID } from '@/env';

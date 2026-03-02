@@ -1,9 +1,9 @@
-import { RefObject, useCallback } from 'react';
-import { DerivedValue, runOnUI, useSharedValue } from 'react-native-reanimated';
+import { type RefObject, useCallback } from 'react';
+import { type DerivedValue, runOnUI, useSharedValue } from 'react-native-reanimated';
 import { useStableValue } from '@/hooks/useStableValue';
 import { hasGetSnapshot } from '@/state/internal/utils/storeUtils';
-import { BaseRainbowStore, Selector } from '../types';
-import { ListenHandle, useListen, UseListenOptions } from './useListen';
+import { type BaseRainbowStore, type Selector } from '../types';
+import { type ListenHandle, useListen, type UseListenOptions } from './useListen';
 
 // ============ Types ========================================================== //
 

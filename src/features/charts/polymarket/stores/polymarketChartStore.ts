@@ -4,24 +4,24 @@ import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarket
 import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam';
 import { isThreeWayMoneyline } from '@/features/polymarket/utils/marketClassification';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { time } from '@/utils/time';
 import { fetchPriceHistory } from '../api/clobClient';
 import { fetchGammaEvent } from '../api/gammaClient';
 import {
   FIDELITY_MAP,
-  GammaEvent,
-  GammaMarket,
-  MarketFilter,
-  OutcomeSeries,
-  PolymarketChartData,
-  PolymarketChartParams,
-  PolymarketInterval,
-  PolymarketMarketChartParams,
-  PricePoint,
+  type GammaEvent,
+  type GammaMarket,
+  type MarketFilter,
+  type OutcomeSeries,
+  type PolymarketChartData,
+  type PolymarketChartParams,
+  type PolymarketInterval,
+  type PolymarketMarketChartParams,
+  type PricePoint,
   SERIES_COLORS,
 } from '../types';
-import { PolymarketStoreState, usePolymarketStore } from './polymarketStore';
+import { type PolymarketStoreState, usePolymarketStore } from './polymarketStore';
 
 // ============ Constants ====================================================== //
 

@@ -1,4 +1,4 @@
-import type { RainbowFetchResponse } from '@/rainbow-fetch';
+import type { RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
 

@@ -1,6 +1,6 @@
 import { hydrate } from '@tanstack/react-query';
 import { createMMKV } from 'react-native-mmkv';
-import { LogEntry, showLogSheet } from '@/components/debugging/LogSheet';
+import { type LogEntry, showLogSheet } from '@/components/debugging/LogSheet';
 import { IS_DEV, IS_TEST_FLIGHT } from '@/env';
 import { RainbowError, logger } from '@/logger';
 import { persistOptions, queryClient } from '@/react-query';

@@ -3,7 +3,7 @@ import { Box, Text, useForegroundColor } from '@/design-system';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { formatPriceChange } from '@/features/perps/utils';
-import { PerpMarket } from '@/features/perps/types';
+import { type PerpMarket } from '@/features/perps/types';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { HYPERLIQUID_TOKEN_ID_SUFFIX } from '@/features/perps/constants';
 

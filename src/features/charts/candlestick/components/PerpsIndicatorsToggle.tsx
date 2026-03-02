@@ -1,6 +1,6 @@
 import { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { SharedValue, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { type SharedValue, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Border, Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';

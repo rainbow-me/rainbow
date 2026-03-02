@@ -8,7 +8,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { formatUnits } from 'viem';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
-import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
+import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { TOKEN_LAUNCH_GAS_LIMIT } from '../constants';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 

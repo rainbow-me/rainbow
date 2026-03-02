@@ -1,13 +1,14 @@
 'use strict';
 
-import AppEth, { ledgerService } from '@ledgerhq/hw-app-eth';
+import type AppEth from '@ledgerhq/hw-app-eth';
+import { ledgerService } from '@ledgerhq/hw-app-eth';
 import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 import { Signer } from '@ethersproject/abstract-signer';
-import { Bytes, hexlify, joinSignature } from '@ethersproject/bytes';
+import { type Bytes, hexlify, joinSignature } from '@ethersproject/bytes';
 import { defineReadOnly, resolveProperties } from '@ethersproject/properties';
-import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
+import { type Provider, type TransactionRequest } from '@ethersproject/abstract-provider';
 import { toUtf8Bytes } from '@ethersproject/strings';
-import { UnsignedTransaction, serialize } from '@ethersproject/transactions';
+import { type UnsignedTransaction, serialize } from '@ethersproject/transactions';
 import { BigNumber } from '@ethersproject/bignumber';
 import { logger, RainbowError } from '@/logger';
 import { Navigation } from '@/navigation';

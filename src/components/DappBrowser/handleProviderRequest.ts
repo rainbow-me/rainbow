@@ -1,13 +1,18 @@
-import { Messenger } from '@/browserMessaging/AppMessenger';
-import { AddEthereumChainProposedChain, RequestArguments, RequestResponse, handleProviderRequest } from '@rainbow-me/provider';
+import { type Messenger } from '@/browserMessaging/AppMessenger';
+import {
+  type AddEthereumChainProposedChain,
+  type RequestArguments,
+  type RequestResponse,
+  handleProviderRequest,
+} from '@rainbow-me/provider';
 import * as i18n from '@/languages';
 
 import { getProvider } from '@/handlers/web3';
 import { UserRejectedRequestError } from 'viem';
 import { logger } from '@/logger';
-import { ActiveSession } from '@rainbow-me/provider/dist/references/appSession';
+import { type ActiveSession } from '@rainbow-me/provider/dist/references/appSession';
 import { handleDappBrowserConnectionPrompt, handleDappBrowserRequest } from '@/utils/requestNavigationHandlers';
-import { Tab } from '@rainbow-me/provider/dist/references/messengers';
+import { type Tab } from '@rainbow-me/provider/dist/references/messengers';
 import { getDappMetadata } from '@/resources/metadata/dapp';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { BigNumber } from '@ethersproject/bignumber';

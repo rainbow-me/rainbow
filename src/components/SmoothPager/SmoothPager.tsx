@@ -1,11 +1,11 @@
-import React, { ForwardedRef, forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import React, { type ForwardedRef, forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
-  DerivedValue,
-  SharedValue,
-  WithSpringConfig,
-  WithTimingConfig,
+  type DerivedValue,
+  type SharedValue,
+  type WithSpringConfig,
+  type WithTimingConfig,
   interpolate,
   runOnJS,
   runOnUI,
@@ -19,7 +19,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box } from '@/design-system';
-import { AlignVertical, alignVerticalToFlexAlign } from '@/design-system/layout/alignment';
+import { type AlignVertical, alignVerticalToFlexAlign } from '@/design-system/layout/alignment';
 import { useStableValue } from '@/hooks/useStableValue';
 import { clamp } from '@/__swaps__/utils/swaps';
 import deviceUtils from '@/utils/deviceUtils';

@@ -3,7 +3,7 @@ import { Box, Text, useColorMode, globalColors } from '@/design-system';
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import { networkSwitcherStore } from '@/state/networkSwitcher/networkSwitcher';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, type TextInput } from 'react-native';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { triggerHaptics } from 'react-native-turbo-haptics';

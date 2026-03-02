@@ -3,7 +3,7 @@ import { RainbowError, logger } from '@/logger';
 import { fetchPromoSheetCollection } from '@/resources/promoSheet/promoSheetCollectionQuery';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { campaigns } from '@/storage';
-import { Migration, MigrationName } from '@/migrations/types';
+import { type Migration, MigrationName } from '@/migrations/types';
 
 export function migrateRemotePromoSheetsToZustand(): Migration {
   return {

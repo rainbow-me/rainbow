@@ -11,7 +11,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { AssetContextMenu } from './AssetContextMenu';
 import { isTestnetChain } from '@/handlers/web3';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { ColorMode, globalColors } from '@/design-system/color/palettes';
+import { type ColorMode, globalColors } from '@/design-system/color/palettes';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

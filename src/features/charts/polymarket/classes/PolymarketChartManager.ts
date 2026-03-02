@@ -3,32 +3,32 @@ import {
   BlurStyle,
   ClipOp,
   PaintStyle,
-  SkCanvas,
-  SkColor,
-  SkPaint,
-  SkParagraph,
-  SkPicture,
+  type SkCanvas,
+  type SkColor,
+  type SkPaint,
+  type SkParagraph,
+  type SkPicture,
   Skia,
   StrokeCap,
   StrokeJoin,
   TileMode,
 } from '@shopify/react-native-skia';
 import { State as GestureState } from 'react-native-gesture-handler';
-import { SharedValue } from 'react-native-reanimated';
+import { type SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
-import { TextSegment } from '@/design-system/components/SkiaText/useSkiaText';
-import { InteractionConfig, LineEffectsConfig } from '@/features/charts/line/LineSeries';
-import { ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { type TextSegment } from '@/design-system/components/SkiaText/useSkiaText';
+import { type InteractionConfig, type LineEffectsConfig } from '@/features/charts/line/LineSeries';
+import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { normalizeSpringConfig } from '@/worklets/animations';
 import { createBlankPicture } from '@/worklets/skia';
 import { Animator } from '../../candlestick/classes/Animator';
 import { TimeFormatter } from '../../candlestick/classes/TimeFormatter';
-import { LineSmoothing } from '../../line/LineSmoothingAlgorithms';
-import { LineSeriesBuilder, SeriesDataInput } from '../../line/LineSeriesBuilder';
-import { DrawParams } from '../../line/types';
-import { EntranceAnimation, OutcomeSeries, SERIES_COLORS, SERIES_PALETTES, SeriesPaletteColors } from '../types';
+import { type LineSmoothing } from '../../line/LineSmoothingAlgorithms';
+import { LineSeriesBuilder, type SeriesDataInput } from '../../line/LineSeriesBuilder';
+import { type DrawParams } from '../../line/types';
+import { EntranceAnimation, type OutcomeSeries, SERIES_COLORS, SERIES_PALETTES, type SeriesPaletteColors } from '../types';
 
 // ============ Types ========================================================== //
 

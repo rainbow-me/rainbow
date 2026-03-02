@@ -1,4 +1,4 @@
-import { Address } from 'viem';
+import { type Address } from 'viem';
 
 import { Network, ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '../internal/createRainbowStore';

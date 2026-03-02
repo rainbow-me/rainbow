@@ -3,7 +3,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchPromoSheetCollection } from '@/resources/promoSheet/promoSheetCollectionQuery';
 import { logger } from '@/logger';
-import { PromoSheet, PromoSheetOrder } from '@/graphql/__generated__/arc';
+import { type PromoSheet, PromoSheetOrder } from '@/graphql/__generated__/arc';
 import { device } from '@/storage';
 
 import * as fns from '@/components/remote-promo-sheet/check-fns';

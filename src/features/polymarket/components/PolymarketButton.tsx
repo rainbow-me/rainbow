@@ -1,5 +1,5 @@
-import React, { ComponentProps, ReactNode } from 'react';
-import { Box, BoxProps, globalColors, useColorMode } from '@/design-system';
+import React, { type ComponentProps, type ReactNode } from 'react';
+import { Box, type BoxProps, globalColors, useColorMode } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { StyleSheet } from 'react-native';
 import { opacity } from '@/framework/ui/utils/opacity';

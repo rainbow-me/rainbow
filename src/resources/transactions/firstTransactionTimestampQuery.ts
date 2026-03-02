@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
+import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
 import { getFirstTransactionTimestamp } from '@/utils/ethereumUtils';
 import { fetchENSAddress } from '../ens/ensAddressQuery';
 

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { delay } from '@/utils/delay';
 import usePrevious from '@/hooks/usePrevious';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Row from '@/components/layout/Row';
 import { Box, Inline, Text } from '@/design-system';

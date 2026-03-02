@@ -1,4 +1,4 @@
-import { Example } from '../types';
+import { type Example } from '../types';
 
 export const getSourceFromExample = ({ Example }: { Example: Example['Example'] }) => {
   let element;

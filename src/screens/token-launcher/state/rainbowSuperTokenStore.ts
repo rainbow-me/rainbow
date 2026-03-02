@@ -1,4 +1,4 @@
-import { TokenLink, TokenLinks } from '@/graphql/__generated__/metadata';
+import { type TokenLink, type TokenLinks } from '@/graphql/__generated__/metadata';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 export interface SuperToken {

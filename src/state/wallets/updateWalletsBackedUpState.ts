@@ -1,6 +1,6 @@
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { logger } from '@/logger';
-import { AllRainbowWallets } from '@/model/wallet';
+import { type AllRainbowWallets } from '@/model/wallet';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { loadWallets, setAllWalletsWithIdsAsBackedUp, setSelectedWallet } from '@/state/wallets/walletsStore';
 

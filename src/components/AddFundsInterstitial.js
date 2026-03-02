@@ -7,7 +7,7 @@ import Routes from '@/navigation/routesNames';
 import ShadowStack from '@/react-native-shadow-stack';
 import { Network } from '@/state/backendNetworks/types';
 import { getIsDamagedWallet, useAccountAddress } from '@/state/wallets/walletsStore';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding, position } from '@/styles';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { useRoute } from '@react-navigation/native';

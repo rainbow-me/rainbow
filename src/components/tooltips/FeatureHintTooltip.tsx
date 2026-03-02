@@ -1,5 +1,5 @@
 import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef } from 'react';
-import { StyleSheet, View, LayoutChangeEvent, useWindowDimensions } from 'react-native';
+import { StyleSheet, View, type LayoutChangeEvent, useWindowDimensions } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS } from 'react-native-reanimated';
 import { Box, globalColors, HitSlop, Text } from '@/design-system';
@@ -259,8 +259,8 @@ export const FeatureHintTooltip = forwardRef<TooltipRef, FeatureHintTooltipProps
                 >
                   <LinearGradient
                     colors={['#268FFF1F', '#268FFF14']}
-                    start={{ x: 0, y: 1 }}
-                    end={{ x: 1, y: 0 }}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
                     style={styles.iconContainer}
                   >
                     <Text weight="heavy" size="17pt" color={{ custom: '#268FFF' }}>

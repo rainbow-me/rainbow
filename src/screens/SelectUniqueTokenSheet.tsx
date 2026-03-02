@@ -1,12 +1,12 @@
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useContext, useEffect } from 'react';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import { SheetHandle } from '../components/sheet';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { Box } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { RootStackParamList } from '@/navigation/types';
-import Routes from '@/navigation/routesNames';
+import { type RootStackParamList } from '@/navigation/types';
+import type Routes from '@/navigation/routesNames';
 import { useNftsStore } from '@/state/nfts/nfts';
 import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 

@@ -1,8 +1,8 @@
-import { RainbowFetchClient } from '@/rainbow-fetch';
+import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { IS_PROD } from '@/env';
-import { ProviderConfig } from '@/screens/AddCash/types';
-import { Address } from 'viem';
-import { FiatProviderName } from '@/entities/f2c';
+import { type ProviderConfig } from '@/screens/AddCash/types';
+import { type Address } from 'viem';
+import { type FiatProviderName } from '@/entities/f2c';
 
 export type GetWidgetURL = (
   id: FiatProviderName,

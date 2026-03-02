@@ -1,6 +1,6 @@
-import React, { createContext, ReactNode, useContext } from 'react';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { GasSpeed } from '@/__swaps__/types/gas';
+import React, { createContext, type ReactNode, useContext } from 'react';
+import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { type GasSpeed } from '@/__swaps__/types/gas';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
@@ -11,7 +11,7 @@ import { createDepositGasStores } from '../stores/createDepositGasStores';
 import { createAmountToReceiveStore } from '../stores/derived/createAmountToReceiveStore';
 import { useDepositController } from '../hooks/useDepositController';
 import { useDepositHandler } from '../hooks/useDepositHandler';
-import { DepositConfig, DepositContextType, FundingScreenTheme } from '../types';
+import { type DepositConfig, type DepositContextType, type FundingScreenTheme } from '../types';
 
 // ============ Context ======================================================= //
 

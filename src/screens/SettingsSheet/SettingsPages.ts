@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 
 import Routes from '@/navigation/routesNames';
 
-import AppIconSettingsSection from '@/features/app-icon/AppIconSettingsSection';
+import AppIconSettingsSection from '@/features/app-icon/components/AppIconSettingsSection';
 import WalletsAndBackup from './components/Backups/WalletsAndBackup';
 import CurrencySection from './components/CurrencySection';
 import LanguageSection from './components/LanguageSection';

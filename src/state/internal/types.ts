@@ -1,6 +1,6 @@
-import { Mutate, StateCreator, StoreApi } from 'zustand';
-import { PersistOptions, StorageValue } from 'zustand/middleware';
-import { UseBoundStoreWithEqualityFn } from 'zustand/traditional';
+import { type Mutate, type StateCreator, type StoreApi } from 'zustand';
+import { type PersistOptions, type StorageValue } from 'zustand/middleware';
+import { type UseBoundStoreWithEqualityFn } from 'zustand/traditional';
 
 // ============ Middleware Helpers ============================================= //
 

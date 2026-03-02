@@ -1,6 +1,6 @@
 import { metadataClient } from '@/graphql';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { Token } from '@/graphql/__generated__/metadata';
+import { type Token } from '@/graphql/__generated__/metadata';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';

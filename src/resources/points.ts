@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { POINTS, useExperimentalFlag } from '@/config';
 import { metadataPOSTClient } from '@/graphql';
-import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
+import { type GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
 import { createQueryKey, queryClient } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { useRemoteConfig } from '@/model/remoteConfig';

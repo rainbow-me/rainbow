@@ -3,7 +3,7 @@ import { Image, ImageBackground } from 'react-native';
 import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
 import { AccentColorProvider, Box, Columns, Inline, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
-import { RewardsAmount } from '@/graphql/__generated__/metadata';
+import { type RewardsAmount } from '@/graphql/__generated__/metadata';
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
 import { addDays, differenceInDays, differenceInHours, fromUnixTime, isPast } from 'date-fns';
 import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
@@ -12,7 +12,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Routes from '@/navigation/routesNames';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
+import { type AppState } from '@/redux/store';
 import { analytics } from '@/analytics';
 
 type Props = {

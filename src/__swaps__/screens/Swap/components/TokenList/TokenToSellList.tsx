@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { Insets, InteractionManager, StyleSheet } from 'react-native';
+import { type Insets, InteractionManager, StyleSheet } from 'react-native';
 import Animated, { runOnUI, useAnimatedRef, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { analytics } from '@/analytics';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
@@ -9,7 +9,6 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getUniqueId } from '@/utils/ethereumUtils';
@@ -17,6 +16,7 @@ import { EXPANDED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
 import { NAVBAR_HEIGHT_WITH_PADDING } from '@/components/navbar/constants';
 import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
+import type { ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
 
 export const SELL_LIST_HEADER_HEIGHT = 20 + 10 + 14; // paddingTop + height + paddingBottom
 

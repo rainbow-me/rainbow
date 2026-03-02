@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { metadataClient } from '@/graphql';
-import { MarketStatsQueryVariables, MarketStatsQuery } from '@/graphql/__generated__/metadata';
-import { QueryFunctionArgs, createQueryKey } from '@/react-query';
+import { type MarketStatsQueryVariables, type MarketStatsQuery } from '@/graphql/__generated__/metadata';
+import { type QueryFunctionArgs, createQueryKey } from '@/react-query';
 
 import { logger, RainbowError } from '@/logger';
 

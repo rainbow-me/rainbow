@@ -5,7 +5,7 @@ import { toChecksumAddress } from '@/handlers/web3';
 import useDimensions from '@/hooks/useDimensions';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding, shadow } from '@/styles';
 import React, { useCallback, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

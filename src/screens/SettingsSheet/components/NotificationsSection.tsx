@@ -7,7 +7,7 @@ import WalletTypes from '@/helpers/walletTypes';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useAppState from '@/hooks/useAppState';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { RainbowAccount } from '@/model/wallet';
+import { type RainbowAccount } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { isNotificationPermissionGranted, requestNotificationPermission } from '@/notifications/permissions';
@@ -15,12 +15,12 @@ import {
   useAllNotificationSettingsFromStorage,
   useWalletGroupNotificationSettings,
   WalletNotificationRelationship,
-  WalletNotificationSettings,
+  type WalletNotificationSettings,
 } from '@/notifications/settings';
 import { GlobalNotificationTopic } from '@/notifications/settings/constants';
 import { toggleGlobalNotificationTopic } from '@/notifications/settings/settings';
 import { getNotificationSettingsForWalletWithAddress, setAllGlobalNotificationSettingsToStorage } from '@/notifications/settings/storage';
-import { GlobalNotificationTopics, GlobalNotificationTopicType } from '@/notifications/settings/types';
+import { type GlobalNotificationTopics, type GlobalNotificationTopicType } from '@/notifications/settings/types';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
 import abbreviations from '@/utils/abbreviations';

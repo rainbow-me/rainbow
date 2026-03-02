@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Children, Fragment } from 'react';
 import Divider from '@/components/Divider';
 import { Row } from '../layout';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 
 const Container = styled(Row)({
   borderTopColor: ({ theme: { colors } }) => colors.rowDivider,

@@ -1,4 +1,4 @@
-import { FiatProviderName } from '@/entities/f2c';
+import { type FiatProviderName } from '@/entities/f2c';
 
 export enum Network {
   Ethereum = 'ethereum',

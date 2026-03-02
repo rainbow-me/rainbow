@@ -1,4 +1,4 @@
-import { DependencyList, EffectCallback, useEffect, useRef } from 'react';
+import { type DependencyList, type EffectCallback, useEffect, useRef } from 'react';
 
 /**
  * A minimal wrapper around `useEffect` that skips running

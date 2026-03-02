@@ -1,11 +1,11 @@
 import * as i18n from '@/languages';
 import type { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
-import { Claimable, ClaimableType, ConsolidatedClaimablesResponse } from './types';
+import { type Claimable, ClaimableType, type ConsolidatedClaimablesResponse } from './types';
 import { logger, RainbowError } from '@/logger';
 import { parseClaimables } from './utils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getAddysHttpClient } from '../client';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import {
   convertRawAmountToBalance,
   greaterThan,
@@ -20,7 +20,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { time } from '@/utils/time';
 import { throttle } from 'lodash';
 import { analytics } from '@/analytics';
-import { ClaimablesStore } from '@/state/claimables/claimables';
+import { type ClaimablesStore } from '@/state/claimables/claimables';
 
 export type ClaimablesArgs = {
   address: Address | string | null;

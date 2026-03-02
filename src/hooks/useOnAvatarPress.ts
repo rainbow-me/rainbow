@@ -1,5 +1,5 @@
 import { analytics } from '@/analytics';
-import { MenuConfig } from '@/components/native-context-menu/contextMenu';
+import { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { enableActionsOnReadOnlyWallet, PROFILES, useExperimentalFlag } from '@/config';
 import { IS_IOS } from '@/env';
 import { REGISTRATION_MODES } from '@/helpers/ens';
@@ -12,7 +12,7 @@ import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { openInBrowser } from '@/utils/openInBrowser';
 import * as i18n from '@/languages';
 import { useCallback } from 'react';
-import { ImagePickerAsset } from 'expo-image-picker';
+import { type ImagePickerAsset } from 'expo-image-picker';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountAsset from './useAccountAsset';
 import useENSAvatar, { prefetchENSAvatar } from './useENSAvatar';

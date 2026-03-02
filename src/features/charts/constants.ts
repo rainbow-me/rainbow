@@ -1,4 +1,4 @@
-import { CandleResolution, HyperliquidInterval, LineChartTimePeriod, LineChartTimespan } from '@/features/charts/types';
+import { CandleResolution, type HyperliquidInterval, LineChartTimePeriod, LineChartTimespan } from '@/features/charts/types';
 
 /**
  * Initial number of candles to fetch for candlestick charts.

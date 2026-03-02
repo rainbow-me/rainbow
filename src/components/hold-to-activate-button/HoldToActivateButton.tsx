@@ -4,7 +4,7 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBiometryIconString } from '@/components/buttons/BiometricButtonContent';
 import HoldToAuthorizeButtonIcon from '@/components/buttons/hold-to-authorize/HoldToAuthorizeButtonIcon';
 import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
-import { Box, BoxProps, Text, TextProps, useColorMode } from '@/design-system';
+import { Box, type BoxProps, Text, type TextProps, useColorMode } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { IS_ANDROID } from '@/env';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
@@ -12,7 +12,7 @@ import { colors } from '@/styles';
 import { useTheme } from '@/theme';
 import { time } from '@/utils/time';
 import React, { useCallback, useMemo } from 'react';
-import { StyleProp, TextStyle, ViewStyle, StyleSheet } from 'react-native';
+import { type StyleProp, type TextStyle, type ViewStyle, StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   FadeIn,

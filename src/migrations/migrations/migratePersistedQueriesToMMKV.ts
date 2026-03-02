@@ -1,4 +1,4 @@
-import { Migration, MigrationName } from '@/migrations/types';
+import { type Migration, MigrationName } from '@/migrations/types';
 import { queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
 import AsyncStorage from '@react-native-async-storage/async-storage';

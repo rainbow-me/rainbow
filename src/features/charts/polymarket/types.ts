@@ -1,6 +1,6 @@
 // ============ Animation Types ================================================ //
 
-import { ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 
 export enum EntranceAnimation {
   /** Lines draw in from left to right, revealing with round cap at leading edge */

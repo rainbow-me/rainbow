@@ -14,10 +14,10 @@ import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigat
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { type RouteProp, useRoute } from '@react-navigation/native';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { openInBrowser } from '@/utils/openInBrowser';
-import { RootStackParamList } from '@/navigation/types';
+import { type RootStackParamList } from '@/navigation/types';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;

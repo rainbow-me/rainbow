@@ -2,7 +2,7 @@ import React from 'react';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { opacity } from '@/framework/ui/utils/opacity';

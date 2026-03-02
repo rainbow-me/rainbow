@@ -1,6 +1,6 @@
 import { IS_TEST } from '@/env';
 import { deepFreeze } from '@/utils/deepFreeze';
-import { Easing, EasingFunction, WithSpringConfig, WithTimingConfig } from 'react-native-reanimated';
+import { Easing, type EasingFunction, type WithSpringConfig, type WithTimingConfig } from 'react-native-reanimated';
 
 // ============ Easing Functions =============================================== //
 

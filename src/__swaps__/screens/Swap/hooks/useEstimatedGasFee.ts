@@ -5,7 +5,7 @@ import { useNativeAsset } from '@/utils/ethereumUtils';
 import { useMemo } from 'react';
 import { formatUnits } from 'viem';
 import { calculateGasFeeWorklet, useSyncedSwapQuoteStore } from '../providers/SyncSwapStateAndSharedValues';
-import { GasSettings } from './useCustomGas';
+import { type GasSettings } from './useCustomGas';
 import { useSelectedGas } from './useSelectedGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
 import { useSwapsStore } from '@/state/swaps/swapsStore';

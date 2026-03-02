@@ -5,7 +5,7 @@ import { useFilteredHyperliquidMarkets, useHyperliquidMarketsStore } from '@/fea
 import { PerpMarketsList } from '@/features/perps/components/PerpMarketsList';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, FOOTER_HEIGHT } from '@/features/perps/constants';
 import { navigateToNewPositionScreen, navigateToPerpDetailScreen } from '@/features/perps/utils';
-import { PerpMarket } from '@/features/perps/types';
+import { type PerpMarket } from '@/features/perps/types';
 import { useOnLeaveRoute } from '@/hooks/useOnLeaveRoute';
 import Routes from '@/navigation/routesNames';
 import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';

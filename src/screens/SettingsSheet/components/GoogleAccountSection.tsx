@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getGoogleAccountUserData, GoogleDriveUserData, logoutFromGoogleDrive } from '@/handlers/cloudBackup';
+import { getGoogleAccountUserData, type GoogleDriveUserData, logoutFromGoogleDrive } from '@/handlers/cloudBackup';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import * as i18n from '@/languages';

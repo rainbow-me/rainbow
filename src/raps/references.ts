@@ -1,17 +1,17 @@
-import { Signer } from '@ethersproject/abstract-signer';
-import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
-import { Address } from 'viem';
+import { type Signer } from '@ethersproject/abstract-signer';
+import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
+import { type Address } from 'viem';
 
-import { ParsedAsset } from '@/__swaps__/types/assets';
+import { type ParsedAsset } from '@/__swaps__/types/assets';
 import type {
   GasFeeParamsBySpeed,
   LegacyGasFeeParamsBySpeed,
   LegacyTransactionGasParamAmounts,
   TransactionGasParamAmounts,
 } from '@/entities/gas';
-import { ChainId } from '@/state/backendNetworks/types';
-import { TransactionClaimableTxPayload } from '@/screens/claimables/transaction/types';
-import { SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
+import { type ChainId } from '@/state/backendNetworks/types';
+import { type TransactionClaimableTxPayload } from '@/screens/claimables/transaction/types';
+import { type SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 
 export enum SwapModalField {
   input = 'inputAmount',
@@ -73,6 +73,7 @@ export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap' | '
   quote: QuoteTypeMap[T];
   address?: Address;
   additionalParams?: AdditionalParamsMap[T];
+  atomic?: boolean;
 }
 
 export interface RapUnlockActionParameters {
@@ -80,6 +81,7 @@ export interface RapUnlockActionParameters {
   assetToUnlock: ParsedAsset;
   contractAddress: Address;
   chainId: number;
+  amount: string;
 }
 
 export interface RapClaimActionParameters {
@@ -165,6 +167,21 @@ export interface ActionProps<T extends RapActionTypes> {
   currentRap: Rap;
   gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
   gasFeeParamsBySpeed: SwapsGasFeeParamsBySpeed | GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
+}
+
+type PrepareActionQuoteMap = {
+  swap: Quote;
+  crosschainSwap: CrosschainQuote;
+  unlock: Quote | CrosschainQuote;
+  claim: Quote | CrosschainQuote;
+  claimBridge: Quote | CrosschainQuote;
+  claimClaimable: Quote | CrosschainQuote;
+};
+
+export interface PrepareActionProps<T extends RapActionTypes> {
+  parameters: RapActionParameterMap[T];
+  wallet: Signer;
+  quote: PrepareActionQuoteMap[T];
 }
 
 export interface WalletExecuteRapProps {

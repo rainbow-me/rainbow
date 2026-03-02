@@ -1,5 +1,5 @@
-import { BottomSheetProps } from '@gorhom/bottom-sheet';
-import { BackdropPressBehavior } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
+import { type BottomSheetProps } from '@gorhom/bottom-sheet';
+import { type BackdropPressBehavior } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
 import type {
   Descriptor,
   NavigationHelpers,

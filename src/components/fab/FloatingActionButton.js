@@ -5,7 +5,7 @@ import magicMemo from '@/utils/magicMemo';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import ButtonPressAnimation, { ScaleButtonZoomableAndroid } from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { borders, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { opacity } from '@/framework/ui/utils/opacity';

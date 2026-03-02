@@ -2,9 +2,9 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, Text, TextIcon, useForegroundColor } from '@/design-system';
-import { TextColor } from '@/design-system/color/palettes';
-import { TextWeight } from '@/design-system/components/Text/Text';
-import { TextSize } from '@/design-system/typography/typeHierarchy';
+import { type TextColor } from '@/design-system/color/palettes';
+import { type TextWeight } from '@/design-system/components/Text/Text';
+import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { useTheme } from '@/theme';
 import { opacity } from '@/framework/ui/utils/opacity';
 

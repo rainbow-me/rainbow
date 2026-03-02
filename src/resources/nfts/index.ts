@@ -1,10 +1,10 @@
-import { QueryFunction, useQuery } from '@tanstack/react-query';
-import { QueryConfigWithSelect, createQueryKey, queryClient } from '@/react-query';
-import { SimpleHashListing } from '@/resources/nfts/simplehash/types';
+import { type QueryFunction, useQuery } from '@tanstack/react-query';
+import { type QueryConfigWithSelect, createQueryKey, queryClient } from '@/react-query';
+import { type SimpleHashListing } from '@/resources/nfts/simplehash/types';
 import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
-import { UniqueAsset } from '@/entities/uniqueAssets';
+import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { arcClient } from '@/graphql';
-import { ChainId } from '@/state/backendNetworks/types';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { time } from '@/utils/time';
 
 const NFTS_STALE_TIME = time.minutes(10);

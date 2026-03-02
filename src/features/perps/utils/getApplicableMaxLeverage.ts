@@ -1,5 +1,5 @@
-import { PerpMarket } from '@/features/perps/types';
-import { greaterThanOrEqualToWorklet, mulWorklet } from '@/safe-math/SafeMath';
+import { type PerpMarket } from '@/features/perps/types';
+import { greaterThanOrEqualToWorklet, mulWorklet } from '@/framework/core/safeMath';
 
 /**
  * Calculate the applicable max leverage based on margin tiers for a given position size.

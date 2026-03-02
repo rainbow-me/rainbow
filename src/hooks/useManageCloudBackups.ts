@@ -1,7 +1,7 @@
 import { IS_ANDROID } from '@/env';
 import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 import {
-  GoogleDriveUserData,
+  type GoogleDriveUserData,
   deleteAllBackups,
   getGoogleAccountUserData,
   login,

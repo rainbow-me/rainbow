@@ -1,4 +1,4 @@
-import { AllRainbowWallets } from '@/model/wallet';
+import { type AllRainbowWallets } from '@/model/wallet';
 
 export default function doesWalletsContainAddress({ address, wallets }: { address: string; wallets: AllRainbowWallets }) {
   // eslint-disable-next-line @typescript-eslint/prefer-for-of

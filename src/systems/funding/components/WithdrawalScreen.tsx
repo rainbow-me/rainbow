@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { View } from 'react-native';
-import Animated, { SharedValue, useDerivedValue } from 'react-native-reanimated';
+import Animated, { type SharedValue, useDerivedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccountImage } from '@/components/AccountImage';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -19,8 +19,8 @@ import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsA
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { toFixedWorklet } from '@/safe-math/SafeMath';
-import { ChainId } from '@/state/backendNetworks/types';
+import { toFixedWorklet } from '@/framework/core/safeMath';
+import { type ChainId } from '@/state/backendNetworks/types';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { addCommasToNumber, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -29,13 +29,13 @@ import { useWithdrawalContext, WithdrawalProvider } from '../contexts/Withdrawal
 import { useWithdrawalController } from '../hooks/useWithdrawalController';
 import { useWithdrawalHandler } from '../hooks/useWithdrawalHandler';
 import {
-  BalanceQueryStore,
-  FundingScreenTheme,
-  WithdrawalConfig,
-  WithdrawalInfoCardConfig,
-  WithdrawalStoreType,
-  WithdrawalTokenData,
-  WithdrawalTokenStoreType,
+  type BalanceQueryStore,
+  type FundingScreenTheme,
+  type WithdrawalConfig,
+  type WithdrawalInfoCardConfig,
+  type WithdrawalStoreType,
+  type WithdrawalTokenData,
+  type WithdrawalTokenStoreType,
   getAccentColor,
 } from '../types';
 import { ChainSelectorButton } from './shared/ChainSelectorButton';

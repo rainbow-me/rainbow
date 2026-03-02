@@ -1,4 +1,4 @@
-import { getCreate2Address, Hex, keccak256, encodeAbiParameters, Address } from 'viem';
+import { getCreate2Address, type Hex, keccak256, encodeAbiParameters, type Address } from 'viem';
 
 const SAFE_INIT_CODE_HASH = '0x2bce2127ff07fb632d16c8347c4ebf501f4841168bed00d9e6ef715ddb6fcecf';
 

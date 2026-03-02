@@ -5,7 +5,7 @@ import TouchableBackdrop from '../components/TouchableBackdrop';
 import { ContactProfileState, WalletProfileState, NewWalletGroupState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import { useNavigation } from '@/navigation';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding, position } from '@/styles';
 import { DevTestBackupState } from '@/components/expanded-state/DevTestBackupState';
 

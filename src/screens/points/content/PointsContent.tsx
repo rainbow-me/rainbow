@@ -1,7 +1,6 @@
 import { analytics } from '@/analytics';
 import EthIcon from '@/assets/eth-icon.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { Page } from '@/components/layout';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
@@ -17,7 +16,7 @@ import {
   Inline,
   Inset,
   Separator,
-  Space,
+  type Space,
   Stack,
   Text,
   TextShadow,
@@ -27,7 +26,7 @@ import {
 } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_ANDROID, IS_TEST } from '@/env';
-import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
+import { type GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
@@ -41,7 +40,6 @@ import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { usePoints } from '@/resources/points';
 import { ChainId } from '@/state/backendNetworks/types';
-import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { useAccountAddress, useAccountProfileInfo, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme';
@@ -52,11 +50,11 @@ import { delay } from '@/utils/delay';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import { isNil } from 'lodash';
-import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { RefreshControl, Share, StyleProp, ViewStyle } from 'react-native';
-import FastImage, { Source } from 'react-native-fast-image';
+import React, { memo, useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { RefreshControl, Share, type StyleProp, type ViewStyle } from 'react-native';
+import FastImage, { type Source } from 'react-native-fast-image';
 import { ScrollView } from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
@@ -506,9 +504,7 @@ const RainbowText = memo(function RainbowText({ totalPointsString }: { totalPoin
 export function PointsContent() {
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
-  const { name } = useRoute();
   const { width: deviceWidth } = useDimensions();
-  const getCardIdsForScreen = remoteCardsStore(state => state.getCardIdsForScreen);
   const accountAddress = useAccountAddress();
   const { accountENS } = useAccountProfileInfo();
   const { setClipboard } = useClipboard();
@@ -527,8 +523,6 @@ export function PointsContent() {
   } = usePoints({
     walletAddress: accountAddress,
   });
-
-  const cardIds = useMemo(() => getCardIdsForScreen(name as keyof typeof Routes), [getCardIdsForScreen, name]);
 
   useFocusEffect(
     useCallback(() => {
@@ -657,7 +651,6 @@ export function PointsContent() {
                   </Box>
                 </Box>
                 <Box width="full" gap={24}>
-                  {!!cardIds.length && !isReadOnlyWallet && <RemoteCardCarousel key="remote-cards" />}
                   <InfoCards points={points} />
                 </Box>
                 <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />

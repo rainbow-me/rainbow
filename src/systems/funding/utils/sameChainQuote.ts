@@ -1,6 +1,5 @@
-import { buildRainbowQuoteUrl, Quote, QuoteError, QuoteParams, SwapType } from '@rainbow-me/swaps';
-
-import { isQuote, isQuoteError, shouldSuppressQuoteError } from './quotes';
+import { buildRainbowQuoteUrl, type Quote, type QuoteError, type QuoteParams, SwapType } from '@rainbow-me/swaps';
+import { isQuote, isQuoteError, shouldSuppressQuoteError } from '@/__swaps__/utils/quotes';
 
 // ============ Same-Chain Quote Fetching ====================================== //
 

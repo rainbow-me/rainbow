@@ -1,6 +1,6 @@
 /** @refresh reset */
 import React from 'react';
-import Animated, { DerivedValue, LinearTransition, SharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, { type DerivedValue, LinearTransition, type SharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { Bleed, Box, IconContainer, Text, TextShadow } from '@/design-system';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';

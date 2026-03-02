@@ -1,4 +1,4 @@
-import { FasterImageView, ImageOptions, type FasterImageProps } from '@candlefinance/faster-image';
+import { FasterImageView, type ImageOptions, type FasterImageProps } from '@candlefinance/faster-image';
 import React from 'react';
 import { Image } from 'react-native';
 import FastImage from 'react-native-fast-image';

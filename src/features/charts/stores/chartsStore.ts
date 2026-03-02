@@ -3,8 +3,8 @@ import { isHyperliquidToken } from '@/features/charts/utils';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
-import { Exact } from '@/types/objects';
-import { CandleResolution, ChartType, HyperliquidSymbol, LineChartTimePeriod, Token } from '../types';
+import { type Exact } from '@/types/objects';
+import { CandleResolution, ChartType, type HyperliquidSymbol, LineChartTimePeriod, type Token } from '../types';
 
 // ============ Charts Store =================================================== //
 

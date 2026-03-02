@@ -5,7 +5,7 @@ import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import * as i18n from '@/languages';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import { getIsReadOnlyWallet, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import styled from '@/styled-thing';
+import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 import React, { Fragment } from 'react';
 import { Share } from 'react-native';

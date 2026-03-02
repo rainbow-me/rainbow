@@ -1,4 +1,4 @@
-import { Colors } from '@/styles';
+import { type Colors } from '@/styles';
 
 export const getButtonDisabledBgColor = (colors: Colors) => ({
   dark: colors.darkGrey,
