@@ -3829,18 +3829,6 @@
               " tengah malam (12:00 AM UTC), ",
               "token terdepan dinobatkan sebagai pemenang harian."
             ]
-          },
-          "step_3": {
-            "title": "Menangkan Hadiah",
-            "subtitle_parts": [
-              "Pembeli Raja saat ini mendapatkan",
-              " 2x poin."
-            ],
-            "subtitle_two_parts": [
-              "Pencipta",
-              " mendapatkan poin ",
-              "ketika dinobatkan."
-            ]
           }
         }
       }
