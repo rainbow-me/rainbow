@@ -3668,18 +3668,6 @@
               " meia-noite (0:00 UTC), ",
               "o token líder é coroado o vencedor diário."
             ]
-          },
-          "step_3": {
-            "title": "Vencer Recompensas",
-            "subtitle_parts": [
-              "Compradores do Rei atual ganham",
-              " 2x pontos."
-            ],
-            "subtitle_two_parts": [
-              "Criadores",
-              " ganham pontos ",
-              "quando são coroados."
-            ]
           }
         }
       }
