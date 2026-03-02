@@ -2014,24 +2014,6 @@
       }
     },
     "promos": {
-      "swaps_launch": {
-        "primary_button": "􀖅 교환 해보기",
-        "secondary_button": "나중에 하기",
-        "info_row_1": {
-          "title": "당신이 좋아하는 모든 토큰을 교환하세요",
-          "description": "Rainbow는 귀하의 거래에 대해 최고의 요금을 찾기 위해 어디든지 검색합니다."
-        },
-        "info_row_2": {
-          "title": "L2에서 직접 교환",
-          "description": "Arbitrum, Optimism, Polygon 그리고 BSC에서 빠르고 저렴한 교환."
-        },
-        "info_row_3": {
-          "title": "Flashbots 보호",
-          "description": "가격 보호, 뿐만 아니라 실패한 교환에 대한 수수료 없음. 교환 설정에서 활성화하세요."
-        },
-        "header": "Rainbow에서의 교환",
-        "subheader": "재소개"
-      },
       "notifications_launch": {
         "primary_button": {
           "permissions_enabled": "구성",
@@ -2053,27 +2035,6 @@
         "header": "알림",
         "subheader": "소개합니다"
       }
-    },
-    "nft_offers_launch": {
-      "primary_button": {
-        "has_offers": "보기 제안",
-        "not_has_offers": "닫기"
-      },
-      "secondary_button": "나중에 하기",
-      "info_row_1": {
-        "title": "모든 제안을 한 곳에서",
-        "description": "모든 NFT 마켓 플레이스에서 제공되는 상품을 확인하세요."
-      },
-      "info_row_2": {
-        "title": "DApp에서 요청한 네임스페이스에 문제가 있습니다. 다시 시도하거나 Rainbow 및 DApp 지원 팀에 문의하십시오.",
-        "description": "1탭으로 제안을 수락하고 선택한 토큰으로 교환하세요."
-      },
-      "info_row_3": {
-        "title": "스마트 소트 모드",
-        "description": "바닥 가격과 비교하거나 가장 높은 가격 또는 최신 제안을 확인하세요."
-      },
-      "header": "제안",
-      "subheader": "소개합니다"
     },
     "review": {
       "alert": {

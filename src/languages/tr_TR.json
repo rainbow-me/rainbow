@@ -2014,24 +2014,6 @@
       }
     },
     "promos": {
-      "swaps_launch": {
-        "primary_button": "Bir değişim deneyin",
-        "secondary_button": "Belki sonra",
-        "info_row_1": {
-          "title": "Tüm favori jetonlarınızı değiştirin",
-          "description": "Rainbow, işleminiz için en iyi oranı bulmak adına her yeri arar."
-        },
-        "info_row_2": {
-          "title": "Doğrudan L2'de değiştirmek",
-          "description": "Arbitrum, Optimism, Polygon ve BSC üzerinde hızlı ve ucuz değişimler."
-        },
-        "info_row_3": {
-          "title": "Flashbots koruması",
-          "description": "Fiyat koruması, plus başarısız değişimlerde hiçbir ücret yok. Ayarlarda aktif hale getirin."
-        },
-        "header": "Rainbow'da Değişimler",
-        "subheader": "YENİDEN TANITMA"
-      },
       "notifications_launch": {
         "primary_button": {
           "permissions_enabled": "Yapılandır",
@@ -2053,27 +2035,6 @@
         "header": "Bildirimler",
         "subheader": "TANITIM"
       }
-    },
-    "nft_offers_launch": {
-      "primary_button": {
-        "has_offers": "Teklifleri Görüntüle",
-        "not_has_offers": "Kapat"
-      },
-      "secondary_button": "Belki Daha Sonra",
-      "info_row_1": {
-        "title": "Tekliflerinizin Hepsi Bir Arada",
-        "description": "Tüm NFT pazarlarında tekliflerinizi görüntüleyin."
-      },
-      "info_row_2": {
-        "title": "Gökkuşağından Kabul Edin",
-        "description": "Tek bir dokunuşla teklifleri kabul edin ve istediğiniz tokena geçin."
-      },
-      "info_row_3": {
-        "title": "Akıllı sıralama modları",
-        "description": "Taban fiyatlarla karşılaştırın veya en yüksek veya en son tekliflerinizi görüntüleyin."
-      },
-      "header": "Teklifler",
-      "subheader": "TANITIM"
     },
     "review": {
       "alert": {

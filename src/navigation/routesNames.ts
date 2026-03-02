@@ -82,7 +82,6 @@ const Routes = {
   SPEED_UP_AND_CANCEL_BOTTOM_SHEET: 'SpeedUpAndCancelBootomSheet',
   SPEED_UP_AND_CANCEL_SHEET: 'SpeedUpAndCancelSheet',
   STACK: 'Stack',
-  SWAPS_PROMO_SHEET: 'SwapsPromoSheet',
   SWIPE_LAYOUT: 'SwipeLayout',
   TRANSACTION_DETAILS: 'TransactionDetails',
   NO_NEED_WC_SHEET: 'NoNeedWCSheet',

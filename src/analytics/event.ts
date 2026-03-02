@@ -29,7 +29,6 @@ import { type WalletLibraryType } from '@/model/wallet';
  * All events, used by `analytics.track()`
  */
 export const event = {
-  excludedFromFeaturePromo: 'Excluded from Feature Promo',
   manuallyDisconnectedFromWalletConnectConnection: 'Manually disconnected from WalletConnect connection',
   receivedWcConnection: 'Received wc connection',
   resetAssetSelectionSend: 'Reset Asset Selection Send',
@@ -43,7 +42,6 @@ export const event = {
   tappedWatchAddress: 'Tapped Watch Address',
   toggledAnNFTAsHidden: 'Toggled an NFT as Hidden',
   viewedEnsProfile: 'Viewed ENS profile',
-  viewedFeaturePromo: 'Viewed Feature Promo',
   viewedProfile: 'Viewed profile',
   applicationBecameInteractive: 'Application became interactive',
   changedLanguage: 'Changed language',
@@ -91,18 +89,6 @@ export const event = {
   notificationPermissionDenied: 'notification_permission.denied',
   notificationPermissionSkipped: 'notification_permission.skipped',
 
-  // notification promo sheet was shown
-  notificationsPromoShown: 'notifications_promo.shown',
-  // only for iOS — initial prompt is not allowed — Android is enabled by default
-  notificationsPromoPermissionsBlocked: 'notifications_promo.permissions_blocked',
-  // only for iOS, Android is enabled by default
-  notificationsPromoPermissionsGranted: 'notifications_promo.permissions_granted',
-  // if initially blocked, user must go to system settings and manually turn on notys
-  notificationsPromoSystemSettingsOpened: 'notifications_promo.system_settings_opened',
-  // user enabled settings, and we sent them to our in-app settings
-  notificationsPromoNotificationSettingsOpened: 'notifications_promo.notification_settings_opened',
-  // user either swiped the sheet away, or clicked "Not Now"
-  notificationsPromoDismissed: 'notifications_promo.dismissed',
   notificationsPromoNotificationSettingsChanged: 'Changed Global Notification Settings',
   notificationsPromoTapped: 'Tapped Push Notification',
 
@@ -419,12 +405,6 @@ export type EventProperties = {
   [event.notificationPermissionGranted]: undefined;
   [event.notificationPermissionDenied]: undefined;
   [event.notificationPermissionSkipped]: undefined;
-  [event.notificationsPromoShown]: undefined;
-  [event.notificationsPromoPermissionsBlocked]: undefined;
-  [event.notificationsPromoPermissionsGranted]: undefined;
-  [event.notificationsPromoSystemSettingsOpened]: undefined;
-  [event.notificationsPromoNotificationSettingsOpened]: undefined;
-  [event.notificationsPromoDismissed]: undefined;
   [event.notificationsPromoNotificationSettingsChanged]: {
     topic: string;
     action: string;
@@ -1038,7 +1018,6 @@ export type EventProperties = {
   [event.changedLanguage]: { language: string };
   [event.changedNativeCurrency]: { currency: string };
   [event.changedNetwork]: { chainId: number };
-  [event.excludedFromFeaturePromo]: { campaign: string; exclusion: string; type: string };
   [event.manuallyDisconnectedFromWalletConnectConnection]: { dappName: string; dappUrl: string };
   [event.receivedWcConnection]: { dappName: string; dappUrl: string; waitingTime?: string | number };
   [event.resetAssetSelectionSend]: undefined;
@@ -1061,7 +1040,6 @@ export type EventProperties = {
     from: string;
     address?: string;
   };
-  [event.viewedFeaturePromo]: { campaign: string };
   [event.viewedProfile]: {
     category: string;
     fromRoute: string;
