@@ -5,10 +5,10 @@
 import { event } from '../event';
 
 export const analytics = {
+  init: jest.fn(),
   identify: jest.fn(),
   screen: jest.fn(),
   track: jest.fn(),
-  setDeviceId: jest.fn(),
   setWalletContext: jest.fn(),
   enable: jest.fn(),
   disable: jest.fn(),
