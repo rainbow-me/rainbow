@@ -1,57 +1,85 @@
 import { expect, test } from '@jest/globals';
 
-import { Analytics } from '@/analytics';
 import Routes from '@/navigation/routesNames';
 
-jest.mock('@rudderstack/rudder-sdk-react-native', () => ({
-  createClient() {
-    return {
-      track: jest.fn(),
-      identify: jest.fn(),
-      screen: jest.fn(),
-    };
-  },
+jest.mock('@/env', () => ({
+  IS_DEV: false,
+  IS_TEST: false,
+  IS_PROD: true,
+  IS_ANDROID: false,
 }));
 
-// TODO: Fix test. skipping for now to unblock CI
-describe.skip('@/analytics', () => {
-  test('track', () => {
+jest.mock('@/storage', () => ({
+  device: { get: jest.fn(() => undefined) },
+}));
+
+jest.mock('@rudderstack/rudder-sdk-react-native', () => ({
+  setup: jest.fn().mockResolvedValue(undefined),
+  track: jest.fn(),
+  identify: jest.fn(),
+  screen: jest.fn(),
+}));
+
+import { Analytics } from '@/analytics';
+
+const flushPromises = () => new Promise(resolve => setImmediate(resolve));
+
+describe('@/analytics', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('track', async () => {
     const analytics = new Analytics();
+    analytics.init({ deviceId: 'test-device' });
+    await flushPromises();
 
     analytics.setWalletContext({ walletAddressHash: 'hash', walletType: 'owned' });
     analytics.track(analytics.event.pressedButton);
 
     expect(analytics.client.track).toHaveBeenCalledWith(analytics.event.pressedButton, {
       walletAddressHash: 'hash',
+      walletType: 'owned',
     });
   });
 
-  test('identify', () => {
+  test('identify', async () => {
     const analytics = new Analytics();
+    analytics.init({ deviceId: 'id' });
+    await flushPromises();
 
     analytics.setWalletContext({ walletAddressHash: 'hash', walletType: 'owned' });
-    analytics.setDeviceId('id');
     analytics.identify({ currency: 'USD' });
 
-    expect(analytics.client.identify).toHaveBeenCalledWith('id', {
-      currency: 'USD',
-      walletAddressHash: 'hash',
-    });
+    expect(analytics.client.identify).toHaveBeenCalledWith(
+      'id',
+      {
+        currency: 'USD',
+        walletAddressHash: 'hash',
+        walletType: 'owned',
+      },
+      {}
+    );
   });
 
-  test('screen', () => {
+  test('screen', async () => {
     const analytics = new Analytics();
+    analytics.init({ deviceId: 'test-device' });
+    await flushPromises();
 
     analytics.setWalletContext({ walletAddressHash: 'hash', walletType: 'owned' });
     analytics.screen(Routes.BACKUP_SHEET);
 
     expect(analytics.client.screen).toHaveBeenCalledWith(Routes.BACKUP_SHEET, {
       walletAddressHash: 'hash',
+      walletType: 'owned',
     });
   });
 
-  test('disablement', () => {
+  test('disablement', async () => {
     const analytics = new Analytics();
+    analytics.init({ deviceId: 'test-device' });
+    await flushPromises();
 
     analytics.disable();
 

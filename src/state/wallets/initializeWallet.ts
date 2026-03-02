@@ -120,7 +120,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
 
     // Allows calling telemetry before currentAddress is available (i.e. onboarding)
     if (walletType || walletAddressHash) analytics.setWalletContext({ walletAddressHash, walletType });
-    analytics.setDeviceId(deviceId);
     analytics.identify();
 
     if (!switching) {

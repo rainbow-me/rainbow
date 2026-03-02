@@ -28,7 +28,7 @@ export class Analytics {
   private ready = false;
 
   private deviceBrand?: string;
-  private deviceId?: string = device.get(['id']);
+  private deviceId?: string;
   private deviceManufacturer?: string;
   private deviceModel?: string;
 
@@ -47,7 +47,16 @@ export class Analytics {
       this.deviceManufacturer = DeviceInfo.getManufacturerSync();
       this.deviceModel = DeviceInfo.getModel();
     }
+  }
 
+  /**
+   * Initialize analytics with the device ID and start the Rudderstack client.
+   * Must be called once during app startup, after `getOrCreateDeviceId()`.
+   */
+  init({ deviceId }: { deviceId: string }): void {
+    this.deviceId = deviceId;
+    if (this.disabled) return;
+    logger.debug('[Analytics]: Initialized with deviceId');
     this.ensureInit();
   }
 
@@ -85,15 +94,6 @@ export class Analytics {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
     this.enqueue(() => this.client.track(event, { ...metadata, ...walletContext, ...params }));
-  }
-
-  /**
-   * Set `deviceId` for use as the identifier. This DOES NOT call
-   * `identify()`, you must do that on your own.
-   */
-  setDeviceId(deviceId: string): void {
-    this.deviceId = deviceId;
-    logger.debug(`[Analytics]: Set deviceId on analytics instance`);
   }
 
   /**
