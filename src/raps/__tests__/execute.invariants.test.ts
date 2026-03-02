@@ -25,10 +25,6 @@ jest.mock('@/state/swaps/swapsStore', () => ({
   },
 }));
 
-jest.mock('@/systems/delegation/featureFlags', () => ({
-  isDelegationEnabled: jest.fn(),
-}));
-
 jest.mock('@/config/experimental', () => ({
   DELEGATION: 'delegation',
   getExperimentalFlag: jest.fn(() => false),
@@ -96,7 +92,8 @@ const ATOMIC_HASH = '0xatomic';
 
 const delegationModule = jest.requireMock('@rainbow-me/delegation');
 const performanceModule = jest.requireMock('@/state/performance/performance');
-const delegationFlagsModule = jest.requireMock('@/systems/delegation/featureFlags');
+const experimentalModule = jest.requireMock('@/config/experimental');
+const remoteConfigModule = jest.requireMock('@/model/remoteConfig');
 const web3Module = jest.requireMock('@/handlers/web3');
 const pendingTransactionsModule = jest.requireMock('@/state/pendingTransactions');
 const actionsModule = jest.requireMock('../actions');
@@ -106,7 +103,8 @@ const unlockAndSwapModule = jest.requireMock('../unlockAndSwap');
 const mockExecuteBatchedTransaction = delegationModule.executeBatchedTransaction;
 const mockSupportsDelegation = delegationModule.supportsDelegation;
 const mockExecuteFn = performanceModule.executeFn;
-const mockIsDelegationEnabled = delegationFlagsModule.isDelegationEnabled;
+const mockGetExperimentalFlag = experimentalModule.getExperimentalFlag;
+const mockGetRemoteConfig = remoteConfigModule.getRemoteConfig;
 const mockGetProvider = web3Module.getProvider;
 const mockAddNewTransaction = pendingTransactionsModule.addNewTransaction;
 const mockSwap = actionsModule.swap;
@@ -121,7 +119,8 @@ function setupExecuteHarness() {
   jest.clearAllMocks();
 
   mockExecuteFn.mockImplementation((fn: (...args: unknown[]) => unknown) => fn);
-  mockIsDelegationEnabled.mockReturnValue(true);
+  mockGetExperimentalFlag.mockReturnValue(false);
+  mockGetRemoteConfig.mockReturnValue({ delegation_enabled: true });
   mockSupportsDelegation.mockResolvedValue({ supported: true, reason: null });
 
   mockExecuteBatchedTransaction.mockResolvedValue({
