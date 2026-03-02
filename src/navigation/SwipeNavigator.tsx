@@ -114,7 +114,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
 
   const { dapp_browser, rnbw_rewards_enabled } = useRemoteConfig('dapp_browser', 'rnbw_rewards_enabled');
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
-  const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
+  const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled || IS_TEST;
 
   const numberOfTabs = 3 + (showRnbwRewardsTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
   const tabWidth = (deviceWidth - TAB_BAR_HORIZONTAL_INSET * 2 - TAB_BAR_INNER_PADDING * 2) / numberOfTabs;
@@ -580,7 +580,7 @@ const Swipe = createMaterialTopTabNavigator();
 
 const TabBarContainer = ({ descriptors, jumpTo, navigation, state }: MaterialTopTabBarProps) => {
   const { rnbw_rewards_enabled } = useRemoteConfig('rnbw_rewards_enabled');
-  const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
+  const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled || IS_TEST;
   const colorMode = useColorMode();
   const descriptorsRef = useRef(descriptors);
   const stateRef = useRef(state);
