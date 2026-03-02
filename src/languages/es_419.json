@@ -25,7 +25,6 @@
       "tab_showcase": "Escaparate",
       "tab_perps": "Perpetuos",
       "tab_polymarket": "Predicciones",
-      "tab_points": "Puntos",
       "tab_positions": "Posiciones",
       "tab_rewards": "Recompensas",
       "tab_transactions": "Transacciones",
@@ -2349,9 +2348,9 @@
             "name": "Puente e intercambio",
             "description": "Entre cadenas, problemas de intercambio"
           },
-          "points_rewards": {
-            "name": "Puntos y recompensas",
-            "description": "Puntos, airdrops, lanzamientos"
+          "rewards": {
+            "name": "Recompensas",
+            "description": "Recompensas, airdrops, lanzamientos"
           },
           "security": {
             "name": "Preocupaciones de seguridad",

@@ -25,7 +25,6 @@
       "tab_showcase": "Витрина",
       "tab_perps": "Perps",
       "tab_polymarket": "Прогнозы",
-      "tab_points": "Очки",
       "tab_positions": "Позиции",
       "tab_rewards": "Награды",
       "tab_transactions": "Транзакции",
@@ -2349,9 +2348,9 @@
             "name": "Мост и обмен",
             "description": "Кроссчейн, проблемы с обменом"
           },
-          "points_rewards": {
-            "name": "Баллы и награды",
-            "description": "Баллы, аирдропы, запуски"
+          "rewards": {
+            "name": "Награды",
+            "description": "Награды, аирдропы, запуски"
           },
           "security": {
             "name": "Проблемы безопасности",

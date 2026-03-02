@@ -25,7 +25,6 @@
       "tab_showcase": "शोकेस",
       "tab_perps": "परप्स",
       "tab_polymarket": "पेशगोई",
-      "tab_points": "अंक",
       "tab_positions": "पोजीशन्स",
       "tab_rewards": "इनाम",
       "tab_transactions": "लेन-देन",
@@ -2349,9 +2348,9 @@
             "name": "ब्रिज और स्वैप",
             "description": "क्रॉस-चेन, स्वैप समस्याएं"
           },
-          "points_rewards": {
-            "name": "पॉइंट्स और रिवार्ड्स",
-            "description": "पॉइंट्स, एयरड्रॉप, लॉन्च"
+          "rewards": {
+            "name": "रिवार्ड्स",
+            "description": "रिवार्ड्स, एयरड्रॉप, लॉन्च"
           },
           "security": {
             "name": "सुरक्षा संबंधी चिंताएँ",

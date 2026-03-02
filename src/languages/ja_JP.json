@@ -25,7 +25,6 @@
       "tab_showcase": "ショーケース",
       "tab_perps": "\"Perps\"",
       "tab_polymarket": "予測",
-      "tab_points": "ポイント",
       "tab_positions": "ポジション",
       "tab_rewards": "報酬",
       "tab_transactions": "取引",
@@ -2349,9 +2348,9 @@
             "name": "ブリッジとスワップ",
             "description": "クロスチェーン、スワップの問題"
           },
-          "points_rewards": {
-            "name": "ポイントと報酬",
-            "description": "ポイント、エアドロップ、ローンチ"
+          "rewards": {
+            "name": "報酬",
+            "description": "報酬、エアドロップ、ローンチ"
           },
           "security": {
             "name": "セキュリティ上の懸念",

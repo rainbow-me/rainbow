@@ -25,7 +25,6 @@
       "tab_showcase": "Pameran",
       "tab_perps": "Perps",
       "tab_polymarket": "Prediksi",
-      "tab_points": "Poin",
       "tab_positions": "Posisi",
       "tab_rewards": "Hadiah",
       "tab_transactions": "Transaksi",
@@ -2349,9 +2348,9 @@
             "name": "Bridge & Swap",
             "description": "Lintas-chain, masalah swap"
           },
-          "points_rewards": {
-            "name": "Poin & Hadiah",
-            "description": "Poin, airdrop, peluncuran"
+          "rewards": {
+            "name": "Hadiah",
+            "description": "Hadiah, airdrop, peluncuran"
           },
           "security": {
             "name": "Kekhawatiran Keamanan",

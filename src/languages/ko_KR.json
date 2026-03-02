@@ -25,7 +25,6 @@
       "tab_showcase": "쇼케이스",
       "tab_perps": "Perps",
       "tab_polymarket": "예측",
-      "tab_points": "포인트",
       "tab_positions": "포지션",
       "tab_rewards": "보상",
       "tab_transactions": "거래",
@@ -2349,9 +2348,9 @@
             "name": "브리지 및 스왑",
             "description": "크로스체인, 스왑 문제"
           },
-          "points_rewards": {
-            "name": "포인트 및 리워드",
-            "description": "포인트, 에어드랍, 출시"
+          "rewards": {
+            "name": "리워드",
+            "description": "리워드, 에어드랍, 출시"
           },
           "security": {
             "name": "보안 관련 우려 사항",

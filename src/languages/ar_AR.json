@@ -25,7 +25,6 @@
       "tab_showcase": "عرض",
       "tab_perps": "الرافعات المالية",
       "tab_polymarket": "التنبؤات",
-      "tab_points": "النقاط",
       "tab_positions": "المواقف",
       "tab_rewards": "المكافآت",
       "tab_transactions": "المعاملات",
@@ -2349,9 +2348,9 @@
             "name": "الجسر والمبادلة",
             "description": "عبر السلاسل، مشكلات المبادلة"
           },
-          "points_rewards": {
-            "name": "النقاط والمكافآت",
-            "description": "النقاط، الإسقاطات الجوية، الإطلاقات"
+          "rewards": {
+            "name": "المكافآت",
+            "description": "المكافآت، الإسقاطات الجوية، الإطلاقات"
           },
           "security": {
             "name": "مخاوف أمنية",

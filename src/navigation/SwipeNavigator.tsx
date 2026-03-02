@@ -665,7 +665,7 @@ function SwipeNavigatorScreens() {
 
   return (
     <Swipe.Navigator
-      // required to force re-render when showKingOfTheHillTab, showRnbwRewardsTab, showPointsTab or language changes
+      // required to force re-render when showKingOfTheHillTab, showRnbwRewardsTab or language changes
       key={key}
       initialLayout={deviceUtils.dimensions}
       initialRouteName={Routes.WALLET_SCREEN}

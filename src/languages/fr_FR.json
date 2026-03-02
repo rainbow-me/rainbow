@@ -25,7 +25,6 @@
       "tab_showcase": "Showcase",
       "tab_perps": "Perps",
       "tab_polymarket": "Prédictions",
-      "tab_points": "Points",
       "tab_positions": "Positions",
       "tab_rewards": "Récompenses",
       "tab_transactions": "Transactions",
@@ -2349,9 +2348,9 @@
             "name": "Bridge et swap",
             "description": "Cross-chain, problèmes de swap"
           },
-          "points_rewards": {
-            "name": "Points et récompenses",
-            "description": "Points, airdrops, lancements"
+          "rewards": {
+            "name": "Récompenses",
+            "description": "Récompenses, airdrops, lancements"
           },
           "security": {
             "name": "Préoccupations de sécurité",

@@ -25,7 +25,6 @@
       "tab_showcase": "展示",
       "tab_perps": "Perps",
       "tab_polymarket": "预测",
-      "tab_points": "积分",
       "tab_positions": "持仓",
       "tab_rewards": "奖励",
       "tab_transactions": "交易",
@@ -2349,9 +2348,9 @@
             "name": "桥接与兑换",
             "description": "跨链、兑换问题"
           },
-          "points_rewards": {
-            "name": "积分与奖励",
-            "description": "积分、空投、上线活动"
+          "rewards": {
+            "name": "奖励",
+            "description": "奖励、空投、上线活动"
           },
           "security": {
             "name": "安全问题",

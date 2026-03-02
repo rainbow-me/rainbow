@@ -25,7 +25,6 @@
       "tab_showcase": "โชว์เคส",
       "tab_perps": "Perps",
       "tab_polymarket": "การพยากรณ์",
-      "tab_points": "แต้ม",
       "tab_positions": "ตำแหน่ง",
       "tab_rewards": "รางวัล",
       "tab_transactions": "การทำธุรกรรม",
@@ -2349,9 +2348,9 @@
             "name": "บริดจ์และสวอป",
             "description": "ข้ามเชน ปัญหาการสวอป"
           },
-          "points_rewards": {
-            "name": "พอยท์และรางวัล",
-            "description": "พอยท์, airdrops, การเปิดตัว"
+          "rewards": {
+            "name": "รางวัล",
+            "description": "รางวัล, airdrops, การเปิดตัว"
           },
           "security": {
             "name": "ข้อกังวลด้านความปลอดภัย",

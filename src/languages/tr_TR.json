@@ -25,7 +25,6 @@
       "tab_showcase": "Vitrin",
       "tab_perps": "Vadeli İşlemler",
       "tab_polymarket": "Tahminler",
-      "tab_points": "Noktalar",
       "tab_positions": "Pozisyonlar",
       "tab_rewards": "Ödüller",
       "tab_transactions": "İşlemler",
@@ -2349,9 +2348,9 @@
             "name": "Köprü ve Takas",
             "description": "Zincirler arası, takas sorunları"
           },
-          "points_rewards": {
-            "name": "Puanlar ve Ödüller",
-            "description": "Puanlar, airdrop'lar, lansmanlar"
+          "rewards": {
+            "name": "Ödüller",
+            "description": "Ödüller, airdrop'lar, lansmanlar"
           },
           "security": {
             "name": "Güvenlik Endişeleri",
