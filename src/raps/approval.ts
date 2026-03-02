@@ -1,4 +1,4 @@
-import { type CrosschainQuote, ETH_ADDRESS, type Quote } from '@rainbow-me/swaps';
+import { type CrosschainQuote, ETH_ADDRESS, type Quote, SwapType } from '@rainbow-me/swaps';
 import type { Address } from 'viem';
 import { type ChainId } from '@/state/backendNetworks/types';
 import { needsTokenApproval } from './actions/unlock';
@@ -16,15 +16,6 @@ type ApprovalRequirement = {
   allowanceTargetAddress: Address | null;
   requiresApprove: boolean;
 };
-
-function isNativeSellToken(sellTokenAddress: string): boolean {
-  return sellTokenAddress.toLowerCase() === ETH_ADDRESS.toLowerCase();
-}
-
-function resolveAllowanceTargetAddress(quote: SwapLikeQuote): Address | null {
-  if (isNativeSellToken(quote.sellTokenAddress)) return null;
-  return getQuoteAllowanceTargetAddress(quote);
-}
 
 /**
  * Resolves whether an ERC20 sell path needs an approval unlock before swap execution.
@@ -51,4 +42,18 @@ export async function resolveApprovalRequirement({
   });
 
   return { allowanceTargetAddress, requiresApprove };
+}
+
+function resolveAllowanceTargetAddress(quote: SwapLikeQuote): Address | null {
+  if (isWrappedNativeSwap(quote)) return null;
+  if (isNativeSellToken(quote.sellTokenAddress)) return null;
+  return getQuoteAllowanceTargetAddress(quote);
+}
+
+function isWrappedNativeSwap(quote: SwapLikeQuote): boolean {
+  return quote.swapType === SwapType.wrap || quote.swapType === SwapType.unwrap;
+}
+
+function isNativeSellToken(sellTokenAddress: string): boolean {
+  return sellTokenAddress.toLowerCase() === ETH_ADDRESS.toLowerCase();
 }
