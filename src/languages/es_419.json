@@ -3668,18 +3668,6 @@
               " medianoche (12:00 AM UTC), ",
               "el token líder es coronado ganador diario."
             ]
-          },
-          "step_3": {
-            "title": "Gana Recompensas",
-            "subtitle_parts": [
-              "Compradores del Rey actual obtienen",
-              " 2x puntos."
-            ],
-            "subtitle_two_parts": [
-              "Creadores",
-              " ganan puntos ",
-              "cuando son coronados."
-            ]
           }
         }
       }
