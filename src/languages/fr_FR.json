@@ -3668,18 +3668,6 @@
               " minuit (12:00 AM UTC), ",
               "le jeton en tête est couronné gagnant du jour."
             ]
-          },
-          "step_3": {
-            "title": "Gagner des récompenses",
-            "subtitle_parts": [
-              "Les acheteurs du roi actuel obtiennent",
-              " 2x points."
-            ],
-            "subtitle_two_parts": [
-              "Créateurs",
-              " gagnent des points ",
-              "lorsqu'ils sont couronnés."
-            ]
           }
         }
       }
