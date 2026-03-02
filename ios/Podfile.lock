@@ -160,6 +160,7 @@ PODS:
   - FirebaseSharedSwift (10.29.0)
   - FLAnimatedImage (1.0.17)
   - fmt (11.0.2)
+  - ForkInputMask (7.3.3)
   - glog (0.3.5)
   - GoogleAppMeasurement (10.27.0):
     - GoogleAppMeasurement/AdIdSupport (= 10.27.0)
@@ -1645,6 +1646,31 @@ PODS:
     - React-jsiexecutor
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
+  - react-native-advanced-input-mask (1.4.6):
+    - DoubleConversion
+    - ForkInputMask (~> 7.3.2)
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-aes-crypto (2.0.2):
     - React-Core
   - react-native-animateable-text (0.16.0-beta.0):
@@ -1872,9 +1898,6 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-text-input-mask (2.0.0):
-    - React
-    - RNInputMask
   - react-native-udp (2.7.0):
     - CocoaAsyncSocket
     - React
@@ -2407,7 +2430,6 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNInputMask (4.1.0)
   - RNKeychain (10.0.0):
     - DoubleConversion
     - glog
@@ -2761,6 +2783,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
+  - react-native-advanced-input-mask (from `../node_modules/react-native-advanced-input-mask`)
   - react-native-aes-crypto (from `../node_modules/react-native-aes-crypto`)
   - react-native-animateable-text (from `../node_modules/react-native-animateable-text`)
   - react-native-ble-plx (from `../node_modules/react-native-ble-plx`)
@@ -2784,7 +2807,6 @@ DEPENDENCIES:
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-screen-corner-radius (from `../node_modules/react-native-screen-corner-radius`)
   - "react-native-skia (from `../node_modules/@shopify/react-native-skia`)"
-  - react-native-text-input-mask (from `../node_modules/react-native-text-input-mask`)
   - react-native-udp (from `../node_modules/react-native-udp`)
   - react-native-version-number (from `../node_modules/react-native-version-number`)
   - react-native-video (from `../node_modules/react-native-video`)
@@ -2838,7 +2860,6 @@ DEPENDENCIES:
   - "RNFlashList (from `../node_modules/@shopify/flash-list`)"
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
-  - RNInputMask (from `../node_modules/react-native-text-input-mask/ios/InputMask`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNOS (from `../node_modules/react-native-os`)
@@ -2879,6 +2900,7 @@ SPEC REPOS:
     - FirebaseRemoteConfigInterop
     - FirebaseSharedSwift
     - FLAnimatedImage
+    - ForkInputMask
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleUtilities
@@ -3024,6 +3046,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+  react-native-advanced-input-mask:
+    :path: "../node_modules/react-native-advanced-input-mask"
   react-native-aes-crypto:
     :path: "../node_modules/react-native-aes-crypto"
   react-native-animateable-text:
@@ -3070,8 +3094,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screen-corner-radius"
   react-native-skia:
     :path: "../node_modules/@shopify/react-native-skia"
-  react-native-text-input-mask:
-    :path: "../node_modules/react-native-text-input-mask"
   react-native-udp:
     :path: "../node_modules/react-native-udp"
   react-native-version-number:
@@ -3178,8 +3200,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fs"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
-  RNInputMask:
-    :path: "../node_modules/react-native-text-input-mask/ios/InputMask"
   RNKeychain:
     :path: "../node_modules/react-native-keychain"
   RNNotifee:
@@ -3259,6 +3279,7 @@ SPEC CHECKSUMS:
   FirebaseSharedSwift: 20530f495084b8d840f78a100d8c5ee613375f6e
   FLAnimatedImage: bbf914596368867157cc71b38a8ec834b3eeb32b
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
+  ForkInputMask: 55e3fbab504b22da98483e9f9a6514b98fdd2f3c
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   GoogleAppMeasurement: f65fc137531af9ad647f1c0a42f3b6a4d3a98049
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
@@ -3310,6 +3331,7 @@ SPEC CHECKSUMS:
   React-logger: 85fa3509931497c72ccd2547fcc91e7299d8591e
   React-Mapbuffer: 96a2f2a176268581733be182fa6eebab1c0193be
   React-microtasksnativemodule: bda561d2648e1e52bd9e5a87f8889836bdbde2e2
+  react-native-advanced-input-mask: 24bbb73eb35d3947729cfa72b63dcbb1838cc8a2
   react-native-aes-crypto: 598b531c1dcdec9830e0475459c53e13e01fcbf0
   react-native-animateable-text: 601c0df62a50bf2d603e4c6800e7db4ab9c581eb
   react-native-ble-plx: 77db31f067bba0f74b6ba2c81c6b521849a524b1
@@ -3333,7 +3355,6 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: 9d72abf6d8473da73033b597090a80b709c0b2f1
   react-native-screen-corner-radius: ebd0d3258fcc894571b41d25ee3db7569d375153
   react-native-skia: 3467bce4be38029a4af437022b88a45e68f4210e
-  react-native-text-input-mask: b83b8b571cba4bf18fb9b7a0bb8319a14201db9e
   react-native-udp: afd81d997ff141501da6ac680667fd8319545da1
   react-native-version-number: 3d74b5224ca4e1032b1593937d86d3f3c94bf95c
   react-native-video: 6fa10431df5753a4f40ff054898a3634f7123c5e
@@ -3387,7 +3408,6 @@ SPEC CHECKSUMS:
   RNFlashList: bf81b67825dd3fca7c3a0624b9c93dd129f2c903
   RNFS: 3557d4b8e51925b011e787094600d6e05dca414e
   RNGestureHandler: 43ff77261c9f3cfcfd195aa16860bfdcfe108ef5
-  RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeychain: b060a891b105741c67da179f4d88ed87960f22e7
   RNNotifee: 8768d065bf1e2f9f8f347b4bd79147431c7eacd6
   RNOS: 5589ece6158813d4a9b7e098c8cbd35162f63fae
@@ -3418,6 +3438,6 @@ SPEC CHECKSUMS:
   VisionCamera: b51af005669c6642dd1b4fca434eda4c1778de87
   Yoga: adb397651e1c00672c12e9495babca70777e411e
 
-PODFILE CHECKSUM: 2c024b751b7adfb610c5cfe99ad28ac6e52fac94
+PODFILE CHECKSUM: 6613d6a9557f5d33f2c2fa22c3ffdb46fd2761b8
 
 COCOAPODS: 1.16.2

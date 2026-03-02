@@ -78,7 +78,6 @@ target 'Rainbow' do
 
   pod 'FLAnimatedImage'
   pod 'libwebp'
-  pod 'RNInputMask', :path => '../node_modules/react-native-text-input-mask/ios/InputMask'
 
   permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
