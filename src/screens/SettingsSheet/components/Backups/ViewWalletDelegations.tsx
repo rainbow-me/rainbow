@@ -1,7 +1,7 @@
 import { type RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text as NativeText, Alert } from 'react-native';
-import { Box, Separator, Stack, Text } from '@/design-system';
+import { Box, Separator, Stack, Text, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import Menu from '../Menu';
@@ -62,7 +62,9 @@ const SmartWalletStatusBadge = ({ status, text }: SmartWalletStatusBadgeProps) =
   const isActive = status === 'active';
   const { colors } = useTheme();
 
-  const labelColor = isActive ? 'rgba(245, 248, 255, 0.76)' : 'rgba(245, 248, 255, 0.56)';
+  const labelSecondary = useForegroundColor('labelSecondary');
+  const labelTertiary = useForegroundColor('labelTertiary');
+  const labelColor = isActive ? labelSecondary : labelTertiary;
 
   return (
     <GradientBorderView
@@ -328,81 +330,80 @@ export const ViewWalletDelegations = () => {
       <Stack space="20px">
         {/* Smart Wallet Status Card */}
         <Box>
-          <Menu>
-            <Box borderRadius={24} shadow="18px" background="surfaceSecondary">
-              <GradientBorderView
-                borderGradientColors={['rgba(59, 127, 255, 0.16)', 'rgba(183, 36, 173, 0.16)', 'rgba(25, 0, 45, 0.16)']}
-                borderWidth={1.667}
+          <Menu background="surfaceSecondary" borderRadius={24}>
+            <GradientBorderView
+              borderGradientColors={['rgba(59, 127, 255, 0.16)', 'rgba(183, 36, 173, 0.16)', 'rgba(25, 0, 45, 0.16)']}
+              borderWidth={1.667}
+              borderRadius={24}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1.25, y: 1.25 }}
+            >
+              {/* Background Gradient */}
+              <Box
+                as={LinearGradient}
                 borderRadius={24}
+                colors={['rgba(0, 68, 195, 0.2)', 'rgba(87, 0, 81, 0.2)', 'rgba(25, 0, 45, 0.2)', 'rgba(0, 0, 0, 0.2)']}
+                locations={[0.096, 0.54, 0.82, 1]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-              >
-                {/* Background Gradient */}
-                <Box
-                  as={LinearGradient}
-                  colors={['rgba(0, 68, 195, 0.2)', 'rgba(87, 0, 81, 0.2)', 'rgba(25, 0, 45, 0.2)', 'rgba(0, 0, 0, 0.2)']}
-                  locations={[0.096, 0.54, 0.82, 1]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={StyleSheet.absoluteFill}
-                />
+                style={StyleSheet.absoluteFill}
+              />
 
-                {/* Content */}
-                <Box paddingVertical="20px" paddingHorizontal="36px">
-                  <Stack space="12px" alignHorizontal="center">
-                    {/* Lock Icon with Gradient */}
-                    <Box
-                      width={{ custom: 36 }}
-                      height={{ custom: 36 }}
-                      borderRadius={12}
-                      borderWidth={1.333}
-                      borderColor={{ custom: 'rgba(255, 255, 255, 0.1)' }}
-                    >
-                      <LinearGradient
-                        colors={['#3b7fff', '#b724ad', '#19002d']}
-                        locations={[0.043, 0.887, 1]}
-                        start={{ x: 0, y: 1 }}
-                        end={{ x: 1, y: 0 }}
-                        style={StyleSheet.absoluteFill}
-                      />
-                      <Box alignItems="center" justifyContent="center" width="full" height="full">
-                        <Text
-                          color="white"
-                          size="20pt"
-                          weight="heavy"
-                          align="center"
-                          style={{
-                            textShadowColor: 'rgba(0, 0, 0, 0.15)',
-                            textShadowOffset: { width: 0, height: 1.5 },
-                            textShadowRadius: 4,
-                          }}
-                        >
-                          􀎡
-                        </Text>
-                      </Box>
-                    </Box>
-
-                    {/* Title */}
-                    <Text color="label" size="20pt" weight="heavy" align="center">
-                      {i18n.t(i18n.l.wallet.delegations.smart_wallet)}
-                    </Text>
-
-                    {/* Status Badge */}
-                    <SmartWalletStatusBadge
-                      status={isSmartWalletDisabled ? 'disabled' : 'active'}
-                      text={i18n.t(isSmartWalletDisabled ? i18n.l.wallet.delegations.not_active : i18n.l.wallet.delegations.active)}
+              {/* Content */}
+              <Box paddingVertical="20px" paddingHorizontal="36px">
+                <Stack space="12px" alignHorizontal="center">
+                  {/* Lock Icon with Gradient */}
+                  <Box
+                    width={{ custom: 36 }}
+                    height={{ custom: 36 }}
+                    borderRadius={12}
+                    borderWidth={1.333}
+                    borderColor={{ custom: 'rgba(255, 255, 255, 0.1)' }}
+                  >
+                    <LinearGradient
+                      colors={['#3b7fff', '#b724ad', '#19002d']}
+                      locations={[0.043, 0.887, 1]}
+                      start={{ x: 0, y: 1 }}
+                      end={{ x: 1, y: 0 }}
+                      style={StyleSheet.absoluteFill}
                     />
-
-                    {/* Description */}
-                    <Box width={{ custom: 288 }}>
-                      <Text color="labelQuaternary" size="13pt" weight="semibold" align="center" style={{ lineHeight: 17.55 }}>
-                        {i18n.t(i18n.l.wallet.delegations.smart_wallet_description)}
+                    <Box alignItems="center" justifyContent="center" width="full" height="full">
+                      <Text
+                        color="white"
+                        size="20pt"
+                        weight="heavy"
+                        align="center"
+                        style={{
+                          textShadowColor: 'rgba(0, 0, 0, 0.15)',
+                          textShadowOffset: { width: 0, height: 1.5 },
+                          textShadowRadius: 4,
+                        }}
+                      >
+                        􀎡
                       </Text>
                     </Box>
-                  </Stack>
-                </Box>
-              </GradientBorderView>
-            </Box>
+                  </Box>
+
+                  {/* Title */}
+                  <Text color="label" size="20pt" weight="heavy" align="center">
+                    {i18n.t(i18n.l.wallet.delegations.smart_wallet)}
+                  </Text>
+
+                  {/* Status Badge */}
+                  <SmartWalletStatusBadge
+                    status={isSmartWalletDisabled ? 'disabled' : 'active'}
+                    text={i18n.t(isSmartWalletDisabled ? i18n.l.wallet.delegations.not_active : i18n.l.wallet.delegations.active)}
+                  />
+
+                  {/* Description */}
+                  <Box width={{ custom: 288 }}>
+                    <Text color="labelQuaternary" size="13pt" weight="semibold" align="center" style={{ lineHeight: 17.55 }}>
+                      {i18n.t(i18n.l.wallet.delegations.smart_wallet_description)}
+                    </Text>
+                  </Box>
+                </Stack>
+              </Box>
+            </GradientBorderView>
           </Menu>
         </Box>
 

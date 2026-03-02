@@ -562,7 +562,23 @@
       "reset_experimental_config": "Atur Ulang Konfigurasi Eksperimental",
       "status": "Status",
       "sync_codepush": "Sinkronisasi CodePush",
-      "simulate_device_transfer": "Simulasikan Transfer Perangkat"
+      "simulate_device_transfer": "Simulasikan Transfer Perangkat",
+      "headers": {
+        "normie_settings": "Pengaturan Normie",
+        "rainbow_developer_settings": "Pengaturan Pengembang Rainbow",
+        "feature_flags": "Flag Fitur",
+        "delegation_settings": "Pengaturan Delegasi"
+      },
+      "delegation_settings": {
+        "clear_store": "Hapus Penyimpanan Delegasi",
+        "simulate_disable_smart_wallet": "Simulasikan Nonaktifkan Smart Wallet",
+        "simulate_disable_single_network": "Simulasikan Nonaktifkan Jaringan Tunggal",
+        "simulate_disable_third_party": "Simulasikan Nonaktifkan Pihak Ketiga",
+        "simulate_alert_vulnerability": "Simulasikan Peringatan Kerentanan",
+        "simulate_alert_bug": "Simulasikan Bug Peringatan",
+        "simulate_alert_unrecognized": "Simulasikan Peringatan Tidak Dikenali",
+        "simulate_alert_unspecified": "Simulasikan Peringatan Tidak Ditentukan"
+      }
     },
     "discover": {
       "pulse": {
@@ -885,6 +901,7 @@
         "minimum_received": "Minimum yang diterima",
         "preferred_network": "Jaringan yang Disukai",
         "rainbow_fee": "Termasuk biaya Rainbow",
+        "smart_wallet_activation_fee": "Perkiraan Biaya Smart Wallet",
         "settings": "Pengaturan"
       },
       "token_index": {
@@ -1039,6 +1056,10 @@
       "gas": {
         "text": "Ini adalah \"biaya gas\" yang digunakan oleh blockchain %{networkName} untuk memvalidasi transaksi Anda dengan aman.\n\nBiaya ini bervariasi tergantung pada kompleksitas transaksi Anda dan seberapa sibuk jaringan tersebut!",
         "title": "Biaya jaringan %{networkName}"
+      },
+      "smart_wallet_activation": {
+        "text": "Transaksi ini mencakup aktivasi Smart Wallet satu kali di %{networkName}. Ini meningkatkan dompet Anda agar mendukung transaksi batch dan fitur akun pintar lainnya.\n\nBiaya aktivasi sudah termasuk dalam biaya jaringan untuk swap ini.",
+        "title": "Aktivasi Smart Wallet"
       },
       "max_base_fee": {
         "text": "Ini adalah biaya dasar maksimum yang Anda bersedia bayar untuk transaksi ini.\n\nMengatur biaya dasar maksimum yang lebih tinggi mencegah transaksi Anda macet jika biaya naik.",
@@ -2705,6 +2726,16 @@
           "confirmed": "Dicabut",
           "failed": "Pencabutan Gagal"
         },
+        "delegate": {
+          "pending": "Mendelegasikan",
+          "confirmed": "Disetujui",
+          "failed": "Delegasi Gagal"
+        },
+        "revoke_delegation": {
+          "pending": "Mencabut",
+          "confirmed": "Dicabut",
+          "failed": "Pencabutan Gagal"
+        },
         "sale": {
           "pending": "Menjual",
           "confirmed": "Dijual",
@@ -2744,6 +2775,8 @@
       "savings": "Tabungan",
       "signed": "Ditandatangani",
       "contract_interaction": "Interaksi Kontrak",
+      "delegate_description": "Delegasi Dompet",
+      "revoke_delegation_description": "Delegasi Dompet",
       "deposited_with_token": "Menyetor %{name}",
       "withdrew_with_token": "Menarik %{name}"
     },
@@ -2756,6 +2789,7 @@
       "network_fee": "Biaya Jaringan",
       "hash_copied": "􀁣 Hash transaksi disalin",
       "address_copied": "􀁣 Alamat disalin",
+      "smart_account": "Akun Pintar",
       "try_again": "􀅉 Coba lagi",
       "context_menu": {
         "copy_address": "Salin Alamat",
@@ -3007,7 +3041,51 @@
         "cloud_backup_link": "Pelajari lebih lanjut…",
         "view_secret_phrase": "Lihat Frasa Rahasia",
         "view_private_key": "Lihat Kunci Pribadi",
-        "copy_wallet_address": "Salin alamat dompet"
+        "copy_wallet_address": "Salin Alamat",
+        "edit_smart_wallet": "Edit Smart Wallet"
+      },
+      "delegations": {
+        "active": "Aktif",
+        "not_active": "Tidak aktif",
+        "smart_wallet": "Smart Wallet",
+        "smart_wallet_description": "Smart wallet memungkinkan pengalaman dompet yang lebih cepat, lebih murah, dan lebih andal.",
+        "activated_networks": "Jaringan yang Diaktifkan",
+        "other_smart_accounts": "Akun Pintar Lainnya",
+        "delegated_to": "Didelegasikan ke %{name}",
+        "delegated_to_another_wallet": "Didelegasikan ke dompet lain",
+        "enable_smart_wallet": "Aktifkan Smart Wallet",
+        "disable_smart_wallet": "Nonaktifkan Smart Wallet",
+        "enabled_description": "Anda akan kehilangan transaksi yang lebih cepat dan biaya jaringan yang lebih rendah",
+        "disabled_description": "Pembaruan akan berlaku pada swap Anda berikutnya",
+        "will_delegate_callout": "Mencakup aktivasi smart wallet",
+        "revoke_panel": {
+          "disable_smart_wallet_title": "Nonaktifkan Smart Wallet",
+          "disable_smart_wallet_subtitle": "Ini akan mencabut semua delegasi aktif dan menonaktifkan fitur Smart Wallet.",
+          "disable_smart_wallet_button": "Tahan untuk Menonaktifkan",
+          "disable_single_network_title": "Nonaktifkan di %{network}",
+          "disable_single_network_subtitle": "Ini akan menghapus delegasi Smart Wallet untuk jaringan ini.",
+          "disable_single_network_button": "Tahan untuk Menonaktifkan",
+          "disable_third_party_title": "Nonaktifkan Akun",
+          "disable_third_party_subtitle": "Dompet Anda didelegasikan ke Smart Wallet yang berbeda. Nonaktifkan untuk menggunakan Rainbow.",
+          "disable_third_party_button": "Tahan untuk Menonaktifkan",
+          "alert_vulnerability_title": "Keamanan Smart Wallet",
+          "alert_vulnerability_subtitle": "Kerentanan terdeteksi di kontrak Smart Wallet Anda. Cabut sebagai tindakan pencegahan untuk melindungi aset Anda.",
+          "alert_vulnerability_button": "Tahan untuk Mencabut",
+          "alert_bug_title": "Masalah Smart Wallet",
+          "alert_bug_subtitle": "Masalah terdeteksi pada kontrak Smart Wallet Anda. Cabut untuk meningkatkan pengalaman dompet Anda.",
+          "alert_bug_button": "Tahan untuk Mencabut",
+          "alert_unrecognized_title": "Delegasi Berisiko",
+          "alert_unrecognized_subtitle": "Kontrak delegasi yang tidak dikenali dan berisiko terdeteksi. Cabut untuk mengamankan dompet Anda.",
+          "alert_unrecognized_button": "Tahan untuk Mencabut",
+          "alert_unspecified_title": "Masalah Delegasi",
+          "alert_unspecified_subtitle": "Dompet Anda saat ini didelegasikan ke kontrak pintar yang berisiko. Cabut untuk mengamankan dompet Anda.",
+          "alert_unspecified_button": "Tahan untuk Mencabut",
+          "revoking": "Mencabut...",
+          "done": "Selesai",
+          "next": "Selanjutnya",
+          "try_again": "Coba Lagi",
+          "gas_fee": "untuk mencabut di %{chainName}"
+        }
       },
       "balance_title": "Saldo",
       "buy": "Beli",
@@ -3016,6 +3094,10 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Menonton",
         "ledger": "Ledger",
+        "delegated": "Didelegasikan",
+        "alt_delegation": "Delegasi Alt",
+        "not_delegated": "Tidak Didelegasikan",
+        "disabled": "Nonaktif",
         "wallets": "Dompet",
         "all_wallets": "Semua Dompet",
         "total_balance": "Total Saldo",

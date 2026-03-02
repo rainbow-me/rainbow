@@ -562,7 +562,23 @@
       "reset_experimental_config": "Сбросить экспериментальную конфигурацию",
       "status": "Статус",
       "sync_codepush": "Синхронизировать CodePush",
-      "simulate_device_transfer": "Симуляция передачи устройства"
+      "simulate_device_transfer": "Симуляция передачи устройства",
+      "headers": {
+        "normie_settings": "Настройки для новичков",
+        "rainbow_developer_settings": "Настройки разработчика Rainbow",
+        "feature_flags": "Флаги функций",
+        "delegation_settings": "Настройки делегирования"
+      },
+      "delegation_settings": {
+        "clear_store": "Очистить хранилище делегирования",
+        "simulate_disable_smart_wallet": "Симулировать отключение Smart Wallet",
+        "simulate_disable_single_network": "Симулировать отключение одной сети",
+        "simulate_disable_third_party": "Симулировать отключение стороннего сервиса",
+        "simulate_alert_vulnerability": "Симулировать предупреждение об уязвимости",
+        "simulate_alert_bug": "Симулировать уведомление об ошибке",
+        "simulate_alert_unrecognized": "Симулировать уведомление: не распознано",
+        "simulate_alert_unspecified": "Симулировать уведомление: не указано"
+      }
     },
     "discover": {
       "pulse": {
@@ -885,6 +901,7 @@
         "minimum_received": "Минимальная получаемая",
         "preferred_network": "Предпочитаемая сеть",
         "rainbow_fee": "Включена комиссия Rainbow",
+        "smart_wallet_activation_fee": "Оценка комиссии Smart Wallet",
         "settings": "Настройки"
       },
       "token_index": {
@@ -1039,6 +1056,10 @@
       "gas": {
         "text": "Это \"плата за газ\", используемая блокчейном %{networkName} для надежной проверки вашей транзакции.\n\nЭта плата может варьироваться в зависимости от сложности вашей транзакции и загруженности сети!",
         "title": "%{networkName} сетевая комиссия"
+      },
+      "smart_wallet_activation": {
+        "text": "Эта транзакция включает одноразовую активацию Smart Wallet в сети %{networkName}. Это обновляет ваш кошелек, чтобы поддерживать пакетные транзакции и другие функции smart account.\n\nПлата за активацию включена в сетевую комиссию этого свапа.",
+        "title": "Активация Smart Wallet"
       },
       "max_base_fee": {
         "text": "Это максимальная базовая комиссия, которую вы готовы заплатить за эту транзакцию.\n\nУстановка более высокой максимальной базовой комиссии предотвращает застревание вашей транзакции, если комиссии увеличиваются.",
@@ -2705,6 +2726,16 @@
           "confirmed": "Отозвано",
           "failed": "Отзыв не удался"
         },
+        "delegate": {
+          "pending": "Делегирование",
+          "confirmed": "Подтвержденные",
+          "failed": "Делегирование не удалось"
+        },
+        "revoke_delegation": {
+          "pending": "Отзыв",
+          "confirmed": "Отозвано",
+          "failed": "Отзыв не удался"
+        },
         "sale": {
           "pending": "Продажа",
           "confirmed": "Проданные",
@@ -2744,6 +2775,8 @@
       "savings": "Сбережения",
       "signed": "Подписано",
       "contract_interaction": "Взаимодействие с контрактом",
+      "delegate_description": "Делегирование кошелька",
+      "revoke_delegation_description": "Делегирование кошелька",
       "deposited_with_token": "Внесено %{name}",
       "withdrew_with_token": "Снято %{name}"
     },
@@ -2756,6 +2789,7 @@
       "network_fee": "Сетевая комиссия",
       "hash_copied": "􀁣 Скопирован хэш транзакции",
       "address_copied": "􀁣 Скопирован адрес",
+      "smart_account": "Smart Account",
       "try_again": "􀅉 Попробуйте снова",
       "context_menu": {
         "copy_address": "Скопировать адрес",
@@ -3007,7 +3041,51 @@
         "cloud_backup_link": "Узнать больше…",
         "view_secret_phrase": "Просмотреть Секретную фразу",
         "view_private_key": "Просмотреть Приватный Ключ",
-        "copy_wallet_address": "Скопировать адрес кошелька"
+        "copy_wallet_address": "Скопировать адрес",
+        "edit_smart_wallet": "Редактировать Smart Wallet"
+      },
+      "delegations": {
+        "active": "Активен",
+        "not_active": "Не активен",
+        "smart_wallet": "Smart Wallet",
+        "smart_wallet_description": "Smart Wallet обеспечивают более быстрый, более дешевый и более надежный опыт использования кошелька.",
+        "activated_networks": "Активированные сети",
+        "other_smart_accounts": "Другие Smart Account",
+        "delegated_to": "Делегировано для %{name}",
+        "delegated_to_another_wallet": "Делегировано другому кошельку",
+        "enable_smart_wallet": "Включить Smart Wallet",
+        "disable_smart_wallet": "Отключить Smart Wallet",
+        "enabled_description": "Вы лишитесь более быстрых транзакций и более низких сетевых расходов",
+        "disabled_description": "Обновления вступят в силу при следующем свапе",
+        "will_delegate_callout": "Включает активацию Smart Wallet",
+        "revoke_panel": {
+          "disable_smart_wallet_title": "Отключить Smart Wallet",
+          "disable_smart_wallet_subtitle": "Это отзовет все активные делегирования и отключит функции Smart Wallet.",
+          "disable_smart_wallet_button": "Удерживайте, чтобы отключить",
+          "disable_single_network_title": "Отключить в сети %{network}",
+          "disable_single_network_subtitle": "Это удалит делегирование Smart Wallet для этой сети.",
+          "disable_single_network_button": "Удерживайте, чтобы отключить",
+          "disable_third_party_title": "Отключить учетную запись",
+          "disable_third_party_subtitle": "Ваш кошелек делегирован другому Smart Wallet. Отключите, чтобы использовать Rainbow.",
+          "disable_third_party_button": "Удерживайте, чтобы отключить",
+          "alert_vulnerability_title": "Безопасность Smart Wallet",
+          "alert_vulnerability_subtitle": "В контракте вашего Smart Wallet обнаружена уязвимость. Отзовите его в качестве меры предосторожности, чтобы защитить свои активы.",
+          "alert_vulnerability_button": "Удерживайте, чтобы отозвать",
+          "alert_bug_title": "Проблема Smart Wallet",
+          "alert_bug_subtitle": "В контракте вашего Smart Wallet обнаружена проблема. Отзовите его, чтобы улучшить использование кошелька.",
+          "alert_bug_button": "Удерживайте, чтобы отозвать",
+          "alert_unrecognized_title": "Рискованное делегирование",
+          "alert_unrecognized_subtitle": "Обнаружен нераспознанный и рискованный контракт делегирования. Отзовите его, чтобы обезопасить свой кошелек.",
+          "alert_unrecognized_button": "Удерживайте, чтобы отозвать",
+          "alert_unspecified_title": "Проблема делегирования",
+          "alert_unspecified_subtitle": "Сейчас ваш кошелек делегирован рискованному смарт-контракту. Отзовите его, чтобы обезопасить свой кошелек.",
+          "alert_unspecified_button": "Удерживайте, чтобы отозвать",
+          "revoking": "Отзыв...",
+          "done": "Готово",
+          "next": "Далее",
+          "try_again": "Попробуйте снова",
+          "gas_fee": "для отзыва в сети %{chainName}"
+        }
       },
       "balance_title": "Баланс",
       "buy": "Купить",
@@ -3016,6 +3094,10 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Наблюдение",
         "ledger": "Ledger",
+        "delegated": "Делегировано",
+        "alt_delegation": "Альтернативное делегирование",
+        "not_delegated": "Не делегировано",
+        "disabled": "Отключено",
         "wallets": "Кошельки",
         "all_wallets": "Все кошельки",
         "total_balance": "Общий баланс",

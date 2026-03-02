@@ -36,6 +36,8 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { DELEGATION, getExperimentalFlag } from '@/config/experimental';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { isRecordLike } from '@/types/guards';
+import { extractReplayableCall } from './replay';
+import { requireAddress } from './validation';
 
 type AtomicPrepareActionType = Extract<RapActionTypes, 'unlock' | 'swap' | 'crosschainSwap'>;
 type PrepareActionResult = { call: BatchCall | null } | { call: BatchCall; transaction: Omit<NewTransaction, 'hash'> };
@@ -176,12 +178,18 @@ export const walletExecuteRap = async <T extends RapTypes>(
     if (!address) {
       delegationUnsupportedReason = 'NO_ADDRESS';
     } else {
-      const support = await supportsDelegation({
-        address,
-        chainId: parameters.chainId,
-      });
-      delegationSupported = support.supported;
-      delegationUnsupportedReason = support.reason;
+      try {
+        const support = await supportsDelegation({
+          address,
+          chainId: parameters.chainId,
+        });
+        delegationSupported = support.supported;
+        delegationUnsupportedReason = support.reason;
+      } catch (e) {
+        logger.warn(`[${rapName}] supportsDelegation check failed`, {
+          message: ensureError(e).message,
+        });
+      }
     }
   }
 
@@ -201,12 +209,18 @@ export const walletExecuteRap = async <T extends RapTypes>(
     if (!quote) {
       return { nonce: undefined, hash: null, errorMessage: 'Quote is required for atomic execution' };
     }
+    const fromAddress = requireAddress(quote.from, 'atomic quote.from');
 
     if (!(wallet instanceof Wallet)) {
       logger.debug(`[${rapName}] atomic execution skipped, falling back to sequential`, {
         reason: 'unsupported-signer',
       });
     } else if (canExecuteAtomic) {
+      const atomicNonce = nonce;
+      if (atomicNonce === undefined) {
+        return { nonce: undefined, hash: null, errorMessage: 'Atomic execution requires nonce' };
+      }
+
       try {
         const calls: BatchCall[] = [];
         let pendingTransaction: Omit<NewTransaction, 'hash'> | null = null;
@@ -219,7 +233,6 @@ export const walletExecuteRap = async <T extends RapTypes>(
           const prepareResult = await runAtomicPrepareAction(action.type, {
             parameters: action.parameters,
             wallet,
-            chainId,
             quote,
           });
 
@@ -249,7 +262,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
             maxPriorityFeePerGas: BigInt(gasParams.maxPriorityFeePerGas),
             gasLimit: null,
           },
-          nonce,
+          nonce: atomicNonce,
         });
 
         if (!result.hash) {
@@ -257,21 +270,26 @@ export const walletExecuteRap = async <T extends RapTypes>(
         }
 
         if (pendingTransaction) {
-          const transaction: NewTransaction = {
-            ...pendingTransaction,
-            hash: result.hash,
-            batch: true,
-            delegation: result.type === 'eip7702',
-          };
+          const atomicTransaction = result.transaction;
+          const replayableCall = extractReplayableCall(atomicTransaction, pendingTransaction);
+
           addNewTransaction({
-            address: quote.from,
+            address: fromAddress,
             chainId,
-            transaction,
+            transaction: {
+              ...pendingTransaction,
+              ...replayableCall,
+              hash: result.hash,
+              batch: true,
+              delegation: result.type === 'eip7702',
+              gasLimit: pendingTransaction.gasLimit ?? atomicTransaction.gas?.toString(),
+              nonce: pendingTransaction.nonce ?? atomicNonce,
+            },
           });
         }
 
         logger.debug(`[${rapName}] executed atomically`, { hash: result.hash });
-        return { nonce, hash: result.hash, errorMessage: null };
+        return { nonce: atomicNonce, hash: result.hash, errorMessage: null };
       } catch (e) {
         const error = ensureError(e);
         const fallbackToSequential = !isUserRejectionError(error);

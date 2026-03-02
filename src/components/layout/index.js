@@ -10,5 +10,4 @@ export { default as LayoutWithDividers } from './LayoutWithDividers';
 export { default as LayoutWithMargins } from './LayoutWithMargins';
 export { default as Page } from './Page';
 export { default as Row } from './Row';
-export { default as RowWithDividers } from './RowWithDividers';
 export { default as RowWithMargins } from './RowWithMargins';

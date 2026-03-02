@@ -3803,11 +3803,6 @@
           "step_2": {
             "title": "One crown a day",
             "subtitle_parts": ["At", " midnight (12:00 AM UTC), ", "the leading token is crowned the daily winner."]
-          },
-          "step_3": {
-            "title": "Win Rewards",
-            "subtitle_parts": ["Buyers of the current King get", " 2x points."],
-            "subtitle_two_parts": ["Creators", " earn points ", "when crowned."]
           }
         }
       }

@@ -1,42 +1,31 @@
-import { getTargetAddress, isAllowedTargetContract } from '@rainbow-me/swaps';
+import { isAllowedTargetContract } from '@rainbow-me/swaps';
 import { createNewAction, createNewRap } from './common';
 import type { RapAction, RapSwapActionParameters } from './references';
-import { needsTokenApproval } from './actions/unlock';
+import { resolveApprovalRequirement } from './approval';
 
 export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParameters<'swap'>) => {
   let actions: RapAction<'swap' | 'unlock'>[] = [];
 
   const { sellAmount, quote, chainId, assetToSell, assetToBuy } = swapParameters;
-  const { allowanceNeeded, from: accountAddress, sellTokenAddress } = quote;
-  const targetAddress = getTargetAddress(quote);
-  let requiresApprove = false;
+  const { allowanceTargetAddress, requiresApprove } = await resolveApprovalRequirement({
+    quote,
+    chainId,
+    sellAmount,
+  });
 
-  if (allowanceNeeded) {
-    if (!targetAddress) {
-      throw new Error('Target address not found');
-    }
-    const isAllowedTarget = isAllowedTargetContract(targetAddress, chainId);
+  if (allowanceTargetAddress) {
+    const isAllowedTarget = isAllowedTargetContract(allowanceTargetAddress, chainId);
     if (!isAllowedTarget) {
       throw new Error('Target address not allowed');
     }
 
-    requiresApprove =
-      allowanceNeeded &&
-      (await needsTokenApproval({
-        owner: accountAddress,
-        tokenAddress: sellTokenAddress,
-        spender: targetAddress,
-        amount: sellAmount,
-        chainId,
-      }));
-
     if (requiresApprove) {
       const unlock = createNewAction('unlock', {
-        fromAddress: accountAddress,
+        fromAddress: quote.from,
         amount: sellAmount,
         assetToUnlock: assetToSell,
         chainId,
-        contractAddress: targetAddress,
+        contractAddress: allowanceTargetAddress,
       });
       actions = actions.concat(unlock);
     }
@@ -48,6 +37,7 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
     sellAmount,
     permit: false,
     requiresApprove,
+    nonce: swapParameters.nonce,
     quote,
     meta: swapParameters.meta,
     assetToSell,

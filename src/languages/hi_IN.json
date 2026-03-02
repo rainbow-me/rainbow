@@ -562,7 +562,23 @@
       "reset_experimental_config": "प्रायोगिक कॉन्फ़िग को रीसेट करें",
       "status": "स्थिति",
       "sync_codepush": "CodePush सिंक करें",
-      "simulate_device_transfer": "उपकरण स्थानांतरण का अनुकरण करें"
+      "simulate_device_transfer": "उपकरण स्थानांतरण का अनुकरण करें",
+      "headers": {
+        "normie_settings": "नॉर्मी सेटिंग्स",
+        "rainbow_developer_settings": "Rainbow डेवलपर सेटिंग्स",
+        "feature_flags": "फ़ीचर फ़्लैग्स",
+        "delegation_settings": "डेलीगेशन सेटिंग्स"
+      },
+      "delegation_settings": {
+        "clear_store": "डेलीगेशन स्टोर साफ़ करें",
+        "simulate_disable_smart_wallet": "स्मार्ट वॉलेट को अक्षम करने का सिमुलेशन करें",
+        "simulate_disable_single_network": "सिंगल नेटवर्क को अक्षम करने का सिमुलेशन करें",
+        "simulate_disable_third_party": "थर्ड पार्टी को अक्षम करने का सिमुलेशन करें",
+        "simulate_alert_vulnerability": "अलर्ट भेद्यता का सिमुलेशन करें",
+        "simulate_alert_bug": "अलर्ट बग का सिमुलेशन करें",
+        "simulate_alert_unrecognized": "अलर्ट अपरिचित का सिमुलेशन करें",
+        "simulate_alert_unspecified": "अलर्ट अनिर्दिष्ट का सिमुलेशन करें"
+      }
     },
     "discover": {
       "pulse": {
@@ -885,6 +901,7 @@
         "minimum_received": "न्यूनतम प्राप्त",
         "preferred_network": "पसंदीदा नेटवर्क",
         "rainbow_fee": "रेनबो शुल्क शामिल",
+        "smart_wallet_activation_fee": "अनुमानित Smart Wallet शुल्क",
         "settings": "सेटिंग्स"
       },
       "token_index": {
@@ -1039,6 +1056,10 @@
       "gas": {
         "text": "\"गैस शुल्क\" %{networkName} ब्लॉकचेन द्वारा आपके लेन-देन की सुरक्षित पुष्टि करने का उपयोग होता है।\n\nइस शुल्क में भिन्नता होती है, आपके लेन-देन की जटिलता और नेटवर्क की व्यस्तता पर निर्भर करती है!",
         "title": "%{networkName} नेटवर्क शुल्क"
+      },
+      "smart_wallet_activation": {
+        "text": "इस लेन-देन में %{networkName} पर एक बार का Smart Wallet सक्रियण शामिल है। यह आपके वॉलेट को बैच किए गए लेन-देन और अन्य स्मार्ट अकाउंट सुविधाओं का समर्थन करने के लिए अपग्रेड करता है।\n\nसक्रियण शुल्क इस स्वैप के लिए नेटवर्क शुल्क में शामिल है।",
+        "title": "Smart Wallet सक्रियण"
       },
       "max_base_fee": {
         "text": "यह अधिकतम मूल शुल्क है जिसे आप इस लेन-देन के लिए चुकाने के लिए तैयार हैं।\n\nअधिकतम मूल शुल्क को अधिक निर्धारित करना शुल्क बढ़ने पर आपके लेन-देन को अटकने से बचाता है।",
@@ -2705,6 +2726,16 @@
           "confirmed": "रद्द कर दिया",
           "failed": "रोकथाम विफल"
         },
+        "delegate": {
+          "pending": "डेलिगेट कर रहे हैं",
+          "confirmed": "मंजूरी दी",
+          "failed": "डेलिगेशन विफल"
+        },
+        "revoke_delegation": {
+          "pending": "रोकथाम कर रहे हैं",
+          "confirmed": "रद्द कर दिया",
+          "failed": "रोकथाम विफल"
+        },
         "sale": {
           "pending": "बिक्री",
           "confirmed": "बेच दिया",
@@ -2744,6 +2775,8 @@
       "savings": "बचत",
       "signed": "हस्ताक्षरित",
       "contract_interaction": "अनुबंध संवाद",
+      "delegate_description": "वॉलेट डेलिगेशन",
+      "revoke_delegation_description": "वॉलेट डेलिगेशन",
       "deposited_with_token": "जमा कर दिया %{name}",
       "withdrew_with_token": "निकाल दिया %{name}"
     },
@@ -2756,6 +2789,7 @@
       "network_fee": "नेटवर्क शुल्क",
       "hash_copied": "􀁣 लेनदेन हैश कॉपी किया गया",
       "address_copied": "􀁣 पता कॉपी किया गया",
+      "smart_account": "स्मार्ट अकाउंट",
       "try_again": "􀅉 पुन: प्रयास करें",
       "context_menu": {
         "copy_address": "पता कॉपी करें",
@@ -3007,7 +3041,51 @@
         "cloud_backup_link": "और जानें…",
         "view_secret_phrase": "गुप्त वाक्यांश देखें",
         "view_private_key": "निजी कुंजी देखें",
-        "copy_wallet_address": "वॉलेट पता कॉपी करें"
+        "copy_wallet_address": "पता कॉपी करें",
+        "edit_smart_wallet": "Smart Wallet संपादित करें"
+      },
+      "delegations": {
+        "active": "सक्रिय",
+        "not_active": "सक्रिय नहीं है",
+        "smart_wallet": "Smart Wallet",
+        "smart_wallet_description": "Smart wallets तेज़, सस्ता और अधिक विश्वसनीय वॉलेट अनुभव सक्षम करते हैं।",
+        "activated_networks": "सक्रिय किए गए नेटवर्क",
+        "other_smart_accounts": "अन्य स्मार्ट अकाउंट",
+        "delegated_to": "%{name} को डेलिगेट किया गया",
+        "delegated_to_another_wallet": "किसी अन्य वॉलेट को डेलिगेट किया गया",
+        "enable_smart_wallet": "Smart Wallet सक्षम करें",
+        "disable_smart_wallet": "Smart Wallet अक्षम करें",
+        "enabled_description": "आप तेज़ लेन-देन और कम नेटवर्क लागतों का लाभ नहीं उठा पाएंगे",
+        "disabled_description": "अपडेट आपके अगले स्वैप पर लागू होंगे",
+        "will_delegate_callout": "Smart Wallet सक्रियण शामिल है",
+        "revoke_panel": {
+          "disable_smart_wallet_title": "Smart Wallet अक्षम करें",
+          "disable_smart_wallet_subtitle": "यह सभी सक्रिय डेलिगेशन को रद्द करेगा और Smart Wallet सुविधाओं को अक्षम करेगा।",
+          "disable_smart_wallet_button": "अक्षम करने के लिए दबाए रखें",
+          "disable_single_network_title": "%{network} पर अक्षम करें",
+          "disable_single_network_subtitle": "यह इस नेटवर्क के लिए Smart Wallet डेलिगेशन हटा देगा।",
+          "disable_single_network_button": "अक्षम करने के लिए दबाए रखें",
+          "disable_third_party_title": "खाता अक्षम करें",
+          "disable_third_party_subtitle": "आपका वॉलेट किसी अलग Smart Wallet को डेलिगेट किया गया है। Rainbow का उपयोग करने के लिए अक्षम करें।",
+          "disable_third_party_button": "अक्षम करने के लिए दबाए रखें",
+          "alert_vulnerability_title": "Smart Wallet सुरक्षा",
+          "alert_vulnerability_subtitle": "आपके Smart Wallet कॉन्ट्रैक्ट में एक भेद्यता का पता चला है। अपने एसेट्स की सुरक्षा के लिए एहतियात के तौर पर इसे रद्द करें।",
+          "alert_vulnerability_button": "रद्द करने के लिए दबाए रखें",
+          "alert_bug_title": "Smart Wallet समस्या",
+          "alert_bug_subtitle": "आपके Smart Wallet कॉन्ट्रैक्ट में एक समस्या का पता चला है। अपने वॉलेट अनुभव को बेहतर बनाने के लिए इसे रद्द करें।",
+          "alert_bug_button": "रद्द करने के लिए दबाए रखें",
+          "alert_unrecognized_title": "जोखिमभरा डेलिगेशन",
+          "alert_unrecognized_subtitle": "एक अपरिचित और जोखिमभरे डेलिगेशन कॉन्ट्रैक्ट का पता चला है। अपने वॉलेट को सुरक्षित करने के लिए इसे रद्द करें।",
+          "alert_unrecognized_button": "रद्द करने के लिए दबाए रखें",
+          "alert_unspecified_title": "डेलिगेशन समस्या",
+          "alert_unspecified_subtitle": "आपका वॉलेट वर्तमान में एक जोखिमभरे स्मार्ट कॉन्ट्रैक्ट को डेलिगेट किया गया है। अपने वॉलेट को सुरक्षित करने के लिए इसे रद्द करें।",
+          "alert_unspecified_button": "रद्द करने के लिए दबाए रखें",
+          "revoking": "रद्द किया जा रहा है...",
+          "done": "हो गया",
+          "next": "अगला",
+          "try_again": "फिर से प्रयास करें",
+          "gas_fee": "%{chainName} पर रद्द करने के लिए"
+        }
       },
       "balance_title": "बैलेंस",
       "buy": "खरीदें",
@@ -3016,6 +3094,10 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "देख रहा है",
         "ledger": "लेजर",
+        "delegated": "डेलिगेट किया गया",
+        "alt_delegation": "वैकल्पिक डेलिगेशन",
+        "not_delegated": "डेलिगेट नहीं किया गया",
+        "disabled": "निष्क्रिय",
         "wallets": "वॉलेट्स",
         "all_wallets": "सभी वॉलेट",
         "total_balance": "कुल शेष राशि",

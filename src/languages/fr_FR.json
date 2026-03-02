@@ -562,7 +562,23 @@
       "reset_experimental_config": "Réinitialiser la Conf Expérimentale",
       "status": "Statut",
       "sync_codepush": "Synchroniser CodePush",
-      "simulate_device_transfer": "Simuler le transfert d'appareil"
+      "simulate_device_transfer": "Simuler le transfert d'appareil",
+      "headers": {
+        "normie_settings": "Réglages Normie",
+        "rainbow_developer_settings": "Paramètres du développeur Rainbow",
+        "feature_flags": "Indicateurs de fonctionnalités",
+        "delegation_settings": "Paramètres de délégation"
+      },
+      "delegation_settings": {
+        "clear_store": "Effacer le stockage de délégation",
+        "simulate_disable_smart_wallet": "Simuler la désactivation du Smart Wallet",
+        "simulate_disable_single_network": "Simuler la désactivation du réseau unique",
+        "simulate_disable_third_party": "Simuler la désactivation du tiers",
+        "simulate_alert_vulnerability": "Simuler l’alerte de vulnérabilité",
+        "simulate_alert_bug": "Simuler l'alerte de bug",
+        "simulate_alert_unrecognized": "Simuler l'alerte non reconnue",
+        "simulate_alert_unspecified": "Simuler l'alerte non spécifiée"
+      }
     },
     "discover": {
       "pulse": {
@@ -885,6 +901,7 @@
         "minimum_received": "Montant minimum reçu",
         "preferred_network": "Réseau Préféré",
         "rainbow_fee": "Frais Rainbow inclus",
+        "smart_wallet_activation_fee": "Frais estimés du Smart Wallet",
         "settings": "Paramètres"
       },
       "token_index": {
@@ -1039,6 +1056,10 @@
       "gas": {
         "text": "Il s'agit des \"frais de gaz\" utilisés par la blockchain %{networkName} pour valider votre transaction de manière sécurisée.\n\nCes frais varient en fonction de la complexité de votre transaction et de l'encombrement du réseau !",
         "title": "Frais de réseau %{networkName}"
+      },
+      "smart_wallet_activation": {
+        "text": "Cette transaction inclut une activation unique du Smart Wallet sur %{networkName}. Cela met à niveau votre portefeuille pour prendre en charge les transactions groupées et d'autres fonctionnalités de compte intelligent.\n\nLes frais d'activation sont inclus dans les frais de réseau pour ce swap.",
+        "title": "Activation du Smart Wallet"
       },
       "max_base_fee": {
         "text": "Il s'agit du maximum de frais de base que vous êtes prêt à payer pour cette transaction.\n\nFixer des frais de base maximaux plus élevés empêche votre transaction de se bloquer si les frais augmentent.",
@@ -2705,6 +2726,16 @@
           "confirmed": "Révoqué",
           "failed": "Échec de révocation"
         },
+        "delegate": {
+          "pending": "Délégation en cours",
+          "confirmed": "Approuvé",
+          "failed": "Échec de la délégation"
+        },
+        "revoke_delegation": {
+          "pending": "Révocation en cours",
+          "confirmed": "Révoqué",
+          "failed": "Échec de révocation"
+        },
         "sale": {
           "pending": "Vente",
           "confirmed": "Vendu",
@@ -2744,6 +2775,8 @@
       "savings": "Économies",
       "signed": "Signé",
       "contract_interaction": "Interaction de contrat",
+      "delegate_description": "Délégation du portefeuille",
+      "revoke_delegation_description": "Délégation du portefeuille",
       "deposited_with_token": "Déposé %{name}",
       "withdrew_with_token": "Retiré %{name}"
     },
@@ -2756,6 +2789,7 @@
       "network_fee": "Frais de réseau",
       "hash_copied": "􀁣 Hash de transaction copié",
       "address_copied": "􀁣 Adresse copiée",
+      "smart_account": "Compte intelligent",
       "try_again": "􀅉 Essayez de nouveau",
       "context_menu": {
         "copy_address": "Copier l'adresse",
@@ -3007,7 +3041,51 @@
         "cloud_backup_link": "En savoir plus…",
         "view_secret_phrase": "Afficher la phrase secrète",
         "view_private_key": "Afficher la clé privée",
-        "copy_wallet_address": "Copier l'adresse du portefeuille"
+        "copy_wallet_address": "Copier l'adresse",
+        "edit_smart_wallet": "Modifier le Smart Wallet"
+      },
+      "delegations": {
+        "active": "Actif",
+        "not_active": "Inactif",
+        "smart_wallet": "Smart Wallet",
+        "smart_wallet_description": "Les Smart Wallets permettent une expérience de portefeuille plus rapide, moins chère et plus fiable.",
+        "activated_networks": "Réseaux activés",
+        "other_smart_accounts": "Autres comptes intelligents",
+        "delegated_to": "Délégué à %{name}",
+        "delegated_to_another_wallet": "Délégué à un autre portefeuille",
+        "enable_smart_wallet": "Activer le Smart Wallet",
+        "disable_smart_wallet": "Désactiver le Smart Wallet",
+        "enabled_description": "Vous manquerez des transactions plus rapides et des coûts de réseau plus bas",
+        "disabled_description": "Les mises à jour prendront effet lors de votre prochain swap",
+        "will_delegate_callout": "Inclut l'activation du Smart Wallet",
+        "revoke_panel": {
+          "disable_smart_wallet_title": "Désactiver le Smart Wallet",
+          "disable_smart_wallet_subtitle": "Cela révoquera toutes les délégations actives et désactivera les fonctionnalités du Smart Wallet.",
+          "disable_smart_wallet_button": "Maintenir pour désactiver",
+          "disable_single_network_title": "Désactiver sur %{network}",
+          "disable_single_network_subtitle": "Cela supprimera la délégation Smart Wallet pour ce réseau.",
+          "disable_single_network_button": "Maintenir pour désactiver",
+          "disable_third_party_title": "Désactiver le compte",
+          "disable_third_party_subtitle": "Votre portefeuille est délégué à un Smart Wallet différent. Désactivez pour utiliser Rainbow.",
+          "disable_third_party_button": "Maintenir pour désactiver",
+          "alert_vulnerability_title": "Sécurité du Smart Wallet",
+          "alert_vulnerability_subtitle": "Une vulnérabilité a été détectée dans votre contrat Smart Wallet. Révoquez-le par précaution pour protéger vos actifs.",
+          "alert_vulnerability_button": "Maintenir pour révoquer",
+          "alert_bug_title": "Problème de Smart Wallet",
+          "alert_bug_subtitle": "Un problème a été détecté avec votre contrat Smart Wallet. Révoquez-le pour améliorer votre expérience de portefeuille.",
+          "alert_bug_button": "Maintenir pour révoquer",
+          "alert_unrecognized_title": "Délégation risquée",
+          "alert_unrecognized_subtitle": "Un contrat de délégation non reconnu et risqué a été détecté. Révoquez-le pour sécuriser votre portefeuille.",
+          "alert_unrecognized_button": "Maintenir pour révoquer",
+          "alert_unspecified_title": "Problème de délégation",
+          "alert_unspecified_subtitle": "Votre portefeuille est actuellement délégué à un contrat intelligent risqué. Révoquez-le pour sécuriser votre portefeuille.",
+          "alert_unspecified_button": "Maintenir pour révoquer",
+          "revoking": "Révocation en cours...",
+          "done": "Terminé",
+          "next": "Suivant",
+          "try_again": "Réessayer",
+          "gas_fee": "pour révoquer sur %{chainName}"
+        }
       },
       "balance_title": "Solde",
       "buy": "Acheter",
@@ -3016,6 +3094,10 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Regarder",
         "ledger": "Ledger",
+        "delegated": "Délégué",
+        "alt_delegation": "Délégation alt.",
+        "not_delegated": "Non délégué",
+        "disabled": "Désactivé",
         "wallets": "Portefeuilles",
         "all_wallets": "Tous les portefeuilles",
         "total_balance": "Solde total",

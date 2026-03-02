@@ -562,7 +562,23 @@
       "reset_experimental_config": "Deneysel Yapılandırmayı Sıfırla",
       "status": "Durum",
       "sync_codepush": "CodePush'u Senkronize Et",
-      "simulate_device_transfer": "Cihaz Transferini Simüle Et"
+      "simulate_device_transfer": "Cihaz Transferini Simüle Et",
+      "headers": {
+        "normie_settings": "Normie Ayarları",
+        "rainbow_developer_settings": "Rainbow Geliştirici Ayarları",
+        "feature_flags": "Özellik Bayrakları",
+        "delegation_settings": "Delegasyon Ayarları"
+      },
+      "delegation_settings": {
+        "clear_store": "Delegasyon Deposunu Temizle",
+        "simulate_disable_smart_wallet": "Akıllı Cüzdanı Devre Dışı Bırakmayı Simüle Et",
+        "simulate_disable_single_network": "Tek Ağı Devre Dışı Bırakmayı Simüle Et",
+        "simulate_disable_third_party": "Üçüncü Tarafı Devre Dışı Bırakmayı Simüle Et",
+        "simulate_alert_vulnerability": "Güvenlik Açığı Uyarısını Simüle Et",
+        "simulate_alert_bug": "Uyarı Hatasını Simüle Et",
+        "simulate_alert_unrecognized": "Tanınmayan Uyarıyı Simüle Et",
+        "simulate_alert_unspecified": "Belirtilmemiş Uyarıyı Simüle Et"
+      }
     },
     "discover": {
       "pulse": {
@@ -885,6 +901,7 @@
         "minimum_received": "Asgari Alınan",
         "preferred_network": "Tercih Edilen Ağ",
         "rainbow_fee": "Dahil Olan Rainbow Ücreti",
+        "smart_wallet_activation_fee": "Tahmini Akıllı Cüzdan Ücreti",
         "settings": "Ayarlar"
       },
       "token_index": {
@@ -1039,6 +1056,10 @@
       "gas": {
         "text": "Bu, %{networkName} blockchain'in işlemi güvenle doğrulamak için kullandığı \"gaz ücreti\"dir.\n\nBu ücret, işleminizin karmaşıklığına ve ağın ne kadar meşgul olduğuna bağlı olarak değişir!",
         "title": "%{networkName} ağ ücreti"
+      },
+      "smart_wallet_activation": {
+        "text": "Bu işlem, %{networkName} üzerinde tek seferlik bir Akıllı Cüzdan etkinleştirmesi içerir. Bu, cüzdanınızı toplu işlemleri ve diğer akıllı hesap özelliklerini destekleyecek şekilde yükseltir.\n\nEtkinleştirme ücreti, bu takas için ağ ücretine dahildir.",
+        "title": "Akıllı Cüzdan etkinleştirme"
       },
       "max_base_fee": {
         "text": "Bu, bu işlem için ödemeye istekli olduğunuz maksimum taban ücrettir.\n\nDaha yüksek bir maksimum taban ücreti belirlenmesi, ücretlerin yükselmesi durumunda işleminizin takılıp kalmamasını sağlar.",
@@ -2705,6 +2726,16 @@
           "confirmed": "İptal Edildi",
           "failed": "İptal Başarısız"
         },
+        "delegate": {
+          "pending": "Yetki Devrediliyor",
+          "confirmed": "Onaylandı",
+          "failed": "Yetki Devri Başarısız"
+        },
+        "revoke_delegation": {
+          "pending": "İptal Ediliyor",
+          "confirmed": "İptal Edildi",
+          "failed": "İptal Başarısız"
+        },
         "sale": {
           "pending": "Satış",
           "confirmed": "Satıldı",
@@ -2744,6 +2775,8 @@
       "savings": "Tasarruflar",
       "signed": "İmzalandı",
       "contract_interaction": "Sözleşme Etkileşimi",
+      "delegate_description": "Cüzdan Yetki Devri",
+      "revoke_delegation_description": "Cüzdan Yetki Devri",
       "deposited_with_token": "Yatırılan %{name}",
       "withdrew_with_token": "Çekilen %{name}"
     },
@@ -2756,6 +2789,7 @@
       "network_fee": "Ağ Ücreti",
       "hash_copied": "􀁣 İşlem hashi kopyalandı",
       "address_copied": "􀁣 Adres kopyalandı",
+      "smart_account": "Akıllı Hesap",
       "try_again": "􀅉 Tekrar deneyin",
       "context_menu": {
         "copy_address": "Adresi Kopyala",
@@ -3007,7 +3041,51 @@
         "cloud_backup_link": "Daha fazla bilgi edinin…",
         "view_secret_phrase": "Gizli İfadeyi Görüntüle",
         "view_private_key": "Özel Anahtarı Görüntüle",
-        "copy_wallet_address": "Cüzdan adresini kopyala"
+        "copy_wallet_address": "Adresi Kopyala",
+        "edit_smart_wallet": "Akıllı Cüzdanı Düzenle"
+      },
+      "delegations": {
+        "active": "Aktif",
+        "not_active": "Aktif değil",
+        "smart_wallet": "Akıllı Cüzdan",
+        "smart_wallet_description": "Akıllı cüzdanlar daha hızlı, daha ucuz ve daha güvenilir bir cüzdan deneyimi sağlar.",
+        "activated_networks": "Etkinleştirilen Ağlar",
+        "other_smart_accounts": "Diğer Akıllı Hesaplar",
+        "delegated_to": "%{name} adlı kişiye devredildi",
+        "delegated_to_another_wallet": "Başka bir cüzdana devredildi",
+        "enable_smart_wallet": "Akıllı Cüzdanı Etkinleştir",
+        "disable_smart_wallet": "Akıllı Cüzdanı Devre Dışı Bırak",
+        "enabled_description": "Daha hızlı işlemleri ve daha düşük ağ maliyetlerini kaçıracaksınız",
+        "disabled_description": "Güncellemeler bir sonraki takasınızda geçerli olacak",
+        "will_delegate_callout": "Akıllı cüzdan etkinleştirmesi içerir",
+        "revoke_panel": {
+          "disable_smart_wallet_title": "Akıllı Cüzdanı Devre Dışı Bırak",
+          "disable_smart_wallet_subtitle": "Bu, tüm etkin yetki devrilerini iptal edecek ve Akıllı Cüzdan özelliklerini devre dışı bırakacaktır.",
+          "disable_smart_wallet_button": "Devre Dışı Bırakmak İçin Basılı Tutun",
+          "disable_single_network_title": "%{network} üzerinde devre dışı bırak",
+          "disable_single_network_subtitle": "Bu, bu ağ için Akıllı Cüzdan yetki devrini kaldıracaktır.",
+          "disable_single_network_button": "Devre Dışı Bırakmak İçin Basılı Tutun",
+          "disable_third_party_title": "Hesabı Devre Dışı Bırak",
+          "disable_third_party_subtitle": "Cüzdanınız farklı bir Akıllı Cüzdan'a devredildi. Rainbow'u kullanmak için devre dışı bırakın.",
+          "disable_third_party_button": "Devre Dışı Bırakmak İçin Basılı Tutun",
+          "alert_vulnerability_title": "Akıllı Cüzdan Güvenliği",
+          "alert_vulnerability_subtitle": "Akıllı Cüzdan sözleşmenizde bir güvenlik açığı tespit edildi. Varlıklarınızı korumak için önlem olarak iptal edin.",
+          "alert_vulnerability_button": "İptal Etmek İçin Basılı Tutun",
+          "alert_bug_title": "Akıllı Cüzdan Sorunu",
+          "alert_bug_subtitle": "Akıllı Cüzdan sözleşmenizle ilgili bir sorun tespit edildi. Cüzdan deneyiminizi iyileştirmek için iptal edin.",
+          "alert_bug_button": "İptal Etmek İçin Basılı Tutun",
+          "alert_unrecognized_title": "Riskli Yetki Devri",
+          "alert_unrecognized_subtitle": "Tanınmayan ve riskli bir yetki devri sözleşmesi tespit edildi. Cüzdanınızı güvene almak için iptal edin.",
+          "alert_unrecognized_button": "İptal Etmek İçin Basılı Tutun",
+          "alert_unspecified_title": "Yetki Devri Sorunu",
+          "alert_unspecified_subtitle": "Cüzdanınız şu anda riskli bir akıllı sözleşmeye devredilmiş durumda. Cüzdanınızı güvene almak için iptal edin.",
+          "alert_unspecified_button": "İptal Etmek İçin Basılı Tutun",
+          "revoking": "İptal Ediliyor...",
+          "done": "Tamamlandı",
+          "next": "Sonraki",
+          "try_again": "Tekrar Deneyin",
+          "gas_fee": "%{chainName} üzerinde iptal etmek için"
+        }
       },
       "balance_title": "Bakiye",
       "buy": "Satın Al",
@@ -3016,6 +3094,10 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "İzliyor",
         "ledger": "Ledger",
+        "delegated": "Devredildi",
+        "alt_delegation": "Alt Yetki Devri",
+        "not_delegated": "Devredilmedi",
+        "disabled": "Devre Dışı",
         "wallets": "Cüzdanlar",
         "all_wallets": "Tüm Cüzdanlar",
         "total_balance": "Toplam Bakiye",

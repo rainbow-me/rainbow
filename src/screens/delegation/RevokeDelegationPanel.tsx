@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { type RouteProp, useRoute } from '@react-navigation/native';
-import { type Wallet } from '@ethersproject/wallet';
+import { Wallet } from '@ethersproject/wallet';
 import { LinearGradient } from 'expo-linear-gradient';
+import { EstimateGasExecutionError, IntrinsicGasTooLowError } from 'viem';
 import { useNavigation } from '@/navigation';
 import { Box, Text, globalColors, Separator } from '@/design-system';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
@@ -15,11 +16,11 @@ import { executeRevokeDelegation } from '@rainbow-me/delegation';
 import { loadWallet } from '@/model/wallet';
 import { getProvider } from '@/handlers/web3';
 import { getNextNonce } from '@/state/nonces';
-import { type ChainId } from '@/state/backendNetworks/types';
 import { backendNetworksActions } from '@/state/backendNetworks/backendNetworks';
+import reduxStore from '@/redux/store';
 import * as i18n from '@/languages';
 import useGas from '@/hooks/useGas';
-import { type GasFee, type LegacyGasFee } from '@/entities/gas';
+import { type GasFee, type LegacySelectedGasFee, type SelectedGasFee } from '@/entities/gas';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -62,11 +63,21 @@ type SheetContent = {
   accentColor: string;
 };
 
-const REVOKE_SUCCESS_DELAY_MS = 2000;
+type DelegationToRevoke = RootStackParamList[typeof Routes.REVOKE_DELEGATION_PANEL]['delegationsToRevoke'][number];
+type RevokeGasOptions = NonNullable<ReturnType<typeof getRevokeTransactionGasOptions>>;
 
-const DEFAULT_LOCK_GRADIENT_COLORS = ['#3b7fff', '#b724ad'] as const;
-const DEFAULT_LOCK_GRADIENT_LOCATIONS = [0, 1] as const;
+const REVOKE_SUCCESS_DELAY_MS = 2000;
+const REVOKE_ESTIMATE_FALLBACK_GAS_LIMIT = 96_000n;
+const REVOKE_GAS_WAIT_TIMEOUT_MS = 15_000;
+
+const DEFAULT_LOCK_GRADIENT_COLORS: [string, string] = ['#3b7fff', '#b724ad'];
+const DEFAULT_LOCK_GRADIENT_LOCATIONS: [number, number] = [0, 1];
 const DEFAULT_LOCK_ACCENT_COLOR = DEFAULT_LOCK_GRADIENT_COLORS[1];
+
+function isIntrinsicEstimateGasFailure(error: unknown): boolean {
+  if (!(error instanceof EstimateGasExecutionError)) return false;
+  return error.walk(cause => cause instanceof IntrinsicGasTooLowError) !== null;
+}
 
 const getSheetContent = (reason: RevokeReason, chainName?: string): SheetContent => {
   switch (reason) {
@@ -125,17 +136,83 @@ const getSheetContent = (reason: RevokeReason, chainName?: string): SheetContent
   }
 };
 
+function getRevokeTransactionGasOptions(selectedGasFee: SelectedGasFee | LegacySelectedGasFee | undefined) {
+  const gasFeeParams = selectedGasFee?.gasFeeParams;
+  if (!gasFeeParams || !('maxBaseFee' in gasFeeParams)) return null;
+
+  const maxPriorityFeePerGas = BigInt(gasFeeParams.maxPriorityFeePerGas.amount);
+  return {
+    gasLimit: null,
+    maxFeePerGas: BigInt(gasFeeParams.maxBaseFee.amount) + maxPriorityFeePerGas,
+    maxPriorityFeePerGas,
+  };
+}
+
+async function waitForRevokeGasOptions({
+  chainId,
+  startPollingGasFees,
+}: {
+  chainId: number;
+  startPollingGasFees: (chainId: number) => unknown;
+}): Promise<RevokeGasOptions> {
+  const initialGasState = reduxStore.getState().gas;
+  const initialChainId = initialGasState.chainId;
+  const initialSelectedGasFee = initialGasState.selectedGasFee;
+
+  const getReadyOptions = () => {
+    const gasState = reduxStore.getState().gas;
+    if (gasState.chainId !== chainId) return null;
+
+    const options = getRevokeTransactionGasOptions(gasState.selectedGasFee);
+    if (!options) return null;
+
+    const chainChanged = initialChainId !== chainId;
+    const hasFreshSelectedGasFee = gasState.selectedGasFee !== initialSelectedGasFee;
+    if (chainChanged && !hasFreshSelectedGasFee) return null;
+
+    return options;
+  };
+
+  startPollingGasFees(chainId);
+
+  const immediateOptions = getReadyOptions();
+  if (immediateOptions) return immediateOptions;
+
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      unsubscribe();
+      reject(new Error('Timed out waiting for revoke gas options'));
+    }, REVOKE_GAS_WAIT_TIMEOUT_MS);
+
+    const unsubscribe = reduxStore.subscribe(() => {
+      const options = getReadyOptions();
+      if (!options) return;
+
+      clearTimeout(timeout);
+      unsubscribe();
+      resolve(options);
+    });
+  });
+}
+
+function replacePendingDelegations(
+  pendingDelegationsRef: React.MutableRefObject<DelegationToRevoke[]>,
+  nextDelegations: DelegationToRevoke[]
+) {
+  pendingDelegationsRef.current.length = 0;
+  pendingDelegationsRef.current.push(...nextDelegations);
+}
+
 export const RevokeDelegationPanel = () => {
   const { goBack } = useNavigation();
   const { params: { address, delegationsToRevoke = [], onSuccess, revokeReason = RevokeReason.ALERT_UNSPECIFIED } = {} } =
     useRoute<RouteProp<RootStackParamList, typeof Routes.REVOKE_DELEGATION_PANEL>>();
 
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [revokeStatus, setRevokeStatus] = useState<RevokeStatus>('ready');
+  const pendingDelegationsRef = useRef<DelegationToRevoke[]>(delegationsToRevoke);
 
-  const currentDelegation = delegationsToRevoke[currentIndex];
-  const isLastDelegation = currentIndex === delegationsToRevoke.length - 1;
-  const chainId = currentDelegation?.chainId as ChainId;
+  const currentDelegation = pendingDelegationsRef.current[0];
+  const chainId = currentDelegation?.chainId;
 
   // Get chain name for display
   const chainName = chainId ? backendNetworksActions.getChainsLabel()[chainId] || `Chain ${chainId}` : '';
@@ -155,12 +232,12 @@ export const RevokeDelegationPanel = () => {
 
   // Get gas fee display with $0.01 floor
   const gasFeeDisplay = (() => {
-    if (!chainId) return null;
-    const gasFee = selectedGasFee?.gasFee;
+    if (!chainId || revokeStatus === 'revoking') return null;
+
+    const gasFee: GasFee | undefined = selectedGasFee?.gasFee;
     if (!gasFee) return i18n.t(i18n.l.swap.loading);
-    const isLegacy = !!(gasFee as LegacyGasFee)?.estimatedFee;
-    const feeData = isLegacy ? (gasFee as LegacyGasFee)?.estimatedFee : (gasFee as GasFee)?.maxFee;
-    const amount = Number(feeData?.native?.value?.amount);
+
+    const amount = Number(gasFee.estimatedFee?.native?.value?.amount);
     if (!Number.isFinite(amount)) return i18n.t(i18n.l.swap.loading);
     return convertAmountToNativeDisplayWorklet(amount, nativeCurrency, true);
   })();
@@ -169,7 +246,8 @@ export const RevokeDelegationPanel = () => {
   const sheetContent = getSheetContent(revokeReason, chainName);
 
   const handleRevoke = useCallback(async () => {
-    if (!currentDelegation || !address) {
+    const pendingDelegations = pendingDelegationsRef.current;
+    if (!address || pendingDelegations.length === 0) {
       goBack();
       return;
     }
@@ -177,63 +255,95 @@ export const RevokeDelegationPanel = () => {
     setRevokeStatus('revoking');
 
     try {
-      const provider = getProvider({ chainId: currentDelegation.chainId });
-
+      const provider = getProvider({ chainId: pendingDelegations[0].chainId });
       const wallet = await loadWallet({
         address,
         provider,
       });
 
-      if (!wallet) {
-        throw new Error('Failed to load wallet');
+      if (!wallet) throw new Error('Failed to load wallet');
+      if (!(wallet instanceof Wallet)) {
+        throw new Error('Revoke delegation requires a software wallet signer');
       }
 
-      // Get current gas prices from provider
-      const feeData = await provider.getFeeData();
-      const maxFeePerGas = feeData.maxFeePerGas?.toBigInt() ?? 0n;
-      const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas?.toBigInt() ?? 0n;
+      const failedDelegations: DelegationToRevoke[] = [];
+      for (const delegation of pendingDelegations) {
+        try {
+          const revokeProvider = getProvider({ chainId: delegation.chainId });
+          const revokeSigner = wallet.connect(revokeProvider);
 
-      const nonce = await getNextNonce({ address, chainId: currentDelegation.chainId });
+          const transactionGasOptions = await waitForRevokeGasOptions({
+            chainId: delegation.chainId,
+            startPollingGasFees,
+          });
+          const nonce = await getNextNonce({ address, chainId: delegation.chainId });
 
-      const result = await executeRevokeDelegation({
-        signer: wallet as Wallet,
-        provider,
-        chainId: currentDelegation.chainId,
-        transactionOptions: {
-          maxFeePerGas,
-          maxPriorityFeePerGas,
-          gasLimit: null,
-        },
-        nonce,
-      });
+          let result;
+          try {
+            result = await executeRevokeDelegation({
+              signer: revokeSigner,
+              provider: revokeProvider,
+              chainId: delegation.chainId,
+              transactionOptions: transactionGasOptions,
+              nonce,
+            });
+          } catch (error) {
+            if (!isIntrinsicEstimateGasFailure(error)) throw error;
 
-      logger.info('Delegation removed successfully', {
-        hash: result.hash,
-        chainId: currentDelegation.chainId,
-      });
+            logger.warn('Revoke gas estimate failed, retrying with fallback gas limit', {
+              chainId: delegation.chainId,
+              gasLimit: REVOKE_ESTIMATE_FALLBACK_GAS_LIMIT.toString(),
+            });
+
+            result = await executeRevokeDelegation({
+              signer: revokeSigner,
+              provider: revokeProvider,
+              chainId: delegation.chainId,
+              transactionOptions: {
+                ...transactionGasOptions,
+                gasLimit: REVOKE_ESTIMATE_FALLBACK_GAS_LIMIT,
+              },
+              nonce,
+            });
+          }
+
+          logger.info('Delegation removed successfully', {
+            hash: result.hash,
+            chainId: delegation.chainId,
+          });
+        } catch (error) {
+          failedDelegations.push(delegation);
+          logger.error(new RainbowError('Failed to revoke delegation'), {
+            error,
+            chainId: delegation.chainId,
+          });
+        }
+      }
+
+      if (failedDelegations.length > 0) {
+        replacePendingDelegations(pendingDelegationsRef, failedDelegations);
+        haptics.notificationError();
+        setRevokeStatus('recoverableError');
+        return;
+      }
 
       haptics.notificationSuccess();
       setRevokeStatus('success');
 
-      // Move to next delegation or finish
       setTimeout(() => {
-        if (isLastDelegation) {
-          onSuccess?.();
-          goBack();
-        } else {
-          setCurrentIndex(prev => prev + 1);
-          setRevokeStatus('ready');
-        }
+        onSuccess?.();
+        goBack();
       }, REVOKE_SUCCESS_DELAY_MS);
     } catch (error) {
       logger.error(new RainbowError('Failed to revoke delegation'), {
         error,
-        chainId: currentDelegation.chainId,
+        chainId: pendingDelegations[0]?.chainId,
       });
+
       haptics.notificationError();
       setRevokeStatus('recoverableError');
     }
-  }, [address, currentDelegation, isLastDelegation, goBack, onSuccess]);
+  }, [address, goBack, onSuccess, startPollingGasFees]);
 
   const buttonLabel = (() => {
     switch (revokeStatus) {
@@ -242,7 +352,7 @@ export const RevokeDelegationPanel = () => {
       case 'revoking':
         return i18n.t(i18n.l.wallet.delegations.revoke_panel.revoking);
       case 'success':
-        return isLastDelegation ? i18n.t(i18n.l.wallet.delegations.revoke_panel.done) : i18n.t(i18n.l.wallet.delegations.revoke_panel.next);
+        return i18n.t(i18n.l.wallet.delegations.revoke_panel.done);
       case 'recoverableError':
         return i18n.t(i18n.l.wallet.delegations.revoke_panel.try_again);
       default:
@@ -253,13 +363,10 @@ export const RevokeDelegationPanel = () => {
   const handleButtonPress = useCallback(() => {
     if (revokeStatus === 'ready' || revokeStatus === 'recoverableError') {
       handleRevoke();
-    } else if (revokeStatus === 'success' && !isLastDelegation) {
-      setCurrentIndex(prev => prev + 1);
-      setRevokeStatus('ready');
     } else {
       goBack();
     }
-  }, [revokeStatus, handleRevoke, isLastDelegation, goBack]);
+  }, [goBack, handleRevoke, revokeStatus]);
 
   const isReady = revokeStatus === 'ready';
   const isProcessing = revokeStatus === 'revoking';
@@ -268,6 +375,13 @@ export const RevokeDelegationPanel = () => {
   const isCriticalBackendAlert = revokeReason === RevokeReason.ALERT_VULNERABILITY || revokeReason === RevokeReason.ALERT_BUG;
   const buttonBackgroundColor = isSuccess ? globalColors.green60 : isError ? globalColors.red60 : sheetContent.accentColor;
   const useDefaultButtonGradient = !isSuccess && !isError && !isCriticalBackendAlert;
+
+  const iconGradientColors: [string, string, ...string[]] =
+    isError || isCriticalBackendAlert
+      ? [globalColors.red60, globalColors.red80, '#19002d']
+      : isSuccess
+        ? [globalColors.green60, globalColors.green80, '#19002d']
+        : DEFAULT_LOCK_GRADIENT_COLORS;
 
   return (
     <PanelSheet showHandle showTapToDismiss>
@@ -283,15 +397,7 @@ export const RevokeDelegationPanel = () => {
           style={styles.iconContainer}
         >
           <LinearGradient
-            colors={
-              (isError
-                ? [globalColors.red60, globalColors.red80, '#19002d']
-                : isSuccess
-                  ? [globalColors.green60, globalColors.green80, '#19002d']
-                  : isCriticalBackendAlert
-                    ? [globalColors.red60, globalColors.red80, '#19002d']
-                    : DEFAULT_LOCK_GRADIENT_COLORS) as [string, string, ...string[]]
-            }
+            colors={iconGradientColors}
             locations={DEFAULT_LOCK_GRADIENT_LOCATIONS}
             start={{ x: 0, y: 1 }}
             end={{ x: 1, y: 0 }}
