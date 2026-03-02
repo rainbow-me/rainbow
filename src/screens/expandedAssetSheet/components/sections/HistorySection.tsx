@@ -328,7 +328,6 @@ export const ListData = memo(function ListData({ data, buys, sells, isLoading }:
         ITEM_DELAY,
         withSpring(clampedListHeight, {
           dampingRatio: 0.9,
-          stiffness: 150,
           overshootClamping: true,
           duration: Math.min(200, Math.max(filteredTokenInteractions.length - DEFAULT_VISIBLE_ITEM_COUNT, 1) * ITEM_DELAY),
         })

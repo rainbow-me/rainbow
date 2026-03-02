@@ -81,7 +81,7 @@ export default function ProfileSheetHeader({
   const emoji = useMemo(() => (profileAddress ? addressHashedEmoji(profileAddress) : ''), [profileAddress]);
 
   return (
-    <Box background="body (Deprecated)" {...(ios && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}>
+    <Box background="body (Deprecated)" {...(ios && { onLayout: (e: any) => setTimeout(() => layout?.(), 500) })}>
       <Stack space={{ custom: 18 }}>
         <ProfileCover
           coverUrl={cover?.imageUrl}

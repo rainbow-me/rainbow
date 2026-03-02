@@ -1,11 +1,19 @@
 import React from 'react';
-import Animated, { Easing, useAnimatedStyle, useDerivedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
+import Animated, {
+  EasingFunction,
+  Easing,
+  useAnimatedStyle,
+  useDerivedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
 import { BackgroundProvider, Box, useForegroundColor } from '@/design-system';
 
 type AnimationConfigOptions = {
   duration: number;
-  easing: Animated.EasingFunction;
+  easing: EasingFunction;
 };
 
 const rotationConfig: AnimationConfigOptions = {

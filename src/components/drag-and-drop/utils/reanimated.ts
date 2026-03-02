@@ -8,32 +8,24 @@ export const DND_DEFAULT_SPRING_CONFIG: WithSpringConfig = {
   mass: 1, // The mass of the object attached to the end of the spring. Default 1.
   stiffness: 100, // The spring stiffness coefficient. Default 100.
   overshootClamping: false, // Indicates whether the spring should be clamped and not bounce. Default false.
-  restSpeedThreshold: 0.001, // The speed at which the spring should be considered at rest in pixels per second. Default 0.001.
-  restDisplacementThreshold: 0.2, // The threshold of displacement from rest below which the spring should be considered at rest. Default 0.001.
 };
 export const DND_FAST_SPRING_CONFIG: WithSpringConfig = {
   damping: 20, // Defines how the spring’s motion should be damped due to the forces of friction. Default 10.
   mass: 0.5, // The mass of the object attached to the end of the spring. Default 1.
   stiffness: 100, // The spring stiffness coefficient. Default 100.
   overshootClamping: false, // Indicates whether the spring should be clamped and not bounce. Default false.
-  restSpeedThreshold: 0.2, // The speed at which the spring should be considered at rest in pixels per second. Default 0.001.
-  restDisplacementThreshold: 0.2, // The threshold of displacement from rest below which the spring should be considered at rest. Default 0.001.
 };
 export const DND_DEFAULT_SPRING_CONFIG_3: WithSpringConfig = {
   damping: 20, // Defines how the spring’s motion should be damped due to the forces of friction. Default 10.
   mass: 0.5, // The mass of the object attached to the end of the spring. Default 1.
   stiffness: 100, // The spring stiffness coefficient. Default 100.
   overshootClamping: false, // Indicates whether the spring should be clamped and not bounce. Default false.
-  restSpeedThreshold: 0.01, // The speed at which the spring should be considered at rest in pixels per second. Default 0.001.
-  restDisplacementThreshold: 0.2, // The threshold of displacement from rest below which the spring should be considered at rest. Default 0.001.
 };
 export const DND_SLOW_SPRING_CONFIG: WithSpringConfig = {
   damping: 20, // Defines how the spring’s motion should be damped due to the forces of friction. Default 10.
   mass: 1, // The mass of the object attached to the end of the spring. Default 1.
   stiffness: 10, // The spring stiffness coefficient. Default 100.
   overshootClamping: false, // Indicates whether the spring should be clamped and not bounce. Default false.
-  restSpeedThreshold: 0.01, // The speed at which the spring should be considered at rest in pixels per second. Default 0.001.
-  restDisplacementThreshold: 0.2, // The threshold of displacement from rest below which the spring should be considered at rest. Default 0.001.
 };
 
 /**

@@ -23,6 +23,24 @@
 				<key>UIPrerenderedIcon</key>
 				<false/>
 			</dict>
+			<key>baggy</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>baggy</string>
+				</array>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+			</dict>
+			<key>chonks</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>chonks</string>
+				</array>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+			</dict>
 			<key>farcaster</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
@@ -100,6 +118,15 @@
 				<key>CFBundleIconFiles</key>
 				<array>
 					<string>raindoge</string>
+				</array>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+			</dict>
+			<key>redacted</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>redacted</string>
 				</array>
 				<key>UIPrerenderedIcon</key>
 				<false/>
@@ -253,6 +280,8 @@
 	</array>
 	<key>RCTAsyncStorageExcludeFromBackup</key>
 	<false/>
+	<key>RCTNewArchEnabled</key>
+	<true/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>SF-Mono-Bold.otf</string>
@@ -289,5 +318,7 @@
 	<string>$(BRANCH_APP_DOMAIN)</string>
 	<key>branch_key</key>
 	<string>$(BRANCH_KEY)</string>
+	<key>ReactNativeReleaseLevel</key>
+	<string>experimental</string>
 </dict>
 </plist>

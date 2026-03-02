@@ -21,7 +21,7 @@ import Routes from '@rainbow-me/routes';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { isENSAddressFormat } from '@/helpers/validators';
 import * as i18n from '@/languages';
-import ContextMenu from '@/components/context-menu/ContextMenu.android';
+import { ContextMenu } from '@/components/context-menu';
 
 type ContextMenuRendererProps = {
   children: React.ReactNode;

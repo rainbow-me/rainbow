@@ -627,7 +627,11 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
 
   return (
     <LayoutAnimationConfig skipEntering skipExiting>
-      <View style={styles.outerContainer}>
+      <View
+        style={styles.outerContainer}
+        // Very important or LayoutAnimationConfig does nothing when child is collapsed.
+        collapsable={false}
+      >
         <Animated.View style={[styles.digitContainer, animatedStyles.visibleWhenDisabled]}>
           <AnimatedText
             // eslint-disable-next-line react/jsx-props-no-spreading

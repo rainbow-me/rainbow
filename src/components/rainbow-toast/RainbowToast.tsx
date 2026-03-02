@@ -160,8 +160,6 @@ const springConfig: WithSpringConfig = {
   damping: 14,
   mass: 1,
   overshootClamping: false,
-  restDisplacementThreshold: 0.001,
-  restSpeedThreshold: 0.001,
   stiffness: 121.6,
 };
 
@@ -273,8 +271,6 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
             {
               damping: 35,
               stiffness: 150,
-              // avoid it bouncing a lot at the "end" so it removes on time
-              restDisplacementThreshold: 0.5,
             },
             finished => {
               if (finished) {
@@ -388,7 +384,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
           />
 
           {/* separate inner view because overflow hidden + shadow breaks */}
-          <View style={[contentContainerStyle, styles.innerContent]}>
+          <Animated.View style={[contentContainerStyle, styles.innerContent]}>
             {IS_IOS ? (
               <>
                 <BlurGradient
@@ -435,7 +431,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
             <Animated.View style={innerContainerStyle} onLayout={handleLayout}>
               <ToastContent toast={toast} />
             </Animated.View>
-          </View>
+          </Animated.View>
         </Animated.View>
       </GestureDetector>
     </Animated.View>

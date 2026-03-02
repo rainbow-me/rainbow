@@ -1,0 +1,251 @@
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
+index 32cb973..a4d26c0 100644
+--- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
++++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
+@@ -140,7 +140,7 @@ class RNGestureHandlerButtonViewManager :
+ 
+   override fun getDelegate(): ViewManagerDelegate<ButtonViewGroup>? = mDelegate
+ 
+-  class ButtonViewGroup(context: Context?) :
++  open class ButtonViewGroup(context: Context?) :
+     ViewGroup(context),
+     NativeViewGestureHandler.NativeViewGestureHandlerHook {
+     // Using object because of handling null representing no value set.
+diff --git a/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm b/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm
+index 667d600..9054037 100644
+--- a/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm
++++ b/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm
+@@ -161,7 +161,7 @@ - (void)bindToView:(UIView *)view
+   // because gesture handler system can handle cancellation of scroll recognizer when JS responder
+   // is set
+   UIScrollView *scrollView = [self retrieveScrollView:view];
+-  scrollView.delaysContentTouches = YES;
++  scrollView.delaysContentTouches = NO;
+ }
+ 
+ - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
+diff --git a/node_modules/react-native-gesture-handler/apple/RNGestureHandler.h b/node_modules/react-native-gesture-handler/apple/RNGestureHandler.h
+index b8e021d..97a4cae 100644
+--- a/node_modules/react-native-gesture-handler/apple/RNGestureHandler.h
++++ b/node_modules/react-native-gesture-handler/apple/RNGestureHandler.h
+@@ -68,6 +68,7 @@
+ @property (nonatomic, readonly, nullable) RNGestureHandlerPointerTracker *pointerTracker;
+ @property (nonatomic) BOOL enabled;
+ @property (nonatomic) RNGestureHandlerActionType actionType;
++@property (nonatomic, copy, nullable) NSNumber *viewTag;
+ @property (nonatomic) BOOL shouldCancelWhenOutside;
+ @property (nonatomic) BOOL needsPointerData;
+ @property (nonatomic) BOOL manualActivation;
+diff --git a/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm b/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
+index 708172f..096136d 100644
+--- a/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
++++ b/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
+@@ -242,12 +242,15 @@ - (void)bindToView:(RNGHUIView *)view
+ 
+   [recognizerView addGestureRecognizer:self.recognizer];
+   [self bindManualActivationToView:recognizerView];
++
++  self.viewTag = view.reactTag;
+ }
+ 
+ - (void)unbindFromView
+ {
+   [self.recognizer.view removeGestureRecognizer:self.recognizer];
+   self.recognizer.delegate = nil;
++  self.viewTag = nil;
+ 
+   [self unbindManualActivation];
+ }
+@@ -425,12 +428,28 @@ - (void)setManualActivation:(BOOL)manualActivation
+     if (_recognizer.view != nil) {
+       [_recognizer.view addGestureRecognizer:_manualActivationRecognizer];
+     }
++
++    [[NSNotificationCenter defaultCenter] addObserver:self
++                                            selector:@selector(handleAppWillResignActive:)
++                                                name:UIApplicationWillResignActiveNotification
++                                              object:nil];
+   } else if (_manualActivationRecognizer != nil) {
++    [[NSNotificationCenter defaultCenter] removeObserver:self
++                                                   name:UIApplicationWillResignActiveNotification
++                                                 object:nil];
+     [_manualActivationRecognizer.view removeGestureRecognizer:_manualActivationRecognizer];
+     _manualActivationRecognizer = nil;
+   }
+ }
+ 
++- (void)handleAppWillResignActive:(NSNotification *)notification
++{
++  if (_manualActivationRecognizer != nil && _manualActivationRecognizer.enabled) {
++    _manualActivationRecognizer.enabled = NO;
++    _manualActivationRecognizer.enabled = YES;
++  }
++}
++
+ - (void)bindManualActivationToView:(RNGHUIView *)view
+ {
+   if (_manualActivationRecognizer != nil) {
+diff --git a/node_modules/react-native-gesture-handler/apple/RNGestureHandlerManager.h b/node_modules/react-native-gesture-handler/apple/RNGestureHandlerManager.h
+index a191817..ec5a9a8 100644
+--- a/node_modules/react-native-gesture-handler/apple/RNGestureHandlerManager.h
++++ b/node_modules/react-native-gesture-handler/apple/RNGestureHandlerManager.h
+@@ -37,4 +37,6 @@
+ 
+ - (nullable RNGestureHandler *)handlerWithTag:(nonnull NSNumber *)handlerTag;
+ 
++- (void)reattachHandlersIfNeeded;
++
+ @end
+diff --git a/node_modules/react-native-gesture-handler/apple/RNGestureHandlerManager.mm b/node_modules/react-native-gesture-handler/apple/RNGestureHandlerManager.mm
+index 7c48214..7074561 100644
+--- a/node_modules/react-native-gesture-handler/apple/RNGestureHandlerManager.mm
++++ b/node_modules/react-native-gesture-handler/apple/RNGestureHandlerManager.mm
+@@ -141,11 +141,6 @@ - (void)attachGestureHandler:(nonnull NSNumber *)handlerTag
+ {
+ #ifdef RCT_NEW_ARCH_ENABLED
+   RNGHUIView *view = [_viewRegistry viewForReactTag:viewTag];
+-#else
+-  RNGHUIView *view = [_uiManager viewForReactTag:viewTag];
+-#endif // RCT_NEW_ARCH_ENABLED
+-
+-#ifdef RCT_NEW_ARCH_ENABLED
+   if (view == nil || view.superview == nil) {
+     // There are a few reasons we could end up here:
+     // - the native view corresponding to the viewtag hasn't yet been created
+@@ -180,6 +175,26 @@ - (void)attachGestureHandler:(nonnull NSNumber *)handlerTag
+   }
+ 
+   [_attachRetryCounter removeObjectForKey:viewTag];
++  [self maybeBindHandler:handlerTag toViewWithTag:viewTag withActionType:actionType];
++#else
++  RNGHUIView *view = [_uiManager viewForReactTag:viewTag];
++  [_registry attachHandlerWithTag:handlerTag toView:view withActionType:actionType];
++  [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
++#endif // RCT_NEW_ARCH_ENABLED
++}
++
++#ifdef RCT_NEW_ARCH_ENABLED
++// Resolves a view tag to its native UIView (including contentView unwrapping),
++// sets reactTag, and binds the gesture handler to it. No-op if the handler is
++// already attached to the correct view.
++- (void)maybeBindHandler:(nonnull NSNumber *)handlerTag
++           toViewWithTag:(nonnull NSNumber *)viewTag
++          withActionType:(RNGestureHandlerActionType)actionType
++{
++  RNGHUIView *view = [_viewRegistry viewForReactTag:viewTag];
++  if (view == nil || view.superview == nil) {
++    return;
++  }
+ 
+   // I think it should be moved to RNNativeViewHandler, but that would require
+   // additional logic for setting contentView.reactTag, this works for now
+@@ -190,15 +205,20 @@ - (void)attachGestureHandler:(nonnull NSNumber *)handlerTag
+     }
+   }
+ 
++  RNGestureHandler *handler = [_registry handlerWithTag:handlerTag];
++
++  // Already attached to the correct native view, nothing to do.
++  if (handler != nil && handler.recognizer.view == view && handler.actionType == actionType) {
++    return;
++  }
++
+   view.reactTag = viewTag; // necessary for RNReanimated eventHash (e.g. "42onGestureHandlerEvent"), also will be
+                            // returned as event.target
+-#endif // RCT_NEW_ARCH_ENABLED
+ 
+   [_registry attachHandlerWithTag:handlerTag toView:view withActionType:actionType];
+-
+-  // register view if not already there
+   [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
+ }
++#endif // RCT_NEW_ARCH_ENABLED
+ 
+ - (void)updateGestureHandler:(NSNumber *)handlerTag config:(NSDictionary *)config
+ {
+@@ -236,6 +256,24 @@ - (id)handlerWithTag:(NSNumber *)handlerTag
+   return [_registry handlerWithTag:handlerTag];
+ }
+ 
++- (void)reattachHandlersIfNeeded
++{
++#ifdef RCT_NEW_ARCH_ENABLED
++  // Re-bind handlers to their current native views. On Fabric, when a parent view has
++  // display:none and siblings change, the native UIView backing a component may be recycled
++  // and replaced. maybeBindHandler is a no-op if the view is nil or unchanged.
++  for (RNGestureHandler *handler in _registry.handlers.objectEnumerator) {
++    if (handler.viewTag == nil) {
++      continue;
++    }
++
++    [self maybeBindHandler:handler.tag
++             toViewWithTag:handler.viewTag
++            withActionType:handler.actionType];
++  }
++#endif // RCT_NEW_ARCH_ENABLED
++}
++
+ #pragma mark Root Views Management
+ 
+ - (void)registerViewWithGestureRecognizerAttachedIfNeeded:(RNGHUIView *)childView
+diff --git a/node_modules/react-native-gesture-handler/apple/RNGestureHandlerModule.mm b/node_modules/react-native-gesture-handler/apple/RNGestureHandlerModule.mm
+index 108ad2d..e97c7d3 100644
+--- a/node_modules/react-native-gesture-handler/apple/RNGestureHandlerModule.mm
++++ b/node_modules/react-native-gesture-handler/apple/RNGestureHandlerModule.mm
+@@ -214,17 +214,21 @@ - (void)setBridge:(RCTBridge *)bridge
+   // On the new arch we rely on `flushOperations` for scheduling the operations on the UI thread.
+   // On the old arch we rely on `uiManagerWillPerformMounting`
+ #ifdef RCT_NEW_ARCH_ENABLED
+-  if (_operations.count == 0) {
+-    return;
+-  }
++  RNGestureHandlerManager *manager = self->_manager;
+ 
+-  NSArray<GestureHandlerOperation> *operations = _operations;
+-  _operations = [NSMutableArray new];
++  if (_operations.count > 0) {
++    NSArray<GestureHandlerOperation> *operations = _operations;
++    _operations = [NSMutableArray new];
++
++    [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
++      for (GestureHandlerOperation operation in operations) {
++        operation(manager);
++      }
++    }];
++  }
+ 
+   [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
+-    for (GestureHandlerOperation operation in operations) {
+-      operation(self->_manager);
+-    }
++    [manager reattachHandlersIfNeeded];
+   }];
+ #endif // RCT_NEW_ARCH_ENABLED
+ }
+diff --git a/node_modules/react-native-gesture-handler/apple/RNGestureHandlerRegistry.h b/node_modules/react-native-gesture-handler/apple/RNGestureHandlerRegistry.h
+index 5e86c07..48140af 100644
+--- a/node_modules/react-native-gesture-handler/apple/RNGestureHandlerRegistry.h
++++ b/node_modules/react-native-gesture-handler/apple/RNGestureHandlerRegistry.h
+@@ -18,4 +18,6 @@
+ - (void)dropHandlerWithTag:(nonnull NSNumber *)handlerTag;
+ - (void)dropAllHandlers;
+ 
++@property (nonatomic, readonly, nonnull) NSDictionary<NSNumber *, RNGestureHandler *> *handlers;
++
+ @end
+diff --git a/node_modules/react-native-gesture-handler/apple/RNGestureHandlerRegistry.m b/node_modules/react-native-gesture-handler/apple/RNGestureHandlerRegistry.m
+index 197e040..0438431 100644
+--- a/node_modules/react-native-gesture-handler/apple/RNGestureHandlerRegistry.m
++++ b/node_modules/react-native-gesture-handler/apple/RNGestureHandlerRegistry.m
+@@ -22,6 +22,11 @@ - (instancetype)init
+   return self;
+ }
+ 
++- (NSDictionary<NSNumber *, RNGestureHandler *> *)handlers
++{
++  return _handlers;
++}
++
+ - (RNGestureHandler *)handlerWithTag:(NSNumber *)handlerTag
+ {
+   return _handlers[handlerTag];
