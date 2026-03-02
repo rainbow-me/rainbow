@@ -21,25 +21,10 @@ export const DEFAULT_FASTER_IMAGE_CONFIG: Partial<ImageOptions> = {
   transitionDuration: 0.175,
 };
 
-// Here we're emulating the pattern used in react-native-fast-image:
-// https://github.com/DylanVann/react-native-fast-image/blob/0439f7190f141e51a391c84890cdd8a7067c6ad3/src/index.tsx#L146
-type HiddenImgixImageProps = {
-  ref?: React.Ref<any>;
-  maxRetries?: number;
-  retryOnError?: boolean;
-  size?: number;
-  fm?: string;
-  enableFasterImage?: boolean;
-  fasterImageConfig?: Omit<ImageOptions, 'borderRadius' | 'url'>;
-};
-type MergedImgixImageProps = ImgixImageProps & HiddenImgixImageProps;
-
 const PIXEL_RATIO = PixelRatio.get();
 
-const isSourceWithUri = (value: unknown): value is Source => typeof value === 'object' && value !== null && 'uri' in value;
-
-const ImgixImage = (props: MergedImgixImageProps) => {
-  const { Component: maybeComponent, onLoad, onError, retryOnError, maxRetries = 5, ...restProps } = props;
+const ImgixImage = React.memo(function ImgixImage(props: ImgixImageProps) {
+  const { Component: maybeComponent, onLoad, onError, ...restProps } = props;
 
   const shouldUseFasterImage = Boolean(props.enableFasterImage || props.fasterImageConfig);
 
@@ -69,44 +54,14 @@ const ImgixImage = (props: MergedImgixImageProps) => {
     }
   }, [props.fasterImageConfig, props.fm, props.resizeMode, props.size, props.source, props.style, shouldUseFasterImage]);
 
-  const [retryCount, setRetryCount] = React.useState(0);
-
-  React.useEffect(() => {
-    setRetryCount(0);
-  }, [props.source]);
-
-  const handleError = React.useCallback(
-    (err: any) => {
-      const isNotFound = err?.nativeEvent?.statusCode === 404 || err?.nativeEvent?.message?.includes('404');
-      const shouldRetry = retryOnError && !isNotFound;
-
-      if (shouldRetry && retryCount < maxRetries) {
-        setRetryCount(current => current + 1);
-      } else {
-        // @ts-expect-error
-        onError?.(err?.nativeEvent?.error);
-      }
-    },
-    [maxRetries, onError, retryCount, retryOnError]
-  );
-
-
   const Component = maybeComponent || (shouldUseFasterImage ? FasterImageView : FastImage);
 
   if (shouldUseFasterImage) {
     return <Component {...restProps} onError={onError} onLoad={undefined} onSuccess={onLoad} source={derivedSource} />;
   } else {
-    return (
-      <Component
-        {...restProps}
-        key={`${isSourceWithUri(derivedSource) ? derivedSource.uri : JSON.stringify(derivedSource)}-${retryCount}`}
-        onError={handleError}
-        onLoad={onLoad}
-        source={derivedSource}
-      />
-    );
+    return <Component {...restProps} onError={onError} onLoad={onLoad} source={derivedSource} />;
   }
-};
+});
 
 const preload = (sources: Source[], size?: number, fm?: string): void => {
   if (sources.length) {

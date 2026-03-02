@@ -4682,7 +4682,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: c6e2edd1c1da07bdce287fa9d9e60c5f7b514616
   react-native-screen-corner-radius: ebd0d3258fcc894571b41d25ee3db7569d375153
   react-native-skia: e819bda7455acc967c3d0c7113b1e665a9d7a472
-  react-native-udp: 33844c2b4a0430271e46cd069a6152cc4c482095
+  react-native-udp: afd81d997ff141501da6ac680667fd8319545da1
   react-native-version-number: 3d74b5224ca4e1032b1593937d86d3f3c94bf95c
   react-native-video: dc7e341a8dc21d183f7e6a17a646b98ba2cf9448
   react-native-view-shot: 5820e00bebc335357bd0febeb881c1589d6a17de
@@ -4767,4 +4767,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: d14f79054b307f29f7e308d24e29c67ad2b22959
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

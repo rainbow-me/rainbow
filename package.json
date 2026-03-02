@@ -370,7 +370,7 @@
     "yaml-eslint-parser": "1.3.0"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.0.0"
   },
   "packageManager": "yarn@4.2.2",
   "resolutions": {
