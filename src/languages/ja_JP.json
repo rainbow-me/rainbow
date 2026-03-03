@@ -1688,15 +1688,17 @@
       "positions": {
         "entry": "エントリー",
         "mark_price": "マーケット価格",
+        "mark_price_full": "マーケット価格",
         "open_positions": "オープンポジション",
         "no_open_positions": "オープンポジションなし",
         "position_value": "ポジションバリュー",
-        "mark_price_full": "マーケット価格",
         "entry_price": "エントリー価格",
         "funding": "資金調達",
         "liquidation_price": "清算価格",
         "total": "合計",
-        "learn_more_about_perps": "Perpsについてもっと学びましょう"
+        "learn_more_about_perps": "Perpsについてもっと学びましょう",
+        "open": "オープン",
+        "close": "閉じる"
       },
       "new_position": {
         "hold_to_long": "ロングするにはホールド",
