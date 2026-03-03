@@ -21,6 +21,70 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.20](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.20)
+
+### Added
+
+- Polymarket block buy/sell when zero or not enough liquidity (https://github.com/rainbow-me/rainbow/pull/7151)
+- Polymarket "in review" market label (https://github.com/rainbow-me/rainbow/pull/7152)
+- Add icons for sports over/under markets (https://github.com/rainbow-me/rainbow/pull/7170)
+- Polymarket midpoint live pricing support (https://github.com/rainbow-me/rainbow/pull/7164)
+- Use midpoint pricing for moneyline ratio bar (https://github.com/rainbow-me/rainbow/pull/7165)
+- 7702 delegation, atomic swaps (https://github.com/rainbow-me/rainbow/pull/7157)
+
+### Changed
+
+- Remove unused debug utilities (https://github.com/rainbow-me/rainbow/pull/7144)
+- Remove dead test files and orphaned test helper (https://github.com/rainbow-me/rainbow/pull/7148)
+- Move rainbow-fetch to framework/data/http (https://github.com/rainbow-me/rainbow/pull/7145)
+- Move styled-thing to framework/ui (https://github.com/rainbow-me/rainbow/pull/7147)
+- Move safeMath to framework/core (https://github.com/rainbow-me/rainbow/pull/7146)
+- Remove deprecated sentry breadcrumb utils (https://github.com/rainbow-me/rainbow/pull/7158)
+- Remove unused ActionCard component (https://github.com/rainbow-me/rainbow/pull/7159)
+- Refactor market and team fallback colors selection (https://github.com/rainbow-me/rainbow/pull/7122)
+- Update react-native-view-shot to 4.0.3 and remove patch (https://github.com/rainbow-me/rainbow/pull/7126)
+- Upload AWS Device Farm logs as GitHub artifacts (https://github.com/rainbow-me/rainbow/pull/7156)
+- Remove IS_TEST hacks from Swap components (https://github.com/rainbow-me/rainbow/pull/7154)
+- Remove unused AirdropSection component and store (https://github.com/rainbow-me/rainbow/pull/7160)
+- Enforce TS are imported with annotation (https://github.com/rainbow-me/rainbow/pull/7161)
+- Import types with annotation in VSCode(Cursor) (https://github.com/rainbow-me/rainbow/pull/7162)
+- Remove barrel import of date-fns to reduce bundle size (https://github.com/rainbow-me/rainbow/pull/7166)
+- Remove unused DraggableFlatList and AnimatedFlatList components (https://github.com/rainbow-me/rainbow/pull/7169)
+- Remove unused AllocationBreakdown component and i18n keys (https://github.com/rainbow-me/rainbow/pull/7168)
+- Organize app-icon into type directories (https://github.com/rainbow-me/rainbow/pull/7167)
+- Bump iOS and Android to v2.0.20 (https://github.com/rainbow-me/rainbow/pull/7176)
+- Convert ImgixImage from class to function component (https://github.com/rainbow-me/rainbow/pull/7153)
+- Remove unused BackupRainbowButton component (https://github.com/rainbow-me/rainbow/pull/7178)
+- Add AGENTS.md for AI coding agent context (https://github.com/rainbow-me/rainbow/pull/7175)
+- New Crowdin updates (https://github.com/rainbow-me/rainbow/pull/7163)
+- Remove unused BottomSheetBackground component (https://github.com/rainbow-me/rainbow/pull/7180)
+- Normalize lockfile and project for Xcode 26 + Ruby 3.4.8 (https://github.com/rainbow-me/rainbow/pull/7182)
+- Remove 13 unused devDependencies (https://github.com/rainbow-me/rainbow/pull/7183)
+- Move dev-only packages out of runtime dependencies (https://github.com/rainbow-me/rainbow/pull/7184)
+- Upgrade Node.js from 18 to 22 LTS (https://github.com/rainbow-me/rainbow/pull/7181)
+- Migrate from @gelatonetwork/relay-sdk to @gelatocloud/gasless (https://github.com/rainbow-me/rainbow/pull/7179)
+- Update TypeScript to 5.9.3 and fix type errors (https://github.com/rainbow-me/rainbow/pull/7155)
+- Remove unused @ethersproject/random (https://github.com/rainbow-me/rainbow/pull/7186)
+- Remove unused @ethersproject/solidity (https://github.com/rainbow-me/rainbow/pull/7187)
+- Remove unused @walletconnect/legacy-utils (https://github.com/rainbow-me/rainbow/pull/7188)
+- Remove unused react-native-section-list-get-item-layout (https://github.com/rainbow-me/rainbow/pull/7189)
+- Remove unused react-style-proptype (https://github.com/rainbow-me/rainbow/pull/7190)
+- Remove noop string.fromcodepoint (https://github.com/rainbow-me/rainbow/pull/7191)
+- Drop @react-native/metro-config from runtime deps (https://github.com/rainbow-me/rainbow/pull/7192)
+- Remove remote cards feature (https://github.com/rainbow-me/rainbow/pull/7201)
+- Smart wallet delegation translations (https://github.com/rainbow-me/rainbow/pull/7196)
+- Remove dead code from src/helpers and src/components (https://github.com/rainbow-me/rainbow/commit/ffbacc32a7ca807608061553ec166f03e3b89df7)
+- Remove koth points multiplier (https://github.com/rainbow-me/rainbow/pull/7208)
+
+### Fixed
+
+- Fix android performance test (https://github.com/rainbow-me/rainbow/pull/7150)
+- Resolved outcomes displayed twice when all outcomes resolved (https://github.com/rainbow-me/rainbow/pull/7177)
+- Handle DepositQuoteStatus.Error in deposit quote flow (https://github.com/rainbow-me/rainbow/pull/7193)
+- Transaction fixes, 7702 cleanup (https://github.com/rainbow-me/rainbow/pull/7200)
+- Resolve startup race dropping identify traits (https://github.com/rainbow-me/rainbow/pull/7207)
+- Correct allowance target handling for wrap/unwrap (https://github.com/rainbow-me/rainbow/pull/7210)
+
 ## [2.0.19](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.19)
 
 ### Added
