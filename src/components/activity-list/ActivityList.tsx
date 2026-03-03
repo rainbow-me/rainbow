@@ -3,7 +3,7 @@ import { FastTransactionCoinRow } from '@/components/coin-row';
 import { type RainbowTransaction } from '@/entities/transactions';
 import { type TransactionSection } from '@/helpers/buildTransactionsSectionsSelector';
 import useAccountTransactions from '@/hooks/useAccountTransactions';
-import { Skeleton } from '@/screens/points/components/Skeleton';
+import { Skeleton } from '@/components/Skeleton';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import styled from '@/framework/ui/styled-thing';

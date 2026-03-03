@@ -5,7 +5,7 @@ import { isSwipeRoute, setActiveRoute } from '@/state/navigation/navigationStore
 import { currentColors } from '@/theme';
 import { logger } from '@/logger';
 import { Navigation } from './index';
-import Routes, { POINTS_ROUTES } from './routesNames';
+import Routes from './routesNames';
 import { isSplashScreenHidden } from '@/hooks/useHideSplashScreen';
 
 let memState;
@@ -54,9 +54,6 @@ export function onHandleStatusBar(currentState, prevState) {
     case Routes.PROFILE_SCREEN:
     case Routes.WALLET_SCREEN:
     case Routes.DISCOVER_SCREEN:
-    case Routes.POINTS_SCREEN:
-    case POINTS_ROUTES.CLAIM_CONTENT:
-    case POINTS_ROUTES.REFERRAL_CONTENT:
     case Routes.DAPP_BROWSER_SCREEN:
     case Routes.WELCOME_SCREEN:
     case Routes.SWAP_NAVIGATOR:
@@ -86,7 +83,6 @@ export function onHandleStatusBar(currentState, prevState) {
     }
 
     // Full dark screens - light status bar and navigation bar.
-    case Routes.CONSOLE_SHEET:
     case Routes.CHANGE_WALLET_SHEET:
     case Routes.NETWORK_SELECTOR:
     case Routes.QR_SCANNER_SCREEN:

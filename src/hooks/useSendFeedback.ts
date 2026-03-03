@@ -16,7 +16,7 @@ const categorySubjectMap: Record<SupportCategory, string> = {
   backup_recovery: 'Backup & Recovery',
   tokens_transactions: 'Tokens & Transactions',
   bridge_swap: 'Bridge & Swap',
-  points_rewards: 'Points & Rewards',
+  rewards: 'Rewards',
   security: 'Security',
   partnership: 'Partnership',
   other: 'Other',
@@ -29,7 +29,7 @@ export type SupportCategory =
   | 'backup_recovery'
   | 'tokens_transactions'
   | 'bridge_swap'
-  | 'points_rewards'
+  | 'rewards'
   | 'security'
   | 'partnership'
   | 'other';

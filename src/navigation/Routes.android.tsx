@@ -53,7 +53,6 @@ import {
   addCashSheet,
   nftSingleOfferSheetPreset,
   walletconnectBottomSheetPreset,
-  consoleSheetPreset,
   appIconUnlockSheetPreset,
   swapSheetPreset,
   tokenLauncherSheetPreset,
@@ -82,13 +81,11 @@ import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
-import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
-import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
-import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
+import { ClaimRewardsPanel } from '@/screens/claimables/ClaimRewardsPanel';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
 import { RevokeDelegationPanel } from '@/screens/delegation/RevokeDelegationPanel';
 import { type RootStackParamList } from './types';
@@ -260,7 +257,6 @@ function BSNavigator() {
       <BSStack.Screen name={Routes.NFT_SINGLE_OFFER_SHEET} component={NFTSingleOfferSheet} options={nftSingleOfferSheetPreset} />
       <BSStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} />
       <BSStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} options={walletconnectBottomSheetPreset} />
-      <BSStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} options={consoleSheetPreset} />
       <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
       <BSStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} />
       <BSStack.Screen component={NetworkSelector} name={Routes.NETWORK_SELECTOR} />
@@ -323,9 +319,7 @@ function AuthNavigator() {
 
 const AppContainerWithAnalytics = React.forwardRef<NavigationContainerRef<RootStackParamList>, { onReady: () => void }>((props, ref) => (
   <NavigationContainer onReady={props.onReady} onStateChange={onNavigationStateChange} ref={ref}>
-    <PointsProfileProvider>
-      <AuthNavigator />
-    </PointsProfileProvider>
+    <AuthNavigator />
 
     {/* NOTE: Internally, these use some navigational checks */}
     <CMPortal />

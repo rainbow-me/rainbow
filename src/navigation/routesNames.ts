@@ -1,10 +1,5 @@
 import { IS_IOS } from '@/env';
 
-export const POINTS_ROUTES = {
-  CLAIM_CONTENT: 'ClaimContent',
-  REFERRAL_CONTENT: 'ReferralContent',
-} as const;
-
 const Routes = {
   ADD_CASH_SCREEN_NAVIGATOR: 'AddCashSheetNavigator',
   ADD_CASH_SHEET: 'AddCashSheet',
@@ -24,7 +19,6 @@ const Routes = {
   CLAIM_CLAIMABLE_PANEL: 'ClaimClaimablePanel',
   CONFIRM_REQUEST: 'ConfirmRequest',
   CONNECTED_DAPPS: 'ConnectedDapps',
-  CONSOLE_SHEET: 'ConsoleSheet',
   CUSTOM_GAS_SHEET: 'CustomGasSheet',
   DAPP_BROWSER_SCREEN: 'DappBrowserScreen',
   DAPP_BROWSER: 'DappBrowser',
@@ -69,8 +63,6 @@ const Routes = {
   PAIR_HARDWARE_WALLET_SIGNING_SHEET: 'PairHardwareWalletSigningSheet',
   PAIR_HARDWARE_WALLET_SUCCESS_SHEET: 'PairHardwareWalletSuccessSheet',
   PIN_AUTHENTICATION_SCREEN: 'PinAuthenticationScreen',
-  POINTS_SCREEN: 'PointsScreen',
-  ...POINTS_ROUTES,
   POSITION_SHEET: 'PositionSheet',
   PROFILE_PREVIEW_SHEET: 'ProfilePreviewSheet',
   PROFILE_SCREEN: 'ProfileScreen',

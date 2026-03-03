@@ -11,9 +11,7 @@ import { logger } from '@/logger';
 import { Navigation } from '@/navigation';
 import { type InitialRoute } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
-import { queryClient } from '@/react-query';
 import store from '@/redux/store';
-import { pointsReferralCodeQueryKey } from '@/resources/points';
 import { delay } from '@/utils/delay';
 import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueId } from '@/utils/ethereumUtils';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
@@ -200,19 +198,6 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
         const secretWordOrHash = pathname?.split('/')?.[1];
         await getPoapAndOpenSheetWithSecretWord(secretWordOrHash, false);
         await getPoapAndOpenSheetWithQRHash(secretWordOrHash, false);
-        break;
-      }
-
-      case 'points': {
-        logger.debug(`[handleDeeplink]: handling points`, { url });
-        const referralCode = query?.ref;
-        if (referralCode) {
-          analytics.track(analytics.event.pointsReferralCodeDeeplinkOpened);
-          queryClient.setQueryData(
-            pointsReferralCodeQueryKey,
-            (referralCode.slice(0, 3) + '-' + referralCode.slice(3, 7)).toLocaleUpperCase()
-          );
-        }
         break;
       }
 

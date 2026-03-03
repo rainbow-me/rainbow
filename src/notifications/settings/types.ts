@@ -14,9 +14,7 @@ export type WalletNotificationTopics = {
   [key: WalletNotificationTopicType]: boolean;
 };
 
-export type GlobalNotificationTopics = {
-  [key: GlobalNotificationTopicType]: boolean;
-};
+export type GlobalNotificationTopics = Record<string, boolean>;
 
 export type NotificationSubscriptionWalletsType = {
   type: WalletNotificationRelationshipType;

@@ -227,29 +227,6 @@ query getPromoSheet($id: String!) {
   }
 }
 
-query getPointsTweetIntentCollection($order: [PointsTweetIntentOrder]) {
-  pointsTweetIntentCollection(order: $order) {
-    items {
-      sys {
-        id
-      }
-      key
-      text
-      via
-      url
-    }
-  }
-}
-
-query getPointsTweetIntent($id: String!) {
-  pointsTweetIntent(id: $id) {
-    key
-    text
-    via
-    url
-  }
-}
-
 fragment simpleHashPaymentToken on SimpleHashPaymentToken {
   payment_token_id
   name
