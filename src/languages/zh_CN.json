@@ -1688,15 +1688,17 @@
       "positions": {
         "entry": "入口",
         "mark_price": "标价",
+        "mark_price_full": "标记价格",
         "open_positions": "持仓",
         "no_open_positions": "没有未平仓位",
         "position_value": "仓位价值",
-        "mark_price_full": "标记价格",
         "entry_price": "入场价",
         "funding": "资金",
         "liquidation_price": "清算价格",
         "total": "总计",
-        "learn_more_about_perps": "了解更多关于Perps的信息"
+        "learn_more_about_perps": "了解更多关于Perps的信息",
+        "open": "打开",
+        "close": "关闭"
       },
       "new_position": {
         "hold_to_long": "长按以做多",
