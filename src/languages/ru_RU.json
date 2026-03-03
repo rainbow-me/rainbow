@@ -1688,15 +1688,17 @@
       "positions": {
         "entry": "ВХОД",
         "mark_price": "МАРКЕТИНГОВАЯ ЦЕНА",
+        "mark_price_full": "Маркетинговая цена",
         "open_positions": "Открытые позиции",
         "no_open_positions": "Нет открытых позиций",
         "position_value": "Стоимость позиции",
-        "mark_price_full": "Маркетинговая цена",
         "entry_price": "Цена входа",
         "funding": "Финансирование",
         "liquidation_price": "Цена ликвидации",
         "total": "Всего",
-        "learn_more_about_perps": "Узнайте больше о Perps"
+        "learn_more_about_perps": "Узнайте больше о Perps",
+        "open": "Открыть",
+        "close": "Закрыть"
       },
       "new_position": {
         "hold_to_long": "Удерживать, чтобы открыть длинную",
