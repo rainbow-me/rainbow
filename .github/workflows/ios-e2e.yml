@@ -224,7 +224,6 @@ jobs:
           echo "Failed tests: $FAILED_TESTS"
           echo "Failed flows: $FAILED_FLOWS"
 
-          chmod +x ./scripts/e2e-autofix.sh
           ./scripts/e2e-autofix.sh \
             --pr "${{ github.event.pull_request.number }}" \
             --branch "${{ github.head_ref }}" \
