@@ -205,7 +205,7 @@ export function WelcomeScreen() {
 
   return (
     <PerformanceMeasureView interactive={true} screenName="WelcomeScreen">
-      <Box style={styles.container} testID="welcome-screen" backgroundColor={colors.white}>
+      <Box style={styles.container} testID="welcome-screen-broken" backgroundColor={colors.white}>
         <RainbowsBackground shouldAnimate={shouldAnimateRainbows} />
         <Animated.View style={[contentStyle, styles.contentContainer]}>
           {IS_ANDROID && IS_TEST ? (
