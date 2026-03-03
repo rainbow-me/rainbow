@@ -1688,15 +1688,17 @@
       "positions": {
         "entry": "เข้า",
         "mark_price": "ราคามาร์ก",
+        "mark_price_full": "ราคามาร์ก",
         "open_positions": "ตำแหน่งที่เปิดอยู่",
         "no_open_positions": "ไม่มีตำแหน่งที่เปิดอยู่",
         "position_value": "ค่าตำแหน่ง",
-        "mark_price_full": "ราคามาร์ก",
         "entry_price": "ราคาเข้า",
         "funding": "การจัดหาเงิน",
         "liquidation_price": "ราคาการชำระหนี้",
         "total": "ทั้งหมด",
-        "learn_more_about_perps": "เรียนรู้เกี่ยวกับ Perps เพิ่มเติม"
+        "learn_more_about_perps": "เรียนรู้เกี่ยวกับ Perps เพิ่มเติม",
+        "open": "เปิด",
+        "close": "ปิด"
       },
       "new_position": {
         "hold_to_long": "กดค้างเพื่อยาว",
