@@ -2040,7 +2040,7 @@
         "secondary_button": "ไม่ตอนนี้",
         "info_row_1": {
           "title": "สำหรับกิจกรรมต่างๆ ในกระเป๋าเงินของคุณ",
-          "description": "Get notified about activity in your wallet."
+          "description": "รับการแจ้งเตือนเกี่ยวกับกิจกรรมในกระเป๋าเงินของคุณ"
         },
         "info_row_2": {
           "title": "เร็วแสงฟ้า",
@@ -2048,7 +2048,7 @@
         },
         "info_row_3": {
           "title": "ปรับแต่งได้",
-          "description": "Sends, receives, sales, mints, swaps, and more."
+          "description": "การส่ง, การรับ, การขาย, การสร้าง, การแลกเปลี่ยน และอื่น ๆ อีกมากมาย"
         },
         "header": "การแจ้งเตือน",
         "subheader": "เราขอแนะนำ"
@@ -2371,7 +2371,7 @@
           },
           "rewards": {
             "name": "รางวัล",
-            "description": "Rewards, airdrops, launches"
+            "description": "รางวัล, แอร์ดรอป, การเปิดตัว"
           },
           "security": {
             "name": "ข้อกังวลด้านความปลอดภัย",
