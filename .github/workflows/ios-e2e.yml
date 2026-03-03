@@ -182,6 +182,8 @@ jobs:
           echo "Simulator is ready."
 
       - name: Run Tests
+        id: e2e
+        continue-on-error: true
         run: ./scripts/e2e-ios-ci.sh
         env:
           DEVICE_UDID: ${{ steps.simulator.outputs.udid }}
@@ -192,3 +194,46 @@ jobs:
         with:
           name: artifacts-${{ matrix.shard-index }}
           path: ${{ env.ARTIFACTS_FOLDER }}
+
+      - name: AI Autofix
+        if: ${{ steps.e2e.outcome == 'failure' && github.event_name == 'pull_request' }}
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          npm install -g @anthropic-ai/claude-code
+
+          FAILED_TESTS=""
+          FAILED_FLOWS=""
+          for dir in ${{ env.ARTIFACTS_FOLDER }}/maestro/❌-*; do
+            [ -d "$dir" ] || continue
+            basename=$(basename "$dir")
+            test_name=$(echo "$basename" | sed 's/^❌-//; s/-[0-9]*$//')
+            flow=$(find e2e/flows -name "${test_name}.yaml" -o -name "${test_name}.yml" 2>/dev/null | head -1)
+            [ -z "$flow" ] && continue
+            if [[ "$FAILED_TESTS" != *"$test_name"* ]]; then
+              FAILED_TESTS="${FAILED_TESTS:+$FAILED_TESTS,}$test_name"
+              FAILED_FLOWS="${FAILED_FLOWS:+$FAILED_FLOWS,}$flow"
+            fi
+          done
+
+          if [ -z "$FAILED_TESTS" ]; then
+            echo "No failed tests found in artifacts, skipping"
+            exit 0
+          fi
+
+          echo "Failed tests: $FAILED_TESTS"
+          echo "Failed flows: $FAILED_FLOWS"
+
+          chmod +x ./scripts/e2e-autofix.sh
+          ./scripts/e2e-autofix.sh \
+            --pr "${{ github.event.pull_request.number }}" \
+            --branch "${{ github.head_ref }}" \
+            --repo "${{ github.repository }}" \
+            --failed-tests "$FAILED_TESTS" \
+            --failed-flows "$FAILED_FLOWS" \
+            --skip-verify \
+            --platform ios
+
+      - name: Fail if tests failed
+        if: ${{ steps.e2e.outcome == 'failure' }}
+        run: exit 1

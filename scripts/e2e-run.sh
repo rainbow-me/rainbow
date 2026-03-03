@@ -162,8 +162,6 @@ fi
 
 # Run tests with retries.
 EXIT_CODE=0
-FAILED_TEST_NAMES=()
-FAILED_FLOW_PATHS=()
 for TEST_FILE in "${TEST_FILES[@]}"; do
   TEST_NAME=$(basename "${TEST_FILE%.*}")
   echo "🚀 Running test: $TEST_NAME"
@@ -231,44 +229,12 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
 
   if ! $SUCCESS; then
     echo "❌ Failed after 3 attempts: $TEST_NAME"
-    FAILED_TEST_NAMES+=("$TEST_NAME")
-    FAILED_FLOW_PATHS+=("$TEST_FILE")
     echo
     EXIT_CODE=1
   fi
 done
 
 
-
-# ─── Trigger AI autofix on CI when tests fail ─────────────────────────
-if [[ "$EXIT_CODE" -ne 0 ]] && [[ "${#FAILED_TEST_NAMES[@]}" -gt 0 ]] && [[ "${CI:-}" = "true" ]]; then
-  # Auto-detect PR info from GitHub Actions environment
-  PR_BRANCH="${GITHUB_HEAD_REF:-}"
-  REPO="${GITHUB_REPOSITORY:-}"
-  PR_NUMBER=""
-
-  # Extract PR number from GITHUB_EVENT_PATH (pull_request events)
-  if [[ -n "${GITHUB_EVENT_PATH:-}" ]] && [[ -f "$GITHUB_EVENT_PATH" ]]; then
-    PR_NUMBER=$(jq -r '.pull_request.number // .issue.number // empty' "$GITHUB_EVENT_PATH" 2>/dev/null || true)
-  fi
-
-  if [[ -n "$PR_NUMBER" && -n "$PR_BRANCH" && -n "$REPO" ]]; then
-    TESTS_CSV=$(IFS=','; echo "${FAILED_TEST_NAMES[*]}")
-    FLOWS_CSV=$(IFS=','; echo "${FAILED_FLOW_PATHS[*]}")
-
-    echo ""
-    echo "🤖 Triggering AI autofix for ${#FAILED_TEST_NAMES[@]} failed test(s)..."
-    echo "   PR: #${PR_NUMBER} (${PR_BRANCH})"
-    echo "   Tests: ${TESTS_CSV}"
-    gh workflow run e2e-autofix.yml \
-      --repo "$REPO" \
-      -f pr_number="$PR_NUMBER" \
-      -f pr_branch="$PR_BRANCH" \
-      -f failed_tests="$TESTS_CSV" \
-      -f failed_flows="$FLOWS_CSV" \
-      2>/dev/null && echo "✅ Autofix workflow triggered" || echo "⚠️ Could not trigger autofix workflow"
-  fi
-fi
 
 
 exit $EXIT_CODE
