@@ -2040,7 +2040,7 @@
         "secondary_button": "Şimdi Değil",
         "info_row_1": {
           "title": "Tüm cüzdan aktiviteniz için",
-          "description": "Get notified about activity in your wallet."
+          "description": "Cüzdanınızdaki etkinlikler hakkında bildirim alın."
         },
         "info_row_2": {
           "title": "Yıldırım hızında",
@@ -2048,7 +2048,7 @@
         },
         "info_row_3": {
           "title": "Özelleştirilebilir",
-          "description": "Sends, receives, sales, mints, swaps, and more."
+          "description": "Gönderimler, alımlar, satışlar, basım işlemleri, takaslar ve daha fazlası."
         },
         "header": "Bildirimler",
         "subheader": "TANITIM"
@@ -2371,7 +2371,7 @@
           },
           "rewards": {
             "name": "Ödüller",
-            "description": "Rewards, airdrops, launches"
+            "description": "Ödüller, airdrop’lar, lansmanlar"
           },
           "security": {
             "name": "Güvenlik Endişeleri",
