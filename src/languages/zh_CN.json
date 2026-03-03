@@ -2040,7 +2040,7 @@
         "secondary_button": "现在不",
         "info_row_1": {
           "title": "针对您所有的钱包活动",
-          "description": "Get notified about activity in your wallet."
+          "description": "获取关于你钱包活动的通知。"
         },
         "info_row_2": {
           "title": "快如闪电",
@@ -2048,7 +2048,7 @@
         },
         "info_row_3": {
           "title": "可定制",
-          "description": "Sends, receives, sales, mints, swaps, and more."
+          "description": "发送、接收、出售、铸造、交换等等。"
         },
         "header": "通知",
         "subheader": "介绍"
@@ -2371,7 +2371,7 @@
           },
           "rewards": {
             "name": "奖励",
-            "description": "Rewards, airdrops, launches"
+            "description": "奖励、空投、发布"
           },
           "security": {
             "name": "安全问题",
