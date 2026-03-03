@@ -1,8 +1,5 @@
-import emojis from './emojis.json';
-
-const emojiData = Object.entries(emojis).map(([emojiChar, { name }]) => [name, emojiChar] as const);
-
-const emojiByName = new Map(emojiData);
+import { isString } from 'lodash';
+import { emojisByName } from './emojisByName';
 
 function normalizeName(name: string): string {
   if (/:.+:/.test(name)) {
@@ -12,7 +9,6 @@ function normalizeName(name: string): string {
 }
 
 export function resolveEmoji(name: unknown): string | null {
-  if (!name || typeof name !== 'string') return null;
-  const result = emojiByName.get(normalizeName(name));
-  return result ?? null;
+  if (!isString(name)) return null;
+  return emojisByName[normalizeName(name)] ?? null;
 }
