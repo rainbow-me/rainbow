@@ -1,0 +1,86 @@
+name: E2E Autofix
+on:
+  workflow_run:
+    workflows: ["iOS"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  autofix:
+    name: Autofix Failing E2E Tests
+    if: >
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      !startsWith(github.event.workflow_run.head_branch, 'autofix/')
+    runs-on: macos-15-xlarge
+    timeout-minutes: 30
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Get PR info
+        id: pr-info
+        run: |
+          PR_NUMBER=$(gh api \
+            "/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}" \
+            --jq '.pull_requests[0].number // empty')
+          if [ -z "$PR_NUMBER" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          PR_DATA=$(gh api "/repos/${{ github.repository }}/pulls/$PR_NUMBER")
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "pr_branch=$(echo "$PR_DATA" | jq -r '.head.ref')" >> $GITHUB_OUTPUT
+          echo "skip=false" >> $GITHUB_OUTPUT
+
+      - name: Check existing autofix
+        if: steps.pr-info.outputs.skip != 'true'
+        id: check
+        run: |
+          EXISTING=$(gh pr list --repo "${{ github.repository }}" \
+            --head "autofix/e2e-${{ steps.pr-info.outputs.pr_number }}" \
+            --state open --json number --jq '.[0].number // empty')
+          echo "skip=$( [ -n "$EXISTING" ] && echo true || echo false )" >> $GITHUB_OUTPUT
+
+      - name: Checkout
+        if: steps.pr-info.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr-info.outputs.pr_branch }}
+          fetch-depth: 0
+
+      - name: Download artifacts
+        if: steps.pr-info.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
+        id: artifacts
+        run: |
+          mkdir -p /tmp/e2e-artifacts
+          ARTIFACTS=$(gh api \
+            "/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/artifacts" \
+            --jq '.artifacts[] | select(.name | startswith("artifacts-")) | .id')
+          [ -z "$ARTIFACTS" ] && echo "has_artifacts=false" >> $GITHUB_OUTPUT && exit 0
+          for AID in $ARTIFACTS; do
+            gh api "/repos/${{ github.repository }}/actions/artifacts/$AID/zip" > "/tmp/e2e-artifacts/$AID.zip"
+            unzip -o "/tmp/e2e-artifacts/$AID.zip" -d /tmp/e2e-artifacts/ 2>/dev/null || true
+          done
+          echo "has_artifacts=true" >> $GITHUB_OUTPUT
+
+      - name: Install Claude Code
+        if: steps.artifacts.outputs.has_artifacts == 'true'
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run autofix
+        if: steps.artifacts.outputs.has_artifacts == 'true'
+        run: |
+          chmod +x ./scripts/e2e-autofix.sh ./scripts/parse-e2e-failures.sh
+          ./scripts/e2e-autofix.sh \
+            --artifacts-dir /tmp/e2e-artifacts \
+            --repo-dir . \
+            --pr "${{ steps.pr-info.outputs.pr_number }}" \
+            --branch "${{ steps.pr-info.outputs.pr_branch }}" \
+            --repo "${{ github.repository }}" \
+            --platform ios \
+            --max-attempts 2
