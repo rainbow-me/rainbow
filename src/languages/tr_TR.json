@@ -1688,15 +1688,17 @@
       "positions": {
         "entry": "GİRİŞ",
         "mark_price": "FİYAT İŞARETİ",
+        "mark_price_full": "Fiyat İşareti",
         "open_positions": "Açık Pozisyonlar",
         "no_open_positions": "Açık Pozisyon Yok",
         "position_value": "Pozisyon Değeri",
-        "mark_price_full": "Fiyat İşareti",
         "entry_price": "Giriş Fiyatı",
         "funding": "Fonlama",
         "liquidation_price": "Tasfiye Fiyatı",
         "total": "Toplam",
-        "learn_more_about_perps": "Perps hakkında daha fazla bilgi edinin"
+        "learn_more_about_perps": "Perps hakkında daha fazla bilgi edinin",
+        "open": "Aç",
+        "close": "Kapat"
       },
       "new_position": {
         "hold_to_long": "Uzun Tut",
