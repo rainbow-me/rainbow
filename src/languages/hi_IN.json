@@ -1688,15 +1688,17 @@
       "positions": {
         "entry": "प्रवेश",
         "mark_price": "मार्क मूल्य",
+        "mark_price_full": "मार्क मूल्य",
         "open_positions": "खुली स्थितियां",
         "no_open_positions": "कोई खुली स्थिति नहीं",
         "position_value": "स्थिति का मूल्य",
-        "mark_price_full": "मार्क मूल्य",
         "entry_price": "प्रवेश मूल्य",
         "funding": "फंडिंग",
         "liquidation_price": "लिक्विडेशन मूल्य",
         "total": "कुल",
-        "learn_more_about_perps": "Perps के बारे में अधिक जानें"
+        "learn_more_about_perps": "Perps के बारे में अधिक जानें",
+        "open": "खोलें",
+        "close": "बंद करें"
       },
       "new_position": {
         "hold_to_long": "लंबा करने के लिए पकड़ें",
