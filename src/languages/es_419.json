@@ -2040,7 +2040,7 @@
         "secondary_button": "Ahora no",
         "info_row_1": {
           "title": "Para todas las actividades de tu billetera",
-          "description": "Get notified about activity in your wallet."
+          "description": "Recibe notificaciones sobre la actividad en tu billetera."
         },
         "info_row_2": {
           "title": "Ultra rápido",
@@ -2048,7 +2048,7 @@
         },
         "info_row_3": {
           "title": "Personalizable",
-          "description": "Sends, receives, sales, mints, swaps, and more."
+          "description": "Envíos, recepciones, ventas, acuñaciones, intercambios y más."
         },
         "header": "Notificaciones",
         "subheader": "PRESENTAMOS"
@@ -2371,7 +2371,7 @@
           },
           "rewards": {
             "name": "Recompensas",
-            "description": "Rewards, airdrops, launches"
+            "description": "Recompensas, airdrops, lanzamientos"
           },
           "security": {
             "name": "Preocupaciones de seguridad",
