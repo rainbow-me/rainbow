@@ -1688,15 +1688,17 @@
       "positions": {
         "entry": "ENTRADA",
         "mark_price": "PREÇO DE MARCAÇÃO",
+        "mark_price_full": "Preço de Marcação",
         "open_positions": "Posições Abertas",
         "no_open_positions": "Nenhuma Posição Aberta",
         "position_value": "Valor da Posição",
-        "mark_price_full": "Preço de Marcação",
         "entry_price": "Preço de Entrada",
         "funding": "Financiamento",
         "liquidation_price": "Preço de Liquidação",
         "total": "Total",
-        "learn_more_about_perps": "Saiba mais sobre Perps"
+        "learn_more_about_perps": "Saiba mais sobre Perps",
+        "open": "Abrir",
+        "close": "Fechar"
       },
       "new_position": {
         "hold_to_long": "Segurar para Longo",
