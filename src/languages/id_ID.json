@@ -2040,7 +2040,7 @@
         "secondary_button": "Bukan Sekarang",
         "info_row_1": {
           "title": "Untuk semua aktivitas dompet Anda",
-          "description": "Get notified about activity in your wallet."
+          "description": "Dapatkan pemberitahuan tentang aktivitas di dompet Anda."
         },
         "info_row_2": {
           "title": "Sangat cepat",
@@ -2048,7 +2048,7 @@
         },
         "info_row_3": {
           "title": "Dapat disesuaikan",
-          "description": "Sends, receives, sales, mints, swaps, and more."
+          "description": "Kirim, terima, jual, cetak, tukar, dan lainnya."
         },
         "header": "Notifikasi",
         "subheader": "MEMPERKENALKAN"
@@ -2371,7 +2371,7 @@
           },
           "rewards": {
             "name": "Hadiah",
-            "description": "Rewards, airdrops, launches"
+            "description": "Reward, airdrop, peluncuran"
           },
           "security": {
             "name": "Kekhawatiran Keamanan",
