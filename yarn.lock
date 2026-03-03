@@ -9653,7 +9653,7 @@ __metadata:
     react-native-video: "npm:6.15.0"
     react-native-view-shot: "npm:4.0.3"
     react-native-vision-camera: "npm:4.7.3"
-    react-native-webview: "npm:13.13.5"
+    react-native-webview: "npm:13.16.1"
     react-native-widgetkit: "npm:1.0.9"
     react-navigation-backhandler: "npm:2.0.3"
     react-primitives: "npm:0.8.1"
@@ -23953,16 +23953,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-webview@npm:13.13.5":
-  version: 13.13.5
-  resolution: "react-native-webview@npm:13.13.5"
+"react-native-webview@npm:13.16.1":
+  version: 13.16.1
+  resolution: "react-native-webview@npm:13.16.1"
   dependencies:
     escape-string-regexp: "npm:^4.0.0"
     invariant: "npm:2.2.4"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/187441eac5a747acb58ae388b07611fcb13c6c8c801b7e3fc5175ea46e20cbc28db38ce777459fa4f405a3b4703e3011cd04c9218ac4a088a8a06031a8a2629c
+  checksum: 10c0/8fdf14447bc430100d78030b8fdb60df223bd51cdb25c06d58757962fea8ad0cd9cdb13a7aa40ff795c671d2b04a561cbeb2b5795d95780d7f0d3734573ebeeb
   languageName: node
   linkType: hard
 
