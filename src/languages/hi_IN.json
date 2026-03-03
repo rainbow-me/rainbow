@@ -2040,7 +2040,7 @@
         "secondary_button": "अभी नहीं",
         "info_row_1": {
           "title": "आपकी सभी वॉलेट गतिविधियों के लिए",
-          "description": "Get notified about activity in your wallet."
+          "description": "अपने वॉलेट में गतिविधि के बारे में सूचनाएं पाएं।"
         },
         "info_row_2": {
           "title": "आश्चर्यजनक रूप से तेज",
@@ -2048,7 +2048,7 @@
         },
         "info_row_3": {
           "title": "अनुकूलनीय",
-          "description": "Sends, receives, sales, mints, swaps, and more."
+          "description": "भेजना, प्राप्त करना, बिक्री, मिंट, स्वैप, और भी बहुत कुछ।"
         },
         "header": "सूचनाएं",
         "subheader": "परिचयकरण"
@@ -2371,7 +2371,7 @@
           },
           "rewards": {
             "name": "इनाम",
-            "description": "Rewards, airdrops, launches"
+            "description": "रिवॉर्ड्स, एयरड्रॉप्स, लॉन्च"
           },
           "security": {
             "name": "सुरक्षा संबंधी चिंताएँ",
