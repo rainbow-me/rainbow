@@ -11,13 +11,15 @@ import { logger, RainbowError } from '@/logger';
 //   3. "lastException.type: lastException.value" (e.g. "AbortError: Aborted")
 // A match on ANY candidate drops the event.
 const IGNORED_ERRORS: Array<string | RegExp> = [
-  // "AbortError: Aborted" -- thrown by whatwg-fetch when a request is intentionally cancelled via
-  // AbortController. This is expected behavior (e.g. createQueryStore aborting stale fetches on param change).
+  // "AbortError: Aborted"
+  // Thrown by whatwg-fetch when a request is intentionally cancelled via AbortController. This is expected behavior
+  // (e.g. createQueryStore aborting stale fetches on param change).
   // Matches candidate 3 ("AbortError: Aborted"). Anchored to the type prefix to avoid false positives.
   /^AbortError:/,
 
-  // "TypeError: Network request failed" -- thrown by whatwg-fetch when the device has no network
-  // connectivity (offline, tunnel, flaky wifi). Not actionable client-side.
+  // "TypeError: Network request failed"
+  // Thrown by whatwg-fetch when the device has no network connectivity (offline, tunnel, flaky wifi). Not actionable
+  // client-side.
   // Matches candidate 2 ("Network request failed"). Exact match to avoid catching other TypeErrors.
   /^Network request failed$/,
 ];
