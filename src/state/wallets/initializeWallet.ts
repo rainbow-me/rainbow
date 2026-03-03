@@ -2,7 +2,6 @@ import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { getOrCreateDeviceId } from '@/analytics/utils';
 import { getWalletContext } from '@/analytics/getWalletContext';
-import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 import { RainbowError, ensureError, logger } from '@/logger';
@@ -12,15 +11,26 @@ import { type Address } from 'viem';
 import runMigrations from '../../model/migrations';
 import { createWallet, type InitializeWalletParams, walletInit } from '../../model/wallet';
 import { settingsLoadNetwork } from '../../redux/settings';
-import { loadWallets, setAccountAddress, setWalletReady } from '@/state/wallets/walletsStore';
+import { checkKeychainIntegrity, loadWallets, setAccountAddress, setWalletReady } from '@/state/wallets/walletsStore';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 import { loadSettingsData } from '../settings/loadSettingsData';
 import { PerformanceTracking } from '../../performance/tracking';
 import { ensureValidHex } from '../../handlers/web3';
 import store from '@/redux/store';
 import { setIsSmallBalancesOpen } from '@/state/wallets/smallBalancesStore';
+import { time } from '@/utils/time';
 
 type WalletStatus = 'unknown' | 'new' | 'imported' | 'old';
+
+let integrityCheckTimeout: NodeJS.Timeout | null = null;
+
+const runKeychainIntegrityChecks = (): void => {
+  // Run with a small delay to avoid blocking more important tasks on startup.
+  if (integrityCheckTimeout) {
+    clearTimeout(integrityCheckTimeout);
+  }
+  integrityCheckTimeout = setTimeout(checkKeychainIntegrity, time.seconds(2.5));
+};
 
 function getWalletStatus(isNew: boolean, isImporting: boolean): WalletStatus {
   if (isNew) {

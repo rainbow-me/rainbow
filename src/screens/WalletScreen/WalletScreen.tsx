@@ -19,7 +19,7 @@ import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { debounce } from 'lodash';
-import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
+import { SessionEntryPromptSync } from '@/state/sync/SessionEntryPromptSync';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { InteractionManager } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -32,7 +32,7 @@ import { useShouldRevokeDelegation } from '@/hooks/useShouldRevokeDelegation';
 const UtilityComponents = memo(function UtilityComponents() {
   return (
     <>
-      <RemotePromoSheetSync />
+      <SessionEntryPromptSync />
       <MobileWalletProtocolListener />
     </>
   );

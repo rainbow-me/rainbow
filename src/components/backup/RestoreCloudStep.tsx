@@ -32,6 +32,7 @@ import { ImgixImage } from '../images';
 import { Text } from '../text';
 import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
 import { opacity } from '@/framework/ui/utils/opacity';
+import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
 
 type ComponentProps = {
   theme: ThemeContextProps;
@@ -157,9 +158,7 @@ export default function RestoreCloudStep() {
         onRestoreSuccess();
         backupsStore.getState().setPassword('');
         if (isEmpty(prevWalletsState)) {
-          Navigation.handleAction(Routes.SWIPE_LAYOUT, {
-            screen: Routes.WALLET_SCREEN,
-          });
+          await navigateAfterOnboarding();
         } else {
           Navigation.handleAction(Routes.WALLET_SCREEN);
         }

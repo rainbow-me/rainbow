@@ -1,8 +1,7 @@
-import messaging from '@react-native-firebase/messaging';
-
 import { getLocal, saveLocal } from '@/handlers/localstorage/common';
-import { getPermissionStatus } from '@/notifications/permissions';
+import { getPermissionStatus, isNotificationPermissionGranted } from '@/notifications/permissions';
 import { logger } from '@/logger';
+import messaging from '@react-native-firebase/messaging';
 
 const RAINBOW_FCM_TOKEN_KEY = 'rainbowFcmToken';
 
@@ -14,7 +13,7 @@ export const registerTokenRefreshListener = () =>
 export const saveFCMToken = async (): Promise<string | null> => {
   try {
     const permissionStatus = await getPermissionStatus();
-    if (permissionStatus === messaging.AuthorizationStatus.AUTHORIZED || permissionStatus === messaging.AuthorizationStatus.PROVISIONAL) {
+    if (isNotificationPermissionGranted(permissionStatus)) {
       const fcmToken = await messaging().getToken();
       if (fcmToken) {
         saveLocal(RAINBOW_FCM_TOKEN_KEY, { data: fcmToken });
