@@ -1688,15 +1688,17 @@
       "positions": {
         "entry": "진입",
         "mark_price": "마크 가격",
+        "mark_price_full": "마크 가격",
         "open_positions": "열린 포지션",
         "no_open_positions": "열린 포지션 없음",
         "position_value": "포지션 가치",
-        "mark_price_full": "마크 가격",
         "entry_price": "진입 가격",
         "funding": "자금 조달",
         "liquidation_price": "청산 가격",
         "total": "총액",
-        "learn_more_about_perps": "영구에 대해 더 알아보기"
+        "learn_more_about_perps": "영구에 대해 더 알아보기",
+        "open": "열기",
+        "close": "닫기"
       },
       "new_position": {
         "hold_to_long": "롱 보유",
