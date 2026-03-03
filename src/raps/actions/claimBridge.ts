@@ -1,6 +1,9 @@
-import { type NewTransaction, TransactionDirection, TransactionStatus, type TxHash } from '@/entities/transactions';
-import { type ParsedAddressAsset } from '@/entities/tokens';
+import { AddressZero } from '@ethersproject/constants';
+import { type CrosschainQuote, type QuoteError, getClaimBridgeQuote } from '@rainbow-me/swaps';
+import type { Address, Hash } from 'viem';
 import { type TransactionGasParamAmounts } from '@/entities/gas';
+import { type ParsedAddressAsset } from '@/entities/tokens';
+import { type NewTransaction, TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { getProvider } from '@/handlers/web3';
 import { add, addBuffer, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
@@ -8,9 +11,6 @@ import store from '@/redux/store';
 import { REFERRER_CLAIM } from '@/references';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import ethereumUtils from '@/utils/ethereumUtils';
-import { AddressZero } from '@ethersproject/constants';
-import { type CrosschainQuote, type QuoteError, getClaimBridgeQuote } from '@rainbow-me/swaps';
-import { type Address } from 'viem';
 import { type ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -193,7 +193,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     ],
     from: bridgeQuote.from,
     to: bridgeQuote.to as Address,
-    hash: swap.hash as TxHash,
+    hash: swap.hash as Hash,
     network: chainsName[parameters.chainId],
     nonce: swap.nonce,
     status: TransactionStatus.pending,

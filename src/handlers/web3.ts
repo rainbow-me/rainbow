@@ -7,6 +7,7 @@ import { type Block, JsonRpcBatchProvider, StaticJsonRpcProvider, type Transacti
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
+import { type Address, type Hex } from 'viem';
 import { AssetType } from '@/entities/assetTypes';
 import { type NewTransaction } from '@/entities/transactions';
 import { type ParsedAddressAsset } from '@/entities/tokens';
@@ -31,7 +32,6 @@ import { ChainId, chainAnvil } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { NftTokenType } from '@/graphql/__generated__/arc';
-import { type Address } from 'viem';
 
 export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
 
@@ -163,7 +163,7 @@ export const isHexString = (value: string): boolean => isEthersHexString(value);
  * @param value The number.
  * @return The hex string.
  */
-export const toHex = (value: BigNumberish): string => BigNumber.from(value).toHexString();
+export const toHex = (value: BigNumberish): Hex => BigNumber.from(value).toHexString() as Hex;
 
 /**
  * Converts a number to a hex string without leading zeros.

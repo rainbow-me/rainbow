@@ -1,5 +1,4 @@
 import { type NotifyOnChangeProps, useQuery } from '@tanstack/react-query';
-
 import { type ChainId } from '@/state/backendNetworks/types';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { abs, lessThan, subtract, isZero } from '@/helpers/utilities';
@@ -14,6 +13,7 @@ import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
 import { IS_TEST } from '@/env';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { mockMeteorologyData } from '@/e2e-mocks/meteorology';
+import { isLegacyMeteorologyFeeData } from '@/resources/meteorology/classification';
 
 // Query Types
 
@@ -85,9 +85,9 @@ export function useMeteorology<Selected = MeteorologyResult>(
   });
 }
 
-function selectGasSuggestions({ data }: MeteorologyResult) {
-  if ('legacy' in data) {
-    const { fastGasPrice, proposeGasPrice, safeGasPrice } = data.legacy;
+function selectGasSuggestions(result: MeteorologyResult) {
+  if (isLegacyMeteorologyFeeData(result)) {
+    const { fastGasPrice, proposeGasPrice, safeGasPrice } = result.data.legacy;
     return {
       urgent: {
         isEIP1559: false,
@@ -104,7 +104,7 @@ function selectGasSuggestions({ data }: MeteorologyResult) {
     } as const;
   }
 
-  const { maxPriorityFeeSuggestions, baseFeeSuggestion } = data;
+  const { maxPriorityFeeSuggestions, baseFeeSuggestion } = result.data;
 
   return {
     urgent: {
@@ -129,9 +129,9 @@ export const getMeteorologyCachedData = (chainId: ChainId) => {
   return queryClient.getQueryData<MeteorologyResult>(meteorologyQueryKey({ chainId }));
 };
 
-function selectBaseFee({ data }: MeteorologyResult) {
-  if ('legacy' in data) return undefined;
-  return data.currentBaseFee;
+function selectBaseFee(result: MeteorologyResult) {
+  if (isLegacyMeteorologyFeeData(result)) return undefined;
+  return result.data.currentBaseFee;
 }
 
 export function useBaseFee<Selected = string>({
@@ -152,10 +152,10 @@ export const getCachedCurrentBaseFee = (chainId: ChainId) => {
   return selectBaseFee(data);
 };
 
-function selectGasTrend({ data }: MeteorologyResult) {
-  if ('legacy' in data) return 'notrend';
+function selectGasTrend(result: MeteorologyResult) {
+  if (isLegacyMeteorologyFeeData(result)) return 'notrend';
 
-  const trend = data.baseFeeTrend;
+  const trend = result.data.baseFeeTrend;
   if (trend === -1) return 'falling';
   if (trend === 1) return 'rising';
   if (trend === 2) return 'surging';
@@ -178,11 +178,11 @@ function findClosestValue(target: string, array: string[]) {
   })!;
 }
 
-function selectEstimatedTime({ data }: MeteorologyResult, selectedGas: GasSettings | undefined) {
-  if ('legacy' in data) return undefined;
+function selectEstimatedTime(result: MeteorologyResult, selectedGas: GasSettings | undefined) {
+  if (isLegacyMeteorologyFeeData(result)) return undefined;
   if (!selectedGas?.isEIP1559) return undefined;
-  const value = findClosestValue(selectedGas.maxPriorityFee, Object.values(data?.confirmationTimeByPriorityFee || {}));
-  const [time] = Object.entries(data?.confirmationTimeByPriorityFee || {}).find(([, v]) => v === value) || [];
+  const value = findClosestValue(selectedGas.maxPriorityFee, Object.values(result.data?.confirmationTimeByPriorityFee || {}));
+  const [time] = Object.entries(result.data?.confirmationTimeByPriorityFee || {}).find(([, v]) => v === value) || [];
   if (!time) return undefined;
   return `${+time >= 3600 ? '> ' : '~'}${getMinimalTimeUnitStringForMs(+time * 1000)}`;
 }
@@ -255,7 +255,7 @@ export function useMeteorologySuggestion<Selected = GasSuggestion>({
   );
 }
 
-const selectIsEIP1559 = ({ data }: MeteorologyResult) => !('legacy' in data);
+const selectIsEIP1559 = (result: MeteorologyResult) => !isLegacyMeteorologyFeeData(result);
 export const useIsChainEIP1559 = (chainId: ChainId) => {
   const { data } = useMeteorology({ chainId }, { select: selectIsEIP1559 });
   if (data === undefined) return true;

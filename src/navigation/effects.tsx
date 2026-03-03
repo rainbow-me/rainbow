@@ -421,11 +421,6 @@ export const walletconnectBottomSheetPreset: BottomSheetNavigationOptions = {
   height: '100%',
 };
 
-export const consoleSheetPreset: BottomSheetNavigationOptions = {
-  backdropColor: 'black',
-  backdropOpacity: 1,
-};
-
 export const swapSheetPreset: BottomSheetNavigationOptions = {
   backdropColor: 'black',
   backdropOpacity: 0.9,

@@ -17,7 +17,7 @@ const tabCoordinates = {
   discoverTab: '35%,92%', // Discover tab
   browserTab: '50%,92%', // Browser tab
   activityTab: '65%,92%', // Activity tab
-  pointsTab: '80%,92%', // Points tab
+  rewardsTab: '80%,92%', // Rnbw Rewards tab
 };
 
 // Export to Maestro's output object

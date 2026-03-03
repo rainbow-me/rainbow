@@ -1,3 +1,4 @@
+import { getAddress } from 'viem';
 import { type Token } from '@/graphql/__generated__/metadata';
 import { metadataClient } from '@/graphql';
 import { type ChainId } from '@/state/backendNetworks/types';
@@ -58,10 +59,10 @@ function formatTokenData(token: ExternalToken): WithdrawalTokenData {
 
 function parseNetworkInfo(value: unknown): NetworkInfo | null {
   if (!value || typeof value !== 'object') return null;
-  if (!('address' in value) || typeof value.address !== 'string') return null;
+  if (!('address' in value) || typeof value.address !== 'string' || !value.address) return null;
   if (!('decimals' in value) || typeof value.decimals !== 'number') return null;
   return {
-    address: value.address as AddressOrEth,
+    address: getAddress(value.address),
     decimals: value.decimals,
   };
 }

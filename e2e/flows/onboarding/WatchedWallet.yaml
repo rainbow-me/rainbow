@@ -17,5 +17,6 @@ tags:
 - tapOn: 'Continue'
 - tapOn: 'Import Wallet'
 - runFlow: ../../utils/MaybeSetupPin.yaml
+- runFlow: ../../utils/HandleOptionalNotificationPermission.yaml
 - assertVisible:
     id: wallet-screen

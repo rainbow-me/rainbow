@@ -3,7 +3,6 @@ import * as i18n from '@/languages';
 import { Text as NativeText } from 'react-native';
 import { Box, ColorModeProvider, Text } from '@/design-system';
 import currentKingImage from '@/assets/kingOfTheHillExplainer/currentKing.png';
-import pointsMultiplierImage from '@/assets/kingOfTheHillExplainer/pointsMultiplier.png';
 import FastImage from 'react-native-fast-image';
 import { fonts } from '@/styles';
 import { ExplainerSheet, type ExplainerSheetStep } from '@/components/explainer-sheet/ExplainerSheet';
@@ -63,38 +62,6 @@ const STEPS: ExplainerSheetStep[] = [
         </Text>
         {i18n.t(translations.steps.step_2.subtitle_parts[2])}
       </Text>
-    ),
-  },
-  {
-    id: 'step-3',
-    titleComponent: () => (
-      <Text align="center" size="34pt" weight="heavy" color="label">
-        {i18n.t(translations.steps.step_3.title)}
-      </Text>
-    ),
-    graphicComponent: () => (
-      <FastImage
-        source={pointsMultiplierImage}
-        style={{ width: PANEL_INNER_WIDTH, height: '80%' }}
-        resizeMode={FastImage.resizeMode.contain}
-      />
-    ),
-    subtitleComponent: () => (
-      <Box gap={16}>
-        <Text align="center" size="17pt" weight="medium" color="labelTertiary">
-          {`⚡️ ${i18n.t(translations.steps.step_3.subtitle_parts[0])}`}
-          <Text size="17pt" weight="bold" color="label">
-            {i18n.t(translations.steps.step_3.subtitle_parts[1])}
-          </Text>
-        </Text>
-        <Text align="center" size="17pt" weight="medium" color="labelTertiary">
-          {`👑 ${i18n.t(translations.steps.step_3.subtitle_two_parts[0])}`}
-          <Text size="17pt" weight="bold" color="label">
-            {i18n.t(translations.steps.step_3.subtitle_two_parts[1])}
-          </Text>
-          {i18n.t(translations.steps.step_3.subtitle_two_parts[2])}
-        </Text>
-      </Box>
     ),
   },
 ];

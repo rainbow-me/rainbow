@@ -21,7 +21,7 @@ export default function ContextMenu({
   children,
   dynamicOptions = /** @type {(() => string[]) | undefined} */ (undefined),
   onPressActionSheet,
-  options = [],
+  options = /** @type {string[]} */ ([]),
   ...props
 }) {
   const actionsheetRef = useRef(undefined);

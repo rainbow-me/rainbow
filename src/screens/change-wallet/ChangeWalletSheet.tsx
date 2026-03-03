@@ -11,6 +11,7 @@ import type { EthereumAddress } from '@/entities/wallet';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import { isValidHex } from '@/handlers/web3';
+import type { Address } from 'viem';
 import WalletTypes from '@/helpers/walletTypes';
 import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
 import { useLiveWalletBalance } from '@/hooks/useLiveWalletBalance';
@@ -47,7 +48,6 @@ import ConditionalWrap from 'conditional-wrap';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, InteractionManager, type LayoutChangeEvent } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { type Address } from 'viem';
 import { updateWebProfile } from '@/helpers/webData';
 import { opacity } from '@/framework/ui/utils/opacity';
 

@@ -4,13 +4,12 @@ import { AccentColorProvider, Box, globalColors, Inset, Stack, Text, useForegrou
 import { IS_ANDROID } from '@/env';
 import useImportingWallet from '@/hooks/useImportingWallet';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
-import { colors } from '@/styles';
 import React, { useCallback, useRef } from 'react';
 import * as i18n from '@/languages';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { type RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { LoadingOverlay } from '@/components/modal';
+import { LoadingOverlay } from '@/components/modal/LoadingOverlay';
 import { type RootStackParamList } from '@/navigation/types';
 import type Routes from '@/navigation/routesNames';
 import { Keyboard } from 'react-native';

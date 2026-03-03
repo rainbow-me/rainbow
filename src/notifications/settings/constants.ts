@@ -8,9 +8,7 @@ export const WalletNotificationTopic = {
   APPROVALS: 'approvals',
   OTHER: 'other',
 };
-export const GlobalNotificationTopic = {
-  POINTS: 'marketing_points',
-};
+export const GlobalNotificationTopic = {};
 export const WalletNotificationRelationship = {
   OWNER: 'owner',
   WATCHER: 'watcher',

@@ -18,12 +18,8 @@ export const OP_REWARDS = '$OP Rewards';
 export const DEFI_POSITIONS = 'Defi Positions';
 export const NFT_OFFERS = 'NFT Offers';
 export const MINTS = 'Mints';
-export const POINTS = 'Points';
 export const REMOTE_PROMO_SHEETS = 'RemotePromoSheets';
-export const REMOTE_CARDS = 'RemoteCards';
-export const POINTS_NOTIFICATIONS_TOGGLE = 'PointsNotificationsToggle';
 export const DAPP_BROWSER = 'Dapp Browser';
-export const ETH_REWARDS = 'ETH Rewards';
 export const DEGEN_MODE = 'Degen Mode';
 export const FEATURED_RESULTS = 'Featured Results';
 export const CLAIMABLES = 'Claimables';
@@ -42,6 +38,8 @@ export const PERPS = 'Perps';
 export const POLYMARKET = 'Polymarket';
 export const DEFI_POSITIONS_THRESHOLD_FILTER = 'DeFi Minimum Value Filter';
 export const RNBW_REWARDS = 'RNBW Rewards';
+export const DELEGATION = '7702 Delegation';
+export const ATOMIC_SWAPS = 'Atomic Swaps';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -69,12 +67,8 @@ const config = {
   [DEFI_POSITIONS]: { settings: true, value: true },
   [NFT_OFFERS]: { settings: true, value: true },
   [MINTS]: { settings: true, value: false },
-  [POINTS]: { settings: true, value: false },
   [REMOTE_PROMO_SHEETS]: { settings: true, value: false },
-  [REMOTE_CARDS]: { settings: true, value: false },
-  [POINTS_NOTIFICATIONS_TOGGLE]: { settings: true, value: false },
   [DAPP_BROWSER]: { settings: true, value: !!IS_TEST },
-  [ETH_REWARDS]: { settings: true, value: false },
   [DEGEN_MODE]: { settings: true, value: false },
   [FEATURED_RESULTS]: { settings: true, value: false },
   [CLAIMABLES]: { settings: true, value: false },
@@ -93,6 +87,8 @@ const config = {
   [DEFI_POSITIONS_THRESHOLD_FILTER]: { settings: true, value: true },
   [POLYMARKET]: { settings: true, value: false },
   [RNBW_REWARDS]: { settings: true, value: false },
+  [DELEGATION]: { settings: true, value: false },
+  [ATOMIC_SWAPS]: { settings: true, value: false },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */

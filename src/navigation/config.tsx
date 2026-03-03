@@ -260,19 +260,6 @@ export const mintsSheetConfig = {
   }),
 };
 
-export const consoleSheetConfig = {
-  options: ({ route: { params = {} } }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      backgroundOpacity: 1,
-      cornerRadius: 0,
-      springDamping: 1,
-      topOffset: 0,
-      transitionDuration: 0.3,
-    }),
-  }),
-};
-
 export const panelConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
@@ -506,6 +493,23 @@ export const promoSheetConfig: PartialNavigatorConfigOptions = {
       springDamping: 1,
       transitionDuration: 0.3,
     }),
+  }),
+};
+
+export const notificationPermissionSheetConfig: PartialNavigatorConfigOptions = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      springDamping: 1,
+      transitionDuration: 0.3,
+    }),
+    allowsDragToDismiss: false,
+    allowsTapToDismiss: false,
+    dismissable: false,
+    headerHeight: 0,
+    isShortFormEnabled: false,
+    gestureEnabled: false,
   }),
 };
 

@@ -83,10 +83,12 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
       .filter(Boolean) || [];
 
   const type = isValidTransactionType(meta?.type) ? meta.type : 'contract_interaction';
+  const fallbackMetaAsset =
+    type === 'approve' && meta?.asset ? parseGoldskyAsset({ asset: meta.asset, address: txn.addressTo ?? '' }) : undefined;
 
   const asset: RainbowTransaction['asset'] = meta?.asset?.assetCode
     ? parseGoldskyAsset({ asset: meta.asset, address: meta.asset.assetCode })
-    : getAssetFromChanges(changes, type);
+    : getAssetFromChanges(changes, type) ?? fallbackMetaAsset;
 
   const direction = txn.direction || getDirection(type);
 

@@ -1,4 +1,5 @@
 import { type BigNumberish } from '@ethersproject/bignumber';
+import { type Hash } from 'viem';
 import { type ProtocolType } from '../protocolTypes';
 import { type ParsedAddressAsset, type ZerionAsset } from '../tokens';
 import { type EthereumAddress } from '../wallet';
@@ -9,7 +10,6 @@ import { type UniqueAsset } from '../uniqueAssets';
 import { type ParsedAsset, type AddysAsset } from '@/resources/assets/types';
 import { type ChainId, type Network } from '@/state/backendNetworks/types';
 import { type TransactionResponse } from '@ethersproject/providers';
-
 import { type BytesLike } from '@ethersproject/bytes';
 import { type Transaction } from '@/features/positions/types/generated/transaction/transaction';
 
@@ -82,7 +82,7 @@ export interface RainbowTransaction {
   nft?: UniqueAsset;
   nonce?: number | null;
   protocol?: ProtocolType | null;
-  approvalAmount?: 'UNLIMITED' | (string & Record<string, never>);
+  approvalAmount?: 'UNLIMITED' | string;
   ensCommitRegistrationName?: string;
   ensRegistration?: boolean;
   sourceAmount?: string; // for purchases
@@ -104,6 +104,10 @@ export interface RainbowTransaction {
   fee?: RainbowTransactionFee;
   explorerLabel?: string;
   explorerUrl?: string;
+  /** True when transaction uses batched execution (atomic swaps) - applies to both type 2 and type 4 */
+  batch?: boolean;
+  /** True when transaction includes a new EIP-7702 delegation (type 4 only) */
+  delegation?: boolean;
 }
 
 export type MinedTransaction = RainbowTransaction & {
@@ -226,14 +230,12 @@ export interface AssetPricesReceivedMessage {
   meta?: MessageMeta;
 }
 
-export type TxHash = `0x${string}`;
-
 export type PendingTransaction = RainbowTransaction & {
   status: TransactionStatus.pending;
 };
 
 export const TransactionTypeMap = {
-  withoutChanges: ['cancel', 'contract_interaction', 'deployment', 'approve', 'revoke', 'speed_up'],
+  withoutChanges: ['cancel', 'contract_interaction', 'delegate', 'deployment', 'approve', 'revoke', 'revoke_delegation', 'speed_up'],
   withChanges: [
     'sale',
     'bridge',
@@ -269,8 +271,8 @@ export interface ExecuteRapResponse extends TransactionResponse {
 
 export type TransactionApiResponse = {
   status: TransactionStatus;
-  id: TxHash;
-  hash: TxHash;
+  id: Hash;
+  hash: Hash;
   network: Network;
   protocol?: string;
   direction?: TransactionDirection;

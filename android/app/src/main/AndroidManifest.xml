@@ -101,12 +101,6 @@
           <!-- POAP sheet -->
           <data android:scheme="https" android:host="rainbow.me"
                 android:pathPrefix="/poap/" />
-          <!-- Points referral link: /points?ref=XXXXXX  (exactly six chars) -->
-          <data android:scheme="https" android:host="rainbow.me"
-                android:pathAdvancedPattern="/points\\?ref=[A-Za-z0-9]{6}" />
-          <!-- Points claim link: /points/claim?code=… -->
-          <data android:scheme="https" android:host="rainbow.me"
-                android:pathPattern="/points/claim\\?code=.*" />
         </intent-filter>
         <intent-filter>
           <data android:scheme="ethereum" />

@@ -19,8 +19,7 @@ import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { debounce } from 'lodash';
-import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
-import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
+import { SessionEntryPromptSync } from '@/state/sync/SessionEntryPromptSync';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { InteractionManager } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,12 +27,12 @@ import { useRecoilValue } from 'recoil';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useRoute } from '@/navigation/Navigation';
+import { useShouldRevokeDelegation } from '@/hooks/useShouldRevokeDelegation';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
     <>
-      <RemoteCardsSync />
-      <RemotePromoSheetSync />
+      <SessionEntryPromptSync />
       <MobileWalletProtocolListener />
     </>
   );
@@ -54,6 +53,7 @@ const WalletScreenEffects = memo(function WalletScreenEffects() {
   useWalletCohort();
   useAppIconIdentify();
   useFetchOpenCollectionsOnMount();
+  useShouldRevokeDelegation();
   return null;
 });
 

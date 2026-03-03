@@ -70,7 +70,6 @@ export type WalletSectionsState = {
   claimables: ClaimablesStore | null;
   perpsData: PerpsWalletListData;
   polymarketData: PolymarketWalletListData;
-  remoteCards: string[];
   rnbwRewardsEnabled: boolean;
   hasMoreCollections: boolean;
   isShowcaseDataMigrated: boolean;
@@ -97,7 +96,6 @@ const positionsSelector = (state: WalletSectionsState) => state.positions;
 const claimablesSelector = (state: WalletSectionsState) => state.claimables;
 const perpsDataSelector = (state: WalletSectionsState) => state.perpsData;
 const polymarketDataSelector = (state: WalletSectionsState) => state.polymarketData;
-const remoteCardsSelector = (state: WalletSectionsState) => state.remoteCards;
 const rnbwRewardsEnabledSelector = (state: WalletSectionsState) => state.rnbwRewardsEnabled;
 const hasMoreCollectionsSelector = (state: WalletSectionsState) => state.hasMoreCollections;
 const isShowcaseDataMigratedSelector = (state: WalletSectionsState) => state.isShowcaseDataMigrated;
@@ -413,8 +411,7 @@ const withBriefBalanceSection = (
   isCoinListEdited: boolean,
   pinnedCoins: BooleanMap,
   hiddenAssets: Set<UniqueId>,
-  collections: Map<CollectionId, Collection> | null,
-  remoteCards: string[]
+  collections: Map<CollectionId, Collection> | null
 ): BalanceSectionResult => {
   const { briefAssets } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenAssets);
 
@@ -504,24 +501,6 @@ const withBriefBalanceSection = (
     content = EMPTY_WALLET_CONTENT;
   }
 
-  if (remoteCards.length) {
-    content = [
-      {
-        type: CellType.REMOTE_CARD_CAROUSEL,
-        uid: 'remote-card-carousel',
-      },
-      ...content,
-    ];
-  } else {
-    content = [
-      {
-        type: CellType.EMPTY_REMOTE_CARD_CAROUSEL,
-        uid: 'empty-remote-card-carousel',
-      },
-      ...content,
-    ];
-  }
-
   const result = {
     headerSection: header,
     contentSection: content,
@@ -559,7 +538,6 @@ const briefBalanceSectionSelector = createSelector(
     pinnedCoinsSelector,
     hiddenAssetsSelector,
     collectionsSelector,
-    remoteCardsSelector,
   ],
   withBriefBalanceSection
 );

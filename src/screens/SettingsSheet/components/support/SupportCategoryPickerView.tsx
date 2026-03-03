@@ -25,7 +25,7 @@ const categories: CategoryConfig[] = [
     labelKey: categoryI18n.tokens_transactions.description,
   },
   { key: 'bridge_swap', emoji: '🔄', titleKey: categoryI18n.bridge_swap.name, labelKey: categoryI18n.bridge_swap.description },
-  { key: 'points_rewards', emoji: '⭐', titleKey: categoryI18n.points_rewards.name, labelKey: categoryI18n.points_rewards.description },
+  { key: 'rewards', emoji: '⭐', titleKey: categoryI18n.rewards.name, labelKey: categoryI18n.rewards.description },
   { key: 'security', emoji: '🚨', titleKey: categoryI18n.security.name, labelKey: categoryI18n.security.description },
   { key: 'partnership', emoji: '🤝', titleKey: categoryI18n.partnership.name, labelKey: categoryI18n.partnership.description },
   { key: 'other', emoji: '❓', titleKey: categoryI18n.other.name, labelKey: categoryI18n.other.description },

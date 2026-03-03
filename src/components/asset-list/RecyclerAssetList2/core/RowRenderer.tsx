@@ -38,7 +38,6 @@ import { PolymarketFeatureCard } from '../cards/PolymarketFeatureCard';
 import { RnbwFeatureCard } from '../cards/RnbwFeatureCard';
 import WrappedPosition from '../WrappedPosition';
 import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
-import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import WrappedCollectiblesHeader from '../WrappedCollectiblesHeader';
 import NFTLoadingSkeleton from '../NFTLoadingSkeleton';
 import { NFTEmptyState } from '../NFTEmptyState';
@@ -76,7 +75,6 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.POSITIONS_SPACE_BEFORE:
     case CellType.CLAIMABLES_SPACE_AFTER:
     case CellType.CLAIMABLES_SPACE_BEFORE:
-    case CellType.EMPTY_REMOTE_CARD_CAROUSEL:
     case CellType.SPACER:
       return null;
     case CellType.COIN_DIVIDER:
@@ -129,12 +127,6 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     }
     case CellType.PROFILE_STICKY_HEADER:
       return <ProfileStickyHeader />;
-    case CellType.REMOTE_CARD_CAROUSEL:
-      return (
-        <CardRowWrapper>
-          <RemoteCardCarousel />
-        </CardRowWrapper>
-      );
     case CellType.COIN:
       return <FastBalanceCoinRow extendedState={extendedState} uniqueId={(data as CoinExtraData).uniqueId} />;
     case CellType.PROFILE_ACTION_BUTTONS_ROW:

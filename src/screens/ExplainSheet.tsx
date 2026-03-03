@@ -291,6 +291,22 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
         title: i18n.t(i18n.l.explain.gas.title, { networkName }),
       };
     }
+    case 'smart_wallet_activation': {
+      const networkName = chainsLabel[params.chainId];
+      return {
+        logo: (
+          <RainbowCoinIcon
+            chainId={params.chainId}
+            color={params.nativeAsset?.colors?.primary || params.nativeAsset?.colors?.fallback || undefined}
+            icon={params.nativeAsset?.icon_url || params.nativeAsset?.iconURL}
+            symbol={params.nativeAsset?.symbol ?? ''}
+          />
+        ),
+        extraHeight: 30,
+        text: i18n.t(i18n.l.explain.smart_wallet_activation.text, { networkName }),
+        title: i18n.t(i18n.l.explain.smart_wallet_activation.title),
+      };
+    }
     case 'ens_primary_name':
       return { extraHeight: 50, emoji: '❓', text: ENS_PRIMARY_NAME_EXPLAINER, title: ENS_PRIMARY_NAME_TITLE };
     case 'ens_manager':

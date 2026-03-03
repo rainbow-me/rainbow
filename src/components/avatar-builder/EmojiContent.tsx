@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TouchableOpacity as GHTouchableOpacity } from 'react-native-gesture-handler';
 import { EMOJIS_CONTAINER_HORIZONTAL_MARGIN } from './constants';
-import { charFromEmojiObject } from './helpers/charFromEmojiObject';
 import { type AllEmojiContentEntry } from './helpers/getFormattedAllEmojiList';
 import { type EmojiEntry } from './types';
 import { useTheme } from '@/theme';
@@ -24,7 +23,7 @@ const EmojiContent = ({ data, columns, onEmojiSelect, cellSize, fontSize }: Prop
       const touchableNet = [];
       for (let j = 0; j < columns; j++) {
         if (i + j < data.length) {
-          rowContent.push(charFromEmojiObject(data[i + j].emoji));
+          rowContent.push(data[i + j].emoji.char);
           touchableNet.push(data[i + j].emoji);
         }
       }
@@ -42,7 +41,7 @@ const EmojiContent = ({ data, columns, onEmojiSelect, cellSize, fontSize }: Prop
         <View key={`categoryEmoji${rowContent[0]}`} style={[cx.rowContainer, { height: cellSize }]}>
           {touchableNet.map((singleLine, index) => {
             const touchableProps = {
-              key: `categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`,
+              key: `categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.char}`,
               onPress: () => onEmojiSelect(singleLine),
               style: {
                 backgroundColor: colors.white,

@@ -10,6 +10,7 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { colors as globalColors } from '@/styles';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { time } from '@/utils/time';
+import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
 const INITIAL_BACKEND_NETWORKS = buildTimeNetworks.networks as BackendNetwork[];
 const DEFAULT_PRIVATE_MEMPOOL_TIMEOUT = time.minutes(2);
@@ -376,6 +377,8 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     version: 1,
   }
 );
+
+export const backendNetworksActions = createStoreActions(useBackendNetworksStore);
 
 /** -----------------------------------------------------------------------------------
  *  Backend networks helper functions.

@@ -41,6 +41,9 @@ import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
 import { RainbowToastDisplay } from '@/components/rainbow-toast/RainbowToast';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { ReducedMotionConfig, ReduceMotion } from 'react-native-reanimated';
+import { configure as configureDelegationClient } from '@rainbow-me/delegation';
+import { getPlatformClient } from '@/resources/platform/client';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -170,19 +173,21 @@ function onReportPrepared() {
 async function initializeApplication() {
   PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRootComponent);
 
+  const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();
+
+  Sentry.setUser({ id: deviceId });
+  analytics.init({ deviceId });
+
   await Promise.all([
     initializeRemoteConfig(),
     migrate(),
-    loadSettingsData(), // load i18n early for first-render
+    loadSettingsData(),
+    configureDelegationClient({
+      platformClient: getPlatformClient(),
+      logger: logger.createServiceLogger(logger.DebugContext.delegation),
+      getCurrentAddress: $ => $(useWalletsStore, s => s.accountAddress),
+    }),
   ]);
-
-  const isReturningUser = ls.device.get(['isReturningUser']);
-  const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();
-
-  // Initial telemetry; amended with wallet context later in `initializeWallet`
-  Sentry.setUser({ id: deviceId });
-  analytics.setDeviceId(deviceId);
-  analytics.identify();
 
   /**
    * We previously relied on the existence of a deviceId on keychain to
@@ -193,6 +198,7 @@ async function initializeApplication() {
    *
    * This block of code will only run once.
    */
+  const isReturningUser = ls.device.get(['isReturningUser']);
   if (deviceIdWasJustCreated && !isReturningUser) {
     // on very first open, set some default data and fire event
     logger.debug(`[App]: User opened application for the first time`);

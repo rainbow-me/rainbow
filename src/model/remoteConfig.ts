@@ -70,12 +70,8 @@ export interface RainbowConfig
   base_swaps_enabled: boolean;
   blast_swaps_enabled: boolean;
   mints_enabled: boolean;
-  points_enabled: boolean;
-  points_fully_enabled: boolean;
   rpc_proxy_enabled: boolean;
-  remote_cards_enabled: boolean;
   remote_promo_enabled: boolean;
-  points_notifications_toggle: boolean;
   dapp_browser: boolean;
   idfa_check_enabled: boolean;
   rewards_enabled: boolean;
@@ -95,6 +91,8 @@ export interface RainbowConfig
   perps_enabled: boolean;
   polymarket_enabled: boolean;
   rnbw_rewards_enabled: boolean;
+  delegation_enabled: boolean;
+  atomic_swaps_enabled: boolean;
 }
 
 const Bips = {
@@ -202,12 +200,8 @@ export const DEFAULT_CONFIG = {
   base_swaps_enabled: true,
   blast_swaps_enabled: true,
   mints_enabled: true,
-  points_enabled: true,
-  points_fully_enabled: true,
   rpc_proxy_enabled: true,
-  remote_cards_enabled: true,
   remote_promo_enabled: false,
-  points_notifications_toggle: true,
   dapp_browser: true,
   idfa_check_enabled: false,
   rewards_enabled: true,
@@ -228,6 +222,8 @@ export const DEFAULT_CONFIG = {
   polymarket_enabled: false,
   dev_section_enabled: IS_DEV,
   rnbw_rewards_enabled: false,
+  delegation_enabled: false,
+  atomic_swaps_enabled: false,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;

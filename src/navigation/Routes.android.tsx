@@ -23,7 +23,7 @@ import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
-import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
+import { NotificationPermissionScreen } from '@/features/notifications/screens/NotificationPermissionScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
@@ -53,7 +53,6 @@ import {
   addCashSheet,
   nftSingleOfferSheetPreset,
   walletconnectBottomSheetPreset,
-  consoleSheetPreset,
   appIconUnlockSheetPreset,
   swapSheetPreset,
   tokenLauncherSheetPreset,
@@ -82,14 +81,13 @@ import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
-import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
-import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
-import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
+import { ClaimRewardsPanel } from '@/screens/claimables/ClaimRewardsPanel';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
+import { RevokeDelegationPanel } from '@/screens/delegation/RevokeDelegationPanel';
 import { type RootStackParamList } from './types';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
 import { LogSheet } from '@/components/debugging/LogSheet';
@@ -173,6 +171,19 @@ function BSNavigator() {
   return (
     <BSStack.Navigator>
       <BSStack.Screen component={MainOuterNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
+      <BSStack.Screen
+        component={NotificationPermissionScreen}
+        name={Routes.NOTIFICATION_PERMISSION_SCREEN}
+        options={{
+          ...bottomSheetPreset,
+          backdropOpacity: 1,
+          backdropPressBehavior: 'none',
+          enableContentPanningGesture: false,
+          enableHandlePanningGesture: false,
+          enablePanDownToClose: false,
+          height: '100%',
+        }}
+      />
       <BSStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
       <BSStack.Screen component={ExpandedAssetSheet} name={Routes.EXPANDED_ASSET_SHEET} />
       <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
@@ -218,7 +229,6 @@ function BSNavigator() {
         </>
       )}
       <BSStack.Screen component={RemotePromoSheet} name={Routes.REMOTE_PROMO_SHEET} options={bottomSheetPreset} />
-      <BSStack.Screen component={NotificationsPromoSheet} name={Routes.NOTIFICATIONS_PROMO_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen component={ExplainSheet} name={Routes.EXPLAIN_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen component={ExternalLinkWarningSheet} name={Routes.EXTERNAL_LINK_WARNING_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen component={ModalScreen} {...closeKeyboardOnClose} name={Routes.MODAL_SCREEN} />
@@ -259,12 +269,12 @@ function BSNavigator() {
       <BSStack.Screen name={Routes.NFT_SINGLE_OFFER_SHEET} component={NFTSingleOfferSheet} options={nftSingleOfferSheetPreset} />
       <BSStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} />
       <BSStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} options={walletconnectBottomSheetPreset} />
-      <BSStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} options={consoleSheetPreset} />
       <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
       <BSStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} />
       <BSStack.Screen component={NetworkSelector} name={Routes.NETWORK_SELECTOR} />
       <BSStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} />
       <BSStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} />
+      <BSStack.Screen component={RevokeDelegationPanel} name={Routes.REVOKE_DELEGATION_PANEL} />
       <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
       <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
       <BSStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} {...swapSheetPreset} />
@@ -321,9 +331,7 @@ function AuthNavigator() {
 
 const AppContainerWithAnalytics = React.forwardRef<NavigationContainerRef<RootStackParamList>, { onReady: () => void }>((props, ref) => (
   <NavigationContainer onReady={props.onReady} onStateChange={onNavigationStateChange} ref={ref}>
-    <PointsProfileProvider>
-      <AuthNavigator />
-    </PointsProfileProvider>
+    <AuthNavigator />
 
     {/* NOTE: Internally, these use some navigational checks */}
     <CMPortal />

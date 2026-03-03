@@ -1,12 +1,9 @@
-import { POINTS, POINTS_NOTIFICATIONS_TOGGLE, useExperimentalFlag } from '@/config';
 import { Box } from '@/design-system';
-import { IS_TEST } from '@/env';
 import { isTestnetChain } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import WalletTypes from '@/helpers/walletTypes';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useAppState from '@/hooks/useAppState';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import { type RainbowAccount } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -17,7 +14,6 @@ import {
   WalletNotificationRelationship,
   type WalletNotificationSettings,
 } from '@/notifications/settings';
-import { GlobalNotificationTopic } from '@/notifications/settings/constants';
 import { toggleGlobalNotificationTopic } from '@/notifications/settings/settings';
 import { getNotificationSettingsForWalletWithAddress, setAllGlobalNotificationSettingsToStorage } from '@/notifications/settings/storage';
 import { type GlobalNotificationTopics, type GlobalNotificationTopicType } from '@/notifications/settings/types';
@@ -164,9 +160,6 @@ const NotificationsSection = () => {
   const wallets = useWallets();
   const walletNames = useWalletsStore(state => state.walletNames);
   const { isConnected } = useNetInfo();
-  const { points_enabled, points_notifications_toggle } = useRemoteConfig();
-  const pointsEnabled = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
-  const pointsNotificationsToggleEnabled = useExperimentalFlag(POINTS_NOTIFICATIONS_TOGGLE) || points_notifications_toggle;
 
   const {
     ownerEnabled: storedOwnerEnabled,
@@ -408,25 +401,6 @@ const NotificationsSection = () => {
             </Menu>
           </>
         )}
-        <Menu>
-          {pointsEnabled && pointsNotificationsToggleEnabled && (
-            <MenuItem
-              disabled
-              rightComponent={
-                <>
-                  {topicSubscriptionInProgress === GlobalNotificationTopic.POINTS && <SettingsLoadingIndicator />}
-                  <Switch
-                    disabled={topicSubscriptionInProgress !== null}
-                    onValueChange={() => toggleTopic(GlobalNotificationTopic.POINTS)}
-                    value={topicState[GlobalNotificationTopic.POINTS]}
-                  />
-                </>
-              }
-              size={52}
-              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.notifications_section.points)} weight="bold" />}
-            />
-          )}
-        </Menu>
       </MenuContainer>
     </Box>
   );

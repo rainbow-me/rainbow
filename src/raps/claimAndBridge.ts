@@ -21,7 +21,7 @@ export const createClaimAndBridgeRap = async (claimParameters: RapClaimActionPar
       assetToBuy,
       quote: undefined,
       gasParams,
-    } satisfies RapClaimActionParameters);
+    });
 
     actions = actions.concat(bridge);
   }

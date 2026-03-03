@@ -9,7 +9,6 @@ import {
 import { useSharedValue } from 'react-native-reanimated';
 import { DataProvider, LayoutProvider, ProgressiveListView } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import 'string.fromcodepoint';
 import { type ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 import deviceUtils from '@/utils/deviceUtils';
 import { Categories } from './Categories';
@@ -19,7 +18,6 @@ import EmojisLoader from './EmojisLoader';
 import EmojisStickyListItem from './EmojisStickyListItem';
 import InitialEmojis from './InitialEmojis';
 import TabsWithShadows from './TabsWithShadows';
-import { charFromEmojiObject } from './helpers/charFromEmojiObject';
 import getEmojiCellsProperties from './helpers/getEmojiCellProperties';
 import getFormattedAllEmojiList, {
   type AllEmojiContentEntry,
@@ -136,7 +134,7 @@ export const EmojiSelector = ({ columns = 7, showSectionTitles = true, showTabs 
 
   const handleEmojiSelect = useCallback(
     (emoji: EmojiEntry) => {
-      onEmojiSelected(charFromEmojiObject(emoji));
+      onEmojiSelected(emoji.char);
     },
     [onEmojiSelected]
   );
@@ -178,7 +176,7 @@ export const EmojiSelector = ({ columns = 7, showSectionTitles = true, showTabs 
         for (let i = 0; i < columns * 10; i += columns) {
           const emojis = [];
           for (let j = 0; j < columns; j++) {
-            emojis.push(charFromEmojiObject((allEmojiList[2] as AllEmojiContentEntry).data[i + j].emoji));
+            emojis.push((allEmojiList[2] as AllEmojiContentEntry).data[i + j].emoji.char);
           }
           emojiRows.push(emojis);
         }

@@ -4,7 +4,7 @@ import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { requireNativeComponent, StyleSheet, View } from 'react-native';
 import Routes from '@/navigation/routesNames';
 import { useActiveRoute } from '@/hooks/useActiveRoute';
-import { LoadingOverlay } from '@/components/modal';
+import { LoadingOverlay } from '@/components/modal/LoadingOverlay';
 import { sheetVerticalOffset } from '@/navigation/effects';
 
 const NativePortal = IS_IOS ? requireNativeComponent('WindowPortal') : View;

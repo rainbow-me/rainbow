@@ -227,69 +227,6 @@ query getPromoSheet($id: String!) {
   }
 }
 
-fragment card on Card {
-  sys {
-    id
-  }
-  cardKey
-  dismissable
-  placement
-  index
-  backgroundColor
-  accentColor
-  padding
-  borderRadius
-  imageIcon
-  imageCollection {
-    items {
-      url
-    }
-  }
-  imageRadius
-  title
-  titleColor
-  subtitle
-  subtitleColor
-  primaryButton
-}
-
-query getCard($id: String!) {
-  card(id: $id) {
-    ...card
-  }
-}
-
-query getCardCollection($order: [CardOrder], $where: CardFilter) {
-  cardCollection(order: $order, where: $where) {
-    items {
-      ...card
-    }
-  }
-}
-
-query getPointsTweetIntentCollection($order: [PointsTweetIntentOrder]) {
-  pointsTweetIntentCollection(order: $order) {
-    items {
-      sys {
-        id
-      }
-      key
-      text
-      via
-      url
-    }
-  }
-}
-
-query getPointsTweetIntent($id: String!) {
-  pointsTweetIntent(id: $id) {
-    key
-    text
-    via
-    url
-  }
-}
-
 fragment simpleHashPaymentToken on SimpleHashPaymentToken {
   payment_token_id
   name

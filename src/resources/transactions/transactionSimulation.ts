@@ -2,21 +2,29 @@ import { createQueryKey, type QueryConfig, type QueryFunctionArgs } from '@/reac
 import { useQuery } from '@tanstack/react-query';
 import { RainbowError, logger } from '@/logger';
 import { metadataPOSTClient } from '@/graphql';
-import {
-  type TransactionErrorType,
-  type TransactionScanResultType,
-  type TransactionSimulationResult,
+import type {
+  MessageResult,
+  SimulateMessageQueryVariables,
+  SimulateTransactionsQueryVariables,
+  Transaction,
+  TransactionErrorType,
+  TransactionResult,
+  TransactionScanResultType,
+  TransactionSimulationResult,
 } from '@/graphql/__generated__/metadataPOST';
 import { isNil } from 'lodash';
 import { type RequestData } from '@/walletConnect/types';
 import { type ChainId } from '@/state/backendNetworks/types';
+
+// ///////////////////////////////////////////////
+// Types
 
 type SimulationArgs = {
   address: string;
   chainId: ChainId;
   isMessageRequest: boolean;
   nativeCurrency: string;
-  req: any; // Replace 'any' with the correct type for 'req'
+  req: Transaction;
   requestMessage: string;
   simulationUnavailable: boolean;
   transactionDetails: RequestData;
@@ -27,6 +35,28 @@ type SimulationResult = {
   simulationError: TransactionErrorType | undefined;
   simulationScanResult: TransactionScanResultType | undefined;
 };
+
+// ///////////////////////////////////////////////
+// Simulations
+
+export const simulateTransactions = async (args: SimulateTransactionsQueryVariables) => {
+  if (!args.transactions) return [];
+  const response = await metadataPOSTClient.simulateTransactions(args);
+  return response?.simulateTransactions ?? [];
+};
+
+export const simulateTransaction = async (args: SimulateTransactionsQueryVariables): Promise<Partial<TransactionResult>> => {
+  const [result] = await simulateTransactions(args);
+  return result ?? {};
+};
+
+export const simulateMessage = async (args: SimulateMessageQueryVariables): Promise<Partial<MessageResult>> => {
+  const response = await metadataPOSTClient.simulateMessage(args);
+  return response?.simulateMessage ?? {};
+};
+
+// ///////////////////////////////////////////////
+// Query Key
 
 const simulationQueryKey = ({
   address,
@@ -53,14 +83,15 @@ const simulationQueryKey = ({
     { persisterVersion: 1 }
   );
 
+// ///////////////////////////////////////////////
+// Query Function
+
 const fetchSimulation = async ({
   queryKey: [{ address, chainId, isMessageRequest, nativeCurrency, req, requestMessage, simulationUnavailable, transactionDetails }],
 }: QueryFunctionArgs<typeof simulationQueryKey>): Promise<SimulationResult> => {
   try {
-    let simulationData;
-
     if (isMessageRequest) {
-      simulationData = await metadataPOSTClient.simulateMessage({
+      const { simulation, error, scanning } = await simulateMessage({
         address,
         chainId,
         message: {
@@ -70,57 +101,55 @@ const fetchSimulation = async ({
         domain: transactionDetails?.dappUrl,
       });
 
-      if (isNil(simulationData?.simulateMessage?.simulation) && isNil(simulationData?.simulateMessage?.error)) {
+      if (isNil(simulation) && isNil(error)) {
         return {
           simulationData: { in: [], out: [], approvals: [] },
           simulationError: undefined,
-          simulationScanResult: simulationData?.simulateMessage?.scanning?.result,
+          simulationScanResult: scanning?.result,
         };
-      } else if (simulationData?.simulateMessage?.error && !simulationUnavailable) {
+      } else if (error && !simulationUnavailable) {
         return {
           simulationData: undefined,
-          simulationError: simulationData?.simulateMessage?.error?.type,
-          simulationScanResult: simulationData?.simulateMessage?.scanning?.result,
+          simulationError: error?.type,
+          simulationScanResult: scanning?.result,
         };
-      } else if (simulationData.simulateMessage?.simulation && !simulationUnavailable) {
+      } else if (simulation && !simulationUnavailable) {
         return {
-          simulationData: simulationData.simulateMessage?.simulation,
+          simulationData: simulation,
           simulationError: undefined,
-          simulationScanResult: simulationData?.simulateMessage?.scanning?.result,
+          simulationScanResult: scanning?.result,
         };
       }
     } else {
-      simulationData = await metadataPOSTClient.simulateTransactions({
+      const { simulation, error, scanning } = await simulateTransaction({
         chainId,
         currency: nativeCurrency?.toLowerCase(),
-        transactions: [
-          {
-            from: req?.from,
-            to: req?.to,
-            data: req?.data || '0x',
-            value: req?.value || '0x0',
-          },
-        ],
+        transactions: {
+          from: req.from,
+          to: req.to,
+          data: req.data || '0x',
+          value: req.value || '0x0',
+        },
         domain: transactionDetails?.dappUrl,
       });
 
-      if (isNil(simulationData?.simulateTransactions?.[0]?.simulation) && isNil(simulationData?.simulateTransactions?.[0]?.error)) {
+      if (isNil(simulation) && isNil(error)) {
         return {
           simulationData: { in: [], out: [], approvals: [] },
           simulationError: undefined,
-          simulationScanResult: simulationData?.simulateTransactions?.[0]?.scanning?.result,
+          simulationScanResult: scanning?.result,
         };
-      } else if (simulationData?.simulateTransactions?.[0]?.error) {
+      } else if (error) {
         return {
           simulationData: undefined,
-          simulationError: simulationData?.simulateTransactions?.[0]?.error?.type,
-          simulationScanResult: simulationData?.simulateTransactions[0]?.scanning?.result,
+          simulationError: error?.type,
+          simulationScanResult: scanning?.result,
         };
-      } else if (simulationData.simulateTransactions?.[0]?.simulation) {
+      } else if (simulation) {
         return {
-          simulationData: simulationData.simulateTransactions[0]?.simulation,
+          simulationData: simulation,
           simulationError: undefined,
-          simulationScanResult: simulationData?.simulateTransactions[0]?.scanning?.result,
+          simulationScanResult: scanning?.result,
         };
       }
     }
@@ -135,6 +164,9 @@ const fetchSimulation = async ({
     throw error;
   }
 };
+
+// ///////////////////////////////////////////////
+// Query Hook
 
 export const useSimulation = (
   args: SimulationArgs,

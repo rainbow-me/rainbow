@@ -44,14 +44,10 @@ async function estimateSwapGasLimitQueryFunction({
     ? estimateUnlockAndCrosschainSwap({
         chainId,
         quote: quote as CrosschainQuote,
-        sellAmount: quote.sellAmount.toString(),
-        assetToSell,
       })
     : estimateUnlockAndSwap({
         chainId,
         quote,
-        sellAmount: quote.sellAmount.toString(),
-        assetToSell,
       }));
 
   if (!gasLimit) {

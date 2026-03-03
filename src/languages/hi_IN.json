@@ -25,7 +25,6 @@
       "tab_showcase": "शोकेस",
       "tab_perps": "परप्स",
       "tab_polymarket": "पेशगोई",
-      "tab_points": "अंक",
       "tab_positions": "पोजीशन्स",
       "tab_rewards": "इनाम",
       "tab_transactions": "लेन-देन",
@@ -562,7 +561,23 @@
       "reset_experimental_config": "प्रायोगिक कॉन्फ़िग को रीसेट करें",
       "status": "स्थिति",
       "sync_codepush": "CodePush सिंक करें",
-      "simulate_device_transfer": "उपकरण स्थानांतरण का अनुकरण करें"
+      "simulate_device_transfer": "उपकरण स्थानांतरण का अनुकरण करें",
+      "headers": {
+        "normie_settings": "नॉर्मी सेटिंग्स",
+        "rainbow_developer_settings": "Rainbow डेवलपर सेटिंग्स",
+        "feature_flags": "फ़ीचर फ़्लैग्स",
+        "delegation_settings": "डेलीगेशन सेटिंग्स"
+      },
+      "delegation_settings": {
+        "clear_store": "डेलीगेशन स्टोर साफ़ करें",
+        "simulate_disable_smart_wallet": "स्मार्ट वॉलेट को अक्षम करने का सिमुलेशन करें",
+        "simulate_disable_single_network": "सिंगल नेटवर्क को अक्षम करने का सिमुलेशन करें",
+        "simulate_disable_third_party": "थर्ड पार्टी को अक्षम करने का सिमुलेशन करें",
+        "simulate_alert_vulnerability": "अलर्ट भेद्यता का सिमुलेशन करें",
+        "simulate_alert_bug": "अलर्ट बग का सिमुलेशन करें",
+        "simulate_alert_unrecognized": "अलर्ट अपरिचित का सिमुलेशन करें",
+        "simulate_alert_unspecified": "अलर्ट अनिर्दिष्ट का सिमुलेशन करें"
+      }
     },
     "discover": {
       "pulse": {
@@ -885,6 +900,7 @@
         "minimum_received": "न्यूनतम प्राप्त",
         "preferred_network": "पसंदीदा नेटवर्क",
         "rainbow_fee": "रेनबो शुल्क शामिल",
+        "smart_wallet_activation_fee": "अनुमानित Smart Wallet शुल्क",
         "settings": "सेटिंग्स"
       },
       "token_index": {
@@ -1039,6 +1055,10 @@
       "gas": {
         "text": "\"गैस शुल्क\" %{networkName} ब्लॉकचेन द्वारा आपके लेन-देन की सुरक्षित पुष्टि करने का उपयोग होता है।\n\nइस शुल्क में भिन्नता होती है, आपके लेन-देन की जटिलता और नेटवर्क की व्यस्तता पर निर्भर करती है!",
         "title": "%{networkName} नेटवर्क शुल्क"
+      },
+      "smart_wallet_activation": {
+        "text": "इस लेन-देन में %{networkName} पर एक बार का Smart Wallet सक्रियण शामिल है। यह आपके वॉलेट को बैच किए गए लेन-देन और अन्य स्मार्ट अकाउंट सुविधाओं का समर्थन करने के लिए अपग्रेड करता है।\n\nसक्रियण शुल्क इस स्वैप के लिए नेटवर्क शुल्क में शामिल है।",
+        "title": "Smart Wallet सक्रियण"
       },
       "max_base_fee": {
         "text": "यह अधिकतम मूल शुल्क है जिसे आप इस लेन-देन के लिए चुकाने के लिए तैयार हैं।\n\nअधिकतम मूल शुल्क को अधिक निर्धारित करना शुल्क बढ़ने पर आपके लेन-देन को अटकने से बचाता है।",
@@ -1802,137 +1822,16 @@
       "up_to": "ऊपर तक"
     },
     "points": {
-      "placeholder": {
-        "coming_soon_title": "जल्द आ रहा है",
-        "coming_soon_description": "अंक बस कोने के आसपास हैं।\nआज ही कमाना शुरू करें।"
-      },
-      "claim": {
-        "title": "अपने अंक दावा करें",
-        "title_rewards_line_1": "में आपका स्वागत है",
-        "title_rewards_line_2": "रेनबो रिवार्ड्स",
-        "subtitle": "अंक यहाँ हैं। जानिए आपको कितने अंक मिले हैं।",
-        "subtitle_rewards": "रेनबो का उपयोग करने के लिए पुरस्कृत होइए। ब्लॉकचेन पर कार्य करें, अंक प्राप्त करें, ETH अर्जित करें।",
-        "get_started": "शुरुआत करें",
-        "use_referral_code": "रेफरल कोड का प्रयोग करें"
-      },
-      "referral": {
-        "title": "अपना रेफरल कोड दर्ज करें",
-        "subtitle": "अंक बोनस का दावा करने के लिए नीचे एक रेफरल कोड दर्ज करें।",
-        "back": "वापस",
-        "error": "कुछ गलत हो गया। कृपया ऐप को पुनः आरंभ करें और फिर से प्रयास करें।",
-        "get_started": "शुरुआत करें",
-        "invalid_code": "अमान्य कोड"
-      },
-      "notifications": {
-        "enable": "अंक सूचनाएँ सक्षम करें",
-        "disable": "पॉइंट्स सूचनाएँ निष्क्रिय करें"
-      },
       "points": {
-        "referral_code": "रेफरल कोड",
-        "share_link": "लिंक साझा करें",
-        "next_drop": "अगला ड्रॉप",
-        "your_rank": "आपका रैंक",
-        "no_change": "कोई बदलाव नहीं",
-        "of_x": "का %{totalUsers}",
-        "referrals": "रेफरल्स",
-        "streak": "स्ट्रीक",
-        "longest_yet": "अब तक का सबसे लंबा",
-        "day": "दिन",
-        "days": "दिन",
-        "leaderboard": "लीडरबोर्ड",
-        "sunday": "रवि",
-        "monday": "सोम",
-        "tuesday": "मंगल",
-        "wednesday": "बुध",
-        "thursday": "गुरु",
-        "friday": "शुक्र",
-        "saturday": "शनि",
-        "today": "आज",
-        "error": "उफ़!\nकृपया ताज़ा करने के लिए खींचें।",
-        "points": "अंक",
-        "points_capitalized": "अंक",
-        "referral_code_copied": "रेफरल कोड कॉपी किया गया",
-        "earn_points_for_referring": "जब आपके रेफरल Rainbow के माध्यम से $100 का आदान-प्रदान करते हैं तो अंक अर्जित करें, साथ ही अपने रेफरल्स द्वारा अर्जित अंकों का 10% भी कमाएं",
-        "already_claimed_points": "क्षमा करें! आप पहले ही अपने अंक दावा कर चुके हैं।",
-        "now": "अब",
-        "unranked": "अश्रेणीकृत",
-        "points_to_rank": "रैंक हेतु 750 अंक आवश्यक",
-        "ranking": "स्थान #%{rank}",
-        "available_to_claim": "दावा करने के लिए उपलब्ध",
-        "claim": "%{value} का दावा करें",
         "choose_claim_network": "दावा नेटवर्क चुनें",
-        "claim_on_network": "%{network} पर दावा करें",
-        "claimed_on_network": "%{network} पर दावा किया गया",
-        "claiming_on_network": "%{network} पर दावा हो रहा है",
-        "error_claiming": "दावा विफल",
-        "free_to_claim": "दावा करने के लिए मुफ्त",
-        "has_bridge_fee": "ब्रिज शुल्क है",
         "claim_rewards": "पुरस्कार दावा करें",
-        "earned_last_week": "पिछले सप्ताह अर्जित",
-        "top_10_earner": "शीर्ष 10 कमाने वाला",
-        "zero_points": "0 अंक",
-        "no_weekly_rank": "कोई साप्ताहिक रैंक नहीं",
-        "none": "कोई नहीं",
-        "my_earnings": "मेरी कमाई",
-        "claimed_earnings": "दावा की गई कमाई",
-        "current_value": "वर्तमान मूल्य",
-        "rainbow_users_have_earned": "रेनबो उपयोगकर्ताओं ने कमाए हैं",
-        "my_points": "मेरे अंक",
-        "refer_friends": "दोस्तों को रेफर करें",
         "try_again": "फिर से प्रयास करें",
+        "claim_on_network": "%{network} पर दावा करें",
+        "claiming_on_network": "%{network} पर दावा हो रहा है",
+        "claimed_on_network": "%{network} पर दावा किया गया",
         "bridge_error": "आंशिक सफलता",
+        "error_claiming": "दावा विफल",
         "bridge_error_explainer": "आपके पुरस्कारों को सफलतापूर्वक Optimism पर दावा किया गया है, लेकिन %{network} पर स्थानांतरण विफल हो गया। यदि आप चाहें, तो आप स्वैप फीचर का उपयोग करके अपने पुरस्कारों को मैन्युअल रूप से पुल कर सकते हैं।"
-      },
-      "console": {
-        "claim_bonus_paragraph": "आपको Rainbow के माध्यम से कम से कम $100 बदलने पर अतिरिक्त 100 अंक मिलेंगे",
-        "welcome_bonus": "स्वागत बोनस",
-        "true_believer": "सच्चा विश्वासी",
-        "registration_complete": "पंजीकरण पूरा हुआ",
-        "account": "खाता",
-        "points_you_have": "आपके पास है",
-        "points_earned": "अर्जित अंक",
-        "share_bonus_paragraph_one": "आपकी सभी व्यवस्था हो चुकी है!",
-        "share_bonus_paragraph_two": "अदला-बदली करके, पुल बनाके, मुद्रांकन करके, मित्रों को संदर्भित करके, और और तरीकों से अंकों को अर्जित करते रहिए",
-        "share_bonus_paragraph_three": "जितना अधिक आप Rainbow का उपयोग करेंगे, उतना ही अधिक आपको पुरस्कृत किया जाएगा",
-        "calculation_complete": "गणना पूरी हो चुकी है",
-        "metamask_swaps": "मेटामास्क स्वैप्स",
-        "wallet_balance": "वॉलेट बैलेंस",
-        "rainbow_nfts_owned": "रेनबो एनएफटीएस स्वामित्व में",
-        "rainbow_swaps": "रेनबो स्वैप्स",
-        "calculating_points": "अंक गणना की जा रही है",
-        "access_granted": "प्रवेश अनुमति दी गई",
-        "sign_in_with_wallet": "अपने वॉलेट के साथ साइन इन करें",
-        "auth_required": "प्राधिकरण आवश्यक है",
-        "proceed_to_share": "जारी रखें",
-        "skip_referral": "छोड़ें",
-        "sign_in": "लॉग इन करें",
-        "try_a_swap": "एक स्वैप का प्रयास करें",
-        "get_some_eth": "ETH प्राप्त करें",
-        "generic_alert": "कुछ गलत हो गया है, कृपया पुनः प्रयास करें।",
-        "existing_user_alert": "अंक पहले ही दावा किए जा चुके हैं। कृपया एप्प को रीस्टार्ट करके ताज़ा करें।",
-        "invalid_referral_code_alert": "अमान्य रेफ़रल कोड। कृपया अपना कोड जाँचें और पुनः प्रयास करें।",
-        "no_balance_alert": "पॉइंट्स में नामांकन के लिए, आपके वॉलेट बैलेंस में शून्य से अधिक होना आवश्यक है।",
-        "referral_link_is_ready": "आपका रेफ़रल लिंक तैयार है",
-        "referral_link_bonus_text": "अपने रेफरल लिंक को ट्वीट करें और आप अपने द्वारा संदर्भित किसी भी व्यक्ति द्वारा अर्जित अंकों का 10% अर्जित करेंगे",
-        "referral_link_bonus_text_extended": "प्लस आपको जो कोई आपके रेफ़र करेगा उसके अर्जित किए गए अंकों का 10% भी मिलेगा",
-        "complete_onboarding": "हो गया",
-        "share_to_x": "X को शेयर करें",
-        "hardware_wallet_alert": "हार्डवेयर वॉलेट सपोर्ट जल्द ही आ रहा है!",
-        "view_weekly_earnings_week_of": "सप्ताह %{startOfWeek} - %{endOfWeek}",
-        "view_weekly_earnings_title": "अर्जित अंकों की गणना",
-        "view_weekly_earnings_counted": "साप्ताहिक कमाई की गणना की गई",
-        "view_weekly_earnings_close_button": "बंद करें",
-        "view_weekly_earnings_retroactive_points": "रेट्रोएक्टिव अंक",
-        "view_weekly_earnings_bonus_points": "बोनस अंक",
-        "view_weekly_earnings_activity": "आपकी गतिविधि",
-        "view_weekly_earnings_referral_activity": "रेफरल गतिविधि",
-        "view_weekly_earnings_total_earnings": "कुल",
-        "view_weekly_earnings_new_referrals": "नए रेफरल",
-        "wallet_balance_required": "वॉलेट बैलेंस की आवश्यकता",
-        "require_balance_paragraph_one": "जारी रखने के लिए, सुनिश्चित करें कि निम्नलिखित नेटवर्क्स में से एक पर आपके पास ETH बैलेंस है:",
-        "require_balance_paragraph_two": "या वैकल्पिक रूप से, पॉलिगॉन पर MATIC बैलेंस या BSC पर BNB बैलेंस",
-        "fund_my_wallet": "मेरा वॉलेट फंड करें",
-        "points": "अंक"
       }
     },
     "pools": {
@@ -2470,9 +2369,9 @@
             "name": "ब्रिज और स्वैप",
             "description": "क्रॉस-चेन, स्वैप समस्याएं"
           },
-          "points_rewards": {
-            "name": "पॉइंट्स और रिवार्ड्स",
-            "description": "पॉइंट्स, एयरड्रॉप, लॉन्च"
+          "rewards": {
+            "name": "रिवार्ड्स",
+            "description": "रिवार्ड्स, एयरड्रॉप, लॉन्च"
           },
           "security": {
             "name": "सुरक्षा संबंधी चिंताएँ",
@@ -2705,6 +2604,16 @@
           "confirmed": "रद्द कर दिया",
           "failed": "रोकथाम विफल"
         },
+        "delegate": {
+          "pending": "डेलिगेट कर रहे हैं",
+          "confirmed": "मंजूरी दी",
+          "failed": "डेलिगेशन विफल"
+        },
+        "revoke_delegation": {
+          "pending": "रोकथाम कर रहे हैं",
+          "confirmed": "रद्द कर दिया",
+          "failed": "रोकथाम विफल"
+        },
         "sale": {
           "pending": "बिक्री",
           "confirmed": "बेच दिया",
@@ -2744,6 +2653,8 @@
       "savings": "बचत",
       "signed": "हस्ताक्षरित",
       "contract_interaction": "अनुबंध संवाद",
+      "delegate_description": "वॉलेट डेलिगेशन",
+      "revoke_delegation_description": "वॉलेट डेलिगेशन",
       "deposited_with_token": "जमा कर दिया %{name}",
       "withdrew_with_token": "निकाल दिया %{name}"
     },
@@ -2756,6 +2667,7 @@
       "network_fee": "नेटवर्क शुल्क",
       "hash_copied": "􀁣 लेनदेन हैश कॉपी किया गया",
       "address_copied": "􀁣 पता कॉपी किया गया",
+      "smart_account": "स्मार्ट अकाउंट",
       "try_again": "􀅉 पुन: प्रयास करें",
       "context_menu": {
         "copy_address": "पता कॉपी करें",
@@ -3007,7 +2919,51 @@
         "cloud_backup_link": "और जानें…",
         "view_secret_phrase": "गुप्त वाक्यांश देखें",
         "view_private_key": "निजी कुंजी देखें",
-        "copy_wallet_address": "वॉलेट पता कॉपी करें"
+        "copy_wallet_address": "पता कॉपी करें",
+        "edit_smart_wallet": "Smart Wallet संपादित करें"
+      },
+      "delegations": {
+        "active": "सक्रिय",
+        "not_active": "सक्रिय नहीं है",
+        "smart_wallet": "Smart Wallet",
+        "smart_wallet_description": "Smart wallets तेज़, सस्ता और अधिक विश्वसनीय वॉलेट अनुभव सक्षम करते हैं।",
+        "activated_networks": "सक्रिय किए गए नेटवर्क",
+        "other_smart_accounts": "अन्य स्मार्ट अकाउंट",
+        "delegated_to": "%{name} को डेलिगेट किया गया",
+        "delegated_to_another_wallet": "किसी अन्य वॉलेट को डेलिगेट किया गया",
+        "enable_smart_wallet": "Smart Wallet सक्षम करें",
+        "disable_smart_wallet": "Smart Wallet अक्षम करें",
+        "enabled_description": "आप तेज़ लेन-देन और कम नेटवर्क लागतों का लाभ नहीं उठा पाएंगे",
+        "disabled_description": "अपडेट आपके अगले स्वैप पर लागू होंगे",
+        "will_delegate_callout": "Smart Wallet सक्रियण शामिल है",
+        "revoke_panel": {
+          "disable_smart_wallet_title": "Smart Wallet अक्षम करें",
+          "disable_smart_wallet_subtitle": "यह सभी सक्रिय डेलिगेशन को रद्द करेगा और Smart Wallet सुविधाओं को अक्षम करेगा।",
+          "disable_smart_wallet_button": "अक्षम करने के लिए दबाए रखें",
+          "disable_single_network_title": "%{network} पर अक्षम करें",
+          "disable_single_network_subtitle": "यह इस नेटवर्क के लिए Smart Wallet डेलिगेशन हटा देगा।",
+          "disable_single_network_button": "अक्षम करने के लिए दबाए रखें",
+          "disable_third_party_title": "खाता अक्षम करें",
+          "disable_third_party_subtitle": "आपका वॉलेट किसी अलग Smart Wallet को डेलिगेट किया गया है। Rainbow का उपयोग करने के लिए अक्षम करें।",
+          "disable_third_party_button": "अक्षम करने के लिए दबाए रखें",
+          "alert_vulnerability_title": "Smart Wallet सुरक्षा",
+          "alert_vulnerability_subtitle": "आपके Smart Wallet कॉन्ट्रैक्ट में एक भेद्यता का पता चला है। अपने एसेट्स की सुरक्षा के लिए एहतियात के तौर पर इसे रद्द करें।",
+          "alert_vulnerability_button": "रद्द करने के लिए दबाए रखें",
+          "alert_bug_title": "Smart Wallet समस्या",
+          "alert_bug_subtitle": "आपके Smart Wallet कॉन्ट्रैक्ट में एक समस्या का पता चला है। अपने वॉलेट अनुभव को बेहतर बनाने के लिए इसे रद्द करें।",
+          "alert_bug_button": "रद्द करने के लिए दबाए रखें",
+          "alert_unrecognized_title": "जोखिमभरा डेलिगेशन",
+          "alert_unrecognized_subtitle": "एक अपरिचित और जोखिमभरे डेलिगेशन कॉन्ट्रैक्ट का पता चला है। अपने वॉलेट को सुरक्षित करने के लिए इसे रद्द करें।",
+          "alert_unrecognized_button": "रद्द करने के लिए दबाए रखें",
+          "alert_unspecified_title": "डेलिगेशन समस्या",
+          "alert_unspecified_subtitle": "आपका वॉलेट वर्तमान में एक जोखिमभरे स्मार्ट कॉन्ट्रैक्ट को डेलिगेट किया गया है। अपने वॉलेट को सुरक्षित करने के लिए इसे रद्द करें।",
+          "alert_unspecified_button": "रद्द करने के लिए दबाए रखें",
+          "revoking": "रद्द किया जा रहा है...",
+          "done": "हो गया",
+          "next": "अगला",
+          "try_again": "फिर से प्रयास करें",
+          "gas_fee": "%{chainName} पर रद्द करने के लिए"
+        }
       },
       "balance_title": "बैलेंस",
       "buy": "खरीदें",
@@ -3016,6 +2972,10 @@
         "balance_eth": "%{balanceEth} ETH",
         "watching": "देख रहा है",
         "ledger": "लेजर",
+        "delegated": "डेलिगेट किया गया",
+        "alt_delegation": "वैकल्पिक डेलिगेशन",
+        "not_delegated": "डेलिगेट नहीं किया गया",
+        "disabled": "निष्क्रिय",
         "wallets": "वॉलेट्स",
         "all_wallets": "सभी वॉलेट",
         "total_balance": "कुल शेष राशि",

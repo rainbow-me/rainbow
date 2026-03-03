@@ -1,7 +1,6 @@
 import { getAddress, type Address } from 'viem';
 import {
   type ChainId as SwapsChainId,
-  type CrosschainQuote,
   type Quote,
   type QuoteParams,
   Source,
@@ -21,6 +20,7 @@ import { time } from '@/utils/time';
 import {
   type AmountStoreType,
   type DepositConfig,
+  type DepositQuoteResult,
   DepositQuoteStatus,
   type DepositQuoteStoreParams,
   type DepositQuoteStoreType,
@@ -40,7 +40,7 @@ export function createDepositQuoteStore(
   useDepositStore: DepositStoreType
 ): DepositQuoteStoreType {
   const recipientStore = config.to.recipient;
-  return createQueryStore({
+  return createQueryStore<DepositQuoteResult, DepositQuoteStoreParams>({
     fetcher: createQuoteFetcher(config),
     params: {
       accountAddress: $ => $(useWalletsStore).accountAddress,
@@ -54,14 +54,6 @@ export function createDepositQuoteStore(
 }
 
 // ============ Quote Fetcher ================================================== //
-
-type DepositQuoteResult =
-  | Quote
-  | CrosschainQuote
-  | DepositQuoteStatus.Error
-  | DepositQuoteStatus.InsufficientBalance
-  | DepositQuoteStatus.InsufficientGas
-  | null;
 
 function createQuoteFetcher(config: DepositConfig) {
   return async function fetchQuote(

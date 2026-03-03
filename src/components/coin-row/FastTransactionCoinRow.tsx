@@ -20,6 +20,9 @@ import { ChainImage } from '../coin-icon/ChainImage';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 import { activityValues, useTransactionLaunchToken } from '@/helpers/transactions';
 import { opacity } from '@/framework/ui/utils/opacity';
+import * as i18n from '@/languages';
+import smartWalletIcon from '@/assets/smartWalletIcon.png';
+import smartWalletRevoke from '@/assets/smartWalletRevoke.png';
 
 const getIconTopMargin = (type: TransactionType) => {
   switch (type) {
@@ -53,7 +56,9 @@ const activityTypeIcon: Record<TransactionType, string> = {
   unstake: '􀄲',
   withdraw: '􀄲',
   deposit: '􀄷',
+  delegate: '􀁢',
   revoke: '􀁎',
+  revoke_delegation: '􀁎',
   speed_up: '􀓎',
   claim: '􀄩',
   borrow: '􀄩',
@@ -109,6 +114,14 @@ const BottomRow = React.memo(function BottomRow({
   if (type === 'contract_interaction' && to) {
     description = transaction.contract?.name || address(to, 6, 4);
     tag = transaction.description;
+  }
+
+  if (type === 'delegate') {
+    description = i18n.t(i18n.l.transactions.delegate_description);
+  }
+
+  if (type === 'revoke_delegation') {
+    description = i18n.t(i18n.l.transactions.revoke_delegation_description);
   }
 
   if (type === 'launch' && launchToken) {
@@ -212,6 +225,28 @@ export const ActivityIcon = ({
       coinIconUrl = rainbowSuperToken?.imageUrl;
     }
     contractIconUrl = undefined;
+  }
+
+  if (transaction?.type === 'approve') {
+    contractIconUrl = undefined;
+  }
+
+  if (transaction?.type === 'delegate' || transaction?.type === 'revoke_delegation') {
+    return (
+      <View style={sx.iconContainer}>
+        <ImgixImage
+          size={size}
+          style={{ width: size, height: size }}
+          source={transaction.type === 'revoke_delegation' ? smartWalletRevoke : smartWalletIcon}
+        />
+        <ChainImage
+          badgeXPosition={-10}
+          badgeYPosition={6}
+          chainId={transaction.chainId}
+          showBadge={badge && transaction.chainId !== ChainId.mainnet}
+        />
+      </View>
+    );
   }
 
   if (contractIconUrl) {

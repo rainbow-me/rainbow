@@ -1,0 +1,15 @@
+appId: ${APP_ID}
+---
+# Onboarding can show a full-screen notification permission modal
+# before navigating to wallet home.
+- runFlow:
+    when:
+      visible:
+        id: notification-permission-screen
+    commands:
+      - tapOn:
+          id: notification-permission-dismiss-button
+- extendedWaitUntil:
+    visible:
+      id: wallet-screen
+    timeout: 60000

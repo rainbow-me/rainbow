@@ -1,15 +1,14 @@
-/* eslint-disable no-nested-ternary */
 import { ContextCircleButton } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { cloudPlatform } from '@/utils/platform';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { type RouteProp, useRoute } from '@react-navigation/native';
-
 import { analytics } from '@/analytics';
 import CloudBackedUpIcon from '@/assets/BackedUpCloud.png';
 import BackupWarningIcon from '@/assets/BackupWarning.png';
 import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
+import { DELEGATION, getExperimentalFlag } from '@/config';
 import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -42,12 +41,15 @@ import MenuContainer from '../MenuContainer';
 import MenuHeader from '../MenuHeader';
 import MenuItem from '../MenuItem';
 import { BackUpMenuItem } from './BackUpMenuButton';
+import type { Address } from 'viem';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
 };
 
 const enum WalletMenuAction {
+  EditSmartWallet = 'edit_smart_wallet',
   ViewPrivateKey = 'view_private_key',
   CopyWalletAddress = 'copy_wallet_address',
 }
@@ -133,6 +135,8 @@ const ViewWalletBackup = () => {
 
   const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
+
+  const delegationEnabled = getRemoteConfig().delegation_enabled || getExperimentalFlag(DELEGATION);
 
   const backupWalletsToCloud = useCallback(async () => {
     executeFnIfCloudBackupAvailable({
@@ -237,6 +241,14 @@ const ViewWalletBackup = () => {
     menuTitle: '',
     menuItems: [
       {
+        actionKey: WalletMenuAction.EditSmartWallet,
+        actionTitle: i18n.t(i18n.l.wallet.back_ups.edit_smart_wallet),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'gearshape',
+        },
+      },
+      {
         actionKey: WalletMenuAction.ViewPrivateKey,
         actionTitle: i18n.t(i18n.l.wallet.back_ups.view_private_key),
         icon: {
@@ -252,11 +264,26 @@ const ViewWalletBackup = () => {
           iconValue: 'square.on.square',
         },
       },
-    ],
+    ].filter(item => delegationEnabled || item.actionKey !== WalletMenuAction.EditSmartWallet),
   };
 
   const onPressMenuItem = ({ nativeEvent: { actionKey: menuAction }, account }: MenuEvent) => {
     switch (menuAction) {
+      case WalletMenuAction.EditSmartWallet: {
+        const title =
+          formatAccountLabel({
+            address: account.address,
+            ens: abbreviations.abbreviateEnsForDisplay(account.ens ?? undefined, 8, 4),
+            label: account.label,
+          }) || abbreviations.address(account.address, 6, 4);
+
+        navigate(Routes.VIEW_WALLET_DELEGATIONS, {
+          walletId,
+          address: account.address as Address,
+          title: title ?? '',
+        });
+        break;
+      }
       case WalletMenuAction.ViewPrivateKey: {
         const title =
           formatAccountLabel({

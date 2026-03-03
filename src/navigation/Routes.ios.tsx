@@ -24,7 +24,7 @@ import SendSheet from '../screens/SendSheet';
 import { SettingsSheet } from '../screens/SettingsSheet/SettingsSheet';
 import { SignTransactionSheet } from '../screens/SignTransactionSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
-import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
+import { NotificationPermissionScreen } from '@/features/notifications/screens/NotificationPermissionScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import NoNeedWCSheet from '../screens/NoNeedWCSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
@@ -37,7 +37,6 @@ import {
   backupSheetConfig,
   basicSheetConfig,
   claimAirdropSheetConfig,
-  consoleSheetConfig,
   customGasSheetConfig,
   defaultScreenStackOptions,
   ensAdditionalRecordsSheetConfig,
@@ -55,6 +54,7 @@ import {
   profilePreviewConfig,
   qrScannerConfig,
   promoSheetConfig,
+  notificationPermissionSheetConfig,
   registerENSNavigatorConfig,
   restoreSheetConfig,
   sendConfirmationSheetConfig,
@@ -105,14 +105,13 @@ import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
-import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
-import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import CheckIdentifierScreen from '@/screens/CheckIdentifierScreen';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
-import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
+import { ClaimRewardsPanel } from '@/screens/claimables/ClaimRewardsPanel';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
+import { RevokeDelegationPanel } from '@/screens/delegation/RevokeDelegationPanel';
 import { type RootStackParamList } from './types';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
 import { LogSheet } from '@/components/debugging/LogSheet';
@@ -187,6 +186,11 @@ function NativeStackNavigator() {
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
       <NativeStack.Screen component={MainStack} name={Routes.STACK} />
+      <NativeStack.Screen
+        component={NotificationPermissionScreen}
+        name={Routes.NOTIFICATION_PERMISSION_SCREEN}
+        {...notificationPermissionSheetConfig}
+      />
       <NativeStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
       <NativeStack.Screen component={ReceiveModal} name={Routes.RECEIVE_MODAL} {...recieveModalSheetConfig} />
       <NativeStack.Screen component={SettingsSheet} name={Routes.SETTINGS_SHEET} {...settingsSheetConfig} />
@@ -214,7 +218,6 @@ function NativeStackNavigator() {
       <Stack.Screen component={SendConfirmationSheet} name={Routes.SEND_CONFIRMATION_SHEET} {...sendConfirmationSheetConfig} />
       <NativeStack.Screen component={ExplainSheet} name={Routes.EXPLAIN_SHEET} {...explainSheetConfig} />
       <NativeStack.Screen component={RemotePromoSheet} name={Routes.REMOTE_PROMO_SHEET} {...promoSheetConfig} />
-      <NativeStack.Screen component={NotificationsPromoSheet} name={Routes.NOTIFICATIONS_PROMO_SHEET} {...promoSheetConfig} />
       <NativeStack.Screen
         component={ExternalLinkWarningSheet}
         name={Routes.EXTERNAL_LINK_WARNING_SHEET}
@@ -299,12 +302,12 @@ function NativeStackNavigator() {
       <NativeStack.Screen name={Routes.NFT_OFFERS_SHEET} component={NFTOffersSheet} {...nftOffersSheetConfig} />
       <NativeStack.Screen name={Routes.NFT_SINGLE_OFFER_SHEET} component={NFTSingleOfferSheet} {...nftSingleOfferSheetConfig} />
       <NativeStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} {...mintsSheetConfig} />
-      <NativeStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} {...consoleSheetConfig} />
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
       <NativeStack.Screen component={NetworkSelector} name={Routes.NETWORK_SELECTOR} {...panelConfig} />
       <NativeStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...panelConfig} />
       <NativeStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} {...panelConfig} />
       <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
+      <NativeStack.Screen component={RevokeDelegationPanel} name={Routes.REVOKE_DELEGATION_PANEL} {...panelConfig} />
       <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
       <NativeStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} {...perpsDepositWithdrawalConfig} />
       <NativeStack.Screen component={PolymarketDepositScreen} name={Routes.POLYMARKET_DEPOSIT_SCREEN} {...perpsDepositWithdrawalConfig} />
@@ -351,9 +354,7 @@ function NativeStackNavigator() {
 
 const AppContainerWithAnalytics = React.forwardRef<NavigationContainerRef<RootStackParamList>, { onReady: () => void }>((props, ref) => (
   <NavigationContainer onReady={props.onReady} onStateChange={onNavigationStateChange} ref={ref}>
-    <PointsProfileProvider>
-      <NativeStackNavigator />
-    </PointsProfileProvider>
+    <NativeStackNavigator />
 
     {/* NOTE: Internally, these use some navigational checks */}
     <CMPortal />

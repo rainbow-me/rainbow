@@ -1,10 +1,5 @@
 import { IS_IOS } from '@/env';
 
-export const POINTS_ROUTES = {
-  CLAIM_CONTENT: 'ClaimContent',
-  REFERRAL_CONTENT: 'ReferralContent',
-} as const;
-
 const Routes = {
   ADD_CASH_SCREEN_NAVIGATOR: 'AddCashSheetNavigator',
   ADD_CASH_SHEET: 'AddCashSheet',
@@ -24,7 +19,6 @@ const Routes = {
   CLAIM_CLAIMABLE_PANEL: 'ClaimClaimablePanel',
   CONFIRM_REQUEST: 'ConfirmRequest',
   CONNECTED_DAPPS: 'ConnectedDapps',
-  CONSOLE_SHEET: 'ConsoleSheet',
   CUSTOM_GAS_SHEET: 'CustomGasSheet',
   DAPP_BROWSER_SCREEN: 'DappBrowserScreen',
   DAPP_BROWSER: 'DappBrowser',
@@ -59,7 +53,7 @@ const Routes = {
   NETWORK_SWITCHER: 'NetworkSection',
   NFT_OFFERS_SHEET: 'NFTOffersSheet',
   NFT_SINGLE_OFFER_SHEET: 'NFTSingleOfferSheet',
-  NOTIFICATIONS_PROMO_SHEET: 'NotificationsPromoSheet',
+  NOTIFICATION_PERMISSION_SCREEN: 'NotificationPermissionScreen',
   OP_REWARDS_SHEET: 'OpRewardsSheet',
   PAIR_HARDWARE_WALLET_AGAIN_SHEET: 'PairHardwareWalletAgainSheet',
   PAIR_HARDWARE_WALLET_ERROR_SHEET: 'PairHardwareWalletErrorSheet',
@@ -69,8 +63,6 @@ const Routes = {
   PAIR_HARDWARE_WALLET_SIGNING_SHEET: 'PairHardwareWalletSigningSheet',
   PAIR_HARDWARE_WALLET_SUCCESS_SHEET: 'PairHardwareWalletSuccessSheet',
   PIN_AUTHENTICATION_SCREEN: 'PinAuthenticationScreen',
-  POINTS_SCREEN: 'PointsScreen',
-  ...POINTS_ROUTES,
   POSITION_SHEET: 'PositionSheet',
   PROFILE_PREVIEW_SHEET: 'ProfilePreviewSheet',
   PROFILE_SCREEN: 'ProfileScreen',
@@ -116,9 +108,11 @@ const Routes = {
   VIEW_CLOUD_BACKUPS: 'ViewCloudBackups',
   SECRET_WARNING: 'SecretWarning',
   SHOW_SECRET: 'ShowSecret',
+  VIEW_WALLET_DELEGATIONS: 'ViewWalletDelegations',
   DAPP_BROWSER_CONTROL_PANEL: 'DappBrowserControlPanel',
   NETWORK_SELECTOR: 'NetworkSelector',
   CLAIM_REWARDS_PANEL: 'ClaimRewardsPanel',
+  REVOKE_DELEGATION_PANEL: 'RevokeDelegationPanel',
   TOKEN_LAUNCHER_SCREEN: 'TokenLauncherScreen',
   KING_OF_THE_HILL_EXPLAIN_SHEET: 'KingOfTheHillExplainSheet',
   PERPS_NAVIGATOR: 'PerpsNavigator',
@@ -175,6 +169,7 @@ export const NATIVE_ROUTES = new Set<Route>([
   Routes.POLYMARKET_EVENT_SCREEN,
   Routes.POLYMARKET_MARKET_SHEET,
   Routes.POLYMARKET_NEW_POSITION_SHEET,
+  Routes.NOTIFICATION_PERMISSION_SCREEN,
   Routes.POSITION_SHEET,
   Routes.RECEIVE_MODAL,
   Routes.SETTINGS_SHEET,
