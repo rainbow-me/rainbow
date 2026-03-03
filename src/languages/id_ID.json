@@ -1688,15 +1688,17 @@
       "positions": {
         "entry": "ENTRI",
         "mark_price": "HARGA PASAR",
+        "mark_price_full": "Harga Pasar",
         "open_positions": "Posisi Terbuka",
         "no_open_positions": "Tidak Ada Posisi Terbuka",
         "position_value": "Nilai Posisi",
-        "mark_price_full": "Harga Pasar",
         "entry_price": "Harga Entri",
         "funding": "Pendanaan",
         "liquidation_price": "Harga Likuidasi",
         "total": "Total",
-        "learn_more_about_perps": "Pelajari lebih lanjut tentang Perps"
+        "learn_more_about_perps": "Pelajari lebih lanjut tentang Perps",
+        "open": "Buka",
+        "close": "Tutup"
       },
       "new_position": {
         "hold_to_long": "Tahan untuk Panjang",
