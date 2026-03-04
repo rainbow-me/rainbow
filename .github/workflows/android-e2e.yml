@@ -402,6 +402,16 @@ jobs:
         if: ${{ steps.failures.outputs.skip != 'true' }}
         run: npm install -g @anthropic-ai/claude-code
 
+      - name: Setup Android Emulator
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        uses: ./.github/actions/android-emulator/
+        with:
+          api-level: ${{ env.ANDROID_EMULATOR_API_LEVEL }}
+          profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
+          cores: ${{ env.ANDROID_EMULATOR_CORES }}
+          ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
+          arch: ${{ env.ARCH }}
+
       - name: Run autofix
         if: ${{ steps.failures.outputs.skip != 'true' }}
         uses: reactivecircus/android-emulator-runner@1dcd0090116d15e7c562f8db72807de5e036a4ed
