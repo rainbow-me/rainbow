@@ -3,6 +3,9 @@
 set -euo pipefail
 source .env
 
+# Ensure maestro is in PATH (installed to ~/.maestro/bin on CI)
+export PATH="$PATH:$HOME/.maestro/bin"
+
 ARTIFACTS_FOLDER=e2e-artifacts
 FLOW="e2e/flows"
 ARGS=()
