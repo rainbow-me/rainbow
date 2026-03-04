@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -euo pipefail
+trap 'echo "EXIT at line $LINENO with code $?" >&2' ERR
 source .env
 
 ARTIFACTS_FOLDER=e2e-artifacts
@@ -240,6 +241,7 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
 
   if ! $SUCCESS; then
     echo "❌ Failed after 1 attempt: $TEST_NAME"
+    echo "DEBUG: writing to $RESULTS_FILE"
     echo "{\"test\":\"$TEST_NAME\",\"flow\":\"$TEST_FILE\",\"status\":\"failed\",\"attempts\":1}" >> "$RESULTS_FILE"
     echo
     EXIT_CODE=1
