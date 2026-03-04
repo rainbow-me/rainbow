@@ -5,25 +5,23 @@
 # Claude Code reads the Maestro logs directly from the artifacts folder.
 #
 # Local:
-#   ./scripts/e2e-autofix.sh --failed-tests "CreateWallet,WatchedWallet" \
-#     --failed-flows "e2e/flows/onboarding/CreateWallet.yaml,e2e/flows/onboarding/WatchedWallet.yaml"
+#   ./scripts/e2e-autofix.sh \
 #
 # CI (called by GitHub Action):
 #   ./scripts/e2e-autofix.sh --pr 123 --branch feat/x --repo owner/repo \
-#     --failed-tests "CreateWallet" --failed-flows "e2e/flows/onboarding/CreateWallet.yaml"
+#     --failed-flows "e2e/flows/onboarding/CreateWallet.yaml"
 
 set -euo pipefail
 
 # ─── Args ─────────────────────────────────────────────────────────────
 PR_NUMBER="" PR_BRANCH="" REPO="" MAX_ATTEMPTS=2
-FAILED_TESTS_CSV="" FAILED_FLOWS_CSV="" SKIP_VERIFY=false
+FAILED_FLOWS_CSV="" SKIP_VERIFY=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
     --pr)            PR_NUMBER="$2";       shift 2 ;;
     --branch)        PR_BRANCH="$2";       shift 2 ;;
     --repo)          REPO="$2";            shift 2 ;;
-    --failed-tests)  FAILED_TESTS_CSV="$2"; shift 2 ;;
     --failed-flows)  FAILED_FLOWS_CSV="$2"; shift 2 ;;
     --max-attempts)  MAX_ATTEMPTS="$2";    shift 2 ;;
     --skip-verify)   SKIP_VERIFY=true;     shift ;;
@@ -31,12 +29,14 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-[[ -z "$FAILED_TESTS_CSV" ]] && { echo "Error: --failed-tests required" >&2; exit 1; }
 [[ -z "$FAILED_FLOWS_CSV" ]] && { echo "Error: --failed-flows required" >&2; exit 1; }
 
-# Parse CSV into arrays
-IFS=',' read -ra FAILED_TESTS <<< "$FAILED_TESTS_CSV"
+# Parse CSV into arrays, derive test names from flow paths
 IFS=',' read -ra FAILED_FLOWS <<< "$FAILED_FLOWS_CSV"
+FAILED_TESTS=()
+for FLOW in "${FAILED_FLOWS[@]}"; do
+  FAILED_TESTS+=("$(basename "${FLOW%.*}")")
+done
 
 CI_MODE=false
 if [[ -n "$PR_NUMBER" ]]; then

@@ -299,5 +299,4 @@ jobs:
             --pr "${{ github.event.pull_request.number }}" \
             --branch "${{ github.head_ref }}" \
             --repo "${{ github.repository }}" \
-            --failed-tests "${{ steps.failures.outputs.failed_tests }}" \
             --failed-flows "${{ steps.failures.outputs.failed_flows }}" \
