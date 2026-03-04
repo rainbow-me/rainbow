@@ -77,9 +77,6 @@ for ATTEMPT in $(seq 1 "$MAX_ATTEMPTS"); do
     FIX_PROMPT="You are fixing failing e2e tests in a React Native app (Rainbow).
 Tests use Maestro (YAML flows in e2e/flows/).
 
-## PR diff:
-${PR_DIFF}
-
 ## Failed tests:
 ${FLOW_INFO}
 
@@ -117,7 +114,6 @@ Start response with: CATEGORY: A|B|C — reason"
 
 $ATTEMPT_LOG
 
-Original diff: ${PR_DIFF}
 Failed tests: ${FLOW_INFO}
 
 Check e2e-artifacts/maestro/ for detailed logs. Try a different approach."
