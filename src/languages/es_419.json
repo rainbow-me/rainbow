@@ -2016,24 +2016,6 @@
       }
     },
     "promos": {
-      "swaps_launch": {
-        "primary_button": "􀖅 Prueba un intercambio",
-        "secondary_button": "Quizás después",
-        "info_row_1": {
-          "title": "Intercambia todos tus tokens favoritos",
-          "description": "Rainbow busca en todas partes para encontrar la mejor tasa para tu intercambio."
-        },
-        "info_row_2": {
-          "title": "Cambia directamente en L2",
-          "description": "Intercambios rápidos y económicos en Arbitrum, Optimism, Polygon y BSC."
-        },
-        "info_row_3": {
-          "title": "Protección de Flashbots",
-          "description": "Protección de precios, además de ninguna tarifa en intercambios fallidos. Habilita en la configuración de intercambio."
-        },
-        "header": "Intercambios en Rainbow",
-        "subheader": "REINTRODUCCIÓN"
-      },
       "notifications_launch": {
         "primary_button": {
           "permissions_enabled": "Configurar",
@@ -2055,27 +2037,6 @@
         "header": "Notificaciones",
         "subheader": "PRESENTAMOS"
       }
-    },
-    "nft_offers_launch": {
-      "primary_button": {
-        "has_offers": "Ver Ofertas",
-        "not_has_offers": "Cerrar"
-      },
-      "secondary_button": "Quizás Más Tarde",
-      "info_row_1": {
-        "title": "Todas tus ofertas en un solo lugar",
-        "description": "Vea sus ofertas en todos los mercados de NFT."
-      },
-      "info_row_2": {
-        "title": "Aceptar desde Rainbow",
-        "description": "Acepte las ofertas con un solo toque y cambie al token de su elección."
-      },
-      "info_row_3": {
-        "title": "Modos de ordenación inteligentes",
-        "description": "Compare con los precios de piso, o vea sus ofertas más altas o más recientes."
-      },
-      "header": "Ofertas",
-      "subheader": "PRESENTAMOS"
     },
     "review": {
       "alert": {
