@@ -170,7 +170,7 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
 
   SUCCESS=false
   SHOULD_RECORD=false
-  for ATTEMPT in {1..3}; do
+  for ATTEMPT in {1..1}; do
     echo "🔁 Attempt $ATTEMPT for $TEST_NAME"
 
     START_TIME=$(date +%s)
@@ -236,7 +236,7 @@ json.dump(r, open(os.environ["RESULTS_FILE"], "w"))
 
 
   if ! $SUCCESS; then
-    echo "❌ Failed after 3 attempts: $TEST_NAME"
+    echo "❌ Failed after 1 attempt: $TEST_NAME"
     TEST_NAME="$TEST_NAME" TEST_FILE="$TEST_FILE" RESULTS_FILE="$RESULTS_FILE" python3 -c '
 import json, os
 r = json.load(open(os.environ["RESULTS_FILE"]))

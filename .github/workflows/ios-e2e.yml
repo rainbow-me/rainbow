@@ -115,13 +115,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard-index: [1, 2, 3, 4]
+        shard-index: [1]
     concurrency:
       group: e2e-ios-${{ github.workflow }}-${{ github.ref }}-shard-${{ matrix.shard-index }}
       cancel-in-progress: false
     timeout-minutes: 30
     env:
-      SHARD_TOTAL: 4
+      SHARD_TOTAL: 1
       SHARD_INDEX: ${{ matrix.shard-index }}
       ARTIFACTS_FOLDER: e2e-artifacts
     steps:
@@ -209,7 +209,7 @@ jobs:
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
         with:
           ref: ${{ github.head_ref }}
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Download all test artifacts
         uses: actions/download-artifact@v4
