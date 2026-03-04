@@ -299,4 +299,5 @@ jobs:
             --pr "${{ github.event.pull_request.number }}" \
             --branch "${{ github.head_ref }}" \
             --repo "${{ github.repository }}" \
-            --failed-flows "${{ steps.failures.outputs.failed_flows }}" \
+            --failed-flows "${{ steps.failures.outputs.failed_flows }}" 
+            --platform ios \

@@ -15,7 +15,7 @@ set -euo pipefail
 
 # ─── Args ─────────────────────────────────────────────────────────────
 PR_NUMBER="" PR_BRANCH="" REPO="" MAX_ATTEMPTS=2
-FAILED_FLOWS_CSV="" SKIP_VERIFY=false
+FAILED_FLOWS_CSV="" SKIP_VERIFY=false PLATFORM=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -25,6 +25,7 @@ while [[ $# -gt 0 ]]; do
     --failed-flows)  FAILED_FLOWS_CSV="$2"; shift 2 ;;
     --max-attempts)  MAX_ATTEMPTS="$2";    shift 2 ;;
     --skip-verify)   SKIP_VERIFY=true;     shift ;;
+    --platform)      PLATFORM="$2";        shift 2 ;;
     *) echo "Unknown: $1" >&2; exit 1 ;;
   esac
 done
@@ -164,6 +165,45 @@ Check e2e-artifacts/maestro/ for detailed logs. Try a different approach."
     FIXED=true; break
   else
     echo ""
+
+    # Check if source code changed (not just test files)
+    SOURCE_CHANGED=false
+    while IFS= read -r f; do
+      if [[ "$f" != e2e/* ]]; then
+        SOURCE_CHANGED=true
+        break
+      fi
+    done <<< "$FIX_FILES"
+
+    if [[ "$SOURCE_CHANGED" = true ]]; then
+      echo "=== Source code changed — re-signing app ==="
+      if [[ "$PLATFORM" = "ios" ]]; then
+        APP_PATH="${ARTIFACT_PATH_FOR_E2E:-}"
+        if [[ -n "$APP_PATH" ]]; then
+          yarn install --immutable 2>/dev/null || true
+          npx rock sign:ios "$APP_PATH" --app --build-jsbundle
+          xcrun simctl install booted "$APP_PATH"
+          echo "✅ App re-signed and reinstalled"
+        else
+          echo "⚠️ No ARTIFACT_PATH_FOR_E2E — skipping re-sign"
+        fi
+      elif [[ "$PLATFORM" = "android" ]]; then
+        APK_PATH="${ARTIFACT_PATH_FOR_E2E:-}"
+        if [[ -n "$APK_PATH" ]]; then
+          yarn install --immutable 2>/dev/null || true
+          npx rock sign:android "$APK_PATH" --build-jsbundle
+          adb install -r "$APK_PATH"
+          echo "✅ APK re-signed and reinstalled"
+        else
+          echo "⚠️ No ARTIFACT_PATH_FOR_E2E — skipping re-sign"
+        fi
+      else
+        echo "⚠️ No --platform specified — skipping re-sign (source changes won't be verified)"
+      fi
+    else
+      echo "=== Only test files changed — no rebuild needed ==="
+    fi
+
     echo "=== Verifying ${#FAILED_FLOWS[@]} test(s) ==="
 
     for j in "${!FAILED_FLOWS[@]}"; do
