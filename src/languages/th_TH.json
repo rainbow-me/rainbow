@@ -2016,24 +2016,6 @@
       }
     },
     "promos": {
-      "swaps_launch": {
-        "primary_button": "ลองเปลี่ยน",
-        "secondary_button": "อาจจะทำในภายหลัง",
-        "info_row_1": {
-          "title": "แลกทุกโทเคนที่คุณโปรดรัก",
-          "description": "Rainbow ค้นหาทุกที่เพื่อหาราคาที่ดีที่สุดสำหรับการแลกเปลี่ยนของคุณ"
-        },
-        "info_row_2": {
-          "title": "แลกเปลี่ยนโดยตรงบน L2",
-          "description": "แลกเปลี่ยนแบบเร็วและราคาถูกบน Arbitrum, Optimism, Polygon และ BSC"
-        },
-        "info_row_3": {
-          "title": "การป้องกัน Flashbots",
-          "description": "การป้องกันต่อราคาพร้อมไม่มีค่าธรรมเนียมสำหรับการแลกเปลี่ยนที่ไม่สำเร็จ สามารถเปิดการใช้งานในการตั้งค่าการแลกเปลี่ยน"
-        },
-        "header": "การแลกเปลี่ยนบน Rainbow",
-        "subheader": "เริ่มต้นใหม่"
-      },
       "notifications_launch": {
         "primary_button": {
           "permissions_enabled": "กำหนดค่า",
@@ -2055,27 +2037,6 @@
         "header": "การแจ้งเตือน",
         "subheader": "เราขอแนะนำ"
       }
-    },
-    "nft_offers_launch": {
-      "primary_button": {
-        "has_offers": "ดูข้อเสนอ",
-        "not_has_offers": "ปิด"
-      },
-      "secondary_button": "อาจหลัง",
-      "info_row_1": {
-        "title": "ข้อเสนอทั้งหมดของคุณที่ได้อยู่ที่เดียว",
-        "description": "ดูข้อเสนอของคุณในตลาด NFT ทั้งหมด"
-      },
-      "info_row_2": {
-        "title": "ยอมรับจาก Rainbow",
-        "description": "ยอมรับข้อเสนอในแต่ละแต้มและสลับไปยังโทเค็นที่คุณเลือก"
-      },
-      "info_row_3": {
-        "title": "โหมดเรียงลำดับอัจฉริยะ",
-        "description": "เปรียบเทียบราคาพื้นหลังหรือดูข้อเสนอที่คุณเสนอสูงสุดหรือล่าสุดของคุณ"
-      },
-      "header": "ข้อเสนอ",
-      "subheader": "เราขอแนะนำ"
     },
     "review": {
       "alert": {
