@@ -2016,24 +2016,6 @@
       }
     },
     "promos": {
-      "swaps_launch": {
-        "primary_button": "尝试进行交换",
-        "secondary_button": "稍后再说",
-        "info_row_1": {
-          "title": "交换所有你喜欢的代币",
-          "description": "Rainbow在所有地方搜索，以寻找最佳的交易汇率。"
-        },
-        "info_row_2": {
-          "title": "直接在L2上交换",
-          "description": "在Arbitrum、Optimism、Polygon和BSC上快速且便宜的交换。"
-        },
-        "info_row_3": {
-          "title": "Flashbots保护",
-          "description": "价格保护，失败的交换不收费。在交换设置中启用。"
-        },
-        "header": "在Rainbow上的交换",
-        "subheader": "重新引入"
-      },
       "notifications_launch": {
         "primary_button": {
           "permissions_enabled": "配置",
@@ -2055,27 +2037,6 @@
         "header": "通知",
         "subheader": "介绍"
       }
-    },
-    "nft_offers_launch": {
-      "primary_button": {
-        "has_offers": "查看报价",
-        "not_has_offers": "关闭"
-      },
-      "secondary_button": "稍后再说",
-      "info_row_1": {
-        "title": "所有报价集中在一个地方",
-        "description": "查看你在所有NFT市场上的报价。"
-      },
-      "info_row_2": {
-        "title": "从彩虹接受",
-        "description": "一键接受报价并交换为所选的代币。"
-      },
-      "info_row_3": {
-        "title": "智能排序模式",
-        "description": "与底价进行比较，或查看您的最高或最新报价。"
-      },
-      "header": "报价",
-      "subheader": "介绍"
     },
     "review": {
       "alert": {
