@@ -66,6 +66,8 @@ if [[ -n "${ARTIFACT_PATH_FOR_E2E:-}" && -n "$PLATFORM" ]]; then
   echo ""
   echo "=== Installing app ==="
   if [[ "$PLATFORM" = "ios" ]]; then
+    echo "Original bundle hash (before any fix):"
+    md5 -q "$ARTIFACT_PATH_FOR_E2E/main.jsbundle" 2>/dev/null || true
     echo "Terminating app before install..."
     xcrun simctl terminate booted me.rainbow 2>/dev/null || true
     xcrun simctl install booted "$ARTIFACT_PATH_FOR_E2E"
@@ -260,7 +262,11 @@ Try a different approach. Remember:
       else
         echo "📦 Native fingerprint unchanged — JS-only re-sign"
         if [[ "$PLATFORM" = "ios" ]]; then
+          echo "Bundle hash BEFORE re-sign:"
+          md5 -q "$ARTIFACT_PATH_FOR_E2E/main.jsbundle" 2>/dev/null || true
           npx rock sign:ios "$ARTIFACT_PATH_FOR_E2E" --app --build-jsbundle
+          echo "Bundle hash AFTER re-sign:"
+          md5 -q "$ARTIFACT_PATH_FOR_E2E/main.jsbundle" 2>/dev/null || true
           echo "Terminating and uninstalling app before reinstall..."
           xcrun simctl terminate booted me.rainbow 2>/dev/null || true
           xcrun simctl uninstall booted me.rainbow 2>/dev/null || true
