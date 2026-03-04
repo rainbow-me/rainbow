@@ -2016,24 +2016,6 @@
       }
     },
     "promos": {
-      "swaps_launch": {
-        "primary_button": "􀖅 Essayez un échange",
-        "secondary_button": "Peut-être plus tard",
-        "info_row_1": {
-          "title": "Échangez tous vos jetons préférés",
-          "description": "Rainbow cherche partout pour trouver le meilleur taux pour votre échange."
-        },
-        "info_row_2": {
-          "title": "Échange directement sur L2",
-          "description": "Des échanges rapides et bon marché sur Arbitrum, Optimism, Polygon et BSC."
-        },
-        "info_row_3": {
-          "title": "Protection Flashbots",
-          "description": "Protection des prix, plus aucun frais sur les échanges échoués. Activez-le dans les paramètres d'échange."
-        },
-        "header": "Échanges sur Rainbow",
-        "subheader": "RÉINTRODUCTION"
-      },
       "notifications_launch": {
         "primary_button": {
           "permissions_enabled": "Configuration :)",
@@ -2055,27 +2037,6 @@
         "header": "Notifications",
         "subheader": "PRÉSENTATION"
       }
-    },
-    "nft_offers_launch": {
-      "primary_button": {
-        "has_offers": "Voir offres",
-        "not_has_offers": "Fermer"
-      },
-      "secondary_button": "Peut-être plus tard",
-      "info_row_1": {
-        "title": "Toutes vos offres en un seul endroit",
-        "description": "Visualisez vos offres sur tous les marchés NFT."
-      },
-      "info_row_2": {
-        "title": "Accepter depuis Rainbow",
-        "description": "Acceptez les offres en un seul clic et échangez vers le jeton de votre choix."
-      },
-      "info_row_3": {
-        "title": "Modes de tri intelligents",
-        "description": "Comparez aux prix de plancher, ou visualisez vos offres les plus élevées ou les plus récentes."
-      },
-      "header": "Offers :)s",
-      "subheader": "PRÉSENTATION"
     },
     "review": {
       "alert": {
