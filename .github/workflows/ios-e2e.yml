@@ -115,13 +115,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard-index: [1]
+        shard-index: [1, 2, 3, 4]
     concurrency:
       group: e2e-ios-${{ github.workflow }}-${{ github.ref }}-shard-${{ matrix.shard-index }}
       cancel-in-progress: false
     timeout-minutes: 30
     env:
-      SHARD_TOTAL: 1
+      SHARD_TOTAL: 4
       SHARD_INDEX: ${{ matrix.shard-index }}
       ARTIFACTS_FOLDER: e2e-artifacts
     steps:
@@ -185,6 +185,7 @@ jobs:
         run: ./scripts/e2e-ios-ci.sh
         env:
           DEVICE_UDID: ${{ steps.simulator.outputs.udid }}
+          MAX_TESTS_PER_SHARD: 1
 
       - name: Upload artifacts
         if: ${{ always() }}
