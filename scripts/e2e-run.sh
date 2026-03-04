@@ -169,6 +169,7 @@ fi
 
 # Run tests with retries.
 EXIT_CODE=0
+mkdir -p "$ARTIFACTS_FOLDER"
 RESULTS_FILE="$ARTIFACTS_FOLDER/e2e-results.json"
 echo "[]" > "$RESULTS_FILE"
 for TEST_FILE in "${TEST_FILES[@]}"; do
