@@ -221,29 +221,7 @@ jobs:
 
       - name: Collect failed tests
         id: failures
-        run: |
-          python3 -c "
-          import json, glob, os
-          results = []
-          for f in glob.glob('e2e-artifacts/**/e2e-results-shard-*.jsonl', recursive=True):
-              for line in open(f):
-                  line = line.strip()
-                  if line:
-                      results.append(json.loads(line))
-          failed = [r for r in results if r['status'] == 'failed']
-          if not failed:
-              print('No failed tests')
-              with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
-                  out.write('skip=true\n')
-              exit(0)
-          tests = ','.join(r['test'] for r in failed)
-          flows = ','.join(r['flow'] for r in failed)
-          print(f'Failed: {tests}')
-          with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
-              out.write(f'failed_tests={tests}\n')
-              out.write(f'failed_flows={flows}\n')
-              out.write('skip=false\n')
-          "
+        run: ./scripts/e2e-collect-failures.sh e2e-artifacts || true
 
       # --- Setup test environment before running autofix ---
 
