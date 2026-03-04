@@ -244,10 +244,8 @@ Check e2e-artifacts/maestro/ for detailed logs. Try a different approach."
         VERIFIED_TESTS+=("$TEST_NAME")
       else
         echo "  ❌ STILL FAILING"
-        tail -5 "/tmp/e2e-verify-${TEST_NAME}.log" | sed 's/^/    /'
         STILL_FAILING+=("$TEST_NAME")
       fi
-      rm -f "/tmp/e2e-verify-${TEST_NAME}.log"
     done
 
     echo "Results: ${#VERIFIED_TESTS[@]} passed, ${#STILL_FAILING[@]} failed"
