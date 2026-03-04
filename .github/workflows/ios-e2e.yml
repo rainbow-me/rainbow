@@ -198,7 +198,7 @@ jobs:
   autofix:
     name: AI Autofix
     needs: [build, e2e-tests]
-    if: ${{ failure() && github.event_name == 'pull_request' }}
+    if: ${{ !cancelled() && needs.e2e-tests.result == 'failure' && github.event_name == 'pull_request' }}
     runs-on: macos-15-xlarge
     timeout-minutes: 30
     env:
