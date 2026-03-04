@@ -267,8 +267,11 @@ Try a different approach. Remember:
           npx rock sign:ios "$ARTIFACT_PATH_FOR_E2E" --app --build-jsbundle
           echo "Bundle hash AFTER re-sign:"
           md5 -q "$ARTIFACT_PATH_FOR_E2E/main.jsbundle" 2>/dev/null || true
-          echo "Grep welcome-screen in bundle (should NOT have -broken):"
-          strings "$ARTIFACT_PATH_FOR_E2E/main.jsbundle" 2>/dev/null | grep "welcome-screen" | head -5 || echo "(not found in bundle)"
+          echo "Files in .app bundle:"
+          ls -la "$ARTIFACT_PATH_FOR_E2E/main.jsbundle"* 2>/dev/null || true
+          file "$ARTIFACT_PATH_FOR_E2E/main.jsbundle" 2>/dev/null || true
+          echo "Grep testID welcome-screen in bundle:"
+          strings "$ARTIFACT_PATH_FOR_E2E/main.jsbundle" 2>/dev/null | grep -o 'welcome-screen[a-zA-Z_-]*' | sort -u | head -10 || echo "(not found via strings)"
           echo "Terminating and uninstalling app before reinstall..."
           xcrun simctl terminate booted me.rainbow 2>/dev/null || true
           xcrun simctl uninstall booted me.rainbow 2>/dev/null || true
