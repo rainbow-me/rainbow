@@ -224,8 +224,8 @@ jobs:
           python3 -c "
           import json, glob, os
           results = []
-          for f in glob.glob('e2e-artifacts/**/e2e-results.json', recursive=True):
-              results.extend(json.load(open(f)))
+          for f in glob.glob('e2e-artifacts/**/e2e-results.jsonl', recursive=True):
+              results.extend(json.loads(line) for line in open(f) if line.strip())
           failed = [r for r in results if r['status'] == 'failed']
           if not failed:
               print('No failed tests')

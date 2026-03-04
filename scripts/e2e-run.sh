@@ -163,8 +163,8 @@ fi
 # Run tests with retries.
 EXIT_CODE=0
 mkdir -p "$ARTIFACTS_FOLDER"
-RESULTS_FILE="$ARTIFACTS_FOLDER/e2e-results.json"
-echo "[]" > "$RESULTS_FILE"
+RESULTS_FILE="$ARTIFACTS_FOLDER/e2e-results.jsonl"
+: > "$RESULTS_FILE"
 for TEST_FILE in "${TEST_FILES[@]}"; do
   TEST_NAME=$(basename "${TEST_FILE%.*}")
   echo "🚀 Running test: $TEST_NAME"
@@ -200,12 +200,7 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
       DURATION=$((END_TIME - START_TIME))
       SUCCESS=true
       echo "✅ Passed: $TEST_NAME (${DURATION}s, $ATTEMPT attempt(s))"
-      TEST_NAME="$TEST_NAME" TEST_FILE="$TEST_FILE" ATTEMPT="$ATTEMPT" DURATION="$DURATION" RESULTS_FILE="$RESULTS_FILE" python3 -c '
-import json, os
-r = json.load(open(os.environ["RESULTS_FILE"]))
-r.append({"test": os.environ["TEST_NAME"], "flow": os.environ["TEST_FILE"], "status": "passed", "attempts": int(os.environ["ATTEMPT"]), "duration": int(os.environ["DURATION"])})
-json.dump(r, open(os.environ["RESULTS_FILE"], "w"))
-'
+      echo "{\"test\":\"$TEST_NAME\",\"flow\":\"$TEST_FILE\",\"status\":\"passed\",\"attempts\":$ATTEMPT,\"duration\":$DURATION}" >> "$RESULTS_FILE"
       echo
 
       # Stop recording (if recording was active)
@@ -238,12 +233,7 @@ json.dump(r, open(os.environ["RESULTS_FILE"], "w"))
 
   if ! $SUCCESS; then
     echo "❌ Failed after 3 attempts: $TEST_NAME"
-    TEST_NAME="$TEST_NAME" TEST_FILE="$TEST_FILE" RESULTS_FILE="$RESULTS_FILE" python3 -c '
-import json, os
-r = json.load(open(os.environ["RESULTS_FILE"]))
-r.append({"test": os.environ["TEST_NAME"], "flow": os.environ["TEST_FILE"], "status": "failed", "attempts": 3})
-json.dump(r, open(os.environ["RESULTS_FILE"], "w"))
-'
+    echo "{\"test\":\"$TEST_NAME\",\"flow\":\"$TEST_FILE\",\"status\":\"failed\",\"attempts\":1}" >> "$RESULTS_FILE"
     echo
     EXIT_CODE=1
   fi
