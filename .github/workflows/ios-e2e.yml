@@ -196,13 +196,14 @@ jobs:
   # AI autofix job — runs after all shards complete, only on PR failures
   autofix:
     name: AI Autofix
-    needs: e2e-tests
+    needs: [build, e2e-tests]
     if: ${{ failure() && github.event_name == 'pull_request' }}
     runs-on: macos-15-xlarge
-    timeout-minutes: 15
+    timeout-minutes: 30
     env:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       GH_TOKEN: ${{ github.token }}
+      ARTIFACTS_FOLDER: e2e-artifacts
     steps:
       - name: Checkout PR branch
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
@@ -220,30 +221,25 @@ jobs:
       - name: Collect failed tests
         id: failures
         run: |
-          FAILED_TESTS=""
-          FAILED_FLOWS=""
-          for dir in e2e-artifacts/maestro/❌-*; do
-            [ -d "$dir" ] || continue
-            basename=$(basename "$dir")
-            test_name=$(echo "$basename" | sed 's/^❌-//; s/-[0-9]*$//')
-            flow=$(find e2e/flows -name "${test_name}.yaml" -o -name "${test_name}.yml" 2>/dev/null | head -1)
-            [ -z "$flow" ] && continue
-            if [[ "$FAILED_TESTS" != *"$test_name"* ]]; then
-              FAILED_TESTS="${FAILED_TESTS:+$FAILED_TESTS,}$test_name"
-              FAILED_FLOWS="${FAILED_FLOWS:+$FAILED_FLOWS,}$flow"
-            fi
-          done
-
-          if [ -z "$FAILED_TESTS" ]; then
-            echo "No failed tests found"
-            echo "skip=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          echo "failed_tests=$FAILED_TESTS" >> $GITHUB_OUTPUT
-          echo "failed_flows=$FAILED_FLOWS" >> $GITHUB_OUTPUT
-          echo "skip=false" >> $GITHUB_OUTPUT
-          echo "Failed tests: $FAILED_TESTS"
+          python3 -c "
+          import json, glob, os
+          results = []
+          for f in glob.glob('e2e-artifacts/**/e2e-results.json', recursive=True):
+              results.extend(json.load(open(f)))
+          failed = [r for r in results if r['status'] == 'failed']
+          if not failed:
+              print('No failed tests')
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
+                  out.write('skip=true\n')
+              exit(0)
+          tests = ','.join(r['test'] for r in failed)
+          flows = ','.join(r['flow'] for r in failed)
+          print(f'Failed: {tests}')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
+              out.write(f'failed_tests={tests}\n')
+              out.write(f'failed_flows={flows}\n')
+              out.write('skip=false\n')
+          "
 
       - name: Install Claude Code
         if: ${{ steps.failures.outputs.skip != 'true' }}
@@ -260,3 +256,83 @@ jobs:
             --failed-flows "${{ steps.failures.outputs.failed_flows }}" \
             --skip-verify \
             --platform ios
+
+      # --- Verification: re-run failed tests with the fix applied ---
+
+      - name: Setup env key
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        uses: ./.github/actions/ssh/
+        with:
+          name: env
+          key: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+
+      - name: Setup env
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+        run: |
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env
+          rm -rf rainbow-env
+
+      - name: Install Maestro
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        run: export MAESTRO_VERSION=2.0.10; curl -fsSL "https://get.maestro.mobile.dev" | bash
+
+      - name: Install Anvil
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        uses: foundry-rs/foundry-toolchain@82dee4ba654bd2146511f85f0d013af94670c4de
+        with:
+          version: stable
+
+      - name: Download app build
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        run: |
+          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build.outputs.artifact-id }}/zip"
+          unzip artifact.zip -d downloaded-artifacts
+          APP_ARCHIVE_PATH=$(find downloaded-artifacts -name "*.tar.gz" -print -quit)
+          tar -xzf "$APP_ARCHIVE_PATH" -C downloaded-artifacts
+          APP_PATH=$(find downloaded-artifacts -name "*.app" -type d | head -n 1)
+          echo "ARTIFACT_PATH_FOR_E2E=$APP_PATH" >> $GITHUB_ENV
+
+      - name: Boot simulator
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        uses: futureware-tech/simulator-action@dab10d813144ef59b48d401cd95da151222ef8cd
+        id: simulator
+        with:
+          model: "iPhone 16"
+          os_version: "18.5"
+
+      - name: Wait for simulator
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        run: |
+          timeout=0
+          while [[ "$(xcrun simctl list | grep "${{ steps.simulator.outputs.udid }}" | grep -o 'Booted')" != "Booted" ]]; do
+            sleep 5
+            timeout=$((timeout+5))
+            if [ $timeout -ge 120 ]; then exit 1; fi
+          done
+
+      - name: Verify fix
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        run: |
+          export PATH="$PATH:$HOME/.maestro/bin"
+          xcrun simctl install "${{ steps.simulator.outputs.udid }}" "$ARTIFACT_PATH_FOR_E2E"
+
+          IFS=',' read -ra FLOWS <<< "${{ steps.failures.outputs.failed_flows }}"
+          PASSED=0
+          TOTAL=${#FLOWS[@]}
+          for flow in "${FLOWS[@]}"; do
+            echo "🧪 Verifying: $flow"
+            if ./scripts/e2e-run.sh --flow "$flow" --platform ios; then
+              echo "✅ Passed"
+              PASSED=$((PASSED + 1))
+            else
+              echo "❌ Still failing"
+            fi
+          done
+          echo "Verification: $PASSED/$TOTAL passed"
+          if [ $PASSED -eq 0 ]; then
+            echo "No tests passed after fix — reverting"
+            exit 1
+          fi
