@@ -287,3 +287,117 @@ jobs:
         with:
           name: perf-results-${{ env.PR_NUMBER || github.ref_name }}
           path: ${{ env.ARTIFACTS_FOLDER }}/perf
+
+  # AI autofix job — runs after all shards complete, only on PR failures
+  autofix:
+    name: AI Autofix
+    needs: [build, e2e-tests]
+    if: ${{ !cancelled() && needs.e2e-tests.result == 'failure' && github.event_name == 'pull_request' }}
+    runs-on: app-e2e-runner
+    concurrency:
+      group: e2e-autofix-android-${{ github.ref }}
+      cancel-in-progress: true
+    timeout-minutes: 30
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      GH_TOKEN: ${{ github.token }}
+      ARTIFACTS_FOLDER: e2e-artifacts
+      ANDROID_EMULATOR_API_LEVEL: 31
+      ANDROID_EMULATOR_PROFILE: pixel_6
+      ANDROID_EMULATOR_CORES: 4
+      ANDROID_EMULATOR_RAM_SIZE: 8192
+      ARCH: x86_64
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 1
+
+      - name: Download all test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: artifacts-*
+          path: e2e-artifacts
+          merge-multiple: true
+
+      - name: Collect failed tests
+        id: failures
+        run: ./scripts/e2e-collect-failures.sh e2e-artifacts || true
+
+      # --- Setup test environment ---
+
+      - name: Setup env key
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        uses: ./.github/actions/ssh/
+        with:
+          name: env
+          key: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+
+      - name: Setup env
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+        run: |
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env
+          rm -rf rainbow-env
+
+      - name: Install Maestro
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        run: export MAESTRO_VERSION=2.0.10; curl -fsSL "https://get.maestro.mobile.dev" | bash
+
+      - name: Install Anvil
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        uses: foundry-rs/foundry-toolchain@82dee4ba654bd2146511f85f0d013af94670c4de
+        with:
+          version: stable
+
+      - name: Download app build
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        run: |
+          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build.outputs.artifact-id }}/zip"
+          unzip artifact.zip -d downloaded-artifacts
+          APK_PATH=$(find downloaded-artifacts -name "*.apk" -print -quit)
+          echo "ARTIFACT_PATH_FOR_E2E=$APK_PATH" >> $GITHUB_ENV
+
+      - name: Setup Android Emulator
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        uses: ./.github/actions/android-emulator/
+        with:
+          api-level: ${{ env.ANDROID_EMULATOR_API_LEVEL }}
+          profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
+          cores: ${{ env.ANDROID_EMULATOR_CORES }}
+          ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
+          arch: ${{ env.ARCH }}
+
+      - name: Install app on emulator
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        uses: reactivecircus/android-emulator-runner@1dcd0090116d15e7c562f8db72807de5e036a4ed
+        with:
+          api-level: ${{ env.ANDROID_EMULATOR_API_LEVEL }}
+          target: google_apis_playstore
+          arch: ${{ env.ARCH }}
+          force-avd-creation: false
+          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
+          cores: ${{ env.ANDROID_EMULATOR_CORES }}
+          ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
+          script: adb install -r $ARTIFACT_PATH_FOR_E2E
+
+      # --- Run autofix ---
+
+      - name: Install Claude Code
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run autofix
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        run: |
+          export PATH="$PATH:$HOME/.maestro/bin"
+          ./scripts/e2e-autofix.sh \
+            --pr "${{ github.event.pull_request.number }}" \
+            --branch "${{ github.head_ref }}" \
+            --repo "${{ github.repository }}" \
+            --failed-flows "${{ steps.failures.outputs.failed_flows }}"
