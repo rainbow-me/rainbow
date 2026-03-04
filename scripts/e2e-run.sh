@@ -215,7 +215,7 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
         stop_recording "$DEBUG_OUTPUT"
       fi
 
-      mv "$DEBUG_OUTPUT" "$ARTIFACTS_FOLDER/maestro/✅-$TEST_NAME-$ATTEMPT"
+      mv "$DEBUG_OUTPUT" "$ARTIFACTS_FOLDER/maestro/✅-$TEST_NAME-$ATTEMPT" 2>/dev/null || true
       break
     else
       END_TIME=$(date +%s)
@@ -228,7 +228,7 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
         stop_recording "$DEBUG_OUTPUT"
       fi
 
-      mv "$DEBUG_OUTPUT" "$ARTIFACTS_FOLDER/maestro/❌-$TEST_NAME-$ATTEMPT"
+      mv "$DEBUG_OUTPUT" "$ARTIFACTS_FOLDER/maestro/❌-$TEST_NAME-$ATTEMPT" 2>/dev/null || true
 
       # Enable recording for subsequent attempts after failure
       if [ "$RECORD_ON_FAILURE" = "true" ]; then
