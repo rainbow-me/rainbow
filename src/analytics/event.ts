@@ -327,6 +327,7 @@ export const event = {
   perpsWithdrawFailed: 'perps.withdraw.failed',
   perpsAddedToPosition: 'perps.added_to_position',
   perpsAddedToPositionFailed: 'perps.added_to_position.failed',
+  perpsTradeDetailsSharePressed: 'perps.trade_details.share_pressed',
 
   // predictions
   predictionsPlaceOrder: 'predictions.place_order',
@@ -1269,6 +1270,13 @@ export type EventProperties = {
     leverage: number;
     perpsBalance: number;
     errorMessage: string;
+  };
+  [event.perpsTradeDetailsSharePressed]: {
+    market: string;
+    direction: 'long' | 'short';
+    pnlPercentage: number;
+    pnl: string;
+    netPnl: string;
   };
 
   // predictions
