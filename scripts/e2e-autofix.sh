@@ -189,6 +189,15 @@ Try a different approach. Remember:
   echo "Changes: $CHANGES"
   FIX_DIFF=$(git diff)
   FIX_FILES=$(git diff --name-only)
+
+  echo ""
+  echo "=== Debug: Claude's changes ==="
+  echo "Changed files:"
+  git diff --name-only
+  echo ""
+  echo "Full diff:"
+  git diff
+  echo "=== End debug ==="
   FIX_DESCRIPTION=$(echo "$CLAUDE_OUTPUT" | grep -o "FIX_DESCRIPTION: .*" | head -1 | sed "s/FIX_DESCRIPTION: //" || echo "Fix applied by Claude Code")
 
   # ─── Verify ──────────────────────────────────────────────────────
@@ -274,6 +283,14 @@ Try a different approach. Remember:
       fi
     fi
 
+    echo ""
+    echo "=== Debug: verifying source state before tests ==="
+    echo "git status:"
+    git status --short
+    echo "welcome-screen testID in source (should NOT have -broken):"
+    grep -n "welcome-screen" src/screens/WelcomeScreen/WelcomeScreen.tsx 2>/dev/null || echo "(file not found)"
+    echo "=== End pre-verify debug ==="
+    echo ""
     echo "=== Verifying ${#FAILED_FLOWS[@]} test(s) ==="
 
     for j in "${!FAILED_FLOWS[@]}"; do
