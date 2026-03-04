@@ -182,8 +182,6 @@ jobs:
           echo "Simulator is ready."
 
       - name: Run Tests
-        id: e2e
-        continue-on-error: true
         run: ./scripts/e2e-ios-ci.sh
         env:
           DEVICE_UDID: ${{ steps.simulator.outputs.udid }}
@@ -195,17 +193,36 @@ jobs:
           name: artifacts-${{ matrix.shard-index }}
           path: ${{ env.ARTIFACTS_FOLDER }}
 
-      - name: AI Autofix
-        if: ${{ steps.e2e.outcome == 'failure' && github.event_name == 'pull_request' }}
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          npm install -g @anthropic-ai/claude-code
+  # AI autofix job — runs after all shards complete, only on PR failures
+  autofix:
+    name: AI Autofix
+    needs: e2e-tests
+    if: ${{ failure() && github.event_name == 'pull_request' }}
+    runs-on: macos-15-xlarge
+    timeout-minutes: 15
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
 
+      - name: Download all test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: artifacts-*
+          path: e2e-artifacts
+          merge-multiple: true
+
+      - name: Collect failed tests
+        id: failures
+        run: |
           FAILED_TESTS=""
           FAILED_FLOWS=""
-          for dir in ${{ env.ARTIFACTS_FOLDER }}/maestro/❌-*; do
+          for dir in e2e-artifacts/maestro/❌-*; do
             [ -d "$dir" ] || continue
             basename=$(basename "$dir")
             test_name=$(echo "$basename" | sed 's/^❌-//; s/-[0-9]*$//')
@@ -218,22 +235,28 @@ jobs:
           done
 
           if [ -z "$FAILED_TESTS" ]; then
-            echo "No failed tests found in artifacts, skipping"
+            echo "No failed tests found"
+            echo "skip=true" >> $GITHUB_OUTPUT
             exit 0
           fi
 
+          echo "failed_tests=$FAILED_TESTS" >> $GITHUB_OUTPUT
+          echo "failed_flows=$FAILED_FLOWS" >> $GITHUB_OUTPUT
+          echo "skip=false" >> $GITHUB_OUTPUT
           echo "Failed tests: $FAILED_TESTS"
-          echo "Failed flows: $FAILED_FLOWS"
 
+      - name: Install Claude Code
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run autofix
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        run: |
           ./scripts/e2e-autofix.sh \
             --pr "${{ github.event.pull_request.number }}" \
             --branch "${{ github.head_ref }}" \
             --repo "${{ github.repository }}" \
-            --failed-tests "$FAILED_TESTS" \
-            --failed-flows "$FAILED_FLOWS" \
+            --failed-tests "${{ steps.failures.outputs.failed_tests }}" \
+            --failed-flows "${{ steps.failures.outputs.failed_flows }}" \
             --skip-verify \
             --platform ios
-
-      - name: Fail if tests failed
-        if: ${{ steps.e2e.outcome == 'failure' }}
-        run: exit 1
