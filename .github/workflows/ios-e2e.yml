@@ -225,7 +225,7 @@ jobs:
           python3 -c "
           import json, glob, os
           results = []
-          for f in glob.glob('e2e-artifacts/**/e2e-results.jsonl', recursive=True):
+          for f in glob.glob('e2e-artifacts/**/e2e-results-shard-*.jsonl', recursive=True):
               for line in open(f):
                   line = line.strip()
                   if line:

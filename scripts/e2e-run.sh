@@ -170,7 +170,7 @@ fi
 # Run tests with retries.
 EXIT_CODE=0
 mkdir -p "$ARTIFACTS_FOLDER"
-RESULTS_FILE="$ARTIFACTS_FOLDER/e2e-results.jsonl"
+RESULTS_FILE="$ARTIFACTS_FOLDER/e2e-results-shard-${SHARD_INDEX:-0}.jsonl"
 : > "$RESULTS_FILE"
 for TEST_FILE in "${TEST_FILES[@]}"; do
   TEST_NAME=$(basename "${TEST_FILE%.*}")
