@@ -66,6 +66,8 @@ if [[ -n "${ARTIFACT_PATH_FOR_E2E:-}" && -n "$PLATFORM" ]]; then
   echo ""
   echo "=== Installing app ==="
   if [[ "$PLATFORM" = "ios" ]]; then
+    echo "Terminating app before install..."
+    xcrun simctl terminate booted me.rainbow 2>/dev/null || true
     xcrun simctl install booted "$ARTIFACT_PATH_FOR_E2E"
     echo "✅ App installed on simulator"
   elif [[ "$PLATFORM" = "android" ]]; then
@@ -229,6 +231,7 @@ Try a different approach. Remember:
           # Find and install the new .app
           NEW_APP=$(find ios/build -name "*.app" -type d | head -1)
           if [[ -n "$NEW_APP" ]]; then
+            xcrun simctl terminate booted me.rainbow 2>/dev/null || true
             xcrun simctl install booted "$NEW_APP"
             echo "✅ Full rebuild complete and installed"
           else
@@ -248,7 +251,13 @@ Try a different approach. Remember:
         echo "📦 Native fingerprint unchanged — JS-only re-sign"
         if [[ "$PLATFORM" = "ios" ]]; then
           npx rock sign:ios "$ARTIFACT_PATH_FOR_E2E" --app --build-jsbundle
+          echo "Terminating app before reinstall..."
+          xcrun simctl terminate booted me.rainbow 2>/dev/null || true
+          echo "Installing from: $ARTIFACT_PATH_FOR_E2E"
+          ls -la "$ARTIFACT_PATH_FOR_E2E/main.jsbundle" 2>/dev/null || echo "(no main.jsbundle found)"
           xcrun simctl install booted "$ARTIFACT_PATH_FOR_E2E"
+          echo "Verifying install..."
+          xcrun simctl get_app_container booted me.rainbow 2>/dev/null && echo "✅ App container found" || echo "⚠️ App container not found"
           echo "✅ App re-signed and reinstalled"
         elif [[ "$PLATFORM" = "android" ]]; then
           npx rock sign:android "$ARTIFACT_PATH_FOR_E2E" --build-jsbundle
