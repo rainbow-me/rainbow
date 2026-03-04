@@ -2016,24 +2016,6 @@
       }
     },
     "promos": {
-      "swaps_launch": {
-        "primary_button": "حاول التبديل",
-        "secondary_button": "ربما لاحقا",
-        "info_row_1": {
-          "title": "قم بتبديل جميع الرموز المفضلة لديك",
-          "description": "تقوم Rainbow بالبحث في كل مكان للعثور على أفضل سعر لصفقتك."
-        },
-        "info_row_2": {
-          "title": "قم بالتبديل مباشرة على L2",
-          "description": "تبديلات سريعة ورخيصة على Arbitrum, Optimism, Polygon و BSC."
-        },
-        "info_row_3": {
-          "title": "حماية Flashbots",
-          "description": "حماية الأسعار، بالإضافة إلى عدم وجود رسوم على التبديلات الفاشلة. قم بتمكينها في إعدادات التبديل."
-        },
-        "header": "التبديلات على Rainbow",
-        "subheader": "إعادة التقديم"
-      },
       "notifications_launch": {
         "primary_button": {
           "permissions_enabled": "تهيئة",
@@ -2055,27 +2037,6 @@
         "header": "الإشعارات",
         "subheader": "مقدمة"
       }
-    },
-    "nft_offers_launch": {
-      "primary_button": {
-        "has_offers": "عرض العروض",
-        "not_has_offers": "إغلاق"
-      },
-      "secondary_button": "ربما لاحقا",
-      "info_row_1": {
-        "title": "كل عروضك في مكان واحد",
-        "description": "عرض عروضك عبر جميع أسواق NFT."
-      },
-      "info_row_2": {
-        "title": "قبول من Rainbow",
-        "description": "قبول العروض بنقرة واحدة والتبديل إلى الرمز الذي تختاره."
-      },
-      "info_row_3": {
-        "title": "وضع فرز ذكي",
-        "description": "قارن بأسعار الأرضية ، أو عرض أعلى عروضك أو أحدثها"
-      },
-      "header": "عروض",
-      "subheader": "مقدمة"
     },
     "review": {
       "alert": {
