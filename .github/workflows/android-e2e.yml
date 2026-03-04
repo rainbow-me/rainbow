@@ -361,33 +361,6 @@ jobs:
           APK_PATH=$(find downloaded-artifacts -name "*.apk" -print -quit)
           echo "ARTIFACT_PATH_FOR_E2E=$APK_PATH" >> $GITHUB_ENV
 
-      - name: Setup Android Emulator
-        if: ${{ steps.failures.outputs.skip != 'true' }}
-        uses: ./.github/actions/android-emulator/
-        with:
-          api-level: ${{ env.ANDROID_EMULATOR_API_LEVEL }}
-          profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
-          cores: ${{ env.ANDROID_EMULATOR_CORES }}
-          ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
-          arch: ${{ env.ARCH }}
-
-      - name: Install app on emulator
-        if: ${{ steps.failures.outputs.skip != 'true' }}
-        uses: reactivecircus/android-emulator-runner@1dcd0090116d15e7c562f8db72807de5e036a4ed
-        with:
-          api-level: ${{ env.ANDROID_EMULATOR_API_LEVEL }}
-          target: google_apis_playstore
-          arch: ${{ env.ARCH }}
-          force-avd-creation: false
-          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
-          profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
-          cores: ${{ env.ANDROID_EMULATOR_CORES }}
-          ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
-          script: adb install -r $ARTIFACT_PATH_FOR_E2E
-
-      # --- Run autofix ---
-
       - name: Setup Node.js
         if: ${{ steps.failures.outputs.skip != 'true' }}
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238
@@ -431,11 +404,22 @@ jobs:
 
       - name: Run autofix
         if: ${{ steps.failures.outputs.skip != 'true' }}
-        run: |
-          export PATH="$PATH:$HOME/.maestro/bin"
-          ./scripts/e2e-autofix.sh \
-            --pr "${{ github.event.pull_request.number }}" \
-            --branch "${{ github.head_ref }}" \
-            --repo "${{ github.repository }}" \
-            --failed-flows "${{ steps.failures.outputs.failed_flows }}" \
-            --platform android
+        uses: reactivecircus/android-emulator-runner@1dcd0090116d15e7c562f8db72807de5e036a4ed
+        with:
+          api-level: ${{ env.ANDROID_EMULATOR_API_LEVEL }}
+          target: google_apis_playstore
+          arch: ${{ env.ARCH }}
+          force-avd-creation: false
+          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
+          cores: ${{ env.ANDROID_EMULATOR_CORES }}
+          ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
+          script: |
+            export PATH="$PATH:$HOME/.maestro/bin"
+            ./scripts/e2e-autofix.sh \
+              --pr "${{ github.event.pull_request.number }}" \
+              --branch "${{ github.head_ref }}" \
+              --repo "${{ github.repository }}" \
+              --failed-flows "${{ steps.failures.outputs.failed_flows }}" \
+              --platform android

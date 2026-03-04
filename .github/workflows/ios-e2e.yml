@@ -281,10 +281,6 @@ jobs:
             if [ $timeout -ge 120 ]; then exit 1; fi
           done
 
-      - name: Install app on simulator
-        if: ${{ steps.failures.outputs.skip != 'true' }}
-        run: xcrun simctl install "${{ steps.simulator.outputs.udid }}" "$ARTIFACT_PATH_FOR_E2E"
-
       # --- Run autofix (with verification) ---
 
       - name: Setup Node.js

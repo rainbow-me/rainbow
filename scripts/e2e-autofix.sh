@@ -61,6 +61,19 @@ if [[ -n "$PLATFORM" ]]; then
   echo "Build fingerprint: ${BUILD_FINGERPRINT:-unknown}"
 fi
 
+# ─── Install app (before any fix attempts) ────────────────────────────
+if [[ -n "${ARTIFACT_PATH_FOR_E2E:-}" && -n "$PLATFORM" ]]; then
+  echo ""
+  echo "=== Installing app ==="
+  if [[ "$PLATFORM" = "ios" ]]; then
+    xcrun simctl install booted "$ARTIFACT_PATH_FOR_E2E"
+    echo "✅ App installed on simulator"
+  elif [[ "$PLATFORM" = "android" ]]; then
+    adb install -r "$ARTIFACT_PATH_FOR_E2E"
+    echo "✅ APK installed on emulator"
+  fi
+fi
+
 # ─── Fix attempts ────────────────────────────────────────────────────
 echo ""
 echo "=== Fixing (max $MAX_ATTEMPTS attempts) ==="
