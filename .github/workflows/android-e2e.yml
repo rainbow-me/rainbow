@@ -297,7 +297,7 @@ jobs:
     concurrency:
       group: e2e-autofix-android-${{ github.ref }}
       cancel-in-progress: true
-    timeout-minutes: 30
+    timeout-minutes: 60
     env:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       GH_TOKEN: ${{ github.token }}

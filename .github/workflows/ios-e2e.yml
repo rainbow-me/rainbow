@@ -202,7 +202,7 @@ jobs:
       cancel-in-progress: true
     if: ${{ !cancelled() && needs.e2e-tests.result == 'failure' && github.event_name == 'pull_request' }}
     runs-on: macos-15-xlarge
-    timeout-minutes: 30
+    timeout-minutes: 60
     env:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       GH_TOKEN: ${{ github.token }}
