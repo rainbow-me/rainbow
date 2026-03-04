@@ -2014,24 +2014,6 @@
       }
     },
     "promos": {
-      "swaps_launch": {
-        "primary_button": "􀖅 スワップを試してみる",
-        "secondary_button": "後で",
-        "info_row_1": {
-          "title": "お気に入りトークンをすべてスワップしてください",
-          "description": "あなたの取引に最適なレートを見つけるために、Rainbowはどこでも検索します。"
-        },
-        "info_row_2": {
-          "title": "L2で直接スワップ",
-          "description": "Arbitrum、Optimism、Polygon、BSCでの高速かつ安価なスワップ。"
-        },
-        "info_row_3": {
-          "title": "Flashbots保護",
-          "description": "価格保護、および失敗したスワップに対する手数料はありません。スワップ設定で有効にしてください。"
-        },
-        "header": "Rainbowでのスワップ",
-        "subheader": "復活"
-      },
       "notifications_launch": {
         "primary_button": {
           "permissions_enabled": "設定",
@@ -2053,27 +2035,6 @@
         "header": "通知",
         "subheader": "紹介"
       }
-    },
-    "nft_offers_launch": {
-      "primary_button": {
-        "has_offers": "オファーを表示",
-        "not_has_offers": "閉じる"
-      },
-      "secondary_button": "後で",
-      "info_row_1": {
-        "title": "すべてのオファーを1つの場所で確認できます",
-        "description": "すべてのNFTマーケットプレイスでオファーを確認できます"
-      },
-      "info_row_2": {
-        "title": "Rainbowから承諾",
-        "description": "タップひとつでオファーを受け入れ、選んだトークンにスワップできます"
-      },
-      "info_row_3": {
-        "title": "スマートなソートモード",
-        "description": "フロア価格と比較したり、最高のオファーまたは最新のオファーを表示したりできます"
-      },
-      "header": "オファー",
-      "subheader": "紹介"
     },
     "review": {
       "alert": {

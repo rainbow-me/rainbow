@@ -80,7 +80,6 @@ import { PositionSheet } from '@/features/positions/screens/PositionSheet';
 import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
-import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
@@ -228,7 +227,6 @@ function BSNavigator() {
           <BSStack.Screen component={SpeedUpAndCancelSheet} name={Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET} />
         </>
       )}
-      <BSStack.Screen component={RemotePromoSheet} name={Routes.REMOTE_PROMO_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen component={ExplainSheet} name={Routes.EXPLAIN_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen component={ExternalLinkWarningSheet} name={Routes.EXTERNAL_LINK_WARNING_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen component={ModalScreen} {...closeKeyboardOnClose} name={Routes.MODAL_SCREEN} />

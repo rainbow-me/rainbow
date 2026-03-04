@@ -1,6 +1,6 @@
 import { createMMKV, type MMKV } from 'react-native-mmkv';
 
-import { type Cards, type Campaigns, type Device, type Review, type WatchedWalletCohort } from '@/storage/schema';
+import { type Cards, type Device, type Review, type WatchedWalletCohort } from '@/storage/schema';
 import { type RainbowTransaction } from '@/entities/transactions';
 import { type SecureStorage } from '@coinbase/mobile-wallet-protocol-host';
 
@@ -95,11 +95,6 @@ export const pendingTransactions = new Storage<[], { pendingTransactions: Record
 });
 
 export const review = new Storage<[], Review>({ id: 'review' });
-
-/**
- * @deprecated - use `remotePromoSheetStore` instead
- */
-export const campaigns = new Storage<[], Campaigns>({ id: 'campaigns' });
 
 export const cards = new Storage<[], Cards>({ id: 'cards' });
 

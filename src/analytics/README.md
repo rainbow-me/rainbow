@@ -15,7 +15,7 @@ analytics.track(analytics.event.appStateChange, {
   label: 'foo',
 });
 
-analytics.screen(Routes.SWAPS_PROMO_SHEET, {
+analytics.screen(Routes.SWIPE_LAYOUT, {
   ...metadata,
 });
 ```

@@ -68,17 +68,6 @@ export type Review = {
   promptTimestamps: number[];
 };
 
-type CampaignKeys = {
-  [campaignKey: string]: boolean;
-};
-
-type CampaignMetadata = {
-  isCurrentlyShown: boolean;
-  lastShownTimestamp: number;
-};
-
-export type Campaigns = CampaignKeys & CampaignMetadata;
-
 export type Cards = {
   [cardKey: string]: boolean;
 };
