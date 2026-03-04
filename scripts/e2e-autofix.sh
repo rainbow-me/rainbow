@@ -241,7 +241,7 @@ if [[ "$FIXED" = true ]]; then
     AUTOFIX_BRANCH="autofix/e2e-${PR_NUMBER}"
     git checkout -b "$AUTOFIX_BRANCH" 2>/dev/null || git checkout "$AUTOFIX_BRANCH"
     git add -u
-    git commit -m "[skip-ci] fix: autofix e2e for PR #${PR_NUMBER}
+    git commit -m "[autofix] e2e ci fix for PR #${PR_NUMBER}
 
 ${CAT_LABEL}
 Verified: ${#VERIFIED_TESTS[@]}/${#FAILED_TESTS[@]}
@@ -251,7 +251,7 @@ Co-authored-by: Claude <noreply@anthropic.com>"
     git push origin "$AUTOFIX_BRANCH" --force
 
     FIX_PR_URL=$(gh pr create --repo "$REPO" --base "$PR_BRANCH" --head "$AUTOFIX_BRANCH" \
-      --title "[skip-ci] fix: autofix e2e for PR #${PR_NUMBER}" \
+      --title "[autofix] e2e ci fix for PR #${PR_NUMBER}" \
       --body "## 🤖 E2E Autofix
 
 $TABLE
