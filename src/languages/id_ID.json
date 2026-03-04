@@ -2016,24 +2016,6 @@
       }
     },
     "promos": {
-      "swaps_launch": {
-        "primary_button": "􀖅 Coba tukar",
-        "secondary_button": "Mungkin nanti",
-        "info_row_1": {
-          "title": "Tukar semua token favorit Anda",
-          "description": "Rainbow mencari di mana-mana untuk menemukan tingkat terbaik untuk perdagangan Anda."
-        },
-        "info_row_2": {
-          "title": "Tukar langsung di L2",
-          "description": "Pertukaran cepat dan murah di Arbitrum, Optimism, Polygon dan BSC."
-        },
-        "info_row_3": {
-          "title": "Perlindungan Flashbots",
-          "description": "Perlindungan harga, plus tidak ada biaya pada pertukaran yang gagal. Aktifkan di pengaturan pertukaran."
-        },
-        "header": "Pertukaran di Rainbow",
-        "subheader": "MEMPERKENALKAN KEMBALI"
-      },
       "notifications_launch": {
         "primary_button": {
           "permissions_enabled": "Konfigurasi",
@@ -2055,27 +2037,6 @@
         "header": "Notifikasi",
         "subheader": "MEMPERKENALKAN"
       }
-    },
-    "nft_offers_launch": {
-      "primary_button": {
-        "has_offers": "Lihat Penawaran",
-        "not_has_offers": "Tutup"
-      },
-      "secondary_button": "Mungkin Nanti",
-      "info_row_1": {
-        "title": "Semua penawaran Anda dalam satu tempat",
-        "description": "Lihat penawaran Anda di semua marketplace NFT."
-      },
-      "info_row_2": {
-        "title": "Terima dari Pelangi",
-        "description": "Terima penawaran dengan sekali tekan dan tukar ke token pilihan Anda."
-      },
-      "info_row_3": {
-        "title": "Mode penyortiran cerdas",
-        "description": "Bandingkan dengan harga lantai, atau lihat penawaran tertinggi atau terbaru Anda."
-      },
-      "header": "Penawaran",
-      "subheader": "MEMPERKENALKAN"
     },
     "review": {
       "alert": {
