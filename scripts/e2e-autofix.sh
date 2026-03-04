@@ -175,7 +175,7 @@ Check e2e-artifacts/maestro/ for detailed logs. Try a different approach."
       TEST_NAME="${FAILED_TESTS[$j]}"
       echo "🧪 $TEST_NAME..."
       VERIFY_EXIT=0
-      ./scripts/e2e-run.sh --flow "$FLOW" > "/tmp/e2e-verify-${TEST_NAME}.log" 2>&1 || VERIFY_EXIT=$?
+      ./scripts/e2e-run.sh --flow "$FLOW" || VERIFY_EXIT=$?
 
       if [[ "$VERIFY_EXIT" -eq 0 ]]; then
         echo "  ✅ PASSED"
