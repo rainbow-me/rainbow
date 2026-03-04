@@ -114,6 +114,10 @@ Folders are named like ❌-TestName-attempt. Read the logs to understand what fa
 3. Minimal changes only.
 4. Read the actual Maestro log files for error details before making changes.
 
+IMPORTANT: If a testID or selector changed in the source code, prefer Category B
+(update tests to match the new selector). Only use Category A if the change
+is clearly a typo or unintentional breakage.
+
 Start response with: CATEGORY: A|B|C — reason"
   else
     FIX_PROMPT="Previous fix attempt failed verification.
