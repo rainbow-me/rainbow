@@ -314,6 +314,7 @@ jobs:
       - name: Run autofix
         if: ${{ steps.failures.outputs.skip != 'true' }}
         run: |
+          export PATH="$PATH:$HOME/.maestro/bin"
           ./scripts/e2e-autofix.sh \
             --pr "${{ github.event.pull_request.number }}" \
             --branch "${{ github.head_ref }}" \
