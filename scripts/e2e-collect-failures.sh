@@ -42,7 +42,7 @@ fi
 echo "Failed: $FAILED_TESTS"
 
 if [ -n "${GITHUB_OUTPUT:-}" ]; then
-  echo "failed_tests=$FAILED_TESTS" >> "$GITHUB_OUTPUT"
+  
   echo "failed_flows=$FAILED_FLOWS" >> "$GITHUB_OUTPUT"
   echo "skip=false" >> "$GITHUB_OUTPUT"
 fi
