@@ -241,23 +241,7 @@ jobs:
               out.write('skip=false\n')
           "
 
-      - name: Install Claude Code
-        if: ${{ steps.failures.outputs.skip != 'true' }}
-        run: npm install -g @anthropic-ai/claude-code
-
-      - name: Run autofix
-        if: ${{ steps.failures.outputs.skip != 'true' }}
-        run: |
-          ./scripts/e2e-autofix.sh \
-            --pr "${{ github.event.pull_request.number }}" \
-            --branch "${{ github.head_ref }}" \
-            --repo "${{ github.repository }}" \
-            --failed-tests "${{ steps.failures.outputs.failed_tests }}" \
-            --failed-flows "${{ steps.failures.outputs.failed_flows }}" \
-            --skip-verify \
-            --platform ios
-
-      # --- Verification: re-run failed tests with the fix applied ---
+      # --- Setup test environment before running autofix ---
 
       - name: Setup env key
         if: ${{ steps.failures.outputs.skip != 'true' }}
@@ -313,26 +297,23 @@ jobs:
             if [ $timeout -ge 120 ]; then exit 1; fi
           done
 
-      - name: Verify fix
+      - name: Install app on simulator
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        run: xcrun simctl install "${{ steps.simulator.outputs.udid }}" "$ARTIFACT_PATH_FOR_E2E"
+
+      # --- Run autofix (with verification) ---
+
+      - name: Install Claude Code
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run autofix
         if: ${{ steps.failures.outputs.skip != 'true' }}
         run: |
-          export PATH="$PATH:$HOME/.maestro/bin"
-          xcrun simctl install "${{ steps.simulator.outputs.udid }}" "$ARTIFACT_PATH_FOR_E2E"
-
-          IFS=',' read -ra FLOWS <<< "${{ steps.failures.outputs.failed_flows }}"
-          PASSED=0
-          TOTAL=${#FLOWS[@]}
-          for flow in "${FLOWS[@]}"; do
-            echo "🧪 Verifying: $flow"
-            if ./scripts/e2e-run.sh --flow "$flow" --platform ios; then
-              echo "✅ Passed"
-              PASSED=$((PASSED + 1))
-            else
-              echo "❌ Still failing"
-            fi
-          done
-          echo "Verification: $PASSED/$TOTAL passed"
-          if [ $PASSED -eq 0 ]; then
-            echo "No tests passed after fix — reverting"
-            exit 1
-          fi
+          ./scripts/e2e-autofix.sh \
+            --pr "${{ github.event.pull_request.number }}" \
+            --branch "${{ github.head_ref }}" \
+            --repo "${{ github.repository }}" \
+            --failed-tests "${{ steps.failures.outputs.failed_tests }}" \
+            --failed-flows "${{ steps.failures.outputs.failed_flows }}" \
+            --platform ios
