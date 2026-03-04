@@ -232,6 +232,7 @@ Try a different approach. Remember:
           NEW_APP=$(find ios/build -name "*.app" -type d | head -1)
           if [[ -n "$NEW_APP" ]]; then
             xcrun simctl terminate booted me.rainbow 2>/dev/null || true
+            xcrun simctl uninstall booted me.rainbow 2>/dev/null || true
             xcrun simctl install booted "$NEW_APP"
             echo "✅ Full rebuild complete and installed"
           else
@@ -251,13 +252,19 @@ Try a different approach. Remember:
         echo "📦 Native fingerprint unchanged — JS-only re-sign"
         if [[ "$PLATFORM" = "ios" ]]; then
           npx rock sign:ios "$ARTIFACT_PATH_FOR_E2E" --app --build-jsbundle
-          echo "Terminating app before reinstall..."
+          echo "Terminating and uninstalling app before reinstall..."
           xcrun simctl terminate booted me.rainbow 2>/dev/null || true
+          xcrun simctl uninstall booted me.rainbow 2>/dev/null || true
           echo "Installing from: $ARTIFACT_PATH_FOR_E2E"
           ls -la "$ARTIFACT_PATH_FOR_E2E/main.jsbundle" 2>/dev/null || echo "(no main.jsbundle found)"
+          md5 -q "$ARTIFACT_PATH_FOR_E2E/main.jsbundle" 2>/dev/null || true
           xcrun simctl install booted "$ARTIFACT_PATH_FOR_E2E"
           echo "Verifying install..."
-          xcrun simctl get_app_container booted me.rainbow 2>/dev/null && echo "✅ App container found" || echo "⚠️ App container not found"
+          CONTAINER=$(xcrun simctl get_app_container booted me.rainbow 2>/dev/null) && echo "✅ App container: $CONTAINER" || echo "⚠️ App container not found"
+          if [[ -n "$CONTAINER" ]]; then
+            echo "Installed bundle hash:"
+            md5 -q "$CONTAINER/main.jsbundle" 2>/dev/null || true
+          fi
           echo "✅ App re-signed and reinstalled"
         elif [[ "$PLATFORM" = "android" ]]; then
           npx rock sign:android "$ARTIFACT_PATH_FOR_E2E" --build-jsbundle
