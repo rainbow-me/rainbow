@@ -55,18 +55,6 @@ for i in "${!FAILED_TESTS[@]}"; do
   echo "  ❌ ${FAILED_TESTS[$i]} → ${FAILED_FLOWS[$i]}"
 done
 
-# ─── Get diff ─────────────────────────────────────────────────────────
-echo ""
-echo "=== Getting diff ==="
-if [[ "$CI_MODE" = true ]]; then
-  PR_DIFF=$(gh pr diff "$PR_NUMBER" --repo "$REPO" 2>/dev/null || echo "")
-  PR_FILES=$(gh pr diff "$PR_NUMBER" --repo "$REPO" --name-only 2>/dev/null || echo "")
-else
-  PR_DIFF=$(git diff HEAD~1 2>/dev/null || echo "")
-  PR_FILES=$(git diff --name-only HEAD~1 2>/dev/null || echo "")
-fi
-echo "Changed: $PR_FILES"
-
 # ─── Fix attempts ────────────────────────────────────────────────────
 echo ""
 echo "=== Fixing (max $MAX_ATTEMPTS attempts) ==="
@@ -107,6 +95,11 @@ Folders are named like ❌-TestName-attempt. Read the logs to understand what fa
 **Category B — Intentional change, tests outdated:** The PR intentionally changed behavior/UI and the tests need updating. → Update the test YAML files. Do NOT revert source.
 
 **Category C — Unclear / risky:** Cannot confidently determine intent. → Make NO changes. Explain why.
+
+## Instructions:
+- Run 'git diff HEAD~1' or 'gh pr diff' to see what changed in this PR.
+- Read the Maestro test YAML files for the failing tests.
+- Read the Maestro log files in the e2e-artifacts/ folder for error details.
 
 ## Rules:
 1. State CATEGORY: A, B, or C with reason
