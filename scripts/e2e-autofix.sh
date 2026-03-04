@@ -16,7 +16,7 @@ set -euo pipefail
 
 # ─── Args ─────────────────────────────────────────────────────────────
 PR_NUMBER="" PR_BRANCH="" REPO="" MAX_ATTEMPTS=2
-FAILED_TESTS_CSV="" FAILED_FLOWS_CSV="" PLATFORM="ios" SKIP_VERIFY=false
+FAILED_TESTS_CSV="" FAILED_FLOWS_CSV="" SKIP_VERIFY=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -26,7 +26,6 @@ while [[ $# -gt 0 ]]; do
     --failed-tests)  FAILED_TESTS_CSV="$2"; shift 2 ;;
     --failed-flows)  FAILED_FLOWS_CSV="$2"; shift 2 ;;
     --max-attempts)  MAX_ATTEMPTS="$2";    shift 2 ;;
-    --platform)      PLATFORM="$2";        shift 2 ;;
     --skip-verify)   SKIP_VERIFY=true;     shift ;;
     *) echo "Unknown: $1" >&2; exit 1 ;;
   esac
@@ -176,7 +175,7 @@ Check e2e-artifacts/maestro/ for detailed logs. Try a different approach."
       TEST_NAME="${FAILED_TESTS[$j]}"
       echo "🧪 $TEST_NAME..."
       VERIFY_EXIT=0
-      ./scripts/e2e-run.sh --flow "$FLOW" --platform "$PLATFORM" > "/tmp/e2e-verify-${TEST_NAME}.log" 2>&1 || VERIFY_EXIT=$?
+      ./scripts/e2e-run.sh --flow "$FLOW" > "/tmp/e2e-verify-${TEST_NAME}.log" 2>&1 || VERIFY_EXIT=$?
 
       if [[ "$VERIFY_EXIT" -eq 0 ]]; then
         echo "  ✅ PASSED"

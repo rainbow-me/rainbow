@@ -299,4 +299,3 @@ jobs:
             --repo "${{ github.repository }}" \
             --failed-tests "${{ steps.failures.outputs.failed_tests }}" \
             --failed-flows "${{ steps.failures.outputs.failed_flows }}" \
-            --platform ios
