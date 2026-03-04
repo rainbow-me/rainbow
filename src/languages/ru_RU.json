@@ -2016,24 +2016,6 @@
       }
     },
     "promos": {
-      "swaps_launch": {
-        "primary_button": "􀖅 Попробуйте обмен",
-        "secondary_button": "Возможно позже",
-        "info_row_1": {
-          "title": "Обменивайте все свои любимые токены",
-          "description": "Радуга ищет везде, чтобы найти лучший курс для вашей сделки."
-        },
-        "info_row_2": {
-          "title": "Обмен непосредственно на L2",
-          "description": "Быстрые и недорогие обмены на Arbitrum, Optimism, Polygon и BSC."
-        },
-        "info_row_3": {
-          "title": "Защита от Flashbots",
-          "description": "Защита от цены, а также отсутствие комиссий за неудачные обмены. Включите в настройках обмена."
-        },
-        "header": "Обмены на Rainbow",
-        "subheader": "ВОЗВРАЩЕНИЕ"
-      },
       "notifications_launch": {
         "primary_button": {
           "permissions_enabled": "Настроить",
@@ -2055,27 +2037,6 @@
         "header": "Оповещения",
         "subheader": "ПРЕДСТАВЛЯЕМ"
       }
-    },
-    "nft_offers_launch": {
-      "primary_button": {
-        "has_offers": "Просмотр предложений",
-        "not_has_offers": "Закрыть"
-      },
-      "secondary_button": "Возможно позже",
-      "info_row_1": {
-        "title": "Все ваши предложения в одном месте",
-        "description": "Просмотрите ваши предложения на всех рынках NFT."
-      },
-      "info_row_2": {
-        "title": "Примите из Rainbow",
-        "description": "Принимайте предложения одним касанием и переходите к выбранному токену."
-      },
-      "info_row_3": {
-        "title": "Умные режимы сортировки",
-        "description": "Сравните с ценами на полу, или просмотрите ваши самые высокие или самые недавние предложения."
-      },
-      "header": "Предложения",
-      "subheader": "ПРЕДСТАВЛЯЕМ"
     },
     "review": {
       "alert": {
