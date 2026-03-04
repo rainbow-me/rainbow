@@ -57,7 +57,7 @@ done
 
 # ─── Capture native fingerprint before fixing ─────────────────────────
 if [[ -n "$PLATFORM" ]]; then
-  BUILD_FINGERPRINT=$(npx rock fingerprint --platform "$PLATFORM" --raw 2>/dev/null | head -1 || echo "")
+  BUILD_FINGERPRINT=$(yarn rock fingerprint --platform "$PLATFORM" --raw 2>/dev/null | head -1 || echo "")
   echo "Build fingerprint: ${BUILD_FINGERPRINT:-unknown}"
 fi
 
@@ -232,13 +232,13 @@ Try a different approach. Remember:
     else
       # Compare native fingerprint to detect if we need a full rebuild or just JS re-sign
       echo "=== Source code changed — checking fingerprint ==="
-      NEW_FINGERPRINT=$(npx rock fingerprint --platform "$PLATFORM" --raw 2>/dev/null | head -1)
+      NEW_FINGERPRINT=$(yarn rock fingerprint --platform "$PLATFORM" --raw 2>/dev/null | head -1)
       OLD_FINGERPRINT="${BUILD_FINGERPRINT:-}"
 
       if [[ -n "$OLD_FINGERPRINT" && "$NEW_FINGERPRINT" != "$OLD_FINGERPRINT" ]]; then
         echo "🔨 Native fingerprint changed — full rebuild required"
         if [[ "$PLATFORM" = "ios" ]]; then
-          npx rock build:ios --configuration Release --destination "generic/platform=iOS Simulator"
+          yarn rock build:ios --configuration Release --destination "generic/platform=iOS Simulator"
           # Find and install the new .app
           NEW_APP=$(find ios/build -name "*.app" -type d | head -1)
           if [[ -n "$NEW_APP" ]]; then
@@ -250,7 +250,7 @@ Try a different approach. Remember:
             echo "❌ Build succeeded but could not find .app"
           fi
         elif [[ "$PLATFORM" = "android" ]]; then
-          npx rock build:android --variant release
+          yarn rock build:android --variant release
           NEW_APK=$(find android/app/build -name "*.apk" | head -1)
           if [[ -n "$NEW_APK" ]]; then
             adb install -r "$NEW_APK"
@@ -264,7 +264,7 @@ Try a different approach. Remember:
         if [[ "$PLATFORM" = "ios" ]]; then
           echo "Bundle hash BEFORE re-sign:"
           md5 -q "$ARTIFACT_PATH_FOR_E2E/main.jsbundle" 2>/dev/null || true
-          npx rock sign:ios "$ARTIFACT_PATH_FOR_E2E" --app --build-jsbundle
+          yarn rock sign:ios "$ARTIFACT_PATH_FOR_E2E" --app --build-jsbundle
           echo "Bundle hash AFTER re-sign:"
           md5 -q "$ARTIFACT_PATH_FOR_E2E/main.jsbundle" 2>/dev/null || true
           echo "Bundle file type AFTER re-sign:"
@@ -292,7 +292,7 @@ Try a different approach. Remember:
           fi
           echo "✅ App re-signed and reinstalled"
         elif [[ "$PLATFORM" = "android" ]]; then
-          npx rock sign:android "$ARTIFACT_PATH_FOR_E2E" --build-jsbundle
+          yarn rock sign:android "$ARTIFACT_PATH_FOR_E2E" --build-jsbundle
           adb install -r "$ARTIFACT_PATH_FOR_E2E"
           echo "✅ APK re-signed and reinstalled"
         fi
