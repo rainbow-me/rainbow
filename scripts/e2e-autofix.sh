@@ -16,7 +16,7 @@ set -euo pipefail
 
 # ─── Args ─────────────────────────────────────────────────────────────
 PR_NUMBER="" PR_BRANCH="" REPO="" MAX_ATTEMPTS=2
-FAILED_TESTS_CSV="" FAILED_FLOWS_CSV="" PLATFORM="ios" SKIP_VERIFY=false
+FAILED_TESTS_CSV="" FAILED_FLOWS_CSV="" SKIP_VERIFY=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -26,7 +26,6 @@ while [[ $# -gt 0 ]]; do
     --failed-tests)  FAILED_TESTS_CSV="$2"; shift 2 ;;
     --failed-flows)  FAILED_FLOWS_CSV="$2"; shift 2 ;;
     --max-attempts)  MAX_ATTEMPTS="$2";    shift 2 ;;
-    --platform)      PLATFORM="$2";        shift 2 ;;
     --skip-verify)   SKIP_VERIFY=true;     shift ;;
     *) echo "Unknown: $1" >&2; exit 1 ;;
   esac
@@ -55,23 +54,11 @@ for i in "${!FAILED_TESTS[@]}"; do
   echo "  ❌ ${FAILED_TESTS[$i]} → ${FAILED_FLOWS[$i]}"
 done
 
-# ─── Get diff ─────────────────────────────────────────────────────────
-echo ""
-echo "=== Getting diff ==="
-if [[ "$CI_MODE" = true ]]; then
-  PR_DIFF=$(gh pr diff "$PR_NUMBER" --repo "$REPO" 2>/dev/null || echo "")
-  PR_FILES=$(gh pr diff "$PR_NUMBER" --repo "$REPO" --name-only 2>/dev/null || echo "")
-else
-  PR_DIFF=$(git diff HEAD~1 2>/dev/null || echo "")
-  PR_FILES=$(git diff --name-only HEAD~1 2>/dev/null || echo "")
-fi
-echo "Changed: $PR_FILES"
-
 # ─── Fix attempts ────────────────────────────────────────────────────
 echo ""
 echo "=== Fixing (max $MAX_ATTEMPTS attempts) ==="
 
-FIXED=false FIX_DIFF="" FIX_FILES="" FIX_EXPLANATION="" CATEGORY=""
+FIXED=false FIX_DIFF="" FIX_FILES="" FIX_DESCRIPTION="" CATEGORY=""
 ATTEMPT_LOG="" ATTEMPT=0
 VERIFIED_TESTS=() STILL_FAILING=() VERIFY_SKIPPED=false
 
@@ -108,11 +95,21 @@ Folders are named like ❌-TestName-attempt. Read the logs to understand what fa
 
 **Category C — Unclear / risky:** Cannot confidently determine intent. → Make NO changes. Explain why.
 
+## Instructions:
+- Run 'git diff HEAD~1' or 'gh pr diff' to see what changed in this PR.
+- Read the Maestro test YAML files for the failing tests.
+- Read the Maestro log files in the e2e-artifacts/ folder for error details.
+
 ## Rules:
-1. State CATEGORY: A, B, or C with reason
-2. A → fix source only. B → fix tests only. C → no changes.
-3. Minimal changes only.
-4. Read the actual Maestro log files for error details before making changes.
+1. State CATEGORY: A, B, or C with one-line reason
+2. State FIX_DESCRIPTION: a short (1-2 sentence) description of what you changed and why
+3. A → fix source only. B → fix tests only. C → no changes.
+4. Minimal changes only.
+5. Read the actual Maestro log files for error details before making changes.
+
+IMPORTANT: If a testID or selector changed in the source code, prefer Category B
+(update tests to match the new selector). Only use Category A if the change
+is clearly a typo or unintentional breakage.
 
 Start response with: CATEGORY: A|B|C — reason"
   else
@@ -159,7 +156,7 @@ Check e2e-artifacts/maestro/ for detailed logs. Try a different approach."
   echo "Changes: $CHANGES"
   FIX_DIFF=$(git diff)
   FIX_FILES=$(git diff --name-only)
-  FIX_EXPLANATION=$(echo "$CLAUDE_OUTPUT" | tail -20)
+  FIX_DESCRIPTION=$(echo "$CLAUDE_OUTPUT" | grep -o "FIX_DESCRIPTION: .*" | head -1 | sed "s/FIX_DESCRIPTION: //" || echo "Fix applied by Claude Code")
 
   # ─── Verify ──────────────────────────────────────────────────────
   VERIFIED_TESTS=() STILL_FAILING=() VERIFY_SKIPPED=false
@@ -178,7 +175,7 @@ Check e2e-artifacts/maestro/ for detailed logs. Try a different approach."
       TEST_NAME="${FAILED_TESTS[$j]}"
       echo "🧪 $TEST_NAME..."
       VERIFY_EXIT=0
-      ./scripts/e2e-run.sh --flow "$FLOW" --platform "$PLATFORM" > "/tmp/e2e-verify-${TEST_NAME}.log" 2>&1 || VERIFY_EXIT=$?
+      ./scripts/e2e-run.sh --flow "$FLOW" > "/tmp/e2e-verify-${TEST_NAME}.log" 2>&1 || VERIFY_EXIT=$?
 
       if [[ "$VERIFY_EXIT" -eq 0 ]]; then
         echo "  ✅ PASSED"
@@ -244,7 +241,7 @@ if [[ "$FIXED" = true ]]; then
     AUTOFIX_BRANCH="autofix/e2e-${PR_NUMBER}"
     git checkout -b "$AUTOFIX_BRANCH" 2>/dev/null || git checkout "$AUTOFIX_BRANCH"
     git add -u
-    git commit -m "[skip-ci] fix: autofix e2e for PR #${PR_NUMBER}
+    git commit -m "[autofix] e2e ci fix for PR #${PR_NUMBER}
 
 ${CAT_LABEL}
 Verified: ${#VERIFIED_TESTS[@]}/${#FAILED_TESTS[@]}
@@ -254,7 +251,7 @@ Co-authored-by: Claude <noreply@anthropic.com>"
     git push origin "$AUTOFIX_BRANCH" --force
 
     FIX_PR_URL=$(gh pr create --repo "$REPO" --base "$PR_BRANCH" --head "$AUTOFIX_BRANCH" \
-      --title "[skip-ci] fix: autofix e2e for PR #${PR_NUMBER}" \
+      --title "[autofix] e2e ci fix for PR #${PR_NUMBER}" \
       --body "## 🤖 E2E Autofix
 
 $TABLE
@@ -262,19 +259,10 @@ $TABLE
 $VERIFY_MSG
 
 **Classification:** $CAT_LABEL
-
-### What was fixed
-$(echo "$FIX_EXPLANATION")
+**Fix:** $FIX_DESCRIPTION
 
 ### Changed files
 $(echo "$FIX_FILES" | sed 's/^/- /')
-
-<details><summary>Diff</summary>
-
-\`\`\`diff
-$(echo "$FIX_DIFF" | head -200)
-\`\`\`
-</details>
 
 _Generated by E2E Autofix_" --no-maintainer-edit 2>&1)
 
@@ -284,9 +272,8 @@ $TABLE
 $VERIFY_MSG
 
 **Classification:** $CAT_LABEL
-**Fix PR:** $FIX_PR_URL
-
-$(echo "$FIX_EXPLANATION" | head -10)"
+**Fix:** $FIX_DESCRIPTION
+**Fix PR:** $FIX_PR_URL"
 
     echo "Done! Fix PR: $FIX_PR_URL"
   else

@@ -138,6 +138,13 @@ else
   fi
 fi
 
+# Limit tests per shard (set MAX_TESTS_PER_SHARD env var)
+MAX_TESTS="${MAX_TESTS_PER_SHARD:-0}"
+if [[ "$MAX_TESTS" -gt 0 ]] && [[ ${#TEST_FILES[@]} -gt $MAX_TESTS ]]; then
+  echo "⚡ Limiting to $MAX_TESTS test(s) per shard (was ${#TEST_FILES[@]})"
+  TEST_FILES=("${TEST_FILES[@]:0:$MAX_TESTS}")
+fi
+
 # Start Anvil only if any test path includes "transaction".
 NEEDS_ANVIL=false
 for FILE in "${TEST_FILES[@]}"; do
@@ -163,7 +170,7 @@ fi
 # Run tests with retries.
 EXIT_CODE=0
 mkdir -p "$ARTIFACTS_FOLDER"
-RESULTS_FILE="$ARTIFACTS_FOLDER/e2e-results.jsonl"
+RESULTS_FILE="$ARTIFACTS_FOLDER/e2e-results-shard-${SHARD_INDEX:-0}.jsonl"
 : > "$RESULTS_FILE"
 for TEST_FILE in "${TEST_FILES[@]}"; do
   TEST_NAME=$(basename "${TEST_FILE%.*}")
