@@ -208,7 +208,6 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
       SUCCESS=true
       echo "✅ Passed: $TEST_NAME (${DURATION}s, $ATTEMPT attempt(s))"
       echo "{\"test\":\"$TEST_NAME\",\"flow\":\"$TEST_FILE\",\"status\":\"passed\",\"attempts\":$ATTEMPT,\"duration\":$DURATION}" >> "$RESULTS_FILE"
-    || true
       echo
 
       # Stop recording (if recording was active)
@@ -242,7 +241,6 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
   if ! $SUCCESS; then
     echo "❌ Failed after 1 attempt: $TEST_NAME"
     echo "{\"test\":\"$TEST_NAME\",\"flow\":\"$TEST_FILE\",\"status\":\"failed\",\"attempts\":1}" >> "$RESULTS_FILE"
-    || true
     echo
     EXIT_CODE=1
   fi
