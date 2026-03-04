@@ -69,6 +69,8 @@ FIXED=false FIX_DIFF="" FIX_FILES="" FIX_DESCRIPTION="" CATEGORY=""
 ATTEMPT_LOG="" ATTEMPT=0
 VERIFIED_TESTS=() STILL_FAILING=() VERIFY_SKIPPED=false
 
+CLAUDE_SESSION_ID=$(uuidgen | tr "[:upper:]" "[:lower:]")
+
 for ATTEMPT in $(seq 1 "$MAX_ATTEMPTS"); do
   echo ""
   echo "--- Attempt $ATTEMPT/$MAX_ATTEMPTS ---"
@@ -117,17 +119,30 @@ is clearly a typo or unintentional breakage.
 
 Start response with: CATEGORY: A|B|C — reason"
   else
-    FIX_PROMPT="Previous fix attempt failed verification.
+    STILL_FAILING_LIST=""
+    for t in "${STILL_FAILING[@]}"; do
+      STILL_FAILING_LIST="${STILL_FAILING_LIST}
+- $t"
+    done
+    FIX_PROMPT="Your previous fix did not work. The following tests still fail after your changes:
+${STILL_FAILING_LIST}
 
-$ATTEMPT_LOG
+The verification re-ran the tests with your changes applied.
+Check e2e-artifacts/maestro/ for the latest Maestro logs from the verification run.
+These logs reflect the state AFTER your fix — use them to understand what is still broken.
 
-Failed tests: ${FLOW_INFO}
-
-Check e2e-artifacts/maestro/ for detailed logs. Try a different approach."
+Try a different approach. Remember:
+- CATEGORY A: fix source code only
+- CATEGORY B: fix test files only
+- State CATEGORY and FIX_DESCRIPTION in your response."
   fi
 
   echo "Running Claude Code..."
-  CLAUDE_OUTPUT=$(echo "$FIX_PROMPT" | claude -p --dangerously-skip-permissions 2>&1) || true
+  if [[ "$ATTEMPT" -eq 1 ]]; then
+    CLAUDE_OUTPUT=$(echo "$FIX_PROMPT" | claude -p --dangerously-skip-permissions --session-id "$CLAUDE_SESSION_ID" 2>&1) || true
+  else
+    CLAUDE_OUTPUT=$(echo "$FIX_PROMPT" | claude -p --dangerously-skip-permissions --resume "$CLAUDE_SESSION_ID" 2>&1) || true
+  fi
 
   echo "Claude (last 15 lines):"
   echo "$CLAUDE_OUTPUT" | tail -15
