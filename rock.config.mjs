@@ -4,6 +4,7 @@
 import { platformIOS } from '@rock-js/platform-ios';
 import { platformAndroid } from '@rock-js/platform-android';
 import { pluginMetro } from '@rock-js/plugin-metro';
+import { providerGitHub } from '@rock-js/provider-github';
 
 const assets = ['./src/assets/fonts'];
 
@@ -14,7 +15,7 @@ export default {
     ios: platformIOS({ assets }),
     android: platformAndroid({ assets }),
   },
-  remoteCacheProvider: 'github-actions',
+  remoteCacheProvider: providerGitHub(),
   fingerprint: {
     extraSources: ['is_testing'],
   },

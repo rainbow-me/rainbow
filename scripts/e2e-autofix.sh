@@ -57,7 +57,7 @@ done
 
 # ─── Capture native fingerprint before fixing ─────────────────────────
 if [[ -n "$PLATFORM" ]]; then
-  BUILD_FINGERPRINT=$(yarn rock fingerprint --platform "$PLATFORM" --raw 2>/dev/null | grep -v "^▲\|deprecated" | head -1 || echo "")
+  BUILD_FINGERPRINT=$(yarn rock fingerprint --platform "$PLATFORM" --raw 2>/dev/null | head -1 || echo "")
   echo "Build fingerprint: ${BUILD_FINGERPRINT:-unknown}"
 fi
 
@@ -232,7 +232,7 @@ Try a different approach. Remember:
     else
       # Compare native fingerprint to detect if we need a full rebuild or just JS re-sign
       echo "=== Source code changed — checking fingerprint ==="
-      NEW_FINGERPRINT=$(yarn rock fingerprint --platform "$PLATFORM" --raw 2>/dev/null | grep -v "^▲\|deprecated" | head -1)
+      NEW_FINGERPRINT=$(yarn rock fingerprint --platform "$PLATFORM" --raw 2>/dev/null | head -1)
       OLD_FINGERPRINT="${BUILD_FINGERPRINT:-}"
 
       if [[ -n "$OLD_FINGERPRINT" && "$NEW_FINGERPRINT" != "$OLD_FINGERPRINT" ]]; then
