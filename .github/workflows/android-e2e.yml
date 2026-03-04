@@ -388,6 +388,43 @@ jobs:
 
       # --- Run autofix ---
 
+      - name: Setup Node.js
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238
+        with:
+          node-version-file: '.node-version'
+
+      - name: Install secret tools
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        run: sudo apt install libsecret-tools
+
+      - name: Setup scripts key
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        uses: ./.github/actions/ssh/
+        with:
+          name: scripts
+          key: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
+
+      - name: Setup sandbox key
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        uses: ./.github/actions/ssh/
+        with:
+          name: sandbox
+          key: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
+
+      - name: Setup scripts
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        env:
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
+        run: eval $CI_SCRIPTS
+
+      - name: Install dependencies
+        if: ${{ steps.failures.outputs.skip != 'true' }}
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
+        run: yarn install && yarn setup
+
       - name: Install Claude Code
         if: ${{ steps.failures.outputs.skip != 'true' }}
         run: npm install -g @anthropic-ai/claude-code

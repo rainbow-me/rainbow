@@ -55,6 +55,12 @@ for i in "${!FAILED_TESTS[@]}"; do
   echo "  ❌ ${FAILED_TESTS[$i]} → ${FAILED_FLOWS[$i]}"
 done
 
+# ─── Capture native fingerprint before fixing ─────────────────────────
+if [[ -n "$PLATFORM" ]]; then
+  BUILD_FINGERPRINT=$(npx rock fingerprint --platform "$PLATFORM" --raw 2>/dev/null | head -1 || echo "")
+  echo "Build fingerprint: ${BUILD_FINGERPRINT:-unknown}"
+fi
+
 # ─── Fix attempts ────────────────────────────────────────────────────
 echo ""
 echo "=== Fixing (max $MAX_ATTEMPTS attempts) ==="
@@ -166,42 +172,62 @@ Check e2e-artifacts/maestro/ for detailed logs. Try a different approach."
   else
     echo ""
 
-    # Check if source code changed (not just test files)
-    SOURCE_CHANGED=false
+    # Determine if we need to rebuild the app
+    ONLY_TEST_FILES=true
     while IFS= read -r f; do
+      [[ -z "$f" ]] && continue
       if [[ "$f" != e2e/* ]]; then
-        SOURCE_CHANGED=true
+        ONLY_TEST_FILES=false
         break
       fi
     done <<< "$FIX_FILES"
 
-    if [[ "$SOURCE_CHANGED" = true ]]; then
-      echo "=== Source code changed — re-signing app ==="
-      if [[ "$PLATFORM" = "ios" ]]; then
-        APP_PATH="${ARTIFACT_PATH_FOR_E2E:-}"
-        if [[ -n "$APP_PATH" ]]; then
-          yarn install --immutable 2>/dev/null || true
-          npx rock sign:ios "$APP_PATH" --app --build-jsbundle
-          xcrun simctl install booted "$APP_PATH"
-          echo "✅ App re-signed and reinstalled"
-        else
-          echo "⚠️ No ARTIFACT_PATH_FOR_E2E — skipping re-sign"
-        fi
-      elif [[ "$PLATFORM" = "android" ]]; then
-        APK_PATH="${ARTIFACT_PATH_FOR_E2E:-}"
-        if [[ -n "$APK_PATH" ]]; then
-          yarn install --immutable 2>/dev/null || true
-          npx rock sign:android "$APK_PATH" --build-jsbundle
-          adb install -r "$APK_PATH"
-          echo "✅ APK re-signed and reinstalled"
-        else
-          echo "⚠️ No ARTIFACT_PATH_FOR_E2E — skipping re-sign"
+    if [[ "$ONLY_TEST_FILES" = true ]]; then
+      echo "=== Only test files changed — no rebuild needed ==="
+    elif [[ -z "$PLATFORM" ]]; then
+      echo "⚠️ No --platform specified — skipping rebuild (source changes won't be verified)"
+    elif [[ -z "${ARTIFACT_PATH_FOR_E2E:-}" ]]; then
+      echo "⚠️ No ARTIFACT_PATH_FOR_E2E — skipping rebuild"
+    else
+      # Compare native fingerprint to detect if we need a full rebuild or just JS re-sign
+      echo "=== Source code changed — checking fingerprint ==="
+      NEW_FINGERPRINT=$(npx rock fingerprint --platform "$PLATFORM" --raw 2>/dev/null | head -1)
+      OLD_FINGERPRINT="${BUILD_FINGERPRINT:-}"
+
+      if [[ -n "$OLD_FINGERPRINT" && "$NEW_FINGERPRINT" != "$OLD_FINGERPRINT" ]]; then
+        echo "🔨 Native fingerprint changed — full rebuild required"
+        if [[ "$PLATFORM" = "ios" ]]; then
+          npx rock build:ios --configuration Release --destination "generic/platform=iOS Simulator"
+          # Find and install the new .app
+          NEW_APP=$(find ios/build -name "*.app" -type d | head -1)
+          if [[ -n "$NEW_APP" ]]; then
+            xcrun simctl install booted "$NEW_APP"
+            echo "✅ Full rebuild complete and installed"
+          else
+            echo "❌ Build succeeded but could not find .app"
+          fi
+        elif [[ "$PLATFORM" = "android" ]]; then
+          npx rock build:android --variant release
+          NEW_APK=$(find android/app/build -name "*.apk" | head -1)
+          if [[ -n "$NEW_APK" ]]; then
+            adb install -r "$NEW_APK"
+            echo "✅ Full rebuild complete and installed"
+          else
+            echo "❌ Build succeeded but could not find .apk"
+          fi
         fi
       else
-        echo "⚠️ No --platform specified — skipping re-sign (source changes won't be verified)"
+        echo "📦 Native fingerprint unchanged — JS-only re-sign"
+        if [[ "$PLATFORM" = "ios" ]]; then
+          npx rock sign:ios "$ARTIFACT_PATH_FOR_E2E" --app --build-jsbundle
+          xcrun simctl install booted "$ARTIFACT_PATH_FOR_E2E"
+          echo "✅ App re-signed and reinstalled"
+        elif [[ "$PLATFORM" = "android" ]]; then
+          npx rock sign:android "$ARTIFACT_PATH_FOR_E2E" --build-jsbundle
+          adb install -r "$ARTIFACT_PATH_FOR_E2E"
+          echo "✅ APK re-signed and reinstalled"
+        fi
       fi
-    else
-      echo "=== Only test files changed — no rebuild needed ==="
     fi
 
     echo "=== Verifying ${#FAILED_FLOWS[@]} test(s) ==="
