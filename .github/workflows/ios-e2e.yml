@@ -185,7 +185,6 @@ jobs:
         run: ./scripts/e2e-ios-ci.sh
         env:
           DEVICE_UDID: ${{ steps.simulator.outputs.udid }}
-          MAX_TESTS_PER_SHARD: 1
 
       - name: Upload artifacts
         if: ${{ always() }}
@@ -198,6 +197,9 @@ jobs:
   autofix:
     name: AI Autofix
     needs: [build, e2e-tests]
+    concurrency:
+      group: e2e-autofix-${{ github.ref }}
+      cancel-in-progress: true
     if: ${{ !cancelled() && needs.e2e-tests.result == 'failure' && github.event_name == 'pull_request' }}
     runs-on: macos-15-xlarge
     timeout-minutes: 30
