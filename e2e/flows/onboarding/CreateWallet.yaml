@@ -10,7 +10,7 @@ tags:
       isE2ETest: true
 - runFlow: ../../utils/Prepare.yaml
 - assertVisible:
-    id: welcome-screen
+    id: welcome-screen-broken
 - tapOn: '.*Get a new wallet'
 - runFlow: ../../utils/MaybeSetupPin.yaml
 - runFlow: ../../utils/HandleOptionalNotificationPermission.yaml

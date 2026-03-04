@@ -5,7 +5,7 @@ appId: ${APP_ID}
     clearKeychain: true
 - runFlow: ./Prepare.yaml
 - assertVisible:
-    id: welcome-screen
+    id: welcome-screen-broken
 - tapOn: '.*Get a new wallet'
 - runFlow: ../utils/MaybeSetupPin.yaml
 - runFlow: ../utils/HandleOptionalNotificationPermission.yaml

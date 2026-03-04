@@ -6,7 +6,7 @@ env:
 # This is usually ran as the first command so make sure it has enough time to load the app.
 - extendedWaitUntil:
     visible:
-      id: welcome-screen
+      id: welcome-screen-broken
     # the test fail quite often if the timeout is too low
     timeout: 60000
 - openLink: rainbow://e2e/import?privateKey=${PKEY}&name=${NAME}
