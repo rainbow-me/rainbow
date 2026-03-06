@@ -27,9 +27,16 @@ import { IS_ANDROID, IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { useWallets, useAccountAddress } from '@/state/wallets/walletsStore';
+import { type ImportFlowContext } from '@/navigation/types';
 import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
 
-export default function useImportingWallet({ showImportModal = true } = {}) {
+export default function useImportingWallet({
+  flowContext,
+  showImportModal = true,
+}: {
+  flowContext?: ImportFlowContext;
+  showImportModal?: boolean;
+} = {}) {
   const accountAddress = useAccountAddress();
   const wallets = useWallets();
 
@@ -290,7 +297,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       try {
         // Dismiss the ADD_WALLET_NAVIGATOR modal stack
         dangerouslyGetParent?.()?.goBack();
-        await navigateAfterOnboarding();
+
+        if (flowContext !== 'in_app') {
+          await navigateAfterOnboarding();
+        }
       } catch (error) {
         logger.error(new RainbowError('[useImportingWallet]: Error navigating to wallet screen'), { error });
         try {
@@ -300,9 +310,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         }
       }
 
-      // Show backup prompt after navigation completes
       InteractionManager.runAfterInteractions(() => {
         if (
+          flowContext === 'in_app' &&
           backupProvider === walletBackupTypes.cloud &&
           !(
             IS_TEST ||
@@ -380,6 +390,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     showImportModal,
     profilesEnabled,
     backupProvider,
+    flowContext,
     resetOnFailure,
     dangerouslyGetParent,
     goBack,

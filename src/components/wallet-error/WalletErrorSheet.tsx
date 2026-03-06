@@ -63,6 +63,7 @@ export default function WalletErrorSheet() {
                   navigation.goBack();
                   InteractionManager.runAfterInteractions(() => {
                     navigation.navigate(Routes.ADD_WALLET_NAVIGATOR, {
+                      flowContext: 'in_app',
                       isFirstWallet: true,
                     });
                   });

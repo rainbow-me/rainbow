@@ -428,6 +428,7 @@ export default function ChangeWalletSheet() {
     goBack();
     InteractionManager.runAfterInteractions(() => {
       navigate(Routes.ADD_WALLET_NAVIGATOR, {
+        flowContext: 'in_app',
         isFirstWallet: false,
       });
     });
