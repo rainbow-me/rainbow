@@ -298,7 +298,7 @@ export default function useImportingWallet({
         // Dismiss the ADD_WALLET_NAVIGATOR modal stack
         dangerouslyGetParent?.()?.goBack();
 
-        if (flowContext !== 'in_app') {
+        if (flowContext === 'onboarding') {
           await navigateAfterOnboarding();
         }
       } catch (error) {
