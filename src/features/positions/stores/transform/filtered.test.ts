@@ -1,9 +1,9 @@
-import { transformPositions } from '../../stores/transform';
-import { usePositionsStore } from '../../stores/positionsStore';
+import { transformPositions } from '.';
+import { usePositionsStore } from '../positionsStore';
 import { PositionName, DetailType } from '../../types/generated/positions/positions';
 import { FIXTURE_PARAMS } from '../../__fixtures__/ListPositions';
-import { createMockAsset } from '../mocks/assets';
-import { createMockStats, createMockPosition, createMockResponse } from '../mocks/positions';
+import { createMockAsset } from '../../__fixtures__/mocks/assets';
+import { createMockStats, createMockPosition, createMockResponse } from '../../__fixtures__/mocks/positions';
 
 /**
  * Comprehensive Filtering Tests

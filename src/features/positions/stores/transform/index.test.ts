@@ -14,8 +14,8 @@ import {
   filteredItemsForPosition,
   filteredItemsForPositions,
 } from '../../__fixtures__/helpers/filters';
-import { createMockAsset } from '../../__tests__/mocks/assets';
-import { createSimpleDapp } from '../../__tests__/mocks/positions';
+import { createMockAsset } from '../../__fixtures__/mocks/assets';
+import { createSimpleDapp } from '../../__fixtures__/mocks/positions';
 
 jest.mock('@/config', () => ({
   getExperimentalFlag: jest.fn(() => true),
