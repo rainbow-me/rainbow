@@ -58,7 +58,7 @@ export const checkLocalWalletsForBackupStatus = (backups: CloudBackups): WalletB
 
       return {
         allBackedUp: acc.allBackedUp && (wallet.backedUp || !isBackupEligible),
-        areBackedUp: acc.areBackedUp && (wallet.backedUp || !isBackupEligible || wallet.imported),
+        areBackedUp: acc.areBackedUp && (wallet.backedUp || !isBackupEligible),
         canBeBackedUp: acc.canBeBackedUp && isBackupEligible,
       };
     },

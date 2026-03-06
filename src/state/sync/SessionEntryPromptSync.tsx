@@ -4,8 +4,6 @@ import { type UnlockableAppIconKey, unlockableAppIcons } from '@/features/app-ic
 import { unlockableAppIconCheck } from '@/features/app-icon/utils/unlockableAppIconCheck';
 import { type EthereumAddress } from '@/entities/wallet';
 import { IS_TEST } from '@/env';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { useActiveRoute } from '@/hooks/useActiveRoute';
 import { type RainbowAccount } from '@/model/wallet';
@@ -13,6 +11,7 @@ import { Navigation } from '@/navigation';
 import { type Route } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { backupsStore, LoadingStates, oneWeekInMs } from '@/state/backups/backups';
+import { canShowBackupPrompt, getBackupPromptStep } from '@/helpers/backupPrompt';
 import { isSwipeRoute } from '@/state/navigation/navigationStore';
 import { getSelectedWallet, getWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
@@ -57,8 +56,7 @@ async function maybeShowBackupPrompt(): Promise<boolean> {
   const selected = getSelectedWallet();
   if (!selected) return false;
 
-  if (selected.backedUp || selected.damaged || selected.imported) return false;
-  if (selected.type === WalletTypes.readOnly || selected.type === WalletTypes.bluetooth) return false;
+  if (!canShowBackupPrompt(selected)) return false;
 
   await waitForBackupStatusToSettle();
 
@@ -71,14 +69,7 @@ async function maybeShowBackupPrompt(): Promise<boolean> {
     return false;
   }
 
-  const step =
-    backupProvider === walletBackupTypes.cloud
-      ? WalletBackupStepTypes.backup_prompt_cloud
-      : backupProvider === walletBackupTypes.manual
-        ? WalletBackupStepTypes.backup_prompt_manual
-        : WalletBackupStepTypes.backup_prompt;
-
-  Navigation.handleAction(Routes.BACKUP_SHEET, { step });
+  Navigation.handleAction(Routes.BACKUP_SHEET, { step: getBackupPromptStep(backupProvider) });
   return true;
 }
 
