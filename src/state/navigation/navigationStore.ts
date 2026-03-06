@@ -20,6 +20,7 @@ const SWIPE_ROUTES = [
   Routes.DAPP_BROWSER_SCREEN,
   Routes.KING_OF_THE_HILL,
   Routes.PROFILE_SCREEN,
+  Routes.RNBW_MEMBERSHIP_SCREEN,
   Routes.RNBW_REWARDS_SCREEN,
 ] as const;
 
