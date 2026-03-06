@@ -149,7 +149,7 @@ export const sentryTransport: Transport = (level: LogLevel, message, { type, tag
       data: metadata,
       type: type || 'default',
       level: severity,
-      timestamp: Date.now(),
+      timestamp: Date.now() / 1000,
     });
 
     /**
