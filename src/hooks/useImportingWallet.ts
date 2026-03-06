@@ -1,9 +1,7 @@
 import { isValidAddress } from 'ethereumjs-util';
 import * as i18n from '@/languages';
-import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, type TextInput } from 'react-native';
-import { useDispatch } from 'react-redux';
 import { fetchENSAvatar } from './useENSAvatar';
 import { initializeWallet } from '../state/wallets/initializeWallet';
 import useIsWalletEthZero from './useIsWalletEthZero';
@@ -12,26 +10,31 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
-import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
+import { getProvider, resolveUnstoppableDomain } from '@/handlers/web3';
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
-import { Navigation, useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { type ImportFlowContext } from '@/navigation/types';
 import { sanitizeSeedPhrase } from '@/utils/formatters';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger, RainbowError } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
 import { backupsStore } from '@/state/backups/backups';
+import { canShowBackupPrompt, showBackupPrompt } from '@/helpers/backupPrompt';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import { IS_ANDROID, IS_TEST } from '@/env';
-import walletBackupTypes from '@/helpers/walletBackupTypes';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { useWallets, useAccountAddress } from '@/state/wallets/walletsStore';
+import { IS_ANDROID } from '@/env';
+import { getSelectedWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
 
-export default function useImportingWallet({ showImportModal = true } = {}) {
+export default function useImportingWallet({
+  flowContext,
+  showImportModal = true,
+}: {
+  flowContext?: ImportFlowContext;
+  showImportModal?: boolean;
+} = {}) {
   const accountAddress = useAccountAddress();
-  const wallets = useWallets();
 
   const { navigate, goBack, getParent: dangerouslyGetParent } = useNavigation<typeof Routes.MODAL_SCREEN>();
   const isWalletEthZero = useIsWalletEthZero();
@@ -275,22 +278,32 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     [isSecretValid, profilesEnabled, seedPhrase, startImportProfile]
   );
 
-  const dispatch = useDispatch();
-
   useEffect(() => {
     if (wasImporting || !isImporting) {
       return;
     }
 
-    const handleImportSuccess = async (input: string, isWalletEthZero: boolean, backupProvider: string | undefined) => {
+    const handleImportSuccess = async (isWalletEthZero: boolean, backupProvider: string | undefined) => {
       setImporting(false);
       setBusy(false);
       walletLoadingStore.setState({ loadingState: null });
 
+      const selectedWallet = getSelectedWallet();
+      const shouldShowImportBackupPrompt = flowContext === 'in_app' && canShowBackupPrompt(selectedWallet);
+
       try {
         // Dismiss the ADD_WALLET_NAVIGATOR modal stack
         dangerouslyGetParent?.()?.goBack();
-        await navigateAfterOnboarding();
+
+        if (flowContext !== 'in_app') {
+          await navigateAfterOnboarding();
+        }
+
+        if (shouldShowImportBackupPrompt) {
+          InteractionManager.runAfterInteractions(() => {
+            showBackupPrompt(backupProvider);
+          });
+        }
       } catch (error) {
         logger.error(new RainbowError('[useImportingWallet]: Error navigating to wallet screen'), { error });
         try {
@@ -300,23 +313,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         }
       }
 
-      // Show backup prompt after navigation completes
       InteractionManager.runAfterInteractions(() => {
-        if (
-          backupProvider === walletBackupTypes.cloud &&
-          !(
-            IS_TEST ||
-            isENSAddressFormat(input) ||
-            isUnstoppableAddressFormat(input) ||
-            isValidAddress(input) ||
-            isValidBluetoothDeviceId(input)
-          )
-        ) {
-          Navigation.handleAction(Routes.BACKUP_SHEET, {
-            step: WalletBackupStepTypes.backup_prompt_cloud,
-          });
-        }
-
         analytics.track(analytics.event.importedSeedPhrase, {
           isWalletEthZero,
         });
@@ -341,8 +338,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         });
 
         if (success) {
-          // Navigate to wallet screen
-          await handleImportSuccess(input, isWalletEthZero, backupProvider);
+          await handleImportSuccess(isWalletEthZero, backupProvider);
         } else {
           // Import failed
           logger.error(new RainbowError('[useImportingWallet]: Import failed'));
@@ -373,13 +369,12 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     name,
     resolvedAddress,
     seedPhrase,
-    wallets,
     wasImporting,
     image,
-    dispatch,
     showImportModal,
     profilesEnabled,
     backupProvider,
+    flowContext,
     resetOnFailure,
     dangerouslyGetParent,
     goBack,

@@ -18,18 +18,19 @@ import WatchWalletIcon from '@/assets/watchWallet.png';
 import { cloudPlatform } from '@/utils/platform';
 import { type RouteProp, useRoute } from '@react-navigation/native';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
-import { type RootStackParamList } from '@/navigation/types';
+import { type ImportFlowContext, type RootStackParamList } from '@/navigation/types';
 import { IS_DEV } from '@/env';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
 export type AddWalletSheetParams = {
+  flowContext?: ImportFlowContext;
   isFirstWallet: boolean;
 };
 
 export const AddWalletSheet = () => {
   const {
-    params: { isFirstWallet },
+    params: { flowContext = 'in_app', isFirstWallet },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.ADD_WALLET_SHEET>>();
 
   const { goBack, navigate } = useNavigation();
@@ -58,7 +59,7 @@ export const AddWalletSheet = () => {
     });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
       screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
-      params: { type: 'import', isFirstWallet },
+      params: { flowContext, type: 'import', isFirstWallet },
     });
   };
 
@@ -70,7 +71,7 @@ export const AddWalletSheet = () => {
     });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
       screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
-      params: { type: 'watch', isFirstWallet },
+      params: { flowContext, type: 'watch', isFirstWallet },
     });
   };
 

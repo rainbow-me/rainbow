@@ -225,9 +225,12 @@ export type ExplainSheetRouteParams = {
   [K in ExplainSheetType]: ExplainSheetParams<K>;
 }[ExplainSheetType];
 
+export type ImportFlowContext = 'onboarding' | 'in_app';
+
 type AddWalletNavigatorParams = {
   type?: 'import' | 'watch';
   isFirstWallet: boolean;
+  flowContext?: ImportFlowContext;
 };
 
 export type HardwareWalletTxParams = {
